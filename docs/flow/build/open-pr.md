@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Build — final step |
 | **Invoke** | `/wholeloop:open-pr` · `$wl-open-pr` · `/wl-open-pr` |
 | **Decision points** | **test it** (before anything is pushed) · **merge** (yours, outside the harness) |
@@ -54,7 +54,7 @@ flowchart TD
 ## Standalone use
 
 | You give it | It opens |
-|---|---|
+| --- | --- |
 | nothing | a draft PR for the current branch, after you confirm you tried it |
 | `slice-0d4e` | the PR(s) for that slice, with its verdicts in the body |
 | `--repo api,web` | PRs only for those parts of a multi-repo slice |
@@ -91,7 +91,7 @@ Next              your review · merge when ready · sync cleans up afterwards
 ```
 
 | CLI | Invoke |
-|---|---|
+| --- | --- |
 | Claude Code | `/wholeloop:open-pr …` |
 | Codex CLI | `$wl-open-pr …` |
 | OpenCode | `/wl-open-pr …` |

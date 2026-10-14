@@ -10,7 +10,7 @@
 ## Tiers
 
 | Tier | CLIs | Why |
-|---|---|---|
+| --- | --- | --- |
 | **A** | Claude Code · OpenAI Codex CLI · OpenCode · GitHub Copilot CLI | Native skills, subagents, hooks and a structured question tool (or close to it); Copilot also reads Claude-format hooks and skills, so it costs little extra |
 | **B** | Gemini CLI · Google Antigravity CLI · Cursor CLI | Supported formats, but gaps to bridge: parallel subagents (Gemini), a structured ask tool (Antigravity), hook loading in the CLI (Cursor) |
 
@@ -19,7 +19,7 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 ## Capability matrix
 
 | | Claude Code | Codex | OpenCode | Copilot | Gemini | Antigravity | Cursor |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | Agent Skills (`SKILL.md`) | ✅ `.claude/skills` | ✅ `.agents/skills` | ✅ both | ✅ both + `.github/skills` | ✅ `.agents/skills` | ✅ `.agents/skills` | ✅ most dirs |
 | Reads `AGENTS.md` | only without `CLAUDE.md` | ✅ | ✅ | ✅ | via setting | ✅ | ✅ |
 | Subagents | ✅ parallel | ✅ TOML | ✅ | ✅ `/fleet` | ✅ (parallel ❓) | ✅ | ✅ |
@@ -33,7 +33,7 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 ## How gaps are bridged
 
 | Gap | Bridge |
-|---|---|
+| --- | --- |
 | No parallel subagents | `headless` engine — `wl fanout` runs workers through the CLI's headless mode — or `sequential` ([engines](../architecture/orchestration-and-gates.md#three-engines-one-result)) |
 | Read-only not enforced | The core checks the worktree is unchanged after every gate round; a change fails the round |
 | No structured question tool | Plain-text questions with numbered options; the skill stops and waits |

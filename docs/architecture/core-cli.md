@@ -18,7 +18,7 @@
 ## Command surface
 
 | Group | Commands | Used by |
-|---|---|---|
+| --- | --- | --- |
 | **Steps** | `wl step begin <step>` · `wl step plan` · `wl step complete <step>` · `wl step skip <step> --reason` | every skill |
 | **Questions** | `wl answer <qid>=<value> --remember run\|initiative\|project\|user` | every skill |
 | **State** | `wl state show\|list\|get <id>` · `wl open <id>` · `wl note <id> "…"` · `wl link <id> <url>` · `wl state rebuild` | skills, people |

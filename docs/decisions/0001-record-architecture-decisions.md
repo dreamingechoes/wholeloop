@@ -33,7 +33,7 @@ Every decision that is expensive to reverse, or that someone will plausibly want
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Reasoning in commit messages | Scattered, hard to find, not linkable from docs |
 | A single "design" document | Grows into a wall nobody reads; edits silently overwrite past reasoning |
 | Comments in skills and prompts | Costs context on every run and rots with the code around it |

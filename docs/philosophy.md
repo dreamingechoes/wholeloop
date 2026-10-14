@@ -16,7 +16,7 @@ The model is identical in every one of those moments. The process around it is n
 ## The half that is yours
 
 | Half | What it is | Who has it |
-|---|---|---|
+| --- | --- | --- |
 | **Model** | The reasoning engine | Everyone, the same version on the same day |
 | **Harness** | What context the agent gets and from where · which tools it can reach · in what order things happen · where it stops and who decides · how you know afterwards that it worked | Only you — and usually decided differently by each person, without anyone having decided that |
 

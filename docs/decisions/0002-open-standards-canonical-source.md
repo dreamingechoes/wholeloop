@@ -40,7 +40,7 @@ Hand-maintaining seven copies would drift within weeks.
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Author per CLI by hand | Seven copies, guaranteed drift |
 | Target only `.agents/skills` and let each CLI cope | Claude Code does not read it; agents and hooks still diverge |
 | Depend on `rulesync` | Good coverage, but our hardest mapping (agent permissions, hook semantics) would live outside our tests |

@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Rollout — first step |
 | **Invoke** | `/wholeloop:prepare-launch` · `$wl-prepare-launch` · `/wl-prepare-launch` |
 | **Decision point** | None — nothing leaves your hands here |
@@ -78,7 +78,7 @@ Next              ramp-exposure when you're ready to start the internal stage
 ```
 
 | CLI | Invoke |
-|---|---|
+| --- | --- |
 | Claude Code | `/wholeloop:prepare-launch …` |
 | Codex CLI | `$wl-prepare-launch …` |
 | OpenCode | `/wl-prepare-launch …` |

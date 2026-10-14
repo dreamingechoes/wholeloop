@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Define — optional, only when it's hard |
 | **Invoke** | `/wholeloop:research` · `$wl-research` · `/wl-research` |
 | **Decision point** | None |
@@ -93,7 +93,7 @@ Next (optional)    /wholeloop:frame-problem --from brief-7f3a
 ```
 
 | CLI | Invoke | Parallel angles |
-|---|---|---|
+| --- | --- | --- |
 | Claude Code | `/wholeloop:research …` | native subagents |
 | Codex CLI | `$wl-research …` | native subagents |
 | OpenCode | `/wl-research …` | native subagents |

@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Define |
 | **Invoke** | `/wholeloop:cut-scopes` · `$wl-cut-scopes` · `/wl-cut-scopes` |
 | **Decision point** | **approve** the scopes |
@@ -47,7 +47,7 @@ flowchart TD
 Every scope carries:
 
 | Field | Meaning |
-|---|---|
+| --- | --- |
 | **Goal** | The user-visible outcome this scope delivers, in one sentence |
 | **Metrics** | Its share of the spec's measurement plan — every metric belongs to at least one scope |
 | **Delivery mode** | `feature` (into an existing product, behind a flag) or `proof-of-concept` (greenfield, no PR flow) |
@@ -89,7 +89,7 @@ Next                 /wholeloop:slice-work scope-a9e0
 ```
 
 | CLI | Invoke |
-|---|---|
+| --- | --- |
 | Claude Code | `/wholeloop:cut-scopes …` |
 | Codex CLI | `$wl-cut-scopes …` |
 | OpenCode · Copilot CLI · tier B | `/wl-cut-scopes …` |

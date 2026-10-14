@@ -34,7 +34,7 @@ A harness is a way of working, written down. If the documentation is thin, stale
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Docs written after the code stabilises | They never catch up |
 | A hosted docs site as the primary surface | Extra infrastructure; GitHub already renders everything we need |
 | Hand-maintained navigation | Drifts with every new page |

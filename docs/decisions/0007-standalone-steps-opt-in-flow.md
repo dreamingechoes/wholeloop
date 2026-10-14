@@ -31,7 +31,7 @@ The full flow — Define, Build, Rollout, Learn — is the point of the harness.
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Strict flow: a step needs the previous one | Safe but slow; small fixes would skip the harness entirely |
 | Standalone steps without their own guarantees | A standalone build without its gates would quietly lower the bar |
 

@@ -10,7 +10,7 @@
 ## At a glance
 
 | Concept | One line | Deep dive |
-|---|---|---|
+| --- | --- | --- |
 | **Work tree** | initiative → scope → slice → part, plus loose artifacts like a research brief | [below](#the-work-tree) |
 | **Steps & blocks** | 13 steps in 4 blocks (Define · Build · Rollout · Learn) + 4 utilities | [flow](./flow/README.md) |
 | **Standalone vs flow** | Every step is a full entry point; `next` chains them | [below](#standalone-or-flow--both-are-first-class) |
@@ -57,7 +57,7 @@ IDs are short, typed and stable (`init-41c2`, `scope-a9e0`, `slice-0d4e`, `brief
 ## Steps, blocks and utilities
 
 | Block | Intent | Steps |
-|---|---|---|
+| --- | --- | --- |
 | **Define** | shape the problem | `research` (optional) · `frame-problem` · `write-spec` · `cut-scopes` |
 | **Build** | ship it right | `slice-work` · `build-slice` · `verify-works` · `review-code` · `open-pr` |
 | **Rollout** | release with care | `prepare-launch` · `ramp-exposure` |
@@ -92,7 +92,7 @@ One rule survives standalone use: **what a step promises, it keeps**. `build-sli
 The machine runs a lot on its own, but it **stops for a person at six fixed points** — in every mode, every profile, every CLI.
 
 | # | Decision | Where | Why a person |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | **Approve the spec** | end of `write-spec` | Commits the team to a problem, a solution shape and a definition of success |
 | 2 | **Approve the scopes** | end of `cut-scopes` | Decides what ships separately and in what order |
 | 3 | **Test it** | before `open-pr` | Nothing is published before a human ran it |

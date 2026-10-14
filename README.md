@@ -73,7 +73,7 @@ The long version, with the reasoning behind each one: [docs/philosophy.md](./doc
 One canonical source — open standards first ([Agent Skills](https://agentskills.io), `AGENTS.md`, MCP) — and a generator that writes what each CLI expects.
 
 | Tier | CLIs |
-|---|---|
+| --- | --- |
 | **A** — supported from the first release | Claude Code · OpenAI Codex CLI · OpenCode · GitHub Copilot CLI |
 | **B** — next | Gemini CLI · Google Antigravity CLI · Cursor CLI |
 

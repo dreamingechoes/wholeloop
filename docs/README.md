@@ -17,7 +17,7 @@
 ## The steps
 
 | Block | Steps |
-|---|---|
+| --- | --- |
 | **Define** · shape the problem | [research](./flow/define/research.md) · [frame-problem](./flow/define/frame-problem.md) · [write-spec](./flow/define/write-spec.md) · [cut-scopes](./flow/define/cut-scopes.md) |
 | **Build** · ship it right | [slice-work](./flow/build/slice-work.md) · [build-slice](./flow/build/build-slice.md) · [verify-works](./flow/build/verify-works.md) · [review-code](./flow/build/review-code.md) · [open-pr](./flow/build/open-pr.md) |
 | **Rollout** · release with care | [prepare-launch](./flow/rollout/prepare-launch.md) · [ramp-exposure](./flow/rollout/ramp-exposure.md) |
@@ -27,7 +27,7 @@
 ## Make it yours
 
 | Page | For |
-|---|---|
+| --- | --- |
 | [Configuration](./configuration/README.md) | Files, scopes and who wins |
 | [Interaction profile](./configuration/profile.md) | Verbosity, depth, challenge, pace, language… |
 | [Providers](./configuration/providers.md) | Where documents, issues, data and comms live |
@@ -37,7 +37,7 @@
 ## Under the hood
 
 | Page | For |
-|---|---|
+| --- | --- |
 | [Platforms](./platforms/README.md) | Supported CLIs, capability matrix, adapters |
 | [Architecture](./architecture/README.md) | Layers, layout, how a step runs |
 | [Core CLI](./architecture/core-cli.md) | The `wl` command surface and the step contract |

@@ -34,7 +34,7 @@ Sharing a name with active tools for the same CLIs would confuse users, search r
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Keep `throughline` under a personal npm scope | Avoids the npm clash but not the confusion with active projects of the same name |
 | `fullarc`, `throughlane`, `impactline`, `harnessline` and others | All free; `wholeloop` was preferred for naming the loop the harness closes |
 

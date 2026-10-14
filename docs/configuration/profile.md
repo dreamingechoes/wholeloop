@@ -10,7 +10,7 @@
 ## The dials
 
 | Dial | Values (default **bold**) | Changes | Example |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `verbosity` | brief · **standard** · detailed | How much reasoning and context it writes around each action | *brief*: "Spec drafted — 4 stories, 11 criteria." |
 | `depth` | product · **balanced** · technical | Vocabulary and level of detail: outcomes vs. code paths, queries, trade-offs | *technical*: names the files, the query plan, the migration |
 | `challenge` | supportive · **balanced** · adversarial | How hard it questions your problem, spec and cuts; how many counter-questions; whether it argues the opposite case | *adversarial*: "What if the real issue is discoverability, not search?" |
@@ -23,7 +23,7 @@
 ## Presets
 
 | Preset | verbosity | depth | challenge | pace | stops | teaching | For |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | `mentor` | detailed | balanced | supportive | guided | every-step | on | Learning the flow, onboarding a teammate |
 | `pair` *(default)* | standard | balanced | balanced | guided | decisions | off | Everyday work |
 | `sparring` | standard | technical | adversarial | staged | decisions | off | Stress-testing an idea or a design |
@@ -44,7 +44,7 @@ Or simply say it mid-session — "más técnico", "challenge me harder", "slow d
 ## What no dial can change
 
 | Invariant | Why |
-|---|---|
+| --- | --- |
 | **The output contract** — preflight, one-line narration, stop on request, receipt | A run must always be legible, whatever the verbosity |
 | **Coverage** — every lens, every verification, every cap | Slowing a check down is a preference; narrowing it is a conversation, not a setting |
 | **Decision points** | Accountability stays with a person |

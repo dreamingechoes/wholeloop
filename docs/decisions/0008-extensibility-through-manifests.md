@@ -15,7 +15,7 @@ Extensions are also a safety surface: an integration written by anyone must not 
 2. **Five extension points are declarative manifests**, validated by JSON Schema and versioned (`schema: 1`):
 
    | Point | Manifest |
-   |---|---|
+   | --- | --- |
    | Provider | `provider.yml` + short guidance files |
    | Lens | `lens.yml` + prompt |
    | Template | Markdown with front matter |
@@ -43,7 +43,7 @@ Extensions are also a safety surface: an integration written by anyone must not 
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Hard-code integrations in the core | Every new tool needs a release; forks multiply |
 | Code plugins (JS/TS) for providers | Arbitrary code execution, hard to sandbox, hard to review |
 | Let skills call any MCP tool freely | No safety contract; behaviour diverges per vendor |

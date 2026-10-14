@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Build |
 | **Invoke** | `/wholeloop:build-slice` · `$wl-build-slice` · `/wl-build-slice` |
 | **Decision point** | None inside — it hands over to **test it** |
@@ -122,7 +122,7 @@ Next         test it, then /wholeloop:open-pr slice-5e1a
 ```
 
 | CLI | Invoke | Parallel builders |
-|---|---|---|
+| --- | --- | --- |
 | Claude Code | `/wholeloop:build-slice …` | native subagents |
 | Codex CLI | `$wl-build-slice …` | native subagents |
 | OpenCode · Copilot CLI | `/wl-build-slice …` | native subagents |

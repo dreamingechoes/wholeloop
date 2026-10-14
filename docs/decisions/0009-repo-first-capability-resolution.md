@@ -39,7 +39,7 @@ Repos also mix CLIs: a team on Codex may have its best guidance in `.claude/skil
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Harness defaults only | Generic results that ignore the repo |
 | Let the model pick repo skills freely | Stochastic, untestable, invisible to the person |
 | Only read the current CLI's folders | Loses guidance written for another CLI in the same repo |

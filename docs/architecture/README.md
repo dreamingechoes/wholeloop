@@ -40,7 +40,7 @@ flowchart TB
 ```
 
 | Layer | Responsibility | Never does |
-|---|---|---|
+| --- | --- | --- |
 | **Canonical harness** | Says *what* each step and role is for, in as few lines as possible | Hold rules nothing executes; hold state |
 | **Core (`wl`)** | Everything with one right answer: order, preconditions, questions, bindings, shape checks, gate arithmetic, persistence | Call a model; make a product judgement |
 | **Adapters** | Translate formats, paths, tool names and hook payloads per CLI | Add behaviour that other CLIs would not get |
@@ -108,7 +108,7 @@ The skill never computes a verdict, a precedence or a next step. It asks the cor
 ## Where to go next
 
 | Page | Covers |
-|---|---|
+| --- | --- |
 | [Core CLI](./core-cli.md) | The `wl` command surface and the step contract JSON |
 | [State and messaging](./state-and-messaging.md) | Journal, projections, mailbox, resume, sync adapters |
 | [Orchestration and gates](./orchestration-and-gates.md) | Engines, agents, lenses, verdicts, caps |

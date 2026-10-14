@@ -38,7 +38,7 @@
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Build in the person's checkout, one slice at a time | Blocks parallelism, needs a clean tree, disrupts the person's work |
 | A full clone per slice | Heavier on disk and network; no shared object store |
 | Containers per slice | Strong isolation, but a large setup cost and not available everywhere |

@@ -20,7 +20,7 @@
 Every page starts, after the title and TL;DR, with exactly one of:
 
 | Banner | Meaning |
-|---|---|
+| --- | --- |
 | `📐 design` | Target behaviour; nothing implemented yet |
 | `🚧 partial` | Some of it works; the page says which parts |
 | `✅ implemented` | Matches the released behaviour, verified by tests or conformance runs |

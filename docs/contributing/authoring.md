@@ -10,7 +10,7 @@
 ## Budgets
 
 | File | Budget | Checked by |
-|---|---|---|
+| --- | --- | --- |
 | `harness/skills/<step>/SKILL.md` | ≤ 120 lines · description ≤ 400 characters | budget lint |
 | `harness/agents/<role>.md` | ≤ 60 lines | budget lint |
 | `harness/protocols/*.md` | ≤ 80 lines | budget lint |
@@ -80,7 +80,7 @@ Workflows describe fan-outs (gates, research) declaratively: inputs, lenses or a
 An adapter implements one interface:
 
 | Method | Answers |
-|---|---|
+| --- | --- |
 | `capabilities()` | subagents? parallel? read-only enforcement? hooks? ask tool? headless? |
 | `paths(scope)` | where skills, agents, hooks, MCP config live |
 | `renderSkill` · `renderAgent` | front-matter and tool-name mapping |

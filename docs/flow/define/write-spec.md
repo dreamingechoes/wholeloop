@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Define |
 | **Invoke** | `/wholeloop:write-spec` · `$wl-write-spec` · `/wl-write-spec` |
 | **Decision point** | **approve** — nothing downstream runs on an unapproved spec |
@@ -81,7 +81,7 @@ Next                 /wholeloop:cut-scopes init-41c2
 ```
 
 | CLI | Invoke |
-|---|---|
+| --- | --- |
 | Claude Code | `/wholeloop:write-spec …` |
 | Codex CLI | `$wl-write-spec …` |
 | OpenCode · Copilot CLI · tier B | `/wl-write-spec …` |

@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Learn — first step |
 | **Invoke** | `/wholeloop:measure-impact` · `$wl-measure-impact` · `/wl-measure-impact` |
 | **Decision point** | None — it measures; [`decide-next`](./decide-next.md) decides |
@@ -78,7 +78,7 @@ Next              decide-next scope-a9e0
 ```
 
 | CLI | Invoke | Parallel analysts |
-|---|---|---|
+| --- | --- | --- |
 | Claude Code | `/wholeloop:measure-impact …` | native subagents |
 | Codex CLI | `$wl-measure-impact …` | native subagents |
 | OpenCode | `/wl-measure-impact …` | native subagents |

@@ -21,7 +21,7 @@ flowchart LR
 ```
 
 | Phase | Outcome — "done" means | Tasks |
-|---|---|---|
+| --- | --- | --- |
 | [P0 · Foundations](./phase-0-foundations.md) | The repo builds, tests and checks itself; every ❓ in the platform matrix is answered | 7 |
 | [P1 · Walking skeleton](./phase-1-walking-skeleton.md) | `frame-problem` runs end to end, standalone and via `next`, on all four tier-A CLIs, from one source | 14 |
 | [P2 · Define](./phase-2-define.md) | An idea becomes an approved spec and scopes, with real providers and research | 9 |
@@ -50,14 +50,14 @@ Phases are ordered, but a task only waits for the tasks listed in its **Depends 
 ```
 
 | Status | Meaning |
-|---|---|
+| --- | --- |
 | ⬜ | To do |
 | 🔄 | In progress — exactly one task at a time per contributor |
 | ✅ | Done — acceptance criteria checked, docs updated, journal entry written |
 | ⏸️ | Blocked or parked — the journal says why |
 
 | Size | Roughly |
-|---|---|
+| --- | --- |
 | **S** | Under half a session |
 | **M** | One session |
 | **L** | Two sessions — split it if you can |

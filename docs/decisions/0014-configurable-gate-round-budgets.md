@@ -14,7 +14,7 @@ Teams and situations differ: a payments change may warrant extra review rounds; 
 1. **Separate budgets per gate**, with defaults:
 
    | Gate | Default rounds | Later rounds look at |
-   |---|---|---|
+   | --- | --- | --- |
    | verify | 4 | the full suite again, plus criteria still failing |
    | review | 3 | only the diff since the previous round |
 
@@ -44,7 +44,7 @@ Teams and situations differ: a payments change may warrant extra review rounds; 
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Fixed caps | Cannot fit both a prototype and a payments change |
 | No caps | Unbounded cost and time |
 | A single shared budget for both gates | Verify and review fail for different reasons and need different room |

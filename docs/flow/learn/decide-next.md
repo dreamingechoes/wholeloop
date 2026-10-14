@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Learn — final step |
 | **Invoke** | `/wholeloop:decide-next` · `$wl-decide-next` · `/wl-decide-next` |
 | **Decision point** | **decide** |
@@ -46,7 +46,7 @@ flowchart TD
 ```
 
 | Outcome | Means | Follow-up the step proposes |
-|---|---|---|
+| --- | --- | --- |
 | **keep** | It worked well enough to stay as is | A task to remove the flag and dead branches |
 | **iterate** | Right direction, not there yet | A new or reopened idea in [`frame-problem`](../define/frame-problem.md), seeded with the evidence |
 | **kill** | It didn't earn its place | Flag off (by you), a task to remove the code, the reasoning archived |
@@ -87,7 +87,7 @@ Next              frame-problem init-9b70 — or stop here
 ```
 
 | CLI | Invoke |
-|---|---|
+| --- | --- |
 | Claude Code | `/wholeloop:decide-next …` |
 | Codex CLI | `$wl-decide-next …` |
 | OpenCode | `/wl-decide-next …` |

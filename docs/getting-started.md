@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Requires** | Node.js ≥ 20 · git ≥ 2.30 (worktrees) · at least one supported agentic CLI |
 | **Installs** | the `wl` CLI · generated skills, agents and hooks for the CLIs you choose |
 | **Writes** | your CLI's skill/agent folders (user or project scope) · `~/.config/wholeloop/` · `~/.local/state/wholeloop/` |
@@ -35,7 +35,7 @@ wl install --target claude,codex,opencode,copilot --scope user
 ```
 
 | `--scope` | Installs into | Use when |
-|---|---|---|
+| --- | --- | --- |
 | `user` | your home folders for each CLI | you want `wholeloop` everywhere, just for you |
 | `project` | the current repository (`.claude/`, `.agents/`, `.opencode/`, `.github/`…) | the whole team should get it with the repo |
 
@@ -59,7 +59,7 @@ Every ✗ comes with the command that fixes it.
 Any step works on its own. Three good first runs:
 
 | Try | Invoke (Claude Code · Codex · others) | You get |
-|---|---|---|
+| --- | --- | --- |
 | Research a question | `/wholeloop:research …` · `$wl-research …` · `/wl-research …` | an evidence brief with open questions |
 | Frame an idea | `/wholeloop:frame-problem …` | an initiative with a framed problem and an owner |
 | Fix something small | `/wholeloop:build-slice "…"` | a slice built in its own worktree, checked until green |
@@ -90,7 +90,7 @@ rm -rf ~/.local/state/wholeloop           # only if you also want your history g
 ## Troubleshooting
 
 | Symptom | Likely cause | Fix |
-|---|---|---|
+| --- | --- | --- |
 | The step is not listed in your CLI | generated files are stale or the CLI was open during install | `wl install --target <cli>` again, then restart the CLI |
 | "`wl` not found" inside a skill | the plugin path cannot find Node | install Node ≥ 20, or use the bundled plugin |
 | A provider shows "not connected" | the MCP server is not in this CLI's config | `wl mcp add <provider> --target <cli>` |

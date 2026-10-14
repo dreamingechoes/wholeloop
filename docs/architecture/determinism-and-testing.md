@@ -10,7 +10,7 @@
 ## Where determinism comes from
 
 | Concern | Lives in | Therefore |
-|---|---|---|
+| --- | --- | --- |
 | Step order, preconditions, skips with reasons | `src/flow` | unit-tested state machine |
 | Which questions to ask, with which options | `src/flow` + `src/config` | generated, snapshot-tested |
 | Config and profile precedence | `src/config` | table-driven tests |
@@ -42,7 +42,7 @@ flowchart TB
 ```
 
 | Layer | Runs | Speed | Fails when |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 · Unit | every commit | seconds | a decision changed |
 | 2 · Snapshot | every commit | seconds | generated output changed — review the diff, update on purpose |
 | 3 · Contract lints | every commit | seconds | a file breaks a budget, a rule has no enforcer, a link or diagram breaks |
@@ -61,7 +61,7 @@ A fixture repository, a scripted scenario (for example: standalone `build-slice 
 ## Evals — measuring the checks themselves
 
 | Corpus | Measures |
-|---|---|
+| --- | --- |
 | **Definition** | Do the challengers catch defective criteria and slice sets, without crying wolf on look-alikes? |
 | **Gates** | False positives and false negatives per lens, before and after adversarial verification |
 | **Grounding** | Do data steps invent numbers, or turn unreachable sources into open questions? |

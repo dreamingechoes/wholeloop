@@ -19,7 +19,7 @@ Every agentic CLI can run a shell command and read its output. That makes a CLI 
 ### Why TypeScript rather than Go
 
 | | TypeScript | Go |
-|---|---|---|
+| --- | --- | --- |
 | Ships as | One npm package, run by Node | One static binary per OS/arch |
 | Needs on the machine | Node.js ≥ 20 | Nothing |
 | Start-up | ~60–100 ms | ~5 ms |
@@ -48,7 +48,7 @@ The two costs of TypeScript are real: a Node dependency, and start-up latency th
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | All logic in prompts | Untestable, drifts, costs context every run |
 | Shell scripts (bash + jq) | Fast to start, hard to test and to keep portable (macOS vs Linux vs Windows) |
 | Go | Better start-up and no runtime, weaker fit for MCP, schemas and contributors — revisit if binaries alone do not close the gap |

@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Define — the front door of the flow |
 | **Invoke** | `/wholeloop:frame-problem` · `$wl-frame-problem` · `/wl-frame-problem` |
 | **Decision point** | None — the first one is *approve* at [`write-spec`](./write-spec.md) |
@@ -48,7 +48,7 @@ flowchart TD
 The framing answers exactly these questions — no more, no fewer:
 
 | Question | What a good answer looks like |
-|---|---|
+| --- | --- |
 | **Problem** | What hurts, observed, in one or two sentences |
 | **Who it is for** | A specific segment, not "users" |
 | **Evidence + hypothesis** | Data, tickets, interviews, prior art — and why we think this would help |
@@ -98,7 +98,7 @@ Next                /wholeloop:write-spec init-41c2
 ```
 
 | CLI | Invoke |
-|---|---|
+| --- | --- |
 | Claude Code | `/wholeloop:frame-problem …` |
 | Codex CLI | `$wl-frame-problem …` |
 | OpenCode · Copilot CLI · tier B | `/wl-frame-problem …` |

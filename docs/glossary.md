@@ -7,7 +7,7 @@
 ## Terms
 
 | Term | Meaning |
-|---|---|
+| --- | --- |
 | **Adapter** | Generator module that turns the canonical harness into one CLI's files ([platforms](./platforms/README.md)). |
 | **Agent (role)** | One of eight short role definitions — conductor, researcher, challenger, builder, verifier, reviewer, launcher, analyst. |
 | **Artifact** | Anything a step produces: a brief, a spec, a slice, a verdict, a launch plan, a decision. |
@@ -41,7 +41,7 @@
 ## If your team says…
 
 | Your vocabulary | In wholeloop |
-|---|---|
+| --- | --- |
 | Discovery, framing, problem statement | `frame-problem` |
 | PRD, RFC, one-pager, product brief | the spec from `write-spec` |
 | Epic, bet, deliverable, milestone | a **scope** from `cut-scopes` |

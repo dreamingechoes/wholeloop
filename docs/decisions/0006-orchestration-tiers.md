@@ -14,7 +14,7 @@ If the logic that decides outcomes lived inside one CLI's orchestration feature,
 1. **Three engines** for any fan-out:
 
    | Engine | How | When |
-   |---|---|---|
+   | --- | --- | --- |
    | `native` | The skill spawns the CLI's own subagents; each reports with `wl gate submit` | The CLI has parallel subagents |
    | `headless` | `wl fanout` runs workers through the CLI's headless mode (`claude -p`, `codex exec`, …) | No suitable subagents, or maximum isolation wanted |
    | `sequential` | The same lenses, one after another | Last resort |
@@ -40,7 +40,7 @@ If the logic that decides outcomes lived inside one CLI's orchestration feature,
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Rely on each CLI's native orchestration only | Results would vary by CLI; no answer for CLIs without parallel subagents |
 | An external orchestrator driving CLIs headlessly for every step | Takes over the interactive session the person is using |
 | A workflow feature specific to one CLI | Not portable |

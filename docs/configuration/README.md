@@ -10,7 +10,7 @@
 ## Files
 
 | Scope | Path | Committed? | Typical content |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **User** | `$XDG_CONFIG_HOME/wholeloop/config.yml` (default `~/.config/wholeloop/`) | No | Your profile, your default providers, CLIs you use |
 | **Project** | `<repo>/.wholeloop/config.yml` | **Yes** | Team providers and destinations, slot bindings, extra lenses, decision-point additions |
 | **Project extensions** | `<repo>/.wholeloop/{providers,lenses,templates,profiles}/` | Yes | Manifests the team adds ([extending](../extending/README.md)) |
@@ -85,7 +85,7 @@ targets: [claude, codex, opencode]
 ## Where to go next
 
 | Page | Covers |
-|---|---|
+| --- | --- |
 | [Interaction profile](./profile.md) | Every dial, presets, and what no dial can change |
 | [Providers](./providers.md) | Capabilities, the built-in catalogue, detection, installing MCP servers per CLI |
 | [Repo skills and slots](./repo-skills.md) | How each step finds and follows your repository's own skills |

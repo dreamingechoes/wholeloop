@@ -17,7 +17,7 @@ The risk is that a style setting becomes a quiet way to lower the bar: "brief" t
 4. **Invariants no dial can touch:**
 
    | Invariant | Meaning |
-   |---|---|
+   | --- | --- |
    | Output contract | Preflight, one-line narration, stop on request, receipt — always |
    | Coverage | Every lens, every verification, every round budget as configured |
    | Decision points | All of them, in every profile |
@@ -41,7 +41,7 @@ The risk is that a style setting becomes a quiet way to lower the bar: "brief" t
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | No profile at all | One style fits nobody well |
 | Profile can relax checks | Turns a preference into a hidden quality setting |
 | Skills read dials directly | Each CLI and skill would interpret them differently |

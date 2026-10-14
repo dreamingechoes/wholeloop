@@ -10,7 +10,7 @@
 ## At a glance
 
 | Utility | Invoke | Reads | Writes | Decision point |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | **next** | `/wholeloop:next` · `$wl-next` · `/wl-next` | anything: nothing, an ID, a URL, an idea | whatever the steps it runs write | the ones in those steps |
 | **status** | `/wholeloop:status` · `$wl-status` · `/wl-status` | the store | nothing | none |
 | **setup** | `/wholeloop:setup` · `$wl-setup` · `/wl-setup` | your CLIs' config, the repo | user / project config · MCP config of chosen CLIs | none |
@@ -76,7 +76,7 @@ In progress
 **Configure once, change any time.** Interactive, short, and it only asks about what you're about to use.
 
 | Area | What it sets | Where it's remembered |
-|---|---|---|
+| --- | --- | --- |
 | **Profile** | verbosity, depth, challenge, pace, stops, teaching, language — or a preset | your user config |
 | **Providers** | which tool fulfils each capability (docs, tracker, codehost, sources…) | project config (team) or user config (you) |
 | **CLIs** | which CLIs get adapters installed, user-wide or for this project | the CLIs' own config folders |

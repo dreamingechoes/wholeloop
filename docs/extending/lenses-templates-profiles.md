@@ -24,7 +24,7 @@ prompt: prompt.md              # ≤ 40 lines: what to look for, what is out of 
 ```
 
 | Field | Notes |
-|---|---|
+| --- | --- |
 | `gate` | Which gate runs it. |
 | `applies-when` | Deterministic filter (paths, languages, slots bound). A lens that does not apply is reported as *not applicable*, never silently absent. |
 | `fail-safe` | Reserve for lenses where a miss is far worse than a false alarm (`security`, `correctness` are fail-safe by default). |

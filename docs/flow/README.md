@@ -42,7 +42,7 @@ flowchart LR
 ## Every step
 
 | Block | # | Step | You get | Decision point |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Define | 0 | [`research`](./define/research.md) | An evidence-first brief with confidence and open questions | — |
 | Define | 1 | [`frame-problem`](./define/frame-problem.md) | A framed problem with an owner — or an argued no-go | — |
 | Define | 2 | [`write-spec`](./define/write-spec.md) | A spec with user stories, acceptance criteria and a measurement plan | **approve** |
@@ -61,7 +61,7 @@ flowchart LR
 ## Three ways in
 
 | You have… | Run | What happens |
-|---|---|---|
+| --- | --- | --- |
 | A loose idea and want the whole thing | `next "idea"` | Each step in order, stopping at every decision point |
 | A specific job | the step itself | That step only — it asks for what it is missing |
 | Something half done, maybe by someone else | `next <id or URL>` | Finds the first step whose output is missing and continues |

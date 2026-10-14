@@ -14,7 +14,7 @@ The four blocks — Define, Build, Rollout, Learn — and the points where a per
 1. **Thirteen steps named verb + object**, grouped in four blocks:
 
    | Block | Steps |
-   |---|---|
+   | --- | --- |
    | Define · shape the problem | `research` · `frame-problem` · `write-spec` · `cut-scopes` |
    | Build · ship it right | `slice-work` · `build-slice` · `verify-works` · `review-code` · `open-pr` |
    | Rollout · release with care | `prepare-launch` · `ramp-exposure` |
@@ -40,7 +40,7 @@ The four blocks — Define, Build, Rollout, Learn — and the points where a per
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Methodology names (PRD, epic, bet…) | Meaning varies between teams; opaque to newcomers |
 | Single nouns (`spec`, `tasks`, `verify`) | Say what the step is about, not what you get |
 | Numbered steps only | Easy to order, impossible to remember |

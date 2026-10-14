@@ -10,7 +10,7 @@
 ## The agents
 
 | Role | Job | Can write code? | Used by |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `conductor` | Locates state, states the plan, routes steps, relays verdicts | No | `next`, multi-slice builds |
 | `researcher` | Investigates one angle against one source; evidence first | No | `research`, `measure-impact` |
 | `challenger` | Attacks a definition artifact: a problem, a spec, a scope cut, a slice set, a criteria set | No | Define steps, `slice-work` |
@@ -35,7 +35,7 @@ flowchart LR
 ```
 
 | Engine | When | Trade-off |
-|---|---|---|
+| --- | --- | --- |
 | **native** | Claude Code, Codex, OpenCode, Copilot (`/fleet`), Cursor, Antigravity | Best UX; enforcement of read-only varies per CLI |
 | **headless** | Gemini CLI if parallel subagents are unavailable; anyone who wants each lens in a clean process | Real isolation and parallelism; separate processes cost more start-up and need non-interactive permissions |
 | **sequential** | Anything else | Slowest; identical coverage |
@@ -55,7 +55,7 @@ The engine is chosen by the adapter's declared capabilities and can be overridde
 Six fixed lenses, each a separate `reviewer`:
 
 | Lens | Asks |
-|---|---|
+| --- | --- |
 | `correctness` | Bugs the tests missed |
 | `design-fit` | Does it follow this repo's existing patterns and boundaries? |
 | `performance` | N+1s, unbounded work, wasteful I/O |
@@ -83,14 +83,14 @@ The rule counts **refutations**, not confirmations. Written the other way round,
 ### Rounds — "until green", with a budget you control
 
 | Gate | Default rounds | Round ≥ 2 looks at |
-|---|---|---|
+| --- | --- | --- |
 | verify | 4 | the full suite again, plus the criteria still failing |
 | review | 3 | only the diff since the previous round |
 
 The round budget is a **parameter, not a constant**:
 
 | Where | How | Example |
-|---|---|---|
+| --- | --- | --- |
 | Project default | `.wholeloop/config.yml` | `gates: { verify: { rounds: 5 }, review: { rounds: 2 } }` |
 | This run | flag | `--rounds verify=6,review=4` |
 | This run | your words | "give it five rounds of review" |
@@ -108,7 +108,7 @@ Gates **never fix**. They route findings back to the builder through the mailbox
 ## Pace — concurrency, nothing else
 
 | Pace | Builders | Gates |
-|---|---|---|
+| --- | --- | --- |
 | `guided` | One at a time, plan shown before code | Lenses one after another |
 | `staged` | In parallel | One slice's gates at a time, cost reported between slices |
 | `parallel` | In parallel | Fully fanned out |

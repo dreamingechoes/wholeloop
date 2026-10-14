@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Build — inside the "until green" loop, or on its own |
 | **Invoke** | `/wholeloop:verify-works` · `$wl-verify-works` · `/wl-verify-works` |
 | **Decision point** | None — *until green* is a machine loop with a round limit |
@@ -57,7 +57,7 @@ flowchart TD
 ## Standalone use
 
 | You give it | It checks |
-|---|---|
+| --- | --- |
 | nothing | the current branch against its base |
 | `slice-0d4e` | that slice's worktree against its criteria |
 | `#142` or a PR URL | that PR, checked out in a temporary worktree, with criteria from its description or linked issue |
@@ -88,7 +88,7 @@ Next      builder, round 2 of 4
 ```
 
 | CLI | Invoke | Parallel verifiers |
-|---|---|---|
+| --- | --- | --- |
 | Claude Code | `/wholeloop:verify-works …` | native subagents |
 | Codex CLI | `$wl-verify-works …` | native subagents |
 | OpenCode | `/wl-verify-works …` | native subagents |

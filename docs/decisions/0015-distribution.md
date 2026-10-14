@@ -37,7 +37,7 @@ Bare names like `wholeloop` are already taken on npm.
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | npm only | Plugin users would need two installs |
 | Binaries only | Larger release burden from day one; no plugin integration |
 | A docs site on a third-party host | Unnecessary — GitHub renders the docs, Mermaid included |

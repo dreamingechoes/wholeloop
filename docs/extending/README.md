@@ -10,7 +10,7 @@
 ## Extension points
 
 | Extension | What it adds | Format | Guide |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Provider** | A source, destination or service (Zendesk, Shortcut, Statsig…) | `provider.yml` + short guidance files | [providers](./providers.md) |
 | **Lens** | An extra review or verify dimension (accessibility, i18n, privacy…) | `lens.yml` + prompt | [lenses, templates, profiles](./lenses-templates-profiles.md#lenses) |
 | **Template** | Your own shape for a brief, spec, launch plan… | Markdown with front matter | [templates](./lenses-templates-profiles.md#templates) |

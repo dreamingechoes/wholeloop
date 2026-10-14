@@ -56,7 +56,7 @@ degrade:
 ## Field by field
 
 | Field | Required | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `schema` | yes | Manifest schema version. `wl` refuses unknown major versions. |
 | `id` | yes | Kebab-case, unique. Same `id` as a built-in **replaces** it; use `extends: <id>` to override only some fields. |
 | `capabilities` | yes | From the [taxonomy](../configuration/providers.md#the-capability-taxonomy). One provider may list several. |

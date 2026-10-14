@@ -12,7 +12,7 @@ Harness prompts tend to grow. Every incident adds a paragraph, every edge case a
 ### Budgets
 
 | File | Budget |
-|---|---|
+| --- | --- |
 | `SKILL.md` body | ≤ 120 lines |
 | Skill `description` | ≤ 400 characters |
 | Agent definition | ≤ 60 lines |
@@ -53,7 +53,7 @@ The *why* behind a rule — the incident, the trade-off, the rejected options �
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | No budgets, review by taste | Growth is gradual and nobody notices until it hurts |
 | Token budgets instead of lines | Harder to reason about in review; lines are a good proxy for Markdown |
 | Rules in prose, checked by evals only | Evals are slow and stochastic; they measure, they do not enforce |

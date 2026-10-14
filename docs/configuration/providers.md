@@ -42,7 +42,7 @@ The taxonomy is the **stable contract**. It versions slowly, and every verb in i
 ### Sources — read-only evidence
 
 | Capability | Answers | Used by |
-|---|---|---|
+| --- | --- | --- |
 | `source.web` | What does the outside world say? | research, frame-problem |
 | `source.code` | What does the code actually do? | every step |
 | `source.product-analytics` | What do users do? Events, funnels, retention | research, write-spec, measure-impact |
@@ -59,7 +59,7 @@ Every source has one verb: **`query`**.
 ### Destinations and services
 
 | Capability | Verbs | Used by |
-|---|---|---|
+| --- | --- | --- |
 | `docs` | `create` · `read` · `update` (always read-modify-write) · `link` | Define, Rollout, Learn |
 | `tracker` | `create-item` · `read-item` · `update-item` · `link-items` · `transition` | cut-scopes, slice-work, sync |
 | `codehost` | `open-draft-pr` · `read-pr` · `pr-status` | open-pr, review-code, sync |
@@ -76,7 +76,7 @@ Every source has one verb: **`query`**.
 Defaults chosen for breadth of real-world use. **v1** ships with the phase that first needs it; **catalogue** entries are planned or welcome as community manifests.
 
 | Capability | v1 built-ins | Catalogue |
-|---|---|---|
+| --- | --- | --- |
 | `source.web` · `source.code` | native (the host CLI's own search, fetch and file tools) | — |
 | `source.product-analytics` | PostHog · Mixpanel · Amplitude | Google Analytics 4 · Heap · Pendo |
 | `source.bi` | Metabase · BigQuery · PostgreSQL (read-only) | Looker · Snowflake · Redash · Databricks |

@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Build |
 | **Invoke** | `/wholeloop:slice-work` · `$wl-slice-work` · `/wl-slice-work` |
 | **Decision point** | None |
@@ -51,7 +51,7 @@ flowchart TD
 4. **The challenger checks the split itself**:
 
    | It asks | Example of a problem |
-   |---|---|
+   | --- | --- |
    | Is this really one thing? | "filter **and** export" in the same slice |
    | Is every dependency written down? | slice 3 needs a column that no earlier slice adds |
    | Could someone try it once it's done? | "set up the data model" |
@@ -88,7 +88,7 @@ Next                 /wholeloop:build-slice scope-a9e0
 ```
 
 | CLI | Invoke |
-|---|---|
+| --- | --- |
 | Claude Code | `/wholeloop:slice-work …` |
 | Codex CLI | `$wl-slice-work …` |
 | OpenCode · Copilot CLI · tier B | `/wl-slice-work …` |

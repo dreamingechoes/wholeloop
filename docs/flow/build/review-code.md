@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Build — after [`verify-works`](./verify-works.md) is green, inside the "until green" loop |
 | **Invoke** | `/wholeloop:review-code` · `$wl-review-code` · `/wl-review-code` |
 | **Decision point** | None — a machine loop with a round limit |
@@ -48,7 +48,7 @@ flowchart TD
 ```
 
 | Lens | The question it owns |
-|---|---|
+| --- | --- |
 | **correctness** | Will this misbehave on an input or state the tests didn't try? |
 | **design fit** | Does it follow how *this* repository already solves this kind of problem? |
 | **performance** | Repeated queries, unbounded loops, work done on every request that could be done once? |
@@ -69,7 +69,7 @@ flowchart TD
 ## Standalone use
 
 | You give it | It reviews |
-|---|---|
+| --- | --- |
 | nothing | the current branch against its base |
 | `slice-0d4e` | that slice's worktree, with its criteria as context |
 | `#142` or a PR URL | that PR; add `--comment` to post findings on it |
@@ -99,7 +99,7 @@ Next      builder, round 2 of 3 (only the new diff is reviewed)
 ```
 
 | CLI | Invoke | Parallel lenses |
-|---|---|---|
+| --- | --- | --- |
 | Claude Code | `/wholeloop:review-code …` | native subagents |
 | Codex CLI | `$wl-review-code …` | native subagents |
 | OpenCode | `/wl-review-code …` | native subagents |

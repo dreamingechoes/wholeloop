@@ -41,7 +41,7 @@ The harness has to remember a lot between sessions: the initiatives in progress,
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | `.wholeloop/` inside the repository | Pollutes diffs, leaks across branches, breaks for multi-repo work |
 | beads or another task-graph tool as the store | Couples the harness to one tool and its install; kept as a possible sync adapter |
 | An external tracker as the store | Network on every write, vendor lock-in, slow for agent chatter |

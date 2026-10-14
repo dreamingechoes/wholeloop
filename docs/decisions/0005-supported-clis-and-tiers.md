@@ -16,7 +16,7 @@ Notable facts that shaped the tiers:
 ## Decision
 
 | Tier | CLIs | Commitment |
-|---|---|---|
+| --- | --- | --- |
 | **A** | Claude Code · OpenAI Codex CLI · OpenCode · GitHub Copilot CLI | Generated adapters, green conformance scenarios and docs from the walking skeleton onwards |
 | **B** | Gemini CLI · Google Antigravity CLI · Cursor CLI | Adapters in Phase 5; gaps bridged as described in [ADR-0006](./0006-orchestration-tiers.md) |
 
@@ -44,7 +44,7 @@ Notable facts that shaped the tiers:
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Claude Code only | Defeats the purpose of a portable harness |
 | All seven at once | Spreads the first release across the CLIs with the most gaps |
 | Gemini CLI and Antigravity as one target | Different config locations, hook schemas and question tools |

@@ -34,7 +34,7 @@
 ## Alternatives considered
 
 | Option | Why not |
-|---|---|
+| --- | --- |
 | Allow attribution, leave it to contributors | Inconsistent history; easy to forget |
 | Strip trailers automatically on merge | Hides the problem instead of preventing it; rewrites authors' commits |
 

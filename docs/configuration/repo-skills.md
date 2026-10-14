@@ -14,7 +14,7 @@ A generic harness that ignores your repository writes generic code. Your repo ma
 ## What `wl discover` looks at
 
 | Kind | Where |
-|---|---|
+| --- | --- |
 | **Skills** | `.agents/skills/` · `.claude/skills/` · `.codex/skills/` · `.opencode/skills/` · `.gemini/skills/` · `.cursor/skills/` · `.github/skills/` |
 | **Agents** | `.claude/agents/` · `.codex/agents/` · `.opencode/agents/` · `.gemini/agents/` · `.agents/agents/` · `.cursor/agents/` · `.github/agents/` |
 | **Instructions & rules** | `AGENTS.md` (nested) · `CLAUDE.md` · `GEMINI.md` · `.cursor/rules/` · `.agents/rules/` · `.github/copilot-instructions.md` |
@@ -28,7 +28,7 @@ The result is a **capability map**, cached in the store and refreshed when the s
 ## Slots
 
 | Slot | Bound to, typically | Used by |
-|---|---|---|
+| --- | --- | --- |
 | `research.method` | a team research or discovery skill | research |
 | `spec.template` | a spec / PRD skill or template | write-spec |
 | `flags.naming` | a feature-flag naming convention | cut-scopes, ramp-exposure |

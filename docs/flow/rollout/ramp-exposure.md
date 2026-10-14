@@ -10,7 +10,7 @@
 ## At a glance
 
 | | |
-|---|---|
+| --- | --- |
 | **Block** | Rollout |
 | **Invoke** | `/wholeloop:ramp-exposure` · `$wl-ramp-exposure` · `/wl-ramp-exposure` |
 | **Decision point** | **ramp** — at every stage, no exceptions |
@@ -81,7 +81,7 @@ Next      re-run after you change the flag; I'll confirm it's at 50%
 ```
 
 | CLI | Invoke |
-|---|---|
+| --- | --- |
 | Claude Code | `/wholeloop:ramp-exposure …` |
 | Codex CLI | `$wl-ramp-exposure …` |
 | OpenCode | `/wl-ramp-exposure …` |

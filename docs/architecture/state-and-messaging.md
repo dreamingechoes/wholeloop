@@ -10,7 +10,7 @@
 ## Why not keep state in the session, or in the repo?
 
 | Option | Problem |
-|---|---|
+| --- | --- |
 | In the agent session | Lost on compaction, on a crash, on switching CLI; invisible to other agents |
 | Inside the repository | Pollutes diffs and history; leaks between branches; one initiative may span several repositories |
 | An external tracker as the store | Couples the harness to one vendor; slow; needs network for every write |
@@ -49,7 +49,7 @@ Every change is an event. Projections are a pure function of the journal, which 
 ```
 
 | Event family | Examples |
-|---|---|
+| --- | --- |
 | `item.*` | `item.created` · `item.updated` · `item.closed` |
 | `step.*` | `step.started` · `step.completed` · `step.skipped` (with reason) |
 | `question.*` / `answer.*` | asked, answered, remembered scope |
@@ -63,7 +63,7 @@ Every change is an event. Projections are a pure function of the journal, which 
 Agents running in parallel need to talk without sharing a context window. The mailbox gives them threads, addressed by role, with a small set of message kinds:
 
 | Kind | Meaning | Typical sender → receiver |
-|---|---|---|
+| --- | --- | --- |
 | `contract` | A published interface others can build against | builder (producer part) → builder (consumer part) |
 | `handoff` | "This is yours now", with what is done and what is not | conductor → builder · builder → verifier |
 | `status` | `DONE` · `BLOCKED` · `NEEDS_INPUT`, with evidence | any agent → conductor |
