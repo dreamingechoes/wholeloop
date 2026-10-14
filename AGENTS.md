@@ -40,7 +40,7 @@ Instructions for any coding agent (and any human) working **on this repository**
 
 ## Commands
 
-Node ≥ 20 and npm ([ADR-0019](docs/decisions/0019-typescript-toolchain.md)).
+Node ≥ 22 and npm for development; the published CLI runs on Node ≥ 20 ([ADR-0019](docs/decisions/0019-typescript-toolchain.md)).
 
 ```bash
 npm ci

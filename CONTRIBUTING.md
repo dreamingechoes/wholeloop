@@ -27,7 +27,7 @@ Thanks for wanting to help. `wholeloop` is built in small, session-sized tasks, 
 
 ## Checks
 
-Node ≥ 20 and npm:
+Node ≥ 22 and npm for development (the published CLI runs on Node ≥ 20):
 
 ```bash
 npm ci
