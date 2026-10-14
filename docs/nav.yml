@@ -1,0 +1,42 @@
+# Order of the documentation. Footers (docnav) are generated from this list — never edit them by hand.
+# Each entry: path relative to docs/, and the short title used in navigation links.
+home: README.md
+concepts: concepts.md
+pages:
+  - { path: README.md, title: Docs index }
+  - { path: philosophy.md, title: Philosophy }
+  - { path: getting-started.md, title: Getting started }
+  - { path: concepts.md, title: Concepts }
+  - { path: flow/README.md, title: The flow }
+  - { path: flow/define/research.md, title: research }
+  - { path: flow/define/frame-problem.md, title: frame-problem }
+  - { path: flow/define/write-spec.md, title: write-spec }
+  - { path: flow/define/cut-scopes.md, title: cut-scopes }
+  - { path: flow/build/slice-work.md, title: slice-work }
+  - { path: flow/build/build-slice.md, title: build-slice }
+  - { path: flow/build/verify-works.md, title: verify-works }
+  - { path: flow/build/review-code.md, title: review-code }
+  - { path: flow/build/open-pr.md, title: open-pr }
+  - { path: flow/rollout/prepare-launch.md, title: prepare-launch }
+  - { path: flow/rollout/ramp-exposure.md, title: ramp-exposure }
+  - { path: flow/learn/measure-impact.md, title: measure-impact }
+  - { path: flow/learn/decide-next.md, title: decide-next }
+  - { path: flow/utilities.md, title: Utilities }
+  - { path: configuration/README.md, title: Configuration }
+  - { path: configuration/profile.md, title: Interaction profile }
+  - { path: configuration/providers.md, title: Providers }
+  - { path: configuration/repo-skills.md, title: Repo skills }
+  - { path: extending/README.md, title: Extending }
+  - { path: extending/providers.md, title: Writing a provider }
+  - { path: extending/lenses-templates-profiles.md, title: Lenses, templates, profiles }
+  - { path: platforms/README.md, title: Platforms }
+  - { path: architecture/README.md, title: Architecture }
+  - { path: architecture/core-cli.md, title: Core CLI }
+  - { path: architecture/state-and-messaging.md, title: State and messaging }
+  - { path: architecture/orchestration-and-gates.md, title: Orchestration and gates }
+  - { path: architecture/determinism-and-testing.md, title: Determinism and testing }
+  - { path: decisions/README.md, title: Decisions }
+  - { path: contributing/authoring.md, title: Authoring }
+  - { path: contributing/docs-style.md, title: Docs style }
+  - { path: glossary.md, title: Glossary }
+  - { path: faq.md, title: FAQ }
