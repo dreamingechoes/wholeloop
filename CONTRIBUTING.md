@@ -18,6 +18,9 @@ Thanks for wanting to help. `throughline` is built in small, session-sized tasks
 
 ## Commits and pull requests
 
+> [!NOTE]
+> **Bootstrap phase:** while the foundations are being built, the owner commits directly to `main`. Branches and pull requests become the workflow once the switch is announced in the [journal](./roadmap/journal.md).
+
 - [Conventional commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:` — imperative subject, ≤ 72 characters, one concern per commit.
 - **No tool attribution.** No `Co-Authored-By` trailers for AI assistants, no "generated with" footers — in commits, PR descriptions or anywhere else ([ADR-0017](./docs/decisions/0017-no-tool-attribution-in-history.md)). Use whatever tools you like; the history records people.
 - PR description: what changed, why, the roadmap task, and how you verified it.

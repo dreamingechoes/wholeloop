@@ -22,6 +22,8 @@
 - Providers and other extensions are declarative manifests over a capability taxonomy with no dangerous verbs.
 - Gate round budgets default to verify 4 / review 3 and are configurable per project and per run.
 - No tool attribution anywhere in the history.
+- Repository hosted privately at `github.com/dreamingechoes/throughline` (personal account).
+- Bootstrap workflow: commits go straight to `main`, no branches or PRs, until the owner announces the switch.
 
 ### Next
 
