@@ -3,7 +3,7 @@
 > **TL;DR** — Harness content is short by rule and specific by design. A skill orchestrates; the core decides; the reasoning lives in an ADR. Every file has a line budget, every hard rule has an enforcer, and every change to generated output is a reviewed golden-file diff.
 
 > [!NOTE]
-> **Status: 📐 design.** Budgets and lints land in [P0-05](../../roadmap/phase-0-foundations.md#p0-05--size-budgets-and-enforcement-lint); adapters in [P1-10](../../roadmap/phase-1-walking-skeleton.md#p1-10--adapter--claude-code).
+> **Status: 🚧 partial.** Budgets, front-matter checks and the enforcement lint are implemented (`wl harness check`, part of `npm run check`). Adapters land in [P1-10](../../roadmap/phase-1-walking-skeleton.md#p1-10--adapter--claude-code).
 
 ---
 
@@ -69,7 +69,28 @@ metadata:
 
 ## Protocols and enforcement
 
-A protocol states a cross-cutting rule in a few lines. A **hard rule** (marked ⛔) must have an entry in `enforcement.yml` naming the code, test or lint that makes it true. The enforcement lint fails on a hard rule with no enforcer, an enforcer that only restates the rule in prose, a skill that contradicts it, or an entry pointing at a rule that no longer exists.
+A protocol states a cross-cutting rule in a few lines. A **hard rule** is written with ⛔ and a kebab-case id in backticks, so tools can find it:
+
+```markdown
+- ⛔ `no-send-verb` — comms providers can only draft; nothing is ever sent.
+```
+
+Every hard rule needs an entry in `enforcement.yml` at the repository root:
+
+```yaml
+version: 1
+rules:
+  - id: no-send-verb
+    enforcers:                          # code, tests or lints: `path` or `path#symbol`
+      - src/providers/taxonomy.ts#VERBS
+      - test/unit/providers/taxonomy.test.ts
+    forbid: ["comms\\.send"]             # regexes no harness source may contain
+documentation_only:
+  - id: some-rule
+    reason: Why nothing can enforce it (yet).
+```
+
+`wl harness check` fails on: a hard rule with no entry · an enforcer that is Markdown (prose restating the rule) · an enforcer file or symbol that does not exist · a harness file matching a `forbid` pattern (a skill contradicting the rule) · an entry whose rule no longer appears anywhere · a documentation-only entry without a reason. It also enforces the size budgets above and the front matter of skills (portable keys only, `name` matching the folder) and agents (`wholeloop.capabilities` from `read · write · shell · web`, optional `wholeloop.tier` from `fast · standard · deep`).
 
 ## Workflows
 

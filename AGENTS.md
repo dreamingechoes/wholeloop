@@ -49,6 +49,7 @@ npm run lint:fix   # apply Biome's safe fixes and formatting
 npm run build      # dist/wl.mjs, one bundled ESM file
 npm run smoke      # the built CLI prints the package version
 npm run docs:nav   # regenerate every docnav footer after editing docs/nav.yml
+npm run harness:check  # budgets, front matter and enforcement.yml (also part of check)
 ```
 
 ## Style for code

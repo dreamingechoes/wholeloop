@@ -1,0 +1,7 @@
+# Every hard rule (a line with ⛔ `rule-id`) in harness/ must be listed here with what enforces it.
+# An enforcer is code, a test or a lint: `path` or `path#symbol`. Markdown is never an enforcer.
+# `forbid` lists regexes that must not appear in harness sources (a skill contradicting the rule).
+# Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
+version: 1
+rules: []
+documentation_only: []

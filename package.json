@@ -33,7 +33,8 @@
     "docs:check": "node dist/wl.mjs docs check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run lint && npm run typecheck && npm run test && npm run build && npm run smoke && npm run docs:check && npm run lint:md && npm run lint:mermaid"
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build && npm run smoke && npm run docs:check && npm run harness:check && npm run lint:md && npm run lint:mermaid",
+    "harness:check": "node dist/wl.mjs harness check"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

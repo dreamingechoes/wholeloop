@@ -74,17 +74,17 @@
 
 ## P0-05 · Size budgets and enforcement lint
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P0-02
+**Status:** ✅ · **Size:** M · **Depends on:** P0-02
 
 **Goal** — Keep every skill, agent and manifest short, and every hard rule executed.
 
-**Deliverables** — budget lint for `harness/**` (lines, description length), Agent Skills front-matter schema check, `enforcement.yml` with its lint (missing enforcer · restatement-only · contradiction · stale entry).
+**Deliverables** — budget lint for `harness/**` (lines, description length), Agent Skills front-matter schema check, `enforcement.yml` with its lint (missing enforcer · restatement-only · contradiction · stale entry) — all behind `wl harness check`.
 
 **Acceptance criteria:**
 
-- [ ] A 121-line `SKILL.md` fails with the budget and the file.
-- [ ] A hard rule (⛔) in `harness/protocols/` with no entry in `enforcement.yml` fails.
-- [ ] Unit tests cover each failure mode with fixtures.
+- [x] A 121-line `SKILL.md` fails with the budget and the file.
+- [x] A hard rule (⛔) in `harness/protocols/` with no entry in `enforcement.yml` fails.
+- [x] Unit tests cover each failure mode with fixtures.
 
 **Docs** — ADR-0011, contributing/authoring.
 

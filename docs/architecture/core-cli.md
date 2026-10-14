@@ -34,6 +34,7 @@
 | **Environment** | `wl env declare <what> --undo "<command>"` · `wl env report` | builder, `open-pr` |
 | **Install** | `wl install --target <cli,…> --scope user\|project` · `wl uninstall` · `wl doctor` | people |
 | **Docs (dev)** | `wl docs nav` · `wl docs check [--json]` — ✅ implemented | CI, contributors |
+| **Harness (dev)** | `wl harness check [--json]` — budgets, front matter, enforcement map — ✅ implemented | CI, contributors |
 
 ## The step contract
 
