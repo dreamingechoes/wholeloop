@@ -22,10 +22,10 @@ Extensions are also a safety surface: an integration written by anyone must not 
    | Profile preset | `profile.yml` |
    | Decision point | config entry |
 
-3. **Discovery order:** repo (`.throughline/<kind>/`) → user (`~/.config/throughline/<kind>/`) → packages listed in config → built-in (`harness/<kind>/`). Same `id` replaces; `extends:` merges.
-4. **Packages carry manifests only.** `tl` reads YAML and Markdown from an npm package; it never executes code from one.
+3. **Discovery order:** repo (`.wholeloop/<kind>/`) → user (`~/.config/wholeloop/<kind>/`) → packages listed in config → built-in (`harness/<kind>/`). Same `id` replaces; `extends:` merges.
+4. **Packages carry manifests only.** `wl` reads YAML and Markdown from an npm package; it never executes code from one.
 5. **Adapters are the only code extension** — supporting a new CLI is a TypeScript module, reviewed like core code.
-6. **Every manifest kind has `scaffold`, `test` and `list` commands.** An invalid manifest is reported by `tl doctor` and ignored; it never half-loads.
+6. **Every manifest kind has `scaffold`, `test` and `list` commands.** An invalid manifest is reported by `wl doctor` and ignored; it never half-loads.
 
 ## Consequences
 

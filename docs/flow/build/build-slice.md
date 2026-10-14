@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Build |
-| **Invoke** | `/throughline:build-slice` · `$tl-build-slice` · `/tl-build-slice` |
+| **Invoke** | `/wholeloop:build-slice` · `$wl-build-slice` · `/wl-build-slice` |
 | **Decision point** | None inside — it hands over to **test it** |
 | **Reads** | A scope, a slice, an issue URL, free text, or nothing (it asks) |
 | **Writes** | One worktree + branch per slice or part · the builder's plan, gate results and evidence on the slice · a list of anything changed outside the repository, each with its undo |
@@ -52,7 +52,7 @@ flowchart TD
 ```
 
 1. **It works out what you meant.** A scope builds every unblocked slice; a slice builds that one; an issue URL or a sentence becomes **one ad-hoc slice** with criteria you confirm in a single question. Even a one-line fix goes through both gates.
-2. **Every slice gets a worktree.** By default each slice (or part, for multi-repo slices) is checked out under the store — `$XDG_STATE_HOME/throughline/worktrees/<repo>/<slice-id>` — on its own branch from a named base. Consequences:
+2. **Every slice gets a worktree.** By default each slice (or part, for multi-repo slices) is checked out under the store — `$XDG_STATE_HOME/wholeloop/worktrees/<repo>/<slice-id>` — on its own branch from a named base. Consequences:
    - builders run **in parallel**, including several slices of the same repository;
    - **your checkout is never touched** — it can be dirty, on any branch, with a dev server running;
    - **blocked-by order still holds**: a slice waits until the ones it depends on are green, and a chained slice can branch from the one below it (stacked branches).
@@ -67,9 +67,9 @@ The preflight, before any worktree exists:
 
 ```text
 Plan       3 slices → 3 builders · pace staged
-Workspace  worktrees under ~/.local/state/throughline/worktrees/shop-web/
-           slice-0d4e  branch tl/slice-0d4e  from origin/main (3f9a1c2)  ports 5200–5209
-           slice-77ab  waits for slice-0d4e · will branch from tl/slice-0d4e
+Workspace  worktrees under ~/.local/state/wholeloop/worktrees/shop-web/
+           slice-0d4e  branch wl/slice-0d4e  from origin/main (3f9a1c2)  ports 5200–5209
+           slice-77ab  waits for slice-0d4e · will branch from wl/slice-0d4e
 Your copy  ~/code/shop-web untouched (it's on feat/other with local changes — that's fine)
 Skills     build.frontend → design-system-guide (repo) · verify.suite → npm test + tsc (detected)
 Gates      verify ≤ 4 rounds · review ≤ 3 · finishes at green  (--rounds to change)
@@ -82,13 +82,13 @@ Stop       "stop" halts every builder; worktrees and branches stay as they are
 When a slice is green, **test it** is yours:
 
 ```text
-tl worktree open slice-0d4e
-  path   ~/.local/state/throughline/worktrees/shop-web/slice-0d4e
-  branch tl/slice-0d4e
+wl worktree open slice-0d4e
+  path   ~/.local/state/wholeloop/worktrees/shop-web/slice-0d4e
+  branch wl/slice-0d4e
   ports  5200–5209 (dev server suggestion: PORT=5200 npm run dev)
 ```
 
-Worktrees are removed by [`sync`](../utilities.md) once their PR is merged, or anytime with `tl worktree prune`. Rather have branches appear in the copy you already work in? Set `build.workspace: checkout` — slices of the same repository then take turns there instead of running side by side.
+Worktrees are removed by [`sync`](../utilities.md) once their PR is merged, or anytime with `wl worktree prune`. Rather have branches appear in the copy you already work in? Set `build.workspace: checkout` — slices of the same repository then take turns there instead of running side by side.
 
 ## Standalone use
 
@@ -97,7 +97,7 @@ This is the step people run on its own most. `build-slice "add CSV export to the
 ## Run it
 
 ```text
-> /throughline:build-slice "add CSV export to the orders list"
+> /wholeloop:build-slice "add CSV export to the orders list"
 
 Ad-hoc slice — "add CSV export to the orders list"
 Criteria (confirm or edit)
@@ -115,23 +115,23 @@ Criteria (confirm or edit)
 ▸ review round 1 · green
 
 Produced
-  Worktree   slice-5e1a                  tl worktree open slice-5e1a
-  Branch     tl/slice-5e1a               (local only)
-  Slice      slice-5e1a · green          tl open slice-5e1a
-Next         test it, then /throughline:open-pr slice-5e1a
+  Worktree   slice-5e1a                  wl worktree open slice-5e1a
+  Branch     wl/slice-5e1a               (local only)
+  Slice      slice-5e1a · green          wl open slice-5e1a
+Next         test it, then /wholeloop:open-pr slice-5e1a
 ```
 
 | CLI | Invoke | Parallel builders |
 |---|---|---|
-| Claude Code | `/throughline:build-slice …` | native subagents |
-| Codex CLI | `$tl-build-slice …` | native subagents |
-| OpenCode · Copilot CLI | `/tl-build-slice …` | native subagents |
-| Tier B | `/tl-build-slice …` | native, headless or sequential |
+| Claude Code | `/wholeloop:build-slice …` | native subagents |
+| Codex CLI | `$wl-build-slice …` | native subagents |
+| OpenCode · Copilot CLI | `/wl-build-slice …` | native subagents |
+| Tier B | `/wl-build-slice …` | native, headless or sequential |
 
 ## Before & after
 
 - **Fed by:** [`slice-work`](./slice-work.md) (slices, criteria, test cases) — or nothing more than your sentence.
-- **Feeds:** **test it** (`tl worktree open`) → [`open-pr`](./open-pr.md).
+- **Feeds:** **test it** (`wl worktree open`) → [`open-pr`](./open-pr.md).
 
 ## Gotchas & FAQ
 
@@ -143,7 +143,7 @@ Next         test it, then /throughline:open-pr slice-5e1a
 
 **"It ran out of rounds."** The slice stops with its open findings attached. Grant more rounds (`--rounds verify=6`), fix them by hand in the worktree, or sharpen the criteria and run it again.
 
-**"Where did my disk space go?"** Worktrees share git objects, so they're light — but `tl worktree prune` clears every one whose branch is merged or abandoned.
+**"Where did my disk space go?"** Worktrees share git objects, so they're light — but `wl worktree prune` clears every one whose branch is merged or abandoned.
 
 ---
 

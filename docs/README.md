@@ -1,6 +1,6 @@
-# throughline — documentation
+# wholeloop — documentation
 
-> **TL;DR** — Everything about `throughline`, from why it exists to how each step works and how to extend it. Read [concepts](./concepts.md) first; everything else assumes its vocabulary.
+> **TL;DR** — Everything about `wholeloop`, from why it exists to how each step works and how to extend it. Read [concepts](./concepts.md) first; everything else assumes its vocabulary.
 
 > [!NOTE]
 > **Status: 📐 design.** The project is being built in the open — pages say clearly what exists and what is planned. Progress: [roadmap](../roadmap/README.md).
@@ -40,7 +40,7 @@
 |---|---|
 | [Platforms](./platforms/README.md) | Supported CLIs, capability matrix, adapters |
 | [Architecture](./architecture/README.md) | Layers, layout, how a step runs |
-| [Core CLI](./architecture/core-cli.md) | The `tl` command surface and the step contract |
+| [Core CLI](./architecture/core-cli.md) | The `wl` command surface and the step contract |
 | [State and messaging](./architecture/state-and-messaging.md) | Journal, projections, mailbox, resume |
 | [Orchestration and gates](./architecture/orchestration-and-gates.md) | Agents, engines, lenses, round budgets |
 | [Determinism and testing](./architecture/determinism-and-testing.md) | What is tested how |

@@ -15,7 +15,7 @@
 | **Steps & blocks** | 13 steps in 4 blocks (Define · Build · Rollout · Learn) + 4 utilities | [flow](./flow/README.md) |
 | **Standalone vs flow** | Every step is a full entry point; `next` chains them | [below](#standalone-or-flow--both-are-first-class) |
 | **Decision points** | The six fixed moments where a person decides | [below](#decision-points) |
-| **Step contract** | `tl step begin` → the skill works → `tl step complete` | [architecture/core-cli](./architecture/core-cli.md) |
+| **Step contract** | `wl step begin` → the skill works → `wl step complete` | [architecture/core-cli](./architecture/core-cli.md) |
 | **State & mailbox** | Event journal + readable projections + agent messages, outside the repo | [architecture/state-and-messaging](./architecture/state-and-messaging.md) |
 | **Repo-first slots** | Each step binds named slots to your repo's own skills first | [configuration/repo-skills](./configuration/repo-skills.md) |
 | **Providers** | Pluggable sources and destinations behind a capability taxonomy | [configuration/providers](./configuration/providers.md) |
@@ -111,14 +111,14 @@ sequenceDiagram
   autonumber
   participant U as Person
   participant S as Skill (in your CLI)
-  participant C as tl (core)
-  S->>C: tl step begin <step> --input …
+  participant C as wl (core)
+  S->>C: wl step begin <step> --input …
   C-->>S: JSON: subject, what exists, questions, slot bindings, providers, profile, template
   S->>U: preflight + batched questions
   U-->>S: answers
-  S->>C: tl answer … (remembered at the chosen scope)
+  S->>C: wl answer … (remembered at the chosen scope)
   Note over S: creative work — research, writing, building, delegating
-  S->>C: tl step complete <step> --artifact …
+  S->>C: wl step complete <step> --artifact …
   C-->>S: shape check · recorded in journal · suggested next steps
   S->>U: receipt
 ```
@@ -127,18 +127,18 @@ The **core decides** (preconditions, missing inputs, which questions, which skil
 
 ## State and mailbox
 
-All state lives **outside your repositories**, in one store per user (`$XDG_STATE_HOME/throughline`, by default `~/.local/state/throughline`):
+All state lives **outside your repositories**, in one store per user (`$XDG_STATE_HOME/wholeloop`, by default `~/.local/state/wholeloop`):
 
 - an append-only **journal** of events — the source of truth;
 - readable **projections** (Markdown + front matter) regenerated from it;
 - a **mailbox** of messages between agents and steps (hand-offs, published contracts, blockers);
 - **links** to external copies (an issue key, a document URL).
 
-Agents never edit state files directly: every write goes through `tl`, which validates it. `tl resume` prints a compact context pack so any session — **in any CLI** — can pick up where another stopped. Details: [state and messaging](./architecture/state-and-messaging.md).
+Agents never edit state files directly: every write goes through `wl`, which validates it. `wl resume` prints a compact context pack so any session — **in any CLI** — can pick up where another stopped. Details: [state and messaging](./architecture/state-and-messaging.md).
 
 ## Repo-first slots
 
-Each step declares named **slots** — `build.frontend`, `verify.suite`, `review.rubric`, `open-pr.convention`… Before acting, `tl discover` scans your repository (skills and agents for every CLI, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, lint configs, scripts, design-system packages) and binds each slot:
+Each step declares named **slots** — `build.frontend`, `verify.suite`, `review.rubric`, `open-pr.convention`… Before acting, `wl discover` scans your repository (skills and agents for every CLI, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, lint configs, scripts, design-system packages) and binds each slot:
 
 > explicit config → repo skill tagged for the slot → repo skill matched by rule → user-installed skill → harness default
 
@@ -171,7 +171,7 @@ Always legible, in any profile:
 
 **"Initiative, scope, slice — do I need all three?"** No. Standalone steps create only what they need: a small fix is a single ad-hoc slice; research is a single brief.
 
-**"Where is my work if I switch from Claude Code to Codex mid-way?"** In the store, not in a session. Run `tl resume <id>` (or the `next` skill) in the new CLI.
+**"Where is my work if I switch from Claude Code to Codex mid-way?"** In the store, not in a session. Run `wl resume <id>` (or the `next` skill) in the new CLI.
 
 **"Can I turn off a decision point?"** No. You can skip a *step* with a recorded reason, and you can add decision points; you cannot remove the six.
 

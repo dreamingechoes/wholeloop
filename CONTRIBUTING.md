@@ -1,6 +1,6 @@
-# Contributing to throughline
+# Contributing to wholeloop
 
-Thanks for wanting to help. `throughline` is built in small, session-sized tasks, in the open.
+Thanks for wanting to help. `wholeloop` is built in small, session-sized tasks, in the open.
 
 ## Before your first change
 

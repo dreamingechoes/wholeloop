@@ -19,7 +19,7 @@ Teams and situations differ: a payments change may warrant extra review rounds; 
    | review | 3 | only the diff since the previous round |
 
 2. **Set at any level:**
-   - project default — `gates.verify.rounds`, `gates.review.rounds` in `.throughline/config.yml`;
+   - project default — `gates.verify.rounds`, `gates.review.rounds` in `.wholeloop/config.yml`;
    - per run — `--rounds verify=6,review=4`;
    - in words — "give it five rounds of review";
    - at the limit — the harness **offers** more rounds; it never extends on its own.

@@ -25,7 +25,7 @@
 
 **Goal** — Parallel builds that never touch the person's checkout.
 
-**Deliverables** — `tl worktree create|open|stop|list|prune`, branch naming, named base recorded, stacked branches for chained slices, port range allocation per worktree, `build.workspace: checkout` opt-out.
+**Deliverables** — `wl worktree create|open|stop|list|prune`, branch naming, named base recorded, stacked branches for chained slices, port range allocation per worktree, `build.workspace: checkout` opt-out.
 
 **Acceptance criteria:**
 
@@ -41,7 +41,7 @@
 
 **Goal** — Gate decisions are arithmetic in the core, not opinions in a prompt.
 
-**Deliverables** — lens registry (built-in + manifests, `applies-when`), round budgets (defaults verify 4 · review 3; project, run and mid-run extension; range 1–10), refutation quorum, fail-safe lenses, deterministic aggregation, `tl gate plan|submit|verdict`, worktree-unchanged check after each round.
+**Deliverables** — lens registry (built-in + manifests, `applies-when`), round budgets (defaults verify 4 · review 3; project, run and mid-run extension; range 1–10), refutation quorum, fail-safe lenses, deterministic aggregation, `wl gate plan|submit|verdict`, worktree-unchanged check after each round.
 
 **Acceptance criteria:**
 
@@ -102,7 +102,7 @@
 
 **Goal** — A draft PR per repository, only after a person tested it.
 
-**Deliverables** — **test it** decision via `tl worktree open`, GitHub (`gh`) and GitLab (`glab`) providers, PR convention via `open-pr.convention`, links to slice and tracker, hand-back of environment writes.
+**Deliverables** — **test it** decision via `wl worktree open`, GitHub (`gh`) and GitLab (`glab`) providers, PR convention via `open-pr.convention`, links to slice and tracker, hand-back of environment writes.
 
 **Acceptance criteria:**
 
@@ -111,7 +111,7 @@
 
 **Docs** — flow/build/open-pr.
 
-## P3-08 · Guards — `tl guard` and git hooks
+## P3-08 · Guards — `wl guard` and git hooks
 
 **Status:** ⬜ · **Size:** M · **Depends on:** P1-11
 
@@ -132,7 +132,7 @@
 
 **Goal** — Anything touched outside a repository can be undone.
 
-**Deliverables** — `tl env declare|report`, undo commands recorded per slice, receipt integration.
+**Deliverables** — `wl env declare|report`, undo commands recorded per slice, receipt integration.
 
 **Acceptance criteria:**
 

@@ -10,19 +10,19 @@
 
 - Repository created: license, editor settings, README with the philosophy and the flow.
 - Documentation skeleton: philosophy, concepts, the flow and every step page, configuration (profile, providers, repo skills), extending, platforms, architecture, contributing guides, glossary, FAQ.
-- Foundational decisions recorded as ADR-0001 to ADR-0017.
+- Foundational decisions recorded as ADR-0001 to ADR-0018.
 - Roadmap: six phases, 54 session-sized tasks with acceptance criteria.
 
 ### Decided
 
-- Name `throughline`; CLI `tl`; TypeScript core; MIT; personal open-source project.
+- Name `wholeloop` (CLI `wl`), chosen after `throughline` turned out to be crowded by active tools for the same CLIs ([ADR-0018](../docs/decisions/0018-project-name.md)); TypeScript core; MIT; personal open-source project.
 - State outside every repository; builds in git worktrees so slices run in parallel.
 - Tier A: Claude Code, Codex, OpenCode, Copilot CLI. Tier B: Gemini CLI, Antigravity, Cursor.
 - Every step usable on its own; the full flow is opt-in through `next`.
 - Providers and other extensions are declarative manifests over a capability taxonomy with no dangerous verbs.
 - Gate round budgets default to verify 4 / review 3 and are configurable per project and per run.
 - No tool attribution anywhere in the history.
-- Repository hosted privately at `github.com/dreamingechoes/throughline` (personal account).
+- Repository hosted privately at `github.com/dreamingechoes/wholeloop` (personal account).
 - Bootstrap workflow: commits go straight to `main`, no branches or PRs, until the owner announces the switch.
 
 ### Next

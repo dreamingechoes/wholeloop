@@ -13,12 +13,12 @@
 
 ## Decision
 
-1. **One git worktree per slice or part**, created under the store at `$XDG_STATE_HOME/throughline/worktrees/<repo>/<slice-id>`, on its own branch from a named base. The base sha is recorded in the journal.
+1. **One git worktree per slice or part**, created under the store at `$XDG_STATE_HOME/wholeloop/worktrees/<repo>/<slice-id>`, on its own branch from a named base. The base sha is recorded in the journal.
 2. **The person's checkout is never touched** — it may be dirty, on any branch, with a server running.
 3. **Parallel even within one repository.** `blocked-by` dependencies still decide what may start; chained slices may stack their branches.
-4. **Ports and resources per worktree.** `tl worktree create` allocates a port range so dev servers in parallel worktrees do not collide.
-5. **Lifecycle commands:** `tl worktree create | open | stop | list | prune`. `open` gives the path and run commands for the *test it* decision point.
-6. **Cleanup after merge.** `sync` removes worktrees whose pull requests merged; `tl worktree prune` does it on demand.
+4. **Ports and resources per worktree.** `wl worktree create` allocates a port range so dev servers in parallel worktrees do not collide.
+5. **Lifecycle commands:** `wl worktree create | open | stop | list | prune`. `open` gives the path and run commands for the *test it* decision point.
+6. **Cleanup after merge.** `sync` removes worktrees whose pull requests merged; `wl worktree prune` does it on demand.
 7. **Opt-out:** `build.workspace: checkout` for repositories where worktrees are impractical (heavy per-checkout setup, unusual tooling). In that mode builds run one at a time and the tree must be clean.
 
 ## Consequences

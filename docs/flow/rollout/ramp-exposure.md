@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Rollout |
-| **Invoke** | `/throughline:ramp-exposure` · `$tl-ramp-exposure` · `/tl-ramp-exposure` |
+| **Invoke** | `/wholeloop:ramp-exposure` · `$wl-ramp-exposure` · `/wl-ramp-exposure` |
 | **Decision point** | **ramp** — at every stage, no exceptions |
 | **Reads** | The scope's rollout plan and flag · live signals from your providers |
 | **Writes** | Per-stage evidence and your decision on the scope · optional stage notes to the tracker or docs |
@@ -33,7 +33,7 @@ flowchart LR
   S0["0%<br/>merged, off"] --> S1["internal"] --> S2["10%"] --> S3["50%"] --> S4["100%"]
   S1 & S2 & S3 & S4 -.-> E["evidence for this stage<br/>errors · health · key metrics<br/>vs exit criteria"]:::core
   E --> D{{"ramp"}}:::person
-  D -- "go" --> F["you flip the flag<br/>tl records it"]
+  D -- "go" --> F["you flip the flag<br/>wl records it"]
   D -- "hold" --> W["wait, re-check later"]
   D -- "roll back" --> B["you flip it back<br/>reason recorded"]
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
@@ -59,7 +59,7 @@ Give it a flag name and the criteria you care about ("`orders_csv_export`, watch
 ## Run it
 
 ```text
-> /throughline:ramp-exposure scope-a9e0
+> /wholeloop:ramp-exposure scope-a9e0
 
 Ramp — scope-a9e0 "orders date filter"
 Flag      orders_date_filter · currently 10% (you set it 3 days ago)
@@ -82,11 +82,11 @@ Next      re-run after you change the flag; I'll confirm it's at 50%
 
 | CLI | Invoke |
 |---|---|
-| Claude Code | `/throughline:ramp-exposure …` |
-| Codex CLI | `$tl-ramp-exposure …` |
-| OpenCode | `/tl-ramp-exposure …` |
-| Copilot CLI | `/tl-ramp-exposure …` |
-| Gemini CLI · Antigravity · Cursor | `/tl-ramp-exposure …` |
+| Claude Code | `/wholeloop:ramp-exposure …` |
+| Codex CLI | `$wl-ramp-exposure …` |
+| OpenCode | `/wl-ramp-exposure …` |
+| Copilot CLI | `/wl-ramp-exposure …` |
+| Gemini CLI · Antigravity · Cursor | `/wl-ramp-exposure …` |
 
 ## Before & after
 

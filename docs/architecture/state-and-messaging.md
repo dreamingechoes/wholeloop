@@ -1,6 +1,6 @@
 # State and messaging — memory that outlives every session
 
-> **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `tl` writes to it. Any session, in any CLI, can resume from it.
+> **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
 > **Status: 📐 design.** Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
@@ -14,12 +14,12 @@
 | In the agent session | Lost on compaction, on a crash, on switching CLI; invisible to other agents |
 | Inside the repository | Pollutes diffs and history; leaks between branches; one initiative may span several repositories |
 | An external tracker as the store | Couples the harness to one vendor; slow; needs network for every write |
-| **A local store owned by `tl`** | Survives everything above; vendor-neutral; mirrors outward through providers when you want it shared |
+| **A local store owned by `wl`** | Survives everything above; vendor-neutral; mirrors outward through providers when you want it shared |
 
 ## Layout
 
 ```text
-$XDG_STATE_HOME/throughline/            default: ~/.local/state/throughline
+$XDG_STATE_HOME/wholeloop/            default: ~/.local/state/wholeloop
 ├─ journal/2026-10.ndjson               append-only events, one file per month
 ├─ items/
 │  ├─ init-41c2/
@@ -37,11 +37,11 @@ $XDG_STATE_HOME/throughline/            default: ~/.local/state/throughline
 └─ worktrees/<repo>/<slice-id>/         one git worktree per slice or part being built
 ```
 
-`TL_WORKSPACE` selects an isolated store (for example `work` and `personal`) without changing anything else.
+`WL_WORKSPACE` selects an isolated store (for example `work` and `personal`) without changing anything else.
 
 ## The journal
 
-Every change is an event. Projections are a pure function of the journal, which makes them reproducible and testable (`tl state rebuild` must produce byte-identical files).
+Every change is an event. Projections are a pure function of the journal, which makes them reproducible and testable (`wl state rebuild` must produce byte-identical files).
 
 ```json
 {"v":1,"id":"ev-01JA…","ts":"2026-10-14T16:02:11Z","actor":{"kind":"agent","name":"builder"},
@@ -75,13 +75,13 @@ sequenceDiagram
   participant C as conductor
   participant B1 as builder · api part
   participant B2 as builder · web part
-  participant M as tl mailbox
+  participant M as wl mailbox
   C->>M: handoff part-1 → builder
   C->>M: handoff part-2 → builder
   B1->>M: contract (GET /orders?filter=…)
-  M-->>B2: tl msg read --for builder:part-2
+  M-->>B2: wl msg read --for builder:part-2
   B2->>M: status NEEDS_INPUT (pagination?)
-  M-->>C: tl msg read --for conductor
+  M-->>C: wl msg read --for conductor
   C->>M: answer (cursor-based)
   B1->>M: status DONE + evidence
   B2->>M: status DONE + evidence
@@ -91,7 +91,7 @@ Messages live in the store, so they survive a crashed subagent and can be read b
 
 ## Resuming anywhere
 
-`tl resume <id>` prints a **context pack**: where the item is in the flow, what each step produced (links, not bodies), open questions, unread messages, pending decision points and the suggested next command. It is short on purpose, sized to start a fresh session without flooding it. The `next` skill calls it first.
+`wl resume <id>` prints a **context pack**: where the item is in the flow, what each step produced (links, not bodies), open questions, unread messages, pending decision points and the suggested next command. It is short on purpose, sized to start a fresh session without flooding it. The `next` skill calls it first.
 
 ## Sharing with other people
 
@@ -100,10 +100,10 @@ The local store is personal. Sharing happens through **providers**: in synced mo
 ## Guarantees
 
 - **Your checkout is never touched** — builds happen in dedicated git worktrees under the store, one per slice or part, each on its own branch. Your working copy can stay dirty, on any branch, while several slices build in parallel.
-- **No harness writes inside repositories** — a guard refuses them. Project *configuration* (`.throughline/config.yml`) is the only harness file a repo holds, and it is written by people, on purpose.
+- **No harness writes inside repositories** — a guard refuses them. Project *configuration* (`.wholeloop/config.yml`) is the only harness file a repo holds, and it is written by people, on purpose.
 - **Crash-safe** — write-then-rename for every file, lock for every append.
 - **Replayable** — any projection can be deleted and rebuilt.
-- **Inspectable** — everything is plain text; `tl open <id>` shows it.
+- **Inspectable** — everything is plain text; `wl open <id>` shows it.
 
 ---
 

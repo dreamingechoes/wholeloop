@@ -1,9 +1,9 @@
-# The core CLI — `tl`
+# The core CLI — `wl`
 
-> **TL;DR** — `tl` is the single place where `throughline` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
+> **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 📐 design.** Command names are the target surface; the generated reference replaces this table once [P1-01](../../roadmap/phase-1-walking-skeleton.md#p1-01--tl-command-framework) lands.
+> **Status: 📐 design.** Command names are the target surface; the generated reference replaces this table once [P1-01](../../roadmap/phase-1-walking-skeleton.md#p1-01--wl-command-framework) lands.
 
 ---
 
@@ -11,7 +11,7 @@
 
 1. **Every command has `--json`**, with a versioned schema. Skills only ever consume JSON.
 2. **Deterministic.** Same inputs, same store, same config → same output. No model calls, no network unless the command is explicitly about a provider.
-3. **Single writer.** Only `tl` writes the store. Writes are validated, atomic (write-then-rename) and serialised with a lock.
+3. **Single writer.** Only `wl` writes the store. Writes are validated, atomic (write-then-rename) and serialised with a lock.
 4. **Exit codes mean something.** `0` ok · `2` needs input (questions in the payload) · `3` precondition failed · `4` shape check failed · `1` unexpected error.
 5. **Small surface.** A new command needs a reason a skill cannot express with the existing ones.
 
@@ -19,29 +19,29 @@
 
 | Group | Commands | Used by |
 |---|---|---|
-| **Steps** | `tl step begin <step>` · `tl step plan` · `tl step complete <step>` · `tl step skip <step> --reason` | every skill |
-| **Questions** | `tl answer <qid>=<value> --remember run\|initiative\|project\|user` | every skill |
-| **State** | `tl state show\|list\|get <id>` · `tl open <id>` · `tl note <id> "…"` · `tl link <id> <url>` · `tl state rebuild` | skills, people |
-| **Messaging** | `tl msg send --thread <id> --to <role> --kind <kind>` · `tl msg read --for <role>` · `tl handoff <id> --to <role>` | agents |
-| **Sessions** | `tl resume [<id>]` · `tl status` | `next`, `status`, people |
-| **Repo** | `tl discover` · `tl resolve <slot>` | step begin, `setup` |
-| **Providers** | `tl provider list\|show\|test\|scaffold` · `tl mcp add <provider> --target <cli>` | `setup`, authors |
-| **Profile** | `tl profile show\|set <dial>=<value>\|preset <name>` | `setup`, people |
-| **Gates** | `tl gate plan <gate> --for <id>` · `tl gate submit` · `tl gate verdict` | gate workflows |
-| **Fan-out** | `tl fanout run <workflow> --engine native\|headless\|sequential` | gates, `research` |
-| **Guards** | `tl guard <event>` (reads a hook payload on stdin) | generated hooks, git hooks |
-| **Worktrees** | `tl worktree create\|open\|stop\|list\|prune <slice>` — isolated workspace and branch per slice, with port allocation | builder, `open-pr`, `sync` |
-| **Environment** | `tl env declare <what> --undo "<command>"` · `tl env report` | builder, `open-pr` |
-| **Install** | `tl install --target <cli,…> --scope user\|project` · `tl uninstall` · `tl doctor` | people |
-| **Docs (dev)** | `tl docs nav` · `tl docs check` | CI, contributors |
+| **Steps** | `wl step begin <step>` · `wl step plan` · `wl step complete <step>` · `wl step skip <step> --reason` | every skill |
+| **Questions** | `wl answer <qid>=<value> --remember run\|initiative\|project\|user` | every skill |
+| **State** | `wl state show\|list\|get <id>` · `wl open <id>` · `wl note <id> "…"` · `wl link <id> <url>` · `wl state rebuild` | skills, people |
+| **Messaging** | `wl msg send --thread <id> --to <role> --kind <kind>` · `wl msg read --for <role>` · `wl handoff <id> --to <role>` | agents |
+| **Sessions** | `wl resume [<id>]` · `wl status` | `next`, `status`, people |
+| **Repo** | `wl discover` · `wl resolve <slot>` | step begin, `setup` |
+| **Providers** | `wl provider list\|show\|test\|scaffold` · `wl mcp add <provider> --target <cli>` | `setup`, authors |
+| **Profile** | `wl profile show\|set <dial>=<value>\|preset <name>` | `setup`, people |
+| **Gates** | `wl gate plan <gate> --for <id>` · `wl gate submit` · `wl gate verdict` | gate workflows |
+| **Fan-out** | `wl fanout run <workflow> --engine native\|headless\|sequential` | gates, `research` |
+| **Guards** | `wl guard <event>` (reads a hook payload on stdin) | generated hooks, git hooks |
+| **Worktrees** | `wl worktree create\|open\|stop\|list\|prune <slice>` — isolated workspace and branch per slice, with port allocation | builder, `open-pr`, `sync` |
+| **Environment** | `wl env declare <what> --undo "<command>"` · `wl env report` | builder, `open-pr` |
+| **Install** | `wl install --target <cli,…> --scope user\|project` · `wl uninstall` · `wl doctor` | people |
+| **Docs (dev)** | `wl docs nav` · `wl docs check` | CI, contributors |
 
 ## The step contract
 
-`tl step begin` is the heart of the design. It turns *"which step, with what input"* into everything the skill needs to act, and nothing it should decide on its own.
+`wl step begin` is the heart of the design. It turns *"which step, with what input"* into everything the skill needs to act, and nothing it should decide on its own.
 
 ```json
 {
-  "schema": "throughline/step-begin@1",
+  "schema": "wholeloop/step-begin@1",
   "step": "write-spec",
   "mode": "flow",
   "subject": { "kind": "initiative", "id": "init-41c2" },
@@ -55,7 +55,7 @@
       "options": [
         { "value": "local", "label": "Local Markdown", "note": "default" },
         { "value": "notion", "label": "Notion", "note": "MCP detected" },
-        { "value": "confluence", "label": "Confluence", "note": "not connected — tl mcp add confluence" }
+        { "value": "confluence", "label": "Confluence", "note": "not connected — wl mcp add confluence" }
       ],
       "remember": ["run", "initiative", "project", "user"]
     }
@@ -76,7 +76,7 @@
 - **`profile`** is a pre-rendered style block, ≤ 10 lines ([profile](../configuration/profile.md)).
 - **`preflight`** lines are generated, so a stated cap or destination is always the one actually enforced.
 
-`tl step complete` validates the produced artifact against the step's **shape rules** (for example: every metric in a spec names a source and a window), records it in the journal, publishes through providers if configured, and returns the receipt plus the suggested next steps.
+`wl step complete` validates the produced artifact against the step's **shape rules** (for example: every metric in a spec names a source and a window), records it in the journal, publishes through providers if configured, and returns the receipt plus the suggested next steps.
 
 ## Questions and remembering
 
@@ -87,8 +87,8 @@ flowchart LR
   A --> R{"remember where?"}
   R -- run --> X1["this run only"]
   R -- initiative --> X2["initiative settings"]
-  R -- project --> X3[".throughline/config.yml<br/>(committed, team)"]
-  R -- user --> X4["~/.config/throughline<br/>(personal)"]
+  R -- project --> X3[".wholeloop/config.yml<br/>(committed, team)"]
+  R -- user --> X4["~/.config/wholeloop<br/>(personal)"]
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
@@ -96,7 +96,7 @@ A remembered answer is never asked again at that scope. A step that re-asks a se
 
 ## Hooks and guards
 
-All generated hooks, for every CLI, call one entry point: `tl guard <event>`. It normalises the payload (`tool_name` vs `toolName`, PascalCase vs camelCase events) and applies the same policies everywhere. Where a CLI has no usable hooks, **git hooks** installed by `tl install` carry the critical ones (no commit to the default branch, no push from a gated step). Details: [ADR-0006](../decisions/0006-orchestration-tiers.md).
+All generated hooks, for every CLI, call one entry point: `wl guard <event>`. It normalises the payload (`tool_name` vs `toolName`, PascalCase vs camelCase events) and applies the same policies everywhere. Where a CLI has no usable hooks, **git hooks** installed by `wl install` carry the critical ones (no commit to the default branch, no push from a gated step). Details: [ADR-0006](../decisions/0006-orchestration-tiers.md).
 
 ---
 

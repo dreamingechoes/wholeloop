@@ -13,7 +13,7 @@ The risk is that a style setting becomes a quiet way to lower the bar: "brief" t
 
 1. **Personal dials:** `verbosity`, `depth`, `challenge`, `pace`, `stops`, `teaching`, `language`, `artifact_language` — with presets `mentor`, `pair` (default), `sparring`, `autopilot`. Teams may add presets ([ADR-0008](./0008-extensibility-through-manifests.md)).
 2. **Profile keys are personal.** The user's file beats the project's suggestion; a run override beats both, for that run only.
-3. **The core renders the profile** into a style block of at most ten lines included in every `tl step begin` payload. Skills never interpret dials themselves.
+3. **The core renders the profile** into a style block of at most ten lines included in every `wl step begin` payload. Skills never interpret dials themselves.
 4. **Invariants no dial can touch:**
 
    | Invariant | Meaning |

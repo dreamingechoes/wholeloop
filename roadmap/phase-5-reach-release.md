@@ -38,7 +38,7 @@
 
 **Goal** — Parallel, isolated gate lenses on any CLI with a headless mode.
 
-**Deliverables** — `tl fanout run --engine headless`, per-CLI headless invocation from adapters, non-interactive read-only permissions, concurrency limit, timeouts, result collection into `tl gate submit`.
+**Deliverables** — `wl fanout run --engine headless`, per-CLI headless invocation from adapters, non-interactive read-only permissions, concurrency limit, timeouts, result collection into `wl gate submit`.
 
 **Acceptance criteria:**
 
@@ -72,7 +72,7 @@
 **Acceptance criteria:**
 
 - [ ] The repository is made public only after the owner explicitly approves it.
-- [ ] A fresh machine goes from nothing to `tl doctor` green in under five minutes for each tier-A CLI (documented run).
+- [ ] A fresh machine goes from nothing to `wl doctor` green in under five minutes for each tier-A CLI (documented run).
 - [ ] Release notes contain no tool attribution.
 
 **Docs** — getting-started, ADR-0015.
@@ -87,7 +87,7 @@
 
 **Acceptance criteria:**
 
-- [ ] `tl docs check` verifies generated pages are current.
+- [ ] `wl docs check` verifies generated pages are current.
 - [ ] No page says `📐 design` for behaviour that is released.
 
 **Docs** — all.

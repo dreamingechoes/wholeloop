@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Build — inside the "until green" loop, or on its own |
-| **Invoke** | `/throughline:verify-works` · `$tl-verify-works` · `/tl-verify-works` |
+| **Invoke** | `/wholeloop:verify-works` · `$wl-verify-works` · `/wl-verify-works` |
 | **Decision point** | None — *until green* is a machine loop with a round limit |
 | **Reads** | A slice's worktree, a branch or a PR · its acceptance criteria (from the slice, an issue, the PR description, or you) |
 | **Writes** | One verdict per round on the slice — `PASS` or `FAIL`, each finding with its evidence · nothing inside your repository |
@@ -46,7 +46,7 @@ flowchart TD
   classDef build fill:#dce9fb,stroke:#2f6fc4,color:#0b1f3a;
 ```
 
-1. **One run of the checks, shared by everyone.** They run inside the slice's own worktree, so nothing you have open is disturbed, and verifiers read the result instead of launching their own. The commands come from `tl discover` (package scripts, `Makefile`, task runners, CI config) or your explicit `verify.suite` binding — never guessed.
+1. **One run of the checks, shared by everyone.** They run inside the slice's own worktree, so nothing you have open is disturbed, and verifiers read the result instead of launching their own. The commands come from `wl discover` (package scripts, `Makefile`, task runners, CI config) or your explicit `verify.suite` binding — never guessed.
 2. **Criteria are the contract.** A verifier judges the change against what was agreed, not against its own taste in features.
 3. **Tests that can't go red are findings.** If a test would still pass with the feature deleted, it is reported — it gives confidence it hasn't earned.
 4. **Findings must survive a challenge.** Three verifiers try to knock each one down; it is dropped only if two or more actively argue against it. A verifier that crashes or times out simply doesn't count, so silence can never erase a real problem.
@@ -68,7 +68,7 @@ No criteria anywhere? It **asks**. Without them the result is only a test run, a
 ## Run it
 
 ```text
-> /throughline:verify-works slice-0d4e
+> /wholeloop:verify-works slice-0d4e
 
 Verify — slice-0d4e "user can filter orders by date"
 Checks    npm test · npm run lint · npx tsc --noEmit   (from package.json)
@@ -89,11 +89,11 @@ Next      builder, round 2 of 4
 
 | CLI | Invoke | Parallel verifiers |
 |---|---|---|
-| Claude Code | `/throughline:verify-works …` | native subagents |
-| Codex CLI | `$tl-verify-works …` | native subagents |
-| OpenCode | `/tl-verify-works …` | native subagents |
-| Copilot CLI | `/tl-verify-works …` | native subagents (`/fleet`) |
-| Gemini CLI · Antigravity · Cursor | `/tl-verify-works …` | native where available, otherwise headless or one by one ([orchestration](../../architecture/orchestration-and-gates.md)) |
+| Claude Code | `/wholeloop:verify-works …` | native subagents |
+| Codex CLI | `$wl-verify-works …` | native subagents |
+| OpenCode | `/wl-verify-works …` | native subagents |
+| Copilot CLI | `/wl-verify-works …` | native subagents (`/fleet`) |
+| Gemini CLI · Antigravity · Cursor | `/wl-verify-works …` | native where available, otherwise headless or one by one ([orchestration](../../architecture/orchestration-and-gates.md)) |
 
 ## Before & after
 
@@ -104,7 +104,7 @@ Next      builder, round 2 of 4
 
 **"Everything is green locally — why FAIL?"** Passing tests and met criteria are different claims. The verdict names the criterion and shows the evidence.
 
-**"It picked the wrong test command."** Pin it once: `tl answer verify.suite="make check" --scope project`, or set it in `.throughline/config.yml`.
+**"It picked the wrong test command."** Pin it once: `wl answer verify.suite="make check" --scope project`, or set it in `.wholeloop/config.yml`.
 
 **"Can I skip a verifier to save time?"** You can make it slower; you can't make it check less ([ADR-0010](../../decisions/0010-interaction-profile-never-changes-coverage.md)).
 

@@ -1,4 +1,4 @@
-# 0003 — A deterministic TypeScript core (`tl`); skills stay thin
+# 0003 — A deterministic TypeScript core (`wl`); skills stay thin
 
 - **Status:** Accepted
 - **Date:** 2026-10-14
@@ -11,9 +11,9 @@ Every agentic CLI can run a shell command and read its output. That makes a CLI 
 
 ## Decision
 
-1. **A core CLI, `tl`, owns every decision with one right answer:** flow and preconditions, question generation, configuration and profile precedence, repo discovery and slot binding, provider resolution, artifact shape checks, gate arithmetic, persistence.
-2. **Skills are thin.** They call `tl step begin`, do the creative work, and call `tl step complete`. They never compute a verdict, a precedence or a next step themselves.
-3. **JSON contract.** Every command supports `--json` with a versioned schema (`throughline/step-begin@1`). Exit codes carry meaning: `0` ok · `1` unexpected · `2` needs input · `3` precondition failed · `4` shape check failed.
+1. **A core CLI, `wl`, owns every decision with one right answer:** flow and preconditions, question generation, configuration and profile precedence, repo discovery and slot binding, provider resolution, artifact shape checks, gate arithmetic, persistence.
+2. **Skills are thin.** They call `wl step begin`, do the creative work, and call `wl step complete`. They never compute a verdict, a precedence or a next step themselves.
+3. **JSON contract.** Every command supports `--json` with a versioned schema (`wholeloop/step-begin@1`). Exit codes carry meaning: `0` ok · `1` unexpected · `2` needs input · `3` precondition failed · `4` shape check failed.
 4. **TypeScript on Node.js ≥ 20.**
 
 ### Why TypeScript rather than Go
@@ -42,7 +42,7 @@ The two costs of TypeScript are real: a Node dependency, and start-up latency th
 
 ### Negative
 
-- One more tool to install where no plugin bundles it; `tl doctor` must say clearly when Node is missing.
+- One more tool to install where no plugin bundles it; `wl doctor` must say clearly when Node is missing.
 - Each skill depends on the JSON contract; schema changes need versioning discipline.
 
 ## Alternatives considered
@@ -57,6 +57,6 @@ The two costs of TypeScript are real: a Node dependency, and start-up latency th
 ## Links
 
 - [Core CLI](../architecture/core-cli.md)
-- [P1-01 — CLI skeleton](../../roadmap/phase-1-walking-skeleton.md#p1-01--tl-command-framework)
+- [P1-01 — CLI skeleton](../../roadmap/phase-1-walking-skeleton.md#p1-01--wl-command-framework)
 
 [◀ Decisions index](./README.md)

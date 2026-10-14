@@ -12,15 +12,15 @@ Repos also mix CLIs: a team on Codex may have its best guidance in `.claude/skil
 ## Decision
 
 1. **Steps declare named slots** — `build.frontend`, `build.design-system`, `verify.suite`, `review.rubric`, `open-pr.convention`, `spec.template`, `comms.voice`, … — instead of hard-coding guidance.
-2. **`tl discover`** scans the repository deterministically: skills and agents in every CLI's folders, instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, Cursor and Copilot rules), conventions, scripts and task runners, quality-tool configs, design-system assets. The result is a cached capability map.
+2. **`wl discover`** scans the repository deterministically: skills and agents in every CLI's folders, instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, Cursor and Copilot rules), conventions, scripts and task runners, quality-tool configs, design-system assets. The result is a cached capability map.
 3. **Precedence**, highest first:
-   1. explicit binding in `.throughline/config.yml`;
-   2. a repo skill tagged `metadata.throughline.slot`;
+   1. explicit binding in `.wholeloop/config.yml`;
+   2. a repo skill tagged `metadata.wholeloop.slot`;
    3. a repo asset matched by deterministic, tested rules;
    4. a skill the user installed;
    5. the harness default.
 4. **Ambiguity is a question.** Two equal candidates or a low-confidence match produce one question; the answer becomes an explicit binding.
-5. **Bindings are visible** in every preflight; `tl resolve <slot>` explains the choice.
+5. **Bindings are visible** in every preflight; `wl resolve <slot>` explains the choice.
 6. **Inside its slot, the repo wins.** The harness keeps only what no slot can override: decision points, coverage, the output contract and *ask, never guess*.
 
 ## Consequences

@@ -1,6 +1,6 @@
 # Architecture — one core, thin skills, generated adapters
 
-> **TL;DR** — `throughline` is three layers. A **canonical harness** of short skills, agents and manifests written once in open formats. A **deterministic core** (`tl`, TypeScript) that owns state, flow, configuration, discovery, providers and gates. And **generated adapters** that translate the canonical harness into whatever each agentic CLI expects. Every CLI can run a shell command and read JSON, so the core is portable by construction.
+> **TL;DR** — `wholeloop` is three layers. A **canonical harness** of short skills, agents and manifests written once in open formats. A **deterministic core** (`wl`, TypeScript) that owns state, flow, configuration, discovery, providers and gates. And **generated adapters** that translate the canonical harness into whatever each agentic CLI expects. Every CLI can run a shell command and read JSON, so the core is portable by construction.
 
 > [!NOTE]
 > **Status: 📐 design.** Decisions behind this page: [ADR-0002](../decisions/0002-open-standards-canonical-source.md), [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0006](../decisions/0006-orchestration-tiers.md).
@@ -19,7 +19,7 @@ flowchart TB
     mf["providers · lenses<br/>templates · profiles"]
     wf["workflows/<br/>gates, fan-out"]
   end
-  subgraph C["Core — tl (TypeScript)"]
+  subgraph C["Core — wl (TypeScript)"]
     direction LR
     fl["flow"] --- st["state<br/>journal · mailbox"] --- cf["config<br/>profile"]
     ds["discover<br/>slots"] --- pv["providers"] --- gt["gates<br/>fan-out"]
@@ -30,8 +30,8 @@ flowchart TB
     cc["Claude Code"] --- cx["Codex"] --- oc["OpenCode"] --- cp["Copilot"]
     gm["Gemini / Antigravity"]:::opt --- cu["Cursor"]:::opt
   end
-  H -- "tl build / tl install" --> A
-  A -- "skills call tl, read JSON" --> C
+  H -- "wl build / wl install" --> A
+  A -- "skills call wl, read JSON" --> C
   C -- "reads manifests, templates" --> H
   classDef opt stroke-dasharray:5 3;
   style H fill:#d9f2e3,stroke:#1f7a45,color:#0b2e1a
@@ -42,14 +42,14 @@ flowchart TB
 | Layer | Responsibility | Never does |
 |---|---|---|
 | **Canonical harness** | Says *what* each step and role is for, in as few lines as possible | Hold rules nothing executes; hold state |
-| **Core (`tl`)** | Everything with one right answer: order, preconditions, questions, bindings, shape checks, gate arithmetic, persistence | Call a model; make a product judgement |
+| **Core (`wl`)** | Everything with one right answer: order, preconditions, questions, bindings, shape checks, gate arithmetic, persistence | Call a model; make a product judgement |
 | **Adapters** | Translate formats, paths, tool names and hook payloads per CLI | Add behaviour that other CLIs would not get |
 
 ## Repository layout (target)
 
 ```text
-throughline/
-├─ src/                      core — the `tl` CLI
+wholeloop/
+├─ src/                      core — the `wl` CLI
 │  ├─ cli/                   command definitions (generate the command reference)
 │  ├─ flow/                  step registry, step contract, decision points
 │  ├─ state/                 journal, projections, mailbox, ids, locking
@@ -59,7 +59,7 @@ throughline/
 │  ├─ gates/                 lenses, rounds, refutation threshold, aggregation
 │  ├─ fanout/                native · headless · sequential engines
 │  ├─ adapters/              one module per CLI
-│  ├─ guards/                normalised hook entry point (`tl guard`)
+│  ├─ guards/                normalised hook entry point (`wl guard`)
 │  └─ docs/                  docnav, link and diagram checks
 ├─ harness/                  canonical, CLI-neutral content
 │  ├─ skills/<step>/SKILL.md
@@ -81,24 +81,24 @@ sequenceDiagram
   participant P as Person
   participant CLI as Agentic CLI
   participant SK as Skill (generated)
-  participant TL as tl core
+  participant TL as wl core
   participant AG as Subagents
   participant EX as Providers (MCP / gh / native)
-  P->>CLI: /throughline:build-slice "add CSV export"
+  P->>CLI: /wholeloop:build-slice "add CSV export"
   CLI->>SK: load skill (progressive disclosure)
-  SK->>TL: tl step begin build-slice --input "…" --json
+  SK->>TL: wl step begin build-slice --input "…" --json
   TL-->>SK: subject, questions, slot bindings, providers, profile block, preflight
   SK->>P: preflight + questions
   P-->>SK: answers
-  SK->>TL: tl answer … · tl step plan
+  SK->>TL: wl answer … · wl step plan
   SK->>AG: spawn builder (native, headless or sequential)
-  AG->>TL: tl msg send · tl note
-  SK->>TL: tl gate plan verify --for slice-0d4e
+  AG->>TL: wl msg send · wl note
+  SK->>TL: wl gate plan verify --for slice-0d4e
   TL-->>SK: lens set, round, cap
   SK->>AG: spawn verifier lenses
-  AG->>TL: tl gate submit …
+  AG->>TL: wl gate submit …
   TL-->>SK: verdict (deterministic aggregation)
-  SK->>TL: tl step complete build-slice
+  SK->>TL: wl step complete build-slice
   TL-->>SK: receipt, next steps
   SK->>P: receipt
 ```
@@ -109,7 +109,7 @@ The skill never computes a verdict, a precedence or a next step. It asks the cor
 
 | Page | Covers |
 |---|---|
-| [Core CLI](./core-cli.md) | The `tl` command surface and the step contract JSON |
+| [Core CLI](./core-cli.md) | The `wl` command surface and the step contract JSON |
 | [State and messaging](./state-and-messaging.md) | Journal, projections, mailbox, resume, sync adapters |
 | [Orchestration and gates](./orchestration-and-gates.md) | Engines, agents, lenses, verdicts, caps |
 | [Determinism and testing](./determinism-and-testing.md) | What is tested how, and why evals are the last layer |

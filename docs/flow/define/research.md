@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Define — optional, only when it's hard |
-| **Invoke** | `/throughline:research` · `$tl-research` · `/tl-research` |
+| **Invoke** | `/wholeloop:research` · `$wl-research` · `/wl-research` |
 | **Decision point** | None |
 | **Reads** | A question (text, file or URL) · optionally an initiative or scope ID |
 | **Writes** | A brief (`brief-xxxx`) in the store · optionally attached to an initiative · optionally published through the `docs` capability |
@@ -47,11 +47,11 @@ flowchart TD
   classDef opt stroke-dasharray:5 3;
 ```
 
-1. **Sources are providers.** The angles on offer are exactly the `source.*` providers you have configured or that `tl` detects — add a provider and it shows up here, with no change to the step ([extending/providers](../../extending/providers.md)).
+1. **Sources are providers.** The angles on offer are exactly the `source.*` providers you have configured or that `wl` detects — add a provider and it shows up here, with no change to the step ([extending/providers](../../extending/providers.md)).
 2. **Confirming angles is cheap and optional.** It is a lightweight check, not one of the six decision points: say "go", "drop 2" or "add competitors' mobile apps".
 3. **Never fabricated.** A source that is not configured, not authenticated or returns nothing becomes an **open question** with what is missing and who might have it.
 4. **Cross-examination is bounded.** Only the claims each angle's conclusion rests on are challenged; a claim falls only on **two active refutations**, so a silent verifier cannot delete a real finding.
-5. **The brief has a fixed shape**, checked by `tl step complete` before it is recorded.
+5. **The brief has a fixed shape**, checked by `wl step complete` before it is recorded.
 
 ## Standalone use
 
@@ -60,7 +60,7 @@ Alone, `research` needs only a question. It creates a **loose brief** that you c
 ## Run it
 
 ```text
-> /throughline:research Do users struggle to find their past orders, and how do comparable products solve it?
+> /wholeloop:research Do users struggle to find their past orders, and how do comparable products solve it?
 
 Research — "Do users struggle to find their past orders?"
 Mode      standalone · no initiative · brief stored outside the repo
@@ -87,18 +87,18 @@ Angles (3) — "go", "drop 2" or "add …"
 ✗ dropped 1 claim — 2 of 3 verifiers refuted it (single-week sample)
 
 Produced
-  Research brief   brief-7f3a    tl open brief-7f3a
+  Research brief   brief-7f3a    wl open brief-7f3a
 Open questions     2             support tickets unreachable · no baseline for "time to find"
-Next (optional)    /throughline:frame-problem --from brief-7f3a
+Next (optional)    /wholeloop:frame-problem --from brief-7f3a
 ```
 
 | CLI | Invoke | Parallel angles |
 |---|---|---|
-| Claude Code | `/throughline:research …` | native subagents |
-| Codex CLI | `$tl-research …` | native subagents |
-| OpenCode | `/tl-research …` | native subagents |
-| Copilot CLI | `/tl-research …` | native subagents (`/fleet`) |
-| Gemini CLI · Antigravity · Cursor | `/tl-research …` | native where supported, else headless or sequential ([orchestration](../../architecture/orchestration-and-gates.md)) |
+| Claude Code | `/wholeloop:research …` | native subagents |
+| Codex CLI | `$wl-research …` | native subagents |
+| OpenCode | `/wl-research …` | native subagents |
+| Copilot CLI | `/wl-research …` | native subagents (`/fleet`) |
+| Gemini CLI · Antigravity · Cursor | `/wl-research …` | native where supported, else headless or sequential ([orchestration](../../architecture/orchestration-and-gates.md)) |
 
 ## Before & after
 

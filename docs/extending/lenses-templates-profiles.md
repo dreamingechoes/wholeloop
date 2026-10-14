@@ -1,6 +1,6 @@
 # Lenses, templates, profiles and decision points
 
-> **TL;DR** — The other four extension points follow the same pattern as providers: a small manifest in `.throughline/<kind>/`, validated by a schema, tested with `tl <kind> test`, overridable by `id`. Lenses add review or verify dimensions, templates reshape artifacts, profiles bundle dials, decision points add stops for a person.
+> **TL;DR** — The other four extension points follow the same pattern as providers: a small manifest in `.wholeloop/<kind>/`, validated by a schema, tested with `wl <kind> test`, overridable by `id`. Lenses add review or verify dimensions, templates reshape artifacts, profiles bundle dials, decision points add stops for a person.
 
 > [!NOTE]
 > **Status: 📐 design.** Lenses land with the gate engine ([P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine)); templates and profiles with the walking skeleton ([P1-09](../../roadmap/phase-1-walking-skeleton.md#p1-09--manifest-loader-for-the-other-extension-kinds)).
@@ -12,7 +12,7 @@
 A lens is one question a gate asks of a change, answered by one `reviewer` (review gate) or `verifier` (verify gate).
 
 ```yaml
-# .throughline/lenses/accessibility/lens.yml
+# .wholeloop/lenses/accessibility/lens.yml
 schema: 1
 id: accessibility
 gate: review                   # review | verify
@@ -50,12 +50,12 @@ sections:
 …
 ```
 
-The **required sections** are what `tl step complete` checks. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation with an explanation. A repo skill bound to `spec.template` takes precedence over a template file, because it carries more than shape.
+The **required sections** are what `wl step complete` checks. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation with an explanation. A repo skill bound to `spec.template` takes precedence over a template file, because it carries more than shape.
 
 ## Profiles
 
 ```yaml
-# .throughline/profiles/onboarding/profile.yml
+# .wholeloop/profiles/onboarding/profile.yml
 schema: 1
 id: onboarding
 extends: mentor
@@ -69,7 +69,7 @@ A team can suggest a profile (`profile: { preset: onboarding }` in project confi
 ## Decision points
 
 ```yaml
-# .throughline/config.yml
+# .wholeloop/config.yml
 flow:
   decisions:
     add:

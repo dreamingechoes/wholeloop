@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Learn — first step |
-| **Invoke** | `/throughline:measure-impact` · `$tl-measure-impact` · `/tl-measure-impact` |
+| **Invoke** | `/wholeloop:measure-impact` · `$wl-measure-impact` · `/wl-measure-impact` |
 | **Decision point** | None — it measures; [`decide-next`](./decide-next.md) decides |
 | **Reads** | The scope's pinned measurement plan (metric · baseline · target · source · window) · qualitative sources |
 | **Writes** | A checkpoint report on the scope · optionally published via `docs` and commented on the tracker item |
@@ -56,7 +56,7 @@ Give it a metric and a time range ("export success rate since 1 September, in Me
 ## Run it
 
 ```text
-> /throughline:measure-impact scope-a9e0 --checkpoint D+30
+> /wholeloop:measure-impact scope-a9e0 --checkpoint D+30
 
 Measure — scope-a9e0 "orders date filter" · D+30
 Plan      pinned at write-spec · 3 metrics · 1 guardrail
@@ -72,18 +72,18 @@ What people say  3 notes from the sales team: date presets requested ("last mont
 Receipts         each value links to its PostHog insight / Datadog query
 
 Produced
-  Checkpoint report   scope-a9e0 · D+30        tl open scope-a9e0 --report D+30
+  Checkpoint report   scope-a9e0 · D+30        wl open scope-a9e0 --report D+30
   Published           Notion · Orders date filter / Impact
 Next              decide-next scope-a9e0
 ```
 
 | CLI | Invoke | Parallel analysts |
 |---|---|---|
-| Claude Code | `/throughline:measure-impact …` | native subagents |
-| Codex CLI | `$tl-measure-impact …` | native subagents |
-| OpenCode | `/tl-measure-impact …` | native subagents |
-| Copilot CLI | `/tl-measure-impact …` | native subagents (`/fleet`) |
-| Gemini CLI · Antigravity · Cursor | `/tl-measure-impact …` | native where available, otherwise headless or one by one |
+| Claude Code | `/wholeloop:measure-impact …` | native subagents |
+| Codex CLI | `$wl-measure-impact …` | native subagents |
+| OpenCode | `/wl-measure-impact …` | native subagents |
+| Copilot CLI | `/wl-measure-impact …` | native subagents (`/fleet`) |
+| Gemini CLI · Antigravity · Cursor | `/wl-measure-impact …` | native where available, otherwise headless or one by one |
 
 ## Before & after
 
@@ -92,7 +92,7 @@ Next              decide-next scope-a9e0
 
 ## Gotchas & FAQ
 
-**"It says unknown for a metric I know is fine."** Then the source behind it isn't reachable from here. Connect the provider (`tl mcp add …`) and re-run; the checkpoint updates in place.
+**"It says unknown for a metric I know is fine."** Then the source behind it isn't reachable from here. Connect the provider (`wl mcp add …`) and re-run; the checkpoint updates in place.
 
 **"Can I compare against a different baseline?"** Yes, with `--baseline`, and both values stay in the report so the change is visible.
 

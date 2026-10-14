@@ -1,4 +1,4 @@
-# Extending throughline — add, don't fork
+# Extending wholeloop — add, don't fork
 
 > **TL;DR** — Almost everything a team would want to customise is a **declarative manifest**, discovered from four places, validated by a schema and testable with one command: providers, review and verify lenses, artifact templates, profile presets and extra decision points. Code is the exception, reserved for new CLI adapters.
 
@@ -24,30 +24,30 @@ What you **cannot** extend away: the six built-in decision points, built-in lens
 
 ```mermaid
 flowchart LR
-  r["repo<br/>.throughline/&lt;kind&gt;/"] --> u["user<br/>~/.config/throughline/&lt;kind&gt;/"] --> p["packages<br/>listed in config"] --> b["built-in<br/>harness/&lt;kind&gt;/"]:::core
+  r["repo<br/>.wholeloop/&lt;kind&gt;/"] --> u["user<br/>~/.config/wholeloop/&lt;kind&gt;/"] --> p["packages<br/>listed in config"] --> b["built-in<br/>harness/&lt;kind&gt;/"]:::core
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
 Highest first. An extension with the same `id` as a lower one **replaces** it — so a team can override a built-in provider's guidance without copying the whole thing (`extends:` merges instead of replacing).
 
-**Packages** are plain npm packages that contain manifests — `throughline-provider-zendesk`, `@acme/throughline-kit` — declared in config:
+**Packages** are plain npm packages that contain manifests — `wholeloop-provider-zendesk`, `@acme/wholeloop-kit` — declared in config:
 
 ```yaml
 extensions:
-  - "@acme/throughline-kit@^1"     # providers, lenses and templates for the whole company
+  - "@acme/wholeloop-kit@^1"     # providers, lenses and templates for the whole company
 ```
 
-No code from a package is executed: `tl` only reads its manifests.
+No code from a package is executed: `wl` only reads its manifests.
 
 ## The lifecycle of an extension
 
 ```text
-tl provider scaffold acme-support      # writes a commented manifest skeleton
-tl provider test acme-support          # schema check, detection dry run, operation mapping, probe call
-tl provider list                       # where every provider comes from and what it can do
+wl provider scaffold acme-support      # writes a commented manifest skeleton
+wl provider test acme-support          # schema check, detection dry run, operation mapping, probe call
+wl provider list                       # where every provider comes from and what it can do
 ```
 
-Lenses, templates and profiles have the same trio (`scaffold`, `test`, `list`). A manifest that fails its schema is reported in `tl doctor` and ignored. It never half-loads.
+Lenses, templates and profiles have the same trio (`scaffold`, `test`, `list`). A manifest that fails its schema is reported in `wl doctor` and ignored. It never half-loads.
 
 ## Contributing an extension upstream
 

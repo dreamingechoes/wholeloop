@@ -27,10 +27,10 @@
 ```mermaid
 flowchart LR
   W["workflow definition<br/>(lenses, inputs, schema)"]:::core --> E{"engine"}
-  E -- "CLI has parallel subagents" --> N["native<br/>skill spawns subagents,<br/>each calls tl gate submit"]
-  E -- "no subagents, or max isolation" --> H["headless<br/>tl fanout spawns<br/>headless CLI workers"]
+  E -- "CLI has parallel subagents" --> N["native<br/>skill spawns subagents,<br/>each calls wl gate submit"]
+  E -- "no subagents, or max isolation" --> H["headless<br/>wl fanout spawns<br/>headless CLI workers"]
   E -- "last resort" --> S["sequential<br/>same lenses, one by one"]
-  N & H & S --> AGG["tl gate verdict<br/>deterministic aggregation"]:::core
+  N & H & S --> AGG["wl gate verdict<br/>deterministic aggregation"]:::core
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
@@ -46,7 +46,7 @@ The engine is chosen by the adapter's declared capabilities and can be overridde
 
 ### Verify — does it work, and does it solve the problem?
 
-- Runs the repository's own suite **once** per round (tests, type checks, linters — detected by `tl discover`).
+- Runs the repository's own suite **once** per round (tests, type checks, linters — detected by `wl discover`).
 - One `verifier` per acceptance criterion or test group, reading the criterion verbatim.
 - Asks of every changed test: *could this ever fail?* A test that cannot fail proves nothing.
 
@@ -91,7 +91,7 @@ The round budget is a **parameter, not a constant**:
 
 | Where | How | Example |
 |---|---|---|
-| Project default | `.throughline/config.yml` | `gates: { verify: { rounds: 5 }, review: { rounds: 2 } }` |
+| Project default | `.wholeloop/config.yml` | `gates: { verify: { rounds: 5 }, review: { rounds: 2 } }` |
 | This run | flag | `--rounds verify=6,review=4` |
 | This run | your words | "give it five rounds of review" |
 | Mid-run, at the limit | an offer, never automatic | "Review is still red after 3 rounds — 2 more, or stop here?" |

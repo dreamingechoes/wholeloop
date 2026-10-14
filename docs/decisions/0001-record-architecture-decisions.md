@@ -5,7 +5,7 @@
 
 ## Context
 
-`throughline` encodes a way of working. Almost every rule in it looks technical — a default, a path, a threshold — and is really a stance about how work should happen. Those stances are the first thing a newcomer wants to change and the last thing anyone remembers the reason for. A harness that cannot explain its own rules invites people to delete the useful ones and keep the leftovers.
+`wholeloop` encodes a way of working. Almost every rule in it looks technical — a default, a path, a threshold — and is really a stance about how work should happen. Those stances are the first thing a newcomer wants to change and the last thing anyone remembers the reason for. A harness that cannot explain its own rules invites people to delete the useful ones and keep the leftovers.
 
 The project is also built across many short sessions, by people and agents who did not take part in earlier conversations. Reasoning that lives only in a chat transcript is lost the moment the session ends.
 

@@ -21,7 +21,7 @@ The four blocks — Define, Build, Rollout, Learn — and the points where a per
    | Learn · measure, then decide | `measure-impact` · `decide-next` |
 
    Plus four utilities: `next`, `status`, `setup`, `sync`.
-2. **Namespacing where the CLI has none.** `throughline:<step>` in CLIs with plugin namespaces; `tl-<step>` elsewhere, so names never collide with a repo's own skills.
+2. **Namespacing where the CLI has none.** `wholeloop:<step>` in CLIs with plugin namespaces; `wl-<step>` elsewhere, so names never collide with a repo's own skills.
 3. **A glossary maps common vocabulary** (PRD → spec, epic → scope, story/ticket → slice, QA → verify, …) so teams can keep talking their own language.
 4. Item IDs follow the same idea: short, typed, speakable — `init-41c2`, `scope-a9e0`, `slice-0d4e`, `brief-7f3a`.
 

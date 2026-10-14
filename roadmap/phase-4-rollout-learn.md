@@ -75,7 +75,7 @@
 **Acceptance criteria:**
 
 - [ ] No manifest can map a send or toggle verb (validated).
-- [ ] Each provider passes `tl provider test` with fixtures.
+- [ ] Each provider passes `wl provider test` with fixtures.
 
 **Docs** — configuration/providers.
 

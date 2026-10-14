@@ -1,10 +1,10 @@
-# AGENTS.md — working on throughline
+# AGENTS.md — working on wholeloop
 
-Instructions for any coding agent (and any human) working **on this repository**. This file is about building `throughline`, not about using it.
+Instructions for any coding agent (and any human) working **on this repository**. This file is about building `wholeloop`, not about using it.
 
 ## What this is
 
-`throughline` is a CLI-agnostic AI development harness: four blocks (Define · Build · Rollout · Learn), thirteen steps, each usable on its own. A deterministic TypeScript core (`tl`) owns state, flow, config, discovery, providers and gates; short canonical skills and agents are generated into each agentic CLI's format. Start with `docs/concepts.md` and `docs/architecture/README.md`.
+`wholeloop` is a CLI-agnostic AI development harness: four blocks (Define · Build · Rollout · Learn), thirteen steps, each usable on its own. A deterministic TypeScript core (`wl`) owns state, flow, config, discovery, providers and gates; short canonical skills and agents are generated into each agentic CLI's format. Start with `docs/concepts.md` and `docs/architecture/README.md`.
 
 ## Where things are
 
@@ -12,7 +12,7 @@ Instructions for any coding agent (and any human) working **on this repository**
 |---|---|
 | `docs/` | The documentation — product, architecture, decisions (`docs/decisions/`) |
 | `roadmap/` | Phases, session-sized tasks, and the journal |
-| `src/` | The `tl` core (from P0-02) |
+| `src/` | The `wl` core (from P0-02) |
 | `harness/` | Canonical skills, agents, protocols, workflows, manifests (from P1) |
 | `test/` | Unit, snapshot, workflow, conformance, evals |
 
@@ -52,7 +52,7 @@ Expected once the toolchain exists:
 pnpm install
 pnpm check        # lint · typecheck · unit · snapshot · docs check
 pnpm test
-pnpm build        # dist/tl.mjs
+pnpm build        # dist/wl.mjs
 ```
 
 ## Style for code

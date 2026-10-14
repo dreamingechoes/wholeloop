@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Build |
-| **Invoke** | `/throughline:slice-work` · `$tl-slice-work` · `/tl-slice-work` |
+| **Invoke** | `/wholeloop:slice-work` · `$wl-slice-work` · `/wl-slice-work` |
 | **Decision point** | None |
 | **Reads** | A scope (`scope-xxxx`) · or a spec URL, an issue URL, or free text |
 | **Writes** | Slices (`slice-xxxx`) and parts, chained in order · optionally tracker items with blocked-by links |
@@ -37,7 +37,7 @@ flowchart TD
   REPO -- no --> CH
   PARTS --> CH["challenger attacks the cut"]
   CH -- "defect" --> CUT
-  CH -- "clean" --> SH["tl step complete<br/>structure check"]:::core
+  CH -- "clean" --> SH["wl step complete<br/>structure check"]:::core
   SH --> CHAIN["ordered slices<br/>with declared dependencies"]:::build
   CHAIN -.-> TR["tracker items + blocked-by<br/>(if configured)"]:::opt
   classDef build fill:#dce9fb,stroke:#2f6fc4,color:#0b1f3a;
@@ -66,7 +66,7 @@ On its own it takes a spec document, an issue URL or a plain description. It qui
 ## Run it
 
 ```text
-> /throughline:slice-work scope-a9e0
+> /wholeloop:slice-work scope-a9e0
 
 Slices — "Find an order"
 Repos      api (~/code/shop-api) · web (~/code/shop-web)
@@ -82,16 +82,16 @@ Format     slice.conventions → default (no repo skill found)
 ✓ shape check passed · 3 slices · 9 criteria · 14 test cases
 
 Produced
-  Slices             3 · parts 5          tl status scope-a9e0
+  Slices             3 · parts 5          wl status scope-a9e0
   Tracker items      5 + blocked-by links (Linear)
-Next                 /throughline:build-slice scope-a9e0
+Next                 /wholeloop:build-slice scope-a9e0
 ```
 
 | CLI | Invoke |
 |---|---|
-| Claude Code | `/throughline:slice-work …` |
-| Codex CLI | `$tl-slice-work …` |
-| OpenCode · Copilot CLI · tier B | `/tl-slice-work …` |
+| Claude Code | `/wholeloop:slice-work …` |
+| Codex CLI | `$wl-slice-work …` |
+| OpenCode · Copilot CLI · tier B | `/wl-slice-work …` |
 
 ## Before & after
 

@@ -34,9 +34,9 @@ Presets are just bundles; any dial can be overridden on top. Teams can ship thei
 ## Changing it
 
 ```text
-tl profile preset sparring          # pick a preset
-tl profile set depth=technical      # tune one dial
-tl profile show                     # what is in force and where each value came from
+wl profile preset sparring          # pick a preset
+wl profile set depth=technical      # tune one dial
+wl profile show                     # what is in force and where each value came from
 ```
 
 Or simply say it mid-session — "más técnico", "challenge me harder", "slow down" — and the skill records it for the run, offering to remember it.
@@ -52,7 +52,7 @@ Or simply say it mid-session — "más técnico", "challenge me harder", "slow d
 
 ## How it reaches the model
 
-The core renders the active profile into a **style block of at most ten lines** and includes it in every `tl step begin` payload. Skills do not interpret dials themselves, so the same profile produces the same instructions in every CLI — and the rendering is snapshot-tested.
+The core renders the active profile into a **style block of at most ten lines** and includes it in every `wl step begin` payload. Skills do not interpret dials themselves, so the same profile produces the same instructions in every CLI — and the rendering is snapshot-tested.
 
 ```text
 Style for this run:

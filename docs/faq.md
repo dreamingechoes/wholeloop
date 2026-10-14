@@ -13,7 +13,7 @@ No. Every step is a complete entry point. Research a question, build a small fix
 The one you already use. Claude Code, Codex, OpenCode and Copilot CLI are tier A; Gemini CLI, Antigravity and Cursor follow. → [Platforms](./platforms/README.md)
 
 **Can I switch CLI halfway through?**
-Yes. State lives in your store, not in a session. Run `next <id>` (or `tl resume <id>`) in the other CLI.
+Yes. State lives in your store, not in a session. Run `next <id>` (or `wl resume <id>`) in the other CLI.
 
 **Do I need Jira, Confluence, Notion…?**
 No. With nothing configured, everything is local Markdown. Configure providers when you want artifacts shared. → [Providers](./configuration/providers.md)

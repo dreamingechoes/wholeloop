@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Build — after [`verify-works`](./verify-works.md) is green, inside the "until green" loop |
-| **Invoke** | `/throughline:review-code` · `$tl-review-code` · `/tl-review-code` |
+| **Invoke** | `/wholeloop:review-code` · `$wl-review-code` · `/wl-review-code` |
 | **Decision point** | None — a machine loop with a round limit |
 | **Reads** | The diff of a slice's worktree, a branch or a PR · the slice's criteria for context · the repo's review guidance |
 | **Writes** | One verdict per round on the slice, findings with file, line and reasoning · optionally PR comments via `codehost` |
@@ -57,7 +57,7 @@ flowchart TD
 | **change shape** | Is this one coherent change, sized to be reviewed, with nothing unrelated inside? |
 
 1. **Lenses are fixed, not chosen per run.** Six reviewers asking the same question would agree with each other; six different questions catch different things.
-2. **Your repo's guidance is the rubric.** A review skill, `CONTRIBUTING.md`, a style guide or lint config found by `tl discover` sets what "good" means here. The harness default applies only where the repo is silent.
+2. **Your repo's guidance is the rubric.** A review skill, `CONTRIBUTING.md`, a style guide or lint config found by `wl discover` sets what "good" means here. The harness default applies only where the repo is silent.
 3. **Challenged before it blocks.** A finding is dropped only when two or more of its three challengers actively argue it is wrong.
 4. **Security and correctness lean cautious.** Input that crosses a boundary is treated as untrusted until the code shows otherwise; in doubt, the finding stands. A missed exploit costs far more than a false alarm.
 5. **Later rounds look at what moved.** Round 2 reviews only the diff since round 1, so a fix isn't punished for code it never touched.
@@ -78,7 +78,7 @@ flowchart TD
 ## Run it
 
 ```text
-> /throughline:review-code #142
+> /wholeloop:review-code #142
 
 Review — PR #142 "Add CSV export to the orders list"
 Rubric    .claude/skills/backend-guidelines (repo) · CONTRIBUTING.md
@@ -100,11 +100,11 @@ Next      builder, round 2 of 3 (only the new diff is reviewed)
 
 | CLI | Invoke | Parallel lenses |
 |---|---|---|
-| Claude Code | `/throughline:review-code …` | native subagents |
-| Codex CLI | `$tl-review-code …` | native subagents |
-| OpenCode | `/tl-review-code …` | native subagents |
-| Copilot CLI | `/tl-review-code …` | native subagents (`/fleet`) |
-| Gemini CLI · Antigravity · Cursor | `/tl-review-code …` | native where available, otherwise headless or one by one ([orchestration](../../architecture/orchestration-and-gates.md)) |
+| Claude Code | `/wholeloop:review-code …` | native subagents |
+| Codex CLI | `$wl-review-code …` | native subagents |
+| OpenCode | `/wl-review-code …` | native subagents |
+| Copilot CLI | `/wl-review-code …` | native subagents (`/fleet`) |
+| Gemini CLI · Antigravity · Cursor | `/wl-review-code …` | native where available, otherwise headless or one by one ([orchestration](../../architecture/orchestration-and-gates.md)) |
 
 ## Before & after
 

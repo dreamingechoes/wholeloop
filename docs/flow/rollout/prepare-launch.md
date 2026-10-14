@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Rollout — first step |
-| **Invoke** | `/throughline:prepare-launch` · `$tl-prepare-launch` · `/tl-prepare-launch` |
+| **Invoke** | `/wholeloop:prepare-launch` · `$wl-prepare-launch` · `/wl-prepare-launch` |
 | **Decision point** | None — nothing leaves your hands here |
 | **Reads** | A scope (its spec, flag, measurement plan, merged PRs) · or a description of what is shipping |
 | **Writes** | Rollout plan · comms **drafts** · dashboards · enablement docs — each through its provider, all linked on the scope |
@@ -56,7 +56,7 @@ Give it a description of what is shipping ("CSV export for the orders list, flag
 ## Run it
 
 ```text
-> /throughline:prepare-launch scope-a9e0
+> /wholeloop:prepare-launch scope-a9e0
 
 Prepare launch — scope-a9e0 "orders date filter"
 Flag      orders_date_filter (off everywhere)
@@ -69,7 +69,7 @@ Voice     docs/brand/voice.md (repo)
 ▸ support guide + runbook (Notion)
 
 Produced
-  Rollout plan       Notion · Launch / Orders date filter     tl open scope-a9e0 --plan
+  Rollout plan       Notion · Launch / Orders date filter     wl open scope-a9e0 --plan
   Slack draft        #product-updates (not sent)              open in Slack → Drafts
   Release note       draft in docs provider
   Dashboard          PostHog · Orders date filter
@@ -79,11 +79,11 @@ Next              ramp-exposure when you're ready to start the internal stage
 
 | CLI | Invoke |
 |---|---|
-| Claude Code | `/throughline:prepare-launch …` |
-| Codex CLI | `$tl-prepare-launch …` |
-| OpenCode | `/tl-prepare-launch …` |
-| Copilot CLI | `/tl-prepare-launch …` |
-| Gemini CLI · Antigravity · Cursor | `/tl-prepare-launch …` |
+| Claude Code | `/wholeloop:prepare-launch …` |
+| Codex CLI | `$wl-prepare-launch …` |
+| OpenCode | `/wl-prepare-launch …` |
+| Copilot CLI | `/wl-prepare-launch …` |
+| Gemini CLI · Antigravity · Cursor | `/wl-prepare-launch …` |
 
 ## Before & after
 

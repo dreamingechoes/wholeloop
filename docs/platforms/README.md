@@ -34,20 +34,20 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 
 | Gap | Bridge |
 |---|---|
-| No parallel subagents | `headless` engine — `tl fanout` runs workers through the CLI's headless mode — or `sequential` ([engines](../architecture/orchestration-and-gates.md#three-engines-one-result)) |
+| No parallel subagents | `headless` engine — `wl fanout` runs workers through the CLI's headless mode — or `sequential` ([engines](../architecture/orchestration-and-gates.md#three-engines-one-result)) |
 | Read-only not enforced | The core checks the worktree is unchanged after every gate round; a change fails the round |
 | No structured question tool | Plain-text questions with numbered options; the skill stops and waits |
-| No usable hooks | Git hooks installed by `tl install` carry the critical guards |
-| Different MCP dialects | `tl mcp add` renders each provider's neutral recipe into the target's format |
+| No usable hooks | Git hooks installed by `wl install` carry the critical guards |
+| Different MCP dialects | `wl mcp add` renders each provider's neutral recipe into the target's format |
 
 ## What gets generated
 
 ```mermaid
 flowchart LR
-  src["harness/<br/>skills · agents · hooks · providers"]:::core --> gen["tl build / tl install"]:::core
+  src["harness/<br/>skills · agents · hooks · providers"]:::core --> gen["wl build / wl install"]:::core
   gen --> c1[".claude/skills · .claude/agents<br/>hooks in settings · plugin.json"]
   gen --> c2[".agents/skills · .codex/agents/*.toml<br/>hooks.json · config.toml MCP"]
-  gen --> c3[".opencode/agents · commands<br/>JS plugin → tl guard"]
+  gen --> c3[".opencode/agents · commands<br/>JS plugin → wl guard"]
   gen --> c4[".github/agents · .github/hooks<br/>Agent Plugins manifest"]
   gen -.-> c5[".gemini/ · .agents/ (Antigravity)<br/>.cursor/"]:::opt
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
@@ -56,20 +56,20 @@ flowchart LR
 
 - **Skills** keep only the portable front-matter fields; CLI-specific extras live in a sidecar the adapter reads.
 - **Agents** are written with abstract capabilities (`read`, `write`, `shell`, `web`) and a model tier; each adapter maps them to that CLI's tool names or permission map.
-- **Names** are namespaced where the CLI has no plugin namespace: `throughline:research` in Claude Code, `tl-research` elsewhere.
+- **Names** are namespaced where the CLI has no plugin namespace: `wholeloop:research` in Claude Code, `wl-research` elsewhere.
 - **Golden files** pin every adapter's output; a change in generated files is a reviewed diff.
 
 ## Installing
 
 ```text
 # as a plugin (Claude Code; Copilot and Codex can read the same marketplace)
-/plugin marketplace add dreamingechoes/throughline
-/plugin install throughline
+/plugin marketplace add dreamingechoes/wholeloop
+/plugin install wholeloop
 
 # or for any combination of CLIs
-npm i -g @throughline/cli          # final package name settled in P0-01
-tl install --target claude,codex,opencode,copilot --scope user
-tl doctor
+npm i -g wholeloop
+wl install --target claude,codex,opencode,copilot --scope user
+wl doctor
 ```
 
 `--scope user` installs for you everywhere; `--scope project` writes into the current repository for the whole team.

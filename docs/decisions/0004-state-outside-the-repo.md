@@ -15,19 +15,19 @@ The harness has to remember a lot between sessions: the initiatives in progress,
 
 ## Decision
 
-1. **One store per person**, at `$XDG_STATE_HOME/throughline` (default `~/.local/state/throughline`). `TL_WORKSPACE` selects an isolated store (for example `work` and `personal`).
+1. **One store per person**, at `$XDG_STATE_HOME/wholeloop` (default `~/.local/state/wholeloop`). `WL_WORKSPACE` selects an isolated store (for example `work` and `personal`).
 2. **An append-only journal** of events is the source of truth.
-3. **Projections** — Markdown with front matter — are regenerated from the journal; `tl state rebuild` must reproduce them byte for byte.
+3. **Projections** — Markdown with front matter — are regenerated from the journal; `wl state rebuild` must reproduce them byte for byte.
 4. **A mailbox** of threads carries messages between agents and steps (`contract`, `handoff`, `status`, `question`, `note`).
-5. **Single writer.** Only `tl` writes the store: validated, write-then-rename, appends under a lock.
+5. **Single writer.** Only `wl` writes the store: validated, write-then-rename, appends under a lock.
 6. **Sharing goes through providers.** Steps publish to the configured `docs` and `tracker` destinations; another person adopts the work into their own store from those artifacts. External trackers are **sync adapters**, never the source of truth.
-7. The only harness file a repository holds is **configuration** (`.throughline/config.yml`), written by people on purpose. Git worktrees used for builds also live under the store ([ADR-0013](./0013-git-worktrees-for-parallel-builds.md)).
+7. The only harness file a repository holds is **configuration** (`.wholeloop/config.yml`), written by people on purpose. Git worktrees used for builds also live under the store ([ADR-0013](./0013-git-worktrees-for-parallel-builds.md)).
 
 ## Consequences
 
 ### Positive
 
-- Any session, in any CLI, resumes from `tl resume`.
+- Any session, in any CLI, resumes from `wl resume`.
 - Plain text: inspectable, greppable, recoverable by hand.
 - Replayable projections make the state layer fully testable.
 - Repositories stay clean; nothing to `.gitignore`.
@@ -42,7 +42,7 @@ The harness has to remember a lot between sessions: the initiatives in progress,
 
 | Option | Why not |
 |---|---|
-| `.throughline/` inside the repository | Pollutes diffs, leaks across branches, breaks for multi-repo work |
+| `.wholeloop/` inside the repository | Pollutes diffs, leaks across branches, breaks for multi-repo work |
 | beads or another task-graph tool as the store | Couples the harness to one tool and its install; kept as a possible sync adapter |
 | An external tracker as the store | Network on every write, vendor lock-in, slow for agent chatter |
 | SQLite | Fast queries, but binary and opaque to people; rejected for now — may return as a rebuildable index next to the journal |

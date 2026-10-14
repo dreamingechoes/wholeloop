@@ -19,7 +19,7 @@ Hand-maintaining seven copies would drift within weeks.
    - skills as Agent Skills, using only the portable front-matter fields; CLI-specific extras go in a sidecar file;
    - agents with **abstract capabilities** (`read`, `write`, `shell`, `web`) and a model tier instead of tool names;
    - MCP recipes in a neutral shape;
-   - hook *policies* as calls to one entry point, `tl guard <event>`.
+   - hook *policies* as calls to one entry point, `wl guard <event>`.
 2. **One adapter module per CLI** in `src/adapters/` turns the canonical source into exactly what that CLI expects: paths, front matter, tool names, permission maps, hook registration, MCP dialect, namespacing.
 3. **Our own small generator**, not a third-party one. We evaluated `rulesync` (broad coverage of rules, MCP, commands, subagents and hooks). The mapping of *agent semantics* — read-only enforcement, tool permissions, hook payload normalisation — is part of the product and needs golden-file tests we control. We borrow ideas freely; we do not depend on it.
 4. **Golden files** pin every adapter's output. A change in generated files is a reviewed diff.

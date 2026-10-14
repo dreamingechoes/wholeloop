@@ -10,7 +10,7 @@ The full flow — Define, Build, Rollout, Learn — is the point of the harness.
 ## Decision
 
 1. **Every step is a complete entry point.** It accepts free text, a file, a URL (issue, document, PR) or an ID from the store.
-2. **`tl step begin` returns `have` and `missing`.** The step uses whatever already exists (an earlier brief, an approved spec) and asks only for the gap. It never requires earlier steps to have run.
+2. **`wl step begin` returns `have` and `missing`.** The step uses whatever already exists (an earlier brief, an approved spec) and asks only for the gap. It never requires earlier steps to have run.
 3. **Loose artifacts are first-class.** A standalone brief, ad-hoc slice or review lives in the store and can be attached to an initiative later (`--from brief-7f3a`), or never.
 4. **What a step promises, it keeps — alone or in the flow.** `build-slice` always ends with its gates green or a clear stop; `open-pr` always asks you to test first. These belong to the step, not to the flow.
 5. **The flow is `next`.** It chains steps in order and stops at every decision point. Using it is a choice, never a precondition.

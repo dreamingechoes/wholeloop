@@ -1,6 +1,6 @@
 # Glossary
 
-> **TL;DR** — Every term `throughline` uses, in one line each, plus how it maps to vocabulary your team may already have.
+> **TL;DR** — Every term `wholeloop` uses, in one line each, plus how it maps to vocabulary your team may already have.
 
 ---
 
@@ -40,7 +40,7 @@
 
 ## If your team says…
 
-| Your vocabulary | In throughline |
+| Your vocabulary | In wholeloop |
 |---|---|
 | Discovery, framing, problem statement | `frame-problem` |
 | PRD, RFC, one-pager, product brief | the spec from `write-spec` |

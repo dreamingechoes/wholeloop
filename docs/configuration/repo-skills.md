@@ -1,6 +1,6 @@
 # Repo skills and slots — follow what your repository already knows
 
-> **TL;DR** — Each step declares named **slots** (`build.frontend`, `verify.suite`, `review.rubric`…). Before acting, `tl discover` scans your repository for the skills, agents, rules and commands it already has — for every major CLI, not just the one you are using — and binds each slot to the most specific match. The harness's own defaults are the last resort, never the first.
+> **TL;DR** — Each step declares named **slots** (`build.frontend`, `verify.suite`, `review.rubric`…). Before acting, `wl discover` scans your repository for the skills, agents, rules and commands it already has — for every major CLI, not just the one you are using — and binds each slot to the most specific match. The harness's own defaults are the last resort, never the first.
 
 > [!NOTE]
 > **Status: 📐 design.** Decision: [ADR-0009](../decisions/0009-repo-first-capability-resolution.md). Implementation: [P1-07](../../roadmap/phase-1-walking-skeleton.md#p1-07--discover-v1-and-slot-resolution), extended in [P3-04](../../roadmap/phase-3-build.md#p3-04--build-slice-and-the-builder).
@@ -9,9 +9,9 @@
 
 ## Why
 
-A generic harness that ignores your repository writes generic code. Your repo may already have a skill for its backend architecture, a design-system guide, a migration checklist, a PR template, a `make check` that is the real test suite. Those are the team's agreements in executable form; `throughline` is the layer that **sequences** them, not the one that replaces them.
+A generic harness that ignores your repository writes generic code. Your repo may already have a skill for its backend architecture, a design-system guide, a migration checklist, a PR template, a `make check` that is the real test suite. Those are the team's agreements in executable form; `wholeloop` is the layer that **sequences** them, not the one that replaces them.
 
-## What `tl discover` looks at
+## What `wl discover` looks at
 
 | Kind | Where |
 |---|---|
@@ -49,7 +49,7 @@ The result is a **capability map**, cached in the store and refreshed when the s
 
 ```mermaid
 flowchart LR
-  a["1 · explicit binding<br/>.throughline/config.yml"] --> b["2 · repo skill tagged<br/>metadata.throughline.slot"]
+  a["1 · explicit binding<br/>.wholeloop/config.yml"] --> b["2 · repo skill tagged<br/>metadata.wholeloop.slot"]
   b --> c["3 · repo asset matched<br/>by deterministic rules"]
   c --> d["4 · skill installed<br/>by the user"]
   d --> e["5 · harness default"]:::core
@@ -64,13 +64,13 @@ flowchart LR
    name: ui-kit
    description: How to build UI with our design system — components, tokens, accessibility.
    metadata:
-     throughline.slot: build.frontend build.design-system
+     wholeloop.slot: build.frontend build.design-system
    ---
    ```
 
 3. **Rule match** — deterministic keyword and path rules over names, descriptions and file types. Rules are data, versioned and tested against fixture repositories.
 4. **User skill** — something you installed for yourself.
-5. **Harness default** — `throughline`'s own minimal guidance.
+5. **Harness default** — `wholeloop`'s own minimal guidance.
 
 **Ambiguity is a question, not a coin toss.** Two equally good matches, or a match with low confidence, produce one question; the answer is remembered as an explicit binding.
 
@@ -85,7 +85,7 @@ Bindings  build.backend   → .agents/skills/api-architecture   (repo, tagged)
           review.rubric   → harness default                     (nothing found)
 ```
 
-`tl resolve <slot>` shows the same for one slot, with every candidate and why it won or lost.
+`wl resolve <slot>` shows the same for one slot, with every candidate and why it won or lost.
 
 ## Gotchas & FAQ
 

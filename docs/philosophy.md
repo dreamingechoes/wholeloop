@@ -1,6 +1,6 @@
 # Philosophy — why the harness is the half that is yours
 
-> **TL;DR** — An agent is a model plus a harness. The model is rented and identical for everyone; the harness is what makes the outcome depend on the *system* rather than on who happens to be driving. `throughline` is a harness built around one agreed path, from a loose idea to a measured result, that respects whatever your repository already knows.
+> **TL;DR** — An agent is a model plus a harness. The model is rented and identical for everyone; the harness is what makes the outcome depend on the *system* rather than on who happens to be driving. `wholeloop` is a harness built around one agreed path, from a loose idea to a measured result, that respects whatever your repository already knows.
 
 > [!NOTE]
 > **Status: 📐 design.** This page describes intent and is stable. The behaviour it motivates is tracked in the [roadmap](../roadmap/README.md).
@@ -36,7 +36,7 @@ A confident assumption is the most dangerous mistake an agent can make, because 
 
 ### 2. Deterministic process, adaptive content
 
-The flow runs the same steps in the same order for everyone. A step may resolve to *"not applicable, because X"*, but it is never skipped silently. What changes per initiative is what each step **produces**. In `throughline` this is literal: the process lives in a tested core ([ADR-0003](./decisions/0003-deterministic-core-cli.md)); the prompts only do the creative part.
+The flow runs the same steps in the same order for everyone. A step may resolve to *"not applicable, because X"*, but it is never skipped silently. What changes per initiative is what each step **produces**. In `wholeloop` this is literal: the process lives in a tested core ([ADR-0003](./decisions/0003-deterministic-core-cli.md)); the prompts only do the creative part.
 
 ### 3. Your repository first
 
@@ -75,7 +75,7 @@ The obvious objection is that all this turns a team into a template. It does not
 
 ## What transfers
 
-You do not need a harness this size to benefit from the exercise. Pick one step — researching an idea, preparing a rollout, checking impact a month later — and write it down as if a machine had to run it: what it may decide, what it must never assume, where it stops for a person. Then let the people who do that work attack it. A new colleague fills the gaps with common sense; a machine makes you fill them yourself. **The conversation is the deliverable.** `throughline` is what that conversation looks like once it is executable.
+You do not need a harness this size to benefit from the exercise. Pick one step — researching an idea, preparing a rollout, checking impact a month later — and write it down as if a machine had to run it: what it may decide, what it must never assume, where it stops for a person. Then let the people who do that work attack it. A new colleague fills the gaps with common sense; a machine makes you fill them yourself. **The conversation is the deliverable.** `wholeloop` is what that conversation looks like once it is executable.
 
 ---
 

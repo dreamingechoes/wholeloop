@@ -1,6 +1,6 @@
 # Providers — bring your own tools
 
-> **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `throughline` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
+> **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
 > **Status: 📐 design.** Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
@@ -18,7 +18,7 @@ flowchart LR
     s3["slice-work → tracker.create-item"]
     s4["prepare-launch → comms.draft"]
   end
-  subgraph R["tl resolves…"]
+  subgraph R["wl resolves…"]
     direction TB
     r1["config + detection<br/>+ your answer"]:::core
   end
@@ -100,7 +100,7 @@ One provider can serve several capabilities — PostHog covers product analytics
 ```mermaid
 sequenceDiagram
   participant S as Step
-  participant TL as tl
+  participant TL as wl
   participant P as Person
   S->>TL: step begin (needs docs.create)
   TL->>TL: config set? → use it
@@ -108,14 +108,14 @@ sequenceDiagram
   TL-->>S: question with detected / not-connected options
   S->>P: "Where should the spec live?"
   P-->>S: Confluence (not connected)
-  S->>TL: tl mcp add confluence --target codex
+  S->>TL: wl mcp add confluence --target codex
   TL-->>P: exact config written (or printed) for this CLI
   P-->>S: remember for: this repo
-  S->>TL: tl answer docs=confluence --remember project
+  S->>TL: wl answer docs=confluence --remember project
 ```
 
-- **Detection is deterministic.** `tl` reads the host CLI's MCP configuration files and checks binaries on `PATH`; it never guesses whether something is connected. Whether a connected server is *authenticated* is checked by the skill with one cheap probe call.
-- **`tl mcp add <provider> --target <cli>`** writes the provider's MCP entry in the dialect that CLI expects (JSON, TOML, `serverUrl` vs `url`…), or prints it if you prefer to paste it yourself.
+- **Detection is deterministic.** `wl` reads the host CLI's MCP configuration files and checks binaries on `PATH`; it never guesses whether something is connected. Whether a connected server is *authenticated* is checked by the skill with one cheap probe call.
+- **`wl mcp add <provider> --target <cli>`** writes the provider's MCP entry in the dialect that CLI expects (JSON, TOML, `serverUrl` vs `url`…), or prints it if you prefer to paste it yourself.
 - **Not available? Never a silent skip.** The step produces a hand-off artifact instead (a ready-to-paste document, an issue list, a dashboard spec with its queries) and records the gap so it can be backfilled later.
 
 ## Local by default, shared when you want

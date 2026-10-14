@@ -1,6 +1,6 @@
 # Determinism and testing — push everything possible below the model
 
-> **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `throughline` moves every decision with one right answer into the core, tests it without a model in seconds, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
+> **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model in seconds, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
 > **Status: 📐 design.** Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation starts in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
@@ -47,7 +47,7 @@ flowchart TB
 | 2 · Snapshot | every commit | seconds | generated output changed — review the diff, update on purpose |
 | 3 · Contract lints | every commit | seconds | a file breaks a budget, a rule has no enforcer, a link or diagram breaks |
 | 4 · Workflow | every commit | seconds | the orchestration logic misroutes, mis-aggregates or never calls a guard |
-| 5 · Conformance | nightly + before release | minutes | a real CLI no longer loads, calls `tl`, or reaches the expected journal state |
+| 5 · Conformance | nightly + before release | minutes | a real CLI no longer loads, calls `wl`, or reaches the expected journal state |
 | 6 · Evals | when a prompt or check changes | minutes–hours | a check got noisier, blinder or started inventing |
 
 ## Workflow tests with stubbed agents

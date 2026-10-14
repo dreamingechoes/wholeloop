@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Define |
-| **Invoke** | `/throughline:cut-scopes` · `$tl-cut-scopes` · `/tl-cut-scopes` |
+| **Invoke** | `/wholeloop:cut-scopes` · `$wl-cut-scopes` · `/wl-cut-scopes` |
 | **Decision point** | **approve** the scopes |
 | **Reads** | An approved spec on an initiative (`init-xxxx`) · or a spec document / issue URL |
 | **Writes** | One scope per deliverable (`scope-xxxx`) under the initiative · optionally an epic-like tracker item per scope |
@@ -66,7 +66,7 @@ On its own it takes a spec document or issue URL, opens the initiative behind it
 ## Run it
 
 ```text
-> /throughline:cut-scopes init-41c2
+> /wholeloop:cut-scopes init-41c2
 
 Scopes — "Users struggle to find their past orders"
 Candidates  search · filters · export
@@ -83,16 +83,16 @@ Tracker     Linear (remembered for this repo)
 Decision: approve these scopes?   [approve] [change the cut]
 
 Produced
-  Scopes             scope-a9e0 · scope-b113     tl status init-41c2
+  Scopes             scope-a9e0 · scope-b113     wl status init-41c2
   Tracker items      2 (Linear)                  (links)
-Next                 /throughline:slice-work scope-a9e0
+Next                 /wholeloop:slice-work scope-a9e0
 ```
 
 | CLI | Invoke |
 |---|---|
-| Claude Code | `/throughline:cut-scopes …` |
-| Codex CLI | `$tl-cut-scopes …` |
-| OpenCode · Copilot CLI · tier B | `/tl-cut-scopes …` |
+| Claude Code | `/wholeloop:cut-scopes …` |
+| Codex CLI | `$wl-cut-scopes …` |
+| OpenCode · Copilot CLI · tier B | `/wl-cut-scopes …` |
 
 ## Before & after
 

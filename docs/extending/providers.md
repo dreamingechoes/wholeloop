@@ -10,7 +10,7 @@
 ## Anatomy
 
 ```text
-.throughline/providers/acme-support/
+.wholeloop/providers/acme-support/
 ├─ provider.yml          the manifest (required)
 └─ guidance/
    └─ query.md           how to query this source well — ≤ 30 lines
@@ -57,11 +57,11 @@ degrade:
 
 | Field | Required | Notes |
 |---|---|---|
-| `schema` | yes | Manifest schema version. `tl` refuses unknown major versions. |
+| `schema` | yes | Manifest schema version. `wl` refuses unknown major versions. |
 | `id` | yes | Kebab-case, unique. Same `id` as a built-in **replaces** it; use `extends: <id>` to override only some fields. |
 | `capabilities` | yes | From the [taxonomy](../configuration/providers.md#the-capability-taxonomy). One provider may list several. |
 | `access` | yes | At least one of `mcp`, `cli`, `native`. The first one that detects wins. |
-| `access.mcp.install` | for MCP | Neutral description; `tl mcp add` turns it into each CLI's dialect. |
+| `access.mcp.install` | for MCP | Neutral description; `wl mcp add` turns it into each CLI's dialect. |
 | `operations` | yes | One entry per `capability.verb` you support. Unlisted verbs are reported as unsupported, not guessed. |
 | `operations.*.args` | no | Mustache-style mapping from contract inputs (`query`, `window`, `title`, `body`, `item`…) to tool arguments. |
 | `operations.*.guidance` | no | A short file the skill reads before calling the tool: query patterns, pitfalls, rate limits. |
@@ -76,13 +76,13 @@ degrade:
 ## Testing it
 
 ```text
-$ tl provider test acme-support
+$ wl provider test acme-support
 ✓ schema 1 valid
 ✓ capabilities: source.support
 ✓ detection: MCP server 'acme-support' found in Claude Code, Codex configs · not in OpenCode
 ✓ install recipe renders for: claude · codex · opencode · copilot · gemini · antigravity · cursor
 ✓ operations: source.support.query → acme_search_tickets (args map cleanly)
-• probe: run inside a CLI session to verify authentication (tl provider test --probe)
+• probe: run inside a CLI session to verify authentication (wl provider test --probe)
 ```
 
 Built-in providers also ship a **fixture test**: a recorded tool response and the expected normalised result, so the mapping is verified without a network.
@@ -92,7 +92,7 @@ Built-in providers also ship a **fixture test**: a recorded tool response and th
 - [ ] Uses only taxonomy verbs, and every supported verb is listed.
 - [ ] Every capability has a `degrade` behaviour.
 - [ ] Guidance files are short and specific to *this* tool.
-- [ ] `tl provider test` passes; a fixture test exists for built-in candidates.
+- [ ] `wl provider test` passes; a fixture test exists for built-in candidates.
 - [ ] A row in the catalogue table, if proposed upstream.
 
 ---

@@ -90,7 +90,7 @@
 
 **Acceptance criteria:**
 
-- [ ] Each provider passes `tl provider test` and has a recorded-response fixture.
+- [ ] Each provider passes `wl provider test` and has a recorded-response fixture.
 - [ ] `docs.update` never writes a body that was not fetched first in the same operation (test).
 
 **Docs** — configuration/providers (catalogue status).

@@ -43,7 +43,7 @@ Banners are updated **in the same change** that moves the behaviour.
 | | |
 |---|---|
 | **Block** | Define / Build / Rollout / Learn |
-| **Invoke** | `/throughline:<step>` · `$tl-<step>` · `/tl-<step>` |
+| **Invoke** | `/wholeloop:<step>` · `$wl-<step>` · `/wl-<step>` |
 | **Decision point** | none / name |
 | **Reads** | … |
 | **Writes** | … |

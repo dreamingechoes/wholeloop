@@ -12,10 +12,10 @@ A harness is a way of working, written down. If the documentation is thin, stale
 1. **Docs ship with the change.** A pull request that changes behaviour updates the affected pages, status banners and generated references in the same change. A behaviour change without docs is not done.
 2. **Honest status.** Every page carries one banner — `📐 design`, `🚧 partial` or `✅ implemented` — updated with the behaviour.
 3. **Fixed templates** for step pages, concept pages and ADRs ([docs style](../contributing/docs-style.md)).
-4. **Generated navigation.** Page order lives in `docs/nav.yml`; `tl docs nav` writes every footer; `tl docs check` fails CI on drift.
+4. **Generated navigation.** Page order lives in `docs/nav.yml`; `wl docs nav` writes every footer; `wl docs check` fails CI on drift.
 5. **Diagrams are first-class.** Mermaid with a shared palette that reads in light and dark themes; every diagram is parse-checked in CI.
 6. **Links are checked** in CI; relative only; no absolute local paths.
-7. **Generated references** for anything that mirrors code: configuration keys (from the JSON Schema), `tl` commands (from the CLI definitions), the compatibility matrix (from conformance results), the provider catalogue (from manifests).
+7. **Generated references** for anything that mirrors code: configuration keys (from the JSON Schema), `wl` commands (from the CLI definitions), the compatibility matrix (from conformance results), the provider catalogue (from manifests).
 8. **English, concise, warm.** TL;DR on every long page; reasons linked to ADRs.
 
 ## Consequences

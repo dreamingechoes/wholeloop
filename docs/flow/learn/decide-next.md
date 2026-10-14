@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Learn — final step |
-| **Invoke** | `/throughline:decide-next` · `$tl-decide-next` · `/tl-decide-next` |
+| **Invoke** | `/wholeloop:decide-next` · `$wl-decide-next` · `/wl-decide-next` |
 | **Decision point** | **decide** |
 | **Reads** | The scope's checkpoint reports · its spec and original promise · open questions still pending |
 | **Writes** | The decision and its reasoning on the scope · the scope closed · follow-up work (flag removal, iteration idea) · optionally published via `docs` / `tracker` |
@@ -66,7 +66,7 @@ Point it at a scope, or describe what shipped and what you observed. Without che
 ## Run it
 
 ```text
-> /throughline:decide-next scope-a9e0
+> /wholeloop:decide-next scope-a9e0
 
 Decide — scope-a9e0 "orders date filter"
 Promise   ≥ 15% of visits use it · time to find ≤ 25 s · fewer "can't find order" tickets
@@ -80,19 +80,19 @@ Outcome?   [ Keep ]  [ Iterate ]  [ Kill ]  [ Unflag ]
 
 Recorded  iterate · "usage is there; presets should get us under 25 s"
 Produced
-  Decision            scope-a9e0 (closed)                 tl open scope-a9e0 --decision
-  New idea            init-9b70 "date presets for orders" tl open init-9b70
+  Decision            scope-a9e0 (closed)                 wl open scope-a9e0 --decision
+  New idea            init-9b70 "date presets for orders" wl open init-9b70
   Follow-up           ENG-517 remove flag after presets ship
 Next              frame-problem init-9b70 — or stop here
 ```
 
 | CLI | Invoke |
 |---|---|
-| Claude Code | `/throughline:decide-next …` |
-| Codex CLI | `$tl-decide-next …` |
-| OpenCode | `/tl-decide-next …` |
-| Copilot CLI | `/tl-decide-next …` |
-| Gemini CLI · Antigravity · Cursor | `/tl-decide-next …` |
+| Claude Code | `/wholeloop:decide-next …` |
+| Codex CLI | `$wl-decide-next …` |
+| OpenCode | `/wl-decide-next …` |
+| Copilot CLI | `/wl-decide-next …` |
+| Gemini CLI · Antigravity · Cursor | `/wl-decide-next …` |
 
 ## Before & after
 

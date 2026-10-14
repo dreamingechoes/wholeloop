@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Define — the front door of the flow |
-| **Invoke** | `/throughline:frame-problem` · `$tl-frame-problem` · `/tl-frame-problem` |
+| **Invoke** | `/wholeloop:frame-problem` · `$wl-frame-problem` · `/wl-frame-problem` |
 | **Decision point** | None — the first one is *approve* at [`write-spec`](./write-spec.md) |
 | **Reads** | An idea (text, file, URL) · optionally `--from brief-xxxx` · optionally an existing `init-xxxx` to refine |
 | **Writes** | The initiative (`init-xxxx`) with its framing and owner · optionally a framing document (`docs`) and an idea item (`tracker`) |
@@ -71,7 +71,7 @@ On its own it needs nothing but the idea: it creates the initiative and stops th
 ## Run it
 
 ```text
-> /throughline:frame-problem --from brief-7f3a
+> /wholeloop:frame-problem --from brief-7f3a
 
 Frame — "Users struggle to find their past orders"
 Mode      new initiative · evidence from brief-7f3a
@@ -92,16 +92,16 @@ Stop if            fewer than 5% of active users have >20 orders
 ▸ challenger: "is this a search problem or a pagination problem?" → added as open question
 
 Produced
-  Initiative        init-41c2   tl open init-41c2
+  Initiative        init-41c2   wl open init-41c2
 Open questions      2
-Next                /throughline:write-spec init-41c2
+Next                /wholeloop:write-spec init-41c2
 ```
 
 | CLI | Invoke |
 |---|---|
-| Claude Code | `/throughline:frame-problem …` |
-| Codex CLI | `$tl-frame-problem …` |
-| OpenCode · Copilot CLI · tier B | `/tl-frame-problem …` |
+| Claude Code | `/wholeloop:frame-problem …` |
+| Codex CLI | `$wl-frame-problem …` |
+| OpenCode · Copilot CLI · tier B | `/wl-frame-problem …` |
 
 ## Before & after
 

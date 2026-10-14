@@ -4,7 +4,7 @@
 
 ---
 
-## P1-01 · `tl` command framework
+## P1-01 · `wl` command framework
 
 **Status:** ⬜ · **Size:** S · **Depends on:** P0-02
 
@@ -26,7 +26,7 @@
 
 **Goal** — One schema, deterministic precedence, personal vs team keys.
 
-**Deliverables** — JSON Schema for config, loader for user · project · initiative · run layers, key classification (personal / team), `tl config show --explain` (value + where it came from).
+**Deliverables** — JSON Schema for config, loader for user · project · initiative · run layers, key classification (personal / team), `wl config show --explain` (value + where it came from).
 
 **Acceptance criteria:**
 
@@ -42,11 +42,11 @@
 
 **Goal** — Durable, replayable, inspectable state outside every repository.
 
-**Deliverables** — XDG store layout, `TL_WORKSPACE`, typed ids, append-only journal with event schemas, projection writer, write-then-rename, file locking, `tl state show|list|get|rebuild`, `tl note`, `tl link`, `tl open`.
+**Deliverables** — XDG store layout, `WL_WORKSPACE`, typed ids, append-only journal with event schemas, projection writer, write-then-rename, file locking, `wl state show|list|get|rebuild`, `wl note`, `wl link`, `wl open`.
 
 **Acceptance criteria:**
 
-- [ ] `tl state rebuild` reproduces every projection byte for byte.
+- [ ] `wl state rebuild` reproduces every projection byte for byte.
 - [ ] Two concurrent writers never corrupt the journal (stress test).
 - [ ] A guard refuses any store write that resolves inside a git repository.
 
@@ -58,12 +58,12 @@
 
 **Goal** — Agents and sessions can talk and pick up where others stopped, in any CLI.
 
-**Deliverables** — threads, message kinds, per-reader cursors, `tl msg send|read`, `tl handoff`, `tl resume [<id>]` context pack with a size ceiling.
+**Deliverables** — threads, message kinds, per-reader cursors, `wl msg send|read`, `wl handoff`, `wl resume [<id>]` context pack with a size ceiling.
 
 **Acceptance criteria:**
 
 - [ ] Unread semantics are per reader and survive restarts.
-- [ ] `tl resume` output stays under its size ceiling for an initiative with 50 items (snapshot test).
+- [ ] `wl resume` output stays under its size ceiling for an initiative with 50 items (snapshot test).
 
 **Docs** — architecture/state-and-messaging.
 
@@ -73,7 +73,7 @@
 
 **Goal** — The process lives in code.
 
-**Deliverables** — step registry for all 13 steps (stubs where not yet implemented), `tl step begin|plan|complete|skip`, `have/missing` computation, question generation, `tl answer --remember`, shape-check framework, decision points, preflight and receipt rendering.
+**Deliverables** — step registry for all 13 steps (stubs where not yet implemented), `wl step begin|plan|complete|skip`, `have/missing` computation, question generation, `wl answer --remember`, shape-check framework, decision points, preflight and receipt rendering.
 
 **Acceptance criteria:**
 
@@ -90,7 +90,7 @@
 
 **Goal** — Personal dials rendered identically for every CLI.
 
-**Deliverables** — dials, built-in presets, `tl profile show|set|preset`, style-block renderer (≤ 10 lines), natural-language override hooks for skills.
+**Deliverables** — dials, built-in presets, `wl profile show|set|preset`, style-block renderer (≤ 10 lines), natural-language override hooks for skills.
 
 **Acceptance criteria:**
 
@@ -105,13 +105,13 @@
 
 **Goal** — Every step knows what the repository already provides.
 
-**Deliverables** — scanner for skills, agents, rules and instruction files of every supported CLI; command detection (package scripts, Makefile, justfile, common runners); rule-based slot matching; `metadata.throughline.slot`; cached capability map; `tl discover`, `tl resolve <slot>`.
+**Deliverables** — scanner for skills, agents, rules and instruction files of every supported CLI; command detection (package scripts, Makefile, justfile, common runners); rule-based slot matching; `metadata.wholeloop.slot`; cached capability map; `wl discover`, `wl resolve <slot>`.
 
 **Acceptance criteria:**
 
 - [ ] At least six fixture repositories (JS monorepo, Python, Go, Ruby, mixed with `.claude/` + `.agents/`, empty) produce snapshot-tested capability maps.
 - [ ] Ambiguous matches produce a question instead of a choice.
-- [ ] `tl resolve` explains why each candidate won or lost.
+- [ ] `wl resolve` explains why each candidate won or lost.
 
 **Docs** — configuration/repo-skills, ADR-0009.
 
@@ -121,12 +121,12 @@
 
 **Goal** — Capabilities resolve to providers; the flow works with zero integrations.
 
-**Deliverables** — capability taxonomy as code, provider manifest schema, loader (repo › user › packages › built-in, `extends`), detection from CLI MCP configs and `PATH`, `tl provider list|show|test|scaffold`, `tl mcp add` renderers for the four tier-A CLIs, built-ins: native web, native code, local docs, local tracker.
+**Deliverables** — capability taxonomy as code, provider manifest schema, loader (repo › user › packages › built-in, `extends`), detection from CLI MCP configs and `PATH`, `wl provider list|show|test|scaffold`, `wl mcp add` renderers for the four tier-A CLIs, built-ins: native web, native code, local docs, local tracker.
 
 **Acceptance criteria:**
 
 - [ ] A manifest mapping a verb outside the taxonomy fails validation.
-- [ ] `tl mcp add <id> --target <cli>` output is golden-tested for each tier-A CLI.
+- [ ] `wl mcp add <id> --target <cli>` output is golden-tested for each tier-A CLI.
 - [ ] With no configuration, `docs.create` and `tracker.create-item` resolve to local providers.
 
 **Docs** — configuration/providers, extending/providers, ADR-0008.
@@ -137,7 +137,7 @@
 
 **Goal** — Templates, profiles and lenses load the same way providers do.
 
-**Deliverables** — shared loader and schema per kind, `tl <kind> list|test|scaffold`, template required-section check.
+**Deliverables** — shared loader and schema per kind, `wl <kind> list|test|scaffold`, template required-section check.
 
 **Acceptance criteria:**
 
@@ -152,11 +152,11 @@
 
 **Goal** — The first generated target, shaped by the spike's findings.
 
-**Deliverables** — adapter interface; Claude Code adapter for skills, agents, hooks (calling `tl guard`) and plugin manifest; bundled `tl` inside the plugin; golden files.
+**Deliverables** — adapter interface; Claude Code adapter for skills, agents, hooks (calling `wl guard`) and plugin manifest; bundled `wl` inside the plugin; golden files.
 
 **Acceptance criteria:**
 
-- [ ] `tl build --target claude` output matches golden files.
+- [ ] `wl build --target claude` output matches golden files.
 - [ ] The generated plugin installs locally and lists every skill.
 
 **Docs** — platforms.
@@ -167,7 +167,7 @@
 
 **Goal** — Same harness, four tier-A targets.
 
-**Deliverables** — three adapters, tool/permission mapping per CLI, hook registration (OpenCode via a thin JS plugin calling `tl guard`), Agent Plugins manifest, golden files.
+**Deliverables** — three adapters, tool/permission mapping per CLI, hook registration (OpenCode via a thin JS plugin calling `wl guard`), Agent Plugins manifest, golden files.
 
 **Acceptance criteria:**
 
@@ -192,7 +192,7 @@
 
 **Docs** — flow/define/frame-problem, flow/utilities (status → partial).
 
-## P1-13 · `tl install`, `tl uninstall`, `tl doctor`
+## P1-13 · `wl install`, `wl uninstall`, `wl doctor`
 
 **Status:** ⬜ · **Size:** M · **Depends on:** P1-11
 

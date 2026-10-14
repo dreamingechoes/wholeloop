@@ -11,10 +11,10 @@
 
 | Utility | Invoke | Reads | Writes | Decision point |
 |---|---|---|---|---|
-| **next** | `/throughline:next` · `$tl-next` · `/tl-next` | anything: nothing, an ID, a URL, an idea | whatever the steps it runs write | the ones in those steps |
-| **status** | `/throughline:status` · `$tl-status` · `/tl-status` | the store | nothing | none |
-| **setup** | `/throughline:setup` · `$tl-setup` · `/tl-setup` | your CLIs' config, the repo | user / project config · MCP config of chosen CLIs | none |
-| **sync** | `/throughline:sync` · `$tl-sync` · `/tl-sync` | the store · `codehost` · `tracker` | the store · tracker items | none |
+| **next** | `/wholeloop:next` · `$wl-next` · `/wl-next` | anything: nothing, an ID, a URL, an idea | whatever the steps it runs write | the ones in those steps |
+| **status** | `/wholeloop:status` · `$wl-status` · `/wl-status` | the store | nothing | none |
+| **setup** | `/wholeloop:setup` · `$wl-setup` · `/wl-setup` | your CLIs' config, the repo | user / project config · MCP config of chosen CLIs | none |
+| **sync** | `/wholeloop:sync` · `$wl-sync` · `/wl-sync` | the store · `codehost` · `tracker` | the store · tracker items | none |
 
 ---
 
@@ -44,7 +44,7 @@ flowchart TD
 - **Respects your `stops` setting.** With `stops: each-step` it pauses after every step even when no decision is due ([profile](../configuration/profile.md)).
 
 ```text
-> /throughline:next https://linear.app/acme/issue/ENG-482
+> /wholeloop:next https://linear.app/acme/issue/ENG-482
 
 Found     ENG-482 "Filter orders by date" → no local record yet, picking it up
 Has       spec (approved in Linear) · 1 scope · no slices
@@ -57,11 +57,11 @@ Go?       [ Go ]  [ Only slice-work ]  [ Change the plan ]
 **What is where, and who is it waiting on.** Read-only, instant, safe anywhere.
 
 ```text
-> /throughline:status
+> /wholeloop:status
 
 Waiting on you
   approve      init-41c2 spec "orders date filter"           since 2 days
-  test it      slice-0d4e (green)                             tl open slice-0d4e
+  test it      slice-0d4e (green)                             wl open slice-0d4e
   ramp         scope-a9e0 at 10% · criteria met               re-check was due today
 Due checkpoints
   D+30         scope-7c21 "CSV export"                        measure-impact scope-7c21
@@ -80,16 +80,16 @@ In progress
 | **Profile** | verbosity, depth, challenge, pace, stops, teaching, language — or a preset | your user config |
 | **Providers** | which tool fulfils each capability (docs, tracker, codehost, sources…) | project config (team) or user config (you) |
 | **CLIs** | which CLIs get adapters installed, user-wide or for this project | the CLIs' own config folders |
-| **MCP servers** | install recipes for the providers you picked, per CLI (`tl mcp add <provider> --target <cli>`) | each CLI's MCP config |
+| **MCP servers** | install recipes for the providers you picked, per CLI (`wl mcp add <provider> --target <cli>`) | each CLI's MCP config |
 
 ```text
-> /throughline:setup providers
+> /wholeloop:setup providers
 
 Docs       ( ) local markdown  (•) Notion ✓ detected  ( ) Confluence  ( ) Google Docs
 Tracker    ( ) local  ( ) GitHub Issues  (•) Linear ✓ detected  ( ) Jira
 Codehost   (•) GitHub ✓ gh signed in  ( ) GitLab
 Analytics  [x] PostHog ✓ detected  [ ] Mixpanel ✗ not connected → show install
-Remember   (•) this repo (shared via .throughline/config.yml)  ( ) only me
+Remember   (•) this repo (shared via .wholeloop/config.yml)  ( ) only me
 ```
 
 Nothing has to be configured up front: every step asks for what it needs the first time and offers to remember the answer. `setup` is just the place to see and change it all at once.
@@ -107,16 +107,16 @@ flowchart LR
 
 - **A merged PR closes its slice** and removes the slice's worktree; when every slice of a scope is closed, the scope moves to Rollout.
 - **Tracker items follow** — transitioned to match, never moved backwards without asking.
-- **Idempotent and safe on a schedule.** Running it twice changes nothing the second time; a CLI's scheduler or plain `cron` can run `tl sync` headless.
+- **Idempotent and safe on a schedule.** Running it twice changes nothing the second time; a CLI's scheduler or plain `cron` can run `wl sync` headless.
 - **Reports, never guesses.** A PR it can't match to a slice is listed, not assigned.
 
 ```text
-> /throughline:sync
+> /wholeloop:sync
 
 ▸ checked 6 open slices against GitHub
 ✓ slice-0d4e  PR #151 merged → closed · worktree removed · ENG-482 → Done
 ✓ scope-a9e0  all slices closed → ready for prepare-launch
-? PR #155     no matching slice — link it with: tl link <slice> #155
+? PR #155     no matching slice — link it with: wl link <slice> #155
 ```
 
 ---

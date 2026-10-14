@@ -5,7 +5,7 @@
 
 ## Context
 
-`throughline` is developed with the help of the very kind of agentic tools it supports. Many of those tools append attribution by default: co-author trailers in commits, "generated with …" footers in pull request descriptions, notes in changelogs. In a public project's history those lines are noise. They also tie the record of the project to a particular vendor, which goes against a harness meant to be CLI-neutral.
+`wholeloop` is developed with the help of the very kind of agentic tools it supports. Many of those tools append attribution by default: co-author trailers in commits, "generated with …" footers in pull request descriptions, notes in changelogs. In a public project's history those lines are noise. They also tie the record of the project to a particular vendor, which goes against a harness meant to be CLI-neutral.
 
 ## Decision
 

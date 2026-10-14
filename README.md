@@ -1,8 +1,8 @@
-# throughline
+# wholeloop
 
 **An AI development harness that carries one idea all the way through — from the first question to a measured result — on whichever agentic CLI you already use.**
 
-> `Agent = Model + Harness`. Everybody rents the same model. The harness — what context the agent gets, which tools it can reach, in what order things happen, where it stops and who decides, and how you know afterwards that it worked — is the half that is yours. `throughline` is that half, made portable.
+> `Agent = Model + Harness`. Everybody rents the same model. The harness — what context the agent gets, which tools it can reach, in what order things happen, where it stops and who decides, and how you know afterwards that it worked — is the half that is yours. `wholeloop` is that half, made portable.
 
 > [!NOTE]
 > **Status: design phase.** This repository currently holds the design, the decisions and the plan. Nothing is installable yet. Follow progress in the [roadmap](./roadmap/README.md).
@@ -13,7 +13,7 @@
 
 Follow two engineers through the life of one feature. One looks at the data first, the other opens the editor. One argues with the model's first answer, the other accepts it. Every review asks different questions, every rollout re-decides the same things from scratch, and a month after launch nobody checks whether the numbers moved. **The model is identical in every one of those moments. The process around it is not** — and a faster tool amplifies whatever process you already have, including the absence of one.
 
-`throughline` makes that process explicit, executable and the same for everyone, without turning a team into a template: it fixes the *questions* (what to ask before building, what counts as evidence, where a person decides, what *done* means) and leaves the *answers* to you and your repository.
+`wholeloop` makes that process explicit, executable and the same for everyone, without turning a team into a template: it fixes the *questions* (what to ask before building, what counts as evidence, where a person decides, what *done* means) and leaves the *answers* to you and your repository.
 
 ## The flow — four blocks, one line
 

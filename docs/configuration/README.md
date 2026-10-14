@@ -11,9 +11,9 @@
 
 | Scope | Path | Committed? | Typical content |
 |---|---|---|---|
-| **User** | `$XDG_CONFIG_HOME/throughline/config.yml` (default `~/.config/throughline/`) | No | Your profile, your default providers, CLIs you use |
-| **Project** | `<repo>/.throughline/config.yml` | **Yes** | Team providers and destinations, slot bindings, extra lenses, decision-point additions |
-| **Project extensions** | `<repo>/.throughline/{providers,lenses,templates,profiles}/` | Yes | Manifests the team adds ([extending](../extending/README.md)) |
+| **User** | `$XDG_CONFIG_HOME/wholeloop/config.yml` (default `~/.config/wholeloop/`) | No | Your profile, your default providers, CLIs you use |
+| **Project** | `<repo>/.wholeloop/config.yml` | **Yes** | Team providers and destinations, slot bindings, extra lenses, decision-point additions |
+| **Project extensions** | `<repo>/.wholeloop/{providers,lenses,templates,profiles}/` | Yes | Manifests the team adds ([extending](../extending/README.md)) |
 | **Initiative** | in the store, on the initiative | — | Work mode and destinations chosen for that initiative |
 | **Run** | flags and your words in the session | — | `--pace guided`, "be more technical" |
 
@@ -36,7 +36,7 @@ flowchart LR
 ## Example — project file
 
 ```yaml
-# .throughline/config.yml — committed, reviewed like code
+# .wholeloop/config.yml — committed, reviewed like code
 version: 1
 
 providers:
@@ -52,7 +52,7 @@ slots:
   open-pr.convention: .github/pull_request_template.md
 
 lenses:
-  add: [accessibility]          # an extra review lens from .throughline/lenses/
+  add: [accessibility]          # an extra review lens from .wholeloop/lenses/
 
 build:
   workspace: worktree         # worktree (default) | checkout
@@ -72,7 +72,7 @@ flow:
 ## Example — user file
 
 ```yaml
-# ~/.config/throughline/config.yml — personal, never committed
+# ~/.config/wholeloop/config.yml — personal, never committed
 version: 1
 profile:
   preset: pair

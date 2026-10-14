@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | **Block** | Define |
-| **Invoke** | `/throughline:write-spec` · `$tl-write-spec` · `/tl-write-spec` |
+| **Invoke** | `/wholeloop:write-spec` · `$wl-write-spec` · `/wl-write-spec` |
 | **Decision point** | **approve** — nothing downstream runs on an unapproved spec |
 | **Reads** | An initiative (`init-xxxx`) · or a pasted idea, document or issue URL |
 | **Writes** | The spec on the initiative · its measurement plan, queries included · scope candidates · optionally a document (`docs`) |
@@ -34,7 +34,7 @@ flowchart TD
   T --> W["write: stories · criteria · metrics<br/>rollout outline · appendix"]
   W --> M["measurement plan<br/>per metric: source · baseline · target · window · query"]
   M --> CH["challenger attacks the criteria"]
-  CH --> SH["tl step complete<br/>shape check"]:::core
+  CH --> SH["wl step complete<br/>shape check"]:::core
   SH -- "fails" --> W
   SH -- "passes" --> AP{{"approve"}}:::person
   AP -- "changes" --> W
@@ -47,7 +47,7 @@ flowchart TD
 1. **Your format first.** If the repository or team has a spec skill or template, the `spec.template` slot binds to it and the harness adds only what it needs on top (criteria, measurement plan). Otherwise the built-in template applies ([repo skills](../../configuration/repo-skills.md)).
 2. **Metrics come with their query.** Each one names the **provider** that answers it (`posthog`, `metabase`, `sentry`…), today's value, the value we're aiming for, the time window and the stored query. [`measure-impact`](../learn/measure-impact.md) replays exactly that later — nobody has to reinvent the measurement after launch. If no provider can answer a metric yet, "add the tracking" becomes work for the first slice.
 3. **The challenger reads the criteria like a tester would.** Two criteria that contradict each other; a criterion you couldn't write a failing test for; a statement about today's behaviour that the code says is false; a criteria set that would pass even if the feature did something extra and unwanted.
-4. **A machine checks the shape, not a reviewer's mood.** `tl step complete` rejects a spec with a story lacking criteria, a metric lacking a provider or window, or wording no test can verify ("fast", "intuitive", "better").
+4. **A machine checks the shape, not a reviewer's mood.** `wl step complete` rejects a spec with a story lacking criteria, a metric lacking a provider or window, or wording no test can verify ("fast", "intuitive", "better").
 5. **Technical notes live in a separate appendix** so the main spec stays readable for everyone: what else touches the same data, a suggested flag name, and the candidate scopes [`cut-scopes`](./cut-scopes.md) will start from.
 
 ## Standalone use
@@ -57,7 +57,7 @@ On its own it takes a pasted idea, a document or an issue URL. With no initiativ
 ## Run it
 
 ```text
-> /throughline:write-spec init-41c2
+> /wholeloop:write-spec init-41c2
 
 Spec — "Users struggle to find their past orders"
 Template  spec.template → product-spec (repo skill)
@@ -75,16 +75,16 @@ Appendix  also touches: orders API, export job · flag: orders_search_v1
 Decision: approve this spec?   [approve] [request changes]
 
 Produced
-  Spec               init-41c2/spec     tl open init-41c2 --spec
+  Spec               init-41c2/spec     wl open init-41c2 --spec
   Document           Notion page        (link)
-Next                 /throughline:cut-scopes init-41c2
+Next                 /wholeloop:cut-scopes init-41c2
 ```
 
 | CLI | Invoke |
 |---|---|
-| Claude Code | `/throughline:write-spec …` |
-| Codex CLI | `$tl-write-spec …` |
-| OpenCode · Copilot CLI · tier B | `/tl-write-spec …` |
+| Claude Code | `/wholeloop:write-spec …` |
+| Codex CLI | `$wl-write-spec …` |
+| OpenCode · Copilot CLI · tier B | `/wl-write-spec …` |
 
 ## Before & after
 
