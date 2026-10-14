@@ -3,7 +3,7 @@
 > **TL;DR** — Documentation is part of the product, not a by-product. Every page has a status banner, a TL;DR, a predictable structure, Mermaid diagrams in the shared palette, and a generated navigation footer. CI checks all of it.
 
 > [!NOTE]
-> **Status: 📐 design.** The conventions are in force from the first commit; the automated checks land in [P0-04](../../roadmap/phase-0-foundations.md#p0-04--documentation-tooling).
+> **Status: ✅ implemented.** Enforced on every change by `npm run check`: `wl docs check` (docnav, nav listing, status banners, links, anchors), markdownlint and the Mermaid parse check.
 
 ---
 

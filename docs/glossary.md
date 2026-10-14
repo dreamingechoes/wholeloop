@@ -2,6 +2,9 @@
 
 > **TL;DR** — Every term `wholeloop` uses, in one line each, plus how it maps to vocabulary your team may already have.
 
+> [!NOTE]
+> **Status: 📐 design.** Terms describe the target design; they change with the [decisions](./decisions/README.md) that introduce them.
+
 ---
 
 ## Terms

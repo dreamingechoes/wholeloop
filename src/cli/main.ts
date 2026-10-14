@@ -1,14 +1,8 @@
 import { VERSION } from '../version.js'
+import { docsCheck, docsNav } from './docs.js'
+import { EXIT, type Io } from './io.js'
 
-export interface Io {
-  out: (text: string) => void
-  err: (text: string) => void
-}
-
-export const EXIT = {
-  ok: 0,
-  unexpected: 1,
-} as const
+export { EXIT, type Io } from './io.js'
 
 const USAGE = `wholeloop ${VERSION} — a CLI-agnostic AI development harness
 
@@ -18,10 +12,14 @@ Options:
   -v, --version   Print the version
   -h, --help      Print this help
 
-Commands arrive with the walking skeleton (roadmap P1).`
+Contributor commands:
+  docs nav        Rewrite every docnav footer from docs/nav.yml
+  docs check      Check docnav, nav listing, status banners, links and anchors (--json)
 
-export function run(argv: readonly string[], io: Io): number {
-  const [first] = argv
+Flow commands arrive with the walking skeleton (roadmap P1).`
+
+export function run(argv: readonly string[], io: Io, root = process.cwd()): number {
+  const [first, second, ...rest] = argv
   if (first === '--version' || first === '-v') {
     io.out(VERSION)
     return EXIT.ok
@@ -30,6 +28,8 @@ export function run(argv: readonly string[], io: Io): number {
     io.out(USAGE)
     return EXIT.ok
   }
-  io.err(`wl: unknown command or option '${first}'. Run 'wl --help'.`)
+  if (first === 'docs' && second === 'nav') return docsNav(root, io)
+  if (first === 'docs' && second === 'check') return docsCheck(root, rest.includes('--json'), io)
+  io.err(`wl: unknown command or option '${argv.join(' ')}'. Run 'wl --help'.`)
   return EXIT.unexpected
 }

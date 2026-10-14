@@ -11,7 +11,9 @@ await build({
   platform: 'node',
   format: 'esm',
   target: 'node20',
-  banner: { js: '#!/usr/bin/env node' },
+  banner: {
+    js: "#!/usr/bin/env node\nimport { createRequire } from 'node:module'\nconst require = createRequire(import.meta.url)",
+  },
   define: { __WL_VERSION__: JSON.stringify(version) },
   legalComments: 'none',
   logLevel: 'warning',

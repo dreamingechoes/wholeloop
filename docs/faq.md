@@ -2,6 +2,9 @@
 
 > **TL;DR** — The questions people ask in the first ten minutes, answered in a few lines each, with a link to the page that goes deeper.
 
+> [!NOTE]
+> **Status: 📐 design.** Answers describe the target behaviour; progress is tracked in the [roadmap](../roadmap/README.md).
+
 ---
 
 ## Using it

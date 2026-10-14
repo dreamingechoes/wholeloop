@@ -33,7 +33,7 @@
 | **Worktrees** | `wl worktree create\|open\|stop\|list\|prune <slice>` — isolated workspace and branch per slice, with port allocation | builder, `open-pr`, `sync` |
 | **Environment** | `wl env declare <what> --undo "<command>"` · `wl env report` | builder, `open-pr` |
 | **Install** | `wl install --target <cli,…> --scope user\|project` · `wl uninstall` · `wl doctor` | people |
-| **Docs (dev)** | `wl docs nav` · `wl docs check` | CI, contributors |
+| **Docs (dev)** | `wl docs nav` · `wl docs check [--json]` — ✅ implemented | CI, contributors |
 
 ## The step contract
 
