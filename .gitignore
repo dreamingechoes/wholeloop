@@ -1,0 +1,21 @@
+# Dependencies & build output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Scratch output from tests and adapter generation
+.tmp/
+test/**/.out/
+
+# OS & editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Logs & env
+*.log
+.env
+.env.*
+!.env.example
