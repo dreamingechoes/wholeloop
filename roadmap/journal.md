@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-10-14 · P0-02 in progress — TypeScript toolchain
+
+### Done
+
+- `package.json` (npm, Node ≥ 20, exact dev dependencies published ≥ 2 weeks earlier), strict `tsconfig`, Biome (recommended preset), Vitest, esbuild bundle to `dist/wl.mjs` with the version injected from `package.json`.
+- Minimal `wl`: `--version`, `--help`, unknown input → stderr + exit 1; 6 unit tests; `npm run smoke` checks the built binary.
+- `npm run check` (lint · typecheck · tests · markdownlint) runs in about 2 seconds.
+- CI workflow: Ubuntu (Node 20, 22) and macOS (Node 22), actions pinned by SHA, runtime-dependency audit.
+- markdownlint upgraded to 0.23.3; its new table rule (MD060) required normalising every table delimiter row.
+- Decisions in [ADR-0019](../docs/decisions/0019-typescript-toolchain.md): npm over pnpm, Biome over ESLint + Prettier, TypeScript 7.
+
+### Decided
+
+- Patched transitive versions forced through `overrides` (`smol-toml` 1.9.0, `katex` 0.18.9).
+- `braces` ≤ 3.0.3 advisory (dev-only, no fix released) accepted and documented; it never sees untrusted input.
+- Biome's `migrate` silently turned the recommended rules off (`preset: none`); fixed to `preset: recommended` and verified with a probe file. Worth remembering on future Biome upgrades.
+
+### Open
+
+- **CI green on Linux and macOS** cannot be verified until these commits are pushed (pushes from agent sessions are currently blocked on this machine — see the P0-01 entry).
+
+---
+
 ## 2026-10-14 · P0-01 in progress — identity and repository
 
 ### Done

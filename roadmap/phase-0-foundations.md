@@ -24,17 +24,17 @@
 
 ## P0-02 · TypeScript toolchain
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P0-01
+**Status:** 🔄 · **Size:** M · **Depends on:** P0-01
 
 **Goal** — A fast, strict, boring toolchain everyone can run.
 
-**Deliverables** — `package.json` (Node ≥ 20, pnpm), strict `tsconfig`, test runner (Vitest), linter and formatter (Biome or ESLint + Prettier — pick one, record why), build to a single bundled `dist/wl.mjs`, `wl --version` working, CI workflow running install · lint · typecheck · test · build.
+**Deliverables** — `package.json` (Node ≥ 20, npm), strict `tsconfig`, test runner (Vitest), linter and formatter (Biome), build to a single bundled `dist/wl.mjs`, `wl --version` working, CI workflow running install · lint · typecheck · test · build — choices recorded in [ADR-0019](../docs/decisions/0019-typescript-toolchain.md).
 
 **Acceptance criteria:**
 
-- [ ] `pnpm check` runs every local check in under 30 seconds on an empty project.
+- [x] `npm run check` runs every local check in under 30 seconds on an empty project (≈ 2 s).
 - [ ] CI is green on Linux and macOS.
-- [ ] `node dist/wl.mjs --version` prints the package version.
+- [x] `node dist/wl.mjs --version` prints the package version (`npm run smoke` asserts it).
 
 **Docs** — CONTRIBUTING (commands), contributing/authoring.
 
@@ -60,7 +60,7 @@
 
 **Goal** — Make the documentation conventions impossible to break silently.
 
-**Deliverables** — `wl docs nav` (rewrites every docnav footer from `docs/nav.yml`), `wl docs check` (docnav drift, relative links, anchors, Mermaid parse with the official parser, status banner present), markdownlint (`.markdownlint-cli2.jsonc`, already in the repo) — all wired into `pnpm check` and CI.
+**Deliverables** — `wl docs nav` (rewrites every docnav footer from `docs/nav.yml`), `wl docs check` (docnav drift, relative links, anchors, Mermaid parse with the official parser, status banner present), markdownlint (`.markdownlint-cli2.jsonc`, already in the repo) — all wired into `npm run check` and CI.
 
 **Acceptance criteria:**
 
