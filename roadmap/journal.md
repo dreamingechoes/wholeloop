@@ -4,6 +4,26 @@
 
 ---
 
+## 2026-10-14 · P0-01 in progress — identity and repository
+
+### Done
+
+- `throughline` turned out to be crowded by active tools for the same CLIs; the project is now **wholeloop**, CLI alias `wl` ([ADR-0018](../docs/decisions/0018-project-name.md)). Docs, ADRs and roadmap renamed in one commit; local folder renamed.
+- Private repository created at `github.com/dreamingechoes/wholeloop`; `main` pushed with full history at creation.
+- Issue forms (bug, idea, provider request), PR template, `SECURITY.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1).
+
+### Open
+
+- **npm reservation** — `wholeloop` is free on the registry, but nobody is logged in to npm on this machine, and publishing a placeholder makes the name public. Waiting on the owner: `npm login`, then approval to publish `0.0.0`.
+- **Pushing from agent sessions** — a global push guard from another plugin on the owner's machine blocks `git push`; the owner pushes, or excludes this repository from that guard.
+- GitHub private vulnerability reporting is unavailable while the repository is private; `SECURITY.md` points to email until then.
+
+### Next
+
+- Close P0-01 once the npm name is reserved. P0-02 and P0-03 do not depend on it and can start.
+
+---
+
 ## 2026-10-14 · Repository bootstrapped
 
 ### Done

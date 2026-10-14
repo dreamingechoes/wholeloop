@@ -6,7 +6,7 @@
 
 ## P0-01 · Names, package and repository hygiene
 
-**Status:** ⬜ · **Size:** S · **Depends on:** —
+**Status:** 🔄 · **Size:** S · **Depends on:** —
 
 **Goal** — Settle the project's identity before anything depends on it.
 
@@ -14,11 +14,11 @@
 
 **Acceptance criteria:**
 
-- [ ] The package name is recorded in [ADR-0015](../docs/decisions/0015-distribution.md) and every doc that mentions it.
+- [x] The package name is recorded in [ADR-0015](../docs/decisions/0015-distribution.md) and every doc that mentions it.
 - [ ] A placeholder package is published (or the scope is owned) so the name cannot be taken.
-- [ ] `gh repo view dreamingechoes/wholeloop --json visibility,owner` reports `PRIVATE` and owner `dreamingechoes`.
-- [ ] `git remote get-url origin` points at `dreamingechoes/wholeloop` and `main` is pushed with its full history.
-- [ ] Templates exist and contain no tool attribution.
+- [x] `gh repo view dreamingechoes/wholeloop --json visibility,owner` reports `PRIVATE` and owner `dreamingechoes`.
+- [x] `git remote get-url origin` points at `dreamingechoes/wholeloop` and `main` is pushed with its full history.
+- [x] Templates exist and contain no tool attribution.
 
 **Docs** — README install snippet, platforms page, ADR-0015.
 
