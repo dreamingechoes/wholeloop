@@ -27,10 +27,13 @@ Thanks for wanting to help. `wholeloop` is built in small, session-sized tasks, 
 
 ## Checks
 
-Available from [P0-02](./roadmap/phase-0-foundations.md#p0-02--typescript-toolchain):
+Node ≥ 20 and npm:
 
 ```bash
-pnpm check
+npm ci
+npm run check      # lint · typecheck · unit tests · markdownlint
+npm run build      # dist/wl.mjs
+npm run smoke      # the built CLI prints the package version
 ```
 
 All checks must pass locally and in CI before review.

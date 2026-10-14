@@ -10,7 +10,7 @@
 ## Index
 
 | # | Decision | Status | Date |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | [0001](./0001-record-architecture-decisions.md) | Record architecture decisions | Accepted | 2026-10-14 |
 | [0002](./0002-open-standards-canonical-source.md) | Open standards as the canonical source, adapters generated per CLI | Accepted | 2026-10-14 |
 | [0003](./0003-deterministic-core-cli.md) | A deterministic TypeScript core (`wl`); skills stay thin | Accepted | 2026-10-14 |
@@ -29,6 +29,7 @@
 | [0016](./0016-documentation-is-part-of-the-product.md) | Documentation is part of the product | Accepted | 2026-10-14 |
 | [0017](./0017-no-tool-attribution-in-history.md) | No tool attribution in project history | Accepted | 2026-10-14 |
 | [0018](./0018-project-name.md) | Project name: wholeloop | Accepted | 2026-10-14 |
+| [0019](./0019-typescript-toolchain.md) | TypeScript toolchain | Accepted | 2026-10-14 |
 
 ## Lifecycle
 

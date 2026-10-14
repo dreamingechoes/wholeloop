@@ -1,5 +1,5 @@
 {
-  // Markdown lint for every .md in the repository. Run: npx markdownlint-cli2 "**/*.md"
+  // Markdown lint for every .md in the repository. Run: npm run lint:md
   "config": {
     "default": true,
     // One paragraph per line keeps diffs reviewable; wrapping is the renderer's job.

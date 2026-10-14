@@ -9,7 +9,7 @@ Instructions for any coding agent (and any human) working **on this repository**
 ## Where things are
 
 | Path | Contents |
-|---|---|
+| --- | --- |
 | `docs/` | The documentation — product, architecture, decisions (`docs/decisions/`) |
 | `roadmap/` | Phases, session-sized tasks, and the journal |
 | `src/` | The `wl` core (from P0-02) |
@@ -40,19 +40,14 @@ Instructions for any coding agent (and any human) working **on this repository**
 
 ## Commands
 
-Until P0-02 lands there is no build. Available today:
+Node ≥ 20 and npm ([ADR-0019](docs/decisions/0019-typescript-toolchain.md)).
 
 ```bash
-npx markdownlint-cli2 "**/*.md"   # must report 0 errors
-```
-
-Expected once the toolchain exists:
-
-```bash
-pnpm install
-pnpm check        # lint · typecheck · unit · snapshot · docs check
-pnpm test
-pnpm build        # dist/wl.mjs
+npm ci
+npm run check      # lint (Biome) · typecheck · unit tests (Vitest) · markdownlint — must be green
+npm run lint:fix   # apply Biome's safe fixes and formatting
+npm run build      # dist/wl.mjs, one bundled ESM file
+npm run smoke      # the built CLI prints the package version
 ```
 
 ## Style for code
