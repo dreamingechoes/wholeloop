@@ -67,10 +67,11 @@
 
 **Goal** — One command to install, wherever you work.
 
-**Deliverables** — npm release automation (conventional-commit changelog, provenance), Claude Code marketplace entry with bundled core, Agent Plugins root manifest, Gemini extension, optional compiled binaries in GitHub Releases.
+**Deliverables** — npm release automation (conventional-commit changelog, provenance), Claude Code marketplace entry with bundled core, Agent Plugins root manifest, Gemini extension, optional compiled binaries in GitHub Releases. Switching the repository from private to public is part of this task and is the owner's explicit decision.
 
 **Acceptance criteria:**
 
+- [ ] The repository is made public only after the owner explicitly approves it.
 - [ ] A fresh machine goes from nothing to `tl doctor` green in under five minutes for each tier-A CLI (documented run).
 - [ ] Release notes contain no tool attribution.
 

@@ -8,14 +8,16 @@
 
 **Status:** ⬜ · **Size:** S · **Depends on:** —
 
-**Goal** — Settle the public identity before anything depends on it.
+**Goal** — Settle the project's identity before anything depends on it.
 
-**Deliverables** — npm package name decided and reserved (`@throughline/cli` if the scope is free, otherwise `throughline-cli`); GitHub repository created and pushed; issue and PR templates; `SECURITY.md`; `CODE_OF_CONDUCT.md`.
+**Deliverables** — npm package name decided and reserved (`@throughline/cli` if the scope is free, otherwise `throughline-cli`); **private** GitHub repository created under the personal account — `github.com/dreamingechoes/throughline`, never an organisation — with `origin` set and `main` pushed; issue and PR templates; `SECURITY.md`; `CODE_OF_CONDUCT.md`.
 
 **Acceptance criteria:**
 
 - [ ] The package name is recorded in [ADR-0015](../docs/decisions/0015-distribution.md) and every doc that mentions it.
 - [ ] A placeholder package is published (or the scope is owned) so the name cannot be taken.
+- [ ] `gh repo view dreamingechoes/throughline --json visibility,owner` reports `PRIVATE` and owner `dreamingechoes`.
+- [ ] `git remote get-url origin` points at `dreamingechoes/throughline` and `main` is pushed with its full history.
 - [ ] Templates exist and contain no tool attribution.
 
 **Docs** — README install snippet, platforms page, ADR-0015.
