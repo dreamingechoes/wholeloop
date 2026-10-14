@@ -24,7 +24,7 @@
 
 ## P0-02 · TypeScript toolchain
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P0-01
+**Status:** ✅ · **Size:** M · **Depends on:** P0-01
 
 **Goal** — A fast, strict, boring toolchain everyone can run.
 
@@ -33,7 +33,7 @@
 **Acceptance criteria:**
 
 - [x] `npm run check` runs every local check in under 30 seconds on an empty project (≈ 2 s).
-- [ ] CI is green on Linux and macOS.
+- [x] CI is green on Linux and macOS (run 38620731201: `check` on Ubuntu and macOS with Node 22, `runtime` running the bundle on Node 20).
 - [x] `node dist/wl.mjs --version` prints the package version (`npm run smoke` asserts it).
 
 **Docs** — CONTRIBUTING (commands), contributing/authoring.

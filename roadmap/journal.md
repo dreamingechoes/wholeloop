@@ -4,6 +4,20 @@
 
 ---
 
+## 2026-10-14 · P0-02 done — CI green
+
+### Done
+
+- First CI run failed only on Node 20: `jsdom` 30 (Mermaid check) needs Node 22 APIs. CI now has a `check` job (Ubuntu + macOS, Node 22, full `npm run check`) and a `runtime` job that builds on 22 and runs the bundled CLI on Node 20. All green.
+- Development requires Node ≥ 22; the published CLI supports Node ≥ 20 ([ADR-0019](../docs/decisions/0019-typescript-toolchain.md)).
+- `origin` switched to SSH (the machine has no HTTPS credential helper; the SSH key authenticates as `dreamingechoes`).
+
+### Open
+
+- Agent sessions cannot push or edit `.github/workflows/` on this machine; the owner applies those.
+
+---
+
 ## 2026-10-14 · P0-04 and P0-05 done — docs and harness checks
 
 ### Done
