@@ -1,0 +1,45 @@
+name: Bug report
+description: Something wholeloop did differently from what its docs say.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time. A small reproduction is the most useful thing you can give us.
+  - type: input
+    id: step
+    attributes:
+      label: Step or command
+      description: The step (e.g. `build-slice`) or `wl` command involved.
+      placeholder: build-slice
+    validations:
+      required: true
+  - type: dropdown
+    id: cli
+    attributes:
+      label: Agentic CLI
+      options: [Claude Code, Codex CLI, OpenCode, Copilot CLI, Gemini CLI, Antigravity CLI, Cursor CLI, Not CLI-specific]
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      description: Paste the preflight, the narration lines and the receipt if you have them.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: Minimal steps. `wl doctor --json` output helps a lot.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: "wholeloop 0.x · node 22 · claude code 2.1.x · OS"

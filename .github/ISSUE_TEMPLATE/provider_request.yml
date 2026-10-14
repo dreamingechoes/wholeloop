@@ -1,0 +1,35 @@
+name: Provider request
+description: Ask for (or offer) a provider for a tool wholeloop does not support yet.
+labels: [provider]
+body:
+  - type: input
+    id: tool
+    attributes:
+      label: Tool
+      placeholder: Zendesk, Shortcut, Statsig…
+    validations:
+      required: true
+  - type: checkboxes
+    id: capabilities
+    attributes:
+      label: Capabilities it would serve
+      description: See docs/configuration/providers.md for the taxonomy.
+      options:
+        - label: a `source.*` capability (research and measurement evidence)
+        - label: "`docs`"
+        - label: "`tracker`"
+        - label: "`codehost`"
+        - label: "`dashboards`"
+        - label: "`flags` (read and propose only)"
+        - label: "`comms` (drafts only)"
+        - label: "`design`"
+  - type: input
+    id: access
+    attributes:
+      label: Access
+      description: Official MCP server URL, CLI binary, or other way to reach it.
+  - type: dropdown
+    id: offer
+    attributes:
+      label: Will you write the manifest?
+      options: ["Yes", "Maybe with help", "No"]
