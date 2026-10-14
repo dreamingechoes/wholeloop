@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-10-14 · P0-04 and P0-05 done — docs and harness checks
+
+### Done
+
+- `wl docs nav` regenerates every footer from `docs/nav.yml`; `wl docs check` verifies docnav drift, nav listing, status banners, relative links and anchors (GitHub slugs) across 71 Markdown files.
+- `npm run lint:mermaid` parses all 35 diagrams with the official Mermaid parser (dev-only; too heavy for the bundled CLI).
+- `wl harness check` enforces size budgets, portable skill and agent front matter, and `enforcement.yml` (missing enforcer · prose as enforcer · missing file or symbol · `forbid` contradictions · stale entries · documentation-only without reason).
+- `npm run check` now runs lint · typecheck · 51 unit tests · build · smoke · docs check · harness check · markdownlint · Mermaid in about 4 seconds; CI runs the same command.
+
+### Found by the new checks
+
+- `docs/nav.yml` had an unquoted title with commas that YAML silently split; `parseNav` now rejects unknown keys.
+- Glossary and FAQ had no status banner; added.
+
+### Decided
+
+- Bundled dependencies stay in `devDependencies`: `dist/wl.mjs` is self-contained, so the published package has no runtime dependencies.
+- npm's optional-dependency bug left the lockfile without platform bindings for Vitest's bundler; the lockfile was regenerated from scratch. If `vitest` fails with a missing `rolldown` binding, regenerate the lockfile rather than adding the binding as a dependency.
+
+---
+
 ## 2026-10-14 · P0-02 in progress — TypeScript toolchain
 
 ### Done
