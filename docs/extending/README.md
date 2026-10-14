@@ -1,0 +1,59 @@
+# Extending throughline — add, don't fork
+
+> **TL;DR** — Almost everything a team would want to customise is a **declarative manifest**, discovered from four places, validated by a schema and testable with one command: providers, review and verify lenses, artifact templates, profile presets and extra decision points. Code is the exception, reserved for new CLI adapters.
+
+> [!NOTE]
+> **Status: 📐 design.** Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry and loader: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1).
+
+---
+
+## Extension points
+
+| Extension | What it adds | Format | Guide |
+|---|---|---|---|
+| **Provider** | A source, destination or service (Zendesk, Shortcut, Statsig…) | `provider.yml` + short guidance files | [providers](./providers.md) |
+| **Lens** | An extra review or verify dimension (accessibility, i18n, privacy…) | `lens.yml` + prompt | [lenses, templates, profiles](./lenses-templates-profiles.md#lenses) |
+| **Template** | Your own shape for a brief, spec, launch plan… | Markdown with front matter | [templates](./lenses-templates-profiles.md#templates) |
+| **Profile preset** | A named bundle of interaction dials | `profile.yml` | [profiles](./lenses-templates-profiles.md#profiles) |
+| **Decision point** | An extra stop for a person (security sign-off, legal review…) | config entry | [decision points](./lenses-templates-profiles.md#decision-points) |
+| **CLI adapter** | Support for another agentic CLI | TypeScript module | [platforms](../platforms/README.md#adding-a-cli) |
+
+What you **cannot** extend away: the six built-in decision points, built-in lenses (without a recorded reason), the output contract, and *ask, never guess* ([ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md)).
+
+## Where extensions are found
+
+```mermaid
+flowchart LR
+  r["repo<br/>.throughline/&lt;kind&gt;/"] --> u["user<br/>~/.config/throughline/&lt;kind&gt;/"] --> p["packages<br/>listed in config"] --> b["built-in<br/>harness/&lt;kind&gt;/"]:::core
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+```
+
+Highest first. An extension with the same `id` as a lower one **replaces** it — so a team can override a built-in provider's guidance without copying the whole thing (`extends:` merges instead of replacing).
+
+**Packages** are plain npm packages that contain manifests — `throughline-provider-zendesk`, `@acme/throughline-kit` — declared in config:
+
+```yaml
+extensions:
+  - "@acme/throughline-kit@^1"     # providers, lenses and templates for the whole company
+```
+
+No code from a package is executed: `tl` only reads its manifests.
+
+## The lifecycle of an extension
+
+```text
+tl provider scaffold acme-support      # writes a commented manifest skeleton
+tl provider test acme-support          # schema check, detection dry run, operation mapping, probe call
+tl provider list                       # where every provider comes from and what it can do
+```
+
+Lenses, templates and profiles have the same trio (`scaffold`, `test`, `list`). A manifest that fails its schema is reported in `tl doctor` and ignored. It never half-loads.
+
+## Contributing an extension upstream
+
+Built-in status is earned by breadth of use. Open a pull request with the manifest under `harness/<kind>/<id>/`, its fixture test, and a line in the catalogue table. The review checks three things: it uses only contract verbs, it degrades to a hand-off artifact, and its guidance stays within the size budget.
+
+---
+
+<!-- docnav -->
+[◀ Repo skills](../configuration/repo-skills.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Writing a provider ▶](providers.md)
