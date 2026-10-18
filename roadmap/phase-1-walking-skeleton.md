@@ -22,7 +22,7 @@
 
 ## P1-02 · Configuration schema and layered loading
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-01
+**Status:** ✅ · **Size:** M · **Depends on:** P1-01
 
 **Goal** — One schema, deterministic precedence, personal vs team keys.
 
@@ -30,9 +30,9 @@
 
 **Acceptance criteria:**
 
-- [ ] Table-driven tests cover every precedence path in [configuration](../docs/configuration/README.md#who-wins).
-- [ ] Invalid config fails with path, value and expected type; it never half-loads.
-- [ ] The configuration reference page is generated from the schema.
+- [x] Table-driven tests cover every precedence path in [configuration](../docs/configuration/README.md#who-wins).
+- [x] Invalid config fails with path, value and expected type; it never half-loads.
+- [x] The configuration reference page is generated from the schema.
 
 **Docs** — configuration/README.
 

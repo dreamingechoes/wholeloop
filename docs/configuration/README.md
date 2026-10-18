@@ -3,7 +3,7 @@
 > **TL;DR** — There is nothing to configure before your first run: anything missing becomes a question, and the answer is remembered at the scope you choose. Settings come in two kinds. **Personal** settings (your interaction profile) follow you. **Team** settings (providers, slot bindings, lenses, templates) follow the repository.
 
 > [!NOTE]
-> **Status: 📐 design.** Schema and loader: [P1-02](../../roadmap/phase-1-walking-skeleton.md#p1-02--configuration-schema-and-layered-loading). The full key reference will be generated from the JSON Schema.
+> **Status: ✅ implemented.** Schema, deterministic loader and `wl config show --explain` are available. Provider execution and the consumers of these settings remain planned. Roadmap: [P1-02](../../roadmap/phase-1-walking-skeleton.md#p1-02--configuration-schema-and-layered-loading). The key reference below is generated from the JSON Schema.
 
 ---
 
@@ -81,6 +81,56 @@ profile:
   artifact_language: en         # …but write every artifact in English
 targets: [claude, codex, opencode]
 ```
+
+## Inspect configuration
+
+```text
+wl config show --explain --json
+wl config show --initiative-config /path/to/initiative.yml --run-config /path/to/run.yml --json
+wl config schema --json
+```
+
+Missing user/project files use built-in defaults. Explicit initiative/run files must exist. Every file requires `version: 1`; unknown keys, duplicate YAML keys and invalid values reject the entire load with a path and expected type. Inspection only reads configuration. Explicit configuration-writing commands arrive with the flow and profile tasks. `--explain` adds each value's scope and source file.
+
+Maps such as slots merge per key; arrays replace rather than concatenate, so a higher scope can explicitly clear optional additions. `targets` is personal, like `profile.*`. Required decision points cannot be removed through the schema; `flow.decisions.add` only adds.
+
+## Key reference
+
+Source: `src/config/schema.json`. Regenerate with `npm run docs:config`; CI checks drift.
+
+<!-- config:start -->
+| Key | Kind | Values | Default |
+| --- | --- | --- | --- |
+| `version` | team | integer | unset |
+| `profile.preset` | personal | mentor · pair · sparring · autopilot | `"pair"` |
+| `profile.verbosity` | personal | brief · standard · detailed | `"standard"` |
+| `profile.depth` | personal | product · balanced · technical | `"balanced"` |
+| `profile.challenge` | personal | supportive · balanced · adversarial | `"balanced"` |
+| `profile.pace` | personal | guided · staged · parallel | `"guided"` |
+| `profile.stops` | personal | decisions · every-step | `"decisions"` |
+| `profile.teaching` | personal | off · on | `"off"` |
+| `profile.language` | personal | string | `"auto"` |
+| `profile.artifact_language` | personal | string | `"en"` |
+| `targets` | personal | array of strings | `[]` |
+| `providers.docs` | team | string | unset |
+| `providers.tracker` | team | string | unset |
+| `providers.codehost` | team | string | unset |
+| `providers.comms` | team | string | unset |
+| `providers.dashboards` | team | string | unset |
+| `providers.flags` | team | string | unset |
+| `providers.design` | team | string | unset |
+| `providers.sources` | team | array of strings | unset |
+| `slots` | team | map of strings | unset |
+| `lenses.add` | team | array of strings | `[]` |
+| `templates` | team | map of strings | unset |
+| `gates.verify.rounds` | team | integer | `4` |
+| `gates.review.rounds` | team | integer | `3` |
+| `build.workspace` | team | worktree · checkout | `"worktree"` |
+| `learn.checkpoints` | team | array of strings | `["launch","d7","d30"]` |
+| `flow.decisions.add` | team | array of strings | `[]` |
+| `answers` | team | map of strings | unset |
+| `extensions` | team | array of strings | `[]` |
+<!-- config:end -->
 
 ## Where to go next
 

@@ -113,6 +113,31 @@
         }
       },
       "required": ["problems"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/config-show@1"
+        },
+        "values": {
+          "type": "object"
+        },
+        "sources": {
+          "type": "object"
+        }
+      },
+      "required": ["values"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/config-schema@1"
+        },
+        "configSchema": {
+          "type": "object"
+        }
+      },
+      "required": ["configSchema"]
     }
   ],
   "$defs": {

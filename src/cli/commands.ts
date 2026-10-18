@@ -8,6 +8,20 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'config show',
+    arguments: '',
+    options: ['--explain', '--initiative-config <file>', '--run-config <file>'],
+    schema: 'wholeloop/config-show@1',
+    summary: 'Resolve layered configuration and optionally explain every value',
+  },
+  {
+    path: 'config schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/config-schema@1',
+    summary: 'Print the configuration JSON Schema',
+  },
+  {
     path: 'docs nav',
     arguments: '',
     options: [],

@@ -2,6 +2,7 @@ import { VERSION } from '../version.js'
 import { parseArguments } from './arguments.js'
 import { COMMANDS } from './commands.js'
 import { commitCheck } from './commit.js'
+import { configCommand } from './config.js'
 import { docsCheck, docsNav } from './docs.js'
 import { CliError } from './errors.js'
 import { harnessCheck } from './harness.js'
@@ -58,6 +59,9 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
     switch (command.path) {
+      case 'config show':
+      case 'config schema':
+        return configCommand(command.path.split(' ')[1] ?? '', parsed, root, json, io)
       case 'docs nav':
         return docsNav(root, json, io)
       case 'docs check':

@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-18 · P1-02 — deterministic layered configuration
+
+- Define the strict public schema and deterministic user/project/initiative/run loader, with source explanations, personal/team precedence, per-key map merging and array replacement.
+- Reject unknown keys, duplicate YAML mappings and missing explicit layer files. Expand preset defaults in each layer before resolving precedence.
+- Generate the configuration reference from the same schema; verify the full local check suite including precedence and malformed configuration fixtures.
+
+---
+
 ## 2026-10-18 · P0-06 — commit hygiene enforcement
 
 - Enforce Conventional Commit subjects, explanatory bodies and the no-tool-attribution rule through one validator shared by the CLI, optional local hook and CI range check.

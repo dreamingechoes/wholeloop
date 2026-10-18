@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/config@1",
+  "required": ["version"],
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "x-kind": "team"
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preset": {
+          "type": "string",
+          "enum": ["mentor", "pair", "sparring", "autopilot"],
+          "default": "pair"
+        },
+        "verbosity": {
+          "type": "string",
+          "enum": ["brief", "standard", "detailed"],
+          "default": "standard"
+        },
+        "depth": {
+          "type": "string",
+          "enum": ["product", "balanced", "technical"],
+          "default": "balanced"
+        },
+        "challenge": {
+          "type": "string",
+          "enum": ["supportive", "balanced", "adversarial"],
+          "default": "balanced"
+        },
+        "pace": {
+          "type": "string",
+          "enum": ["guided", "staged", "parallel"],
+          "default": "guided"
+        },
+        "stops": {
+          "type": "string",
+          "enum": ["decisions", "every-step"],
+          "default": "decisions"
+        },
+        "teaching": {
+          "type": "string",
+          "enum": ["off", "on"],
+          "default": "off"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1,
+          "default": "auto",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9-]{0,34}$"
+        },
+        "artifact_language": {
+          "type": "string",
+          "minLength": 1,
+          "default": "en",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9-]{0,34}$"
+        }
+      },
+      "x-kind": "personal"
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["claude", "codex", "opencode", "copilot", "gemini", "antigravity", "cursor"]
+      },
+      "uniqueItems": true,
+      "default": [],
+      "x-kind": "personal"
+    },
+    "providers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "docs": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tracker": {
+          "type": "string",
+          "minLength": 1
+        },
+        "codehost": {
+          "type": "string",
+          "minLength": 1
+        },
+        "comms": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dashboards": {
+          "type": "string",
+          "minLength": 1
+        },
+        "flags": {
+          "type": "string",
+          "minLength": 1
+        },
+        "design": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      },
+      "x-kind": "team"
+    },
+    "slots": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      },
+      "x-kind": "team"
+    },
+    "lenses": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "add": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "default": []
+        }
+      },
+      "x-kind": "team"
+    },
+    "templates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      },
+      "x-kind": "team"
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verify": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rounds": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 4
+            }
+          }
+        },
+        "review": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rounds": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 3
+            }
+          }
+        }
+      },
+      "x-kind": "team"
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "workspace": {
+          "type": "string",
+          "enum": ["worktree", "checkout"],
+          "default": "worktree"
+        }
+      },
+      "x-kind": "team"
+    },
+    "learn": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "checkpoints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "default": ["launch", "d7", "d30"]
+        }
+      },
+      "x-kind": "team"
+    },
+    "flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "decisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "add": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "default": []
+            }
+          }
+        }
+      },
+      "x-kind": "team"
+    },
+    "answers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      },
+      "x-kind": "team"
+    },
+    "extensions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "default": [],
+      "x-kind": "team"
+    }
+  }
+}
