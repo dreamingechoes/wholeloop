@@ -25,6 +25,7 @@ Every command accepts `--json`. Output contracts live in `src/cli/schemas/`. Err
 | `wl docs nav` | `wholeloop/docs-nav@1` | Rewrite docnav footers from docs/nav.yml |
 | `wl docs check` | `wholeloop/docs-check@1` | Check documentation navigation, status, links and anchors |
 | `wl harness check` | `wholeloop/harness-check@1` | Check size budgets, front matter and enforcement |
+| `wl guard commit-msg <file>` | `wholeloop/commit-check@1` | Validate a commit message without changing it |
 <!-- commands:end -->
 
 Regenerate with `npm run docs:commands`; CI checks drift.

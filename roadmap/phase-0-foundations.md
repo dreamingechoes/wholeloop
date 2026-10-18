@@ -92,7 +92,7 @@
 
 ## P0-06 · Commit hygiene check
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P0-02
+**Status:** ✅ · **Size:** S · **Depends on:** P0-02
 
 **Goal** — Keep public history clean of tool attribution and inconsistent messages.
 
@@ -100,8 +100,8 @@
 
 **Acceptance criteria:**
 
-- [ ] A commit with an AI co-author trailer is rejected locally and in CI.
-- [ ] A non-conventional subject is rejected with an example of the right shape.
+- [x] A commit with an AI co-author trailer is rejected locally and in CI.
+- [x] A non-conventional subject is rejected with an example of the right shape.
 
 **Docs** — ADR-0017, CONTRIBUTING.
 

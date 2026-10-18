@@ -1,6 +1,7 @@
 import { VERSION } from '../version.js'
 import { parseArguments } from './arguments.js'
 import { COMMANDS } from './commands.js'
+import { commitCheck } from './commit.js'
 import { docsCheck, docsNav } from './docs.js'
 import { CliError } from './errors.js'
 import { harnessCheck } from './harness.js'
@@ -63,6 +64,9 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
         return docsCheck(root, json, io)
       case 'harness check':
         return harnessCheck(root, json, io)
+      case 'guard commit-msg':
+        if (parsed.positional.length > 1) throw new CliError('Expected one commit message file')
+        return commitCheck(parsed.positional[0], json, io)
       default:
         throw new Error(`No handler registered for ${command.path}`)
     }

@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+
+const binary = fileURLToPath(new URL('../dist/wl.mjs', import.meta.url))
+const result = spawnSync(process.execPath, [binary, 'guard', 'commit-msg', process.argv[2]], {
+  stdio: 'inherit',
+})
+if (result.error) console.error(`commit-msg: ${result.error.message}; run npm run build`)
+process.exitCode = result.status ?? 1

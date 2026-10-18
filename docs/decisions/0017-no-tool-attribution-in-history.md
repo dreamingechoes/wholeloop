@@ -40,6 +40,9 @@
 
 ## Links
 
+- Enforcement: `wl guard commit-msg <file>`, `.githooks/commit-msg`,
+  `npm run commits:check` (PR range in CI). Human coauthors are allowed;
+  attribution to tools is rejected. See [contributing](../../CONTRIBUTING.md#checks).
 - [CONTRIBUTING](../../CONTRIBUTING.md) · [AGENTS.md](../../AGENTS.md)
 
 [◀ Decisions index](./README.md)

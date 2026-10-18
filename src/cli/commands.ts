@@ -28,4 +28,11 @@ export const COMMANDS: readonly Command[] = [
     schema: 'wholeloop/harness-check@1',
     summary: 'Check size budgets, front matter and enforcement',
   },
+  {
+    path: 'guard commit-msg',
+    arguments: '<file>',
+    options: [],
+    schema: 'wholeloop/commit-check@1',
+    summary: 'Validate a commit message without changing it',
+  },
 ]

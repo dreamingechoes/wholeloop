@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-18 · P0-06 — commit hygiene enforcement
+
+- Enforce Conventional Commit subjects, explanatory bodies and the no-tool-attribution rule through one validator shared by the CLI, optional local hook and CI range check.
+- Keep hook installation explicit and preserve an existing custom hook path. CI resolves the actual pull-request base/head and never evaluates message content as shell code.
+- Verified the full local check suite, real hook execution in an isolated repository, malformed messages and pull-request range selection.
+
+---
+
 ## 2026-10-18 · P1-01 — versioned command framework
 
 - Add one command registry, strict option parsing, versioned JSON for help/version and every implemented command, and contained error formatting with all five documented exit codes.
