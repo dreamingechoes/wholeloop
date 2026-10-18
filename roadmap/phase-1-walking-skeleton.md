@@ -6,7 +6,7 @@
 
 ## P1-01 · `wl` command framework
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P0-02
+**Status:** ✅ · **Size:** S · **Depends on:** P0-02
 
 **Goal** — A command skeleton every later command plugs into.
 
@@ -14,9 +14,9 @@
 
 **Acceptance criteria:**
 
-- [ ] Every command supports `--json`; schemas live in `src/cli/schemas/` with a version.
-- [ ] Exit codes 0 · 1 · 2 · 3 · 4 behave as documented, with tests.
-- [ ] `docs/architecture/core-cli.md` command table is generated from the definitions.
+- [x] Every command supports `--json`; schemas live in `src/cli/schemas/` with a version.
+- [x] Exit codes 0 · 1 · 2 · 3 · 4 behave as documented, with tests.
+- [x] `docs/architecture/core-cli.md` command table is generated from the definitions.
 
 **Docs** — architecture/core-cli.
 

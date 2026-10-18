@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-18 · P1-01 — versioned command framework
+
+- Add one command registry, strict option parsing, versioned JSON for help/version and every implemented command, and contained error formatting with all five documented exit codes.
+- Generate the implemented command reference from definitions and check it for drift, keeping the target flow surface explicitly planned.
+- Verified the complete local check suite, including command/error contracts, documentation generation, build and smoke on macOS arm64.
+
+---
+
 ## 2026-10-18 · P0-03 availability evidence; owner-only foundations parked
 
 - Version/help probes passed for Claude 2.1.299, Codex 0.163.0, OpenCode 1.17.9 and Copilot 1.0.83 on macOS arm64.

@@ -6,5 +6,7 @@ export interface Io {
 export const EXIT = {
   ok: 0,
   unexpected: 1,
+  input: 2,
+  precondition: 3,
   shape: 4,
 } as const

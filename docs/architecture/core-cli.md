@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 📐 design.** Command names are the target surface; the generated reference replaces this table once [P1-01](../../roadmap/phase-1-walking-skeleton.md#p1-01--wl-command-framework) lands.
+> **Status: 🚧 partial.** The command router, versioned JSON outputs, documented exit codes and generated implemented-command reference are available. Later flow behavior below remains planned.
 
 ---
 
@@ -15,7 +15,21 @@
 4. **Exit codes mean something.** `0` ok · `2` needs input (questions in the payload) · `3` precondition failed · `4` shape check failed · `1` unexpected error.
 5. **Small surface.** A new command needs a reason a skill cannot express with the existing ones.
 
-## Command surface
+## Implemented commands
+
+Every command accepts `--json`. Output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape).
+
+<!-- commands:start -->
+| Command | Output schema | Purpose |
+| --- | --- | --- |
+| `wl docs nav` | `wholeloop/docs-nav@1` | Rewrite docnav footers from docs/nav.yml |
+| `wl docs check` | `wholeloop/docs-check@1` | Check documentation navigation, status, links and anchors |
+| `wl harness check` | `wholeloop/harness-check@1` | Check size budgets, front matter and enforcement |
+<!-- commands:end -->
+
+Regenerate with `npm run docs:commands`; CI checks drift.
+
+## Planned command surface
 
 | Group | Commands | Used by |
 | --- | --- | --- |

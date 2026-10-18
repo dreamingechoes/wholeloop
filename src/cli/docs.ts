@@ -8,24 +8,37 @@ function format(problem: Problem): string {
   return `${where}  ${problem.rule}  ${problem.message}`
 }
 
-export function docsNav(root: string, io: Io): number {
+export function docsNav(root: string, json: boolean, io: Io): number {
   const nav = parseNav(readNavYaml(root))
   const tree = readTree(root)
   let changed = 0
+  const problems: string[] = []
   nav.pages.forEach((page, index) => {
     const file = `docs/${page.path}`
     const content = tree.files.get(file)
     const updated =
       content === undefined ? undefined : withFooter(content, renderFooter(nav, index))
     if (updated === undefined) {
-      io.err(`skip ${file}: missing file or <!-- docnav --> marker`)
+      problems.push(`skip ${file}: missing file or <!-- docnav --> marker`)
     } else if (updated !== content) {
       writeFile(root, file, updated)
       changed++
     }
   })
-  io.out(`docnav: ${nav.pages.length} pages, ${changed} updated`)
-  return EXIT.ok
+  if (json)
+    io.out(
+      JSON.stringify({
+        schema: 'wholeloop/docs-nav@1',
+        pages: nav.pages.length,
+        changed,
+        problems,
+      }),
+    )
+  else {
+    problems.forEach(io.err)
+    io.out(`docnav: ${nav.pages.length} pages, ${changed} updated`)
+  }
+  return problems.length ? EXIT.shape : EXIT.ok
 }
 
 export function docsCheck(root: string, json: boolean, io: Io): number {

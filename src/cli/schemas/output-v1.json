@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/cli-output@1",
+  "type": "object",
+  "required": ["schema"],
+  "oneOf": [
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/version@1"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": ["version"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/help@1"
+        },
+        "version": {
+          "type": "string"
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/command"
+          }
+        }
+      },
+      "required": ["version", "commands"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/error@1"
+        },
+        "code": {
+          "enum": [1, 2, 3, 4]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": ["code", "message"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/docs-nav@1"
+        },
+        "pages": {
+          "type": "integer"
+        },
+        "changed": {
+          "type": "integer"
+        },
+        "problems": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["pages", "changed", "problems"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/docs-check@1"
+        },
+        "files": {
+          "type": "integer"
+        },
+        "problems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        }
+      },
+      "required": ["files", "problems"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/harness-check@1"
+        },
+        "files": {
+          "type": "integer"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        }
+      },
+      "required": ["files", "findings"]
+    }
+  ],
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "required": ["file", "rule", "message"],
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "command": {
+      "type": "object",
+      "required": ["path", "arguments", "options", "schema", "summary"],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "schema": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
