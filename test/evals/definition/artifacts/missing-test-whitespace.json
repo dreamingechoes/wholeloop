@@ -1,0 +1,10 @@
+{
+  "schema": "wholeloop/criteria@1",
+  "criteria": [
+    {
+      "id": "lookup",
+      "text": "An authenticated lookup returns the matching order within the declared response-time bound.",
+      "test": " "
+    }
+  ]
+}

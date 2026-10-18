@@ -1,0 +1,349 @@
+{
+  "schema": "wholeloop/definition-eval@1",
+  "seed": "definition-v1-2026-10-18",
+  "corpusSha256": "a545e4b2c0d37a8a8b83b41f6b044722cba95e23203fc51d8229368630e671ea",
+  "evaluator": "core-definition-lint@1",
+  "cases": 30,
+  "classes": [
+    {
+      "defect": "vague-wording",
+      "tp": 3,
+      "fp": 0,
+      "tn": 27,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "contradictory-pair",
+      "tp": 3,
+      "fp": 0,
+      "tn": 27,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "missing-test",
+      "tp": 2,
+      "fp": 0,
+      "tn": 28,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "duplicate-id",
+      "tp": 1,
+      "fp": 0,
+      "tn": 29,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "missing-source",
+      "tp": 2,
+      "fp": 0,
+      "tn": 28,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "missing-window",
+      "tp": 2,
+      "fp": 0,
+      "tn": 28,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "missing-criteria",
+      "tp": 1,
+      "fp": 0,
+      "tn": 29,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "unexplained-unknown",
+      "tp": 2,
+      "fp": 0,
+      "tn": 28,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "metric-ownership",
+      "tp": 1,
+      "fp": 0,
+      "tn": 29,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    },
+    {
+      "defect": "semantic-conflict",
+      "tp": 0,
+      "fp": 0,
+      "tn": 29,
+      "fn": 1,
+      "recall": 0,
+      "falseAlarmRate": 0,
+      "precision": null
+    },
+    {
+      "defect": "independent-delivery",
+      "tp": 0,
+      "fp": 0,
+      "tn": 29,
+      "fn": 1,
+      "recall": 0,
+      "falseAlarmRate": 0,
+      "precision": null
+    },
+    {
+      "defect": "invalid-structure",
+      "tp": 1,
+      "fp": 0,
+      "tn": 29,
+      "fn": 0,
+      "recall": 1,
+      "falseAlarmRate": 0,
+      "precision": 1
+    }
+  ],
+  "totals": {
+    "tp": 18,
+    "fp": 0,
+    "tn": 340,
+    "fn": 2,
+    "recall": 0.9,
+    "falseAlarmRate": 0
+  },
+  "outcomes": [
+    {
+      "case": "vague-fast",
+      "expected": ["vague-wording"],
+      "predicted": ["vague-wording"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "vague-intuitive",
+      "expected": ["vague-wording"],
+      "predicted": ["vague-wording"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "vague-robust",
+      "expected": ["vague-wording"],
+      "predicted": ["vague-wording"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "lookalike-breakfast",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "lookalike-measured-speed",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "lookalike-identifier",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "conflict-strict-bound",
+      "expected": ["contradictory-pair"],
+      "predicted": ["contradictory-pair"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "conflict-disjoint-bounds",
+      "expected": ["contradictory-pair"],
+      "predicted": ["contradictory-pair"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "conflict-excluded-equality",
+      "expected": ["contradictory-pair"],
+      "predicted": ["contradictory-pair"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "lookalike-different-context",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "lookalike-different-unit",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "lookalike-inclusive-bound",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "lookalike-compatible-bounds",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "missing-test-whitespace",
+      "expected": ["missing-test"],
+      "predicted": ["missing-test"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "missing-test-field",
+      "expected": ["missing-test"],
+      "predicted": ["missing-test"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "duplicate-criterion-id",
+      "expected": ["duplicate-id"],
+      "predicted": ["duplicate-id"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "spec-known-baseline",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "spec-unknown-baseline",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "spec-missing-source",
+      "expected": ["missing-source"],
+      "predicted": ["missing-source"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "spec-missing-window",
+      "expected": ["missing-window"],
+      "predicted": ["missing-window"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "spec-empty-criteria",
+      "expected": ["missing-criteria"],
+      "predicted": ["missing-criteria"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "spec-two-defects",
+      "expected": ["missing-source", "missing-window"],
+      "predicted": ["missing-source", "missing-window"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "frame-explicit-unknowns",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "frame-unowned-tbd",
+      "expected": ["unexplained-unknown"],
+      "predicted": ["unexplained-unknown"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "frame-unexplained-unknown",
+      "expected": ["unexplained-unknown"],
+      "predicted": ["unexplained-unknown"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "scope-owned-metric",
+      "expected": [],
+      "predicted": [],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "scope-unowned-metric",
+      "expected": ["metric-ownership"],
+      "predicted": ["metric-ownership"],
+      "missed": [],
+      "falseAlarms": []
+    },
+    {
+      "case": "semantic-http-conflict",
+      "expected": ["semantic-conflict"],
+      "predicted": [],
+      "missed": ["semantic-conflict"],
+      "falseAlarms": []
+    },
+    {
+      "case": "semantic-unrelated-deliveries",
+      "expected": ["independent-delivery"],
+      "predicted": [],
+      "missed": ["independent-delivery"],
+      "falseAlarms": []
+    },
+    {
+      "case": "invalid-empty-problem",
+      "expected": ["invalid-structure"],
+      "predicted": ["invalid-structure"],
+      "missed": [],
+      "falseAlarms": []
+    }
+  ]
+}

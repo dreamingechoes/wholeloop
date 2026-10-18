@@ -1,0 +1,15 @@
+{
+  "schema": "wholeloop/criteria@1",
+  "criteria": [
+    {
+      "id": "always-ok",
+      "text": "Every order lookup returns HTTP 200.",
+      "test": "Query an order and assert HTTP 200."
+    },
+    {
+      "id": "unknown-not-found",
+      "text": "An unknown order lookup returns HTTP 404.",
+      "test": "Query a nonexistent order and assert HTTP 404."
+    }
+  ]
+}

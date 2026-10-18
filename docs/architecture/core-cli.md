@@ -22,6 +22,7 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl eval definitions <corpus>` | `wholeloop/definition-eval@1` | Measure labelled definition defects and false alarms |
 | `wl challenge plan <problem\|spec\|criteria\|scopes>` | `wholeloop/challenge-plan@1` | Lint a definition and render fixed challenger coverage |
 | `wl challenge schema` | `wholeloop/challenge-schema@1` | Print the standalone criteria metadata schema |
 | `wl scopes plan` | `wholeloop/scopes-plan@1` | Suggest one scope and expose the metric ownership contract |

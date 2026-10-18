@@ -1,0 +1,10 @@
+{
+  "schema": "wholeloop/criteria@1",
+  "criteria": [
+    {
+      "id": "lookup",
+      "text": "The order lookup is fast.",
+      "test": "Seed an owned order and compare its measured response time with the bound."
+    }
+  ]
+}

@@ -133,7 +133,7 @@ block implementing the remaining local workflows.
 
 ## P2-09 · Definition eval corpus
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P2-05
+**Status:** ✅ · **Size:** M · **Depends on:** P2-05
 
 **Goal** — Measure whether the challengers catch real defects without crying wolf.
 
@@ -141,8 +141,8 @@ block implementing the remaining local workflows.
 
 **Acceptance criteria:**
 
-- [ ] The report runs on demand and is reproducible from a fixed seed set.
-- [ ] Baseline numbers are recorded in the journal.
+- [x] The report runs on demand and is reproducible from a fixed seed set.
+- [x] Baseline numbers are recorded in the journal.
 
 **Docs** — architecture/determinism-and-testing.
 

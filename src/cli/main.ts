@@ -7,6 +7,7 @@ import { configCommand } from './config.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav } from './docs.js'
 import { CliError } from './errors.js'
+import { evalCommand } from './eval.js'
 import { extensionCommand } from './extensions.js'
 import { flowCommand } from './flow.js'
 import { harnessCheck } from './harness.js'
@@ -70,6 +71,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path === 'eval definitions') return evalCommand(parsed, json, io)
     if (command.path.startsWith('challenge '))
       return challengeCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('scopes '))

@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P2-09 — reproducible definition defect evaluation
+
+- Add thirty original labelled artifacts across problem/spec/criteria/scopes, including look-alike negatives and two semantic defects the core cannot detect. Keep the fixed seed and committed report under test/evals/definition.
+- Add eval definitions and npm run eval:definitions. Report per-class TP/FP/TN/FN, recall, precision and false-alarm rates; bind labels and exact bytes into the corpus digest. External host predictions must match the digest and cover every case exactly once. ADR-0028 separates evaluation arithmetic from live execution evidence.
+- Baseline core-definition-lint@1, seed definition-v1-2026-10-18, digest a545e4b2c0d37a8a8b83b41f6b044722cba95e23203fc51d8229368630e671ea: 30 cases; TP 18, FP 0, TN 340, FN 2; micro recall 0.9, false-alarm rate 0. Supported structural classes retain full recall on this small seed. Semantic-conflict and independent-delivery each miss their positive case; the report preserves both instead of presenting lint as semantic approval.
+- Verify the baseline, independent confusion arithmetic, invalid/omitted external predictions, corpus mutation/escape rejection, and byte-identical compiled CLI runs. Local check: 330 tests plus build, smoke, lint, typecheck, docs, catalog drift, harness and Mermaid passed. No model ran; blind host challenger evaluation remains owner verification.
+
+---
+
 ## 2026-10-18 · P2-07 — source catalog and explicit missing observations
 
 - Add eleven source mappings with bounded tool-specific guidance and synthetic query fixtures: nine analytics/BI/errors/support providers plus Confluence/Notion knowledge. Enforce open-question degradation on every source mapping and retain complete observed content separately from inferred claims.

@@ -1,0 +1,29 @@
+{
+  "schema": "wholeloop/criteria@1",
+  "criteria": [
+    {
+      "id": "first",
+      "text": "An authenticated lookup returns the matching order within the declared response-time bound.",
+      "test": "Seed an owned order and compare its measured response time with the bound.",
+      "assertion": {
+        "subject": "response-time",
+        "context": "authenticated order lookup",
+        "unit": "ms",
+        "operator": "lt",
+        "value": 100
+      }
+    },
+    {
+      "id": "second",
+      "text": "An authenticated lookup returns the matching order within the declared response-time bound.",
+      "test": "Seed an owned order and compare its measured response time with the bound.",
+      "assertion": {
+        "subject": "response-time",
+        "context": "authenticated order lookup",
+        "unit": "ms",
+        "operator": "gt",
+        "value": 200
+      }
+    }
+  ]
+}

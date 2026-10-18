@@ -3,7 +3,7 @@
 > **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model in seconds, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
-> **Status: 📐 design.** Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation starts in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
+> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. Live model evals, gate corpora and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
 
 ---
 
@@ -67,6 +67,36 @@ A fixture repository, a scripted scenario (for example: standalone `build-slice 
 | **Grounding** | Do data steps invent numbers, or turn unreachable sources into open questions? |
 
 Every real failure that reaches a person becomes a new fixture. A change to a check ships with its eval result.
+
+### Reproducible definition report
+
+Run `npm run eval:definitions -- --json` against the fixed thirty-case seed, or
+`wl eval definitions <corpus.json> --json` after building. It covers all four
+challenger modes, defective definitions and look-alike negatives. The report
+includes per-class TP/FP/TN/FN, recall, precision and false-alarm rate; no
+denominator produces null rather than a misleading perfect score.
+
+The initial **core-definition-lint@1** baseline has 18 true positives, 0 false
+positives and 2 false negatives: 90% micro recall and 0% false-alarm rate across
+this seed's case/class pairs. Supported structural classes have full recall in
+this small fixture set; prose semantic-conflict and independent-delivery each
+have zero recall. These are local deterministic measurements, not model quality
+or population estimates. The committed baseline retains both misses.
+
+For actual challenger evaluation, collect predictions in
+wholeloop/definition-predictions@1 JSON with evaluator, corpusSha256 and one
+case/defects result per case, then pass `--predictions <file>`. The digest binds
+labels and exact artifact bytes. Missing/duplicate responses, unknown labels and
+changed seeds fail. An evaluator name does not prove the host ran; preserve raw
+findings and actual execution evidence separately, with expected labels hidden
+from the challenger. The runner makes no model/network calls or state writes.
+
+See the [corpus instructions](../../test/evals/definition/README.md),
+[baseline](../../test/evals/definition/baseline.json) and
+[ADR-0028](../decisions/0028-definition-eval-seeds-and-external-predictions.md).
+Scoring exits zero even when it reports misses; callers choose regression
+thresholds independently. Baseline reproduction and confusion arithmetic run in
+the unit suite.
 
 ## Enforcement — every hard rule executes somewhere
 

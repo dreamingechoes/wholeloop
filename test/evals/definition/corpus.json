@@ -1,0 +1,216 @@
+{
+  "schema": "wholeloop/definition-corpus@1",
+  "seed": "definition-v1-2026-10-18",
+  "cases": [
+    {
+      "id": "vague-fast",
+      "mode": "criteria",
+      "artifact": "artifacts/vague-fast.json",
+      "expected": ["vague-wording"],
+      "why": "A subjective adjective supplies no observable threshold."
+    },
+    {
+      "id": "vague-intuitive",
+      "mode": "criteria",
+      "artifact": "artifacts/vague-intuitive.json",
+      "expected": ["vague-wording"],
+      "why": "A subjective adjective supplies no observable threshold."
+    },
+    {
+      "id": "vague-robust",
+      "mode": "criteria",
+      "artifact": "artifacts/vague-robust.json",
+      "expected": ["vague-wording"],
+      "why": "A subjective adjective supplies no observable threshold."
+    },
+    {
+      "id": "lookalike-breakfast",
+      "mode": "criteria",
+      "artifact": "artifacts/lookalike-breakfast.json",
+      "expected": [],
+      "why": "A substring inside breakfast is not the vague word fast."
+    },
+    {
+      "id": "lookalike-measured-speed",
+      "mode": "criteria",
+      "artifact": "artifacts/lookalike-measured-speed.json",
+      "expected": [],
+      "why": "An explicit measured threshold is testable."
+    },
+    {
+      "id": "lookalike-identifier",
+      "mode": "criteria",
+      "artifact": "artifacts/lookalike-identifier.json",
+      "expected": [],
+      "why": "Concrete observable fields should not trigger style-based false alarms."
+    },
+    {
+      "id": "conflict-strict-bound",
+      "mode": "criteria",
+      "artifact": "artifacts/conflict-strict-bound.json",
+      "expected": ["contradictory-pair"],
+      "why": "No continuous numeric value satisfies this explicitly comparable pair."
+    },
+    {
+      "id": "conflict-disjoint-bounds",
+      "mode": "criteria",
+      "artifact": "artifacts/conflict-disjoint-bounds.json",
+      "expected": ["contradictory-pair"],
+      "why": "No continuous numeric value satisfies this explicitly comparable pair."
+    },
+    {
+      "id": "conflict-excluded-equality",
+      "mode": "criteria",
+      "artifact": "artifacts/conflict-excluded-equality.json",
+      "expected": ["contradictory-pair"],
+      "why": "No continuous numeric value satisfies this explicitly comparable pair."
+    },
+    {
+      "id": "lookalike-different-context",
+      "mode": "criteria",
+      "artifact": "artifacts/lookalike-different-context.json",
+      "expected": [],
+      "why": "The pair is satisfiable or does not declare identical comparable context and units."
+    },
+    {
+      "id": "lookalike-different-unit",
+      "mode": "criteria",
+      "artifact": "artifacts/lookalike-different-unit.json",
+      "expected": [],
+      "why": "The pair is satisfiable or does not declare identical comparable context and units."
+    },
+    {
+      "id": "lookalike-inclusive-bound",
+      "mode": "criteria",
+      "artifact": "artifacts/lookalike-inclusive-bound.json",
+      "expected": [],
+      "why": "The pair is satisfiable or does not declare identical comparable context and units."
+    },
+    {
+      "id": "lookalike-compatible-bounds",
+      "mode": "criteria",
+      "artifact": "artifacts/lookalike-compatible-bounds.json",
+      "expected": [],
+      "why": "The pair is satisfiable or does not declare identical comparable context and units."
+    },
+    {
+      "id": "missing-test-whitespace",
+      "mode": "criteria",
+      "artifact": "artifacts/missing-test-whitespace.json",
+      "expected": ["missing-test"],
+      "why": "Whitespace supplies no falsifiable test."
+    },
+    {
+      "id": "missing-test-field",
+      "mode": "criteria",
+      "artifact": "artifacts/missing-test-field.json",
+      "expected": ["missing-test"],
+      "why": "The required falsifiable test is absent."
+    },
+    {
+      "id": "duplicate-criterion-id",
+      "mode": "criteria",
+      "artifact": "artifacts/duplicate-criterion-id.json",
+      "expected": ["duplicate-id"],
+      "why": "Two distinct criteria cannot share an identity."
+    },
+    {
+      "id": "spec-known-baseline",
+      "mode": "spec",
+      "artifact": "artifacts/spec-known-baseline.md",
+      "expected": [],
+      "why": "A pinned fixture baseline, source and window form a structurally complete spec."
+    },
+    {
+      "id": "spec-unknown-baseline",
+      "mode": "spec",
+      "artifact": "artifacts/spec-unknown-baseline.md",
+      "expected": [],
+      "why": "An unknown baseline is valid when its missing evidence and tracking story are explicit."
+    },
+    {
+      "id": "spec-missing-source",
+      "mode": "spec",
+      "artifact": "artifacts/spec-missing-source.md",
+      "expected": ["missing-source"],
+      "why": "A number without a source is not an executable measurement plan."
+    },
+    {
+      "id": "spec-missing-window",
+      "mode": "spec",
+      "artifact": "artifacts/spec-missing-window.md",
+      "expected": ["missing-window"],
+      "why": "A metric without a window cannot be compared reproducibly."
+    },
+    {
+      "id": "spec-empty-criteria",
+      "mode": "spec",
+      "artifact": "artifacts/spec-empty-criteria.md",
+      "expected": ["missing-criteria"],
+      "why": "An outcome without acceptance criteria cannot be verified."
+    },
+    {
+      "id": "spec-two-defects",
+      "mode": "spec",
+      "artifact": "artifacts/spec-two-defects.md",
+      "expected": ["missing-source", "missing-window"],
+      "why": "Independent defects must both count, not cancel each other."
+    },
+    {
+      "id": "frame-explicit-unknowns",
+      "mode": "problem",
+      "artifact": "artifacts/frame-explicit-unknowns.md",
+      "expected": [],
+      "why": "A TBD with missing evidence and an answerer is honest incomplete knowledge."
+    },
+    {
+      "id": "frame-unowned-tbd",
+      "mode": "problem",
+      "artifact": "artifacts/frame-unowned-tbd.md",
+      "expected": ["unexplained-unknown"],
+      "why": "A bare placeholder loses both the evidence gap and accountable answerer."
+    },
+    {
+      "id": "frame-unexplained-unknown",
+      "mode": "problem",
+      "artifact": "artifacts/frame-unexplained-unknown.md",
+      "expected": ["unexplained-unknown"],
+      "why": "An unexplained unknown must remain an answerable question."
+    },
+    {
+      "id": "scope-owned-metric",
+      "mode": "scopes",
+      "artifact": "artifacts/scope-owned-metric.md",
+      "expected": [],
+      "why": "The single default scope owns every declared metric."
+    },
+    {
+      "id": "scope-unowned-metric",
+      "mode": "scopes",
+      "artifact": "artifacts/scope-unowned-metric.md",
+      "expected": ["metric-ownership"],
+      "why": "Explaining one unmeasured scope does not excuse an unowned initiative metric."
+    },
+    {
+      "id": "semantic-http-conflict",
+      "mode": "criteria",
+      "artifact": "artifacts/semantic-http-conflict.json",
+      "expected": ["semantic-conflict"],
+      "why": "The universal response contradicts the unknown-order case; prose semantics require a challenger."
+    },
+    {
+      "id": "semantic-unrelated-deliveries",
+      "mode": "scopes",
+      "artifact": "artifacts/semantic-unrelated-deliveries.md",
+      "expected": ["independent-delivery"],
+      "why": "Two unrelated releases are bundled; structural ownership alone cannot judge independence."
+    },
+    {
+      "id": "invalid-empty-problem",
+      "mode": "problem",
+      "artifact": "artifacts/invalid-empty-problem.md",
+      "expected": ["invalid-structure"],
+      "why": "Required framing sections are absent."
+    }
+  ]
+}

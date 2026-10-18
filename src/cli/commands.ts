@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'eval definitions',
+    arguments: '<corpus>',
+    options: ['--predictions <file>'],
+    schema: 'wholeloop/definition-eval@1',
+    summary: 'Measure labelled definition defects and false alarms',
+  },
+  {
     path: 'challenge plan',
     arguments: '<problem|spec|criteria|scopes>',
     options: ['--file <path>', '--for <id>', '--challenge <level>'],

@@ -38,6 +38,14 @@ restricted libpq service and verify server read-only rejection, function privile
 and timeout behavior; process tests used a fixture executable, not a database.
 Failed or incomplete access must produce an explicit unknown rather than a baseline.
 
+## Definition eval validation still pending
+
+Run the thirty-case seed through a real host challenger with expected labels
+hidden. Preserve raw findings, actual model/client versions and run settings;
+score complete predictions with `eval definitions --predictions`. The committed
+90% recall/0% false-alarm baseline measures deterministic lint only and retains
+two known semantic misses. It does not establish live challenger quality.
+
 ## Definition challenger validation still pending
 
 Exercise all four modes in a host using the returned instructions and exact

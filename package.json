@@ -39,7 +39,8 @@
     "hooks:install": "npm run build && node scripts/install-hooks.mjs",
     "commits:check": "node scripts/check-commits.mjs",
     "docs:config": "npm run build && node scripts/generate-config.mjs",
-    "providers:catalog": "node scripts/generate-providers.mjs"
+    "providers:catalog": "node scripts/generate-providers.mjs",
+    "eval:definitions": "npm run build && node dist/wl.mjs eval definitions test/evals/definition/corpus.json"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

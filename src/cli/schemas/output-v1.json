@@ -8,6 +8,24 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/definition-eval@1"
+        }
+      },
+      "required": [
+        "schema",
+        "seed",
+        "corpusSha256",
+        "evaluator",
+        "cases",
+        "classes",
+        "totals",
+        "outcomes"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/challenge-plan@1"
         }
       },
