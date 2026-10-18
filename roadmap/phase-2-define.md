@@ -22,7 +22,7 @@
 
 ## P2-02 · `frame-problem`, complete
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P2-01
+**Status:** ✅ · **Size:** M · **Depends on:** P2-01
 
 **Goal** — Every framing ends in a spec or an argued no-go.
 
@@ -30,8 +30,8 @@
 
 **Acceptance criteria:**
 
-- [ ] Unknowns appear as `TBD` with what is missing and who could answer — never as invented values (shape check).
-- [ ] Running it twice on the same idea adopts the existing initiative instead of duplicating it.
+- [x] Unknowns appear as `TBD` with what is missing and who could answer — never as invented values (shape check).
+- [x] Running it twice on the same idea adopts the existing initiative instead of duplicating it.
 
 **Docs** — flow/define/frame-problem.
 

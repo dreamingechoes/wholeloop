@@ -8,6 +8,7 @@ import { loadConfig } from '../../../src/config/load.js'
 import { loadCatalog } from '../../../src/extensions/catalog.js'
 import { lensAdapter, profileAdapter, templateAdapter } from '../../../src/extensions/kinds.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
+import { FRAME_SECTIONS } from '../../../src/framing/contract.js'
 import { StateStore } from '../../../src/state/store.js'
 
 function fixture(run: (dir: string, put: (path: string, content: unknown) => void) => void) {
@@ -105,7 +106,11 @@ describe('layered manifest catalogs', () => {
     fixture((dir, put) => {
       put(
         '.wholeloop/templates/custom.md',
-        template('custom', ['problem'], { extends: 'builtin:frame' }),
+        template(
+          'custom',
+          FRAME_SECTIONS.filter((name) => name !== 'Owner').map((name) => name.toLowerCase()),
+          { extends: 'builtin:frame' },
+        ),
       )
       let catalog = loadCatalog(templateAdapter, { root: dir, user: join(dir, 'user') })
       expect(catalog.problems[0]?.message).toContain(
@@ -113,10 +118,11 @@ describe('layered manifest catalogs', () => {
       )
       put(
         '.wholeloop/templates/custom.md',
-        template('custom', ['problem', 'owner'], { extends: 'builtin:frame' }).replace(
-          '## owner\n\nSupply evidence.',
-          '## owner',
-        ),
+        template(
+          'custom',
+          FRAME_SECTIONS.map((name) => name.toLowerCase()),
+          { extends: 'builtin:frame' },
+        ).replace('## owner\n\nSupply evidence.', '## owner'),
       )
       catalog = loadCatalog(templateAdapter, { root: dir, user: join(dir, 'user') })
       expect(catalog.problems[0]?.message).toContain('Missing or empty required section: owner')
@@ -126,13 +132,25 @@ describe('layered manifest catalogs', () => {
     fixture((dir, put) => {
       put(
         '.wholeloop/templates/frame.md',
-        template('frame', ['owner', 'problem', 'risks'], { extends: 'builtin:frame' }),
+        template(
+          'frame',
+          [...FRAME_SECTIONS]
+            .reverse()
+            .map((name) => name.toLowerCase())
+            .concat('risks'),
+          { extends: 'builtin:frame' },
+        ),
       )
       let catalog = loadCatalog(templateAdapter, { root: dir, user: join(dir, 'user') })
       expect(catalog.problems).toEqual([])
       expect(
         catalog.entries.find((entry) => entry.manifest.id === 'frame')?.manifest.sections.required,
-      ).toEqual(['owner', 'problem', 'risks'])
+      ).toEqual(
+        [...FRAME_SECTIONS]
+          .reverse()
+          .map((name) => name.toLowerCase())
+          .concat('risks'),
+      )
       put('.wholeloop/templates/frame/template.md', template('frame', ['owner', 'problem']))
       catalog = loadCatalog(templateAdapter, { root: dir, user: join(dir, 'user') })
       expect(catalog.problems[0]?.message).toContain('Duplicate manifest id frame')

@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: framing-explicit-unknowns
+    enforcers: [src/framing/contract.ts#checkFrame, src/flow/registry.ts, test/unit/framing/framing.test.ts]
+  - id: framing-safe-identity
+    enforcers: [src/framing/contract.ts#framingMatches, test/unit/framing/framing.test.ts]
+  - id: framing-argued-no-go
+    enforcers: [src/framing/contract.ts#validateFrameOutcome, src/flow/engine.ts, test/unit/framing/framing.test.ts]
   - id: research-source-coverage
     enforcers: [src/research/plan.ts#researchPlan, test/unit/research/research.test.ts]
   - id: research-active-refutations

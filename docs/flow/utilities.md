@@ -29,7 +29,7 @@ wl setup --json
 wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
 ```
 
-`next` begins minimal framing from a sentence. Missing ownership becomes a
+`next` begins framing from a sentence and reuses initiatives with an equivalent normalized title. Missing ownership becomes a
 question before creating an item; no input selects the sole open item or asks
 which one to continue. IDs reuse unfinished runs. After framing completion it
 reports the next step as unavailable until that workflow lands. Pending decisions

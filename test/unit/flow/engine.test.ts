@@ -9,7 +9,7 @@ import { checkShape, STEPS } from '../../../src/flow/registry.js'
 import { event, type Item, replay } from '../../../src/state/events.js'
 import { StateStore } from '../../../src/state/store.js'
 
-const artifact = '# Framing\n\n## Problem\n\nOrders are hard to find.\n\n## Owner\n\nAlex\n'
+const artifact = readFileSync(new URL('../../fixtures/framing/frame.md', import.meta.url), 'utf8')
 function fixture(operation: (engine: FlowEngine) => void): void {
   const dir = mkdtempSync(join(tmpdir(), 'wholeloop-flow-'))
   try {

@@ -87,6 +87,7 @@ exports[`context packs > summarizes 50 descendants deterministically within its 
   "next": "wl step begin frame-problem --for init-00000000",
   "notes": [],
   "schema": "wholeloop/resume@1",
+  "sources": [],
   "subject": {
     "id": "init-00000000",
     "kind": "initiative",

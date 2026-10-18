@@ -48,15 +48,21 @@ export function flowPlan(
 ) {
   const completed = new Set<StepName>()
   let active: StepName | undefined
+  let closed = false
   for (const entry of events)
     if (entry.subject === subject) {
+      if (entry.type === 'item.closed') closed = true
+      if (entry.type === 'item.updated' && entry.data.status)
+        closed = entry.data.status === 'closed'
       if (entry.type === 'step.started') active = entry.data.step
       if (entry.type === 'step.completed' || entry.type === 'step.skipped') {
         completed.add(entry.data.step)
         if (active === entry.data.step) active = undefined
       }
     }
-  const next = active ?? STEPS.find((step) => !step.optional && !completed.has(step.name))?.name
+  const next = closed
+    ? undefined
+    : (active ?? STEPS.find((step) => !step.optional && !completed.has(step.name))?.name)
   const definition = STEPS.find((step) => step.name === next)
   const pending = decisions(events, subject, [
     ...(definition?.before ?? []),

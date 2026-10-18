@@ -10,8 +10,16 @@ import { writeSetting } from '../config/write.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { knownSlot } from '../discovery/rules.js'
 import { discover } from '../discovery/tree.js'
+import {
+  checkFrame,
+  type FrameOutcome,
+  framingMatches,
+  validateFrameOutcome,
+} from '../framing/contract.js'
+import { framePublication } from '../framing/publication.js'
 import { researchBrief } from '../research/report.js'
 import { itemId, replay } from '../state/events.js'
+import { canonicalPath } from '../state/paths.js'
 import type { StateStore } from '../state/store.js'
 import { beginPlan, decisions, flowPlan } from './plan.js'
 import { checkShape, stepDefinition } from './registry.js'
@@ -21,6 +29,7 @@ export interface BeginOptions {
   profile?: Record<string, unknown>
   subject?: string
   parent?: string
+  from?: string
   input?: string
   owner?: string
   mode?: 'standalone' | 'flow'
@@ -79,7 +88,65 @@ export class FlowEngine {
     )
     return this.store.transaction((events, append) => {
       const items = replay(events)
-      const subject = options.subject ? items.get(options.subject) : undefined
+      let subject = options.subject ? items.get(options.subject) : undefined
+      if (options.from && name !== 'frame-problem')
+        throw new CliError('--from is for framing a completed research brief')
+      const source = options.from ? items.get(options.from) : undefined
+      const sourceArtifact = source
+        ? [...events]
+            .reverse()
+            .find(
+              (entry) =>
+                entry.subject === source.id &&
+                entry.type === 'step.completed' &&
+                entry.data.step === 'research',
+            )
+        : undefined
+      if (options.from && (source?.kind !== 'brief' || sourceArtifact?.type !== 'step.completed'))
+        throw new CliError('--from needs a completed research brief', EXIT.precondition)
+      const sourceStart =
+        sourceArtifact?.type === 'step.completed'
+          ? events.find(
+              (entry) =>
+                entry.subject === source?.id &&
+                entry.type === 'step.started' &&
+                entry.data.run === sourceArtifact.data.run,
+            )
+          : undefined
+      const input =
+        options.input ??
+        (sourceStart?.type === 'step.started' ? sourceStart.data.input : source?.title)
+      if (name === 'frame-problem' && !options.subject) {
+        const matches = framingMatches(
+          [...items.values()],
+          events,
+          input,
+          source?.id,
+          canonicalPath(this.root),
+        )
+        if (matches.length > 1)
+          throw new CliError(
+            'Several initiatives match this idea; choose one with --for <id>',
+            EXIT.input,
+          )
+        if (matches[0] && !matches[0].repository && !source)
+          throw new CliError(
+            'An initiative matches but has no repository identity; confirm it with --for <id>',
+            EXIT.input,
+          )
+        subject = matches[0]
+      }
+      if (name === 'frame-problem' && subject?.kind !== undefined && subject.kind !== 'initiative')
+        throw new CliError(
+          'Framing needs an initiative; use --from for a research brief',
+          EXIT.precondition,
+        )
+      if (subject?.status === 'closed')
+        throw new CliError(
+          `Item ${subject.id} is closed; inspect its outcome before explicitly reopening it`,
+          EXIT.precondition,
+        )
+
       if (options.parent && (name !== 'research' || options.subject))
         throw new CliError('--parent is for a new research brief only')
       const parent = options.parent ? items.get(options.parent) : undefined
@@ -111,9 +178,9 @@ export class FlowEngine {
             ),
         )
       const run = active?.type === 'step.started' ? active.data.run : newRun()
-      const owner = options.owner ?? parent?.owner
+      const owner = options.owner ?? parent?.owner ?? source?.owner
       const payload = beginPlan(step, {
-        ...(options.input ? { input: options.input } : {}),
+        ...(input ? { input } : {}),
         ...(owner ? { owner } : {}),
         ...(options.mode ? { mode: options.mode } : {}),
         ...(subject ? { subject } : {}),
@@ -122,6 +189,11 @@ export class FlowEngine {
         configuration,
         presets: loaded.presets,
       })
+      if (sourceArtifact?.type === 'step.completed') {
+        payload.preflight.push(
+          `Evidence — ${source?.id}: ${sourceArtifact.data.artifact.path}. Preserve its open questions.`,
+        )
+      }
       payload.bindings = bindings
       for (const resolution of Object.values(bindings))
         if (resolution.questions.length) {
@@ -154,6 +226,7 @@ export class FlowEngine {
           type: 'item.created',
           data: {
             kind: step.kind,
+            repository: canonicalPath(this.root),
             ...(parent ? { parent: parent.id } : {}),
             title: payload.input ?? '',
             owner: payload.owner ?? '',
@@ -172,6 +245,21 @@ export class FlowEngine {
             input: payload.input ?? '',
           },
         })
+      if (
+        source &&
+        !events.some(
+          (entry) =>
+            entry.subject === id &&
+            entry.type === 'frame.sourced' &&
+            entry.data.run === run &&
+            entry.data.brief === source.id,
+        )
+      )
+        if (sourceArtifact?.type === 'step.completed')
+          append(id, {
+            type: 'frame.sourced',
+            data: { run, brief: source.id, artifact: sourceArtifact.data.artifact.path },
+          })
       return {
         payload: { ...payload, subject: { id, kind: subject?.kind ?? step.kind } },
         code: EXIT.ok,
@@ -188,11 +276,17 @@ export class FlowEngine {
     }
   }
 
-  complete(name: string, subject: string, content: string) {
+  complete(name: string, subject: string, content: string, outcome?: FrameOutcome) {
     const step = stepDefinition(name)
     if (!step.available)
       throw new CliError(`Step ${name} is registered but not implemented`, EXIT.precondition)
-    const problems = checkShape(content, step.sections)
+    if (outcome && name !== 'frame-problem')
+      throw new CliError('Framing outcomes apply only to frame-problem')
+    if (outcome) validateFrameOutcome(outcome)
+    const problems = [
+      ...checkShape(content, step.sections),
+      ...(name === 'frame-problem' ? checkFrame(content) : []),
+    ]
     if (problems.length) throw new CliError(problems.join('\n'))
     return this.store.transaction((events, append) => {
       const latest = [...events]
@@ -213,16 +307,48 @@ export class FlowEngine {
           EXIT.precondition,
         )
       const path = `items/${subject}/artifacts/${name}/${run}.md`
+      const publication =
+        name === 'frame-problem'
+          ? framePublication(this.root, this.userFile, this.config(), subject, path)
+          : undefined
       append(subject, {
         type: 'step.completed',
         data: { step: step.name, run, artifact: { path, content } },
       })
+      if (name === 'frame-problem') {
+        append(subject, {
+          type: 'frame.decided',
+          data: {
+            run,
+            ...(outcome ?? { outcome: 'go', reason: 'Framing completed for specification.' }),
+          },
+        })
+        if (outcome && outcome.outcome !== 'go') {
+          append(subject, {
+            type: 'note.added',
+            data: {
+              text: `Framing ${outcome.outcome}: ${outcome.reason}${outcome.reopen ? ` Reopen when: ${outcome.reopen}` : ''}`,
+            },
+          })
+          append(subject, { type: 'item.closed', data: {} })
+        }
+        for (const destination of Object.values(publication ?? {}))
+          if (destination.status === 'pending')
+            append(subject, {
+              type: 'note.added',
+              data: {
+                text: `Publication pending: ${destination.provider} ${destination.operation}; local reference: ${destination.ref}.`,
+              },
+            })
+      }
       return {
         schema: 'wholeloop/step-complete@1',
         subject,
         step: name,
         run,
         artifact: path,
+        ...(publication ? { publication } : {}),
+        ...(outcome ? { outcome } : {}),
         receipt: {
           produced: path,
           undo: 'Artifacts are retained in the append-only journal; refine with a new run.',

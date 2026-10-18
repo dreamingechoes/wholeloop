@@ -50,7 +50,7 @@ sections:
 …
 ```
 
-The loader checks that every **required section** has a non-empty heading body. Step-specific selection of these templates arrives with the full step workflows; the current minimal framing engine checks its fixed `Problem` and `Owner` contract. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation naming the section and its dependent step. A repo skill bound to `spec.template` will take precedence over a template file in those workflows, because it carries more than shape.
+The loader checks that every **required section** has a non-empty heading body. Step-specific selection of these templates arrives with the full step workflows; the framing engine always checks its eight core questions plus `Owner`, including explicit unknown markers. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation naming the section and its dependent step. A repo skill bound to `spec.template` will take precedence over a template file in those workflows, because it carries more than shape.
 
 ## Profiles
 

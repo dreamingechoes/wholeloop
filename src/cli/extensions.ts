@@ -5,6 +5,7 @@ import { loadExtensionOptions } from '../config/load.js'
 import { type CatalogAdapter, loadCatalog, type Manifest } from '../extensions/catalog.js'
 import { MANIFEST_ID } from '../extensions/common.js'
 import { lensAdapter, profileAdapter, templateAdapter } from '../extensions/kinds.js'
+import { FRAME_SECTIONS } from '../framing/contract.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -12,7 +13,7 @@ import { EXIT, type Io } from './io.js'
 function scaffold(kind: string, id: string): Record<string, string> {
   if (kind === 'template')
     return {
-      'template.md': `---\n${stringify({ schema: 1, id, extends: 'builtin:frame', sections: { required: ['problem', 'owner'], optional: [] } })}---\n# {{title}}\n\n## Problem\n\nDescribe the problem and evidence.\n\n## Owner\n\nName the accountable person.\n`,
+      'template.md': `---\n${stringify({ schema: 1, id, extends: 'builtin:frame', sections: { required: FRAME_SECTIONS.map((name) => name.toLowerCase()), optional: [] } })}---\n# {{title}}\n\n${FRAME_SECTIONS.map((name) => `## ${name}\n\nTBD: supply evidence; who: initiative owner`).join('\n\n')}\n`,
     }
   if (kind === 'profile')
     return {

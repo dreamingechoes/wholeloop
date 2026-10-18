@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import { FlowEngine } from '../flow/engine.js'
+import type { FrameOutcome } from '../framing/contract.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
@@ -21,6 +22,11 @@ export function flowCommand(
   if (positional.length > (command === 'step plan' ? 0 : 1))
     throw new CliError(`Too many arguments for ${command}`)
   try {
+    const noGo = value('--no-go')
+    if (noGo && !['dropped', 'on-hold'].includes(noGo))
+      throw new CliError('--no-go must be dropped or on-hold')
+    if (!noGo && (value('--reason') || value('--reopen')) && command === 'step complete')
+      throw new CliError('--reason and --reopen require --no-go')
     const engine = new FlowEngine(new StateStore(), root)
     let payload: unknown
     let code: number = EXIT.ok
@@ -47,6 +53,7 @@ export function flowCommand(
           mode,
           ...(value('--for') ? { subject: value('--for') as string } : {}),
           ...(value('--parent') ? { parent: value('--parent') as string } : {}),
+          ...(value('--from') ? { from: value('--from') as string } : {}),
           ...(value('--input') ? { input: value('--input') as string } : {}),
           ...(value('--owner') ? { owner: value('--owner') as string } : {}),
         })
@@ -63,6 +70,13 @@ export function flowCommand(
           name,
           require(value('--for'), '--for <id>'),
           readFileSync(require(value('--artifact'), '--artifact <file>'), 'utf8'),
+          value('--no-go')
+            ? {
+                outcome: value('--no-go') as FrameOutcome['outcome'],
+                reason: require(value('--reason'), '--reason'),
+                ...(value('--reopen') ? { reopen: value('--reopen') as string } : {}),
+              }
+            : undefined,
         )
     }
     io.out(JSON.stringify(payload, null, json ? undefined : 2))

@@ -83,7 +83,7 @@ describe('minimal local skill workflow', () => {
       const artifact = join(dir, 'frame.md')
       writeFileSync(
         artifact,
-        '## Problem\n\nCustomers cannot find old orders.\n\n## Owner\n\nAlex\n',
+        readFileSync(new URL('../../fixtures/framing/frame.md', import.meta.url), 'utf8'),
       )
       const completed = cli(
         'step',

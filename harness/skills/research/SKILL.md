@@ -29,7 +29,7 @@ Read ask-never-guess, output-contract and core-invariants.
    aggregate can complete the artifact; missing workers become open questions,
    and a claim drops only after the pinned active-refutation majority.
 7. Show the brief receipt, evidence, retained/dropped claims and open questions.
-   Frame-from-brief adoption and external publishing remain later tasks.
+   Continue with `step begin frame-problem --from <brief-id> --json` when requested. External publishing remains later integration work.
 
 Host adapters still need live conformance. Do not claim parallelism, source
 access or authentication that the current client cannot establish.

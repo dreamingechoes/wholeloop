@@ -1,30 +1,40 @@
 ---
 name: frame-problem
-description: Capture a rough idea as an owned wholeloop initiative and a local framing artifact. Use before writing a spec when the problem needs a clear statement.
+description: Frame a rough idea or research brief as an owned initiative, with evidence and unknowns, and finish with a specification handoff or an argued no-go.
 metadata:
   wholeloop.step: frame-problem
 ---
 # Frame a problem
 
-Read the shared ask-never-guess and output-contract protocols.
+Read ask-never-guess, output-contract and framing-evidence.
 
 1. Call `wl step begin frame-problem --input "<idea>" --owner "<person>" --json`.
-   Omit unknown values so the core can return its batched questions. For an
-   existing initiative, pass `--for <id>` instead of creating another one.
-2. Handle exit 2 by collecting explicit answers at their returned scopes and
-   rerunning begin. Exit 3 means a precondition is unmet; exit 4 means invalid
-   input. Preserve the distinction and show what must change.
-3. Show the returned preflight and profile style. Inspect `bindings.frame.template`;
-   load its selected repository guidance when it is not the harness default.
-4. Draft a concise Markdown artifact outside the repository. Include non-empty
-   `## Problem` and `## Owner` sections. Separate observed evidence from hypotheses;
-   record missing evidence and who can answer as TBD. Do not manufacture data.
-5. Call `wl step complete frame-problem --for <id> --artifact <path> --json`.
-   Fix returned shape findings before reporting success. The core journals the
-   artifact and rebuilds readable projections in the external store.
-6. Show the receipt, remaining unknowns and `wl next <id> --json`. Stop if the
-   next step is unavailable or requires a human decision.
+   Omit unknown values for batched questions. Use `--for <initiative>` to refine
+   known work or `--from <brief-id>` to adopt completed research. Read the source
+   artifact named in the preflight and carry its unresolved questions forward.
+   Equivalent normalized titles and repeated brief adoption reuse an initiative;
+   unrelated ideas need their own initiative. Ambiguity requires an explicit ID.
+2. Handle exit 2 by collecting explicit answers and rerunning begin. Exit 3 is
+   a precondition; exit 4 is invalid input. Do not create a second initiative
+   to bypass a closed outcome, a required decision or another failure.
+3. Show the preflight and profile style. Load the selected `frame.template`
+   repository guidance. Use supportive, balanced or adversarial challenge as
+   the style directs, while preserving every question in the returned template.
+4. Ask the fixed framing questions: problem, target segment, evidence/hypothesis,
+   expected impact, who validated it, cost/priority, stop conditions and scope
+   hint. The owner is recorded separately. If evidence is too weak to frame
+   responsibly, use the research skill and return with its completed brief.
+5. Draft outside the repository using every heading in `contract.template`.
+   Separate evidence from hypotheses. Write each unknown as
+   `TBD: <missing evidence>; who: <person or role>`; never invent a value.
+6. Complete with `wl step complete frame-problem --for <id> --artifact <path>
+   --json`. Fix structural findings first. When the explicit call is no-go,
+   add `--no-go dropped --reason "<why>"` or `--no-go on-hold --reason "<why>"
+   --reopen "<condition>"`. No-go closes the initiative with durable reasoning;
+   reopening is an explicit state action, never automatic duplicate creation.
+7. Show the receipt and publication status. Local docs/tracker destinations
+   reference the stored artifact and initiative. Remote destinations remain
+   pending handoffs until a host performs the operation and records its link.
+   A go hands off to the spec; an unavailable next step is a limitation to state.
 
-This is the minimal local framing path. Research escalation, duplicate adoption
-from URLs, no-go outcomes, eight-question framing and external publication are
-later workflow features; do not claim to have performed them.
+URL adoption and live external publishing remain later integration work.

@@ -3,9 +3,33 @@
 > **TL;DR** — Give it a rough idea — one sentence, a copied thread, a research brief — and it works through a short, fixed list of questions: what hurts and for whom, what supports that, what would change if we got it right, and what would make us walk away. It opens the **initiative**, names the person who owns it, and finishes with a clear call: write the spec next, or record why not.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The CLI engine can begin an owned initiative and validate/store a minimal Problem/Owner artifact. The canonical framing skill and conductor are available with compiled CLI workflow tests. Generated client adapters, live skill execution, eight-question framing, challenger and publication remain pending. Skeleton tracked in [P1-12](../../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem); full step in [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
+> **Status: 🚧 partial.** The core enforces all eight framing questions plus ownership, explicit TBD markers, completed-brief adoption, normalized-title reuse and argued dropped/on-hold outcomes. Local docs/tracker publication references the existing store records; remote destinations return pending handoffs. Canonical skill escalation to research follows the challenge style. Live client behavior, URL adoption and remote publication remain unverified or planned. [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
 
 ---
+
+## Available core commands
+
+```text
+wl step begin frame-problem --input "Find old orders" --owner Alex --json
+wl step begin frame-problem --from brief-0123abcd --json
+wl step complete frame-problem --for init-0123abcd --artifact /path/to/frame.md --json
+wl step complete frame-problem --for init-0123abcd --artifact /path/to/frame.md --no-go on-hold --reason "Need evidence" --reopen "Ten affected customers confirmed" --json
+```
+
+The returned `template` lists the exact required headings. Each unknown must name
+both missing evidence and its answerer, for example `TBD: order-search baseline;
+who: product analyst`. This is a structural check, not proof that a factual claim
+is true; the skill and research evidence review establish that distinction.
+
+Title reuse normalizes case and whitespace within the same canonical repository path; cross-repository continuation uses an explicit ID. It does not claim semantic duplicate
+detection. Several matches require an explicit ID. A closed outcome must be
+inspected and explicitly reopened with `state update --status open`; rerunning
+an idea does not erase its no-go. Completed-brief adoption records the source
+artifact path and includes it in bounded resume context.
+
+Local publication creates no duplicate docs or tracker items. Remote receipts say
+`pending` and add a durable handoff note; they do not claim an external write.
+The broader scenarios below still depend on live clients and provider work.
 
 ## At a glance
 
@@ -58,7 +82,7 @@ The framing answers exactly these questions — no more, no fewer:
 | **What would make us stop** | The signal that would change course |
 | **Rough scope hint** | One line on what is likely in and out — not a spec |
 
-1. **"Don't know yet" is a valid answer; a made-up one isn't.** Write `TBD: <what's missing> · <who could answer>`. A few of those usually means [`research`](./research.md) is the next stop.
+1. **"Don't know yet" is a valid answer; a made-up one isn't.** Write `TBD: <what is missing>; who: <who could answer>`. A few of those usually means [`research`](./research.md) is the next stop.
 2. **You set how hard it pushes.** With `challenge: supportive` it points out gaps; with `adversarial` it argues the other side on purpose. Either way the list of questions stays the same ([profile](../../configuration/profile.md)).
 3. **Every initiative has an owner** — a real person, stored on the initiative. Later decision points go to them unless you say otherwise.
 4. **It publishes only where you told it to.** A configured `docs` provider gets a framing document; a `tracker` gets an idea item. With neither, it all stays in the store until a later `sync`.
@@ -114,7 +138,7 @@ Next                /wholeloop:write-spec init-41c2
 
 **"I have no numbers and nobody has confirmed it yet."** Use `TBD` and name who could fill it in. An honest gap beats a confident guess every time.
 
-**"Will I end up with two initiatives for the same idea?"** No: before creating anything it checks for a matching ID, URL or `--from` and offers to continue that one.
+**"Will I end up with two initiatives for the same idea?"** A matching explicit ID, completed-brief relation or normalized title in the same recorded repository reuses the initiative. Ambiguous matches require an ID; semantic duplicate detection and URL adoption remain planned. [ADR-0022](../../decisions/0022-framing-identity-and-explicit-outcomes.md) explains why.
 
 **"Can I already sketch the solution here?"** Save it for [`write-spec`](./write-spec.md); this step is only about the problem.
 

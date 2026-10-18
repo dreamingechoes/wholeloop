@@ -39,6 +39,11 @@ export function contextPack(
       ? [{ step: entry.data.step, path: entry.data.artifact.path }]
       : [],
   )
+  const sources = events.flatMap((entry) =>
+    entry.subject === subject.id && entry.type === 'frame.sourced'
+      ? [{ id: entry.data.brief, path: entry.data.artifact }]
+      : [],
+  )
   const payload = {
     schema: 'wholeloop/resume@1',
     subject: {
@@ -66,6 +71,7 @@ export function contextPack(
     notes: subject.notes.slice(-3).map((note) => short(note.text, 160)),
     links: subject.links.slice(-5).map((link) => short(link, 240)),
     flow: { ...plan, pending: plan.pending.slice(0, 8), completed: plan.completed.slice(0, 13) },
+    sources: sources.slice(-5),
     artifacts: artifacts.slice(-8),
     next: plan.pending.length
       ? `wl step plan --for ${subject.id}`
@@ -73,6 +79,7 @@ export function contextPack(
         ? `wl step begin ${plan.next} --for ${subject.id}`
         : `wl open ${subject.id}`,
     truncated:
+      sources.length > 5 ||
       descendants.length > 12 ||
       messages.length > 8 ||
       subject.links.length > 5 ||
@@ -81,6 +88,7 @@ export function contextPack(
   while (Buffer.byteLength(JSON.stringify(payload)) > CONTEXT_BYTES) {
     payload.truncated = true
     if (payload.items.length) payload.items.pop()
+    else if (payload.sources.length) payload.sources.pop()
     else if (payload.artifacts.length) payload.artifacts.pop()
     else if (payload.unread.length) payload.unread.pop()
     else if (payload.links.length) payload.links.pop()

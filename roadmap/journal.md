@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P2-02 — complete local framing and explicit no-go
+
+- Require all eight framing questions plus ownership; validate unresolved placeholders as TBD markers naming missing evidence and an answerer. Keep challenge intensity in the existing style block without changing coverage.
+- Adopt completed research briefs with pinned artifact references and reuse normalized titles only inside the same recorded repository. Explicit IDs resolve ambiguous/unscoped matches; independent repositories keep separate initiatives. ADR-0022 records the identity boundary.
+- Journal go/dropped/on-hold outcomes; no-go retains its reason in a readable note, on-hold requires a reopening condition, and closed work cannot restart implicitly. Local docs/tracker publication reuses store records; remote publication remains a pending, durable handoff.
+- Verify full framing fixtures, invalid unknowns, repeat execution, separate repository identities, brief adoption, no-go rollback/reopening, compiled CLI execution and pending remote publication. Live challenge/research escalation and remote writes still need client/provider conformance.
+
+---
+
 ## 2026-10-18 · P2-01 — source-bound research and evidence briefs
 
 - Add the research skill, researcher/challenger roles, angle/result/examination schemas and a shared native/sequential scheduling workflow within budget.

@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine repository discovery and extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; minimal frame-problem and structured research briefs can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; complete local framing and structured research briefs can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
 
 ---
 
@@ -26,7 +26,7 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 | `wl research submit` | `wholeloop/research-submit@1` | Record a validated source result in the journal |
 | `wl research examine` | `wholeloop/research-examine@1` | Record one independent claim examination |
 | `wl research complete` | `wholeloop/research-complete@1` | Aggregate evidence into a replayable research brief |
-| `wl next [<idea\|id>]` | `wholeloop/next@1` | Continue stored work or begin minimal framing |
+| `wl next [<idea\|id>]` | `wholeloop/next@1` | Continue stored work or begin evidence-based framing |
 | `wl status [<id>]` | `wholeloop/status@1` | Inspect work and pending decisions without mutation |
 | `wl setup` | `wholeloop/setup@1` | Ask for or explicitly save scoped profile and provider choices |
 | `wl template list` | `wholeloop/template-list@1` | List validated manifests and their origins |
@@ -108,7 +108,7 @@ wl step skip research --for init-0123abcd --reason "Existing support evidence" -
 wl answer owner=Alex --remember user --json
 ```
 
-A minimal framing artifact requires non-empty `Problem` and `Owner` headings; headings inside code fences do not count. This is the engine skeleton, not the complete framing workflow in P2. Completion copies the artifact into the external store and includes its contents in the journal so rebuild restores it. Repeated begin calls reuse an unfinished run; completion without a start fails. Unimplemented steps return their contract with `available: false` and exit 3, without recording a fabricated run.
+A framing artifact requires the eight framing headings plus `Owner`; the begin contract lists their exact names. Headings inside code fences do not count. Unknowns require `TBD: <missing>; who: <answerer>`. Completed research briefs can seed framing with `--from`; equivalent titles reuse initiatives. `--no-go dropped|on-hold` requires a reason, and on-hold also requires `--reopen`. Completion copies the artifact into the external store and includes its contents in the journal so rebuild restores it. Repeated begin calls reuse an unfinished run; completion without a start fails. Unimplemented steps return their contract with `available: false` and exit 3, without recording a fabricated run.
 
 `--mode standalone` (default) allows direct entry; `--mode flow` checks the next planned step. Missing input/owner returns batched questions and exit 2 without creating an item. Skipping requires a reason, retains it in subsequent preflights and preserves that step's required decisions.
 

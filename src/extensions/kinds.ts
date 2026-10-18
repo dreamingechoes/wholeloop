@@ -1,5 +1,6 @@
 import { isObject, type Schema, validate } from '../config/schema.js'
 import { checkShape } from '../flow/registry.js'
+import { FRAME_SECTIONS } from '../framing/contract.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import { PRESETS } from '../profile/presets.js'
 import type { CatalogAdapter, Manifest } from './catalog.js'
@@ -43,7 +44,12 @@ function base(value: unknown, fields: readonly string[], schema: Schema): Record
 }
 
 const REQUIRED: Record<string, Record<string, string>> = {
-  frame: { problem: 'frame-problem', owner: 'initiative ownership' },
+  frame: Object.fromEntries(
+    FRAME_SECTIONS.map((name) => [
+      name.toLowerCase(),
+      name === 'Owner' ? 'initiative ownership' : 'frame-problem',
+    ]),
+  ),
   spec: {
     problem: 'write-spec',
     users: 'write-spec',
@@ -58,7 +64,7 @@ const TEMPLATES: Template[] = Object.entries(REQUIRED).map(([id, sections]) => (
   id,
   sections: { required: Object.keys(sections), optional: [] },
   content: `# {{title}}\n\n${Object.keys(sections)
-    .map((section) => `## ${section}\n\nTBD: supply evidence and name who can answer.`)
+    .map((section) => `## ${section}\n\nTBD: supply evidence; who: initiative owner`)
     .join('\n\n')}\n`,
 }))
 

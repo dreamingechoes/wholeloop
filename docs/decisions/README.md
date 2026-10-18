@@ -32,6 +32,7 @@
 | [0019](./0019-typescript-toolchain.md) | TypeScript toolchain | Accepted | 2026-10-14 |
 | [0020](./0020-journal-atomicity-and-lock-recovery.md) | Journal atomicity and lock recovery | Accepted | 2026-10-18 |
 | [0021](./0021-journaled-research-plans-and-refutations.md) | Journal research plans and count active refutations | Accepted | 2026-10-18 |
+| [0022](./0022-framing-identity-and-explicit-outcomes.md) | Framing identity and explicit outcomes | Accepted | 2026-10-18 |
 
 ## Lifecycle
 

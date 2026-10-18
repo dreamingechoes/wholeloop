@@ -1,4 +1,5 @@
 import { stripCode } from '../docs/markdown.js'
+import { FRAME_SECTIONS } from '../framing/contract.js'
 import type { ItemKind } from '../state/events.js'
 
 export const STEP_NAMES = [
@@ -78,7 +79,7 @@ export const STEPS: readonly Step[] = Object.freeze(
       ),
       sections: Object.freeze(
         name === 'frame-problem'
-          ? ['Problem', 'Owner']
+          ? [...FRAME_SECTIONS]
           : name === 'research'
             ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
             : [],

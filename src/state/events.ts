@@ -1,6 +1,8 @@
 import { randomBytes, randomUUID } from 'node:crypto'
+import { isAbsolute } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { STEP_NAMES, type StepName } from '../flow/registry.js'
+import { type FrameOutcome, validateFrameOutcome } from '../framing/contract.js'
 import {
   type AngleResult,
   type Refutation,
@@ -29,6 +31,7 @@ export interface ItemInput {
   owner: string
   body: string
   parent?: string
+  repository?: string
 }
 export interface Item extends ItemInput {
   id: string
@@ -42,6 +45,8 @@ export type ItemPatch = Partial<Pick<Item, 'title' | 'owner' | 'body' | 'status'
 export const MESSAGE_KINDS = ['contract', 'handoff', 'status', 'question', 'note'] as const
 export type MessageKind = (typeof MESSAGE_KINDS)[number]
 export type EventData =
+  | { type: 'frame.sourced'; data: { run: string; brief: string; artifact: string } }
+  | { type: 'frame.decided'; data: { run: string } & FrameOutcome }
   | { type: 'research.planned'; data: { run: string; plan: ResearchPlan } }
   | { type: 'research.submitted'; data: { run: string; result: AngleResult } }
   | { type: 'research.examined'; data: { run: string; vote: Refutation } }
@@ -89,6 +94,32 @@ function text(value: unknown, empty = false): value is string {
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
   switch (type) {
+    case 'frame.sourced':
+      return (
+        keys(data, ['run', 'brief', 'artifact']) &&
+        runId(data.run) &&
+        text(data.brief) &&
+        /^brief-[a-f0-9]{8}$/.test(data.brief) &&
+        text(data.artifact) &&
+        new RegExp(`^items/${data.brief}/artifacts/research/run-[a-f0-9]{16}\\.md$`).test(
+          data.artifact,
+        )
+      )
+    case 'frame.decided':
+      if (
+        !keys(data, ['run', 'outcome', 'reason', 'reopen']) ||
+        !runId(data.run) ||
+        !text(data.reason) ||
+        (data.reopen !== undefined && !text(data.reopen))
+      )
+        return false
+      try {
+        validateFrameOutcome(data as unknown as FrameOutcome)
+        return true
+      } catch {
+        return false
+      }
+
     case 'research.planned':
     case 'research.submitted':
     case 'research.examined': {
@@ -142,12 +173,13 @@ function validData(type: string, data: Record<string, unknown>): boolean {
       )
     case 'item.created':
       return (
-        keys(data, ['kind', 'title', 'owner', 'body', 'parent']) &&
+        keys(data, ['kind', 'title', 'owner', 'body', 'parent', 'repository']) &&
         KINDS.includes(data.kind as ItemKind) &&
         text(data.title) &&
         text(data.owner) &&
         text(data.body, true) &&
-        (data.parent === undefined || (text(data.parent) && ITEM_ID.test(data.parent)))
+        (data.parent === undefined || (text(data.parent) && ITEM_ID.test(data.parent))) &&
+        (data.repository === undefined || (text(data.repository) && isAbsolute(data.repository)))
       )
     case 'item.updated':
       return (

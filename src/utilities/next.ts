@@ -1,7 +1,9 @@
 import { CliError } from '../cli/errors.js'
 import { EXIT } from '../cli/io.js'
 import type { FlowEngine } from '../flow/engine.js'
+import { framingMatches } from '../framing/contract.js'
 import { ITEM_ID } from '../state/events.js'
+import { canonicalPath } from '../state/paths.js'
 
 /** Route known state first; never infer identity from a title or remote URL. */
 export function next(engine: FlowEngine, input?: string, owner?: string) {
@@ -12,6 +14,23 @@ export function next(engine: FlowEngine, input?: string, owner?: string) {
     )
   const items = engine.store.list().filter((item) => item.status === 'open')
   let subject = input && ITEM_ID.test(input) ? engine.store.get(input) : undefined
+  if (input && !ITEM_ID.test(input)) {
+    const matches = framingMatches(
+      engine.store.list(),
+      engine.store.events(),
+      input,
+      undefined,
+      canonicalPath(engine.root),
+    )
+    if (matches.length > 1)
+      throw new CliError('Several initiatives match this idea; choose one with its ID', EXIT.input)
+    if (matches[0] && !matches[0].repository)
+      throw new CliError(
+        'An initiative matches but has no repository identity; confirm its ID',
+        EXIT.input,
+      )
+    subject = matches[0]
+  }
   if (subject?.status === 'closed')
     throw new CliError(`Item is closed: ${subject.id}`, EXIT.precondition)
   if (!input) {

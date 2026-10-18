@@ -40,7 +40,7 @@ export const COMMANDS: readonly Command[] = [
     arguments: '[<idea|id>]',
     options: ['--owner <person>'],
     schema: 'wholeloop/next@1',
-    summary: 'Continue stored work or begin minimal framing',
+    summary: 'Continue stored work or begin evidence-based framing',
   },
   {
     path: 'status',
@@ -203,6 +203,7 @@ export const COMMANDS: readonly Command[] = [
     options: [
       '--for <id>',
       '--parent <id>',
+      '--from <brief-id>',
       '--input <text>',
       '--owner <name>',
       '--mode <mode>',
@@ -221,7 +222,13 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'step complete',
     arguments: '<step>',
-    options: ['--for <id>', '--artifact <file>'],
+    options: [
+      '--for <id>',
+      '--artifact <file>',
+      '--no-go <outcome>',
+      '--reason <text>',
+      '--reopen <condition>',
+    ],
     schema: 'wholeloop/step-complete@1',
     summary: 'Validate and record a step artifact',
   },

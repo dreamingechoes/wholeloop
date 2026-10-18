@@ -68,6 +68,10 @@
             "parent": {
               "type": "string",
               "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+            },
+            "repository": {
+              "type": "string",
+              "pattern": "^/"
             }
           },
           "required": ["kind", "title", "owner", "body"]
@@ -680,6 +684,62 @@
             }
           },
           "required": ["run", "vote"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "frame.sourced"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "brief": {
+              "type": "string",
+              "pattern": "^brief-[a-f0-9]{8}$"
+            },
+            "artifact": {
+              "type": "string",
+              "pattern": "^items/brief-[a-f0-9]{8}/artifacts/research/run-[a-f0-9]{16}\\.md$"
+            }
+          },
+          "required": ["run", "brief", "artifact"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "frame.decided"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "outcome": {
+              "type": "string",
+              "enum": ["go", "dropped", "on-hold"]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reopen": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["run", "outcome", "reason"]
         }
       }
     }

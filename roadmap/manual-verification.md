@@ -22,6 +22,15 @@ actual tool call and authentication before calling that integration supported.
 Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
+## Framing validation still pending
+
+In a real host session, verify that supportive/balanced/adversarial challenge
+changes tone while preserving every framing question, and that insufficient
+evidence triggers research and explicit TBD markers. Exercise an on-hold call,
+its reopening condition and an explicit reopen. Remote publication remains a
+pending handoff; verify the host write and record its link before reporting it
+published. Cross-repository continuation uses explicit IDs.
+
 ## Research validation still pending
 
 Run the research skill with real source tools and independent challenger sessions
@@ -33,7 +42,7 @@ no real research claim or live provider call was produced in this session.
 ## Canonical skill validation still pending
 
 P1-12 is verified through compiled CLI workflow tests, including a sentence,
-explicit owner, artifact receipt, read-only status and scoped setup. After P0-03
+explicit owner, full framing artifact, no-go outcome, artifact receipt, read-only status and scoped setup. After P0-03
 conformance and adapter generation, exercise the four canonical skills in real
 client sessions: question rendering, repository guidance loading, preflight and
 receipt language, and stopping at unavailable work or human decisions. No model
@@ -56,8 +65,9 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
 
 1. Begin `step begin frame-problem --input "Find past orders" --owner "Alex" --json`.
 2. Copy its initiative ID. Complete it with `step complete frame-problem
-   --for <id> --artifact <file> --json`; the file must contain non-empty
-   `Problem` and `Owner` sections.
+   --for <id> --artifact <file> --json`; the file must contain all returned framing headings. Use
+   `test/fixtures/framing/frame.md` as a smoke fixture in a temporary location;
+   actual framing must distinguish observed evidence from explicit TBD markers.
 3. Inspect `state get`, `open` and `step plan` for that ID. The next step is
    `write-spec`, currently an unavailable stub; a begin attempt must exit 3.
 4. Send a local `msg send --thread <id> --to builder --kind note --body "Ready"`.
@@ -70,7 +80,7 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
    configuration unchanged.
 
 These core paths also have automated tests. Generated client adapters, live canonical skill sessions,
-live provider integrations and full step workflows remain unimplemented; do not
+live provider integrations and later step workflows remain unimplemented; do not
 interpret this smoke scenario as their conformance validation.
 
 [Roadmap](./README.md) · [Journal](./journal.md)
