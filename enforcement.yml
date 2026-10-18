@@ -4,6 +4,10 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: definition-fixed-coverage
+    enforcers: [src/definition/challenge.ts#challengePlan, test/unit/definition/definition.test.ts]
+  - id: definition-structural-contradictions
+    enforcers: [src/definition/criteria.ts#lintCriteria, src/spec/contract.ts#checkSpec, test/unit/definition/definition.test.ts]
   - id: scope-metric-coverage
     enforcers: [src/scopes/contract.ts#checkScopePlan, test/unit/scopes/scopes.test.ts]
   - id: scope-stable-publication

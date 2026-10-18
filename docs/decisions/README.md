@@ -35,6 +35,7 @@
 | [0022](./0022-framing-identity-and-explicit-outcomes.md) | Framing identity and explicit outcomes | Accepted | 2026-10-18 |
 | [0023](./0023-structured-spec-plans-and-revision-approval.md) | Structured spec plans and revision approval | Accepted | 2026-10-18 |
 | [0024](./0024-atomic-scope-plans-and-parent-approval.md) | Atomic scope plans and parent approval | Accepted | 2026-10-18 |
+| [0025](./0025-explicit-criteria-constraints-and-challenge-modes.md) | Explicit criteria constraints and challenge modes | Accepted | 2026-10-18 |
 
 ## Lifecycle
 

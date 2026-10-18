@@ -47,6 +47,32 @@
                 "test": {
                   "type": "string",
                   "minLength": 1
+                },
+                "assertion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "subject": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "context": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "unit": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": ["lt", "lte", "eq", "ne", "gte", "gt"]
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": ["subject", "context", "unit", "operator", "value"]
                 }
               },
               "required": ["id", "text", "test"]

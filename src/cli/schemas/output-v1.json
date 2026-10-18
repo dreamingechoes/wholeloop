@@ -5,6 +5,24 @@
   "required": ["schema"],
   "oneOf": [
     {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/challenge-plan@1"
+        }
+      },
+      "required": ["schema", "mode", "source", "coverage", "style", "problems", "instructions"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/challenge-schema@1"
+        }
+      },
+      "required": ["schema", "criteriaSchema"]
+    },
+    {
       "properties": {
         "schema": {
           "const": "wholeloop/version@1"

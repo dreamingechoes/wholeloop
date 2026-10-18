@@ -8,6 +8,20 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'challenge plan',
+    arguments: '<problem|spec|criteria|scopes>',
+    options: ['--file <path>', '--for <id>', '--challenge <level>'],
+    schema: 'wholeloop/challenge-plan@1',
+    summary: 'Lint a definition and render fixed challenger coverage',
+  },
+  {
+    path: 'challenge schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/challenge-schema@1',
+    summary: 'Print the standalone criteria metadata schema',
+  },
+  {
     path: 'scopes plan',
     arguments: '',
     options: ['--for <id>'],

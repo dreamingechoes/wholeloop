@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P2-05 — challenger modes and definition checks
+
+- Add read-only problem/spec/criteria/scopes challenger plans with fixed coverage, source digests and transient challenge overrides. Tone and the additional counter-question limit change across dials; required checks and structural findings do not.
+- Share criteria lint with spec completion. Optional numeric assertions detect impossible equality/exclusion or open/closed bound pairs only with identical subject, context and unit. Keep vague wording, meaningful tests and unique IDs checks. ADR-0025 explains why prose is not parsed as a constraint language.
+- Wire canonical skills and the challenger role to the executable plans. Verify labelled good/bad fixtures, numeric edge cases, separate contexts/units, journal rollback, all mode/dial instruction snapshots and compiled CLI operation.
+- Local check: 276 tests, build, smoke, lint, typecheck, docs, harness and Mermaid passed. Live semantic critique/read-only enforcement and broader logical consistency remain owner/client verification.
+
+---
+
 ## 2026-10-18 · P2-04 — measurable scopes and inherited approval
 
 - Add cut-scopes, a versioned plan/schema, a single-scope suggestion and batched delivery questions. Read repository flag naming before drafting; retain explicit delivery/complexity reasons.

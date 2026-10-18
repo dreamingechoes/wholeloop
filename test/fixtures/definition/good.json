@@ -1,0 +1,29 @@
+{
+  "schema": "wholeloop/criteria@1",
+  "criteria": [
+    {
+      "id": "upper",
+      "text": "The order response time is lte 200 ms for an authenticated existing order.",
+      "test": "Measure elapsed time for a seeded existing order request and assert lte 200 ms.",
+      "assertion": {
+        "subject": "response-time",
+        "context": "authenticated existing order",
+        "unit": "ms",
+        "operator": "lte",
+        "value": 200
+      }
+    },
+    {
+      "id": "lower",
+      "text": "The order response time is gte 0 ms for an authenticated existing order.",
+      "test": "Measure elapsed time for a seeded existing order request and assert gte 0 ms.",
+      "assertion": {
+        "subject": "response-time",
+        "context": "authenticated existing order",
+        "unit": "ms",
+        "operator": "gte",
+        "value": 0
+      }
+    }
+  ]
+}

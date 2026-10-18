@@ -128,6 +128,12 @@ Next                 /wholeloop:cut-scopes init-41c2
 | Codex CLI | `$wl-write-spec …` |
 | OpenCode · Copilot CLI · tier B | `/wl-write-spec …` |
 
+Optional numeric criterion assertions allow deterministic contradictory-pair
+checks: name the exact subject, context, unit, operator and value. The shared
+lint rejects conflicting bounds before completion. Free-text consistency still
+needs a challenger; `wl challenge plan spec --file <file> --json` supplies fixed
+coverage and tone without calling a model.
+
 ## Before & after
 
 - **Fed by:** [`frame-problem`](./frame-problem.md) (problem, impact, `TBD`s) and [`research`](./research.md) (evidence, baselines).

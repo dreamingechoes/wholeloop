@@ -1,4 +1,5 @@
 import { validate } from '../config/schema.js'
+import { type Criterion, lintCriteria } from '../definition/criteria.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import { OPERATIONS } from '../providers/taxonomy.js'
 import schema from './schemas/spec-v1.json' with { type: 'json' }
@@ -14,11 +15,7 @@ export const SPEC_SECTIONS = [
   'Measurement plan',
   'Technical appendix',
 ] as const
-export interface Criterion {
-  id: string
-  text: string
-  test: string
-}
+export type { Criterion } from '../definition/criteria.js'
 export interface Story {
   id: string
   actor: string
@@ -55,8 +52,6 @@ export interface Spec {
     rollback: string
   }
 }
-const VAGUE =
-  /\b(fast|quickly|intuitive|better|user[- ]friendly|seamless|robust|scalable|easy|asap)\b/i
 
 export function parseSpec(content: string): Spec {
   let data: unknown
@@ -103,25 +98,14 @@ export function checkSpec(content: string): string[] {
     'Story',
   )
   unique(
-    spec.stories.flatMap((story) => story.criteria.map((criterion) => criterion.id)),
-    'Criterion',
-  )
-  unique(
     spec.metrics.map((metric) => metric.id),
     'Metric',
   )
-  for (const story of spec.stories)
-    for (const criterion of story.criteria) {
-      const match = VAGUE.exec(criterion.text)
-      if (match)
-        problems.push(
-          `Criterion ${criterion.id}: replace untestable wording "${match[0]}" with an observable threshold or behavior`,
-        )
-      if (!criterion.text.trim() || !criterion.test.trim())
-        problems.push(
-          `Criterion ${criterion.id}: describe observable behavior and a falsifiable test`,
-        )
-    }
+  problems.push(
+    ...lintCriteria(spec.stories.flatMap((story) => story.criteria)).map(
+      (finding) => finding.message,
+    ),
+  )
   for (const metric of spec.metrics) {
     if (!metric.source.operation.startsWith('source.') || !OPERATIONS.has(metric.source.operation))
       problems.push(`Metric ${metric.id}: source operation must be a taxonomy query`)

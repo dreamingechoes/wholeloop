@@ -3,7 +3,7 @@
 > **TL;DR** — Eight short agent roles do the work. They run on whichever **engine** the CLI supports best — native subagents, headless worker processes, or one after another — and the result is the same, because everything that decides (lens sets, thresholds, round caps, aggregation) lives in the core, not in the engine.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation are implemented with stubbed-agent tests. Live client engines, gate rounds and the remaining roles are pending. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
+> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Live client engines, gate rounds and the remaining roles are pending. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
 
 ---
 
@@ -21,6 +21,31 @@
 | `analyst` | Pulls real numbers against the pinned plan; verdict per metric | No | `measure-impact`, `decide-next` |
 
 **What a role must not do is removed from its tools, not only written in its prompt.** Where a CLI cannot enforce a read-only agent, the core verifies it afterwards (the working tree must be unchanged after a review).
+
+## Definition challenger modes
+
+`wl challenge plan problem|spec|criteria|scopes --file <artifact> --json` renders
+fixed coverage, an input digest, structural findings and host instructions.
+Problem/spec/scopes read their Markdown artifacts; standalone criteria use
+`wholeloop/criteria@1` JSON from `wl challenge schema --json`. Scope plans pinned
+to a spec also need `--for <initiative>`. Exit 4 reports structural defects.
+The command is read-only and does not invoke a model.
+
+The resolved challenge dial controls tone and **additional** counter-questions:
+supportive 1, balanced 2, adversarial 3. `--challenge` is a transient override.
+Every finding and coverage item remains present at every level. The host
+challenger reports location, defect, evidence and a falsifying example, without
+repairing the author's artifact or inventing missing evidence.
+
+Optional criterion `assertion` metadata contains `subject`, `context`, `unit`,
+`operator` (`lt`, `lte`, `eq`, `ne`, `gte`, `gt`) and numeric `value`. Lint detects
+contradictory pairs only with identical subject/context/unit, including open and
+closed bounds. It does not infer assertions from prose or convert units. Broader
+logical consistency, independence and factual truth still need semantic critique.
+[ADR-0025](../decisions/0025-explicit-criteria-constraints-and-challenge-modes.md)
+records the deliberate boundary. Spec completion runs this same lint before
+writing state. Definition plans and instruction snapshots are tested locally;
+live host critique and read-only tools remain manual verification.
 
 ## Three engines, one result
 

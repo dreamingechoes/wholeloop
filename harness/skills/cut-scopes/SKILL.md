@@ -29,7 +29,8 @@ Read ask-never-guess, output-contract and scope-definition.
    dependencies, named by another plan key or an existing scope ID in this
    initiative. Omitting an existing scope does not delete it.
 6. Write Scope overview, Metric ownership, Delivery plan, Complexity and Open
-   questions sections. Ask the challenger whether each scope can ship alone and
+   questions sections. Run `wl challenge plan scopes --file <file>
+   --for <initiative> --json` and give its coverage to the challenger. Ask whether each scope can ship alone and
    whether dependencies hide missing cuts. Preserve unresolved evidence as
    explicit questions. Host semantic critique still needs client conformance.
 7. Call `wl step complete cut-scopes --for <initiative> --artifact <file> --json`.

@@ -1,0 +1,117 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`challenger modes and style > criteria preserves coverage and findings across challenge dials 1`] = `
+[
+  "Challenge mode: criteria. Ask constructively and explain the gap.
+Check: Observable behavior and falsifiable tests.
+Check: Structurally contradictory assertions.
+Check: Boundary, empty, error and unauthorized paths.
+Check: Unwanted behavior that could still pass.
+Ask up to 1 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: criteria. Challenge firmly and kindly; require evidence.
+Check: Observable behavior and falsifiable tests.
+Check: Structurally contradictory assertions.
+Check: Boundary, empty, error and unauthorized paths.
+Check: Unwanted behavior that could still pass.
+Ask up to 2 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: criteria. Argue the opposite case and demand a falsifying example.
+Check: Observable behavior and falsifiable tests.
+Check: Structurally contradictory assertions.
+Check: Boundary, empty, error and unauthorized paths.
+Check: Unwanted behavior that could still pass.
+Ask up to 3 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+]
+`;
+
+exports[`challenger modes and style > problem preserves coverage and findings across challenge dials 1`] = `
+[
+  "Challenge mode: problem. Ask constructively and explain the gap.
+Check: Observed problem and affected people.
+Check: Evidence versus hypothesis and missing answerers.
+Check: Expected impact, cost, priority and stop conditions.
+Check: Counterexample that would reverse the go decision.
+Ask up to 1 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: problem. Challenge firmly and kindly; require evidence.
+Check: Observed problem and affected people.
+Check: Evidence versus hypothesis and missing answerers.
+Check: Expected impact, cost, priority and stop conditions.
+Check: Counterexample that would reverse the go decision.
+Ask up to 2 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: problem. Argue the opposite case and demand a falsifying example.
+Check: Observed problem and affected people.
+Check: Evidence versus hypothesis and missing answerers.
+Check: Expected impact, cost, priority and stop conditions.
+Check: Counterexample that would reverse the go decision.
+Ask up to 3 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+]
+`;
+
+exports[`challenger modes and style > scopes preserves coverage and findings across challenge dials 1`] = `
+[
+  "Challenge mode: scopes. Ask constructively and explain the gap.
+Check: Independent release and measurement.
+Check: Complete story and metric ownership.
+Check: Delivery mode, flag convention and argued complexity.
+Check: Explicit dependencies, cycles and missing cuts.
+Ask up to 1 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: scopes. Challenge firmly and kindly; require evidence.
+Check: Independent release and measurement.
+Check: Complete story and metric ownership.
+Check: Delivery mode, flag convention and argued complexity.
+Check: Explicit dependencies, cycles and missing cuts.
+Ask up to 2 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: scopes. Argue the opposite case and demand a falsifying example.
+Check: Independent release and measurement.
+Check: Complete story and metric ownership.
+Check: Delivery mode, flag convention and argued complexity.
+Check: Explicit dependencies, cycles and missing cuts.
+Ask up to 3 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+]
+`;
+
+exports[`challenger modes and style > spec preserves coverage and findings across challenge dials 1`] = `
+[
+  "Challenge mode: spec. Ask constructively and explain the gap.
+Check: Story ownership and observable acceptance tests.
+Check: Contradictions, boundaries, empty and error paths.
+Check: Metric source, baseline, target and measurement window.
+Check: Rollout, rollback and technical assumptions.
+Ask up to 1 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: spec. Challenge firmly and kindly; require evidence.
+Check: Story ownership and observable acceptance tests.
+Check: Contradictions, boundaries, empty and error paths.
+Check: Metric source, baseline, target and measurement window.
+Check: Rollout, rollback and technical assumptions.
+Ask up to 2 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: spec. Argue the opposite case and demand a falsifying example.
+Check: Story ownership and observable acceptance tests.
+Check: Contradictions, boundaries, empty and error paths.
+Check: Metric source, baseline, target and measurement window.
+Check: Rollout, rollback and technical assumptions.
+Ask up to 3 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+]
+`;

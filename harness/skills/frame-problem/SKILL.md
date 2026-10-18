@@ -27,6 +27,9 @@ Read ask-never-guess, output-contract and framing-evidence.
 5. Draft outside the repository using every heading in `contract.template`.
    Separate evidence from hypotheses. Write each unknown as
    `TBD: <missing evidence>; who: <person or role>`; never invent a value.
+   Run `wl challenge plan problem --file <path> --json` and give its fixed
+   coverage and exact draft to the challenger. Resolve findings or preserve
+   explicit evidence gaps before the go/no-go call.
 6. Complete with `wl step complete frame-problem --for <id> --artifact <path>
    --json`. Fix structural findings first. When the explicit call is no-go,
    add `--no-go dropped --reason "<why>"` or `--no-go on-hold --reason "<why>"

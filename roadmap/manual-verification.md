@@ -22,6 +22,15 @@ actual tool call and authentication before calling that integration supported.
 Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
+## Definition challenger validation still pending
+
+Exercise all four modes in a host using the returned instructions and exact
+artifact. Verify that every mode reports evidence and counterexamples, preserves
+unknowns and leaves files unchanged. Compare challenge dials: tone and extra
+counter-questions can differ, coverage and findings cannot. Numeric lint only
+proves supported pairwise contradictions with explicitly matching contexts/units;
+free-text semantics and multi-constraint consistency remain independent review.
+
 ## Scope validation still pending
 
 Run cut-scopes with actual repository flag naming guidance and ask the challenger

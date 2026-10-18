@@ -29,7 +29,8 @@ Read ask-never-guess, output-contract and spec-definition.
 6. Write the readable problem/users/stories/criteria/metrics/rollout/measurement
    sections and technical appendix. Keep technical detail in the appendix; show
    dependencies, affected paths, proposed flags and candidate scopes there.
-7. Ask the challenger to inspect the criteria as a tester: contradictions, missing
+7. Run `wl challenge plan spec --file <draft-file> --json`. Give the returned
+   fixed coverage and exact artifact to the challenger to inspect the criteria as a tester: contradictions, missing
    boundaries and behavior that could pass while doing something unwanted. Use
    the challenge style without dropping coverage. Resolve findings with evidence
    or explicit questions; do not invent a baseline or claim to have run a query.

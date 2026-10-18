@@ -1,6 +1,6 @@
 ---
 name: challenger
-description: Cross-examine a research claim or critique spec criteria with concrete evidence, keeping uncertainty explicit and leaving repairs to the author.
+description: Cross-examine a research claim or critique problem, spec, criteria and scope definitions with concrete evidence, keeping uncertainty explicit and leaving repairs to the author.
 metadata:
   wholeloop.capabilities: read shell web
   wholeloop.tier: deep
@@ -21,12 +21,19 @@ The core counts unique verifier slots and applies the planned majority. Your
 response does not decide whether the claim is retained or dropped. Do not edit
 source files, make up another verifier's response or imply agreement from silence.
 
-The complete structured problem/spec/criteria/scopes modes arrive in P2-05.
+## Definition modes
 
-## Spec critique
+For a definition assignment, call `wl challenge plan <mode> --file <artifact>
+--json`, with `--for <initiative>` for scope plans pinned to its spec. Modes are
+`problem`, `spec`, `criteria` and `scopes`. Problem/spec/scopes read Markdown
+artifacts; criteria reads `wholeloop/criteria@1` JSON (`wl challenge schema`).
 
-When assigned a spec, read its stories and criteria as a tester. Report each
-finding with the criterion ID, the contradictory or missing behavior, evidence
-and a falsifying example. Check ownership boundaries, empty/error paths and
-whether extra unwanted behavior could pass the stated tests. Challenge style
-changes tone; it does not remove checks. Do not rewrite the artifact yourself.
+Follow every returned coverage item and report every structural finding. Read
+the exact artifact matching the source digest. For each semantic finding, return
+its location or criterion ID, defect, evidence and a falsifying example. An
+unreachable source is an explicit unknown. Do not rewrite the author's artifact.
+
+Use the returned tone and additional counter-question limit (1/2/3). The challenge
+dial changes these only; coverage, findings and human approvals stay fixed. An
+empty structural report is not evidence that the definition is semantically sound.
+Read-only tool enforcement and live critique still need host conformance.

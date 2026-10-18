@@ -67,7 +67,7 @@
 
 ## P2-05 · Challenger modes and definition checks
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P2-03
+**Status:** ✅ · **Size:** M · **Depends on:** P2-03
 
 **Goal** — Defects in definitions are caught before they become code.
 
@@ -75,8 +75,8 @@
 
 **Acceptance criteria:**
 
-- [ ] Deterministic checks have unit tests over good and bad fixtures.
-- [ ] The dial changes tone and number of counter-questions only (snapshot of rendered instructions).
+- [x] Deterministic checks have unit tests over good and bad fixtures.
+- [x] The dial changes tone and number of counter-questions only (snapshot of rendered instructions).
 
 **Docs** — architecture/orchestration-and-gates (agents).
 
