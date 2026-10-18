@@ -8,6 +8,47 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'step begin',
+    arguments: '<step>',
+    options: [
+      '--for <id>',
+      '--input <text>',
+      '--owner <name>',
+      '--mode <mode>',
+      '--profile <json>',
+    ],
+    schema: 'wholeloop/step-begin@1',
+    summary: 'Compute inputs and begin an available step',
+  },
+  {
+    path: 'step plan',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/step-plan@1',
+    summary: 'Plan the next step and required decisions',
+  },
+  {
+    path: 'step complete',
+    arguments: '<step>',
+    options: ['--for <id>', '--artifact <file>'],
+    schema: 'wholeloop/step-complete@1',
+    summary: 'Validate and record a step artifact',
+  },
+  {
+    path: 'step skip',
+    arguments: '<step>',
+    options: ['--for <id>', '--reason <text>'],
+    schema: 'wholeloop/step-skip@1',
+    summary: 'Skip a step with a durable reason',
+  },
+  {
+    path: 'answer',
+    arguments: '<qid=value>',
+    options: ['--for <id>', '--run <id>', '--remember <scope>', '--by <person>'],
+    schema: 'wholeloop/answer@1',
+    summary: 'Remember an answer or record an explicit human decision',
+  },
+  {
     path: 'msg send',
     arguments: '',
     options: [

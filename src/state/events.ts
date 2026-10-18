@@ -1,5 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
+import { STEP_NAMES, type StepName } from '../flow/registry.js'
 import { replayMailbox } from './mailbox.js'
 
 export const KINDS = ['initiative', 'scope', 'slice', 'part', 'brief', 'review'] as const
@@ -40,6 +41,23 @@ export type EventData =
   | { type: 'link.added'; data: { url: string } }
   | { type: 'msg.sent'; data: { to: string; from: string; kind: MessageKind; body: string } }
   | { type: 'msg.read'; data: { reader: string; role: string; through: string } }
+  | {
+      type: 'step.started'
+      data: { step: StepName; run: string; mode: 'standalone' | 'flow'; input: string }
+    }
+  | {
+      type: 'step.completed'
+      data: { step: StepName; run: string; artifact: { path: string; content: string } }
+    }
+  | { type: 'step.skipped'; data: { step: StepName; run: string; reason: string } }
+  | {
+      type: 'answer.remembered'
+      data: { qid: string; value: string; scope: 'run' | 'initiative'; run: string }
+    }
+  | {
+      type: 'decision.recorded'
+      data: { decision: string; outcome: 'approved' | 'rejected'; by: string; basis: string }
+    }
 export type StateEvent = {
   v: 1
   id: string
@@ -60,6 +78,42 @@ function text(value: unknown, empty = false): value is string {
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
   switch (type) {
+    case 'step.started':
+      return (
+        keys(data, ['step', 'run', 'mode', 'input']) &&
+        stepData(data) &&
+        ['standalone', 'flow'].includes(String(data.mode)) &&
+        text(data.input)
+      )
+    case 'step.completed':
+      return (
+        keys(data, ['step', 'run', 'artifact']) &&
+        stepData(data) &&
+        isObject(data.artifact) &&
+        keys(data.artifact, ['path', 'content']) &&
+        text(data.artifact.path) &&
+        text(data.artifact.content)
+      )
+    case 'step.skipped':
+      return keys(data, ['step', 'run', 'reason']) && stepData(data) && text(data.reason)
+    case 'answer.remembered':
+      return (
+        keys(data, ['qid', 'value', 'scope', 'run']) &&
+        ['owner', 'input', 'docs.destination', 'tracker.destination'].includes(String(data.qid)) &&
+        text(data.value) &&
+        ['run', 'initiative'].includes(String(data.scope)) &&
+        runId(data.run)
+      )
+    case 'decision.recorded':
+      return (
+        keys(data, ['decision', 'outcome', 'by', 'basis']) &&
+        text(data.decision) &&
+        /^[a-z][a-z0-9-]*$/.test(data.decision) &&
+        ['approved', 'rejected'].includes(String(data.outcome)) &&
+        text(data.by) &&
+        text(data.basis) &&
+        /^ev-[a-f0-9-]{36}$/.test(data.basis)
+      )
     case 'item.created':
       return (
         keys(data, ['kind', 'title', 'owner', 'body', 'parent']) &&
@@ -113,6 +167,13 @@ function validData(type: string, data: Record<string, unknown>): boolean {
   }
 }
 
+function runId(value: unknown): value is string {
+  return typeof value === 'string' && /^run-[a-f0-9]{16}$/.test(value)
+}
+function stepData(data: Record<string, unknown>): boolean {
+  return STEP_NAMES.includes(data.step as StepName) && runId(data.run)
+}
+
 function address(value: unknown): value is string {
   return typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9:_.-]{0,127}$/.test(value)
 }
@@ -144,6 +205,13 @@ export function validateEvent(value: unknown): asserts value is StateEvent {
     !String(value.subject).startsWith(`${PREFIX[value.data.kind as ItemKind]}-`)
   )
     throw new Error('Item kind does not match its typed id')
+  if (value.type === 'step.completed') {
+    const artifact = value.data.artifact as { path: string }
+    if (
+      artifact.path !== `items/${value.subject}/artifacts/${value.data.step}/${value.data.run}.md`
+    )
+      throw new Error('Artifact path does not match its step and subject')
+  }
 }
 
 export function event(subject: string, data: EventData, ts: string): StateEvent {
@@ -183,6 +251,22 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
     }
     const item = items.get(entry.subject)
     if (!item) throw new Error(`Missing item: ${entry.subject}`)
+    if (
+      entry.type === 'decision.recorded' &&
+      (!ids.has(entry.data.basis) || entry.data.basis === entry.id)
+    )
+      throw new Error('Decision basis must reference an earlier event')
+    if (entry.type === 'step.completed') {
+      const started = events.find(
+        (candidate) =>
+          candidate.type === 'step.started' &&
+          candidate.subject === entry.subject &&
+          candidate.data.step === entry.data.step &&
+          candidate.data.run === entry.data.run &&
+          ids.has(candidate.id),
+      )
+      if (!started) throw new Error('Step completion needs a matching start')
+    }
     switch (entry.type) {
       case 'item.updated':
         Object.assign(item, entry.data)

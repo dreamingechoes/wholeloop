@@ -297,6 +297,73 @@
         }
       },
       "required": ["subject", "totalItems", "truncated"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/step-begin@1"
+        },
+        "subject": {},
+        "step": {
+          "type": "string"
+        }
+      },
+      "required": ["subject", "step"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/step-plan@1"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "pending": {
+          "type": "array"
+        }
+      },
+      "required": ["subject", "pending"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/step-complete@1"
+        },
+        "subject": {},
+        "step": {
+          "type": "string"
+        }
+      },
+      "required": ["subject", "step"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/step-skip@1"
+        },
+        "subject": {},
+        "step": {
+          "type": "string"
+        }
+      },
+      "required": ["subject", "step"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/answer@1"
+        },
+        "qid": {
+          "type": "string"
+        },
+        "scope": {
+          "enum": ["run", "initiative", "project", "user"]
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": ["qid", "scope", "value"]
     }
   ],
   "$defs": {

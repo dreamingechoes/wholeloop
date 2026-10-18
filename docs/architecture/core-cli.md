@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The command router, versioned JSON outputs, documented exit codes and generated implemented-command reference are available. Later flow behavior below remains planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine are implemented. The registry contains all thirteen steps; only the minimal frame-problem artifact path can complete. Generated CLI adapters, providers, gates and later step behavior remain planned.
 
 ---
 
@@ -17,11 +17,16 @@
 
 ## Implemented commands
 
-Every command accepts `--json`. Output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape).
+Every command accepts `--json`. Machine-readable output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape). Unknown options fail rather than silently changing behavior.
 
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl step begin <step>` | `wholeloop/step-begin@1` | Compute inputs and begin an available step |
+| `wl step plan` | `wholeloop/step-plan@1` | Plan the next step and required decisions |
+| `wl step complete <step>` | `wholeloop/step-complete@1` | Validate and record a step artifact |
+| `wl step skip <step>` | `wholeloop/step-skip@1` | Skip a step with a durable reason |
+| `wl answer <qid=value>` | `wholeloop/answer@1` | Remember an answer or record an explicit human decision |
 | `wl msg send` | `wholeloop/msg-send@1` | Send a durable message in an item thread |
 | `wl msg read` | `wholeloop/msg-read@1` | Read unread messages with a persistent per-reader cursor |
 | `wl handoff <id>` | `wholeloop/handoff@1` | Hand an item to another role with durable context |
@@ -43,7 +48,7 @@ Every command accepts `--json`. Output contracts live in `src/cli/schemas/`. Err
 | `wl guard commit-msg <file>` | `wholeloop/commit-check@1` | Validate a commit message without changing it |
 <!-- commands:end -->
 
-Regenerate with `npm run docs:commands`; CI checks drift.
+Regenerate with `npm run docs:commands`; CI checks for drift.
 
 ## Planned command surface
 
@@ -65,6 +70,24 @@ Regenerate with `npm run docs:commands`; CI checks drift.
 | **Install** | `wl install --target <cli,…> --scope user\|project` · `wl uninstall` · `wl doctor` | people |
 | **Docs (dev)** | `wl docs nav` · `wl docs check [--json]` — ✅ implemented | CI, contributors |
 | **Harness (dev)** | `wl harness check [--json]` — budgets, front matter, enforcement map — ✅ implemented | CI, contributors |
+
+## Running the core step contract
+
+```text
+wl step begin frame-problem --input "Find past orders faster" --owner "Alex" --json
+wl step complete frame-problem --for init-0123abcd --artifact /path/to/frame.md --json
+wl step plan --for init-0123abcd --json
+wl step skip research --for init-0123abcd --reason "Existing support evidence" --json
+wl answer owner=Alex --remember user --json
+```
+
+A minimal framing artifact requires non-empty `Problem` and `Owner` headings; headings inside code fences do not count. This is the engine skeleton, not the complete framing workflow in P2. Completion copies the artifact into the external store and includes its contents in the journal so rebuild restores it. Repeated begin calls reuse an unfinished run; completion without a start fails. Unimplemented steps return their contract with `available: false` and exit 3, without recording a fabricated run.
+
+`--mode standalone` (default) allows direct entry; `--mode flow` checks the next planned step. Missing input/owner returns batched questions and exit 2 without creating an item. Skipping requires a reason, retains it in subsequent preflights and preserves that step's required decisions.
+
+`answer` recognizes `owner`, `input`, `docs.destination` and `tracker.destination`. Run/initiative answers require `--for`; a run answer uses `--run` or the latest started run. User/project answers explicitly update configuration (`answers.owner` or `providers.*`); `input` cannot be remembered beyond its initiative.
+
+A pending decision is answered with `wl answer decision.approve-spec=approved --for <id> --by "Alex" --remember run`. Only `approved`/`rejected` are accepted; decisions cannot become reusable defaults. They bind to the completed/skipped revision, so changing that revision requires another decision. Merging remains outside the CLI.
 
 ## The step contract
 

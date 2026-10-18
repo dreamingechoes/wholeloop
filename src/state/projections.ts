@@ -32,6 +32,9 @@ export function projections(
   }
   for (const [id, messages] of threads)
     files.set(`mailbox/${id}.ndjson`, `${messages.join('\n')}\n`)
+  for (const entry of events)
+    if (entry.type === 'step.completed')
+      files.set(entry.data.artifact.path, entry.data.artifact.content)
   files.set('cursors.json', `${JSON.stringify(mailbox.cursors, null, 2)}\n`)
   return files
 }

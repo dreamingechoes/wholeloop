@@ -3,7 +3,7 @@
 > **TL;DR** — Give it a rough idea — one sentence, a copied thread, a research brief — and it works through a short, fixed list of questions: what hurts and for whom, what supports that, what would change if we got it right, and what would make us walk away. It opens the **initiative**, names the person who owns it, and finishes with a clear call: write the spec next, or record why not.
 
 > [!NOTE]
-> **Status: 📐 design.** Skeleton tracked in [P1-12](../../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem); full step in [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
+> **Status: 🚧 partial.** The CLI engine can begin an owned initiative and validate/store a minimal Problem/Owner artifact. The eight-question framing, challenger, publication and generated skills below remain planned. Skeleton tracked in [P1-12](../../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem); full step in [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
 
 ---
 

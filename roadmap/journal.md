@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-18 · P1-05 — step and question contracts
+
+- Register all thirteen steps with explicit inputs, outputs, checks and decisions; only minimal frame-problem completion is available until full workflows land.
+- Record starts, validated artifacts, skips with reasons and revision-bound human decisions in the journal. Batch missing input questions before mutation; remember answers only at explicitly chosen scopes.
+- Verify every step from empty/input/initiative entry, idempotent runs, shape validation, scoped answers and decisions that survive skips; complete local checks passed. Full workflow behavior remains tracked in P2/P3.
+
+---
+
 ## 2026-10-18 · P1-04 — durable mailbox and bounded resume context
 
 - Add local message threads and independent reader/role cursors, with explicit peek and handoff operations; rebuilding projections preserves read positions.

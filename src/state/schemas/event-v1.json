@@ -207,6 +207,194 @@
           "required": ["reader", "role", "through"]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "step.started"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "step": {
+              "enum": [
+                "research",
+                "frame-problem",
+                "write-spec",
+                "cut-scopes",
+                "slice-work",
+                "build-slice",
+                "verify-works",
+                "review-code",
+                "open-pr",
+                "prepare-launch",
+                "ramp-exposure",
+                "measure-impact",
+                "decide-next"
+              ]
+            },
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "mode": {
+              "enum": ["standalone", "flow"]
+            },
+            "input": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["step", "run", "mode", "input"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "step.completed"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "step": {
+              "enum": [
+                "research",
+                "frame-problem",
+                "write-spec",
+                "cut-scopes",
+                "slice-work",
+                "build-slice",
+                "verify-works",
+                "review-code",
+                "open-pr",
+                "prepare-launch",
+                "ramp-exposure",
+                "measure-impact",
+                "decide-next"
+              ]
+            },
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "artifact": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "content": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["path", "content"]
+            }
+          },
+          "required": ["step", "run", "artifact"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "step.skipped"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "step": {
+              "enum": [
+                "research",
+                "frame-problem",
+                "write-spec",
+                "cut-scopes",
+                "slice-work",
+                "build-slice",
+                "verify-works",
+                "review-code",
+                "open-pr",
+                "prepare-launch",
+                "ramp-exposure",
+                "measure-impact",
+                "decide-next"
+              ]
+            },
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["step", "run", "reason"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "answer.remembered"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "qid": {
+              "enum": ["owner", "input", "docs.destination", "tracker.destination"]
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scope": {
+              "enum": ["run", "initiative"]
+            },
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            }
+          },
+          "required": ["qid", "value", "scope", "run"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "decision.recorded"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "decision": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*$"
+            },
+            "outcome": {
+              "enum": ["approved", "rejected"]
+            },
+            "by": {
+              "type": "string",
+              "minLength": 1
+            },
+            "basis": {
+              "type": "string",
+              "pattern": "^ev-[a-f0-9-]{36}$"
+            }
+          },
+          "required": ["decision", "outcome", "by", "basis"]
+        }
+      }
     }
   ]
 }

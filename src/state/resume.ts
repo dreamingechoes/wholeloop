@@ -1,3 +1,4 @@
+import { flowPlan } from '../flow/plan.js'
 import { replay, type StateEvent } from './events.js'
 import { unread } from './mailbox.js'
 
@@ -32,6 +33,12 @@ export function contextPack(
   const messages = unread(events, role, reader).filter((message) =>
     descendantIds.has(message.thread),
   )
+  const plan = flowPlan(events, subject.id)
+  const artifacts = events.flatMap((entry) =>
+    entry.subject === subject.id && entry.type === 'step.completed'
+      ? [{ step: entry.data.step, path: entry.data.artifact.path }]
+      : [],
+  )
   const payload = {
     schema: 'wholeloop/resume@1',
     subject: {
@@ -58,8 +65,13 @@ export function contextPack(
     })),
     notes: subject.notes.slice(-3).map((note) => short(note.text, 160)),
     links: subject.links.slice(-5).map((link) => short(link, 240)),
-    flow: { available: false },
-    next: `wl open ${subject.id}`,
+    flow: { ...plan, pending: plan.pending.slice(0, 8), completed: plan.completed.slice(0, 13) },
+    artifacts: artifacts.slice(-8),
+    next: plan.pending.length
+      ? `wl step plan --for ${subject.id}`
+      : plan.available && plan.next
+        ? `wl step begin ${plan.next} --for ${subject.id}`
+        : `wl open ${subject.id}`,
     truncated:
       descendants.length > 12 ||
       messages.length > 8 ||
@@ -69,6 +81,7 @@ export function contextPack(
   while (Buffer.byteLength(JSON.stringify(payload)) > CONTEXT_BYTES) {
     payload.truncated = true
     if (payload.items.length) payload.items.pop()
+    else if (payload.artifacts.length) payload.artifacts.pop()
     else if (payload.unread.length) payload.unread.pop()
     else if (payload.links.length) payload.links.pop()
     else if (payload.notes.length) payload.notes.pop()

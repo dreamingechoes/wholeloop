@@ -1,0 +1,1847 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`step begin contracts > build-slice: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — build-slice (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "build-slice",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — build-slice (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "build-slice",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — build-slice (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "build-slice",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > cut-scopes: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "approve-scopes",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — cut-scopes (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "cut-scopes",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "approve-scopes",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — cut-scopes (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "cut-scopes",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "approve-scopes",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — cut-scopes (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "cut-scopes",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > decide-next: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "decide",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — decide-next (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "decide-next",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "decide",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — decide-next (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "decide-next",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "decide",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — decide-next (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "decide-next",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > frame-problem: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": true,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — frame-problem (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "frame-problem",
+    "subject": null,
+    "template": [
+      "Problem",
+      "Owner",
+    ],
+  },
+  {
+    "available": true,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — frame-problem (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "frame-problem",
+    "subject": null,
+    "template": [
+      "Problem",
+      "Owner",
+    ],
+  },
+  {
+    "available": true,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — frame-problem (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "frame-problem",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": [
+      "Problem",
+      "Owner",
+    ],
+  },
+]
+`;
+
+exports[`step begin contracts > measure-impact: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — measure-impact (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "measure-impact",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — measure-impact (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "measure-impact",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — measure-impact (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "measure-impact",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > open-pr: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [
+        "test-it",
+      ],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — open-pr (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "open-pr",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [
+        "test-it",
+      ],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — open-pr (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "open-pr",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [
+        "test-it",
+      ],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — open-pr (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "open-pr",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > prepare-launch: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — prepare-launch (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "prepare-launch",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — prepare-launch (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "prepare-launch",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — prepare-launch (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "prepare-launch",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > ramp-exposure: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "ramp",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — ramp-exposure (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "ramp-exposure",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "ramp",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — ramp-exposure (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "ramp-exposure",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "ramp",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — ramp-exposure (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "ramp-exposure",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > research: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — research (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "research",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — research (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "research",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — research (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "research",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > review-code: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — review-code (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "review-code",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — review-code (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "review-code",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — review-code (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "review-code",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > slice-work: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — slice-work (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "slice-work",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — slice-work (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "slice-work",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — slice-work (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "slice-work",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > verify-works: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — verify-works (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "verify-works",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — verify-works (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "verify-works",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — verify-works (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "verify-works",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;
+
+exports[`step begin contracts > write-spec: standalone empty, standalone input and initiative 1`] = `
+[
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "approve-spec",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": null,
+    "missing": [
+      "input",
+      "owner",
+    ],
+    "mode": "standalone",
+    "owner": null,
+    "preflight": [
+      "Plan — write-spec (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [
+      {
+        "id": "input",
+        "multi": false,
+        "options": [],
+        "prompt": "What should this step work on?",
+        "remember": [
+          "run",
+          "initiative",
+        ],
+      },
+      {
+        "id": "owner",
+        "multi": false,
+        "options": [],
+        "prompt": "Who owns this work?",
+        "remember": [
+          "run",
+          "initiative",
+          "project",
+          "user",
+        ],
+      },
+    ],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "write-spec",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "approve-spec",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "standalone",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — write-spec (standalone).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "write-spec",
+    "subject": null,
+    "template": null,
+  },
+  {
+    "available": false,
+    "bindings": {},
+    "decision": {
+      "after": [
+        "approve-spec",
+      ],
+      "before": [],
+    },
+    "have": {},
+    "input": "Find orders",
+    "missing": [],
+    "mode": "flow",
+    "owner": "Alex",
+    "preflight": [
+      "Plan — write-spec (flow).",
+      "Where — external wholeloop store.",
+      "Never — merge, send messages externally or change flags.",
+      "Stop — on request or at a required decision point.",
+    ],
+    "profile": "Style for this run:
+- Give enough reasoning and context to assess each action.
+- Balance product outcomes with useful technical detail.
+- Challenge unsupported assumptions firmly and kindly.
+- Run one worker at a time.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Match the conversation language.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.",
+    "questions": [],
+    "run": null,
+    "schema": "wholeloop/step-begin@1",
+    "step": "write-spec",
+    "subject": {
+      "id": "init-12345678",
+      "kind": "initiative",
+    },
+    "template": null,
+  },
+]
+`;

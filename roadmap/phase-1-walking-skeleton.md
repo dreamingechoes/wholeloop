@@ -69,7 +69,7 @@
 
 ## P1-05 · Flow engine and the step contract
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-02, P1-03
+**Status:** ✅ · **Size:** L · **Depends on:** P1-02, P1-03
 
 **Goal** — The process lives in code.
 
@@ -77,10 +77,10 @@
 
 **Acceptance criteria:**
 
-- [ ] Each step's `begin` payload is snapshot-tested for: standalone with nothing, standalone with input, inside an initiative.
-- [ ] A remembered answer is never asked again at its scope (test).
-- [ ] `step skip` without `--reason` fails; with it, the reason appears in the journal and in later preflights.
-- [ ] Decision points cannot be removed via config (test).
+- [x] Each step's `begin` payload is snapshot-tested for: standalone with nothing, standalone with input, inside an initiative.
+- [x] A remembered answer is never asked again at its scope (test).
+- [x] `step skip` without `--reason` fails; with it, the reason appears in the journal and in later preflights.
+- [x] Decision points cannot be removed via config (test).
 
 **Docs** — concepts (step contract), architecture/core-cli.
 

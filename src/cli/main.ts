@@ -5,6 +5,7 @@ import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
 import { docsCheck, docsNav } from './docs.js'
 import { CliError } from './errors.js'
+import { flowCommand } from './flow.js'
 import { harnessCheck } from './harness.js'
 import { EXIT, type Io } from './io.js'
 import { mailboxCommand } from './mailbox.js'
@@ -60,6 +61,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path.startsWith('step ') || command.path === 'answer')
+      return flowCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('msg ') || ['handoff', 'resume'].includes(command.path))
       return mailboxCommand(command.path, parsed, json, io)
     if (command.path.startsWith('state ') || ['note', 'link', 'open'].includes(command.path))

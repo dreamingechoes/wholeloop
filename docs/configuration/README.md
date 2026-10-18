@@ -90,7 +90,7 @@ wl config show --initiative-config /path/to/initiative.yml --run-config /path/to
 wl config schema --json
 ```
 
-Missing user/project files use built-in defaults. Explicit initiative/run files must exist. Every file requires `version: 1`; unknown keys, duplicate YAML keys and invalid values reject the entire load with a path and expected type. Inspection only reads configuration. Explicit configuration-writing commands arrive with the flow and profile tasks. `--explain` adds each value's scope and source file.
+Missing user/project files use built-in defaults. Explicit initiative/run files must exist. Every file requires `version: 1`; unknown keys, duplicate YAML keys and invalid values reject the entire load with a path and expected type. Inspection only reads configuration. Explicit `answer --remember user|project` actions update configuration atomically; project configuration writes are intentional, never runtime state. `--explain` adds each value's scope and source file.
 
 Maps such as slots merge per key; arrays replace rather than concatenate, so a higher scope can explicitly clear optional additions. `targets` is personal, like `profile.*`. Required decision points cannot be removed through the schema; `flow.decisions.add` only adds.
 

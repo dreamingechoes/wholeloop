@@ -2,8 +2,12 @@
 
 exports[`context packs > summarizes 50 descendants deterministically within its UTF-8 byte ceiling 1`] = `
 {
+  "artifacts": [],
   "flow": {
-    "available": false,
+    "available": true,
+    "completed": [],
+    "next": "frame-problem",
+    "pending": [],
   },
   "items": [
     {
@@ -80,7 +84,7 @@ exports[`context packs > summarizes 50 descendants deterministically within its 
     },
   ],
   "links": [],
-  "next": "wl open init-00000000",
+  "next": "wl step begin frame-problem --for init-00000000",
   "notes": [],
   "schema": "wholeloop/resume@1",
   "subject": {
