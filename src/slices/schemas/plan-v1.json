@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/slice-plan@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/slice-plan@1"
+    },
+    "sourceScope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceSpec": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repositories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["key", "path"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "slices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "objective": {
+            "type": "string",
+            "minLength": 1
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "demonstration": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entry": {
+                "type": "string",
+                "minLength": 1
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "expected": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["entry", "steps", "expected"]
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]*$"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "test": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "assertion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "subject": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "context": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "unit": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": ["lt", "lte", "eq", "ne", "gte", "gt"]
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": ["subject", "context", "unit", "operator", "value"]
+                }
+              },
+              "required": ["id", "text", "test"]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]*$"
+                },
+                "criteria": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_-]*$"
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "expected": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["id", "criteria", "steps", "expected"]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "repositories": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "repository": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "interface": {
+                "type": "string",
+                "minLength": 1
+              },
+              "examples": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            },
+            "required": ["repository", "interface", "examples"]
+          },
+          "blockedBy": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "key",
+          "title",
+          "objective",
+          "outcomes",
+          "demonstration",
+          "criteria",
+          "tests",
+          "repositories"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": ["schema", "repositories", "slices"]
+}

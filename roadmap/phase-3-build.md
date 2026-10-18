@@ -6,7 +6,7 @@
 
 ## P3-01 · `slice-work`
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P2-04
+**Status:** ✅ · **Size:** L · **Depends on:** P2-04
 
 **Goal** — Vertical, sequential slices with criteria before code.
 
@@ -14,8 +14,8 @@
 
 **Acceptance criteria:**
 
-- [ ] A slice with two user-visible outcomes or no end-to-end demonstration is flagged (fixtures).
-- [ ] A slice spanning N repositories produces at most N parts, the contract part first.
+- [x] A slice with two user-visible outcomes or no end-to-end demonstration is flagged (fixtures).
+- [x] A slice spanning N repositories produces at most N parts, the contract part first.
 
 **Docs** — flow/build/slice-work.
 

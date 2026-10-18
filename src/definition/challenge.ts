@@ -8,10 +8,16 @@ import {
   SCOPE_SECTIONS,
   type ScopeContext,
 } from '../scopes/contract.js'
+import {
+  checkSlicePlan,
+  parseSlicePlan,
+  SLICE_SECTIONS,
+  type SlicingContext,
+} from '../slices/contract.js'
 import { checkSpec, SPEC_SECTIONS } from '../spec/contract.js'
 import { lintCriteria, parseCriteria } from './criteria.js'
 
-export const CHALLENGE_MODES = ['problem', 'spec', 'criteria', 'scopes'] as const
+export const CHALLENGE_MODES = ['problem', 'spec', 'criteria', 'scopes', 'slicing'] as const
 export type ChallengeMode = (typeof CHALLENGE_MODES)[number]
 const COVERAGE: Record<ChallengeMode, readonly string[]> = {
   problem: [
@@ -38,6 +44,13 @@ const COVERAGE: Record<ChallengeMode, readonly string[]> = {
     'Delivery mode, flag convention and argued complexity',
     'Explicit dependencies, cycles and missing cuts',
   ],
+  slicing: [
+    'Exactly one user-visible outcome per slice',
+    'An end-to-end demonstration with observable results',
+    'Testable criteria and test-case coverage',
+    'One part per repository, contract repository first',
+    'Explicit acyclic dependencies and complete scope delivery',
+  ],
 }
 const STYLE = {
   supportive: { tone: 'Ask constructively and explain the gap.', questions: 1 },
@@ -51,6 +64,7 @@ export function challengePlan(
   options: {
     challenge: Profile['challenge']
     context?: ScopeContext
+    slicing?: SlicingContext
   },
 ) {
   let problems: string[] = []
@@ -70,6 +84,11 @@ export function challengePlan(
       case 'scopes': {
         problems = checkShape(content, SCOPE_SECTIONS)
         checkScopePlan(parseScopePlan(content), options.context ?? { metrics: [], stories: [] })
+        break
+      }
+      case 'slicing': {
+        problems = checkShape(content, SLICE_SECTIONS)
+        checkSlicePlan(parseSlicePlan(content), options.slicing ?? { criteria: [] })
         break
       }
     }

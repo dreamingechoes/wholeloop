@@ -87,6 +87,38 @@ Read only. Do not rewrite the artifact or treat an empty structural report as se
 ]
 `;
 
+exports[`challenger modes and style > slicing preserves coverage and findings across challenge dials 1`] = `
+[
+  "Challenge mode: slicing. Ask constructively and explain the gap.
+Check: Exactly one user-visible outcome per slice.
+Check: An end-to-end demonstration with observable results.
+Check: Testable criteria and test-case coverage.
+Check: One part per repository, contract repository first.
+Check: Explicit acyclic dependencies and complete scope delivery.
+Ask up to 1 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: slicing. Challenge firmly and kindly; require evidence.
+Check: Exactly one user-visible outcome per slice.
+Check: An end-to-end demonstration with observable results.
+Check: Testable criteria and test-case coverage.
+Check: One part per repository, contract repository first.
+Check: Explicit acyclic dependencies and complete scope delivery.
+Ask up to 2 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+  "Challenge mode: slicing. Argue the opposite case and demand a falsifying example.
+Check: Exactly one user-visible outcome per slice.
+Check: An end-to-end demonstration with observable results.
+Check: Testable criteria and test-case coverage.
+Check: One part per repository, contract repository first.
+Check: Explicit acyclic dependencies and complete scope delivery.
+Ask up to 3 additional counter-questions after reporting every finding.
+For each finding return the location, defect, evidence and a falsifying example; keep unknowns explicit.
+Read only. Do not rewrite the artifact or treat an empty structural report as semantic approval.",
+]
+`;
+
 exports[`challenger modes and style > spec preserves coverage and findings across challenge dials 1`] = `
 [
   "Challenge mode: spec. Ask constructively and explain the gap.

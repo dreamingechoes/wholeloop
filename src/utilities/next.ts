@@ -3,6 +3,7 @@ import { EXIT } from '../cli/io.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { stepDefinition } from '../flow/registry.js'
 import { framingMatches } from '../framing/contract.js'
+import { blockingDependencies, buildChildren } from '../slices/routing.js'
 import { ITEM_ID } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 
@@ -54,6 +55,18 @@ export function next(engine: FlowEngine, input?: string, owner?: string) {
     subject = items[0]
   }
   let plan = subject ? engine.plan(subject.id) : undefined
+  if (subject && blockingDependencies(engine.store.events(), subject.id).length)
+    return {
+      code: EXIT.precondition,
+      payload: {
+        schema: 'wholeloop/next@1',
+        subject: subject.id,
+        action: null,
+        questions: [],
+        blockedBy: blockingDependencies(engine.store.events(), subject.id),
+        stop: 'Complete the recorded dependencies before continuing this work.',
+      },
+    }
   if (subject?.kind === 'initiative' && plan?.next === 'slice-work' && !plan.pending.length) {
     const children = items.filter((item) => item.kind === 'scope' && item.parent === subject?.id)
     if (children.length !== 1)
@@ -79,6 +92,39 @@ export function next(engine: FlowEngine, input?: string, owner?: string) {
         },
       }
     subject = children[0]
+    plan = subject ? engine.plan(subject.id) : undefined
+  }
+  while (subject && plan?.next === 'build-slice' && !plan.pending.length) {
+    const events = engine.store.events()
+    const children = buildChildren(events, subject.id)
+    if (children === undefined) break
+    const ready = children.filter((item) => !blockingDependencies(events, item.id).length)
+    if (ready.length !== 1)
+      return {
+        code: ready.length ? EXIT.input : EXIT.precondition,
+        payload: {
+          schema: 'wholeloop/next@1',
+          subject: subject.id,
+          action: null,
+          questions: ready.length
+            ? [
+                {
+                  id: 'work',
+                  prompt: 'Which ready slice or part should continue?',
+                  multi: false,
+                  options: ready.map(({ id, title }) => ({ value: id, label: title })),
+                },
+              ]
+            : [],
+          blocked: children
+            .filter((item) => !ready.includes(item))
+            .map((item) => ({ id: item.id, blockedBy: blockingDependencies(events, item.id) })),
+          stop: ready.length
+            ? 'Choose an explicit work ID.'
+            : 'No open work is ready; inspect dependencies and completed children.',
+        },
+      }
+    subject = ready[0]
     plan = subject ? engine.plan(subject.id) : undefined
   }
   const blocking =

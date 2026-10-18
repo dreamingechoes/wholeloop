@@ -1483,7 +1483,7 @@ exports[`step begin contracts > review-code: standalone empty, standalone input 
 exports[`step begin contracts > slice-work: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1541,10 +1541,18 @@ exports[`step begin contracts > slice-work: standalone empty, standalone input a
     "schema": "wholeloop/step-begin@1",
     "step": "slice-work",
     "subject": null,
-    "template": null,
+    "template": [
+      "Slice overview",
+      "Acceptance criteria",
+      "Test cases",
+      "End-to-end demonstrations",
+      "Repositories and contracts",
+      "Dependencies",
+      "Open questions",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1576,10 +1584,18 @@ exports[`step begin contracts > slice-work: standalone empty, standalone input a
     "schema": "wholeloop/step-begin@1",
     "step": "slice-work",
     "subject": null,
-    "template": null,
+    "template": [
+      "Slice overview",
+      "Acceptance criteria",
+      "Test cases",
+      "End-to-end demonstrations",
+      "Repositories and contracts",
+      "Dependencies",
+      "Open questions",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1614,7 +1630,15 @@ exports[`step begin contracts > slice-work: standalone empty, standalone input a
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Slice overview",
+      "Acceptance criteria",
+      "Test cases",
+      "End-to-end demonstrations",
+      "Repositories and contracts",
+      "Dependencies",
+      "Open questions",
+    ],
   },
 ]
 `;

@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs and scope plans can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
 
 ---
 
@@ -22,8 +22,11 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl slices plan` | `wholeloop/slices-plan@1` | Suggest vertical work and expose inherited acceptance criteria |
+| `wl slices check <file>` | `wholeloop/slices-check@1` | Validate slice outcomes tests repositories and dependencies |
+| `wl slices schema` | `wholeloop/slices-schema@1` | Print the versioned slice plan schema |
 | `wl eval definitions <corpus>` | `wholeloop/definition-eval@1` | Measure labelled definition defects and false alarms |
-| `wl challenge plan <problem\|spec\|criteria\|scopes>` | `wholeloop/challenge-plan@1` | Lint a definition and render fixed challenger coverage |
+| `wl challenge plan <problem\|spec\|criteria\|scopes\|slicing>` | `wholeloop/challenge-plan@1` | Lint a definition and render fixed challenger coverage |
 | `wl challenge schema` | `wholeloop/challenge-schema@1` | Print the standalone criteria metadata schema |
 | `wl scopes plan` | `wholeloop/scopes-plan@1` | Suggest one scope and expose the metric ownership contract |
 | `wl scopes schema` | `wholeloop/scopes-schema@1` | Print the versioned scope plan schema |

@@ -4,6 +4,7 @@ import { CRITERIA_SCHEMA } from '../definition/criteria.js'
 import { FlowEngine } from '../flow/engine.js'
 import type { Profile } from '../profile/presets.js'
 import { scopeContext } from '../scopes/contract.js'
+import { slicingContext } from '../slices/contract.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
@@ -34,11 +35,17 @@ export function challengeCommand(
     !CHALLENGE_MODES.includes(mode as ChallengeMode) ||
     typeof file !== 'string'
   )
-    throw new CliError('Provide problem|spec|criteria|scopes and --file <artifact>', EXIT.input)
+    throw new CliError(
+      'Provide problem|spec|criteria|scopes|slicing and --file <artifact>',
+      EXIT.input,
+    )
   const engine = new FlowEngine(new StateStore(), root)
   const subject = options['--for']
-  if (typeof subject === 'string' && engine.store.get(subject).kind !== 'initiative')
-    throw new CliError('--for expects an initiative')
+  if (
+    typeof subject === 'string' &&
+    engine.store.get(subject).kind !== (mode === 'slicing' ? 'scope' : 'initiative')
+  )
+    throw new CliError(mode === 'slicing' ? '--for expects a scope' : '--for expects an initiative')
   const selected = options['--challenge']
   if (
     selected !== undefined &&
@@ -49,7 +56,9 @@ export function challengeCommand(
   const plan = challengePlan(mode as ChallengeMode, readFileSync(file, 'utf8'), {
     challenge: challenge as Profile['challenge'],
     ...(typeof subject === 'string'
-      ? { context: scopeContext(engine.store.events(), subject) }
+      ? mode === 'slicing'
+        ? { slicing: slicingContext(engine.store.events(), subject) }
+        : { context: scopeContext(engine.store.events(), subject) }
       : {}),
   })
   io.out(JSON.stringify(plan, null, json ? undefined : 2))

@@ -234,7 +234,7 @@ describe('scope persistence and approval', () => {
       })
       approve(engine, id)
       expect(engine.plan(child.id)).toMatchObject({ next: 'slice-work', pending: [] })
-      expect(next(engine, id).code).toBe(3)
+      expect(next(engine, id).code).toBe(0)
       engine.begin('cut-scopes', { subject: id })
       const revised = engine.complete(
         'cut-scopes',

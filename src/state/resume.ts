@@ -1,4 +1,4 @@
-import { flowPlan } from '../flow/plan.js'
+import { decisionTrail, flowPlan } from '../flow/plan.js'
 import { replay, type StateEvent } from './events.js'
 import { unread } from './mailbox.js'
 
@@ -33,7 +33,14 @@ export function contextPack(
   const messages = unread(events, role, reader).filter((message) =>
     descendantIds.has(message.thread),
   )
-  const plan = flowPlan(events, subject.id)
+  const ownPlan = flowPlan(events, subject.id)
+  const plan = {
+    ...ownPlan,
+    pending: [
+      ...decisionTrail(events, subject.id).filter((decision) => decision.subject !== subject.id),
+      ...ownPlan.pending.map((decision) => ({ ...decision, subject: subject.id })),
+    ],
+  }
   const artifacts = events.flatMap((entry) =>
     entry.subject === subject.id && entry.type === 'step.completed'
       ? [{ step: entry.data.step, path: entry.data.artifact.path }]

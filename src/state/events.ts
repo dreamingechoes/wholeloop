@@ -12,6 +12,7 @@ import {
   validateResult,
 } from '../research/contracts.js'
 import { type ScopeDefinition, validateScope } from '../scopes/contract.js'
+import { type Repository, type SliceDefinition, validateSlice } from '../slices/contract.js'
 import { replayMailbox } from './mailbox.js'
 
 export const KINDS = ['initiative', 'scope', 'slice', 'part', 'brief', 'review'] as const
@@ -45,7 +46,37 @@ export interface Item extends ItemInput {
 export type ItemPatch = Partial<Pick<Item, 'title' | 'owner' | 'body' | 'status'>>
 export const MESSAGE_KINDS = ['contract', 'handoff', 'status', 'question', 'note'] as const
 export type MessageKind = (typeof MESSAGE_KINDS)[number]
+export interface TrackerReference {
+  provider: string
+  operation: string
+  status: 'stored' | 'pending'
+  ref: string
+  handoff?: string
+}
 export type EventData =
+  | {
+      type: 'slice.defined'
+      data: {
+        scope: string
+        run: string
+        definition: SliceDefinition
+        repositories: Repository[]
+        blockedBy: string[]
+        parts: string[]
+        tracker: TrackerReference
+      }
+    }
+  | {
+      type: 'part.defined'
+      data: {
+        slice: string
+        run: string
+        repository: Repository
+        role: 'contract' | 'implementation'
+        blockedBy: string[]
+        tracker: TrackerReference
+      }
+    }
   | {
       type: 'scope.defined'
       data: {
@@ -53,13 +84,7 @@ export type EventData =
         run: string
         definition: ScopeDefinition
         after: string[]
-        tracker: {
-          provider: string
-          operation: string
-          status: 'stored' | 'pending'
-          ref: string
-          handoff?: string
-        }
+        tracker: TrackerReference
       }
     }
   | { type: 'frame.sourced'; data: { run: string; brief: string; artifact: string } }
@@ -109,8 +134,75 @@ function keys(value: Record<string, unknown>, allowed: readonly string[]): boole
 function text(value: unknown, empty = false): value is string {
   return typeof value === 'string' && (empty || value.trim().length > 0)
 }
+function tracker(value: unknown): boolean {
+  return (
+    isObject(value) &&
+    keys(value, ['provider', 'operation', 'status', 'ref', 'handoff']) &&
+    text(value.provider) &&
+    value.operation === 'tracker.create-item' &&
+    ['stored', 'pending'].includes(String(value.status)) &&
+    text(value.ref) &&
+    (value.handoff === undefined || text(value.handoff))
+  )
+}
+function repository(value: unknown): boolean {
+  return (
+    isObject(value) &&
+    keys(value, ['key', 'path']) &&
+    text(value.key) &&
+    /^[a-z][a-z0-9_-]*$/.test(value.key) &&
+    text(value.path) &&
+    isAbsolute(value.path)
+  )
+}
+function references(value: unknown, kinds: string): boolean {
+  return (
+    Array.isArray(value) &&
+    new Set(value).size === value.length &&
+    value.every((id) => typeof id === 'string' && new RegExp(`^(${kinds})-[a-f0-9]{8}$`).test(id))
+  )
+}
 function validData(type: string, data: Record<string, unknown>): boolean {
   switch (type) {
+    case 'slice.defined':
+      if (
+        !keys(data, [
+          'scope',
+          'run',
+          'definition',
+          'repositories',
+          'blockedBy',
+          'parts',
+          'tracker',
+        ]) ||
+        !text(data.scope) ||
+        !/^scope-[a-f0-9]{8}$/.test(data.scope) ||
+        !runId(data.run) ||
+        !Array.isArray(data.repositories) ||
+        !data.repositories.length ||
+        !data.repositories.every(repository) ||
+        !references(data.blockedBy, 'slice') ||
+        !references(data.parts, 'part') ||
+        !tracker(data.tracker)
+      )
+        return false
+      try {
+        validateSlice(data.definition)
+        return true
+      } catch {
+        return false
+      }
+    case 'part.defined':
+      return (
+        keys(data, ['slice', 'run', 'repository', 'role', 'blockedBy', 'tracker']) &&
+        text(data.slice) &&
+        /^slice-[a-f0-9]{8}$/.test(data.slice) &&
+        runId(data.run) &&
+        repository(data.repository) &&
+        ['contract', 'implementation'].includes(String(data.role)) &&
+        references(data.blockedBy, 'slice|part') &&
+        tracker(data.tracker)
+      )
     case 'scope.defined':
       if (
         !keys(data, ['initiative', 'run', 'definition', 'after', 'tracker']) ||
@@ -119,13 +211,7 @@ function validData(type: string, data: Record<string, unknown>): boolean {
         !runId(data.run) ||
         !Array.isArray(data.after) ||
         !data.after.every((ref) => text(ref) && /^scope-[a-f0-9]{8}$/.test(ref)) ||
-        !isObject(data.tracker) ||
-        !keys(data.tracker, ['provider', 'operation', 'status', 'ref', 'handoff']) ||
-        !text(data.tracker.provider) ||
-        data.tracker.operation !== 'tracker.create-item' ||
-        !['stored', 'pending'].includes(String(data.tracker.status)) ||
-        !text(data.tracker.ref) ||
-        (data.tracker.handoff !== undefined && !text(data.tracker.handoff))
+        !tracker(data.tracker)
       )
         return false
       try {
@@ -308,6 +394,9 @@ export function validateEvent(value: unknown): asserts value is StateEvent {
     throw new Error('Item kind does not match its typed id')
   if (value.type === 'scope.defined' && !String(value.subject).startsWith('scope-'))
     throw new Error('Scope definitions require a scope subject')
+  for (const kind of ['slice', 'part'])
+    if (value.type === `${kind}.defined` && !String(value.subject).startsWith(`${kind}-`))
+      throw new Error(`${kind} definitions require the matching typed subject`)
   if (value.type === 'research.planned') {
     const plan = value.data.plan as ResearchPlan
     if (plan.subject !== value.subject || plan.run !== value.data.run)
@@ -364,6 +453,18 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
       (item.kind !== 'scope' || item.parent !== entry.data.initiative)
     )
       throw new Error('Scope definition does not match its initiative parent')
+    if (
+      entry.type === 'slice.defined' &&
+      (item.kind !== 'slice' || item.parent !== entry.data.scope)
+    )
+      throw new Error('Slice definition does not match its scope parent')
+    if (
+      entry.type === 'part.defined' &&
+      (item.kind !== 'part' ||
+        item.parent !== entry.data.slice ||
+        item.repository !== entry.data.repository.path)
+    )
+      throw new Error('Part definition does not match its slice parent and repository')
     if (
       entry.type === 'decision.recorded' &&
       (!ids.has(entry.data.basis) || entry.data.basis === entry.id)

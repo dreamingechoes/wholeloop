@@ -1,6 +1,6 @@
 # Definition evaluation seed
 
-The fixed seed contains thirty original problem/spec/criteria/scope artifacts,
+The fixed seed contains thirty original Define problem/spec/criteria/scope artifacts,
 labelled defects and look-alike negatives. It is a small regression corpus, not a
 representative estimate of model quality. No model is called by the runner.
 

@@ -20,6 +20,9 @@ import { publicationPlan } from '../providers/publication.js'
 import { researchBrief } from '../research/report.js'
 import { checkScopePlan, parseScopePlan, scopeContext } from '../scopes/contract.js'
 import { publishScopes } from '../scopes/publish.js'
+import { checkSlicePlan, parseSlicePlan, slicingContext } from '../slices/contract.js'
+import { publishSlices } from '../slices/publish.js'
+import { blockingDependencies } from '../slices/routing.js'
 import { checkSpec } from '../spec/contract.js'
 import { specTemplate } from '../spec/template.js'
 import { itemId, replay } from '../state/events.js'
@@ -155,6 +158,11 @@ export class FlowEngine {
           'Framing needs an initiative; use --from for a research brief',
           EXIT.precondition,
         )
+      if (name === 'slice-work' && subject && subject.kind !== 'scope')
+        throw new CliError(
+          'slice-work needs a scope; select a child scope explicitly',
+          EXIT.precondition,
+        )
       if (subject?.status === 'closed')
         throw new CliError(
           `Item ${subject.id} is closed; inspect its outcome before explicitly reopening it`,
@@ -254,6 +262,11 @@ export class FlowEngine {
           payload.questions.push(...resolution.questions)
         }
       if (payload.missing.length) return { payload, code: EXIT.input }
+      if (name === 'build-slice' && subject && blockingDependencies(events, subject.id).length)
+        throw new CliError(
+          `Blocked by: ${blockingDependencies(events, subject.id).join(', ')}`,
+          EXIT.precondition,
+        )
       if (!step.available) return { payload, code: EXIT.precondition }
       const pending = subject
         ? decisions(events, subject.id, [
@@ -281,12 +294,31 @@ export class FlowEngine {
       if (!id) {
         id = itemId(step.kind)
         while (items.has(id)) id = itemId(step.kind)
+        let standaloneParent: string | undefined
+        if (name === 'slice-work') {
+          standaloneParent = itemId('initiative')
+          while (items.has(standaloneParent)) standaloneParent = itemId('initiative')
+          append(standaloneParent, {
+            type: 'item.created',
+            data: {
+              kind: 'initiative',
+              title: payload.input ?? '',
+              owner: payload.owner ?? '',
+              body: payload.input ?? '',
+              repository: canonicalPath(this.root),
+            },
+          })
+        }
         append(id, {
           type: 'item.created',
           data: {
             kind: step.kind,
             repository: canonicalPath(this.root),
-            ...(parent ? { parent: parent.id } : {}),
+            ...(standaloneParent
+              ? { parent: standaloneParent }
+              : parent
+                ? { parent: parent.id }
+                : {}),
             title: payload.input ?? '',
             owner: payload.owner ?? '',
             body: payload.input ?? '',
@@ -387,6 +419,11 @@ export class FlowEngine {
       if (latest?.type !== 'step.started')
         throw new CliError(`Begin ${name} for ${subject} before completing it`, EXIT.precondition)
       const run = latest.data.run
+      if (name === 'build-slice' && blockingDependencies(events, subject).length)
+        throw new CliError(
+          `Blocked by: ${blockingDependencies(events, subject).join(', ')}`,
+          EXIT.precondition,
+        )
       const blocking = decisionTrail(events, subject).filter((decision) =>
         decisionBlocks(name, decision.id),
       )
@@ -395,6 +432,21 @@ export class FlowEngine {
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
         )
+      let slices: ReturnType<typeof publishSlices> | undefined
+      if (name === 'slice-work') {
+        const plan = parseSlicePlan(content)
+        checkSlicePlan(plan, slicingContext(events, subject))
+        slices = publishSlices({
+          root: this.root,
+          userFile: this.userFile,
+          configuration: this.config(),
+          subject,
+          run,
+          plan,
+          events,
+          append,
+        })
+      }
       let scopes: ReturnType<typeof publishScopes> | undefined
       if (name === 'cut-scopes') {
         const plan = parseScopePlan(content)
@@ -456,6 +508,7 @@ export class FlowEngine {
         run,
         artifact: path,
         ...(scopes ? { scopes } : {}),
+        ...(slices ? { slices } : {}),
         ...(publication ? { publication } : {}),
         ...(outcome ? { outcome } : {}),
         receipt: {

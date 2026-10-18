@@ -71,7 +71,7 @@ Every real failure that reaches a person becomes a new fixture. A change to a ch
 ### Reproducible definition report
 
 Run `npm run eval:definitions -- --json` against the fixed thirty-case seed, or
-`wl eval definitions <corpus.json> --json` after building. It covers all four
+`wl eval definitions <corpus.json> --json` after building. It covers all four Define
 challenger modes, defective definitions and look-alike negatives. The report
 includes per-class TP/FP/TN/FN, recall, precision and false-alarm rate; no
 denominator produces null rather than a misleading perfect score.

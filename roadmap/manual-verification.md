@@ -38,6 +38,16 @@ restricted libpq service and verify server read-only rejection, function privile
 and timeout behavior; process tests used a fixture executable, not a database.
 Failed or incomplete access must produce an explicit unknown rather than a baseline.
 
+## Slicing validation still pending
+
+Exercise slice-work with real repository conventions and a challenger in slicing
+mode. Verify that the declared single outcome and demonstration describe a real
+vertical user journey, and that all slices together deliver the scope. Local
+fixtures validate shape, inherited criteria, stable IDs, dependencies and at most
+one part per repository. Contract-first routing is automated; actual contract
+implementation, Git eligibility/worktrees and builder execution are later tasks.
+Remote tracker items/relationships remain pending host writes until linked.
+
 ## Definition eval validation still pending
 
 Run the thirty-case seed through a real host challenger with expected labels
@@ -123,7 +133,8 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
    `write-spec`, now available. Complete a spec using the returned schema/sections
    and verify that `next` stops at `approve-spec`; cut-scopes is now available. Approve the spec, complete a scope plan, and verify
    that both initiative and child continuation stop at approve-scopes. After
-   approval, slice-work remains unavailable.
+   approval, slice-work is available; complete a vertical slice plan and inspect
+   contract-first routing. build-slice remains unavailable.
 4. Send a local `msg send --thread <id> --to builder --kind note --body "Ready"`.
    Read it with `msg read --for builder --reader a`, then repeat: the second
    read is empty. A different reader still sees it.

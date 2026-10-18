@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P3-01 — vertical slice plans and contract-first parts
+
+- Add slice-work with versioned metadata, standalone minimal initiative/scope entry, repository-first drafting guidance, slice planning/check/schema commands and a fixed slicing challenger mode. Require a single declared outcome, end-to-end demonstration, testable criteria and linked test cases.
+- Pin scope/spec revisions and preserve every inherited criterion unchanged. Publish stable-key slices and at most one part per repository atomically with local tracker refs. For multiple repositories, the contract-owning repository's part includes its implementation and precedes all peers; default slice order is sequential unless explicitly overridden. ADR-0029 records the tradeoffs.
+- Reject cycles across new/stored dependencies, cross-scope references, repository aliases, changing stable part identity and implicit reopening. Next selects ready slices/parts or asks between independent choices; bounded resume context now carries ancestor approvals too. Remote tracker items/relationships remain pending host writes.
+- Verify malformed/valid fixtures, one-to-four repository cuts, journal rollback, repeated identity, exact criterion coverage, approval/source revisions, repository guidance, inherited resume decisions and compiled CLI planning-to-contract routing. Local check: 355 tests plus build, smoke, lint, typecheck, docs, catalog drift, harness and Mermaid passed. Semantic verticality, real Git eligibility/worktrees, building and live remote mirroring remain subsequent work or owner checks.
+
+---
+
 ## 2026-10-18 · P2-09 — reproducible definition defect evaluation
 
 - Add thirty original labelled artifacts across problem/spec/criteria/scopes, including look-alike negatives and two semantic defects the core cannot detect. Keep the fixed seed and committed report under test/evals/definition.

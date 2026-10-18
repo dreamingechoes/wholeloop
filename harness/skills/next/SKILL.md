@@ -14,10 +14,11 @@ Read the shared ask-never-guess and output-contract protocols.
    --for <question.subject> --remember run --by <person> --json`, then rerun next.
 3. Read `contract` and show its preflight and style. Follow the corresponding
    canonical step skill only when the returned contract is available. The
-   current local path includes research, framing, write-spec and cut-scopes, preserving their contracts.
+   current local path includes research, framing, write-spec, cut-scopes and slice-work, preserving their contracts.
 4. After completing that artifact, show the receipt and call `wl next <id> --json`
    to inspect the next action. Stop on missing input, a required decision,
-   an unavailable step or the person's request. Keep the same item ID.
+   an unavailable step or the person's request. Follow returned child IDs when
+   routing through a scope, slice or contract-first repository part.
 
 Finished and explicitly skipped steps stay recorded. Never simulate the later
 steps to make the flow appear complete. Use `wl resume <id> --json` for bounded

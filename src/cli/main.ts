@@ -17,6 +17,7 @@ import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
 import { researchCommand } from './research.js'
 import { scopesCommand } from './scopes.js'
+import { slicesCommand } from './slices.js'
 import { specCommand } from './spec.js'
 import { stateCommand } from './state.js'
 import { utilityCommand } from './utilities.js'
@@ -74,6 +75,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (command.path === 'eval definitions') return evalCommand(parsed, json, io)
     if (command.path.startsWith('challenge '))
       return challengeCommand(command.path, parsed, root, json, io)
+    if (command.path.startsWith('slices '))
+      return slicesCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('scopes '))
       return scopesCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('spec ')) return specCommand(command.path, parsed, json, io)

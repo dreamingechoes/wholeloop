@@ -8,6 +8,33 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/slices-plan@1"
+        }
+      },
+      "required": ["schema", "subject", "criteria", "repositories", "suggestedSlices", "questions"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/slices-schema@1"
+        }
+      },
+      "required": ["schema", "sliceSchema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/slices-check@1"
+        }
+      },
+      "required": ["schema", "problems"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/definition-eval@1"
         }
       },

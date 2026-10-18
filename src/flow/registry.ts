@@ -1,6 +1,7 @@
 import { stripCode } from '../docs/markdown.js'
 import { FRAME_SECTIONS } from '../framing/contract.js'
 import { SCOPE_SECTIONS } from '../scopes/contract.js'
+import { SLICE_SECTIONS } from '../slices/contract.js'
 import { SPEC_SECTIONS } from '../spec/contract.js'
 import type { ItemKind } from '../state/events.js'
 
@@ -54,12 +55,16 @@ export const STEPS: readonly Step[] = Object.freeze(
       slots: Object.freeze(STEP_SLOTS[name]),
       kind: (name === 'research'
         ? 'brief'
-        : ['slice-work', 'build-slice', 'verify-works', 'review-code', 'open-pr'].includes(name)
-          ? 'slice'
-          : ['prepare-launch', 'ramp-exposure', 'measure-impact', 'decide-next'].includes(name)
-            ? 'scope'
-            : 'initiative') as ItemKind,
-      available: ['frame-problem', 'research', 'write-spec', 'cut-scopes'].includes(name),
+        : name === 'slice-work'
+          ? 'scope'
+          : ['build-slice', 'verify-works', 'review-code', 'open-pr'].includes(name)
+            ? 'slice'
+            : ['prepare-launch', 'ramp-exposure', 'measure-impact', 'decide-next'].includes(name)
+              ? 'scope'
+              : 'initiative') as ItemKind,
+      available: ['frame-problem', 'research', 'write-spec', 'cut-scopes', 'slice-work'].includes(
+        name,
+      ),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
       after: Object.freeze(
@@ -76,13 +81,15 @@ export const STEPS: readonly Step[] = Object.freeze(
       sections: Object.freeze(
         name === 'frame-problem'
           ? [...FRAME_SECTIONS]
-          : name === 'cut-scopes'
-            ? [...SCOPE_SECTIONS]
-            : name === 'write-spec'
-              ? [...SPEC_SECTIONS]
-              : name === 'research'
-                ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-                : [],
+          : name === 'slice-work'
+            ? [...SLICE_SECTIONS]
+            : name === 'cut-scopes'
+              ? [...SCOPE_SECTIONS]
+              : name === 'write-spec'
+                ? [...SPEC_SECTIONS]
+                : name === 'research'
+                  ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+                  : [],
       ),
     }),
   ),

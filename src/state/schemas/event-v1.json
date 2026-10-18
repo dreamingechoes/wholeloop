@@ -879,6 +879,370 @@
           "required": ["initiative", "run", "definition", "after", "tracker"]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "slice.defined"
+        },
+        "subject": {
+          "type": "string",
+          "pattern": "^slice-[a-f0-9]{8}$"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scope": {
+              "type": "string",
+              "pattern": "^scope-[a-f0-9]{8}$"
+            },
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "definition": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "$id": "wholeloop/slice-definition@1",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]*$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "objective": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "outcomes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "demonstration": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "entry": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "steps": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "minItems": 1,
+                      "uniqueItems": true
+                    },
+                    "expected": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["entry", "steps", "expected"]
+                },
+                "criteria": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_-]*$"
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "test": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "assertion": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "subject": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "context": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "unit": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "operator": {
+                            "type": "string",
+                            "enum": ["lt", "lte", "eq", "ne", "gte", "gt"]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": ["subject", "context", "unit", "operator", "value"]
+                      }
+                    },
+                    "required": ["id", "text", "test"]
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "tests": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_-]*$"
+                      },
+                      "criteria": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_-]*$"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                      },
+                      "steps": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                      },
+                      "expected": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["id", "criteria", "steps", "expected"]
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "repositories": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_-]*$"
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "contract": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9_-]*$"
+                    },
+                    "interface": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "examples": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "minItems": 1,
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": ["repository", "interface", "examples"]
+                },
+                "blockedBy": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "key",
+                "title",
+                "objective",
+                "outcomes",
+                "demonstration",
+                "criteria",
+                "tests",
+                "repositories"
+              ]
+            },
+            "repositories": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_-]*$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["key", "path"]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "blockedBy": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(slice)-[a-f0-9]{8}$"
+              },
+              "uniqueItems": true
+            },
+            "parts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(part)-[a-f0-9]{8}$"
+              },
+              "uniqueItems": true
+            },
+            "tracker": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "operation": {
+                  "const": "tracker.create-item"
+                },
+                "status": {
+                  "enum": ["stored", "pending"]
+                },
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "handoff": {
+                  "type": "string"
+                }
+              },
+              "required": ["provider", "operation", "status", "ref"]
+            }
+          },
+          "required": [
+            "scope",
+            "run",
+            "definition",
+            "repositories",
+            "blockedBy",
+            "parts",
+            "tracker"
+          ]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "part.defined"
+        },
+        "subject": {
+          "type": "string",
+          "pattern": "^part-[a-f0-9]{8}$"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "slice": {
+              "type": "string",
+              "pattern": "^slice-[a-f0-9]{8}$"
+            },
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "repository": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]*$"
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["key", "path"]
+            },
+            "role": {
+              "type": "string",
+              "enum": ["contract", "implementation"]
+            },
+            "blockedBy": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(slice|part)-[a-f0-9]{8}$"
+              },
+              "uniqueItems": true
+            },
+            "tracker": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "operation": {
+                  "const": "tracker.create-item"
+                },
+                "status": {
+                  "enum": ["stored", "pending"]
+                },
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "handoff": {
+                  "type": "string"
+                }
+              },
+              "required": ["provider", "operation", "status", "ref"]
+            }
+          },
+          "required": ["slice", "run", "repository", "role", "blockedBy", "tracker"]
+        }
+      }
     }
   ]
 }

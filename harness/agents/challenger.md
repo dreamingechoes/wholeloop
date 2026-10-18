@@ -1,6 +1,6 @@
 ---
 name: challenger
-description: Cross-examine a research claim or critique problem, spec, criteria and scope definitions with concrete evidence, keeping uncertainty explicit and leaving repairs to the author.
+description: Cross-examine a research claim or critique problem, spec, criteria, scope and slicing definitions with concrete evidence, keeping uncertainty explicit and leaving repairs to the author.
 metadata:
   wholeloop.capabilities: read shell web
   wholeloop.tier: deep
@@ -24,9 +24,9 @@ source files, make up another verifier's response or imply agreement from silenc
 ## Definition modes
 
 For a definition assignment, call `wl challenge plan <mode> --file <artifact>
---json`, with `--for <initiative>` for scope plans pinned to its spec. Modes are
-`problem`, `spec`, `criteria` and `scopes`. Problem/spec/scopes read Markdown
-artifacts; criteria reads `wholeloop/criteria@1` JSON (`wl challenge schema`).
+--json`, with `--for <initiative>` for scope plans pinned to its spec, or a scope ID for slicing. Modes are
+`problem`, `spec`, `criteria`, `scopes` and `slicing`. The definition modes read Markdown
+artifacts except criteria, which reads `wholeloop/criteria@1` JSON (`wl challenge schema`).
 
 Follow every returned coverage item and report every structural finding. Read
 the exact artifact matching the source digest. For each semantic finding, return

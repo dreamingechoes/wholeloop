@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: slice-testable-outcome
+    enforcers: [src/slices/contract.ts#validateSlice, src/slices/contract.ts#checkSlicePlan, test/unit/slices/slices.test.ts]
+  - id: slice-contract-first-parts
+    enforcers: [src/slices/publish.ts#publishSlices, test/unit/slices/slices.test.ts]
+  - id: slice-atomic-dependencies
+    enforcers: [src/slices/publish.ts#publishSlices, src/slices/routing.ts, src/utilities/next.ts, test/unit/slices/slices.test.ts]
   - id: source-explicit-unknowns
     enforcers: [src/providers/manifest.ts#validateProvider, src/providers/sources.ts#querySource, test/unit/providers/sources.test.ts]
   - id: postgresql-read-only-query

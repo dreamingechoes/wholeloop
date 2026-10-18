@@ -39,6 +39,7 @@
 | [0026](./0026-destination-host-contract-and-document-updates.md) | Destination host contract and document updates | Accepted | 2026-10-18 |
 | [0027](./0027-read-only-source-evidence-and-degradation.md) | Read-only source evidence and degradation | Accepted | 2026-10-18 |
 | [0028](./0028-definition-eval-seeds-and-external-predictions.md) | Definition eval seeds and external predictions | Accepted | 2026-10-18 |
+| [0029](./0029-vertical-slice-contracts-and-repository-parts.md) | Vertical slice contracts and repository parts | Accepted | 2026-10-18 |
 
 ## Lifecycle
 

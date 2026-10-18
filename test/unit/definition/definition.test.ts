@@ -149,6 +149,7 @@ describe('deterministic criteria lint', () => {
 
 describe('challenger modes and style', () => {
   const inputs = {
+    slicing: readFileSync(new URL('../../fixtures/slicing/plan.md', import.meta.url), 'utf8'),
     problem: frame,
     spec,
     criteria: criteriaFile([criterion('a')]),

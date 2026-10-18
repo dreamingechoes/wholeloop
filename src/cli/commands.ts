@@ -8,6 +8,27 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'slices plan',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/slices-plan@1',
+    summary: 'Suggest vertical work and expose inherited acceptance criteria',
+  },
+  {
+    path: 'slices check',
+    arguments: '<file>',
+    options: ['--for <id>'],
+    schema: 'wholeloop/slices-check@1',
+    summary: 'Validate slice outcomes tests repositories and dependencies',
+  },
+  {
+    path: 'slices schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/slices-schema@1',
+    summary: 'Print the versioned slice plan schema',
+  },
+  {
     path: 'eval definitions',
     arguments: '<corpus>',
     options: ['--predictions <file>'],
@@ -16,7 +37,7 @@ export const COMMANDS: readonly Command[] = [
   },
   {
     path: 'challenge plan',
-    arguments: '<problem|spec|criteria|scopes>',
+    arguments: '<problem|spec|criteria|scopes|slicing>',
     options: ['--file <path>', '--for <id>', '--challenge <level>'],
     schema: 'wholeloop/challenge-plan@1',
     summary: 'Lint a definition and render fixed challenger coverage',

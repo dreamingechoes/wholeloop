@@ -24,11 +24,11 @@
 
 ## Definition challenger modes
 
-`wl challenge plan problem|spec|criteria|scopes --file <artifact> --json` renders
+`wl challenge plan problem|spec|criteria|scopes|slicing --file <artifact> --json` renders
 fixed coverage, an input digest, structural findings and host instructions.
-Problem/spec/scopes read their Markdown artifacts; standalone criteria use
+Problem/spec/scopes/slicing read their Markdown artifacts; standalone criteria use
 `wholeloop/criteria@1` JSON from `wl challenge schema --json`. Scope plans pinned
-to a spec also need `--for <initiative>`. Exit 4 reports structural defects.
+to a spec also need `--for <initiative>`; slicing uses `--for <scope>`. Exit 4 reports structural defects.
 The command is read-only and does not invoke a model.
 
 The resolved challenge dial controls tone and **additional** counter-questions:
