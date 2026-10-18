@@ -38,7 +38,7 @@
 
 ## P1-03 · State store — journal, ids, projections
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-01
+**Status:** ✅ · **Size:** L · **Depends on:** P1-01
 
 **Goal** — Durable, replayable, inspectable state outside every repository.
 
@@ -46,9 +46,9 @@
 
 **Acceptance criteria:**
 
-- [ ] `wl state rebuild` reproduces every projection byte for byte.
-- [ ] Two concurrent writers never corrupt the journal (stress test).
-- [ ] A guard refuses any store write that resolves inside a git repository.
+- [x] `wl state rebuild` reproduces every projection byte for byte.
+- [x] Two concurrent writers never corrupt the journal (stress test).
+- [x] A guard refuses any store write that resolves inside a git repository.
 
 **Docs** — architecture/state-and-messaging, ADR-0004.
 

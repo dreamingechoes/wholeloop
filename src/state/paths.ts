@@ -1,0 +1,47 @@
+import { existsSync, realpathSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+
+/** Resolve even a not-yet-created destination through its existing symlink ancestors. */
+export function canonicalPath(path: string): string {
+  const suffix: string[] = []
+  let ancestor = resolve(path)
+  while (!existsSync(ancestor)) {
+    const parent = dirname(ancestor)
+    if (parent === ancestor) throw new Error(`Cannot resolve store path: ${path}`)
+    suffix.unshift(basename(ancestor))
+    ancestor = parent
+  }
+  return join(realpathSync(ancestor), ...suffix)
+}
+
+export function assertExternal(path: string): void {
+  let ancestor = canonicalPath(path)
+  while (true) {
+    if (
+      existsSync(join(ancestor, '.git')) ||
+      (existsSync(join(ancestor, 'HEAD')) &&
+        existsSync(join(ancestor, 'objects')) &&
+        existsSync(join(ancestor, 'refs')))
+    ) {
+      throw new Error(`Runtime state must stay outside git repositories: ${path}`)
+    }
+    const parent = dirname(ancestor)
+    if (parent === ancestor) return
+    ancestor = parent
+  }
+}
+
+export function inside(root: string, path: string): boolean {
+  const rel = relative(root, path)
+  return rel === '' || (!isAbsolute(rel) && rel !== '..' && !rel.startsWith(`..${sep}`))
+}
+
+export function storePath(env: NodeJS.ProcessEnv = process.env, home = homedir()): string {
+  const base = env.XDG_STATE_HOME
+  const root = join(base && isAbsolute(base) ? base : join(home, '.local/state'), 'wholeloop')
+  if (!env.WL_WORKSPACE) return root
+  if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(env.WL_WORKSPACE))
+    throw new Error('WL_WORKSPACE must be a simple lowercase name (1–64 characters)')
+  return join(root, 'workspaces', env.WL_WORKSPACE)
+}

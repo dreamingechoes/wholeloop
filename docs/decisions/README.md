@@ -30,6 +30,7 @@
 | [0017](./0017-no-tool-attribution-in-history.md) | No tool attribution in project history | Accepted | 2026-10-14 |
 | [0018](./0018-project-name.md) | Project name: wholeloop | Accepted | 2026-10-14 |
 | [0019](./0019-typescript-toolchain.md) | TypeScript toolchain | Accepted | 2026-10-14 |
+| [0020](./0020-journal-atomicity-and-lock-recovery.md) | Journal atomicity and lock recovery | Accepted | 2026-10-18 |
 
 ## Lifecycle
 

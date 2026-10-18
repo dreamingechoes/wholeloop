@@ -138,6 +138,115 @@
         }
       },
       "required": ["configSchema"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/state-create@1"
+        },
+        "item": {
+          "type": "object"
+        }
+      },
+      "required": ["item"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/state-update@1"
+        },
+        "item": {
+          "type": "object"
+        }
+      },
+      "required": ["item"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/state-show@1"
+        },
+        "item": {
+          "type": "object"
+        },
+        "items": {
+          "type": "array"
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["item"]
+        },
+        {
+          "required": ["items"]
+        }
+      ]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/state-list@1"
+        },
+        "items": {
+          "type": "array"
+        }
+      },
+      "required": ["items"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/state-get@1"
+        },
+        "item": {
+          "type": "object"
+        }
+      },
+      "required": ["item"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/state-rebuild@1"
+        },
+        "files": {
+          "type": "integer"
+        }
+      },
+      "required": ["files"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/note@1"
+        },
+        "item": {
+          "type": "object"
+        }
+      },
+      "required": ["item"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/link@1"
+        },
+        "item": {
+          "type": "object"
+        }
+      },
+      "required": ["item"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/open@1"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": ["content"]
     }
   ],
   "$defs": {

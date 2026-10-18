@@ -22,6 +22,15 @@ Every command accepts `--json`. Output contracts live in `src/cli/schemas/`. Err
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl state create <kind>` | `wholeloop/state-create@1` | Create a typed item in the external store |
+| `wl state update <id>` | `wholeloop/state-update@1` | Update a stored item through the journal |
+| `wl state show [<id>]` | `wholeloop/state-show@1` | Show an item or the whole store |
+| `wl state list` | `wholeloop/state-list@1` | List stored item summaries |
+| `wl state get <id>` | `wholeloop/state-get@1` | Get a complete stored item |
+| `wl state rebuild` | `wholeloop/state-rebuild@1` | Rebuild projections from the journal |
+| `wl note <id> <text>` | `wholeloop/note@1` | Append a durable note |
+| `wl link <id> <url>` | `wholeloop/link@1` | Record an external reference |
+| `wl open <id>` | `wholeloop/open@1` | Print the item as Markdown |
 | `wl config show` | `wholeloop/config-show@1` | Resolve layered configuration and optionally explain every value |
 | `wl config schema` | `wholeloop/config-schema@1` | Print the configuration JSON Schema |
 | `wl docs nav` | `wholeloop/docs-nav@1` | Rewrite docnav footers from docs/nav.yml |

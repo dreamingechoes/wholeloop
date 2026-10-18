@@ -3,7 +3,7 @@
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
-> **Status: 📐 design.** Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
+> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands are implemented. Step workflows and provider adoption remain planned. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
 
 ---
 
@@ -37,11 +37,26 @@ $XDG_STATE_HOME/wholeloop/            default: ~/.local/state/wholeloop
 └─ worktrees/<repo>/<slice-id>/         one git worktree per slice or part being built
 ```
 
-`WL_WORKSPACE` selects an isolated store (for example `work` and `personal`) without changing anything else.
+`WL_WORKSPACE` selects `$XDG_STATE_HOME/wholeloop/workspaces/<name>` (for example `work` and `personal`); unset uses the root store. Names contain lowercase letters, numbers, underscores and hyphens. Relative XDG paths are ignored.
+
+## Available commands
+
+```text
+wl state create initiative --title "Faster order search" --owner "Alex" --json
+wl state list --json
+wl state get init-0123abcd --json
+wl state update init-0123abcd --status closed --json
+wl note init-0123abcd "Support evidence collected" --json
+wl link init-0123abcd https://example.com/spec --json
+wl open init-0123abcd
+wl state rebuild --json
+```
+
+`state show` prints all items, or one optional ID. `state list` returns summaries; `state get` returns the full item. `open` prints Markdown without launching another application. Creation accepts `--body-file` and an existing `--parent`; updates accept title, owner, body and status. IDs have a kind prefix and eight random hexadecimal characters, checked for collisions under the store lock. The examples in the design diagrams abbreviate them.
 
 ## The journal
 
-Every change is an event. Projections are a pure function of the journal, which makes them reproducible and testable (`wl state rebuild` must produce byte-identical files).
+Implemented event types are `item.created`, `item.updated`, `item.closed`, `note.added`, `link.added`; later families in the table below remain planned. Their versioned schema lives in `src/state/schemas/event-v1.json`. Every change is an event. Projections are a pure function of the journal, which makes them reproducible and testable (`wl state rebuild` must produce byte-identical files).
 
 ```json
 {"v":1,"id":"ev-01JA…","ts":"2026-10-14T16:02:11Z","actor":{"kind":"agent","name":"builder"},
@@ -87,11 +102,13 @@ sequenceDiagram
   B2->>M: status DONE + evidence
 ```
 
+Mailbox commands and bounded resume packs arrive with P1-04. The following sections describe their target behavior.
+
 Messages live in the store, so they survive a crashed subagent and can be read by an agent spawned tomorrow in another CLI.
 
 ## Resuming anywhere
 
-`wl resume <id>` prints a **context pack**: where the item is in the flow, what each step produced (links, not bodies), open questions, unread messages, pending decision points and the suggested next command. It is short on purpose, sized to start a fresh session without flooding it. The `next` skill calls it first.
+`wl resume [<id>] [--for <role>] [--reader <id>]` prints a **context pack**. Without an ID it selects the most recently active item. The implemented pack includes item/descendant summaries, unread message references, recent notes, links and an available next command; compact JSON is capped at 6144 UTF-8 bytes, with explicit totals and truncation. It never consumes messages or includes artifact bodies. Step availability, decisions and artifact references arrive with the flow engine. The target pack also includes: where the item is in the flow, what each step produced (links, not bodies), open questions, unread messages, pending decision points and the suggested next command. It is short on purpose, sized to start a fresh session without flooding it. The `next` skill calls it first.
 
 ## Sharing with other people
 
@@ -101,7 +118,10 @@ The local store is personal. Sharing happens through **providers**: in synced mo
 
 - **Your checkout is never touched** — builds happen in dedicated git worktrees under the store, one per slice or part, each on its own branch. Your working copy can stay dirty, on any branch, while several slices build in parallel.
 - **No harness writes inside repositories** — a guard refuses them. Project *configuration* (`.wholeloop/config.yml`) is the only harness file a repo holds, and it is written by people, on purpose.
-- **Crash-safe** — write-then-rename for every file, lock for every append.
+- **Crash-safe** — a validated batch atomically replaces its monthly journal file, preserving all previous events. Files and directories are fsynced. Reads replay the journal, so a crash before projection updates does not hide committed changes; `state rebuild` repairs them. See [ADR-0020](../decisions/0020-journal-atomicity-and-lock-recovery.md).
+- **Locks** — directory creation serializes writers. After five seconds, contention fails with the lock path and owner metadata. A crashed writer's lock is deliberately not stolen: inspect `.lock/owner.json`, confirm the writer has stopped, then remove only that lock directory.
+- **Corruption** — invalid or incomplete journal lines stop reads and writes with file/line evidence. Preserve the original before manual recovery; the CLI never truncates it automatically.
+- **Path guard** — repository roots, worktrees, bare repositories and symlinked ancestors are rejected before store writes. Store subpaths cannot escape through symlinks or traversal.
 - **Replayable** — any projection can be deleted and rebuilt.
 - **Inspectable** — everything is plain text; `wl open <id>` shows it.
 

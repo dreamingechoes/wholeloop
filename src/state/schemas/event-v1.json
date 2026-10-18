@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/state-event@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^ev-[a-f0-9-]{36}$"
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["person", "agent", "system"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["kind", "name"]
+    },
+    "subject": {
+      "type": "string",
+      "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+    },
+    "type": {
+      "type": "string"
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "required": ["v", "id", "ts", "actor", "subject", "type", "data"],
+  "oneOf": [
+    {
+      "properties": {
+        "type": {
+          "const": "item.created"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": ["initiative", "scope", "slice", "part", "brief", "review"]
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "minLength": 1
+            },
+            "body": {
+              "type": "string"
+            },
+            "parent": {
+              "type": "string",
+              "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+            }
+          },
+          "required": ["kind", "title", "owner", "body"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "item.updated"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "minLength": 1
+            },
+            "body": {
+              "type": "string"
+            },
+            "status": {
+              "enum": ["open", "closed"]
+            }
+          },
+          "required": [],
+          "minProperties": 1
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "item.closed"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {},
+          "required": []
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "note.added"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["text"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "link.added"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "url": {
+              "type": "string",
+              "pattern": "^https?://"
+            }
+          },
+          "required": ["url"]
+        }
+      }
+    }
+  ]
+}

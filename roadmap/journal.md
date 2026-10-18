@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-18 · P1-03 — external journal and item projections
+
+- Add typed items, notes, links and readable projections under the external XDG store, rejecting repositories, traversal and symlink escapes before writes.
+- Use one lock and atomic monthly journal replacement per validated transaction. Reads replay the journal so projection recovery remains deterministic after interruption; ADR-0020 records why stale locks are not stolen.
+- Verify replay, batch rollback, corruption handling, lock contention and twelve concurrent real writer processes alongside the complete local check suite. Physical process-interruption checks remain owner verification.
+
+---
+
 ## 2026-10-18 · P1-02 — deterministic layered configuration
 
 - Define the strict public schema and deterministic user/project/initiative/run loader, with source explanations, personal/team precedence, per-key map merging and array replacement.
