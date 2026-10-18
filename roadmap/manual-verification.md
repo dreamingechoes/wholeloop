@@ -22,6 +22,15 @@ actual tool call and authentication before calling that integration supported.
 Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
+## Extension smoke checks
+
+Use an isolated configuration home when selecting a custom profile. Run
+`profile scaffold onboarding --output .wholeloop/profiles/onboarding`, inspect
+the kit, then `profile test onboarding` and `profile preset onboarding --scope run`.
+For templates, `template test spec` reports mandatory-section dependents. Lens
+validation checks manifests and prompt resources only; actual gate execution and
+workflow-specific template selection remain pending.
+
 ## Current smoke scenario
 
 Use a temporary `XDG_STATE_HOME` outside any repository and a temporary

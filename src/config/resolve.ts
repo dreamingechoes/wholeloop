@@ -1,4 +1,4 @@
-import { PRESETS, type Preset } from '../profile/presets.js'
+import { PRESETS } from '../profile/presets.js'
 import { configKeys, isObject, type Key, validate } from './schema.js'
 
 export type Scope = 'user' | 'project' | 'initiative' | 'run'
@@ -37,7 +37,10 @@ function assign(target: Record<string, unknown>, path: readonly string[], value:
   }
 }
 
-export function resolveConfig(layers: readonly Layer[]): Configuration {
+export function resolveConfig(
+  layers: readonly Layer[],
+  presets: Readonly<Record<string, Readonly<Record<string, string>>>> = PRESETS,
+): Configuration {
   const problems = layers.flatMap((layer) =>
     validate(layer.values, undefined, layer.file ?? layer.scope),
   )
@@ -49,11 +52,13 @@ export function resolveConfig(layers: readonly Layer[]): Configuration {
       typeof layer.values.profile.preset !== 'string'
     )
       return layer
+    const preset = layer.values.profile.preset
+    if (!Object.hasOwn(presets, preset)) throw new Error(`Unknown profile preset: ${preset}`)
     return {
       ...layer,
       values: {
         ...layer.values,
-        profile: { ...PRESETS[layer.values.profile.preset as Preset], ...layer.values.profile },
+        profile: { ...presets[preset], ...layer.values.profile },
       },
     }
   })
@@ -68,8 +73,12 @@ export function resolveConfig(layers: readonly Layer[]): Configuration {
       key.kind === 'personal'
         ? ['project', 'user', 'initiative', 'run']
         : ['user', 'project', 'initiative', 'run']
+    const defaultValue =
+      key.path[0] === 'profile' && key.path.length === 2
+        ? (presets.pair?.[key.path[1] ?? ''] ?? key.rule.default)
+        : key.rule.default
     let source: Source | undefined =
-      key.rule.default === undefined ? undefined : { value: key.rule.default, scope: 'built-in' }
+      defaultValue === undefined ? undefined : { value: defaultValue, scope: 'built-in' }
     for (const scope of precedence) {
       const layer = layers.find((candidate) => candidate.scope === scope)
       const value = at(layer?.values, key.path)

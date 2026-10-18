@@ -34,7 +34,7 @@ export const PRESETS = {
 } as const
 export type Preset = keyof typeof PRESETS
 export interface Profile {
-  preset: Preset
+  preset: string
   verbosity: 'brief' | 'standard' | 'detailed'
   depth: 'product' | 'balanced' | 'technical'
   challenge: 'supportive' | 'balanced' | 'adversarial'

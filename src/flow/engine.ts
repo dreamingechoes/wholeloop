@@ -32,8 +32,12 @@ export class FlowEngine {
     readonly home = homedir(),
   ) {}
 
+  configuration() {
+    return loadConfig({ root: this.root, userFile: this.userFile })
+  }
+
   config() {
-    return loadConfig({ root: this.root, userFile: this.userFile }).values
+    return this.configuration().values
   }
 
   additions(): string[] {
@@ -45,12 +49,16 @@ export class FlowEngine {
 
   begin(name: string, options: BeginOptions) {
     const step = stepDefinition(name)
+    const loaded = this.configuration()
     const configuration = options.profile
-      ? resolveConfig([
-          { scope: 'user', values: this.config() },
-          { scope: 'run', values: { profile: options.profile } },
-        ]).values
-      : this.config()
+      ? resolveConfig(
+          [
+            { scope: 'user', values: loaded.values },
+            { scope: 'run', values: { profile: options.profile } },
+          ],
+          loaded.presets,
+        ).values
+      : loaded.values
     const inventory = discover(this.root, this.store.files, this.home)
     const bindings = Object.fromEntries(
       step.slots.map((slot) => {
@@ -95,6 +103,7 @@ export class FlowEngine {
         run,
         events,
         configuration,
+        presets: loaded.presets,
       })
       payload.bindings = bindings
       for (const resolution of Object.values(bindings))

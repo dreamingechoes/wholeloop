@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P1-09 — layered template, profile and lens catalogs
+
+- Load the three manifest kinds through a shared catalog with repository/user/package/built-in precedence, replacement or recursive inheritance, cycle detection and resource-origin preservation.
+- Validate against public schemas; reject removal of required template sections with their dependent step, unsafe prompt paths and prompts exceeding forty lines. Scaffold prints a kit or explicitly creates a new directory without overwriting.
+- Connect custom profile selection to layered configuration, transient overrides and step preflights; preserve personal precedence and coverage invariants. File versions remain mandatory while in-memory overrides stay partial.
+- Verified the complete local suite, including compiled CLI scaffold/test/list round trips, npm manifest-only packages, all profile combinations, required sections and inherited prompt resources. Gate execution and full workflow template consumption remain later tasks, documented in the owner checklist.
+
+---
+
 ## 2026-10-18 · P1-08 — provider registry and credential-free MCP rendering
 
 - Add the safe capability taxonomy, strict provider manifests, layered inheritance and bundled local/native providers; default docs and tracker resolution works without integrations.

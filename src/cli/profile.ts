@@ -1,9 +1,9 @@
 import { join } from 'node:path'
 import { loadConfig, userConfigPath } from '../config/load.js'
-import { resolveConfig } from '../config/resolve.js'
+import { type Configuration, resolveConfig } from '../config/resolve.js'
 import { validate } from '../config/schema.js'
 import { writeSetting } from '../config/write.js'
-import { PRESETS, type Preset, type Profile } from '../profile/presets.js'
+import type { Profile } from '../profile/presets.js'
 import { renderProfile } from '../profile/render.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
@@ -29,12 +29,13 @@ export function profileCommand(
     if (command !== 'profile show') {
       if (command === 'profile preset') {
         const name = positional[0] ?? ''
-        if (!Object.hasOwn(PRESETS, name)) throw new CliError(`Unknown preset: ${name}`)
+        const loaded = loadConfig({ root })
+        if (!Object.hasOwn(loaded.presets, name)) throw new CliError(`Unknown preset: ${name}`)
         const file = scope === 'project' ? join(root, '.wholeloop/config.yml') : userConfigPath()
         const existing = loadConfig({ root }).values.profile as Profile
         override = {
           preset: name,
-          ...PRESETS[name as Preset],
+          ...loaded.presets[name],
           language: existing.language,
           artifact_language: existing.artifact_language,
         }
@@ -57,12 +58,16 @@ export function profileCommand(
           )
       }
     }
-    let config = loadConfig({ root })
+    const loaded = loadConfig({ root })
+    let config: Configuration = loaded
     if (scope === 'run' && override)
-      config = resolveConfig([
-        { scope: 'user', values: config.values },
-        { scope: 'run', values: { profile: override } },
-      ])
+      config = resolveConfig(
+        [
+          { scope: 'user', values: config.values },
+          { scope: 'run', values: { profile: override } },
+        ],
+        loaded.presets,
+      )
     const profile = config.values.profile as Profile
     const payload = {
       schema: `wholeloop/${command.replaceAll(' ', '-')}@1`,

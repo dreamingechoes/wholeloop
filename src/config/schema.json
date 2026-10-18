@@ -16,8 +16,8 @@
       "properties": {
         "preset": {
           "type": "string",
-          "enum": ["mentor", "pair", "sparring", "autopilot"],
-          "default": "pair"
+          "default": "pair",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
         },
         "verbosity": {
           "type": "string",

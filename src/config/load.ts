@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { isAbsolute, join } from 'node:path'
+import { dirname, isAbsolute, join } from 'node:path'
 import { parse } from 'yaml'
+import { loadCatalog } from '../extensions/catalog.js'
+import { profileAdapter } from '../extensions/kinds.js'
 import { type Configuration, type Layer, resolveConfig } from './resolve.js'
 import { isObject } from './schema.js'
 
@@ -30,7 +32,7 @@ export interface LoadOptions {
   runFile?: string
 }
 
-export function loadConfig(options: LoadOptions): Configuration {
+function configLayers(options: LoadOptions): Layer[] {
   const files = [
     { scope: 'user', file: options.userFile ?? userConfigPath(), optional: true },
     { scope: 'project', file: join(options.root, '.wholeloop/config.yml'), optional: true },
@@ -44,5 +46,39 @@ export function loadConfig(options: LoadOptions): Configuration {
     const values = readConfig(entry.file, entry.optional)
     if (values !== undefined) layers.push({ scope: entry.scope, file: entry.file, values })
   }
-  return resolveConfig(layers)
+  return layers
+}
+
+function extensionOptions(options: LoadOptions, layers: readonly Layer[]) {
+  // Resolve package selection without requiring profiles that those packages supply.
+  const bootstrap = resolveConfig(
+    layers.map((layer) => ({
+      ...layer,
+      values: isObject(layer.values)
+        ? Object.fromEntries(Object.entries(layer.values).filter(([key]) => key !== 'profile'))
+        : layer.values,
+    })),
+  )
+  return {
+    root: options.root,
+    user: dirname(options.userFile ?? userConfigPath()),
+    packages: bootstrap.values.extensions as string[],
+  }
+}
+
+export function loadExtensionOptions(options: LoadOptions) {
+  return extensionOptions(options, configLayers(options))
+}
+
+export function loadConfig(
+  options: LoadOptions,
+): Configuration & { presets: Record<string, Record<string, string>> } {
+  const layers = configLayers(options)
+  const catalog = loadCatalog(profileAdapter, extensionOptions(options, layers))
+  if (catalog.problems.length)
+    throw new Error(catalog.problems.map(({ file, message }) => `${file}: ${message}`).join('\n'))
+  const presets = Object.fromEntries(
+    catalog.entries.map(({ manifest }) => [manifest.id, manifest.dials]),
+  )
+  return { ...resolveConfig(layers, presets), presets }
 }

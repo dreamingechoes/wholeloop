@@ -10,6 +10,8 @@ export interface Schema {
   default?: unknown
   minimum?: number
   minLength?: number
+  required?: readonly string[]
+  minItems?: number
   uniqueItems?: boolean
   pattern?: string
   'x-kind'?: string
@@ -31,7 +33,10 @@ export function validate(value: unknown, rule: Schema = CONFIG_SCHEMA, path = 'c
   switch (rule.type) {
     case 'object': {
       if (!isObject(value)) return fail()
-      const problems: string[] = []
+      // File versions are checked by readConfig; in-memory run overrides are partial.
+      const problems = (rule === CONFIG_SCHEMA ? [] : (rule.required ?? []))
+        .filter((key) => !Object.hasOwn(value, key))
+        .map((key) => `${path}.${key}: required field`)
       for (const [key, child] of Object.entries(value)) {
         if (UNSAFE_KEYS.has(key)) {
           problems.push(`${path}.${key}: forbidden key`)
@@ -51,6 +56,8 @@ export function validate(value: unknown, rule: Schema = CONFIG_SCHEMA, path = 'c
     }
     case 'array': {
       if (!Array.isArray(value)) return fail()
+      if (value.length < (rule.minItems ?? 0))
+        return [`${path}: expected at least ${rule.minItems} items`]
       if (
         rule.uniqueItems &&
         new Set(value.map((item) => JSON.stringify(item))).size !== value.length
@@ -60,6 +67,8 @@ export function validate(value: unknown, rule: Schema = CONFIG_SCHEMA, path = 'c
         rule.items ? validate(item, rule.items, `${path}[${index}]`) : [],
       )
     }
+    case 'boolean':
+      return typeof value === 'boolean' ? [] : fail()
     case 'integer':
       return typeof value === 'number' &&
         Number.isSafeInteger(value) &&

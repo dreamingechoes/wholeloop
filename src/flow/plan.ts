@@ -108,6 +108,7 @@ export function beginPlan(
     run?: string
     events?: readonly StateEvent[]
     configuration?: Record<string, unknown>
+    presets?: Readonly<Record<string, Readonly<Record<string, string>>>>
   },
 ) {
   const events = options.events ?? []
@@ -144,7 +145,7 @@ export function beginPlan(
     })),
     bindings: {},
     profile: renderProfile(
-      resolveConfig([{ scope: 'run', values: options.configuration ?? {} }]).values
+      resolveConfig([{ scope: 'run', values: options.configuration ?? {} }], options.presets).values
         .profile as Profile,
     ),
     template: step.sections.length ? [...step.sections] : null,

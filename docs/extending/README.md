@@ -3,7 +3,7 @@
 > **TL;DR** — Almost everything a team would want to customise is a **declarative manifest**, discovered from four places, validated by a schema and testable with one command: providers, review and verify lenses, artifact templates, profile presets and extra decision points. Code is the exception, reserved for new CLI adapters.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Providers load and validate from all four layers; the other manifest kinds remain P1-09. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry and loader: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1).
+> **Status: 🚧 partial.** Providers, templates, profiles and lenses load and validate from all four layers. Custom profiles are consumed by configuration; gate execution and full workflow template selection remain planned. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry and loader: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1).
 
 ---
 
@@ -37,17 +37,17 @@ extensions:
   - "@acme/wholeloop-kit@^1"     # providers, lenses and templates for the whole company
 ```
 
-Install packages with npm first. The loader reads `providers/<id>/provider.yml` (or JSON/YAML) from each installed package; it does not install packages or enforce version ranges itself. npm owns version selection. Later packages in the list override earlier ones, below user/project manifests. No code from a package is executed: `wl` only resolves its package.json and reads manifests.
+Install packages with npm first. The loader reads `<kind>/<id>/<manifest>` (or JSON/YAML; templates use Markdown) from each installed package; it does not install packages or enforce version ranges itself. npm owns version selection. Later packages in the list override earlier ones, below user/project manifests. No code from a package is executed: `wl` only resolves its package.json and reads manifests.
 
 ## The lifecycle of an extension
 
 ```text
-wl provider scaffold acme-support      # writes a commented manifest skeleton
-wl provider test acme-support          # schema check, detection dry run, operation mapping, probe call
+wl provider scaffold acme-support      # prints a manifest skeleton
+wl provider test acme-support          # schema, resource and access declaration checks; no probe
 wl provider list                       # where every provider comes from and what it can do
 ```
 
-Lenses, templates and profiles have the same trio (`scaffold`, `test`, `list`). A manifest that fails its schema is reported in `wl doctor` and ignored. It never half-loads.
+Lenses, templates and profiles have the same trio (`scaffold`, `test`, `list`). A manifest that fails its schema is reported by list/test and ignored as an entry; configuration rejects broken profile catalogs. `wl doctor` reporting remains planned. It never half-loads.
 
 ## Contributing an extension upstream
 

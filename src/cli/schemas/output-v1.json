@@ -524,6 +524,87 @@
         }
       },
       "required": ["target", "snippet", "applied"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/template-list@1"
+        }
+      },
+      "required": ["schema", "entries", "problems"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/template-test@1"
+        }
+      },
+      "required": ["schema", "entries", "problems"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/template-scaffold@1"
+        }
+      },
+      "required": ["schema", "id", "files", "directory"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/profile-list@1"
+        }
+      },
+      "required": ["schema", "entries", "problems"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/profile-test@1"
+        }
+      },
+      "required": ["schema", "entries", "problems"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/profile-scaffold@1"
+        }
+      },
+      "required": ["schema", "id", "files", "directory"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/lens-list@1"
+        }
+      },
+      "required": ["schema", "entries", "problems"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/lens-test@1"
+        }
+      },
+      "required": ["schema", "entries", "problems"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/lens-scaffold@1"
+        }
+      },
+      "required": ["schema", "id", "files", "directory"]
     }
   ],
   "$defs": {

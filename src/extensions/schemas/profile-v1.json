@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/profile-manifest@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "extends": {
+      "type": "string",
+      "pattern": "^(builtin:)?[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "dials": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verbosity": {
+          "type": "string",
+          "enum": ["brief", "standard", "detailed"],
+          "default": "standard"
+        },
+        "depth": {
+          "type": "string",
+          "enum": ["product", "balanced", "technical"],
+          "default": "balanced"
+        },
+        "challenge": {
+          "type": "string",
+          "enum": ["supportive", "balanced", "adversarial"],
+          "default": "balanced"
+        },
+        "pace": {
+          "type": "string",
+          "enum": ["guided", "staged", "parallel"],
+          "default": "guided"
+        },
+        "stops": {
+          "type": "string",
+          "enum": ["decisions", "every-step"],
+          "default": "decisions"
+        },
+        "teaching": {
+          "type": "string",
+          "enum": ["off", "on"],
+          "default": "off"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1,
+          "default": "auto",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9-]{0,34}$"
+        },
+        "artifact_language": {
+          "type": "string",
+          "minLength": 1,
+          "default": "en",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9-]{0,34}$"
+        }
+      }
+    }
+  },
+  "required": ["schema", "id", "dials"]
+}

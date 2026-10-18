@@ -3,7 +3,7 @@
 > **TL;DR** — There is nothing to configure before your first run: anything missing becomes a question, and the answer is remembered at the scope you choose. Settings come in two kinds. **Personal** settings (your interaction profile) follow you. **Team** settings (providers, slot bindings, lenses, templates) follow the repository.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Schema, deterministic loader and `wl config show --explain` are available. Provider execution and the consumers of these settings remain planned. Roadmap: [P1-02](../../roadmap/phase-1-walking-skeleton.md#p1-02--configuration-schema-and-layered-loading). The key reference below is generated from the JSON Schema.
+> **Status: ✅ implemented.** Schema, deterministic loader and `wl config show --explain` are available. Custom profile presets are loaded from manifest catalogs. External provider execution and later workflow consumers remain planned. Roadmap: [P1-02](../../roadmap/phase-1-walking-skeleton.md#p1-02--configuration-schema-and-layered-loading). The key reference below is generated from the JSON Schema.
 
 ---
 
@@ -102,7 +102,7 @@ Source: `src/config/schema.json`. Regenerate with `npm run docs:config`; CI chec
 | Key | Kind | Values | Default |
 | --- | --- | --- | --- |
 | `version` | team | integer | unset |
-| `profile.preset` | personal | mentor · pair · sparring · autopilot | `"pair"` |
+| `profile.preset` | personal | string | `"pair"` |
 | `profile.verbosity` | personal | brief · standard · detailed | `"standard"` |
 | `profile.depth` | personal | product · balanced · technical | `"balanced"` |
 | `profile.challenge` | personal | supportive · balanced · adversarial | `"balanced"` |

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/lens-manifest@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "extends": {
+      "type": "string",
+      "pattern": "^(builtin:)?[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "gate": {
+      "type": "string",
+      "enum": ["review", "verify"]
+    },
+    "asks": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fail-safe": {
+      "type": "boolean"
+    },
+    "prompt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "applies-when": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "required": ["schema", "id", "gate", "asks", "fail-safe", "prompt"]
+}

@@ -8,6 +8,70 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'template list',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/template-list@1',
+    summary: 'List validated manifests and their origins',
+  },
+  {
+    path: 'template test',
+    arguments: '<id>',
+    options: [],
+    schema: 'wholeloop/template-test@1',
+    summary: 'Validate a manifest and its required resources',
+  },
+  {
+    path: 'template scaffold',
+    arguments: '<id>',
+    options: ['--output <directory>'],
+    schema: 'wholeloop/template-scaffold@1',
+    summary: 'Print or explicitly create a manifest kit',
+  },
+  {
+    path: 'profile list',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/profile-list@1',
+    summary: 'List validated manifests and their origins',
+  },
+  {
+    path: 'profile test',
+    arguments: '<id>',
+    options: [],
+    schema: 'wholeloop/profile-test@1',
+    summary: 'Validate a manifest and its required resources',
+  },
+  {
+    path: 'profile scaffold',
+    arguments: '<id>',
+    options: ['--output <directory>'],
+    schema: 'wholeloop/profile-scaffold@1',
+    summary: 'Print or explicitly create a manifest kit',
+  },
+  {
+    path: 'lens list',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/lens-list@1',
+    summary: 'List validated manifests and their origins',
+  },
+  {
+    path: 'lens test',
+    arguments: '<id>',
+    options: [],
+    schema: 'wholeloop/lens-test@1',
+    summary: 'Validate a manifest and its required resources',
+  },
+  {
+    path: 'lens scaffold',
+    arguments: '<id>',
+    options: ['--output <directory>'],
+    schema: 'wholeloop/lens-scaffold@1',
+    summary: 'Print or explicitly create a manifest kit',
+  },
+
+  {
     path: 'provider list',
     arguments: '',
     options: [],

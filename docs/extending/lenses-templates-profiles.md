@@ -3,7 +3,7 @@
 > **TL;DR** — The other four extension points follow the same pattern as providers: a small manifest in `.wholeloop/<kind>/`, validated by a schema, tested with `wl <kind> test`, overridable by `id`. Lenses add review or verify dimensions, templates reshape artifacts, profiles bundle dials, decision points add stops for a person.
 
 > [!NOTE]
-> **Status: 📐 design.** Lenses land with the gate engine ([P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine)); templates and profiles with the walking skeleton ([P1-09](../../roadmap/phase-1-walking-skeleton.md#p1-09--manifest-loader-for-the-other-extension-kinds)).
+> **Status: 🚧 partial.** Template, profile and lens catalogs, validation, inheritance and scaffold commands are implemented ([P1-09](../../roadmap/phase-1-walking-skeleton.md#p1-09--manifest-loader-for-the-other-extension-kinds)). Custom profiles are selectable in configuration and step preflights. Gate execution and template selection by later step workflows remain planned.
 
 ---
 
@@ -29,7 +29,7 @@ prompt: prompt.md              # ≤ 40 lines: what to look for, what is out of 
 | `applies-when` | Deterministic filter (paths, languages, slots bound). A lens that does not apply is reported as *not applicable*, never silently absent. |
 | `fail-safe` | Reserve for lenses where a miss is far worse than a false alarm (`security`, `correctness` are fail-safe by default). |
 
-Activate it in project config: `lenses: { add: [accessibility] }`. Built-in lenses can only be disabled with a written reason (`lenses: { disable: { performance: "batch tool, never user-facing" } }`), and the reason appears in every preflight.
+Declare it in project config: `lenses: { add: [accessibility] }`. The loader validates applicability fields and a prompt of at most 40 lines, including inherited resource origins and symlink boundaries. Actual applicability, built-in lenses and disabling with a recorded reason arrive with the gate engine; `lenses.disable` is not accepted yet.
 
 ## Templates
 
@@ -50,7 +50,7 @@ sections:
 …
 ```
 
-The **required sections** are what `wl step complete` checks. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation with an explanation. A repo skill bound to `spec.template` takes precedence over a template file, because it carries more than shape.
+The loader checks that every **required section** has a non-empty heading body. Step-specific selection of these templates arrives with the full step workflows; the current minimal framing engine checks its fixed `Problem` and `Owner` contract. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation naming the section and its dependent step. A repo skill bound to `spec.template` will take precedence over a template file in those workflows, because it carries more than shape.
 
 ## Profiles
 
@@ -66,6 +66,39 @@ dials:
 
 A team can suggest a profile (`profile: { preset: onboarding }` in project config); each person's own choice still wins ([why](../configuration/README.md#who-wins)).
 
+## Inspect and scaffold
+
+```text
+wl template list --json
+wl template test spec --json
+wl profile list --json
+wl profile test onboarding --json
+wl profile preset onboarding --scope run --json
+wl lens scaffold accessibility --json
+wl lens scaffold accessibility --output .wholeloop/lenses/accessibility --json
+wl lens test accessibility --json
+```
+
+Each kind supports `list`, `test <id>` and `scaffold <id>`. Scaffold prints a kit
+by default; `--output <directory>` explicitly creates a new directory and refuses
+to overwrite an existing one. Lens kits include `prompt.md`. Template kits contain
+`template.md`; profiles contain `profile.yml`. A flat `templates/<id>.md` also loads.
+
+Catalog precedence is repository, user, installed packages, then built-in. A
+same-id manifest replaces its predecessor unless it declares `extends`. Maps
+merge recursively and arrays replace. `extends: builtin:pair` names a built-in
+explicitly; `extends: pair` on a same-id override selects the next lower layer.
+Cycles, duplicate IDs within one layer, malformed schemas and unsafe resource
+paths are reported as problems; list/test exits 4 when any problem exists.
+Configuration loading rejects a broken profile catalog rather than silently
+using a different communication profile.
+
+The schemas in `src/extensions/schemas/` describe decoded manifests. Template
+front matter supplies metadata and the Markdown body supplies `content`.
+Profile manifests contain dials only; they cannot alter checks or decisions.
+`profile set` still overrides one dial, while `profile preset <id>` selects any
+validated catalog profile. User preferences keep their normal precedence.
+
 ## Decision points
 
 ```yaml
@@ -73,13 +106,10 @@ A team can suggest a profile (`profile: { preset: onboarding }` in project confi
 flow:
   decisions:
     add:
-      - id: security-signoff
-        before: open-pr
-        ask: "Has the security owner reviewed the threat model for this slice?"
-        record: [who, when, link]
+      - security-signoff
 ```
 
-Added decision points behave exactly like the built-in ones: they stop every mode and every profile, they are listed in the preflight, and the decision is recorded in the journal with who made it.
+Current additions apply before `open-pr`; structured custom prompts and record fields remain planned. Added decision points behave like the built-in ones: they stop every mode and every profile, they are listed in the preflight, and the decision is recorded in the journal with who made it.
 
 ---
 

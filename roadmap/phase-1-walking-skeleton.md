@@ -133,7 +133,7 @@
 
 ## P1-09 · Manifest loader for the other extension kinds
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P1-08
+**Status:** ✅ · **Size:** S · **Depends on:** P1-08
 
 **Goal** — Templates, profiles and lenses load the same way providers do.
 
@@ -141,8 +141,8 @@
 
 **Acceptance criteria:**
 
-- [ ] A template removing a required section fails with the section name and who depends on it.
-- [ ] Repo-level manifests override built-ins by `id`; `extends` merges.
+- [x] A template removing a required section fails with the section name and who depends on it.
+- [x] Repo-level manifests override built-ins by `id`; `extends` merges.
 
 **Docs** — extending/README, extending/lenses-templates-profiles.
 
