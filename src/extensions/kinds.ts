@@ -1,6 +1,7 @@
 import { isObject, type Schema, validate } from '../config/schema.js'
 import { checkShape } from '../flow/registry.js'
 import { FRAME_SECTIONS } from '../framing/contract.js'
+import { BUILTIN_LENSES } from '../gates/builtins.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import { PRESETS } from '../profile/presets.js'
 import type { CatalogAdapter, Manifest } from './catalog.js'
@@ -133,7 +134,14 @@ export const profileAdapter: CatalogAdapter<ProfileManifest> = {
 export const lensAdapter: CatalogAdapter<Lens> = {
   kind: 'lenses',
   filename: 'lens.yml',
-  builtins: [],
+  builtins: BUILTIN_LENSES.map(([id, asks, failSafe]) => ({
+    schema: 1,
+    id,
+    gate: 'review',
+    asks,
+    'fail-safe': failSafe,
+    prompt: 'prompt.md',
+  })),
   validate(value) {
     const data = base(value, ['gate', 'asks', 'applies-when', 'fail-safe', 'prompt'], lensSchema)
     if (

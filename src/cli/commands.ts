@@ -8,6 +8,43 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'gate plan',
+    arguments: '<verify|review>',
+    options: [
+      '--for <id>',
+      '--repo <path>',
+      '--base <branch>',
+      '--rounds <verify=n,review=n>',
+      '--extend <rounds>',
+      '--reason <why>',
+      '--new-run',
+      '--criteria <file>',
+    ],
+    schema: 'wholeloop/gate-plan@1',
+    summary: 'Pin coverage and start or resume a bounded read-only gate round',
+  },
+  {
+    path: 'gate submit',
+    arguments: '',
+    options: ['--for <id>', '--file <path>'],
+    schema: 'wholeloop/gate-submit@1',
+    summary: 'Journal a planned unit result or independent finding refutation',
+  },
+  {
+    path: 'gate verdict',
+    arguments: '',
+    options: ['--for <id>', '--gate <verify|review>'],
+    schema: 'wholeloop/gate-verdict@1',
+    summary: 'Seal a round with deterministic fail-safe aggregation',
+  },
+  {
+    path: 'gate schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/gate-schema@1',
+    summary: 'Print public gate plan result and refutation schemas',
+  },
+  {
     path: 'worktree create',
     arguments: '<id>',
     options: ['--repo <path>', '--base <branch>', '--after <id>'],

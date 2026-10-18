@@ -1,4 +1,5 @@
 import { stringify } from 'yaml'
+import { gateRuns } from '../gates/state.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import type { Item, StateEvent } from './events.js'
 import { replayMailbox } from './mailbox.js'
@@ -30,6 +31,12 @@ export function projections(
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }
+  for (const run of gateRuns(events))
+    for (const round of run.rounds)
+      files.set(
+        `items/${run.subject}/gates/${run.run}/${round.plan.round}.json`,
+        `${JSON.stringify({ ...round, budget: run.budget }, null, 2)}\n`,
+      )
   files.set('links.json', `${JSON.stringify(links, null, 2)}\n`)
   const mailbox = replayMailbox(events)
   const threads = new Map<string, string[]>()

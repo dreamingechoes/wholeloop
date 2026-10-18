@@ -3,6 +3,8 @@ import { isAbsolute } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { STEP_NAMES, type StepName } from '../flow/registry.js'
 import { type FrameOutcome, validateFrameOutcome } from '../framing/contract.js'
+import type { GateEventData } from '../gates/contracts.js'
+import { gateRuns, validGateData } from '../gates/state.js'
 import {
   type AngleResult,
   type Refutation,
@@ -60,6 +62,7 @@ export interface TrackerReference {
 }
 export type EventData =
   | WorktreeEventData
+  | GateEventData
   | {
       type: 'slice.defined'
       data: {
@@ -169,6 +172,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('gate.')) return validGateData(type, data)
   if (type.startsWith('worktree.')) return validWorktreeData(type, data)
   switch (type) {
     case 'slice.defined':
@@ -508,5 +512,6 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   }
   replayMailbox(events)
   worktreeRecords(events)
+  gateRuns(events)
   return items
 }

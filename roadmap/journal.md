@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P3-03 — pinned gate rounds and deterministic verdicts
+
+- Add gate plan/submit/verdict/schema, six built-in review lenses, manifest applicability, explicit disabled reasons, per-criterion verify coverage and versioned result/refutation contracts. Pin repository/base, prompts, policy digest, criteria and quorum; reject weakened built-in fail-safe defaults and policy changes mid-run.
+- Count rounds from the journal, enforce project/run budgets in 1–10, default verify four/review three, and require an explicit larger budget with a reason for extension. Missing/unavailable units block PASS; exhausted runs cannot reset implicitly. Ordinary findings need majority active refutations; correctness/security need every verifier to refute. ADR-0031 records the stricter fail-safe boundary and host limitations.
+- Snapshot branch, HEAD, index entries, file bytes/modes and symlink targets. Reject submissions after changes and seal failures without restoring files. Preserve historical verdicts and report STALE after a subsequent change. Rebuild round projections and route compact verdict pointers through the builder mailbox.
+- Exercise stubbed workflows for pass/fail, every supported quorum, silence, uncertainty, exhausted/extended budgets, duplicate/stale submissions, forged PASS rollback, manifest policy, detached branches and seven classes of workspace mutation. The compiled CLI covers planning through results, refutation, exhaustion and extension. Local check: 409 tests plus build, smoke, lint, typecheck, docs, catalogs, harness, Markdown and Mermaid passed. Suite execution, incremental review, genuine host independence, ignored/external state and Linux remain subsequent work or owner verification; no model or authenticated provider ran.
+
+---
+
 ## 2026-10-18 · P3-02 — recoverable isolated worktrees
 
 - Add worktree create/open/stop/list/prune with deterministic topic names, explicit named bases, stacked integration targets, external paths and disjoint ten-port leases. Preserve stopped/failed reservations until conservative pruning; expose allocations in status, resume and replayable projections.

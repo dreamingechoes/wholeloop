@@ -3,7 +3,7 @@
 > **TL;DR** — The other four extension points follow the same pattern as providers: a small manifest in `.wholeloop/<kind>/`, validated by a schema, tested with `wl <kind> test`, overridable by `id`. Lenses add review or verify dimensions, templates reshape artifacts, profiles bundle dials, decision points add stops for a person.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Template, profile and lens catalogs, validation, inheritance and scaffold commands are implemented ([P1-09](../../roadmap/phase-1-walking-skeleton.md#p1-09--manifest-loader-for-the-other-extension-kinds)). Custom profiles are selectable in configuration and step preflights. Spec template selection is consumed by the core; gate execution and other workflow-specific template selection remain planned.
+> **Status: 🚧 partial.** Template, profile and lens catalogs, validation, inheritance and scaffold commands are implemented ([P1-09](../../roadmap/phase-1-walking-skeleton.md#p1-09--manifest-loader-for-the-other-extension-kinds)). Custom profiles are selectable in configuration and step preflights. Spec template selection is consumed by the core. Gate planning consumes lens manifests; suite execution and other workflow-specific template selection remain planned.
 
 ---
 
@@ -29,7 +29,7 @@ prompt: prompt.md              # ≤ 40 lines: what to look for, what is out of 
 | `applies-when` | Deterministic filter (paths, languages, slots bound). A lens that does not apply is reported as *not applicable*, never silently absent. |
 | `fail-safe` | Reserve for lenses where a miss is far worse than a false alarm (`security`, `correctness` are fail-safe by default). |
 
-Declare it in project config: `lenses: { add: [accessibility] }`. The loader validates applicability fields and a prompt of at most 40 lines, including inherited resource origins and symlink boundaries. Actual applicability, built-in lenses and disabling with a recorded reason arrive with the gate engine; `lenses.disable` is not accepted yet.
+Declare it in project config: `lenses: { add: [accessibility] }`. The loader validates applicability fields and a prompt of at most 40 lines, including inherited resource origins and symlink boundaries. The gate engine evaluates applicability and reports excluded lenses. `lenses.disable: { performance: "No runtime surface in this migration" }` records an explicit reason; empty/blank reasons fail validation. Built-in applicability cannot be narrowed through a manifest, and overrides cannot weaken correctness/security fail-safe defaults. Custom path patterns accept `*`, `**` and `?`; dimensions combine with AND and values within a dimension with OR. Language matching currently recognizes TypeScript, JavaScript, Python, Go, Rust, Ruby, Java, Swift, HTML, CSS and shell by extension.
 
 ## Templates
 

@@ -3,7 +3,7 @@
 > **TL;DR** — The quality gate for craft. Six reviewers each look at the change through one fixed lens — correctness, design fit, performance, security, simplicity, change shape — using your repository's own review guidance where it has one. Every finding is challenged before it blocks, and what survives goes back to the builder. It never edits code.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P3-06](../../../roadmap/phase-3-build.md#p3-06--review-code).
+> **Status: 🚧 partial.** The gate core implements six lenses, custom manifests, budgets, active refutations and snapshot-bound verdicts. Rubric loading, incremental inputs, remote comments and this step workflow are pending. Tracked in [P3-06](../../../roadmap/phase-3-build.md#p3-06--review-code).
 
 ---
 
@@ -64,7 +64,7 @@ flowchart TD
 6. **Reads, never writes.** Same guarantee as verify: no edit tools where enforceable, and the slice's worktree is checked untouched after every round.
 7. **Bounded, and yours to tune.** Three rounds by default; change it per project (`gates.review.rounds`) or per run (`--rounds review=5`). Still blocked at the limit? You get every finding with its reasoning, and the choice to extend or stop.
 
-**Teams can add lenses** (accessibility, i18n, data privacy…) as manifests ([extending](../../extending/lenses-templates-profiles.md)). Removing one of the six is not a configuration option.
+**Teams can add lenses** (accessibility, i18n, data privacy…) as manifests ([extending](../../extending/lenses-templates-profiles.md)). Disabling a built-in requires a meaningful reason in project configuration, reported in every gate plan.
 
 ## Standalone use
 

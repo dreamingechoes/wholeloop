@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete. The worktree manager provisions isolated environments and conservative cleanup. Generated CLI adapters, live external provider execution, gates and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Generated CLI adapters, live external provider execution, suite execution and later step behavior remain planned.
 
 ---
 
@@ -22,6 +22,10 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl gate plan <verify\|review>` | `wholeloop/gate-plan@1` | Pin coverage and start or resume a bounded read-only gate round |
+| `wl gate submit` | `wholeloop/gate-submit@1` | Journal a planned unit result or independent finding refutation |
+| `wl gate verdict` | `wholeloop/gate-verdict@1` | Seal a round with deterministic fail-safe aggregation |
+| `wl gate schema` | `wholeloop/gate-schema@1` | Print public gate plan result and refutation schemas |
 | `wl worktree create <id>` | `wholeloop/worktree-create@1` | Allocate an isolated worktree from a recorded named base |
 | `wl worktree open <id>` | `wholeloop/worktree-open@1` | Show environment path ports and commands without starting them |
 | `wl worktree stop <id>` | `wholeloop/worktree-stop@1` | Stop the workspace lease while retaining files and branches |

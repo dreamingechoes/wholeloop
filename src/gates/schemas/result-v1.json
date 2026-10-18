@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/gate-result@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "unit": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "unavailable"]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          }
+        },
+        "required": ["id", "location", "text", "evidence"]
+      },
+      "minItems": 0
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["unit", "status", "evidence", "findings"]
+}

@@ -137,6 +137,42 @@
           },
           "uniqueItems": true,
           "default": []
+        },
+        "disable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "correctness": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "design-fit": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "performance": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "security": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "simplicity": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "change-shape": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          }
         }
       },
       "x-kind": "team"
@@ -160,7 +196,8 @@
             "rounds": {
               "type": "integer",
               "minimum": 1,
-              "default": 4
+              "default": 4,
+              "maximum": 10
             }
           }
         },
@@ -171,9 +208,15 @@
             "rounds": {
               "type": "integer",
               "minimum": 1,
-              "default": 3
+              "default": 3,
+              "maximum": 10
             }
           }
+        },
+        "verifiers": {
+          "type": "integer",
+          "enum": [3, 5, 7, 9],
+          "default": 3
         }
       },
       "x-kind": "team"

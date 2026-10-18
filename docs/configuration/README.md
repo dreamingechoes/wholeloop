@@ -122,9 +122,16 @@ Source: `src/config/schema.json`. Regenerate with `npm run docs:config`; CI chec
 | `providers.sources` | team | array of strings | unset |
 | `slots` | team | map of strings | unset |
 | `lenses.add` | team | array of strings | `[]` |
+| `lenses.disable.correctness` | team | string | unset |
+| `lenses.disable.design-fit` | team | string | unset |
+| `lenses.disable.performance` | team | string | unset |
+| `lenses.disable.security` | team | string | unset |
+| `lenses.disable.simplicity` | team | string | unset |
+| `lenses.disable.change-shape` | team | string | unset |
 | `templates` | team | map of strings | unset |
 | `gates.verify.rounds` | team | integer | `4` |
 | `gates.review.rounds` | team | integer | `3` |
+| `gates.verifiers` | team | 3 · 5 · 7 · 9 | `3` |
 | `build.workspace` | team | worktree · checkout | `"worktree"` |
 | `learn.checkpoints` | team | array of strings | `["launch","d7","d30"]` |
 | `flow.decisions.add` | team | array of strings | `[]` |

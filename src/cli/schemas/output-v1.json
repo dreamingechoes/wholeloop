@@ -812,6 +812,52 @@
         }
       },
       "required": ["schema", "scopeSchema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/gate-plan@1"
+        }
+      },
+      "required": ["schema", "plan", "budget", "resumed"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/gate-submit@1"
+        }
+      },
+      "required": ["schema", "subject", "run", "round", "recorded"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/gate-verdict@1"
+        }
+      },
+      "required": [
+        "schema",
+        "subject",
+        "run",
+        "gate",
+        "round",
+        "budget",
+        "report",
+        "current",
+        "verdict"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/gate-schema@1"
+        }
+      },
+      "required": ["schema", "schemas"]
     }
   ],
   "$defs": {

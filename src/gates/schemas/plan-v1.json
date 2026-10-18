@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/gate-round@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/gate-round@1"
+    },
+    "subject": {
+      "type": "string",
+      "pattern": "^(slice|part|review)-[a-f0-9]{8}$"
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^gate-[a-f0-9]{16}$"
+    },
+    "gate": {
+      "type": "string",
+      "enum": ["verify", "review"]
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "budget": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^/"
+    },
+    "base": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40,64}$"
+        }
+      },
+      "required": ["ref", "sha"]
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "head": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40,64}$"
+        },
+        "branch": {
+          "type": "string"
+        }
+      },
+      "required": ["digest", "head", "branch"]
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      },
+      "required": ["paths", "languages", "slots"]
+    },
+    "units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+          },
+          "lens": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+          },
+          "asks": {
+            "type": "string",
+            "minLength": 1
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "origin": {
+            "type": "string",
+            "minLength": 1
+          },
+          "failSafe": {
+            "type": "boolean"
+          }
+        },
+        "required": ["id", "lens", "asks", "prompt", "origin", "failSafe"]
+      },
+      "minItems": 1
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["id", "reason"]
+      },
+      "minItems": 0
+    },
+    "verifiers": {
+      "type": "integer",
+      "enum": [3, 5, 7, 9]
+    },
+    "refutations": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 5
+    },
+    "policy": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "schema",
+    "subject",
+    "run",
+    "gate",
+    "round",
+    "budget",
+    "repository",
+    "base",
+    "snapshot",
+    "inputs",
+    "units",
+    "excluded",
+    "verifiers",
+    "refutations",
+    "policy"
+  ]
+}

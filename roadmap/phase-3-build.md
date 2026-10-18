@@ -37,7 +37,7 @@
 
 ## P3-03 · Gate engine
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-05
+**Status:** ✅ · **Size:** L · **Depends on:** P1-05
 
 **Goal** — Gate decisions are arithmetic in the core, not opinions in a prompt.
 
@@ -45,9 +45,9 @@
 
 **Acceptance criteria:**
 
-- [ ] Workflow tests with stubbed agents cover: pass, fail, quorum drop, fail-safe keep, silent verifier, budget exhausted, budget extended.
-- [ ] Reaching the budget never yields PASS.
-- [ ] Disabling a built-in lens without a reason fails config validation.
+- [x] Workflow tests with stubbed agents cover: pass, fail, quorum drop, fail-safe keep, silent verifier, budget exhausted, budget extended.
+- [x] Reaching the budget never yields PASS.
+- [x] Disabling a built-in lens without a reason fails config validation.
 
 **Docs** — architecture/orchestration-and-gates, ADR-0014.
 

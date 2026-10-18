@@ -132,7 +132,7 @@ branch there, and restores the original branch or detached commit on eligible
 cleanup. It never deletes the person's directory. See
 [ADR-0030](../../decisions/0030-worktree-intents-leases-and-conservative-pruning.md).
 These lifecycle commands are available independently; build-slice remains an
-unavailable workflow until P3-04 supplies the builder and gates.
+unavailable workflow until P3-04 supplies the builder orchestration. The independent gate decision layer is available now.
 
 ## Standalone use
 

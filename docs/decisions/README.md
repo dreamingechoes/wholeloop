@@ -41,6 +41,7 @@
 | [0028](./0028-definition-eval-seeds-and-external-predictions.md) | Definition eval seeds and external predictions | Accepted | 2026-10-18 |
 | [0029](./0029-vertical-slice-contracts-and-repository-parts.md) | Vertical slice contracts and repository parts | Accepted | 2026-10-18 |
 | [0030](./0030-worktree-intents-leases-and-conservative-pruning.md) | Worktree intents, leases and conservative pruning | Accepted | 2026-10-18 |
+| [0031](./0031-pinned-gate-rounds-and-fail-safe-verdicts.md) | Pinned gate rounds and fail-safe verdicts | Accepted | 2026-10-18 |
 
 ## Lifecycle
 

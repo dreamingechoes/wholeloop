@@ -10,6 +10,7 @@ import { CliError } from './errors.js'
 import { evalCommand } from './eval.js'
 import { extensionCommand } from './extensions.js'
 import { flowCommand } from './flow.js'
+import { gateCommand } from './gate.js'
 import { harnessCheck } from './harness.js'
 import { EXIT, type Io } from './io.js'
 import { mailboxCommand } from './mailbox.js'
@@ -73,6 +74,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('worktree '))
       return worktreeCommand(command.path, parsed, root, json, io)
     if (command.path === 'eval definitions') return evalCommand(parsed, json, io)
