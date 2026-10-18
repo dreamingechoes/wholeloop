@@ -3,5 +3,15 @@
 # `forbid` lists regexes that must not appear in harness sources (a skill contradicting the rule).
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
-rules: []
+rules:
+  - id: external-runtime-state
+    enforcers: [src/state/paths.ts#assertExternal, test/unit/state/store.test.ts]
+  - id: recorded-step-skips
+    enforcers: [src/flow/engine.ts#skip, test/unit/flow/engine.test.ts]
+  - id: required-human-decisions
+    enforcers: [src/flow/plan.ts#decisions, test/unit/flow/engine.test.ts]
+  - id: profile-preserves-coverage
+    enforcers: [test/unit/profile/profile.test.ts]
+  - id: history-without-tool-attribution
+    enforcers: [src/git/commit.ts#checkCommit, test/unit/git/hook.test.ts]
 documentation_only: []

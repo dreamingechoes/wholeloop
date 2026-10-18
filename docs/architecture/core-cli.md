@@ -22,6 +22,9 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl profile show` | `wholeloop/profile-show@1` | Show the active profile and rendered instructions |
+| `wl profile set <dial=value>` | `wholeloop/profile-set@1` | Set a profile dial at user, project or run scope |
+| `wl profile preset <name>` | `wholeloop/profile-preset@1` | Select a built-in interaction preset |
 | `wl step begin <step>` | `wholeloop/step-begin@1` | Compute inputs and begin an available step |
 | `wl step plan` | `wholeloop/step-plan@1` | Plan the next step and required decisions |
 | `wl step complete <step>` | `wholeloop/step-complete@1` | Validate and record a step artifact |

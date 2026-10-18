@@ -8,6 +8,27 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'profile show',
+    arguments: '',
+    options: ['--explain'],
+    schema: 'wholeloop/profile-show@1',
+    summary: 'Show the active profile and rendered instructions',
+  },
+  {
+    path: 'profile set',
+    arguments: '<dial=value>',
+    options: ['--scope <scope>', '--explain'],
+    schema: 'wholeloop/profile-set@1',
+    summary: 'Set a profile dial at user, project or run scope',
+  },
+  {
+    path: 'profile preset',
+    arguments: '<name>',
+    options: ['--scope <scope>', '--explain'],
+    schema: 'wholeloop/profile-preset@1',
+    summary: 'Select a built-in interaction preset',
+  },
+  {
     path: 'step begin',
     arguments: '<step>',
     options: [

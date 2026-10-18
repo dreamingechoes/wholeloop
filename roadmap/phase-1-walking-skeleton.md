@@ -86,7 +86,7 @@
 
 ## P1-06 · Interaction profile
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P1-02
+**Status:** ✅ · **Size:** S · **Depends on:** P1-02
 
 **Goal** — Personal dials rendered identically for every CLI.
 
@@ -94,8 +94,8 @@
 
 **Acceptance criteria:**
 
-- [ ] Every preset × verbosity renders a snapshot-tested style block.
-- [ ] No dial changes lens sets, decision points or the output contract (property test over all dial combinations).
+- [x] Every preset × verbosity renders a snapshot-tested style block.
+- [x] No dial changes lens sets, decision points or the output contract (property test over all dial combinations).
 
 **Docs** — configuration/profile, ADR-0010.
 

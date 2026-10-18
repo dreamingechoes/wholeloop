@@ -3,7 +3,7 @@
 > **TL;DR** — A handful of personal dials shape the conversation: how much it explains, how technical it gets, how hard it pushes back, how much happens at once, how often it pauses, and in which language. Pick a preset or tune single dials. No dial can lower coverage, skip a decision point or let the harness guess instead of ask.
 
 > [!NOTE]
-> **Status: 📐 design.** Decision: [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P1-06](../../roadmap/phase-1-walking-skeleton.md#p1-06--interaction-profile).
+> **Status: ✅ implemented.** Built-in presets, layered dials, CLI setters, transient overrides and the ten-line renderer are tested. Custom preset manifests arrive in P1-09. Decision: [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P1-06](../../roadmap/phase-1-walking-skeleton.md#p1-06--interaction-profile).
 
 ---
 
@@ -39,7 +39,11 @@ wl profile set depth=technical      # tune one dial
 wl profile show                     # what is in force and where each value came from
 ```
 
-Or simply say it mid-session — "más técnico", "challenge me harder", "slow down" — and the skill records it for the run, offering to remember it.
+`--scope user` is the default; `--scope project` changes the team's suggested profile. Selecting a preset resets its six interaction dials and preserves the active language codes. An explicit dial overrides the preset at its own layer. User preferences still beat project suggestions.
+
+`wl profile set depth=technical --scope run --json` emits a transient `override.profile` object without writing a file. A skill passes that object to `wl step begin ... --profile '{"depth":"technical"}' --json`. The override applies to that invocation; the skill carries it through subsequent calls in the session. It is not persisted across a fresh session.
+
+Or simply say it mid-session — "más técnico", "challenge me harder", "slow down" — and a skill can translate that request into a validated run override, offering to remember it. No natural-language parser is embedded in the deterministic CLI.
 
 ## What no dial can change
 

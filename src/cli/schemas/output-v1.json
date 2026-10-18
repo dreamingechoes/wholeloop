@@ -364,6 +364,48 @@
         }
       },
       "required": ["qid", "scope", "value"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/profile-show@1"
+        },
+        "profile": {
+          "type": "object"
+        },
+        "style": {
+          "type": "string"
+        }
+      },
+      "required": ["profile", "style"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/profile-set@1"
+        },
+        "profile": {
+          "type": "object"
+        },
+        "style": {
+          "type": "string"
+        }
+      },
+      "required": ["profile", "style"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/profile-preset@1"
+        },
+        "profile": {
+          "type": "object"
+        },
+        "style": {
+          "type": "string"
+        }
+      },
+      "required": ["profile", "style"]
     }
   ],
   "$defs": {

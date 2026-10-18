@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-18 · P1-06 — interaction profiles
+
+- Expose profile inspection, preset selection and explicit user/project/run dial overrides with a style block capped at ten lines.
+- Keep run overrides transient. Render communication choices without changing lens coverage, questions, checks, output shapes or required decisions; list core invariants with executable enforcers.
+- Verify twelve preset/verbosity snapshots and all 324 dial combinations, plus scoped settings and natural-language override contracts in the complete local suite.
+
+---
+
 ## 2026-10-18 · P1-05 — step and question contracts
 
 - Register all thirteen steps with explicit inputs, outputs, checks and decisions; only minimal frame-problem completion is available until full workflows land.
