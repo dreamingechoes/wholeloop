@@ -3,7 +3,7 @@
 > **TL;DR** — Almost everything a team would want to customise is a **declarative manifest**, discovered from four places, validated by a schema and testable with one command: providers, review and verify lenses, artifact templates, profile presets and extra decision points. Code is the exception, reserved for new CLI adapters.
 
 > [!NOTE]
-> **Status: 📐 design.** Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry and loader: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1).
+> **Status: 🚧 partial.** Providers load and validate from all four layers; the other manifest kinds remain P1-09. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry and loader: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1).
 
 ---
 
@@ -37,7 +37,7 @@ extensions:
   - "@acme/wholeloop-kit@^1"     # providers, lenses and templates for the whole company
 ```
 
-No code from a package is executed: `wl` only reads its manifests.
+Install packages with npm first. The loader reads `providers/<id>/provider.yml` (or JSON/YAML) from each installed package; it does not install packages or enforce version ranges itself. npm owns version selection. Later packages in the list override earlier ones, below user/project manifests. No code from a package is executed: `wl` only resolves its package.json and reads manifests.
 
 ## The lifecycle of an extension
 

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "id": "native-code",
+  "name": "Native code",
+  "description": "Use the host CLI file tools for read-only code evidence.",
+  "capabilities": ["source.code"],
+  "access": {
+    "native": true
+  },
+  "operations": {
+    "source.code.query": {
+      "tool": "wholeloop.native-code.query"
+    }
+  },
+  "degrade": {
+    "source.code.query": "open-question"
+  }
+}

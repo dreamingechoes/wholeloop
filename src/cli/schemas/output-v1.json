@@ -440,6 +440,90 @@
         }
       },
       "required": ["slot", "candidates", "questions"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/provider-list@1"
+        },
+        "providers": {
+          "type": "array"
+        },
+        "problems": {
+          "type": "array"
+        }
+      },
+      "required": ["providers", "problems"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/provider-show@1"
+        },
+        "providers": {
+          "type": "array"
+        },
+        "problems": {
+          "type": "array"
+        }
+      },
+      "required": ["providers", "problems"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/provider-test@1"
+        },
+        "providers": {
+          "type": "array"
+        },
+        "problems": {
+          "type": "array"
+        }
+      },
+      "required": ["providers", "problems"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/provider-resolve@1"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "manifest": {
+          "type": "object"
+        }
+      },
+      "required": ["operation", "manifest"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/provider-scaffold@1"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": ["content"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/mcp-add@1"
+        },
+        "target": {
+          "type": "string"
+        },
+        "snippet": {
+          "type": "string"
+        },
+        "applied": {
+          "const": false
+        }
+      },
+      "required": ["target", "snippet", "applied"]
     }
   ],
   "$defs": {

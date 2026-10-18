@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P1-08 — provider registry and credential-free MCP rendering
+
+- Add the safe capability taxonomy, strict provider manifests, layered inheritance and bundled local/native providers; default docs and tracker resolution works without integrations.
+- Inspect supported MCP configuration declarations and executable presence without probing authentication or running manifest commands. Print golden-tested HTTP/stdio snippets for four clients, with credential references only and no automatic installation.
+- Reuse the already-locked smol-toml parser as a direct development dependency for Codex TOML. Verify the complete local suite including schema/runtime taxonomy consistency, inheritance and bounded guidance, snippets and isolated compiled CLI execution.
+- Record pending owner actions in roadmap/manual-verification.md. Live provider calls, authentication, client conformance and Linux/Node 20 execution remain unverified; no push or publication was performed.
+
+---
+
 ## 2026-10-18 · P1-07 — repository discovery and explainable slots
 
 - Discover supported CLI guidance, skills, agents, conventions, quality files, design assets and declared commands without executing repository commands.

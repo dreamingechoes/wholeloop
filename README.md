@@ -5,7 +5,7 @@
 > `Agent = Model + Harness`. Everybody rents the same model. The harness — what context the agent gets, which tools it can reach, in what order things happen, where it stops and who decides, and how you know afterwards that it worked — is the half that is yours. `wholeloop` is that half, made portable.
 
 > [!NOTE]
-> **Status: design phase.** This repository currently holds the design, the decisions and the plan. Nothing is installable yet. Follow progress in the [roadmap](./roadmap/README.md).
+> **Status: early implementation.** The contributor CLI, documentation and harness checks, commit hygiene and command framework are implemented. The end-to-end harness and published package remain pending. Follow progress in the [roadmap](./roadmap/README.md).
 
 ---
 

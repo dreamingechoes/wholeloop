@@ -8,6 +8,48 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'provider list',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/provider-list@1',
+    summary: 'List providers with their origins and detection evidence',
+  },
+  {
+    path: 'provider show',
+    arguments: '<id>',
+    options: [],
+    schema: 'wholeloop/provider-show@1',
+    summary: 'Show one validated provider manifest',
+  },
+  {
+    path: 'provider test',
+    arguments: '<id>',
+    options: [],
+    schema: 'wholeloop/provider-test@1',
+    summary: 'Validate a provider and inspect declared access without probing',
+  },
+  {
+    path: 'provider resolve',
+    arguments: '<operation>',
+    options: [],
+    schema: 'wholeloop/provider-resolve@1',
+    summary: 'Resolve an operation to an explicit or built-in provider',
+  },
+  {
+    path: 'provider scaffold',
+    arguments: '<id>',
+    options: ['--output <file>'],
+    schema: 'wholeloop/provider-scaffold@1',
+    summary: 'Print or explicitly create a provider manifest',
+  },
+  {
+    path: 'mcp add',
+    arguments: '<id>',
+    options: ['--target <cli>'],
+    schema: 'wholeloop/mcp-add@1',
+    summary: 'Print a credential-free MCP configuration snippet',
+  },
+  {
     path: 'discover',
     arguments: '',
     options: [],

@@ -4,6 +4,8 @@
 
 ---
 
+Current manual checks and owner-only actions: [manual verification](./manual-verification.md).
+
 ## Phases
 
 ```mermaid

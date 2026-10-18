@@ -12,7 +12,9 @@ await build({
   format: 'esm',
   target: 'node20',
   banner: {
-    js: "#!/usr/bin/env node\nimport { createRequire } from 'node:module'\nconst require = createRequire(import.meta.url)",
+    // The banner is opaque to esbuild's identifier renaming. Keep its import
+    // separate from source imports such as the manifest package resolver.
+    js: "#!/usr/bin/env node\nimport * as __wlModule from 'node:module'\nconst require = __wlModule.createRequire(import.meta.url)",
   },
   define: { __WL_VERSION__: JSON.stringify(version) },
   legalComments: 'none',

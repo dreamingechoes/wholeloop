@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "id": "native-web",
+  "name": "Native web",
+  "description": "Use the host CLI web tools for read-only evidence.",
+  "capabilities": ["source.web"],
+  "access": {
+    "native": true
+  },
+  "operations": {
+    "source.web.query": {
+      "tool": "wholeloop.native-web.query"
+    }
+  },
+  "degrade": {
+    "source.web.query": "open-question"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "id": "local-docs",
+  "name": "Local documents",
+  "description": "Store documents locally without integrations.",
+  "capabilities": ["docs"],
+  "access": {
+    "local": true
+  },
+  "operations": {
+    "docs.create": {
+      "tool": "wholeloop.local-docs.create"
+    },
+    "docs.read": {
+      "tool": "wholeloop.local-docs.read"
+    },
+    "docs.update": {
+      "tool": "wholeloop.local-docs.update"
+    },
+    "docs.link": {
+      "tool": "wholeloop.local-docs.link"
+    }
+  },
+  "degrade": {
+    "docs.create": "handoff-artifact",
+    "docs.read": "handoff-artifact",
+    "docs.update": "handoff-artifact",
+    "docs.link": "handoff-artifact"
+  }
+}

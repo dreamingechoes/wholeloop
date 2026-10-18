@@ -3,7 +3,7 @@
 > **TL;DR** — A provider is a folder with a `provider.yml` and, optionally, a few short guidance files. The manifest says which capabilities it serves, how to detect it, how to connect it in each CLI, which tool fulfils each verb, and what to hand over when it is not available. Most providers are under fifty lines.
 
 > [!NOTE]
-> **Status: 📐 design.** The schema below is the target for [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); it is versioned (`schema: 1`) from day one.
+> **Status: 🚧 partial.** Schema, inheritance, package loading, inspection/scaffolding and tier-A MCP rendering are implemented. Live operation mapping/probes and additional built-ins remain planned. Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); it is versioned (`schema: 1`) from day one.
 
 ---
 
@@ -53,6 +53,12 @@ degrade:
   source.support.query: open-question     # never invent: record what is missing and who has it
 ```
 
+JSON manifests (`provider.json`) use the same schema and are also accepted; built-ins use JSON so they embed in the single-file CLI bundle. The public schema is `src/providers/schema.json`. A provider folder contains exactly one manifest; its ID must match the folder name. Invalid overrides are reported and ignored as complete units.
+
+`extends: builtin:<id>` names the built-in explicitly. `extends: <same-id>` merges the next lower layer; another ID extends that provider. Cycles and missing bases fail. Inherited guidance retains its source directory; guidance cannot escape through traversal/symlinks and is capped at 30 lines. Arrays replace during inheritance; objects merge.
+
+An HTTP recipe may use `auth: header` with `token_env: ACME_AUTH`; only the variable name is stored. Inline headers, credential-bearing URLs, query strings and fragments are rejected. Stdio recipes use `command` and optional `args`; authenticate through the server/client's own credential store.
+
 ## Field by field
 
 | Field | Required | Notes |
@@ -73,7 +79,11 @@ degrade:
 - **Read-modify-write for documents.** `docs.update` always fetches the current body, applies the change and writes it back in the same format, so a colleague's edits are never overwritten by a body rebuilt from memory.
 - **No secrets in manifests.** Authentication is delegated to the MCP server or the CLI (OAuth, the CLI's own login, environment variables referenced by name).
 
-## Testing it
+## Current inspection behavior
+
+`wl provider scaffold acme-support` prints a valid starter manifest. Add `--output .wholeloop/providers/acme-support/provider.yml` to create it explicitly; existing files are never overwritten. `provider list|show|test` report validation and declaration/PATH detection only. Authentication and tool availability remain manual; `--probe` is not implemented.
+
+## Target live inspection
 
 ```text
 $ wl provider test acme-support

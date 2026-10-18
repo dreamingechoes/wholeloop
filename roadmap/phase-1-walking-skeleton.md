@@ -117,7 +117,7 @@
 
 ## P1-08 · Provider registry v1
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-02
+**Status:** ✅ · **Size:** L · **Depends on:** P1-02
 
 **Goal** — Capabilities resolve to providers; the flow works with zero integrations.
 
@@ -125,9 +125,9 @@
 
 **Acceptance criteria:**
 
-- [ ] A manifest mapping a verb outside the taxonomy fails validation.
-- [ ] `wl mcp add <id> --target <cli>` output is golden-tested for each tier-A CLI.
-- [ ] With no configuration, `docs.create` and `tracker.create-item` resolve to local providers.
+- [x] A manifest mapping a verb outside the taxonomy fails validation.
+- [x] `wl mcp add <id> --target <cli>` output is golden-tested for each tier-A CLI.
+- [x] With no configuration, `docs.create` and `tracker.create-item` resolve to local providers.
 
 **Docs** — configuration/providers, extending/providers, ADR-0008.
 

@@ -1,0 +1,50 @@
+# Manual verification — current implementation
+
+> Automated results and pending work are separate. A checked roadmap task means
+> its local acceptance checks passed, not that every target CLI or platform has
+> been exercised. Updated 2026-10-18.
+
+## Owner actions still pending
+
+| Task | Action | Current evidence |
+| --- | --- | --- |
+| P0-01 | Authenticate to npm and reserve the package when ready to make the name public | No package was published in this session |
+| P0-03 | Follow the isolated-session [conformance checklist](../test/conformance/notes/README.md) for all four tier-A CLIs | Version/help only; permissions, discovery, hooks, questions, MCP and plugin loading remain unverified |
+| P0-06 | Optionally enable the local hook with `npm run hooks:install`; preserve any existing hook chain | A real hook was exercised in a temporary git repository; this checkout's Git configuration was not changed |
+| CI | Run the updated workflow on Linux/macOS, including Node 20 runtime and a PR containing a rejected message | Local checks ran on macOS arm64 / Node 24.1.0; no remote CI run or push was performed |
+| P1-03 | Optionally exercise forced interruption during a store write, preserve the journal, inspect the lock owner and rebuild after recovery | Concurrent processes, failed batches, malformed journals, symlinks and byte-identical rebuild are tested; physical power loss is not |
+
+## Provider validation still pending
+
+MCP snippets for Claude, Codex, OpenCode and Copilot are golden-tested for HTTP
+and stdio. Merge a snippet into an isolated client configuration and verify an
+actual tool call and authentication before calling that integration supported.
+Registry detection only establishes declarations or executable presence. No live
+provider operation, model session or OAuth flow was executed here.
+
+## Current smoke scenario
+
+Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
+`XDG_CONFIG_HOME` to avoid changing personal defaults. Build first with
+`npm run build`, then use `node /absolute/path/to/wholeloop/dist/wl.mjs`:
+
+1. Begin `step begin frame-problem --input "Find past orders" --owner "Alex" --json`.
+2. Copy its initiative ID. Complete it with `step complete frame-problem
+   --for <id> --artifact <file> --json`; the file must contain non-empty
+   `Problem` and `Owner` sections.
+3. Inspect `state get`, `open` and `step plan` for that ID. The next step is
+   `write-spec`, currently an unavailable stub; a begin attempt must exit 3.
+4. Send a local `msg send --thread <id> --to builder --kind note --body "Ready"`.
+   Read it with `msg read --for builder --reader a`, then repeat: the second
+   read is empty. A different reader still sees it.
+5. Run `resume <id> --json` and `state rebuild --json`; the pack stays bounded
+   and projections rebuild without changing the journal.
+6. Inspect `profile show --json`; try a preset and a dial only in the temporary
+   config home. `profile set depth=technical --scope run --json` must leave
+   configuration unchanged.
+
+These core paths also have automated tests. Generated CLI skills, adapters,
+live provider integrations and full step workflows remain unimplemented; do not
+interpret this smoke scenario as their conformance validation.
+
+[Roadmap](./README.md) · [Journal](./journal.md)

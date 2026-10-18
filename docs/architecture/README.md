@@ -3,7 +3,7 @@
 > **TL;DR** — `wholeloop` is three layers. A **canonical harness** of short skills, agents and manifests written once in open formats. A **deterministic core** (`wl`, TypeScript) that owns state, flow, configuration, discovery, providers and gates. And **generated adapters** that translate the canonical harness into whatever each agentic CLI expects. Every CLI can run a shell command and read JSON, so the core is portable by construction.
 
 > [!NOTE]
-> **Status: 📐 design.** Decisions behind this page: [ADR-0002](../decisions/0002-open-standards-canonical-source.md), [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0006](../decisions/0006-orchestration-tiers.md).
+> **Status: 🚧 partial.** The core now includes configuration, profiles, external state, messaging and the initial step contract; generated adapters, providers and gates remain planned. Decisions behind this page: [ADR-0002](../decisions/0002-open-standards-canonical-source.md), [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0006](../decisions/0006-orchestration-tiers.md).
 
 ---
 

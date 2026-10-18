@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine and repository discovery are implemented. The registry contains all thirteen steps; only the minimal frame-problem artifact path can complete. Generated CLI adapters, providers, gates and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine and repository discovery and the provider registry are implemented. The registry contains all thirteen steps; only the minimal frame-problem artifact path can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
 
 ---
 
@@ -22,6 +22,12 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl provider list` | `wholeloop/provider-list@1` | List providers with their origins and detection evidence |
+| `wl provider show <id>` | `wholeloop/provider-show@1` | Show one validated provider manifest |
+| `wl provider test <id>` | `wholeloop/provider-test@1` | Validate a provider and inspect declared access without probing |
+| `wl provider resolve <operation>` | `wholeloop/provider-resolve@1` | Resolve an operation to an explicit or built-in provider |
+| `wl provider scaffold <id>` | `wholeloop/provider-scaffold@1` | Print or explicitly create a provider manifest |
+| `wl mcp add <id>` | `wholeloop/mcp-add@1` | Print a credential-free MCP configuration snippet |
 | `wl discover` | `wholeloop/discover@1` | Discover repository guidance and declared commands without executing them |
 | `wl resolve <slot>` | `wholeloop/resolve@1` | Explain slot precedence or ask about ambiguous matches |
 | `wl profile show` | `wholeloop/profile-show@1` | Show the active profile and rendered instructions |
