@@ -605,6 +605,33 @@
         }
       },
       "required": ["schema", "id", "files", "directory"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/next@1"
+        }
+      },
+      "required": ["schema", "questions"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/status@1"
+        }
+      },
+      "required": ["schema", "items", "unreadCount"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/setup@1"
+        }
+      },
+      "required": ["schema", "applied", "questions"]
     }
   ],
   "$defs": {

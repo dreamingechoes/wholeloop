@@ -22,6 +22,15 @@ actual tool call and authentication before calling that integration supported.
 Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
+## Canonical skill validation still pending
+
+P1-12 is verified through compiled CLI workflow tests, including a sentence,
+explicit owner, artifact receipt, read-only status and scoped setup. After P0-03
+conformance and adapter generation, exercise the four canonical skills in real
+client sessions: question rendering, repository guidance loading, preflight and
+receipt language, and stopping at unavailable work or human decisions. No model
+session was executed to establish these behaviors in a host client.
+
 ## Extension smoke checks
 
 Use an isolated configuration home when selecting a custom profile. Run
@@ -52,7 +61,7 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
    config home. `profile set depth=technical --scope run --json` must leave
    configuration unchanged.
 
-These core paths also have automated tests. Generated CLI skills, adapters,
+These core paths also have automated tests. Generated client adapters, live canonical skill sessions,
 live provider integrations and full step workflows remain unimplemented; do not
 interpret this smoke scenario as their conformance validation.
 

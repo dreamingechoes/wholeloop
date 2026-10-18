@@ -9,7 +9,7 @@ const table = [
   '| --- | --- | --- |',
   ...commands.map(
     (command) =>
-      `| \`wl ${command.path}${command.arguments ? ` ${command.arguments}` : ''}\` | \`${command.schema}\` | ${command.summary} |`,
+      `| \`wl ${command.path}${command.arguments ? ` ${command.arguments.replaceAll('|', '\\|')}` : ''}\` | \`${command.schema}\` | ${command.summary} |`,
   ),
 ].join('\n')
 const file = 'docs/architecture/core-cli.md'

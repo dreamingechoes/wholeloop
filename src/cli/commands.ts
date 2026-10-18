@@ -8,6 +8,27 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'next',
+    arguments: '[<idea|id>]',
+    options: ['--owner <person>'],
+    schema: 'wholeloop/next@1',
+    summary: 'Continue stored work or begin minimal framing',
+  },
+  {
+    path: 'status',
+    arguments: '[<id>]',
+    options: ['--for <role>', '--reader <id>'],
+    schema: 'wholeloop/status@1',
+    summary: 'Inspect work and pending decisions without mutation',
+  },
+  {
+    path: 'setup',
+    arguments: '',
+    options: ['--profile <id>', '--docs <id>', '--tracker <id>', '--scope <scope>'],
+    schema: 'wholeloop/setup@1',
+    summary: 'Ask for or explicitly save scoped profile and provider choices',
+  },
+  {
     path: 'template list',
     arguments: '',
     options: [],

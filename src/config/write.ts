@@ -14,19 +14,25 @@ import { readConfig } from './load.js'
 import { isObject, validate } from './schema.js'
 
 /** An explicit settings action may write configuration; it never writes runtime state. */
-export function writeSetting(file: string, path: readonly string[], value: unknown): void {
+export function writeSettings(
+  file: string,
+  changes: readonly { path: readonly string[]; value: unknown }[],
+): void {
   const existing = readConfig(file, true) ?? { version: 1 }
   if (!isObject(existing)) throw new Error(`Invalid configuration: ${file}`)
-  let target = existing
-  for (const [index, key] of path.entries()) {
-    if (['__proto__', 'constructor', 'prototype'].includes(key))
-      throw new Error('Forbidden configuration key')
-    if (index === path.length - 1) {
-      target[key] = value
-      break
+  for (const { path, value } of changes) {
+    if (!path.length) throw new Error('A configuration setting needs a key path')
+    let target = existing
+    for (const [index, key] of path.entries()) {
+      if (['__proto__', 'constructor', 'prototype'].includes(key))
+        throw new Error('Forbidden configuration key')
+      if (index === path.length - 1) {
+        target[key] = value
+        break
+      }
+      if (!isObject(target[key])) target[key] = {}
+      target = target[key] as Record<string, unknown>
     }
-    if (!isObject(target[key])) target[key] = {}
-    target = target[key] as Record<string, unknown>
   }
   const problems = validate(existing, undefined, file)
   if (problems.length) throw new Error(problems.join('\n'))
@@ -44,4 +50,8 @@ export function writeSetting(file: string, path: readonly string[], value: unkno
   } finally {
     rmSync(temporary, { force: true })
   }
+}
+
+export function writeSetting(file: string, path: readonly string[], value: unknown): void {
+  writeSettings(file, [{ path, value }])
 }

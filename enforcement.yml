@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: missing-input-blocks-mutation
+    enforcers: [src/flow/engine.ts#begin, test/unit/utilities/utilities.test.ts]
   - id: external-runtime-state
     enforcers: [src/state/paths.ts#assertExternal, test/unit/state/store.test.ts]
   - id: recorded-step-skips

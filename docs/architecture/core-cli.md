@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine repository discovery and extension catalogs are implemented. The registry contains all thirteen steps; only the minimal frame-problem artifact path can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine repository discovery and extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; only the minimal frame-problem artifact path can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
 
 ---
 
@@ -22,6 +22,9 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl next [<idea\|id>]` | `wholeloop/next@1` | Continue stored work or begin minimal framing |
+| `wl status [<id>]` | `wholeloop/status@1` | Inspect work and pending decisions without mutation |
+| `wl setup` | `wholeloop/setup@1` | Ask for or explicitly save scoped profile and provider choices |
 | `wl template list` | `wholeloop/template-list@1` | List validated manifests and their origins |
 | `wl template test <id>` | `wholeloop/template-test@1` | Validate a manifest and its required resources |
 | `wl template scaffold <id>` | `wholeloop/template-scaffold@1` | Print or explicitly create a manifest kit |

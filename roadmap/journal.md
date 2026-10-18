@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P1-12 — first canonical skills and local entry utilities
+
+- Add next, status, setup and frame-problem skills, the conductor agent and shared question/output protocols within their enforced portable budgets.
+- Add local CLI utilities: next routes sentences and stored IDs without repeating completed work, asks about ambiguous items and human decisions, and stops at unavailable steps; status reads state without consuming messages; setup validates a complete selection before one scoped settings write.
+- Verify the compiled sentence-to-initiative-to-artifact-to-receipt path, repeated/resumed runs, explicit ownership, decisions, read-only status and atomic setup. Canonical resource checks enforce front matter, budgets and hard-rule mapping.
+- Live skill execution and generated client installation remain manual/unimplemented until P0-03 and the adapter tasks. Document these limits instead of treating CLI workflow tests as host-client conformance.
+
+---
+
 ## 2026-10-18 · P1-09 — layered template, profile and lens catalogs
 
 - Load the three manifest kinds through a shared catalog with repository/user/package/built-in precedence, replacement or recursive inheritance, cycle detection and resource-origin preservation.

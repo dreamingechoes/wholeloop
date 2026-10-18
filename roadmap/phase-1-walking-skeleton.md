@@ -178,7 +178,7 @@
 
 ## P1-12 · First skills — `next`, `status`, `setup`, `frame-problem`
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-05, P1-06, P1-07, P1-08
+**Status:** ✅ · **Size:** L · **Depends on:** P1-05, P1-06, P1-07, P1-08
 
 **Goal** — Prove the step contract with a real step and the entry point.
 
@@ -186,9 +186,9 @@
 
 **Acceptance criteria:**
 
-- [ ] `frame-problem` works standalone from a sentence and creates `init-xxxx` with an owner.
-- [ ] `next "idea"` runs `frame-problem` and stops at the right point with the right receipt.
-- [ ] `status` lists the initiative; `setup` sets a profile and a provider at a chosen scope.
+- [x] `frame-problem` works standalone from a sentence and creates `init-xxxx` with an owner.
+- [x] `next "idea"` runs `frame-problem` and stops at the right point with the right receipt.
+- [x] `status` lists the initiative; `setup` sets a profile and a provider at a chosen scope.
 
 **Docs** — flow/define/frame-problem, flow/utilities (status → partial).
 

@@ -3,7 +3,7 @@
 > **TL;DR** — Four helpers that move you around the flow rather than through one step of it. `next` is the single front door: it figures out where things stand and runs forward to the next decision. `status` shows what is where and what is waiting on whom. `setup` configures your profile, providers and CLIs. `sync` keeps the store and your external tools in agreement.
 
 > [!NOTE]
-> **Status: 📐 design.** `next`, `status` and `setup` are tracked in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem), picking up from a URL in [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
+> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status` and `wl setup` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem), Generated client installation remains pending conformance. The scenarios below describe the target flow; picking up from a URL remains [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
 
 ---
 
@@ -17,6 +17,38 @@
 | **sync** | `/wholeloop:sync` · `$wl-sync` · `/wl-sync` | the store · `codehost` · `tracker` | the store · tracker items | none |
 
 ---
+
+## Available local commands
+
+```text
+wl next "Find old orders faster" --owner Alex --json
+wl next init-0123abcd --json
+wl status --json
+wl status init-0123abcd --json
+wl setup --json
+wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
+```
+
+`next` begins minimal framing from a sentence. Missing ownership becomes a
+question before creating an item; no input selects the sole open item or asks
+which one to continue. IDs reuse unfinished runs. After framing completion it
+reports the next step as unavailable until that workflow lands. Pending decisions
+become questions for a person, never automatic approvals. URL adoption and
+`--through` routing remain planned.
+
+`status` reports stored items, owners, step plans, pending decisions and unread
+message counts without consuming messages or writing the store. It does not yet
+read live integrations or scheduled checkpoints.
+
+`setup` returns batched choices or applies an explicit subset of profile/docs/
+tracker choices. `--scope user|project|run` is required before applying choices.
+All selections validate before an atomic settings write. Run scope returns a
+transient override; project profile suggestions still yield to user preferences.
+Adapter installation, MCP configuration edits and authentication remain manual.
+The canonical skills live in `harness/skills/`; live client execution awaits the
+adapter/conformance tasks, while compiled CLI workflow tests exercise these paths.
+
+The remaining examples show the broader target behavior.
 
 ## next
 
