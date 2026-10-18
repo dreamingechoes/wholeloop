@@ -6,11 +6,11 @@
 
 ## P0-01 · Names, package and repository hygiene
 
-**Status:** 🔄 · **Size:** S · **Depends on:** —
+**Status:** ⏸️ · **Size:** S · **Depends on:** —
 
 **Goal** — Settle the project's identity before anything depends on it.
 
-**Deliverables** — npm package `wholeloop` reserved (free on 2026-10-14, chosen after `wholeloop` proved crowded — [ADR-0018](../docs/decisions/0018-project-name.md)); **private** GitHub repository created under the personal account — `github.com/dreamingechoes/wholeloop`, never an organisation — with `origin` set and `main` pushed; issue and PR templates; `SECURITY.md`; `CODE_OF_CONDUCT.md`.
+**Deliverables** — npm package `wholeloop` reserved (free on 2026-10-14, chosen after `throughline` proved crowded — [ADR-0018](../docs/decisions/0018-project-name.md)); **private** GitHub repository created under the personal account — `github.com/dreamingechoes/wholeloop`, never an organisation — with `origin` set and `main` pushed; issue and PR templates; `SECURITY.md`; `CODE_OF_CONDUCT.md`.
 
 **Acceptance criteria:**
 
@@ -40,7 +40,7 @@
 
 ## P0-03 · CLI conformance spike
 
-**Status:** ⬜ · **Size:** L · **Depends on:** —
+**Status:** ⏸️ · **Size:** L · **Depends on:** —
 
 **Goal** — Replace every ❓ in the platform matrix with a verified answer.
 
@@ -51,6 +51,8 @@
 - [ ] Verified per CLI: skill discovery dirs, subagent format and parallelism, read-only enforcement, hook events and payload shape, structured question tool, MCP config dialect, headless flags and JSON output.
 - [ ] Specifically answered: Claude Code reading `.agents/skills` and Agent Plugins manifests; Codex `request_user_input` behaviour; Copilot reading Claude hooks.
 - [ ] Any finding that changes a design decision opens or amends an ADR.
+
+**Pending manual verification** — Installed CLI versions and help were inspected on macOS on 2026-10-18; discovery, permission enforcement, hooks, questions and MCP still require isolated sessions. See `test/conformance/notes/README.md`. Help text alone is not conformance evidence.
 
 **Docs** — platforms (matrix), ADR-0005, ADR-0006.
 

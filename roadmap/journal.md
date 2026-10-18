@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P0-03 availability evidence; owner-only foundations parked
+
+- Version/help probes passed for Claude 2.1.299, Codex 0.163.0, OpenCode 1.17.9 and Copilot 1.0.83 on macOS arm64.
+- These probes do not establish skill discovery, permissions, hooks, questions, MCP or plugin conformance. Per-CLI notes and an isolated manual checklist preserve that distinction; P0-03 remains parked.
+- P0-01 remains parked awaiting npm reservation. No publication or push was attempted.
+- The existing local check suite passed before recording this evidence; Linux and live client sessions remain unverified in this session.
+
+---
+
 ## 2026-10-14 · P0-02 done — CI green
 
 ### Done
