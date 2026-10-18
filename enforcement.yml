@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: spec-testable-definition
+    enforcers: [src/spec/contract.ts#checkSpec, test/unit/spec/spec.test.ts]
+  - id: spec-pinned-measurement
+    enforcers: [src/spec/schemas/spec-v1.json, src/spec/contract.ts, test/unit/spec/spec.test.ts]
+  - id: spec-human-approval
+    enforcers: [src/flow/engine.ts#decide, src/flow/plan.ts#decisions, test/unit/spec/spec.test.ts]
   - id: framing-explicit-unknowns
     enforcers: [src/framing/contract.ts#checkFrame, src/flow/registry.ts, test/unit/framing/framing.test.ts]
   - id: framing-safe-identity

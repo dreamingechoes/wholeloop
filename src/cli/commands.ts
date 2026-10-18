@@ -8,6 +8,20 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'spec check',
+    arguments: '<file>',
+    options: [],
+    schema: 'wholeloop/spec-check@1',
+    summary: 'Check stories criteria metrics and rollout structure',
+  },
+  {
+    path: 'spec schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/spec-schema@1',
+    summary: 'Print the versioned spec metadata schema',
+  },
+  {
     path: 'research plan',
     arguments: '',
     options: ['--for <id>'],
@@ -205,6 +219,7 @@ export const COMMANDS: readonly Command[] = [
       '--parent <id>',
       '--from <brief-id>',
       '--input <text>',
+      '--impact <text>',
       '--owner <name>',
       '--mode <mode>',
       '--profile <json>',

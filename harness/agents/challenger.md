@@ -1,6 +1,6 @@
 ---
 name: challenger
-description: Independently examine one load-bearing research claim and return an evidence-backed refutation, confirmation or explicit uncertainty.
+description: Cross-examine a research claim or critique spec criteria with concrete evidence, keeping uncertainty explicit and leaving repairs to the author.
 metadata:
   wholeloop.capabilities: read shell web
   wholeloop.tier: deep
@@ -21,4 +21,12 @@ The core counts unique verifier slots and applies the planned majority. Your
 response does not decide whether the claim is retained or dropped. Do not edit
 source files, make up another verifier's response or imply agreement from silence.
 
-Definition-specific challenger modes arrive in later Define tasks.
+The complete structured problem/spec/criteria/scopes modes arrive in P2-05.
+
+## Spec critique
+
+When assigned a spec, read its stories and criteria as a tester. Report each
+finding with the criterion ID, the contradictory or missing behavior, evidence
+and a falsifying example. Check ownership boundaries, empty/error paths and
+whether extra unwanted behavior could pass the stated tests. Challenge style
+changes tone; it does not remove checks. Do not rewrite the artifact yourself.

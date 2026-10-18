@@ -37,7 +37,7 @@
 
 ## P2-03 · `write-spec`
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P2-02
+**Status:** ✅ · **Size:** L · **Depends on:** P2-02
 
 **Goal** — A spec a builder and an analyst can both execute.
 
@@ -45,8 +45,8 @@
 
 **Acceptance criteria:**
 
-- [ ] Shape check fails on: a metric without source or window, a story without criteria, vague-word criteria from the lexicon.
-- [ ] A repo skill bound to `spec.template` is followed instead of the built-in template.
+- [x] Shape check fails on: a metric without source or window, a story without criteria, vague-word criteria from the lexicon.
+- [x] A repo skill bound to `spec.template` is followed instead of the built-in template.
 
 **Docs** — flow/define/write-spec.
 

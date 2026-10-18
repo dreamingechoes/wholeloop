@@ -76,7 +76,7 @@ describe('complete framing contract', () => {
       expect(repeated.payload.subject?.id).toBe(id)
       expect(repeated.payload.run).toBe(first.payload.run)
       engine.complete('frame-problem', id, artifact)
-      expect(next(engine, 'Find old orders').code).toBe(3)
+      expect(next(engine, 'Find old orders').code).toBe(0)
       expect(engine.begin('frame-problem', { input: 'Find old orders' }).payload.subject?.id).toBe(
         id,
       )

@@ -3,9 +3,51 @@
 > **TL;DR** — Turns a framed problem into a spec a builder can work from and a person can sign off: user stories with testable acceptance criteria, success metrics, a rough rollout outline and a **measurement plan you can actually run** — for every metric, where the number comes from, where it is today, where it should go and over what window. A challenger stress-tests the criteria first. Ends at the **approve** decision point.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P2-03](../../../roadmap/phase-2-define.md#p2-03--write-spec).
+> **Status: 🚧 partial.** The core supports standalone/initiative entry, repository-first template routing, versioned spec metadata, deterministic shape/wording checks, local publication and revision-bound approval. Canonical drafting and challenger resources are available; live model critique, source queries and remote publication still need client/provider conformance. Tracked in [P2-03](../../../roadmap/phase-2-define.md#p2-03--write-spec).
 
 ---
+
+## Available core commands
+
+```text
+wl step begin write-spec --for init-0123abcd --json
+wl step begin write-spec --input "Find old orders" --owner Alex --impact "Reduce retrieval time" --json
+wl spec schema --json
+wl spec check /path/to/spec.md --json
+wl step complete write-spec --for init-0123abcd --artifact /path/to/spec.md --json
+wl answer decision.approve-spec=approved --for init-0123abcd --by Alex --json
+```
+
+The artifact uses YAML front matter with `schema: wholeloop/spec@1`. The public
+schema is `src/spec/schemas/spec-v1.json`; a complete, fictional fixture is
+`test/fixtures/spec/spec.md`. Each story has an ID, actor, desired behavior,
+benefit and uniquely identified criteria with falsifiable tests. The English
+wording lint currently rejects fast, quickly, intuitive, better, user-friendly,
+seamless, robust, scalable, easy and ASAP. It is a structural aid, not proof that
+the criteria are correct or complete.
+
+Each metric pins a source provider, query operation and stored query, unit,
+baseline, target comparator/value and days/timezone. A known baseline needs its
+value and evidence. An unknown baseline needs missing evidence, an answerer and
+an existing `trackingStory`. Without metrics, `measurementException` requires a
+reason and accountable person. Rollout stages record audience, increasing exposure,
+exit conditions and rollback; flagged rollout also needs its proposed flag name.
+No query or flag change is executed by validating this plan.
+
+The begin payload exposes `templateSource`: selected repository guidance takes
+priority; otherwise `templates.spec` selects a manifest (default `spec`). Custom
+required sections add to the core sections. The shared host workflow reads repo
+guidance before drafting, while completion validates both metadata and shape.
+
+Standalone entry asks for problem, owner and expected impact before creating work.
+An initiative can reuse its framing impact or an explicit remembered answer.
+After completion, approval is pending for that revision. Rejection permits another
+write-spec run; approval during an unfinished draft is refused. An earlier
+approval never applies to a later completion. See
+[ADR-0023](../../decisions/0023-structured-spec-plans-and-revision-approval.md).
+
+Local publication references the stored spec and initiative; external destinations
+remain pending handoffs. The broader examples below describe the target host UX.
 
 ## At a glance
 

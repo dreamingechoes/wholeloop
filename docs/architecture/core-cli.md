@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; complete local framing and structured research briefs can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
 
 ---
 
@@ -22,6 +22,8 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl spec check <file>` | `wholeloop/spec-check@1` | Check stories criteria metrics and rollout structure |
+| `wl spec schema` | `wholeloop/spec-schema@1` | Print the versioned spec metadata schema |
 | `wl research plan` | `wholeloop/research-plan@1` | Plan source angles and independent examination jobs |
 | `wl research submit` | `wholeloop/research-submit@1` | Record a validated source result in the journal |
 | `wl research examine` | `wholeloop/research-examine@1` | Record one independent claim examination |
@@ -112,7 +114,7 @@ A framing artifact requires the eight framing headings plus `Owner`; the begin c
 
 `--mode standalone` (default) allows direct entry; `--mode flow` checks the next planned step. Missing input/owner returns batched questions and exit 2 without creating an item. Skipping requires a reason, retains it in subsequent preflights and preserves that step's required decisions.
 
-`answer` recognizes `owner`, `input`, `docs.destination` and `tracker.destination`. Run/initiative answers require `--for`; a run answer uses `--run` or the latest started run. User/project answers explicitly update configuration (`answers.owner` or `providers.*`); `input` cannot be remembered beyond its initiative.
+`answer` recognizes `owner`, `input`, `impact`, `docs.destination` and `tracker.destination`. Run/initiative answers require `--for`; a run answer uses `--run` or the latest started run. User/project answers explicitly update configuration (`answers.owner` or `providers.*`); `input` and `impact` cannot be remembered beyond their initiative. A spec started without framing accepts `--impact`; its completion stops at a revision-bound approval.
 
 A pending decision is answered with `wl answer decision.approve-spec=approved --for <id> --by "Alex" --remember run`. Only `approved`/`rejected` are accepted; decisions cannot become reusable defaults. They bind to the completed/skipped revision, so changing that revision requires another decision. Merging remains outside the CLI.
 

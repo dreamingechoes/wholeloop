@@ -353,7 +353,7 @@
           "additionalProperties": false,
           "properties": {
             "qid": {
-              "enum": ["owner", "input", "docs.destination", "tracker.destination"]
+              "enum": ["owner", "input", "docs.destination", "tracker.destination", "impact"]
             },
             "value": {
               "type": "string",

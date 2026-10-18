@@ -13,7 +13,11 @@ export function decisions(
   const relevant = events.filter((entry) => entry.subject === subject)
   const required = new Map<string, string>()
   for (const entry of relevant)
-    if (entry.type === 'step.completed' || entry.type === 'step.skipped') {
+    if (
+      entry.type === 'step.started' ||
+      entry.type === 'step.completed' ||
+      entry.type === 'step.skipped'
+    ) {
       for (const id of STEPS.find((step) => step.name === entry.data.step)?.after ?? [])
         required.set(id, entry.id)
     }
@@ -49,12 +53,19 @@ export function flowPlan(
   const completed = new Set<StepName>()
   let active: StepName | undefined
   let closed = false
+  // Standalone completion establishes progress without inventing earlier skip events.
+  let furthest = -1
   for (const entry of events)
     if (entry.subject === subject) {
       if (entry.type === 'item.closed') closed = true
       if (entry.type === 'item.updated' && entry.data.status)
         closed = entry.data.status === 'closed'
       if (entry.type === 'step.started') active = entry.data.step
+      if (entry.type === 'step.completed')
+        furthest = Math.max(
+          furthest,
+          STEPS.findIndex((step) => step.name === entry.data.step),
+        )
       if (entry.type === 'step.completed' || entry.type === 'step.skipped') {
         completed.add(entry.data.step)
         if (active === entry.data.step) active = undefined
@@ -62,7 +73,8 @@ export function flowPlan(
     }
   const next = closed
     ? undefined
-    : (active ?? STEPS.find((step) => !step.optional && !completed.has(step.name))?.name)
+    : (active ??
+      STEPS.slice(furthest + 1).find((step) => !step.optional && !completed.has(step.name))?.name)
   const definition = STEPS.find((step) => step.name === next)
   const pending = decisions(events, subject, [
     ...(definition?.before ?? []),

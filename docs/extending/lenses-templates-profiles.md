@@ -3,7 +3,7 @@
 > **TL;DR** — The other four extension points follow the same pattern as providers: a small manifest in `.wholeloop/<kind>/`, validated by a schema, tested with `wl <kind> test`, overridable by `id`. Lenses add review or verify dimensions, templates reshape artifacts, profiles bundle dials, decision points add stops for a person.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Template, profile and lens catalogs, validation, inheritance and scaffold commands are implemented ([P1-09](../../roadmap/phase-1-walking-skeleton.md#p1-09--manifest-loader-for-the-other-extension-kinds)). Custom profiles are selectable in configuration and step preflights. Gate execution and template selection by later step workflows remain planned.
+> **Status: 🚧 partial.** Template, profile and lens catalogs, validation, inheritance and scaffold commands are implemented ([P1-09](../../roadmap/phase-1-walking-skeleton.md#p1-09--manifest-loader-for-the-other-extension-kinds)). Custom profiles are selectable in configuration and step preflights. Spec template selection is consumed by the core; gate execution and other workflow-specific template selection remain planned.
 
 ---
 
@@ -50,7 +50,7 @@ sections:
 …
 ```
 
-The loader checks that every **required section** has a non-empty heading body. Step-specific selection of these templates arrives with the full step workflows; the framing engine always checks its eight core questions plus `Owner`, including explicit unknown markers. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation naming the section and its dependent step. A repo skill bound to `spec.template` will take precedence over a template file in those workflows, because it carries more than shape.
+The loader checks that every **required section** has a non-empty heading body. The spec workflow consumes `templates.spec` unless repository guidance wins; other selections arrive with their workflows; the framing engine always checks its eight core questions plus `Owner`, including explicit unknown markers. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation naming the section and its dependent step. A repo skill bound to `spec.template` takes precedence over a template file in the spec workflow, because it carries more than shape.
 
 ## Profiles
 

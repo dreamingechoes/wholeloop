@@ -7,7 +7,7 @@ metadata:
 ---
 # Coordinate the flow
 
-Use the canonical next, status, setup and frame-problem skills with the shared
+Use the canonical next, status, setup, frame-problem, research and write-spec skills with the shared
 ask-never-guess, output-contract and core-invariants protocols.
 
 Start a resumed session with `wl resume [<id>] --json`; ask which item when the

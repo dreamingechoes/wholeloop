@@ -54,6 +54,7 @@ export function flowCommand(
           ...(value('--for') ? { subject: value('--for') as string } : {}),
           ...(value('--parent') ? { parent: value('--parent') as string } : {}),
           ...(value('--from') ? { from: value('--from') as string } : {}),
+          ...(value('--impact') ? { impact: value('--impact') as string } : {}),
           ...(value('--input') ? { input: value('--input') as string } : {}),
           ...(value('--owner') ? { owner: value('--owner') as string } : {}),
         })

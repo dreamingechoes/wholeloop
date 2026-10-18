@@ -22,6 +22,15 @@ actual tool call and authentication before calling that integration supported.
 Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
+## Spec validation still pending
+
+Run write-spec with a bound repository guide in a real host session. Verify that
+the guide is followed, the challenger catches semantic defects, metrics come from
+actual source evidence and the person reviews the completed revision. Local tests
+use a fictional baseline/query fixture; validation does not execute those queries
+or authenticate the named provider. Exercise rejection, correction and fresh
+approval. External publication remains a pending handoff until linked.
+
 ## Framing validation still pending
 
 In a real host session, verify that supportive/balanced/adversarial challenge
@@ -55,7 +64,7 @@ Use an isolated configuration home when selecting a custom profile. Run
 the kit, then `profile test onboarding` and `profile preset onboarding --scope run`.
 For templates, `template test spec` reports mandatory-section dependents. Lens
 validation checks manifests and prompt resources only; actual gate execution and
-workflow-specific template selection remain pending.
+other workflow-specific template selection remain pending.
 
 ## Current smoke scenario
 
@@ -69,7 +78,8 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
    `test/fixtures/framing/frame.md` as a smoke fixture in a temporary location;
    actual framing must distinguish observed evidence from explicit TBD markers.
 3. Inspect `state get`, `open` and `step plan` for that ID. The next step is
-   `write-spec`, currently an unavailable stub; a begin attempt must exit 3.
+   `write-spec`, now available. Complete a spec using the returned schema/sections
+   and verify that `next` stops at `approve-spec`; cut-scopes remains unavailable.
 4. Send a local `msg send --thread <id> --to builder --kind note --body "Ready"`.
    Read it with `msg read --for builder --reader a`, then repeat: the second
    read is empty. A different reader still sees it.

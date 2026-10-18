@@ -1,5 +1,6 @@
 import { stripCode } from '../docs/markdown.js'
 import { FRAME_SECTIONS } from '../framing/contract.js'
+import { SPEC_SECTIONS } from '../spec/contract.js'
 import type { ItemKind } from '../state/events.js'
 
 export const STEP_NAMES = [
@@ -63,7 +64,7 @@ export const STEPS: readonly Step[] = Object.freeze(
               ].includes(name)
             ? 'scope'
             : 'initiative') as ItemKind,
-      available: name === 'frame-problem' || name === 'research',
+      available: ['frame-problem', 'research', 'write-spec'].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
       after: Object.freeze(
@@ -80,9 +81,11 @@ export const STEPS: readonly Step[] = Object.freeze(
       sections: Object.freeze(
         name === 'frame-problem'
           ? [...FRAME_SECTIONS]
-          : name === 'research'
-            ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-            : [],
+          : name === 'write-spec'
+            ? [...SPEC_SECTIONS]
+            : name === 'research'
+              ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+              : [],
       ),
     }),
   ),
@@ -110,4 +113,10 @@ export function checkShape(content: string, sections: readonly string[]): string
     .map((section) => `Missing or empty required section: ${section}`)
   if (!content.trim()) problems.unshift('Artifact must not be empty')
   return problems
+}
+
+/** Decisions stop consumers; authors can still correct the producing or earlier definition. */
+export function decisionBlocks(step: string, decision: string): boolean {
+  const producer = STEPS.findIndex((entry) => entry.after.includes(decision))
+  return producer < 0 || STEPS.findIndex((entry) => entry.name === step) > producer
 }

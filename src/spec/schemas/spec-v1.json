@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/spec@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/spec@1"
+    },
+    "stories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "actor": {
+            "type": "string",
+            "minLength": 1
+          },
+          "want": {
+            "type": "string",
+            "minLength": 1
+          },
+          "benefit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]*$"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "test": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["id", "text", "test"]
+            },
+            "minItems": 1
+          }
+        },
+        "required": ["id", "actor", "want", "benefit", "criteria"]
+      },
+      "minItems": 1
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "provider": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "operation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "query": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["provider", "operation", "query"]
+          },
+          "baseline": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["known", "unknown"]
+              },
+              "value": {
+                "type": "number"
+              },
+              "evidence": {
+                "type": "string",
+                "minLength": 1
+              },
+              "missing": {
+                "type": "string",
+                "minLength": 1
+              },
+              "who": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["status"]
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operator": {
+                "type": "string",
+                "enum": ["lt", "lte", "eq", "gte", "gt"]
+              },
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": ["operator", "value"]
+          },
+          "window": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "days": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["days", "timezone"]
+          },
+          "trackingStory": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          }
+        },
+        "required": ["id", "name", "unit", "source", "baseline", "target", "window"]
+      },
+      "minItems": 0
+    },
+    "rollout": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["flagged", "direct", "manual"]
+        },
+        "flag": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "audience": {
+                "type": "string",
+                "minLength": 1
+              },
+              "exposure": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "exit": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["name", "audience", "exposure", "exit"]
+          },
+          "minItems": 1
+        },
+        "rollback": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["strategy", "stages", "rollback"]
+    },
+    "impact": {
+      "type": "string",
+      "minLength": 1
+    },
+    "measurementException": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "who": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["reason", "who"]
+    }
+  },
+  "required": ["schema", "stories", "metrics", "rollout", "impact"]
+}

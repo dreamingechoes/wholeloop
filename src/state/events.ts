@@ -156,7 +156,9 @@ function validData(type: string, data: Record<string, unknown>): boolean {
     case 'answer.remembered':
       return (
         keys(data, ['qid', 'value', 'scope', 'run']) &&
-        ['owner', 'input', 'docs.destination', 'tracker.destination'].includes(String(data.qid)) &&
+        ['owner', 'input', 'impact', 'docs.destination', 'tracker.destination'].includes(
+          String(data.qid),
+        ) &&
         text(data.value) &&
         ['run', 'initiative'].includes(String(data.scope)) &&
         runId(data.run)

@@ -76,16 +76,16 @@ describe('flow engine', () => {
       engine.store.rebuild()
       expect(engine.store.files.read(receipt.artifact)).toBe(artifact)
       expect(() => engine.complete('frame-problem', subject, artifact)).toThrow('Begin')
-      expect(engine.plan(subject).available).toBe(false)
+      expect(engine.plan(subject).available).toBe(true)
     }))
 
   it('keeps future steps as explicit stubs without fabricated completion', () =>
     fixture((engine) => {
-      const result = engine.begin('write-spec', { input: 'Find orders', owner: 'Alex' })
+      const result = engine.begin('cut-scopes', { input: 'Find orders', owner: 'Alex' })
       expect(result.code).toBe(3)
       expect(result.payload.available).toBe(false)
       expect(engine.store.events()).toEqual([])
-      expect(() => engine.complete('write-spec', 'init-12345678', '# Spec')).toThrow(
+      expect(() => engine.complete('cut-scopes', 'init-12345678', '# Spec')).toThrow(
         'not implemented',
       )
     }))

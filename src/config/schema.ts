@@ -9,6 +9,7 @@ export interface Schema {
   const?: unknown
   default?: unknown
   minimum?: number
+  maximum?: number
   minLength?: number
   required?: readonly string[]
   minItems?: number
@@ -69,10 +70,18 @@ export function validate(value: unknown, rule: Schema = CONFIG_SCHEMA, path = 'c
     }
     case 'boolean':
       return typeof value === 'boolean' ? [] : fail()
+    case 'number':
+      return typeof value === 'number' &&
+        Number.isFinite(value) &&
+        (rule.minimum === undefined || value >= rule.minimum) &&
+        (rule.maximum === undefined || value <= rule.maximum)
+        ? []
+        : fail()
     case 'integer':
       return typeof value === 'number' &&
         Number.isSafeInteger(value) &&
-        (rule.minimum === undefined || value >= rule.minimum)
+        (rule.minimum === undefined || value >= rule.minimum) &&
+        (rule.maximum === undefined || value <= rule.maximum)
         ? []
         : fail()
     case 'string':

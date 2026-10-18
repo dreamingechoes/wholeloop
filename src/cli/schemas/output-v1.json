@@ -668,6 +668,24 @@
         }
       },
       "required": ["schema", "report", "receipt"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/spec-check@1"
+        }
+      },
+      "required": ["schema", "problems"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/spec-schema@1"
+        }
+      },
+      "required": ["schema", "specSchema"]
     }
   ],
   "$defs": {

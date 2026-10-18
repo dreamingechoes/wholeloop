@@ -1743,7 +1743,7 @@ exports[`step begin contracts > verify-works: standalone empty, standalone input
 exports[`step begin contracts > write-spec: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [
@@ -1803,10 +1803,19 @@ exports[`step begin contracts > write-spec: standalone empty, standalone input a
     "schema": "wholeloop/step-begin@1",
     "step": "write-spec",
     "subject": null,
-    "template": null,
+    "template": [
+      "Problem",
+      "Users",
+      "Stories",
+      "Criteria",
+      "Metrics",
+      "Rollout",
+      "Measurement plan",
+      "Technical appendix",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [
@@ -1840,10 +1849,19 @@ exports[`step begin contracts > write-spec: standalone empty, standalone input a
     "schema": "wholeloop/step-begin@1",
     "step": "write-spec",
     "subject": null,
-    "template": null,
+    "template": [
+      "Problem",
+      "Users",
+      "Stories",
+      "Criteria",
+      "Metrics",
+      "Rollout",
+      "Measurement plan",
+      "Technical appendix",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [
@@ -1880,7 +1898,16 @@ exports[`step begin contracts > write-spec: standalone empty, standalone input a
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Problem",
+      "Users",
+      "Stories",
+      "Criteria",
+      "Metrics",
+      "Rollout",
+      "Measurement plan",
+      "Technical appendix",
+    ],
   },
 ]
 `;

@@ -16,13 +16,15 @@ import {
   framingMatches,
   validateFrameOutcome,
 } from '../framing/contract.js'
-import { framePublication } from '../framing/publication.js'
+import { publicationPlan } from '../providers/publication.js'
 import { researchBrief } from '../research/report.js'
+import { checkSpec } from '../spec/contract.js'
+import { specTemplate } from '../spec/template.js'
 import { itemId, replay } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 import type { StateStore } from '../state/store.js'
-import { beginPlan, decisions, flowPlan } from './plan.js'
-import { checkShape, stepDefinition } from './registry.js'
+import { beginPlan, decisions, flowPlan, remembered } from './plan.js'
+import { checkShape, decisionBlocks, STEPS, stepDefinition } from './registry.js'
 
 const newRun = () => `run-${randomBytes(8).toString('hex')}`
 export interface BeginOptions {
@@ -30,6 +32,7 @@ export interface BeginOptions {
   subject?: string
   parent?: string
   from?: string
+  impact?: string
   input?: string
   owner?: string
   mode?: 'standalone' | 'flow'
@@ -86,6 +89,11 @@ export class FlowEngine {
         ]
       }),
     )
+    const templateSource =
+      name === 'write-spec'
+        ? specTemplate(this.root, this.userFile, configuration, bindings['spec.template']?.selected)
+        : null
+    if (options.impact && name !== 'write-spec') throw new CliError('--impact is for write-spec')
     return this.store.transaction((events, append) => {
       const items = replay(events)
       let subject = options.subject ? items.get(options.subject) : undefined
@@ -116,7 +124,7 @@ export class FlowEngine {
       const input =
         options.input ??
         (sourceStart?.type === 'step.started' ? sourceStart.data.input : source?.title)
-      if (name === 'frame-problem' && !options.subject) {
+      if (['frame-problem', 'write-spec'].includes(name) && !options.subject) {
         const matches = framingMatches(
           [...items.values()],
           events,
@@ -136,7 +144,11 @@ export class FlowEngine {
           )
         subject = matches[0]
       }
-      if (name === 'frame-problem' && subject?.kind !== undefined && subject.kind !== 'initiative')
+      if (
+        ['frame-problem', 'write-spec'].includes(name) &&
+        subject?.kind !== undefined &&
+        subject.kind !== 'initiative'
+      )
         throw new CliError(
           'Framing needs an initiative; use --from for a research brief',
           EXIT.precondition,
@@ -179,19 +191,58 @@ export class FlowEngine {
         )
       const run = active?.type === 'step.started' ? active.data.run : newRun()
       const owner = options.owner ?? parent?.owner ?? source?.owner
-      const payload = beginPlan(step, {
-        ...(input ? { input } : {}),
-        ...(owner ? { owner } : {}),
-        ...(options.mode ? { mode: options.mode } : {}),
-        ...(subject ? { subject } : {}),
-        run,
-        events,
-        configuration,
-        presets: loaded.presets,
-      })
+      const frameArtifact = subject
+        ? [...events]
+            .reverse()
+            .find(
+              (entry) =>
+                entry.subject === subject.id &&
+                entry.type === 'step.completed' &&
+                entry.data.step === 'frame-problem',
+            )
+        : undefined
+      const frameImpact =
+        frameArtifact?.type === 'step.completed'
+          ? /^## Expected impact\s*\n([\s\S]*?)(?=\n## |$)/im
+              .exec(frameArtifact.data.artifact.content)?.[1]
+              ?.trim()
+          : undefined
+      const impact =
+        options.impact ?? remembered(events, subject?.id, run, configuration).impact ?? frameImpact
+
+      const payload = {
+        ...beginPlan(step, {
+          ...(input ? { input } : {}),
+          ...(owner ? { owner } : {}),
+          ...(options.mode ? { mode: options.mode } : {}),
+          ...(subject ? { subject } : {}),
+          run,
+          events,
+          configuration,
+          presets: loaded.presets,
+        }),
+        templateSource,
+        expectedImpact: name === 'write-spec' ? (impact ?? null) : null,
+      }
+      if (name === 'write-spec' && !impact?.trim()) {
+        payload.missing.push('impact')
+        payload.questions.push({
+          id: 'impact',
+          prompt: 'What observable impact should the spec achieve?',
+          multi: false,
+          options: [],
+          remember: ['run', 'initiative'],
+        })
+      }
       if (sourceArtifact?.type === 'step.completed') {
         payload.preflight.push(
           `Evidence — ${source?.id}: ${sourceArtifact.data.artifact.path}. Preserve its open questions.`,
+        )
+      }
+      if (templateSource) {
+        payload.template = templateSource.sections
+        payload.preflight.push(
+          `Template — ${templateSource.kind}: ${templateSource.ref}. Preserve structured criteria and measurement metadata.`,
         )
       }
       payload.bindings = bindings
@@ -206,7 +257,7 @@ export class FlowEngine {
         ? decisions(events, subject.id, [
             ...step.before,
             ...(name === 'open-pr' ? this.additions() : []),
-          ])
+          ]).filter((decision) => decisionBlocks(name, decision.id))
         : []
       if (pending.length)
         throw new CliError(
@@ -244,6 +295,11 @@ export class FlowEngine {
             mode: options.mode ?? 'standalone',
             input: payload.input ?? '',
           },
+        })
+      if (name === 'write-spec' && options.impact)
+        append(id, {
+          type: 'answer.remembered',
+          data: { qid: 'impact', value: options.impact, scope: 'initiative', run },
         })
       if (
         source &&
@@ -283,8 +339,24 @@ export class FlowEngine {
     if (outcome && name !== 'frame-problem')
       throw new CliError('Framing outcomes apply only to frame-problem')
     if (outcome) validateFrameOutcome(outcome)
+    let sections: readonly string[] = step.sections
+    if (name === 'write-spec') {
+      const configuration = this.config()
+      const inventory = discover(this.root, this.store.files, this.home)
+      const binding = resolveSlot('spec.template', inventory.repo, {
+        user: inventory.user,
+        ...(isObject(configuration.slots) &&
+        typeof configuration.slots['spec.template'] === 'string'
+          ? { binding: configuration.slots['spec.template'] }
+          : {}),
+      })
+      if (binding.questions.length)
+        throw new CliError('Resolve the spec.template choice before completion', EXIT.input)
+      sections = specTemplate(this.root, this.userFile, configuration, binding.selected).sections
+    }
     const problems = [
-      ...checkShape(content, step.sections),
+      ...checkShape(content, sections),
+      ...(name === 'write-spec' ? checkSpec(content) : []),
       ...(name === 'frame-problem' ? checkFrame(content) : []),
     ]
     if (problems.length) throw new CliError(problems.join('\n'))
@@ -307,10 +379,9 @@ export class FlowEngine {
           EXIT.precondition,
         )
       const path = `items/${subject}/artifacts/${name}/${run}.md`
-      const publication =
-        name === 'frame-problem'
-          ? framePublication(this.root, this.userFile, this.config(), subject, path)
-          : undefined
+      const publication = ['frame-problem', 'write-spec'].includes(name)
+        ? publicationPlan(this.root, this.userFile, this.config(), subject, path)
+        : undefined
       append(subject, {
         type: 'step.completed',
         data: { step: step.name, run, artifact: { path, content } },
@@ -409,11 +480,11 @@ export class FlowEngine {
       writeSetting(file, ['slots', slot], value)
       return { schema: 'wholeloop/answer@1', qid, value, scope, file }
     }
-    if (!['owner', 'input', 'docs.destination', 'tracker.destination'].includes(qid))
+    if (!['owner', 'input', 'impact', 'docs.destination', 'tracker.destination'].includes(qid))
       throw new CliError(`Unknown question: ${qid}`)
     if (scope === 'user' || scope === 'project') {
-      if (qid === 'input')
-        throw new CliError('Input can only be remembered for a run or initiative')
+      if (qid === 'input' || qid === 'impact')
+        throw new CliError('Input and impact can only be remembered for a run or initiative')
       const file = scope === 'user' ? this.userFile : join(this.root, '.wholeloop/config.yml')
       const path = qid.endsWith('.destination')
         ? ['providers', qid.split('.')[0] ?? '']
@@ -455,6 +526,24 @@ export class FlowEngine {
     const subject = options.subject
     const by = options.by
     return this.store.transaction((events, append) => {
+      const producer = STEPS.find((step) => step.after.includes(decision))
+      if (producer) {
+        const latest = [...events]
+          .reverse()
+          .find(
+            (entry) =>
+              entry.subject === subject &&
+              (entry.type === 'step.started' ||
+                entry.type === 'step.completed' ||
+                entry.type === 'step.skipped') &&
+              entry.data.step === producer.name,
+          )
+        if (latest?.type === 'step.started')
+          throw new CliError(
+            `Complete ${producer.name} before recording ${decision}`,
+            EXIT.precondition,
+          )
+      }
       const required = decisions(
         events,
         subject,

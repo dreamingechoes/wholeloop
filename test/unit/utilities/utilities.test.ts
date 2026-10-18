@@ -66,7 +66,7 @@ function files(root: string): Record<string, string> {
 }
 
 describe('minimal local skill workflow', () => {
-  it('routes a sentence through framing and a receipt, then stops at the unavailable next step', () =>
+  it('routes a sentence through framing and a receipt, then offers the available spec contract', () =>
     fixture((dir, cli) => {
       const missing = cli('next', 'Find old orders')
       expect(missing.code).toBe(2)
@@ -97,9 +97,9 @@ describe('minimal local skill workflow', () => {
       expect(completed.code).toBe(0)
       expect(completed.payload.receipt.produced).toContain(id)
       const next = cli('next', id)
-      expect(next.code).toBe(3)
+      expect(next.code).toBe(0)
       expect(next.payload.contract.step).toBe('write-spec')
-      expect(next.payload.contract.available).toBe(false)
+      expect(next.payload.contract.available).toBe(true)
       expect(cli('state', 'list').payload.items).toHaveLength(1)
       const before = files(join(dir, 'state'))
       const status = cli('status', id)

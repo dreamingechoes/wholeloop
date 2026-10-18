@@ -1,11 +1,12 @@
 import { CliError } from '../cli/errors.js'
 import { EXIT } from '../cli/io.js'
 import type { FlowEngine } from '../flow/engine.js'
+import { stepDefinition } from '../flow/registry.js'
 import { framingMatches } from '../framing/contract.js'
 import { ITEM_ID } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 
-/** Route known state first; never infer identity from a title or remote URL. */
+/** Route recorded identities and scoped title matches before starting new work. */
 export function next(engine: FlowEngine, input?: string, owner?: string) {
   if (input && /^https?:\/\//i.test(input))
     throw new CliError(
@@ -53,13 +54,17 @@ export function next(engine: FlowEngine, input?: string, owner?: string) {
     subject = items[0]
   }
   const plan = subject ? engine.plan(subject.id) : undefined
-  if (plan?.pending.length)
+  const blocking =
+    plan?.pending.filter(
+      (decision) => !plan.next || !stepDefinition(plan.next).after.includes(decision.id),
+    ) ?? []
+  if (blocking.length)
     return {
       code: EXIT.input,
       payload: {
         schema: 'wholeloop/next@1',
         subject: subject?.id,
-        questions: plan.pending.map(({ id, basis }) => ({
+        questions: blocking.map(({ id, basis }) => ({
           id: `decision.${id}`,
           basis,
           prompt: `Record the human decision: ${id}`,

@@ -3,7 +3,7 @@ import { isObject } from '../config/schema.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
 
 /** Local destinations already are the core item and artifact; avoid duplicate copies. */
-export function framePublication(
+export function publicationPlan(
   root: string,
   userFile: string,
   configuration: Record<string, unknown>,
@@ -12,7 +12,7 @@ export function framePublication(
 ) {
   const registry = loadProviders(loadExtensionOptions({ root, userFile }))
   if (registry.problems.length)
-    throw new Error('Resolve provider registry problems before publishing framing')
+    throw new Error('Resolve provider registry problems before publishing artifacts')
   return Object.fromEntries(
     ['docs', 'tracker'].map((capability) => {
       const operation = capability === 'docs' ? 'docs.create' : 'tracker.create-item'

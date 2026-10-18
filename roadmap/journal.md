@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-18 · P2-03 — testable specs and pinned measurement plans
+
+- Add the write-spec skill and host drafting workflow, standalone problem/owner/impact entry, repository-first guidance and additive manifest template sections.
+- Validate versioned story/criterion IDs and falsifiable tests, the initial vague-word lexicon, metric provider/query/baseline/target/window and structured rollout. Unknown baselines require an answerer and tracking story; no metrics requires an explicit measurement exception.
+- Persist the exact authored metadata in the spec artifact. Local publication reuses records; remote destinations remain pending. Standalone completion advances from existing output without inventing earlier skips.
+- Stop at a revision-bound human approval. Rejected specs can be revised, unfinished drafts cannot be approved, and completing another revision requires a fresh decision. ADR-0023 records the schema and approval choices.
+- Verify valid/defective fixtures, repository guidance read-before-draft, custom required sections, missing input without mutation, rejection/revision, compiled CLI execution and byte-identical replay. Live semantic critique, source queries and external writes remain manual conformance.
+
+---
+
 ## 2026-10-18 · P2-02 — complete local framing and explicit no-go
 
 - Require all eight framing questions plus ownership; validate unresolved placeholders as TBD markers naming missing evidence and an answerer. Keep challenge intensity in the existing style block without changing coverage.

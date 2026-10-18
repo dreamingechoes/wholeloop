@@ -57,6 +57,8 @@ const REQUIRED: Record<string, Record<string, string>> = {
     criteria: 'verify-works',
     metrics: 'measure-impact',
     rollout: 'prepare-launch',
+    'measurement plan': 'measure-impact',
+    'technical appendix': 'build-slice',
   },
 }
 const TEMPLATES: Template[] = Object.entries(REQUIRED).map(([id, sections]) => ({
