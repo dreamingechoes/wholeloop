@@ -3,7 +3,7 @@
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands are implemented. Step workflows and provider adoption remain planned. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
+> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. Step workflows and provider adoption remain planned. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
 
 ---
 
@@ -56,7 +56,7 @@ wl state rebuild --json
 
 ## The journal
 
-Implemented event types are `item.created`, `item.updated`, `item.closed`, `note.added`, `link.added`; later families in the table below remain planned. Their versioned schema lives in `src/state/schemas/event-v1.json`. Every change is an event. Projections are a pure function of the journal, which makes them reproducible and testable (`wl state rebuild` must produce byte-identical files).
+Implemented event types are `item.created`, `item.updated`, `item.closed`, `note.added`, `link.added`, `msg.sent`, `msg.read`; later families in the table below remain planned. Their versioned schema lives in `src/state/schemas/event-v1.json`. Every change is an event. Projections are a pure function of the journal, which makes them reproducible and testable (`wl state rebuild` must produce byte-identical files).
 
 ```json
 {"v":1,"id":"ev-01JA…","ts":"2026-10-14T16:02:11Z","actor":{"kind":"agent","name":"builder"},
@@ -102,7 +102,14 @@ sequenceDiagram
   B2->>M: status DONE + evidence
 ```
 
-Mailbox commands and bounded resume packs arrive with P1-04. The following sections describe their target behavior.
+```text
+wl msg send --thread slice-0123abcd --to builder --kind contract --body "GET /orders uses cursors" --json
+wl msg read --for builder --reader session-a --json
+wl msg read --for builder --reader session-b --peek --json
+wl handoff slice-0123abcd --to verifier --body "Ready for verification" --json
+```
+
+Threads are existing item IDs. `--from` defaults to `conductor`; bodies can come from `--body-file`. Reading advances a cursor per reader and destination role; the reader defaults to the role. `--peek` leaves it untouched. Mailbox files and `cursors.json` are journal-derived projections, so rebuild preserves read positions. These commands only write the local store.
 
 Messages live in the store, so they survive a crashed subagent and can be read by an agent spawned tomorrow in another CLI.
 

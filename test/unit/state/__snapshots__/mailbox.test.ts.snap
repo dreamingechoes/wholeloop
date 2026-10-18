@@ -1,0 +1,99 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`context packs > summarizes 50 descendants deterministically within its UTF-8 byte ceiling 1`] = `
+{
+  "flow": {
+    "available": false,
+  },
+  "items": [
+    {
+      "id": "slice-00000001",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 1",
+    },
+    {
+      "id": "slice-00000002",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 2",
+    },
+    {
+      "id": "slice-00000003",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 3",
+    },
+    {
+      "id": "slice-00000004",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 4",
+    },
+    {
+      "id": "slice-00000005",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 5",
+    },
+    {
+      "id": "slice-00000006",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 6",
+    },
+    {
+      "id": "slice-00000007",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 7",
+    },
+    {
+      "id": "slice-00000008",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 8",
+    },
+    {
+      "id": "slice-00000009",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 9",
+    },
+    {
+      "id": "slice-0000000a",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 10",
+    },
+    {
+      "id": "slice-0000000b",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 11",
+    },
+    {
+      "id": "slice-0000000c",
+      "kind": "slice",
+      "status": "open",
+      "title": "Filter orders 12",
+    },
+  ],
+  "links": [],
+  "next": "wl open init-00000000",
+  "notes": [],
+  "schema": "wholeloop/resume@1",
+  "subject": {
+    "id": "init-00000000",
+    "kind": "initiative",
+    "owner": "Alex",
+    "path": "items/init-00000000/initiative.md",
+    "status": "open",
+    "title": "Better search",
+  },
+  "totalItems": 51,
+  "truncated": true,
+  "unread": [],
+  "unreadCount": 0,
+}
+`;

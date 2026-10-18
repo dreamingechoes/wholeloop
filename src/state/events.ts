@@ -1,5 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
+import { replayMailbox } from './mailbox.js'
 
 export const KINDS = ['initiative', 'scope', 'slice', 'part', 'brief', 'review'] as const
 export type ItemKind = (typeof KINDS)[number]
@@ -29,12 +30,16 @@ export interface Item extends ItemInput {
   links: string[]
 }
 export type ItemPatch = Partial<Pick<Item, 'title' | 'owner' | 'body' | 'status'>>
+export const MESSAGE_KINDS = ['contract', 'handoff', 'status', 'question', 'note'] as const
+export type MessageKind = (typeof MESSAGE_KINDS)[number]
 export type EventData =
   | { type: 'item.created'; data: ItemInput }
   | { type: 'item.updated'; data: ItemPatch }
   | { type: 'item.closed'; data: Record<string, never> }
   | { type: 'note.added'; data: { text: string } }
   | { type: 'link.added'; data: { url: string } }
+  | { type: 'msg.sent'; data: { to: string; from: string; kind: MessageKind; body: string } }
+  | { type: 'msg.read'; data: { reader: string; role: string; through: string } }
 export type StateEvent = {
   v: 1
   id: string
@@ -86,9 +91,30 @@ function validData(type: string, data: Record<string, unknown>): boolean {
         return false
       }
     }
+    case 'msg.sent':
+      return (
+        keys(data, ['to', 'from', 'kind', 'body']) &&
+        address(data.to) &&
+        address(data.from) &&
+        MESSAGE_KINDS.includes(data.kind as MessageKind) &&
+        text(data.body) &&
+        data.body.length <= 32768
+      )
+    case 'msg.read':
+      return (
+        keys(data, ['reader', 'role', 'through']) &&
+        address(data.reader) &&
+        address(data.role) &&
+        text(data.through) &&
+        /^ev-[a-f0-9-]{36}$/.test(data.through)
+      )
     default:
       return false
   }
+}
+
+function address(value: unknown): value is string {
+  return typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9:_.-]{0,127}$/.test(value)
 }
 
 export function validateEvent(value: unknown): asserts value is StateEvent {
@@ -173,5 +199,6 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
     }
     item.updatedAt = entry.ts
   }
+  replayMailbox(events)
   return items
 }

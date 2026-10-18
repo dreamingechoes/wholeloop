@@ -1,0 +1,78 @@
+import { replay, type StateEvent } from './events.js'
+import { unread } from './mailbox.js'
+
+export const CONTEXT_BYTES = 6144
+const short = (value: string, limit: number) => [...value].slice(0, limit).join('')
+
+/** Bodies stay in the store; a fresh session gets references and bounded summaries. */
+export function contextPack(
+  events: readonly StateEvent[],
+  id?: string,
+  role = 'conductor',
+  reader = role,
+) {
+  const items = [...replay(events).values()]
+  const subject = id
+    ? items.find((item) => item.id === id)
+    : [...items].sort(
+        (a, b) => b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id),
+      )[0]
+  if (!subject)
+    throw new Error(id ? `Unknown item: ${id}` : 'No items to resume; create an initiative first')
+  const descendantIds = new Set([subject.id])
+  let previous = 0
+  while (previous !== descendantIds.size) {
+    previous = descendantIds.size
+    for (const item of items)
+      if (item.parent && descendantIds.has(item.parent)) descendantIds.add(item.id)
+  }
+  const descendants = items
+    .filter((item) => item.id !== subject.id && descendantIds.has(item.id))
+    .sort((a, b) => a.id.localeCompare(b.id))
+  const messages = unread(events, role, reader).filter((message) =>
+    descendantIds.has(message.thread),
+  )
+  const payload = {
+    schema: 'wholeloop/resume@1',
+    subject: {
+      id: subject.id,
+      kind: subject.kind,
+      title: short(subject.title, 160),
+      owner: short(subject.owner, 80),
+      status: subject.status,
+      path: `items/${subject.id}/${subject.kind}.md`,
+    },
+    totalItems: descendantIds.size,
+    items: descendants.slice(0, 12).map((item) => ({
+      id: item.id,
+      kind: item.kind,
+      title: short(item.title, 80),
+      status: item.status,
+    })),
+    unreadCount: messages.length,
+    unread: messages.slice(0, 8).map((message) => ({
+      id: message.id,
+      thread: message.thread,
+      kind: message.kind,
+      from: message.from,
+    })),
+    notes: subject.notes.slice(-3).map((note) => short(note.text, 160)),
+    links: subject.links.slice(-5).map((link) => short(link, 240)),
+    flow: { available: false },
+    next: `wl open ${subject.id}`,
+    truncated:
+      descendants.length > 12 ||
+      messages.length > 8 ||
+      subject.links.length > 5 ||
+      subject.notes.length > 3,
+  }
+  while (Buffer.byteLength(JSON.stringify(payload)) > CONTEXT_BYTES) {
+    payload.truncated = true
+    if (payload.items.length) payload.items.pop()
+    else if (payload.unread.length) payload.unread.pop()
+    else if (payload.links.length) payload.links.pop()
+    else if (payload.notes.length) payload.notes.pop()
+    else throw new Error('Context pack metadata exceeds its byte ceiling')
+  }
+  return payload
+}

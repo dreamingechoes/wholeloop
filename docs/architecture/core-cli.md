@@ -22,6 +22,10 @@ Every command accepts `--json`. Output contracts live in `src/cli/schemas/`. Err
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl msg send` | `wholeloop/msg-send@1` | Send a durable message in an item thread |
+| `wl msg read` | `wholeloop/msg-read@1` | Read unread messages with a persistent per-reader cursor |
+| `wl handoff <id>` | `wholeloop/handoff@1` | Hand an item to another role with durable context |
+| `wl resume [<id>]` | `wholeloop/resume@1` | Print a context pack bounded to 6144 UTF-8 bytes |
 | `wl state create <kind>` | `wholeloop/state-create@1` | Create a typed item in the external store |
 | `wl state update <id>` | `wholeloop/state-update@1` | Update a stored item through the journal |
 | `wl state show [<id>]` | `wholeloop/state-show@1` | Show an item or the whole store |

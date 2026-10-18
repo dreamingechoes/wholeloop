@@ -54,7 +54,7 @@
 
 ## P1-04 · Mailbox and resume
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-03
+**Status:** ✅ · **Size:** M · **Depends on:** P1-03
 
 **Goal** — Agents and sessions can talk and pick up where others stopped, in any CLI.
 
@@ -62,8 +62,8 @@
 
 **Acceptance criteria:**
 
-- [ ] Unread semantics are per reader and survive restarts.
-- [ ] `wl resume` output stays under its size ceiling for an initiative with 50 items (snapshot test).
+- [x] Unread semantics are per reader and survive restarts.
+- [x] `wl resume` output stays under its size ceiling for an initiative with 50 items (snapshot test).
 
 **Docs** — architecture/state-and-messaging.
 

@@ -151,6 +151,62 @@
           "required": ["url"]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "msg.sent"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "to": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9:_.-]{0,127}$"
+            },
+            "from": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9:_.-]{0,127}$"
+            },
+            "kind": {
+              "enum": ["contract", "handoff", "status", "question", "note"]
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32768
+            }
+          },
+          "required": ["to", "from", "kind", "body"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "msg.read"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "reader": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9:_.-]{0,127}$"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9:_.-]{0,127}$"
+            },
+            "through": {
+              "type": "string",
+              "pattern": "^ev-[a-f0-9-]{36}$"
+            }
+          },
+          "required": ["reader", "role", "through"]
+        }
+      }
     }
   ]
 }

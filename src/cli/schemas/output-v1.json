@@ -247,6 +247,56 @@
         }
       },
       "required": ["content"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/msg-send@1"
+        },
+        "message": {
+          "type": "object"
+        }
+      },
+      "required": ["message"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/msg-read@1"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "required": ["messages"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/handoff@1"
+        },
+        "message": {
+          "type": "object"
+        }
+      },
+      "required": ["message"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/resume@1"
+        },
+        "subject": {
+          "type": "object"
+        },
+        "totalItems": {
+          "type": "integer"
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": ["subject", "totalItems", "truncated"]
     }
   ],
   "$defs": {

@@ -8,6 +8,41 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'msg send',
+    arguments: '',
+    options: [
+      '--thread <id>',
+      '--to <role>',
+      '--from <role>',
+      '--kind <kind>',
+      '--body <text>',
+      '--body-file <file>',
+    ],
+    schema: 'wholeloop/msg-send@1',
+    summary: 'Send a durable message in an item thread',
+  },
+  {
+    path: 'msg read',
+    arguments: '',
+    options: ['--for <role>', '--reader <id>', '--peek'],
+    schema: 'wholeloop/msg-read@1',
+    summary: 'Read unread messages with a persistent per-reader cursor',
+  },
+  {
+    path: 'handoff',
+    arguments: '<id>',
+    options: ['--to <role>', '--from <role>', '--body <text>', '--body-file <file>'],
+    schema: 'wholeloop/handoff@1',
+    summary: 'Hand an item to another role with durable context',
+  },
+  {
+    path: 'resume',
+    arguments: '[<id>]',
+    options: ['--for <role>', '--reader <id>'],
+    schema: 'wholeloop/resume@1',
+    summary: 'Print a context pack bounded to 6144 UTF-8 bytes',
+  },
+  {
     path: 'state create',
     arguments: '<kind>',
     options: ['--title <text>', '--owner <name>', '--body-file <file>', '--parent <id>'],

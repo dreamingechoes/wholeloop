@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-18 · P1-04 — durable mailbox and bounded resume context
+
+- Add local message threads and independent reader/role cursors, with explicit peek and handoff operations; rebuilding projections preserves read positions.
+- Generate deterministic resume packs with references rather than artifact bodies and an enforced 6144-byte UTF-8 ceiling, including truncation and total counts.
+- Verify restart/rebuild behavior, invalid cursor rollback, Unicode limits and a fifty-descendant snapshot alongside the complete local check suite.
+
+---
+
 ## 2026-10-18 · P1-03 — external journal and item projections
 
 - Add typed items, notes, links and readable projections under the external XDG store, rejecting repositories, traversal and symlink escapes before writes.
