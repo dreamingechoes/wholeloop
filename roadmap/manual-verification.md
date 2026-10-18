@@ -27,6 +27,17 @@ Atlassian fields/permissions, and optional gws creation plus content insertion.
 No integration was installed. Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
+## Source validation still pending
+
+For each configured source, verify the actual project/tenant, regional endpoint,
+live tool schema, permissions, pagination/truncation, query reference and exact
+window/timezone. All eleven source transcripts are synthetic. Replace Metabase's
+example endpoint and configure Zendesk's real tenant/host authentication. Verify
+PostHog tools mode and BigQuery read-only IAM/cost controls. For PostgreSQL use a
+restricted libpq service and verify server read-only rejection, function privileges
+and timeout behavior; process tests used a fixture executable, not a database.
+Failed or incomplete access must produce an explicit unknown rather than a baseline.
+
 ## Definition challenger validation still pending
 
 Exercise all four modes in a host using the returned instructions and exact

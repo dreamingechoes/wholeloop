@@ -3,7 +3,7 @@
 > **TL;DR** — Splits a question into angles, investigates each one against a real source in parallel, lets a challenger try to refute the claims the conclusion rests on, and hands back a brief: claims with evidence and confidence, plus the open questions nothing could answer. Optional in the flow; useful on its own any day.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Core source planning, structured submissions, active-refutation aggregation, a journaled brief and canonical researcher/challenger resources are implemented and tested with stubbed agents. Native/sequential scheduling shares one workflow; live client fan-out, independent sessions, source authentication and external publication remain unverified or planned. Tracked in [P2-01](../../../roadmap/phase-2-define.md#p2-01--research).
+> **Status: 🚧 partial.** Core source planning, structured submissions, active-refutation aggregation, a journaled brief and canonical researcher/challenger resources are implemented and tested with stubbed agents. Eleven source mappings have bounded guidance and query fixtures; pending/partial observations remain explicit unknowns. Native/sequential scheduling shares one workflow; live client fan-out, independent sessions, source authentication and external publication remain unverified or planned. Tracked in [P2-01](../../../roadmap/phase-2-define.md#p2-01--research).
 
 ---
 

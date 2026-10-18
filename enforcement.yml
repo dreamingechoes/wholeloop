@@ -4,6 +4,10 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: source-explicit-unknowns
+    enforcers: [src/providers/manifest.ts#validateProvider, src/providers/sources.ts#querySource, test/unit/providers/sources.test.ts]
+  - id: postgresql-read-only-query
+    enforcers: [src/providers/postgresql.ts#readOnlyStatement, src/providers/postgresql.ts#PostgreSqlSource, test/unit/providers/sources.test.ts]
   - id: docs-same-operation-read
     enforcers: [src/providers/operations.ts#updateDocument, src/providers/manifest.ts#validateProvider, test/unit/providers/destinations.test.ts]
   - id: repo-docs-contained-output

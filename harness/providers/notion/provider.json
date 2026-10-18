@@ -13,7 +13,7 @@
       }
     }
   },
-  "capabilities": ["docs"],
+  "capabilities": ["docs", "source.knowledge"],
   "operations": {
     "docs.create": {
       "tool": "notion-create-pages",
@@ -32,11 +32,16 @@
         "allow_async": false
       },
       "guidance": "guidance/usage.md"
+    },
+    "source.knowledge.query": {
+      "tool": "notion-search",
+      "guidance": "guidance/knowledge.md"
     }
   },
   "degrade": {
     "docs.create": "handoff-artifact",
     "docs.read": "handoff-artifact",
-    "docs.update": "handoff-artifact"
+    "docs.update": "handoff-artifact",
+    "source.knowledge.query": "open-question"
   }
 }

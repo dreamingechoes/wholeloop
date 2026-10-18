@@ -1,0 +1,21 @@
+{
+  "provenance": "synthetic source transcript; no live query or observed product metric",
+  "provider": "posthog",
+  "request": {
+    "operation": "source.product-analytics.query",
+    "query": "SELECT count() AS orders FROM events WHERE event = 'order_found'",
+    "owner": "Alex",
+    "window": {
+      "start": "2026-10-01T00:00:00Z",
+      "end": "2026-10-08T00:00:00Z",
+      "timezone": "UTC"
+    }
+  },
+  "tool": "execute-sql",
+  "response": {
+    "status": "succeeded",
+    "ref": "fixture:posthog:query-1",
+    "body": "{\"rows\":[{\"fixture_count\":12}],\"synthetic\":true}",
+    "complete": true
+  }
+}

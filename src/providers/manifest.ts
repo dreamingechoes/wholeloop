@@ -117,14 +117,24 @@ export function validateProvider(value: unknown): asserts value is Provider {
       if (!text(recipe.url)) fail('access.mcp.install.url', 'an HTTP(S) URL')
       try {
         const url = new URL(String(recipe.url))
+        // PostHog needs an explicit roster mode; this is the only credential-free
+        // query parameter accepted in installation recipes, never an arbitrary token.
+        const safeQuery =
+          [...url.searchParams].length <= 1 &&
+          [...url.searchParams].every(
+            ([key, mode]) => key === 'mode' && ['tools', 'cli'].includes(mode),
+          )
         if (
           !['http:', 'https:'].includes(url.protocol) ||
           url.username ||
           url.password ||
-          url.search ||
+          !safeQuery ||
           url.hash
         )
-          fail('access.mcp.install.url', 'an endpoint without credentials, query or fragment')
+          fail(
+            'access.mcp.install.url',
+            'an endpoint without credentials, arbitrary query or fragment',
+          )
       } catch {
         fail('access.mcp.install.url', 'an HTTP(S) endpoint without credentials')
       }
@@ -198,4 +208,7 @@ export function validateProvider(value: unknown): asserts value is Provider {
       )
     )
       fail(`degrade.${operation}`, 'an explicit degradation behavior')
+  for (const operation of Object.keys(operations))
+    if (operation.startsWith('source.') && degrade[operation] !== 'open-question')
+      fail(`degrade.${operation}`, 'open-question for an unavailable evidence source')
 }

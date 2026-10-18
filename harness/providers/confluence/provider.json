@@ -13,7 +13,7 @@
       }
     }
   },
-  "capabilities": ["docs"],
+  "capabilities": ["docs", "source.knowledge"],
   "operations": {
     "docs.create": {
       "tool": "createConfluenceContent",
@@ -26,11 +26,16 @@
     "docs.update": {
       "tool": "updateConfluenceContent",
       "guidance": "guidance/usage.md"
+    },
+    "source.knowledge.query": {
+      "tool": "searchConfluence",
+      "guidance": "guidance/knowledge.md"
     }
   },
   "degrade": {
     "docs.create": "handoff-artifact",
     "docs.read": "handoff-artifact",
-    "docs.update": "handoff-artifact"
+    "docs.update": "handoff-artifact",
+    "source.knowledge.query": "open-question"
   }
 }

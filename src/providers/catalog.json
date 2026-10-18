@@ -2,6 +2,70 @@
   {
     "manifest": {
       "schema": 1,
+      "id": "amplitude",
+      "name": "Amplitude",
+      "description": "Retrieve read-only evidence from Amplitude.",
+      "access": {
+        "mcp": {
+          "server": "amplitude",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.amplitude.com/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["source.product-analytics"],
+      "operations": {
+        "source.product-analytics.query": {
+          "tool": "query_amplitude_data",
+          "args": {},
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.product-analytics.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.product-analytics.query": "# Amplitude evidence\n\n- Select the correct US/EU endpoint and project; load the project's AI Context and verify metric definitions.\n- Inspect the live query_amplitude_data schema through describe_tool when progressive discovery is enabled.\n- Translate the pinned analytics query into the supported segmentation/funnel/retention request.\n- Keep exact dates, timezone, cohorts and counting units; preserve query/chart references in evidence.\n- Use query tools only. Never manage taxonomy, create a cohort or change an experiment for research.\n- Call out sampling, missing events and incomplete access. Do not fabricate a metric baseline.\n- Unavailable data becomes an open question naming the owner who can provide it.\n- [Official reference](https://amplitude.com/docs/amplitude-ai/amplitude-mcp)\n- Mapping checked: 2026-10-18. Live project/schema conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "bigquery",
+      "name": "BigQuery",
+      "description": "Retrieve read-only evidence from BigQuery.",
+      "access": {
+        "mcp": {
+          "server": "bigquery",
+          "install": {
+            "transport": "http",
+            "url": "https://bigquery.googleapis.com/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["source.bi"],
+      "operations": {
+        "source.bi.query": {
+          "tool": "execute_sql_readonly",
+          "args": {},
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.bi.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.bi.query": "# BigQuery evidence\n\n- Use execute_sql_readonly, never the unrestricted execute_sql tool.\n- Confirm project, dataset, region and billing scope. Use a principal with read-only dataset permissions.\n- Discover columns first; pin GoogleSQL, parameters, date boundaries and timezone.\n- Set bounded server timeouts and inspect dry-run cost estimates before an expensive real query.\n- Preserve job ID/location and poll incomplete jobs in the host; pending work is not an empty result.\n- Record row limits, errors and aggregation units. Missing access becomes an explicit open question.\n- Do not export sensitive raw rows merely to calculate an aggregate already supported in the warehouse.\n- [Read-only tool](https://docs.cloud.google.com/bigquery/docs/reference/mcp/tools_list/execute_sql_readonly)\n- Mapping checked: 2026-10-18. Live IAM, cost and job-conformance checks remain pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
       "id": "confluence",
       "name": "Confluence",
       "description": "Publish wholeloop definitions through Confluence.",
@@ -15,7 +79,7 @@
           }
         }
       },
-      "capabilities": ["docs"],
+      "capabilities": ["docs", "source.knowledge"],
       "operations": {
         "docs.create": {
           "tool": "createConfluenceContent",
@@ -28,18 +92,24 @@
         "docs.update": {
           "tool": "updateConfluenceContent",
           "guidance": "guidance/usage.md"
+        },
+        "source.knowledge.query": {
+          "tool": "searchConfluence",
+          "guidance": "guidance/knowledge.md"
         }
       },
       "degrade": {
         "docs.create": "handoff-artifact",
         "docs.read": "handoff-artifact",
-        "docs.update": "handoff-artifact"
+        "docs.update": "handoff-artifact",
+        "source.knowledge.query": "open-question"
       }
     },
     "guidance": {
       "docs.create": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n",
       "docs.read": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n",
-      "docs.update": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n"
+      "docs.update": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n",
+      "source.knowledge.query": "# Confluence knowledge evidence\n\n- Use searchConfluence with explicit CQL for Confluence knowledge; confirm space/cloud scope and fetch cited content before drawing conclusions.\n- Preserve the exact query, page IDs, revision/timestamps and links; distinguish authored claims from your inference.\n- Respect pagination, truncation and permissions; a partial search is not proof of absence.\n- Knowledge collection is read-only: do not edit content or call destination write tools.\n- Missing access or evidence becomes an explicit open question naming the owner who can answer it.\n- Read the companion usage guidance for the official server reference and host-specific schema checks.\n- Mapping checked: 2026-10-18. Live search/fetch conformance remains pending.\n"
     }
   },
   {
@@ -200,6 +270,38 @@
       "docs.create": "# Google Docs\n\n- Use the optional Google Workspace CLI gws and its own encrypted credential store.\n- The core declares operations; the host invokes gws with argv, --params JSON and --json request JSON.\n- Create returns an empty document ID; insert content using read-modify-write before reporting publication.\n- Get the full document (including tabs) and revisionId before every batchUpdate operation.\n- Preserve structural elements and unrelated tabs; do not flatten a rich document into guessed plain text.\n- Transform the fetched document into batch requests and carry writeControl.requiredRevisionId.\n- A stale revision fails; re-read and review before retrying. Never suppress writeControl on conflict.\n- Normalize the complete document JSON to ref/body/revision; body is the fetched JSON representation.\n- Use the returned documentId to record `https://docs.google.com/document/d/<id>/edit`.\n- Native Docs MCP currently exposes read/update only, so creation uses the optional CLI.\n- References: [Official documentation](https://github.com/googleworkspace/cli)\n- [API reference](https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/batchUpdate)\n- Mapping checked: 2026-10-18. No CLI was installed; live auth/conformance remains pending.\n",
       "docs.read": "# Google Docs\n\n- Use the optional Google Workspace CLI gws and its own encrypted credential store.\n- The core declares operations; the host invokes gws with argv, --params JSON and --json request JSON.\n- Create returns an empty document ID; insert content using read-modify-write before reporting publication.\n- Get the full document (including tabs) and revisionId before every batchUpdate operation.\n- Preserve structural elements and unrelated tabs; do not flatten a rich document into guessed plain text.\n- Transform the fetched document into batch requests and carry writeControl.requiredRevisionId.\n- A stale revision fails; re-read and review before retrying. Never suppress writeControl on conflict.\n- Normalize the complete document JSON to ref/body/revision; body is the fetched JSON representation.\n- Use the returned documentId to record `https://docs.google.com/document/d/<id>/edit`.\n- Native Docs MCP currently exposes read/update only, so creation uses the optional CLI.\n- References: [Official documentation](https://github.com/googleworkspace/cli)\n- [API reference](https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/batchUpdate)\n- Mapping checked: 2026-10-18. No CLI was installed; live auth/conformance remains pending.\n",
       "docs.update": "# Google Docs\n\n- Use the optional Google Workspace CLI gws and its own encrypted credential store.\n- The core declares operations; the host invokes gws with argv, --params JSON and --json request JSON.\n- Create returns an empty document ID; insert content using read-modify-write before reporting publication.\n- Get the full document (including tabs) and revisionId before every batchUpdate operation.\n- Preserve structural elements and unrelated tabs; do not flatten a rich document into guessed plain text.\n- Transform the fetched document into batch requests and carry writeControl.requiredRevisionId.\n- A stale revision fails; re-read and review before retrying. Never suppress writeControl on conflict.\n- Normalize the complete document JSON to ref/body/revision; body is the fetched JSON representation.\n- Use the returned documentId to record `https://docs.google.com/document/d/<id>/edit`.\n- Native Docs MCP currently exposes read/update only, so creation uses the optional CLI.\n- References: [Official documentation](https://github.com/googleworkspace/cli)\n- [API reference](https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/batchUpdate)\n- Mapping checked: 2026-10-18. No CLI was installed; live auth/conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "intercom",
+      "name": "Intercom",
+      "description": "Retrieve read-only evidence from Intercom.",
+      "access": {
+        "mcp": {
+          "server": "intercom",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.intercom.com/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["source.support"],
+      "operations": {
+        "source.support.query": {
+          "tool": "search",
+          "args": {},
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.support.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.support.query": "# Intercom evidence\n\n- Confirm workspace region support and authenticate using the host-managed official MCP connection.\n- Use search with object_type:conversations and explicit timestamps/filter DSL; fetch returned conversation IDs.\n- Preserve the search query and starting_after cursor. A result page is not the full conversation population.\n- Cite conversation links and distinguish customer reports from independently established product facts.\n- Keep only necessary excerpts and omit unrelated personal data.\n- Query/fetch only; do not create/update articles, send replies or change conversation state.\n- Unsupported regions, missing permissions or incomplete conversation bodies become owner-assigned open questions.\n- [Official MCP reference](https://developers.intercom.com/docs/guides/mcp)\n- Mapping checked: 2026-10-18. Live regional/workspace conformance remains pending.\n"
     }
   },
   {
@@ -379,6 +481,70 @@
   {
     "manifest": {
       "schema": 1,
+      "id": "metabase",
+      "name": "Metabase",
+      "description": "Retrieve read-only evidence from Metabase.",
+      "access": {
+        "mcp": {
+          "server": "metabase",
+          "install": {
+            "transport": "http",
+            "url": "https://metabase.example.com/api/metabase-mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["source.bi"],
+      "operations": {
+        "source.bi.query": {
+          "tool": "query",
+          "args": {},
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.bi.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.bi.query": "# Metabase evidence\n\n- Override the example endpoint with the actual instance before connecting; the admin must enable MCP.\n- Authenticate as a read-only user and inspect permitted databases, tables and saved questions.\n- Use query for read-only table/metric results; construct_query/execute_query can supply the query handle.\n- Preserve database/question IDs, native query or MBQL, parameters, timezone and date boundaries.\n- Follow continuation tokens and report the server's result cap rather than treating a page as all rows.\n- Do not edit a saved question or create a dashboard during evidence collection.\n- Cite the question/query reference and keep unavailable permissions/data as owner-assigned open questions.\n- [Official reference](https://www.metabase.com/docs/latest/ai/mcp)\n- Mapping checked: 2026-10-18. Instance endpoint and live permission checks remain pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "mixpanel",
+      "name": "Mixpanel",
+      "description": "Retrieve read-only evidence from Mixpanel.",
+      "access": {
+        "mcp": {
+          "server": "mixpanel",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.mixpanel.com/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["source.product-analytics"],
+      "operations": {
+        "source.product-analytics.query": {
+          "tool": "Run-Query",
+          "args": {},
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.product-analytics.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.product-analytics.query": "# Mixpanel evidence\n\n- Confirm US/EU/IN region and the real project ID; authenticate through the host's OAuth store.\n- Discover events/properties and Get-Query-Schema before translating the pinned query into Run-Query JSON.\n- Query insights/funnels/flows/retention only; do not create reports or modify Lexicon/flags during research.\n- Preserve calendar dates, project timezone, identity/counting rules, filters and report type.\n- Record query/results references and any unverified entities or incomplete result warnings.\n- A missing baseline is unknown, not zero. Rate limits and permission failures remain open questions.\n- The host translates the core query string into the live Run-Query schema without silently changing it.\n- [Official reference](https://docs.mixpanel.com/docs/mcp)\n- Mapping checked: 2026-10-18. Live account/schema conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
       "id": "native-code",
       "name": "Native code",
       "description": "Use the host CLI file tools for read-only code evidence.",
@@ -434,7 +600,7 @@
           }
         }
       },
-      "capabilities": ["docs"],
+      "capabilities": ["docs", "source.knowledge"],
       "operations": {
         "docs.create": {
           "tool": "notion-create-pages",
@@ -453,18 +619,88 @@
             "allow_async": false
           },
           "guidance": "guidance/usage.md"
+        },
+        "source.knowledge.query": {
+          "tool": "notion-search",
+          "guidance": "guidance/knowledge.md"
         }
       },
       "degrade": {
         "docs.create": "handoff-artifact",
         "docs.read": "handoff-artifact",
-        "docs.update": "handoff-artifact"
+        "docs.update": "handoff-artifact",
+        "source.knowledge.query": "open-question"
       }
     },
     "guidance": {
       "docs.create": "# Notion\n\n- Confirm the actual parent page/data source and writable properties from fetched schema.\n- notion-create-pages creates content; use an existing page ID for notion-update-page.\n- Every update first fetches the full page in the same read-modify-write operation.\n- Preserve unrelated content and block references; prefer a targeted edit over replacing a whole page.\n- Normalize complete fetched Markdown to ref/body/revision; truncation or hidden content blocks replacement.\n- allow_async false requests a synchronous write. A returned async_task is still pending: poll it in the host.\n- Record the page URL only on confirmed success. The core does not equate queued work with publication.\n- Discover host aliases for fetch/search; OpenAI MCP clients can drop the notion- prefix.\n- OAuth stays in the client store; do not create a plaintext integration-token config.\n- Reference: [Official documentation](https://developers.notion.com/guides/mcp/mcp-supported-tools)\n- Mapping checked: 2026-10-18. Live host/schema conformance remains pending.\n",
       "docs.read": "# Notion\n\n- Confirm the actual parent page/data source and writable properties from fetched schema.\n- notion-create-pages creates content; use an existing page ID for notion-update-page.\n- Every update first fetches the full page in the same read-modify-write operation.\n- Preserve unrelated content and block references; prefer a targeted edit over replacing a whole page.\n- Normalize complete fetched Markdown to ref/body/revision; truncation or hidden content blocks replacement.\n- allow_async false requests a synchronous write. A returned async_task is still pending: poll it in the host.\n- Record the page URL only on confirmed success. The core does not equate queued work with publication.\n- Discover host aliases for fetch/search; OpenAI MCP clients can drop the notion- prefix.\n- OAuth stays in the client store; do not create a plaintext integration-token config.\n- Reference: [Official documentation](https://developers.notion.com/guides/mcp/mcp-supported-tools)\n- Mapping checked: 2026-10-18. Live host/schema conformance remains pending.\n",
-      "docs.update": "# Notion\n\n- Confirm the actual parent page/data source and writable properties from fetched schema.\n- notion-create-pages creates content; use an existing page ID for notion-update-page.\n- Every update first fetches the full page in the same read-modify-write operation.\n- Preserve unrelated content and block references; prefer a targeted edit over replacing a whole page.\n- Normalize complete fetched Markdown to ref/body/revision; truncation or hidden content blocks replacement.\n- allow_async false requests a synchronous write. A returned async_task is still pending: poll it in the host.\n- Record the page URL only on confirmed success. The core does not equate queued work with publication.\n- Discover host aliases for fetch/search; OpenAI MCP clients can drop the notion- prefix.\n- OAuth stays in the client store; do not create a plaintext integration-token config.\n- Reference: [Official documentation](https://developers.notion.com/guides/mcp/mcp-supported-tools)\n- Mapping checked: 2026-10-18. Live host/schema conformance remains pending.\n"
+      "docs.update": "# Notion\n\n- Confirm the actual parent page/data source and writable properties from fetched schema.\n- notion-create-pages creates content; use an existing page ID for notion-update-page.\n- Every update first fetches the full page in the same read-modify-write operation.\n- Preserve unrelated content and block references; prefer a targeted edit over replacing a whole page.\n- Normalize complete fetched Markdown to ref/body/revision; truncation or hidden content blocks replacement.\n- allow_async false requests a synchronous write. A returned async_task is still pending: poll it in the host.\n- Record the page URL only on confirmed success. The core does not equate queued work with publication.\n- Discover host aliases for fetch/search; OpenAI MCP clients can drop the notion- prefix.\n- OAuth stays in the client store; do not create a plaintext integration-token config.\n- Reference: [Official documentation](https://developers.notion.com/guides/mcp/mcp-supported-tools)\n- Mapping checked: 2026-10-18. Live host/schema conformance remains pending.\n",
+      "source.knowledge.query": "# Notion knowledge evidence\n\n- Use notion-search with a content query; fetch the matched page and preserve its citations and access limitations.\n- Preserve the exact query, page IDs, revision/timestamps and links; distinguish authored claims from your inference.\n- Respect pagination, truncation and permissions; a partial search is not proof of absence.\n- Knowledge collection is read-only: do not edit content or call destination write tools.\n- Missing access or evidence becomes an explicit open question naming the owner who can answer it.\n- Read the companion usage guidance for the official server reference and host-specific schema checks.\n- Mapping checked: 2026-10-18. Live search/fetch conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "description": "Retrieve read-only evidence from PostgreSQL.",
+      "access": {
+        "cli": {
+          "binary": "psql"
+        }
+      },
+      "capabilities": ["source.bi"],
+      "operations": {
+        "source.bi.query": {
+          "tool": "psql",
+          "args": {
+            "argv": ["-X", "--set", "ON_ERROR_STOP=1", "--csv"],
+            "readOnly": true
+          },
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.bi.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.bi.query": "# PostgreSQL evidence\n\n- Use an explicit libpq service backed by a read-only database role; no password or connection URI in argv.\n- Credentials come from the host's encrypted/keyring integration; never create a plaintext password file.\n- The host executes the pinned query through psql stdin inside BEGIN READ ONLY and ROLLBACK.\n- Reject transaction-control or multi-statement input; never permit a query to escape the read-only transaction.\n- Apply a statement timeout and bounded result size; preserve schema, parameters, timezone and query digest.\n- Read-only transaction semantics complement restricted role permissions; a SQL prefix check is insufficient.\n- Do not grant SECURITY DEFINER side effects or broad privileges to make a failing query pass.\n- Record the database/service/query reference without credentials. Errors remain owner-assigned open questions.\n- [Transaction reference](https://www.postgresql.org/docs/current/sql-set-transaction.html)\n- Mapping checked: 2026-10-18. No database connection was made; role/transaction enforcement is manual.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "posthog",
+      "name": "PostHog",
+      "description": "Retrieve read-only evidence from PostHog.",
+      "access": {
+        "mcp": {
+          "server": "posthog",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.posthog.com/mcp?mode=tools",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["source.product-analytics"],
+      "operations": {
+        "source.product-analytics.query": {
+          "tool": "execute-sql",
+          "args": {
+            "query": "{{query}}"
+          },
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.product-analytics.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.product-analytics.query": "# PostHog evidence\n\n- Use the official MCP endpoint in tools mode; the default cli mode does not expose execute-sql directly.\n- Confirm organization, project and region; discover real event/property names before authoring HogQL.\n- Query through execute-sql with query:read permission, never flag/experiment mutation tools.\n- Pin the exact query, inclusive/exclusive timestamps, timezone, cohorts and aggregation unit.\n- Preserve returned column names, sample size and truncation warnings; a missing event is not a zero count.\n- Cite the project/query reference and distinguish observed rows from your interpretation.\n- Authentication, failed queries, sampling or incomplete results become an open question with an answerer.\n- [Official tools](https://github.com/PostHog/posthog/blob/master/services/mcp/schema/tool-definitions.json)\n- Mapping checked: 2026-10-18. Live project conformance remains pending.\n"
     }
   },
   {
@@ -504,6 +740,68 @@
       "docs.create": "# Repository docs\n\n- This is intentional publication of documentation, never a runtime-state store.\n- Resolve the requested Markdown path under the repository docs/ directory and reject symlink escapes.\n- Ask for an explicit destination if none is known. Do not invent a tracked path.\n- The host maps native.read-file/write-file to its own file tools; the core never runs arbitrary shell text.\n- Create exclusively, without overwriting existing content. Update only through read-modify-write.\n- Preserve front matter, navigation and unrelated sections; follow repository docs conventions.\n- Normalize a full UTF-8 read to ref/body/revision (content digest for local concurrency checks).\n- Verify the expected digest before atomic replacement. A conflict requires a fresh read/review.\n- Report the relative path and optional code-host URL; do not commit or push as a side effect.\n- Native tool availability, path containment and concurrent-write behavior need host conformance.\n",
       "docs.read": "# Repository docs\n\n- This is intentional publication of documentation, never a runtime-state store.\n- Resolve the requested Markdown path under the repository docs/ directory and reject symlink escapes.\n- Ask for an explicit destination if none is known. Do not invent a tracked path.\n- The host maps native.read-file/write-file to its own file tools; the core never runs arbitrary shell text.\n- Create exclusively, without overwriting existing content. Update only through read-modify-write.\n- Preserve front matter, navigation and unrelated sections; follow repository docs conventions.\n- Normalize a full UTF-8 read to ref/body/revision (content digest for local concurrency checks).\n- Verify the expected digest before atomic replacement. A conflict requires a fresh read/review.\n- Report the relative path and optional code-host URL; do not commit or push as a side effect.\n- Native tool availability, path containment and concurrent-write behavior need host conformance.\n",
       "docs.update": "# Repository docs\n\n- This is intentional publication of documentation, never a runtime-state store.\n- Resolve the requested Markdown path under the repository docs/ directory and reject symlink escapes.\n- Ask for an explicit destination if none is known. Do not invent a tracked path.\n- The host maps native.read-file/write-file to its own file tools; the core never runs arbitrary shell text.\n- Create exclusively, without overwriting existing content. Update only through read-modify-write.\n- Preserve front matter, navigation and unrelated sections; follow repository docs conventions.\n- Normalize a full UTF-8 read to ref/body/revision (content digest for local concurrency checks).\n- Verify the expected digest before atomic replacement. A conflict requires a fresh read/review.\n- Report the relative path and optional code-host URL; do not commit or push as a side effect.\n- Native tool availability, path containment and concurrent-write behavior need host conformance.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "sentry",
+      "name": "Sentry",
+      "description": "Retrieve read-only evidence from Sentry.",
+      "access": {
+        "mcp": {
+          "server": "sentry",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.sentry.dev/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["source.errors"],
+      "operations": {
+        "source.errors.query": {
+          "tool": "search_events",
+          "args": {},
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.errors.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.errors.query": "# Sentry evidence\n\n- Scope the official OAuth endpoint to the actual organization/project where practical.\n- Use search_events for counts/aggregations and event evidence; issue groups are not event counts.\n- Preserve dataset, environment, release, filters and exact time range from the measurement plan.\n- Inspect the live schema: supported absolute windows and natural-language translation vary by version.\n- Cite event/issue/query links and retain sample sizes or partial-result warnings.\n- Do not triage, resolve issues, change alert rules or invoke automated fixes during evidence collection.\n- A missing tool/provider key, permission error or unpinnable window remains an open question.\n- [Official server](https://mcp.sentry.dev/)\n- Mapping checked: 2026-10-18. Live search/window conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "zendesk",
+      "name": "Zendesk",
+      "description": "Retrieve read-only evidence from Zendesk.",
+      "access": {
+        "cli": {
+          "binary": "curl"
+        }
+      },
+      "capabilities": ["source.support"],
+      "operations": {
+        "source.support.query": {
+          "tool": "curl",
+          "args": {
+            "method": "GET",
+            "path": "/api/v2/search.json"
+          },
+          "guidance": "guidance/query.md"
+        }
+      },
+      "degrade": {
+        "source.support.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.support.query": "# Zendesk evidence\n\n- This provider maps the official Search REST API through a host-managed curl invocation, not an invented MCP server.\n- Require the actual Zendesk subdomain and a host-managed OAuth credential; never put a token in argv/config.\n- Send GET /api/v2/search.json with a URL-encoded query constrained to type:ticket and explicit date filters.\n- The host supplies authentication through stdin or its credential store and never echoes credentials.\n- Follow pagination; split date ranges when the search cap is reached and preserve count/next-page metadata.\n- Keep ticket IDs/URLs and distinguish customer statements from verified product behavior.\n- Redact unnecessary personal data from evidence. Never reply to or modify a ticket during research.\n- Search indexing can lag; missing records and permission failures become explicit owner-assigned questions.\n- [Search API](https://developer.zendesk.com/api-reference/ticketing/ticket-management/search/)\n- Mapping checked: 2026-10-18. Live subdomain/auth normalization remains pending.\n"
     }
   }
 ]

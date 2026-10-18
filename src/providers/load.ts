@@ -32,7 +32,7 @@ export function loadProviders(options: {
 }): Registry {
   const candidates: Candidate[] = BUILTINS.map((value) => ({
     id: value.id,
-    value: value as unknown as Record<string, unknown>,
+    value: structuredClone(value) as unknown as Record<string, unknown>,
     origin: `builtin:${value.id}`,
     priority: 0,
   }))

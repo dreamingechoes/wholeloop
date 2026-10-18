@@ -1,0 +1,21 @@
+{
+  "provenance": "synthetic source transcript; no live query or observed product metric",
+  "provider": "intercom",
+  "request": {
+    "operation": "source.support.query",
+    "query": "object_type:conversations source_body:contains:\"order search\"",
+    "owner": "Alex",
+    "window": {
+      "start": "2026-10-01T00:00:00Z",
+      "end": "2026-10-08T00:00:00Z",
+      "timezone": "UTC"
+    }
+  },
+  "tool": "search",
+  "response": {
+    "status": "succeeded",
+    "ref": "fixture:intercom:query-1",
+    "body": "{\"rows\":[{\"fixture_count\":12}],\"synthetic\":true}",
+    "complete": true
+  }
+}

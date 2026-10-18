@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "mixpanel",
+  "name": "Mixpanel",
+  "description": "Retrieve read-only evidence from Mixpanel.",
+  "access": {
+    "mcp": {
+      "server": "mixpanel",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.mixpanel.com/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["source.product-analytics"],
+  "operations": {
+    "source.product-analytics.query": {
+      "tool": "Run-Query",
+      "args": {},
+      "guidance": "guidance/query.md"
+    }
+  },
+  "degrade": {
+    "source.product-analytics.query": "open-question"
+  }
+}

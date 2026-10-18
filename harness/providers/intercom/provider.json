@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "intercom",
+  "name": "Intercom",
+  "description": "Retrieve read-only evidence from Intercom.",
+  "access": {
+    "mcp": {
+      "server": "intercom",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.intercom.com/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["source.support"],
+  "operations": {
+    "source.support.query": {
+      "tool": "search",
+      "args": {},
+      "guidance": "guidance/query.md"
+    }
+  },
+  "degrade": {
+    "source.support.query": "open-question"
+  }
+}

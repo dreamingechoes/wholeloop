@@ -6,7 +6,7 @@ metadata:
 ---
 # Research a question
 
-Read ask-never-guess, output-contract and core-invariants.
+Read source-evidence, ask-never-guess, output-contract and core-invariants.
 
 1. Begin `wl step begin research --input "<question>" --owner "<person>" --json`.
    For an attached brief, use `--parent <initiative-or-scope>`; the recorded parent

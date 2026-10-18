@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "amplitude",
+  "name": "Amplitude",
+  "description": "Retrieve read-only evidence from Amplitude.",
+  "access": {
+    "mcp": {
+      "server": "amplitude",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.amplitude.com/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["source.product-analytics"],
+  "operations": {
+    "source.product-analytics.query": {
+      "tool": "query_amplitude_data",
+      "args": {},
+      "guidance": "guidance/query.md"
+    }
+  },
+  "degrade": {
+    "source.product-analytics.query": "open-question"
+  }
+}

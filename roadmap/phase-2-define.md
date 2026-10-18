@@ -103,7 +103,7 @@ block implementing the remaining local workflows.
 
 ## P2-07 · Source providers
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-08
+**Status:** ✅ · **Size:** L · **Depends on:** P1-08
 
 **Goal** — Research and measurement have real data to work with.
 
@@ -111,8 +111,8 @@ block implementing the remaining local workflows.
 
 **Acceptance criteria:**
 
-- [ ] Every guidance file is within its budget and specific to its tool.
-- [ ] Each provider declares `degrade: open-question`.
+- [x] Every guidance file is within its budget and specific to its tool.
+- [x] Each provider declares `degrade: open-question`.
 
 **Docs** — configuration/providers.
 

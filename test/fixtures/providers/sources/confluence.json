@@ -1,0 +1,21 @@
+{
+  "provenance": "synthetic source transcript; no live query or observed product metric",
+  "provider": "confluence",
+  "request": {
+    "operation": "source.knowledge.query",
+    "query": "type = page AND text ~ \"order search\"",
+    "owner": "Alex",
+    "window": {
+      "start": "2026-10-01T00:00:00Z",
+      "end": "2026-10-08T00:00:00Z",
+      "timezone": "UTC"
+    }
+  },
+  "tool": "searchConfluence",
+  "response": {
+    "status": "succeeded",
+    "ref": "fixture:confluence:query-1",
+    "body": "{\"rows\":[{\"fixture_count\":12}],\"synthetic\":true}",
+    "complete": true
+  }
+}

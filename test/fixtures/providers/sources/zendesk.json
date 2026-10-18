@@ -1,0 +1,21 @@
+{
+  "provenance": "synthetic source transcript; no live query or observed product metric",
+  "provider": "zendesk",
+  "request": {
+    "operation": "source.support.query",
+    "query": "type:ticket tags:order-search created>=2026-10-01 created<2026-10-08",
+    "owner": "Alex",
+    "window": {
+      "start": "2026-10-01T00:00:00Z",
+      "end": "2026-10-08T00:00:00Z",
+      "timezone": "UTC"
+    }
+  },
+  "tool": "curl",
+  "response": {
+    "status": "succeeded",
+    "ref": "fixture:zendesk:query-1",
+    "body": "{\"rows\":[{\"fixture_count\":12}],\"synthetic\":true}",
+    "complete": true
+  }
+}

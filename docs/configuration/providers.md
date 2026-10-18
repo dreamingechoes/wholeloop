@@ -3,7 +3,7 @@
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. Eight destination manifests, bundled guidance, a typed host invocation boundary and same-operation document updates are implemented with synthetic fixture transcripts. Authenticated remote execution and source/service catalogues remain pending. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
+> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. Eight destination manifests, bundled guidance, a typed host invocation boundary and same-operation document updates are implemented with synthetic fixture transcripts. Eleven source mappings pin evidence queries and explicit unknowns, with a guarded PostgreSQL process host. Authenticated remote execution and the remaining service catalogue remain pending. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
 
 ---
 
@@ -124,6 +124,57 @@ Canonical resources live under harness/providers. Run `npm run providers:catalog
 after changing them, then `npm run lint:fix`; check enforces semantic catalog drift.
 The bundled registry returns guidanceText even without the source checkout.
 Repository/user resources also retain their file paths and inheritance precedence.
+
+### Implemented source mappings
+
+| ID | Capability | Mapping |
+| --- | --- | --- |
+| `posthog` | product analytics | execute-sql, explicitly selected tools roster |
+| `mixpanel` | product analytics | Run-Query |
+| `amplitude` | product analytics | query_amplitude_data |
+| `metabase` | BI | query; requires actual instance endpoint |
+| `bigquery` | BI | execute_sql_readonly |
+| `postgresql` | BI | psql through a guarded read-only process host |
+| `sentry` | errors | search_events |
+| `zendesk` | support | Official Search REST API through host-managed curl |
+| `intercom` | support | Official MCP search |
+| `confluence` | knowledge | searchConfluence; fetch citations through the host |
+| `notion` | knowledge | notion-search; fetch citations through the host |
+
+Each mapping includes tool-specific guidance within thirty lines and
+open-question degradation. Fixtures are synthetic, never observed product data.
+Official references checked on 2026-10-18:
+[PostHog](https://github.com/PostHog/posthog/blob/master/services/mcp/schema/tool-definitions.json),
+[Mixpanel](https://docs.mixpanel.com/docs/mcp),
+[Amplitude](https://amplitude.com/docs/amplitude-ai/amplitude-mcp),
+[Metabase](https://www.metabase.com/docs/latest/ai/mcp),
+[BigQuery read-only tool](https://docs.cloud.google.com/bigquery/docs/reference/mcp/tools_list/execute_sql_readonly),
+[PostgreSQL](https://www.postgresql.org/docs/current/sql-set-transaction.html),
+[Sentry](https://mcp.sentry.dev/),
+[Zendesk](https://developer.zendesk.com/api-reference/ticketing/ticket-management/search/),
+and [Intercom](https://developers.intercom.com/docs/guides/mcp).
+Knowledge provider references are listed with their destination mappings above.
+
+`querySource` pins the query, operation, owner and explicit timestamp/timezone
+window. A complete successful host result retains its observed content/ref;
+failed, pending or partial results become answerable open questions. It does not
+turn missing results into zero or infer claims from rows. The host translates
+vendor arguments without changing the pinned plan. Research offers exactly
+configured or detected sources, not every catalog entry. curl alone does not
+detect a Zendesk connection; configure the source and actual tenant in the host.
+
+PostgreSqlSource accepts a configured libpq service name, sends one conservatively
+validated SELECT/WITH statement over stdin, and wraps it in BEGIN READ ONLY,
+statement timeout and ROLLBACK. It rejects transaction escapes, modifying CTEs,
+psql commands and unsupported quoting. Tests execute a fixture process; live
+read-only role/function privileges still need verification. Credentials remain
+in the host/tool store. No driver or integration dependency was added.
+
+PostHog installation permits only mode=tools or mode=cli as one credential-free
+query parameter. Its built-in named tool uses tools mode; arbitrary parameters
+and credential values remain forbidden. Metabase's example host must be replaced
+with the real instance. See
+[ADR-0027](../decisions/0027-read-only-source-evidence-and-degradation.md).
 
 ### Read-modify-write boundary
 

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "id": "postgresql",
+  "name": "PostgreSQL",
+  "description": "Retrieve read-only evidence from PostgreSQL.",
+  "access": {
+    "cli": {
+      "binary": "psql"
+    }
+  },
+  "capabilities": ["source.bi"],
+  "operations": {
+    "source.bi.query": {
+      "tool": "psql",
+      "args": {
+        "argv": ["-X", "--set", "ON_ERROR_STOP=1", "--csv"],
+        "readOnly": true
+      },
+      "guidance": "guidance/query.md"
+    }
+  },
+  "degrade": {
+    "source.bi.query": "open-question"
+  }
+}

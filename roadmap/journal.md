@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P2-07 — source catalog and explicit missing observations
+
+- Add eleven source mappings with bounded tool-specific guidance and synthetic query fixtures: nine analytics/BI/errors/support providers plus Confluence/Notion knowledge. Enforce open-question degradation on every source mapping and retain complete observed content separately from inferred claims.
+- Pin exact queries and explicit timestamp/timezone windows; failed, pending or incomplete responses remain answerable unknowns without copying raw tool errors. Use BigQuery's read-only operation and an optional PostgreSQL process host with single-query scanning, stdin, server read-only transaction, timeout and rollback. No database or live source was queried.
+- Permit only the credential-free mode=tools|cli installation parameter needed by PostHog's roster. Do not infer Zendesk availability from curl. Fix mutable built-in manifests leaking between registry loads and make workflow assertions cover every detected source rather than assuming two defaults. ADR-0027 records the choices.
+- Local check: 325 tests, build, smoke, lint, typecheck, docs, catalog drift, harness and Mermaid passed. All eleven provider checks run through the isolated compiled CLI. Live region/schema/auth/cost/window behavior and PostgreSQL role privileges remain owner verification.
+
+---
+
 ## 2026-10-18 · P2-06 — destination code complete; live recordings pending
 
 - Add eight destination manifests and tool-specific bounded guidance, verified against official documentation: GitHub/GitLab Issues, Jira, Linear, Confluence, Notion, Google Docs through optional gws, and repository docs. No integration installation or authenticated write was performed.

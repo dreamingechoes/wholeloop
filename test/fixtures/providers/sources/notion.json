@@ -1,0 +1,21 @@
+{
+  "provenance": "synthetic source transcript; no live query or observed product metric",
+  "provider": "notion",
+  "request": {
+    "operation": "source.knowledge.query",
+    "query": "order search",
+    "owner": "Alex",
+    "window": {
+      "start": "2026-10-01T00:00:00Z",
+      "end": "2026-10-08T00:00:00Z",
+      "timezone": "UTC"
+    }
+  },
+  "tool": "notion-search",
+  "response": {
+    "status": "succeeded",
+    "ref": "fixture:notion:query-1",
+    "body": "{\"rows\":[{\"fixture_count\":12}],\"synthetic\":true}",
+    "complete": true
+  }
+}

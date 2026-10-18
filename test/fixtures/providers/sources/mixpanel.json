@@ -1,0 +1,21 @@
+{
+  "provenance": "synthetic source transcript; no live query or observed product metric",
+  "provider": "mixpanel",
+  "request": {
+    "operation": "source.product-analytics.query",
+    "query": "{\"report_type\":\"insights\",\"event\":\"order_found\"}",
+    "owner": "Alex",
+    "window": {
+      "start": "2026-10-01T00:00:00Z",
+      "end": "2026-10-08T00:00:00Z",
+      "timezone": "UTC"
+    }
+  },
+  "tool": "Run-Query",
+  "response": {
+    "status": "succeeded",
+    "ref": "fixture:mixpanel:query-1",
+    "body": "{\"rows\":[{\"fixture_count\":12}],\"synthetic\":true}",
+    "complete": true
+  }
+}

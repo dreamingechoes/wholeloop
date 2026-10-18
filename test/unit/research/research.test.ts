@@ -235,7 +235,7 @@ describe('native and sequential research workflows', () => {
         ),
       ).toThrow('aggregated report')
       const completed = workflow.complete(id)
-      expect(completed.report.dropped).toHaveLength(2)
+      expect(completed.report.dropped).toHaveLength(p.angles.length)
       expect(completed.report.claims).toHaveLength(0)
       const brief = engine.store.files.read(completed.receipt.artifact)
       expect(brief).toContain('active refutations: 2/2')
@@ -300,7 +300,7 @@ describe('native and sequential research workflows', () => {
       }
       const completed = cli('research', 'complete', '--for', id)
       expect(completed.report.claims).toEqual([])
-      expect(completed.report.openQuestions).toHaveLength(2)
+      expect(completed.report.openQuestions).toHaveLength(p.angles.length)
       expect(
         readFileSync(join(dir, 'cli-state/wholeloop', completed.receipt.artifact), 'utf8'),
       ).toContain('Fixture host has no source tool')

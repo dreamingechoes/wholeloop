@@ -144,6 +144,14 @@ export function detectProvider(
         declarations: configured,
       }
   }
+  if (provider.access.cli?.binary === 'curl')
+    return {
+      kind: 'unavailable',
+      available: false,
+      authenticated: false,
+      evidence:
+        'A generic HTTP executable does not detect this service; configure its source, endpoint and host credentials explicitly',
+    }
   if (provider.access.cli) {
     for (const directory of path.split(delimiter).filter(Boolean)) {
       try {

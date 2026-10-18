@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "metabase",
+  "name": "Metabase",
+  "description": "Retrieve read-only evidence from Metabase.",
+  "access": {
+    "mcp": {
+      "server": "metabase",
+      "install": {
+        "transport": "http",
+        "url": "https://metabase.example.com/api/metabase-mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["source.bi"],
+  "operations": {
+    "source.bi.query": {
+      "tool": "query",
+      "args": {},
+      "guidance": "guidance/query.md"
+    }
+  },
+  "degrade": {
+    "source.bi.query": "open-question"
+  }
+}

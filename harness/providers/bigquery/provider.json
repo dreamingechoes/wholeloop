@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "bigquery",
+  "name": "BigQuery",
+  "description": "Retrieve read-only evidence from BigQuery.",
+  "access": {
+    "mcp": {
+      "server": "bigquery",
+      "install": {
+        "transport": "http",
+        "url": "https://bigquery.googleapis.com/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["source.bi"],
+  "operations": {
+    "source.bi.query": {
+      "tool": "execute_sql_readonly",
+      "args": {},
+      "guidance": "guidance/query.md"
+    }
+  },
+  "degrade": {
+    "source.bi.query": "open-question"
+  }
+}

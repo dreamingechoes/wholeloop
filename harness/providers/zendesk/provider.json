@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "id": "zendesk",
+  "name": "Zendesk",
+  "description": "Retrieve read-only evidence from Zendesk.",
+  "access": {
+    "cli": {
+      "binary": "curl"
+    }
+  },
+  "capabilities": ["source.support"],
+  "operations": {
+    "source.support.query": {
+      "tool": "curl",
+      "args": {
+        "method": "GET",
+        "path": "/api/v2/search.json"
+      },
+      "guidance": "guidance/query.md"
+    }
+  },
+  "degrade": {
+    "source.support.query": "open-question"
+  }
+}

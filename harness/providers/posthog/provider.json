@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "id": "posthog",
+  "name": "PostHog",
+  "description": "Retrieve read-only evidence from PostHog.",
+  "access": {
+    "mcp": {
+      "server": "posthog",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.posthog.com/mcp?mode=tools",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["source.product-analytics"],
+  "operations": {
+    "source.product-analytics.query": {
+      "tool": "execute-sql",
+      "args": {
+        "query": "{{query}}"
+      },
+      "guidance": "guidance/query.md"
+    }
+  },
+  "degrade": {
+    "source.product-analytics.query": "open-question"
+  }
+}
