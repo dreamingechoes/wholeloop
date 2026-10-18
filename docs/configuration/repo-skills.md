@@ -3,7 +3,7 @@
 > **TL;DR** — Each step declares named **slots** (`build.frontend`, `verify.suite`, `review.rubric`…). Before acting, `wl discover` scans your repository for the skills, agents, rules and commands it already has — for every major CLI, not just the one you are using — and binds each slot to the most specific match. The harness's own defaults are the last resort, never the first.
 
 > [!NOTE]
-> **Status: 📐 design.** Decision: [ADR-0009](../decisions/0009-repo-first-capability-resolution.md). Implementation: [P1-07](../../roadmap/phase-1-walking-skeleton.md#p1-07--discover-v1-and-slot-resolution), extended in [P3-04](../../roadmap/phase-3-build.md#p3-04--build-slice-and-the-builder).
+> **Status: 🚧 partial.** Discovery v1, cached capability maps, slot resolution, explicit choices and step bindings are implemented. Design-system MCP discovery and richer language-specific rules arrive with providers and build workflows. Decision: [ADR-0009](../decisions/0009-repo-first-capability-resolution.md). Implementation: [P1-07](../../roadmap/phase-1-walking-skeleton.md#p1-07--discover-v1-and-slot-resolution), extended in [P3-04](../../roadmap/phase-3-build.md#p3-04--build-slice-and-the-builder).
 
 ---
 
@@ -23,7 +23,9 @@ A generic harness that ignores your repository writes generic code. Your repo ma
 | **Quality tools** | linters, formatters, type checkers, architecture checkers — from their config files |
 | **Design system** | UI kit packages, token files, Storybook, an MCP server for the design system |
 
-The result is a **capability map**, cached in the store and refreshed when the scanned files change.
+The result is a **capability map**, cached in the external store and refreshed when selected file contents change. `wl discover --json` returns declarations and parse problems; it never executes scripts. Package scripts carry structured `argv` plus `cwd`, and nested packages inherit a declared workspace package manager. Go, Rust, pytest, RSpec, Make, just and Taskfile runners are detected from their declarations; detection does not prove that a runner is installed or that its tests pass.
+
+Discovery skips dependency/build directories, files over 1 MiB and external or broken repository symlinks, reporting warnings. Internal symlinks are followed once. User discovery scans only skill directories, with lower precedence than repository assets. Codex TOML agents are inventoried by path; format and read-only conformance still require P0-03. Invalid metadata or runner configuration blocks resolution instead of silently choosing from a partial map.
 
 ## Slots
 
@@ -85,7 +87,9 @@ Bindings  build.backend   → .agents/skills/api-architecture   (repo, tagged)
           review.rubric   → harness default                     (nothing found)
 ```
 
-`wl resolve <slot>` shows the same for one slot, with every candidate and why it won or lost.
+`wl resolve <slot> --json` shows the same for one slot, with every candidate and why it won or lost. Ambiguity or a description-only match returns a structured question and exit 2. No match returns the harness default. An explicit `default` binding opts out of repository guidance for that slot.
+
+Remember a choice with `wl answer slot:build.frontend=.agents/skills/ui-kit/SKILL.md --remember project --json`. User scope is also available. Step begin payloads expose their slot resolutions and include unresolved choices in their missing-input questions.
 
 ## Gotchas & FAQ
 

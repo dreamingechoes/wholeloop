@@ -101,7 +101,7 @@
 
 ## P1-07 · Discover v1 and slot resolution
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-02
+**Status:** ✅ · **Size:** L · **Depends on:** P1-02
 
 **Goal** — Every step knows what the repository already provides.
 
@@ -109,9 +109,9 @@
 
 **Acceptance criteria:**
 
-- [ ] At least six fixture repositories (JS monorepo, Python, Go, Ruby, mixed with `.claude/` + `.agents/`, empty) produce snapshot-tested capability maps.
-- [ ] Ambiguous matches produce a question instead of a choice.
-- [ ] `wl resolve` explains why each candidate won or lost.
+- [x] At least six fixture repositories (JS monorepo, Python, Go, Ruby, mixed with `.claude/` + `.agents/`, empty) produce snapshot-tested capability maps.
+- [x] Ambiguous matches produce a question instead of a choice.
+- [x] `wl resolve` explains why each candidate won or lost.
 
 **Docs** — configuration/repo-skills, ADR-0009.
 

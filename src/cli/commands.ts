@@ -8,6 +8,20 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'discover',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/discover@1',
+    summary: 'Discover repository guidance and declared commands without executing them',
+  },
+  {
+    path: 'resolve',
+    arguments: '<slot>',
+    options: [],
+    schema: 'wholeloop/resolve@1',
+    summary: 'Explain slot precedence or ask about ambiguous matches',
+  },
+  {
     path: 'profile show',
     arguments: '',
     options: ['--explain'],

@@ -7,6 +7,9 @@ import { loadConfig, userConfigPath } from '../config/load.js'
 import { resolveConfig } from '../config/resolve.js'
 import { isObject } from '../config/schema.js'
 import { writeSetting } from '../config/write.js'
+import { resolveSlot } from '../discovery/resolve.js'
+import { knownSlot } from '../discovery/rules.js'
+import { discover } from '../discovery/tree.js'
 import { itemId, replay } from '../state/events.js'
 import type { StateStore } from '../state/store.js'
 import { beginPlan, decisions, flowPlan } from './plan.js'
@@ -48,6 +51,22 @@ export class FlowEngine {
           { scope: 'run', values: { profile: options.profile } },
         ]).values
       : this.config()
+    const inventory = discover(this.root, this.store.files, this.home)
+    const bindings = Object.fromEntries(
+      step.slots.map((slot) => {
+        const binding =
+          isObject(configuration.slots) && typeof configuration.slots[slot] === 'string'
+            ? configuration.slots[slot]
+            : undefined
+        return [
+          slot,
+          resolveSlot(slot, inventory.repo, {
+            user: inventory.user,
+            ...(binding ? { binding } : {}),
+          }),
+        ]
+      }),
+    )
     return this.store.transaction((events, append) => {
       const items = replay(events)
       const subject = options.subject ? items.get(options.subject) : undefined
@@ -77,6 +96,12 @@ export class FlowEngine {
         events,
         configuration,
       })
+      payload.bindings = bindings
+      for (const resolution of Object.values(bindings))
+        if (resolution.questions.length) {
+          payload.missing.push(`slot:${resolution.slot}`)
+          payload.questions.push(...resolution.questions)
+        }
       if (payload.missing.length) return { payload, code: EXIT.input }
       if (!step.available) return { payload, code: EXIT.precondition }
       const pending = subject
@@ -217,6 +242,15 @@ export class FlowEngine {
     if (!['run', 'initiative', 'project', 'user'].includes(scope))
       throw new CliError(`Unknown remember scope: ${scope}`)
     if (qid.startsWith('decision.')) return this.decide(qid.slice(9), value, options)
+    if (qid.startsWith('slot:')) {
+      const slot = qid.slice(5)
+      if (!knownSlot(slot)) throw new CliError(`Unknown slot: ${slot}`)
+      if (scope !== 'project' && scope !== 'user')
+        throw new CliError('Slot choices must be remembered at project or user scope')
+      const file = scope === 'user' ? this.userFile : join(this.root, '.wholeloop/config.yml')
+      writeSetting(file, ['slots', slot], value)
+      return { schema: 'wholeloop/answer@1', qid, value, scope, file }
+    }
     if (!['owner', 'input', 'docs.destination', 'tracker.destination'].includes(qid))
       throw new CliError(`Unknown question: ${qid}`)
     if (scope === 'user' || scope === 'project') {

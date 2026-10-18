@@ -406,6 +406,40 @@
         }
       },
       "required": ["profile", "style"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/discover@1"
+        },
+        "assets": {
+          "type": "array"
+        },
+        "commands": {
+          "type": "array"
+        },
+        "problems": {
+          "type": "array"
+        }
+      },
+      "required": ["assets", "commands", "problems"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/resolve@1"
+        },
+        "slot": {
+          "type": "string"
+        },
+        "candidates": {
+          "type": "array"
+        },
+        "questions": {
+          "type": "array"
+        }
+      },
+      "required": ["slot", "candidates", "questions"]
     }
   ],
   "$defs": {

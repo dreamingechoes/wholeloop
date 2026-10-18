@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-18 · P1-07 — repository discovery and explainable slots
+
+- Discover supported CLI guidance, skills, agents, conventions, quality files, design assets and declared commands without executing repository commands.
+- Resolve slots by explicit configuration, repository tags, rules, user skills and harness fallback; ties and weak matches become questions. Cache inventory outside the repository with content fingerprints and report skipped unsafe paths.
+- Verify six repository snapshots, monorepo manager inheritance, ambiguity, cache invalidation, symlinks, malformed manifests and prototype-name command keys alongside the complete local suite.
+
+---
+
 ## 2026-10-18 · P1-06 — interaction profiles
 
 - Expose profile inspection, preset selection and explicit user/project/run dial overrides with a style block capped at ten lines.

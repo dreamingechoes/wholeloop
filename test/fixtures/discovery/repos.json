@@ -1,0 +1,36 @@
+{
+  "js-monorepo": {
+    "package.json": "{\"packageManager\": \"pnpm@10.0.0\", \"scripts\": {\"check\": \"pnpm test && pnpm lint\", \"test\": \"vitest run\", \"lint\": \"biome check .\"}}",
+    "packages/web/package.json": "{\"scripts\": {\"test\": \"vitest run\"}}",
+    ".agents/skills/ui-kit/SKILL.md": "---\nname: ui-kit\ndescription: Use our UI primitives.\nmetadata:\n  wholeloop.slot: build.frontend build.design-system\n---\n\nFollow repository conventions.\n",
+    "AGENTS.md": "# Repository instructions\n\nUse the workspace check command.\n",
+    "biome.json": "{}",
+    "packages/web/.storybook/main.ts": "export default {}"
+  },
+  "python": {
+    "pyproject.toml": "[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n",
+    "AGENTS.md": "# Python instructions\n",
+    "ruff.toml": "line-length = 100\n"
+  },
+  "go": {
+    "go.mod": "module example.com/orders\n\ngo 1.24\n",
+    "Makefile": "check:\n\tgo test ./...\n",
+    "internal/AGENTS.md": "# Internal API rules\n",
+    ".golangci.yml": "version: \"2\"\n"
+  },
+  "ruby": {
+    "Gemfile": "source \"https://rubygems.org\"\ngem \"rspec\"\n",
+    ".rubocop.yml": "AllCops:\n  NewCops: enable\n",
+    ".github/pull_request_template.md": "# Change\n\nExplain why.\n"
+  },
+  "mixed": {
+    ".claude/skills/ui-kit/SKILL.md": "---\nname: ui-kit\ndescription: Build frontend components.\n---\n\nFollow repository conventions.\n",
+    ".agents/skills/web-guide/SKILL.md": "---\nname: web-guide\ndescription: Guide for our frontend.\nmetadata:\n  wholeloop.slot: build.frontend\n---\n\nFollow repository conventions.\n",
+    ".codex/agents/reviewer.toml": "name = \"reviewer\"\ndescription = \"Read-only review\"\n",
+    ".opencode/agents/reviewer.md": "---\nname: reviewer\ndescription: Review code.\n---\n",
+    ".cursor/rules/style.mdc": "# Style\n",
+    ".github/copilot-instructions.md": "Use repository guidance.\n",
+    "justfile": "test:\n  npm test\n"
+  },
+  "empty": {}
+}

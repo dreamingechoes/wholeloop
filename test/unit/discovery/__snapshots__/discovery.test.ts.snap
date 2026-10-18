@@ -1,0 +1,321 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`repository capability maps > prefers explicit bindings, then repo tags, repo rules, user skills and defaults 1`] = `
+{
+  "candidates": [
+    {
+      "confident": true,
+      "origin": "repo",
+      "outcome": "Selected by precedence and confidence",
+      "reason": "Explicit metadata.wholeloop.slot tag for build.frontend",
+      "ref": ".agents/skills/web-guide/SKILL.md",
+      "score": 300,
+      "selected": true,
+    },
+    {
+      "confident": true,
+      "origin": "repo",
+      "outcome": "Lost to a higher-precedence or stronger candidate",
+      "reason": "Name matches the versioned build.frontend rule",
+      "ref": ".claude/skills/ui-kit/SKILL.md",
+      "score": 280,
+      "selected": false,
+    },
+    {
+      "confident": true,
+      "origin": "user",
+      "outcome": "Lost to a higher-precedence or stronger candidate",
+      "reason": "Explicit metadata.wholeloop.slot tag for build.frontend",
+      "ref": ".agents/skills/ui-kit/SKILL.md",
+      "score": 100,
+      "selected": false,
+    },
+  ],
+  "questions": [],
+  "schema": "wholeloop/resolve@1",
+  "selected": {
+    "origin": "repo",
+    "reason": "Explicit metadata.wholeloop.slot tag for build.frontend",
+    "ref": ".agents/skills/web-guide/SKILL.md",
+  },
+  "slot": "build.frontend",
+}
+`;
+
+exports[`repository capability maps > scans empty deterministically 1`] = `
+{
+  "assets": [],
+  "commands": [],
+  "problems": [],
+  "schema": "wholeloop/discover@1",
+}
+`;
+
+exports[`repository capability maps > scans go deterministically 1`] = `
+{
+  "assets": [
+    {
+      "description": "",
+      "kind": "quality",
+      "name": ".golangci",
+      "path": ".golangci.yml",
+      "slots": [],
+    },
+    {
+      "description": "",
+      "kind": "instruction",
+      "name": "AGENTS",
+      "path": "internal/AGENTS.md",
+      "slots": [],
+    },
+  ],
+  "commands": [
+    {
+      "argv": [
+        "go",
+        "test",
+        "./...",
+      ],
+      "cwd": ".",
+      "priority": 180,
+      "reason": "Go module test runner",
+      "ref": "go.mod#test",
+    },
+    {
+      "argv": [
+        "make",
+        "check",
+      ],
+      "cwd": ".",
+      "priority": 190,
+      "reason": "Declared Makefile target check",
+      "ref": "Makefile#check",
+    },
+  ],
+  "problems": [],
+  "schema": "wholeloop/discover@1",
+}
+`;
+
+exports[`repository capability maps > scans js-monorepo deterministically 1`] = `
+{
+  "assets": [
+    {
+      "description": "Use our UI primitives.",
+      "kind": "skill",
+      "name": "ui-kit",
+      "path": ".agents/skills/ui-kit/SKILL.md",
+      "slots": [
+        "build.frontend",
+        "build.design-system",
+      ],
+    },
+    {
+      "description": "",
+      "kind": "instruction",
+      "name": "AGENTS",
+      "path": "AGENTS.md",
+      "slots": [],
+    },
+    {
+      "description": "",
+      "kind": "quality",
+      "name": "biome",
+      "path": "biome.json",
+      "slots": [],
+    },
+    {
+      "description": "",
+      "kind": "design",
+      "name": "main",
+      "path": "packages/web/.storybook/main.ts",
+      "slots": [],
+    },
+  ],
+  "commands": [
+    {
+      "argv": [
+        "pnpm",
+        "run",
+        "check",
+      ],
+      "cwd": ".",
+      "priority": 190,
+      "reason": "Declared pnpm script check",
+      "ref": "package.json#check",
+    },
+    {
+      "argv": [
+        "pnpm",
+        "run",
+        "lint",
+      ],
+      "cwd": ".",
+      "priority": 150,
+      "reason": "Declared pnpm script lint",
+      "ref": "package.json#lint",
+    },
+    {
+      "argv": [
+        "pnpm",
+        "run",
+        "test",
+      ],
+      "cwd": ".",
+      "priority": 180,
+      "reason": "Declared pnpm script test",
+      "ref": "package.json#test",
+    },
+    {
+      "argv": [
+        "pnpm",
+        "run",
+        "test",
+      ],
+      "cwd": "packages/web",
+      "priority": 178,
+      "reason": "Declared pnpm script test",
+      "ref": "packages/web/package.json#test",
+    },
+  ],
+  "problems": [],
+  "schema": "wholeloop/discover@1",
+}
+`;
+
+exports[`repository capability maps > scans mixed deterministically 1`] = `
+{
+  "assets": [
+    {
+      "description": "Guide for our frontend.",
+      "kind": "skill",
+      "name": "web-guide",
+      "path": ".agents/skills/web-guide/SKILL.md",
+      "slots": [
+        "build.frontend",
+      ],
+    },
+    {
+      "description": "Build frontend components.",
+      "kind": "skill",
+      "name": "ui-kit",
+      "path": ".claude/skills/ui-kit/SKILL.md",
+      "slots": [],
+    },
+    {
+      "description": "",
+      "kind": "agent",
+      "name": "reviewer",
+      "path": ".codex/agents/reviewer.toml",
+      "slots": [],
+    },
+    {
+      "description": "",
+      "kind": "instruction",
+      "name": "style",
+      "path": ".cursor/rules/style.mdc",
+      "slots": [],
+    },
+    {
+      "description": "",
+      "kind": "instruction",
+      "name": "copilot-instructions",
+      "path": ".github/copilot-instructions.md",
+      "slots": [],
+    },
+    {
+      "description": "Review code.",
+      "kind": "agent",
+      "name": "reviewer",
+      "path": ".opencode/agents/reviewer.md",
+      "slots": [],
+    },
+  ],
+  "commands": [
+    {
+      "argv": [
+        "just",
+        "test",
+      ],
+      "cwd": ".",
+      "priority": 180,
+      "reason": "Declared justfile target test",
+      "ref": "justfile#test",
+    },
+  ],
+  "problems": [],
+  "schema": "wholeloop/discover@1",
+}
+`;
+
+exports[`repository capability maps > scans python deterministically 1`] = `
+{
+  "assets": [
+    {
+      "description": "",
+      "kind": "instruction",
+      "name": "AGENTS",
+      "path": "AGENTS.md",
+      "slots": [],
+    },
+    {
+      "description": "",
+      "kind": "quality",
+      "name": "ruff",
+      "path": "ruff.toml",
+      "slots": [],
+    },
+  ],
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+      ],
+      "cwd": ".",
+      "priority": 180,
+      "reason": "Declared pytest configuration",
+      "ref": "pyproject.toml#test",
+    },
+  ],
+  "problems": [],
+  "schema": "wholeloop/discover@1",
+}
+`;
+
+exports[`repository capability maps > scans ruby deterministically 1`] = `
+{
+  "assets": [
+    {
+      "description": "",
+      "kind": "convention",
+      "name": "pull_request_template",
+      "path": ".github/pull_request_template.md",
+      "slots": [],
+    },
+    {
+      "description": "",
+      "kind": "quality",
+      "name": ".rubocop",
+      "path": ".rubocop.yml",
+      "slots": [],
+    },
+  ],
+  "commands": [
+    {
+      "argv": [
+        "bundle",
+        "exec",
+        "rspec",
+      ],
+      "cwd": ".",
+      "priority": 180,
+      "reason": "Declared RSpec dependency",
+      "ref": "Gemfile#test",
+    },
+  ],
+  "problems": [],
+  "schema": "wholeloop/discover@1",
+}
+`;
