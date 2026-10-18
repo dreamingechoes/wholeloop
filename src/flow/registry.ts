@@ -62,7 +62,7 @@ export const STEPS: readonly Step[] = Object.freeze(
               ].includes(name)
             ? 'scope'
             : 'initiative') as ItemKind,
-      available: name === 'frame-problem',
+      available: name === 'frame-problem' || name === 'research',
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
       after: Object.freeze(
@@ -76,7 +76,13 @@ export const STEPS: readonly Step[] = Object.freeze(
                 ? ['decide']
                 : [],
       ),
-      sections: Object.freeze(name === 'frame-problem' ? ['Problem', 'Owner'] : []),
+      sections: Object.freeze(
+        name === 'frame-problem'
+          ? ['Problem', 'Owner']
+          : name === 'research'
+            ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+            : [],
+      ),
     }),
   ),
 )

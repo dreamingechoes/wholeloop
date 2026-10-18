@@ -10,6 +10,7 @@ import { writeSetting } from '../config/write.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { knownSlot } from '../discovery/rules.js'
 import { discover } from '../discovery/tree.js'
+import { researchBrief } from '../research/report.js'
 import { itemId, replay } from '../state/events.js'
 import type { StateStore } from '../state/store.js'
 import { beginPlan, decisions, flowPlan } from './plan.js'
@@ -19,6 +20,7 @@ const newRun = () => `run-${randomBytes(8).toString('hex')}`
 export interface BeginOptions {
   profile?: Record<string, unknown>
   subject?: string
+  parent?: string
   input?: string
   owner?: string
   mode?: 'standalone' | 'flow'
@@ -78,6 +80,20 @@ export class FlowEngine {
     return this.store.transaction((events, append) => {
       const items = replay(events)
       const subject = options.subject ? items.get(options.subject) : undefined
+      if (options.parent && (name !== 'research' || options.subject))
+        throw new CliError('--parent is for a new research brief only')
+      const parent = options.parent ? items.get(options.parent) : undefined
+      if (options.parent && (!parent || !['initiative', 'scope'].includes(parent.kind)))
+        throw new CliError(
+          'Research parent must be an existing initiative or scope',
+          EXIT.precondition,
+        )
+      if (name === 'research' && subject && subject.kind !== 'brief')
+        throw new CliError(
+          'Research runs use a brief; use --parent <id> to attach one',
+          EXIT.precondition,
+        )
+
       if (options.subject && !subject)
         throw new CliError(`Unknown item: ${options.subject}`, EXIT.precondition)
       const active = [...events]
@@ -95,9 +111,10 @@ export class FlowEngine {
             ),
         )
       const run = active?.type === 'step.started' ? active.data.run : newRun()
+      const owner = options.owner ?? parent?.owner
       const payload = beginPlan(step, {
         ...(options.input ? { input: options.input } : {}),
-        ...(options.owner ? { owner: options.owner } : {}),
+        ...(owner ? { owner } : {}),
         ...(options.mode ? { mode: options.mode } : {}),
         ...(subject ? { subject } : {}),
         run,
@@ -137,6 +154,7 @@ export class FlowEngine {
           type: 'item.created',
           data: {
             kind: step.kind,
+            ...(parent ? { parent: parent.id } : {}),
             title: payload.input ?? '',
             owner: payload.owner ?? '',
             body: payload.input ?? '',
@@ -189,6 +207,11 @@ export class FlowEngine {
       if (latest?.type !== 'step.started')
         throw new CliError(`Begin ${name} for ${subject} before completing it`, EXIT.precondition)
       const run = latest.data.run
+      if (name === 'research' && content !== researchBrief(events, subject, run))
+        throw new CliError(
+          'Complete research through the aggregated report; do not replace its evidence',
+          EXIT.precondition,
+        )
       const path = `items/${subject}/artifacts/${name}/${run}.md`
       append(subject, {
         type: 'step.completed',

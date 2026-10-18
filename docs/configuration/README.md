@@ -130,6 +130,7 @@ Source: `src/config/schema.json`. Regenerate with `npm run docs:config`; CI chec
 | `flow.decisions.add` | team | array of strings | `[]` |
 | `answers` | team | map of strings | unset |
 | `extensions` | team | array of strings | `[]` |
+| `research.verifiers` | team | 3 · 5 · 7 · 9 | `3` |
 <!-- config:end -->
 
 ## Where to go next

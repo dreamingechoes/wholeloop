@@ -245,6 +245,17 @@
       "uniqueItems": true,
       "default": [],
       "x-kind": "team"
+    },
+    "research": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verifiers": {
+          "type": "integer",
+          "enum": [3, 5, 7, 9],
+          "default": 3
+        }
+      }
     }
   }
 }

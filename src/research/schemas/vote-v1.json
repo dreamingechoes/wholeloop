@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/research-vote@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "claim": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+    },
+    "verifier": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["refute", "confirm", "uncertain"]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "excerpt": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["ref", "excerpt"]
+      }
+    }
+  },
+  "required": ["claim", "verifier", "outcome", "reason", "evidence"]
+}

@@ -3,7 +3,7 @@
 > **TL;DR** — Four helpers that move you around the flow rather than through one step of it. `next` is the single front door: it figures out where things stand and runs forward to the next decision. `status` shows what is where and what is waiting on whom. `setup` configures your profile, providers and CLIs. `sync` keeps the store and your external tools in agreement.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status` and `wl setup` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem), Generated client installation remains pending conformance. The scenarios below describe the target flow; picking up from a URL remains [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
+> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status` and `wl setup` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem). Generated client installation remains pending conformance. The scenarios below describe the target flow; picking up from a URL remains [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
 
 ---
 

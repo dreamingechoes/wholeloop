@@ -22,6 +22,14 @@ actual tool call and authentication before calling that integration supported.
 Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
+## Research validation still pending
+
+Run the research skill with real source tools and independent challenger sessions
+once a host adapter is available. Verify source authentication, failure-to-open-
+question handling, read-only workers, actual native fan-out and the same result
+under sequential execution. Local tests use stubbed workers and fixture evidence;
+no real research claim or live provider call was produced in this session.
+
 ## Canonical skill validation still pending
 
 P1-12 is verified through compiled CLI workflow tests, including a sentence,

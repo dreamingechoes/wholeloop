@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/research-result@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "angle": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "unavailable"]
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "loadBearing": {
+            "type": "boolean"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "excerpt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["ref", "excerpt"]
+            },
+            "minItems": 1
+          }
+        },
+        "required": ["id", "text", "confidence", "loadBearing", "evidence"]
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "missing": {
+            "type": "string",
+            "minLength": 1
+          },
+          "who": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["question", "missing", "who"]
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["angle", "status", "claims", "openQuestions"]
+}

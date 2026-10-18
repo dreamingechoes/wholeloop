@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'research plan',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/research-plan@1',
+    summary: 'Plan source angles and independent examination jobs',
+  },
+  {
+    path: 'research submit',
+    arguments: '',
+    options: ['--for <id>', '--file <path>'],
+    schema: 'wholeloop/research-submit@1',
+    summary: 'Record a validated source result in the journal',
+  },
+  {
+    path: 'research examine',
+    arguments: '',
+    options: ['--for <id>', '--file <path>'],
+    schema: 'wholeloop/research-examine@1',
+    summary: 'Record one independent claim examination',
+  },
+  {
+    path: 'research complete',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/research-complete@1',
+    summary: 'Aggregate evidence into a replayable research brief',
+  },
+  {
     path: 'next',
     arguments: '[<idea|id>]',
     options: ['--owner <person>'],
@@ -174,6 +202,7 @@ export const COMMANDS: readonly Command[] = [
     arguments: '<step>',
     options: [
       '--for <id>',
+      '--parent <id>',
       '--input <text>',
       '--owner <name>',
       '--mode <mode>',

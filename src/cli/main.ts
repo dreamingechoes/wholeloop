@@ -13,6 +13,7 @@ import { EXIT, type Io } from './io.js'
 import { mailboxCommand } from './mailbox.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
+import { researchCommand } from './research.js'
 import { stateCommand } from './state.js'
 import { utilityCommand } from './utilities.js'
 
@@ -66,6 +67,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path.startsWith('research '))
+      return researchCommand(command.path, parsed, root, json, io)
     if (['next', 'status', 'setup'].includes(command.path))
       return utilityCommand(command.path, parsed, root, json, io)
     if (/^(template|lens) |^profile (list|test|scaffold)$/.test(command.path))

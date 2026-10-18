@@ -395,6 +395,293 @@
           "required": ["decision", "outcome", "by", "basis"]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "research.planned"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "plan": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "schema": {
+                  "type": "string",
+                  "const": "wholeloop/research-plan@1"
+                },
+                "subject": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+                },
+                "run": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+                },
+                "question": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "verifiers": {
+                  "type": "integer",
+                  "enum": [3, 5, 7, 9]
+                },
+                "refutations": {
+                  "type": "integer",
+                  "minimum": 2
+                },
+                "angles": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+                      },
+                      "provider": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+                      },
+                      "capability": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "operation": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "available": {
+                        "type": "boolean"
+                      },
+                      "evidence": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "provider",
+                      "capability",
+                      "operation",
+                      "available",
+                      "evidence"
+                    ]
+                  }
+                },
+                "openQuestions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "question": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "missing": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "who": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["question", "missing", "who"]
+                  }
+                }
+              },
+              "required": [
+                "schema",
+                "subject",
+                "run",
+                "question",
+                "owner",
+                "verifiers",
+                "refutations",
+                "angles",
+                "openQuestions"
+              ]
+            }
+          },
+          "required": ["run", "plan"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "research.submitted"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "result": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "angle": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["ok", "unavailable"]
+                },
+                "claims": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "confidence": {
+                        "type": "string",
+                        "enum": ["low", "medium", "high"]
+                      },
+                      "loadBearing": {
+                        "type": "boolean"
+                      },
+                      "evidence": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "ref": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "excerpt": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": ["ref", "excerpt"]
+                        },
+                        "minItems": 1
+                      }
+                    },
+                    "required": ["id", "text", "confidence", "loadBearing", "evidence"]
+                  }
+                },
+                "openQuestions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "question": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "missing": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "who": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["question", "missing", "who"]
+                  }
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["angle", "status", "claims", "openQuestions"]
+            }
+          },
+          "required": ["run", "result"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "research.examined"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "vote": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "claim": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9:.-]{0,160}$"
+                },
+                "verifier": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "outcome": {
+                  "type": "string",
+                  "enum": ["refute", "confirm", "uncertain"]
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "ref": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "excerpt": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["ref", "excerpt"]
+                  }
+                }
+              },
+              "required": ["claim", "verifier", "outcome", "reason", "evidence"]
+            }
+          },
+          "required": ["run", "vote"]
+        }
+      }
     }
   ]
 }

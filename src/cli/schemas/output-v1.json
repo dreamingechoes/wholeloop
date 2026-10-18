@@ -632,6 +632,42 @@
         }
       },
       "required": ["schema", "applied", "questions"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/research-plan@1"
+        }
+      },
+      "required": ["schema", "angles", "verifiers", "refutations"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/research-submit@1"
+        }
+      },
+      "required": ["schema", "subject", "run", "angle"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/research-examine@1"
+        }
+      },
+      "required": ["schema", "subject", "run", "claim", "verifier"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/research-complete@1"
+        }
+      },
+      "required": ["schema", "report", "receipt"]
     }
   ],
   "$defs": {

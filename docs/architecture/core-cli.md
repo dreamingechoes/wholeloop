@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine repository discovery and extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; only the minimal frame-problem artifact path can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine repository discovery and extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; minimal frame-problem and structured research briefs can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
 
 ---
 
@@ -22,6 +22,10 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl research plan` | `wholeloop/research-plan@1` | Plan source angles and independent examination jobs |
+| `wl research submit` | `wholeloop/research-submit@1` | Record a validated source result in the journal |
+| `wl research examine` | `wholeloop/research-examine@1` | Record one independent claim examination |
+| `wl research complete` | `wholeloop/research-complete@1` | Aggregate evidence into a replayable research brief |
 | `wl next [<idea\|id>]` | `wholeloop/next@1` | Continue stored work or begin minimal framing |
 | `wl status [<id>]` | `wholeloop/status@1` | Inspect work and pending decisions without mutation |
 | `wl setup` | `wholeloop/setup@1` | Ask for or explicitly save scoped profile and provider choices |

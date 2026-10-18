@@ -1,6 +1,14 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import { STEP_NAMES, type StepName } from '../flow/registry.js'
+import {
+  type AngleResult,
+  type Refutation,
+  type ResearchPlan,
+  validatePlan,
+  validateRefutation,
+  validateResult,
+} from '../research/contracts.js'
 import { replayMailbox } from './mailbox.js'
 
 export const KINDS = ['initiative', 'scope', 'slice', 'part', 'brief', 'review'] as const
@@ -34,6 +42,9 @@ export type ItemPatch = Partial<Pick<Item, 'title' | 'owner' | 'body' | 'status'
 export const MESSAGE_KINDS = ['contract', 'handoff', 'status', 'question', 'note'] as const
 export type MessageKind = (typeof MESSAGE_KINDS)[number]
 export type EventData =
+  | { type: 'research.planned'; data: { run: string; plan: ResearchPlan } }
+  | { type: 'research.submitted'; data: { run: string; result: AngleResult } }
+  | { type: 'research.examined'; data: { run: string; vote: Refutation } }
   | { type: 'item.created'; data: ItemInput }
   | { type: 'item.updated'; data: ItemPatch }
   | { type: 'item.closed'; data: Record<string, never> }
@@ -78,6 +89,21 @@ function text(value: unknown, empty = false): value is string {
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
   switch (type) {
+    case 'research.planned':
+    case 'research.submitted':
+    case 'research.examined': {
+      const field =
+        type === 'research.planned' ? 'plan' : type === 'research.submitted' ? 'result' : 'vote'
+      if (!keys(data, ['run', field]) || !runId(data.run)) return false
+      try {
+        if (field === 'plan') validatePlan(data[field])
+        else if (field === 'result') validateResult(data[field])
+        else validateRefutation(data[field])
+        return true
+      } catch {
+        return false
+      }
+    }
     case 'step.started':
       return (
         keys(data, ['step', 'run', 'mode', 'input']) &&
@@ -205,6 +231,11 @@ export function validateEvent(value: unknown): asserts value is StateEvent {
     !String(value.subject).startsWith(`${PREFIX[value.data.kind as ItemKind]}-`)
   )
     throw new Error('Item kind does not match its typed id')
+  if (value.type === 'research.planned') {
+    const plan = value.data.plan as ResearchPlan
+    if (plan.subject !== value.subject || plan.run !== value.data.run)
+      throw new Error('Research plan must match its journal subject and run')
+  }
   if (value.type === 'step.completed') {
     const artifact = value.data.artifact as { path: string }
     if (

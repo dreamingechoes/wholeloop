@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P2-01 — source-bound research and evidence briefs
+
+- Add the research skill, researcher/challenger roles, angle/result/examination schemas and a shared native/sequential scheduling workflow within budget.
+- Pin source coverage and configurable strict-majority refutations per brief run. Journal source results and unique verifier slots; unavailable sources and silent/uncertain examinations remain explicit open questions.
+- Complete only the deterministic aggregate, retaining evidence and dropped-claim reasons for replay. Attach briefs to existing initiatives/scopes without guessing ownership; ADR-0021 records the persistence and independence boundary.
+- Verify stubbed-agent workflows, failed sources, native/sequential equivalence, quorums of 3/5/7/9, duplicate-voter rejection, pinned settings, compiled CLI execution and byte-identical rebuilt briefs. Live tool access, independent sessions and client fan-out remain on the manual checklist.
+
+---
+
 ## 2026-10-18 · P1-12 — first canonical skills and local entry utilities
 
 - Add next, status, setup and frame-problem skills, the conductor agent and shared question/output protocols within their enforced portable budgets.

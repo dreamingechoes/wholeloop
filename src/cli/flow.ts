@@ -46,6 +46,7 @@ export function flowCommand(
           ...(value('--profile') ? { profile: parseProfile(value('--profile') ?? '') } : {}),
           mode,
           ...(value('--for') ? { subject: value('--for') as string } : {}),
+          ...(value('--parent') ? { parent: value('--parent') as string } : {}),
           ...(value('--input') ? { input: value('--input') as string } : {}),
           ...(value('--owner') ? { owner: value('--owner') as string } : {}),
         })

@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: research-source-coverage
+    enforcers: [src/research/plan.ts#researchPlan, test/unit/research/research.test.ts]
+  - id: research-active-refutations
+    enforcers: [src/research/report.ts#researchReport, test/unit/research/research.test.ts]
+  - id: research-journaled-brief
+    enforcers: [src/flow/engine.ts#researchBrief, test/unit/research/research.test.ts]
   - id: missing-input-blocks-mutation
     enforcers: [src/flow/engine.ts#begin, test/unit/utilities/utilities.test.ts]
   - id: external-runtime-state

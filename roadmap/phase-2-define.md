@@ -6,7 +6,7 @@
 
 ## P2-01 · `research`
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-12
+**Status:** ✅ · **Size:** L · **Depends on:** P1-12
 
 **Goal** — Evidence-first answers to hard questions, with nothing invented.
 
@@ -14,9 +14,9 @@
 
 **Acceptance criteria:**
 
-- [ ] Angles offered are exactly the configured or detected `source.*` providers.
-- [ ] An unreachable source becomes an open question in the brief (test with a failing provider stub).
-- [ ] A claim is dropped only with the configured number of refutations (workflow test with stubbed agents).
+- [x] Angles offered are exactly the configured or detected `source.*` providers.
+- [x] An unreachable source becomes an open question in the brief (test with a failing provider stub).
+- [x] A claim is dropped only with the configured number of refutations (workflow test with stubbed agents).
 
 **Docs** — flow/define/research.
 

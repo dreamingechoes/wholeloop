@@ -3,9 +3,41 @@
 > **TL;DR** — Splits a question into angles, investigates each one against a real source in parallel, lets a challenger try to refute the claims the conclusion rests on, and hands back a brief: claims with evidence and confidence, plus the open questions nothing could answer. Optional in the flow; useful on its own any day.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P2-01](../../../roadmap/phase-2-define.md#p2-01--research).
+> **Status: 🚧 partial.** Core source planning, structured submissions, active-refutation aggregation, a journaled brief and canonical researcher/challenger resources are implemented and tested with stubbed agents. Native/sequential scheduling shares one workflow; live client fan-out, independent sessions, source authentication and external publication remain unverified or planned. Tracked in [P2-01](../../../roadmap/phase-2-define.md#p2-01--research).
 
 ---
+
+## Available core workflow
+
+```text
+wl step begin research --input "How do people find old orders?" --owner Alex --json
+wl research plan --for brief-0123abcd --json
+wl research submit --for brief-0123abcd --file /path/to/source-result.json --json
+wl research examine --for brief-0123abcd --file /path/to/examination.json --json
+wl research complete --for brief-0123abcd --json
+```
+
+Use `step begin research --parent <initiative-or-scope>` to attach a new brief;
+its stored owner is available as a fact. Resume an existing brief with `--for`.
+The versioned schemas in `src/research/schemas/` define source results and votes.
+Each claim includes evidence references with excerpts, confidence and whether it
+is load-bearing. A verifier slot submits a reasoned `refute`, `confirm` or
+`uncertain` result; an active refutation needs evidence.
+
+Plans are pinned to a run, including `research.verifiers` (3, 5, 7 or 9; default
+3) and its strict-majority threshold. Replanning is idempotent even if settings
+change. Source results and examinations are append-only and cannot be replaced
+within that run. Start a new run to revise them. The complete command aggregates
+recorded evidence; generic completion rejects a different final artifact.
+
+Missing source results become open questions with a named owner. Missing or
+uncertain examinations retain the claim at low confidence; duplicate verifier
+slots do not count twice. The host remains responsible for assigning independent
+sessions. [ADR-0021](../../decisions/0021-journaled-research-plans-and-refutations.md)
+explains this boundary and the rejected alternatives.
+
+The examples below show the full target experience, including integrations that
+still need live conformance and later provider work.
 
 ## At a glance
 
