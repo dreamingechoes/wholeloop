@@ -223,7 +223,7 @@ describe('slice and part persistence', () => {
       const value = plan(dir)
       const slice = first(engine.complete('slice-work', id, artifact(value)).slices ?? [])
       expect(next(engine, id)).toMatchObject({
-        code: 3,
+        code: 0,
         payload: { contract: { subject: { id: first(slice.parts).id } } },
       })
       const implementation = first(slice.parts.slice(1))
@@ -241,7 +241,7 @@ describe('slice and part persistence', () => {
       expect(revised.parts).toEqual(slice.parts)
       engine.store.update(first(slice.parts).id, { status: 'closed' })
       expect(next(engine, id)).toMatchObject({
-        code: 3,
+        code: 0,
         payload: { contract: { subject: { id: implementation.id } } },
       })
       expect(engine.store.get(slice.id).title).toBe('Find an archived order by number')
@@ -482,7 +482,7 @@ describe('slice and part persistence', () => {
       expect(receipt.code).toBe(0)
       const contract = receipt.value.slices[0].parts[0].id
       expect(cli('next', id)).toMatchObject({
-        code: 3,
+        code: 0,
         value: { contract: { subject: { id: contract } } },
       })
     }))

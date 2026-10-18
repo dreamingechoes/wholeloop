@@ -8,6 +8,61 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'build route',
+    arguments: '[<input>]',
+    options: [],
+    schema: 'wholeloop/build-route@1',
+    summary: 'Route a scope slice issue URL or sentence to ready build work',
+  },
+  {
+    path: 'build agree',
+    arguments: '<input>',
+    options: [
+      '--owner <person>',
+      '--criteria <file>',
+      '--by <person>',
+      '--issue <url>',
+      '--revision <value>',
+    ],
+    schema: 'wholeloop/build-agree@1',
+    summary: 'Create an ad-hoc slice from explicitly agreed testable criteria',
+  },
+  {
+    path: 'build preflight',
+    arguments: '<id>',
+    options: [],
+    schema: 'wholeloop/build-preflight@1',
+    summary: 'Resolve and load repository build guidance before code',
+  },
+  {
+    path: 'build prepare',
+    arguments: '<id>',
+    options: ['--base <branch>', '--after <id>'],
+    schema: 'wholeloop/build-prepare@1',
+    summary: 'Begin the build and provision its isolated workspace',
+  },
+  {
+    path: 'build plan',
+    arguments: '<id>',
+    options: ['--file <path>', '--basis <snapshot>'],
+    schema: 'wholeloop/build-plan@1',
+    summary: 'Record the builder plan before changing the prepared code',
+  },
+  {
+    path: 'build complete',
+    arguments: '<id>',
+    options: [],
+    schema: 'wholeloop/build-complete@1',
+    summary: 'Record a receipt only after current verify and review passes',
+  },
+  {
+    path: 'build schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/build-schema@1',
+    summary: 'Print the versioned builder plan schema',
+  },
+  {
     path: 'gate plan',
     arguments: '<verify|review>',
     options: [

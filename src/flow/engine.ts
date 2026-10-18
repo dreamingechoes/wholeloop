@@ -1,6 +1,8 @@
 import { randomBytes } from 'node:crypto'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+import { buildCriteria } from '../build/contracts.js'
+import { buildReceipt } from '../build/workflow.js'
 import { CliError } from '../cli/errors.js'
 import { EXIT } from '../cli/io.js'
 import { loadConfig, userConfigPath } from '../config/load.js'
@@ -28,6 +30,7 @@ import { specTemplate } from '../spec/template.js'
 import { itemId, replay } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 import type { StateStore } from '../state/store.js'
+import { worktreeRecords } from '../worktrees/contracts.js'
 import { beginPlan, decisions, decisionTrail, flowPlan, remembered } from './plan.js'
 import { checkShape, decisionBlocks, STEPS, stepDefinition } from './registry.js'
 
@@ -169,6 +172,14 @@ export class FlowEngine {
           EXIT.precondition,
         )
 
+      if (name === 'build-slice') {
+        if (!subject || !['slice', 'part'].includes(subject.kind))
+          throw new CliError(
+            'Agree ad-hoc criteria through build agree or select a stored slice/part before building',
+            EXIT.input,
+          )
+        buildCriteria(events, subject.id)
+      }
       if (options.parent && (name !== 'research' || options.subject))
         throw new CliError('--parent is for a new research brief only')
       const parent = options.parent ? items.get(options.parent) : undefined
@@ -432,6 +443,16 @@ export class FlowEngine {
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
         )
+      if (name === 'build-slice') {
+        const workspace = worktreeRecords(events).find(
+          (record) => record.subject === subject && record.status === 'active',
+        )
+        if (!workspace || content !== buildReceipt(events, subject, workspace.path))
+          throw new CliError(
+            'Complete builds through their current gate-backed receipt',
+            EXIT.precondition,
+          )
+      }
       let slices: ReturnType<typeof publishSlices> | undefined
       if (name === 'slice-work') {
         const plan = parseSlicePlan(content)

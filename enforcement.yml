@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: build-plan-before-code
+    enforcers: [src/build/workflow.ts#BuildWorkflow, src/flow/plan.ts#decisions, test/unit/build/build.test.ts]
+  - id: build-current-gates
+    enforcers: [src/build/contracts.ts#assertBuildGreen, src/flow/engine.ts#FlowEngine, test/unit/build/build.test.ts]
+  - id: build-repo-guidance
+    enforcers: [src/build/workflow.ts#BuildWorkflow, test/unit/build/build.test.ts]
   - id: gate-deterministic-verdict
     enforcers: [src/gates/report.ts#gateReport, src/gates/state.ts#gateRuns, test/unit/gates/gates.test.ts]
   - id: gate-explicit-budget

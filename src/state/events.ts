@@ -1,5 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { isAbsolute } from 'node:path'
+import { type BuildEventData, validBuildData } from '../build/contracts.js'
 import { isObject } from '../config/schema.js'
 import { STEP_NAMES, type StepName } from '../flow/registry.js'
 import { type FrameOutcome, validateFrameOutcome } from '../framing/contract.js'
@@ -63,6 +64,7 @@ export interface TrackerReference {
 export type EventData =
   | WorktreeEventData
   | GateEventData
+  | BuildEventData
   | {
       type: 'slice.defined'
       data: {
@@ -172,6 +174,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('build.')) return validBuildData(type, data)
   if (type.startsWith('gate.')) return validGateData(type, data)
   if (type.startsWith('worktree.')) return validWorktreeData(type, data)
   switch (type) {
@@ -440,6 +443,8 @@ export function event(subject: string, data: EventData, ts: string): StateEvent 
 export function replay(events: readonly StateEvent[]): Map<string, Item> {
   const items = new Map<string, Item>()
   const ids = new Set<string>()
+  const buildRuns = new Map<string, string>()
+  const agreements = new Set<string>()
   for (const entry of events) {
     validateEvent(entry)
     if (ids.has(entry.id)) throw new Error(`Duplicate journal event: ${entry.id}`)
@@ -461,6 +466,24 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
     }
     const item = items.get(entry.subject)
     if (!item) throw new Error(`Missing item: ${entry.subject}`)
+    if (entry.type === 'step.started' && entry.data.step === 'build-slice')
+      buildRuns.set(entry.subject, entry.data.run)
+    if (
+      (entry.type === 'step.completed' || entry.type === 'step.skipped') &&
+      entry.data.step === 'build-slice'
+    )
+      buildRuns.delete(entry.subject)
+    if (entry.type === 'build.agreed') {
+      if (item.kind !== 'slice' || agreements.has(entry.subject))
+        throw new Error('An ad-hoc slice has one explicit criteria agreement')
+      agreements.add(entry.subject)
+    }
+    if (
+      entry.type === 'build.planned' &&
+      (!['slice', 'part'].includes(item.kind) || buildRuns.get(entry.subject) !== entry.data.run)
+    )
+      throw new Error('Builder plan needs the current active build run')
+
     if (
       entry.type === 'scope.defined' &&
       (item.kind !== 'scope' || item.parent !== entry.data.initiative)

@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-18 · P3-04 — repository-first builder host and green receipts
+
+- Add build route/agree/preflight/prepare/plan/complete/schema, the builder role and canonical skill, and a shared typed-host workflow. Route scopes to ready leaf work; require explicit testable criteria agreement for ad-hoc slices. Host issue reads pin complete same-reference revisions; CLI agreement records supplied evidence without claiming to fetch/authenticate it.
+- Resolve and load repository/user build guidance before implementation. Journal the builder plan against the prepared code snapshot; unresolved assumptions require an exact-plan human decision. Keep plan references in bounded resume packs and replayable projections. ADR-0032 records these boundaries.
+- Run verify then review, route kept findings to repairs, rerun verify after code-changing review repairs, preserve partial units on resume and stop at exhausted budgets. Guided/staged/parallel scheduling keeps identical coverage; staged leases one complete gate round at a time. Observe the personal checkout around host actions and preserve violations rather than resetting files.
+- Construct completion receipts only from both current gate passes after the latest plan. Keep human testing pending and perform no push/PR. Green builds unblock dependencies without closing their items; active rebuilds block them again. Refuse stacking that would omit uncommitted predecessor files.
+- Verify seventeen builder integration/conformance fixtures with real temporary Git repositories and synthetic workers, including loaded skills, actual worktree edits, repair loops, assumption revision, stop/resume, pacing, issue reads and compiled CLI actions. Update the former build stub snapshot and routing expectations. Local check: 426 tests plus build, smoke, lint, typecheck, docs, generated catalogs, harness, Markdown and Mermaid passed. The five-round and multi-item dependency cases have explicit integration timeouts; other unit limits remain unchanged. Live client isolation, authenticated tracker normalization, actual project suite execution and human testing remain owner checks or subsequent tasks.
+
+---
+
 ## 2026-10-18 · P3-03 — pinned gate rounds and deterministic verdicts
 
 - Add gate plan/submit/verdict/schema, six built-in review lenses, manifest applicability, explicit disabled reasons, per-criterion verify coverage and versioned result/refutation contracts. Pin repository/base, prompts, policy digest, criteria and quorum; reject weakened built-in fail-safe defaults and policy changes mid-run.

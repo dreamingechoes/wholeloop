@@ -81,13 +81,11 @@ describe('flow engine', () => {
 
   it('keeps future steps as explicit stubs without fabricated completion', () =>
     fixture((engine) => {
-      const result = engine.begin('build-slice', { input: 'Find orders', owner: 'Alex' })
+      const result = engine.begin('open-pr', { input: 'Find orders', owner: 'Alex' })
       expect(result.code).toBe(3)
       expect(result.payload.available).toBe(false)
       expect(engine.store.events()).toEqual([])
-      expect(() => engine.complete('build-slice', 'init-12345678', '# Spec')).toThrow(
-        'not implemented',
-      )
+      expect(() => engine.complete('open-pr', 'init-12345678', '# Spec')).toThrow('not implemented')
     }))
 
   it('requires and preserves skip reasons in the journal and later preflights', () =>

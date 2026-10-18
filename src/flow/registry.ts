@@ -62,9 +62,14 @@ export const STEPS: readonly Step[] = Object.freeze(
             : ['prepare-launch', 'ramp-exposure', 'measure-impact', 'decide-next'].includes(name)
               ? 'scope'
               : 'initiative') as ItemKind,
-      available: ['frame-problem', 'research', 'write-spec', 'cut-scopes', 'slice-work'].includes(
-        name,
-      ),
+      available: [
+        'frame-problem',
+        'research',
+        'write-spec',
+        'cut-scopes',
+        'slice-work',
+        'build-slice',
+      ].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
       after: Object.freeze(
@@ -87,9 +92,11 @@ export const STEPS: readonly Step[] = Object.freeze(
               ? [...SCOPE_SECTIONS]
               : name === 'write-spec'
                 ? [...SPEC_SECTIONS]
-                : name === 'research'
-                  ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-                  : [],
+                : name === 'build-slice'
+                  ? ['Plan', 'Criteria', 'Verification', 'Review', 'Workspace', 'Environment']
+                  : name === 'research'
+                    ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+                    : [],
       ),
     }),
   ),

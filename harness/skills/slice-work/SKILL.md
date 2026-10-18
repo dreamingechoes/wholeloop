@@ -41,5 +41,4 @@ Read ask-never-guess, output-contract, destination-publication and slice-definit
    The atomic receipt contains slice/part IDs, dependencies and tracker statuses.
    Remote tracker execution remains a pending host handoff until linked.
 9. Call `wl next <scope> --json`. It selects sole ready work, chooses the contract
-   part first or asks between independent candidates. An unavailable builder is
-   a limitation to state. Never close dependencies merely to bypass their work.
+   part first or asks between independent candidates. Continue through build-slice for implementation. Never close dependencies merely to bypass their work.

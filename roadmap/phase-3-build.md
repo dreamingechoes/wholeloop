@@ -53,7 +53,7 @@
 
 ## P3-04 · `build-slice` and the `builder`
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P3-02, P3-03, P1-07
+**Status:** ✅ · **Size:** L · **Depends on:** P3-02, P3-03, P1-07
 
 **Goal** — The self-routing build entry, following the repo's skills.
 
@@ -61,8 +61,8 @@
 
 **Acceptance criteria:**
 
-- [ ] Bound repo skills for `build.<area>` appear in the preflight and are loaded by the builder (conformance scenario).
-- [ ] A free-text fix runs the same gates as a planned slice.
+- [x] Bound repo skills for `build.<area>` appear in the preflight and are loaded by the builder (conformance scenario).
+- [x] A free-text fix runs the same gates as a planned slice.
 
 **Docs** — flow/build/build-slice.
 

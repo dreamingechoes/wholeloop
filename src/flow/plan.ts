@@ -21,6 +21,12 @@ export function decisions(
       for (const id of STEPS.find((step) => step.name === entry.data.step)?.after ?? [])
         required.set(id, entry.id)
     }
+  for (const entry of relevant)
+    if (entry.type === 'build.planned') {
+      if (entry.data.plan.assumptions.some((assumption) => assumption.status !== 'verified'))
+        required.set('approve-build-plan', entry.id)
+      else required.delete('approve-build-plan')
+    }
   const basis = [...relevant]
     .reverse()
     .find(
@@ -96,6 +102,11 @@ export function flowPlan(
       if (entry.type === 'item.updated' && entry.data.status)
         closed = entry.data.status === 'closed'
       if (entry.type === 'step.started') active = entry.data.step
+      if (entry.type === 'step.completed' && entry.data.step === 'build-slice')
+        furthest = Math.max(
+          furthest,
+          STEPS.findIndex((step) => step.name === 'review-code'),
+        )
       if (entry.type === 'step.completed')
         furthest = Math.max(
           furthest,

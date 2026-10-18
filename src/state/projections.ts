@@ -31,6 +31,12 @@ export function projections(
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }
+  for (const entry of events)
+    if (entry.type === 'build.planned')
+      files.set(
+        `items/${entry.subject}/build-plan.json`,
+        `${JSON.stringify(entry.data, null, 2)}\n`,
+      )
   for (const run of gateRuns(events))
     for (const round of run.rounds)
       files.set(

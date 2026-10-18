@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { resolve } from 'node:path'
+import { buildCriteria } from '../build/contracts.js'
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import { type Criterion, lintCriteria } from '../definition/criteria.js'
@@ -131,6 +132,7 @@ export class GateWorkflow {
         .reverse()
         .find((entry) => entry.subject === parent && entry.type === 'slice.defined')
       criteria ??= defined?.type === 'slice.defined' ? defined.data.definition.criteria : undefined
+      if (!criteria && item.kind !== 'review') criteria = buildCriteria(events, subject)
       if (!criteria && first && !options.newRun)
         criteria = first.units
           .filter((unit) => unit.lens === 'acceptance')

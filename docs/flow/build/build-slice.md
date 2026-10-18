@@ -3,7 +3,7 @@
 > **TL;DR** — Builds each slice in its **own git worktree** on its own branch, so several builders work at once — even in the same repository — while your checkout stays exactly as you left it. Builders follow the skills and conventions your repository already has, and every slice runs [`verify-works`](./verify-works.md) then [`review-code`](./review-code.md) until both are green. Give it a scope, a slice, an issue URL or a one-line fix. It finishes at green: no push, no PR.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The worktree lifecycle, named bases, stacked branches, port reservations and explicit checkout opt-out are implemented with real Git fixtures. Builder execution and the gate loop remain planned. Tracked in [P3-04](../../../roadmap/phase-3-build.md#p3-04--build-slice-and-the-builder).
+> **Status: 🚧 partial.** The worktree lifecycle, named bases, stacked branches, port reservations and explicit checkout opt-out are implemented with real Git fixtures. Repository-first preflights, explicit ad-hoc agreement, builder plans, revision-bound assumption decisions and bounded verify/review repair orchestration are implemented through a typed host with real temporary Git/stub-worker fixtures. Live client workers, actual suite execution and incremental review remain pending. Tracked in [P3-04](../../../roadmap/phase-3-build.md#p3-04--build-slice-and-the-builder).
 
 ---
 
@@ -131,8 +131,52 @@ The checkout opt-out requires a clean, exclusive repository, creates its topic
 branch there, and restores the original branch or detached commit on eligible
 cleanup. It never deletes the person's directory. See
 [ADR-0030](../../decisions/0030-worktree-intents-leases-and-conservative-pruning.md).
-These lifecycle commands are available independently; build-slice remains an
-unavailable workflow until P3-04 supplies the builder orchestration. The independent gate decision layer is available now.
+These lifecycle commands are available independently of builder orchestration.
+
+## Available build contracts
+
+```bash
+wl build route "Reject empty requests" --json
+wl build agree "Reject empty requests" --owner Owner --by Owner --criteria criteria.json --json
+wl build preflight slice-0123abcd --json
+wl build prepare slice-0123abcd --base main --json
+wl build schema --json
+wl build plan slice-0123abcd --file plan.json --basis '<prepared-snapshot>' --json
+wl build complete slice-0123abcd --json
+```
+
+Criteria files use `wholeloop/criteria@1`. The builder plan uses
+`wholeloop/builder-plan@1` with steps, tests and assumptions (text, verified/unknown/
+contradicted status, evidence). Plan recording checks the prepared snapshot before
+any code write. Unknown/contradicted assumptions require an explicit
+`wl answer decision.approve-build-plan=approved --for <id> --by <person> --json`.
+Changing the plan requires a fresh assumption decision when still unresolved.
+
+The shared `harness/workflows/build.ts` host contract supplies planning, implementation,
+unit inspection, independent refutations and stop state. The core loads selected
+build guidance into that context. `runBuild` resumes existing plans and partial
+rounds; `runBuildGroup` schedules ready dependency waves according to pace. Staged
+uses a whole-round gate lease. Host cancellation of already-running tools remains
+its responsibility. Gate results are observations supplied by that host; planning
+alone never runs project tests or proves semantic correctness.
+
+Every repair that changes code invalidates older passes. Completion requires verify
+and review PASS after the latest plan on identical current bytes, constructs the
+receipt and advances to open-pr without inventing separate standalone step runs.
+Stacking during a build refuses uncommitted predecessor files: commit them only
+when authorized and rerun gates after HEAD changes, because a Git branch cannot
+include another worktree's uncommitted changes. Scope routing preserves declared
+dependency order; choose a named base or explicit stacked predecessor per build.
+The item stays open for human testing and PR work; dependent work can use its green
+build. A later active rebuild blocks those dependencies again. Resume links the
+external builder-plan projection. [ADR-0032](../../decisions/0032-repository-first-build-plans-and-gate-backed-receipts.md)
+records the host and recovery boundaries.
+
+Issue routing asks for criteria. A host can read the selected tracker through
+`BuildWorkflow.readIssue`; it requires a complete same-reference body/revision.
+CLI agreement can record observed `--issue <url> --revision <revision>` but never
+claims it fetched/authenticated that source. Live normalized reads remain owner
+verification. No push or PR operation exists in this workflow.
 
 ## Standalone use
 

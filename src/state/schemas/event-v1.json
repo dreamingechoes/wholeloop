@@ -1985,6 +1985,187 @@
           "required": ["run", "round", "observed", "report"]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "build.agreed"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "criteria": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_-]*$"
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "test": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "assertion": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "subject": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "context": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "unit": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": ["lt", "lte", "eq", "ne", "gte", "gt"]
+                      },
+                      "value": {
+                        "type": "number"
+                      }
+                    },
+                    "required": ["subject", "context", "unit", "operator", "value"]
+                  }
+                },
+                "required": ["id", "text", "test"]
+              }
+            },
+            "by": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": ["sentence", "issue"]
+                },
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "revision": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["kind", "ref"]
+            }
+          },
+          "required": ["criteria", "by", "source"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "build.planned"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "plan": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "$id": "wholeloop/builder-plan@1",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "schema": {
+                  "type": "string",
+                  "const": "wholeloop/builder-plan@1"
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 1
+                },
+                "tests": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 1
+                },
+                "assumptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": ["verified", "unknown", "contradicted"]
+                      },
+                      "evidence": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": ["text", "status", "evidence"]
+                  }
+                }
+              },
+              "required": ["schema", "steps", "tests", "assumptions"]
+            },
+            "snapshot": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "guidance": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "slot": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": ["slot", "ref", "digest"]
+              }
+            }
+          },
+          "required": ["run", "plan", "snapshot", "guidance"]
+        }
+      }
     }
   ]
 }

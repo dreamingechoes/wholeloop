@@ -3,7 +3,7 @@
 exports[`step begin contracts > build-slice: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -61,10 +61,17 @@ exports[`step begin contracts > build-slice: standalone empty, standalone input 
     "schema": "wholeloop/step-begin@1",
     "step": "build-slice",
     "subject": null,
-    "template": null,
+    "template": [
+      "Plan",
+      "Criteria",
+      "Verification",
+      "Review",
+      "Workspace",
+      "Environment",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -96,10 +103,17 @@ exports[`step begin contracts > build-slice: standalone empty, standalone input 
     "schema": "wholeloop/step-begin@1",
     "step": "build-slice",
     "subject": null,
-    "template": null,
+    "template": [
+      "Plan",
+      "Criteria",
+      "Verification",
+      "Review",
+      "Workspace",
+      "Environment",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -134,7 +148,14 @@ exports[`step begin contracts > build-slice: standalone empty, standalone input 
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Plan",
+      "Criteria",
+      "Verification",
+      "Review",
+      "Workspace",
+      "Environment",
+    ],
   },
 ]
 `;

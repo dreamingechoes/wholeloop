@@ -858,6 +858,80 @@
         }
       },
       "required": ["schema", "schemas"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/build-route@1"
+        }
+      },
+      "required": ["schema", "kind", "candidates", "questions"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/build-agree@1"
+        }
+      },
+      "required": ["schema", "subject", "criteria"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/build-preflight@1"
+        }
+      },
+      "required": [
+        "schema",
+        "subject",
+        "criteria",
+        "profile",
+        "bindings",
+        "guidance",
+        "questions",
+        "gates",
+        "workspace",
+        "stop"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/build-prepare@1"
+        }
+      },
+      "required": ["schema", "preflight", "run", "workspace", "snapshot"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/build-plan@1"
+        }
+      },
+      "required": ["schema", "subject", "run", "pending"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/build-complete@1"
+        }
+      },
+      "required": ["schema", "receipt"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/build-schema@1"
+        }
+      },
+      "required": ["schema", "plan"]
     }
   ],
   "$defs": {

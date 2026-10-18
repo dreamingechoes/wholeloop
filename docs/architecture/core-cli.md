@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Generated CLI adapters, live external provider execution, suite execution and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Generated CLI adapters, live external provider execution, suite execution and later step behavior remain planned.
 
 ---
 
@@ -22,6 +22,13 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl build route [<input>]` | `wholeloop/build-route@1` | Route a scope slice issue URL or sentence to ready build work |
+| `wl build agree <input>` | `wholeloop/build-agree@1` | Create an ad-hoc slice from explicitly agreed testable criteria |
+| `wl build preflight <id>` | `wholeloop/build-preflight@1` | Resolve and load repository build guidance before code |
+| `wl build prepare <id>` | `wholeloop/build-prepare@1` | Begin the build and provision its isolated workspace |
+| `wl build plan <id>` | `wholeloop/build-plan@1` | Record the builder plan before changing the prepared code |
+| `wl build complete <id>` | `wholeloop/build-complete@1` | Record a receipt only after current verify and review passes |
+| `wl build schema` | `wholeloop/build-schema@1` | Print the versioned builder plan schema |
 | `wl gate plan <verify\|review>` | `wholeloop/gate-plan@1` | Pin coverage and start or resume a bounded read-only gate round |
 | `wl gate submit` | `wholeloop/gate-submit@1` | Journal a planned unit result or independent finding refutation |
 | `wl gate verdict` | `wholeloop/gate-verdict@1` | Seal a round with deterministic fail-safe aggregation |

@@ -4,6 +4,15 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-18.
 
+## Builder host and build-slice (P3-04)
+
+- [ ] Run the canonical skill in each actual client. Confirm the preflight appears before provisioning, resolved repository build instructions are loaded, and all writes stay in the allocated workspace. Typed-host fixtures are local conformance scenarios, not live client captures.
+- [ ] Confirm native/sequential workers are independent and genuinely read-only in gates. Exercise guided/staged/parallel pacing, an interrupted partial gate and cancellation of already-running workers.
+- [ ] Exercise an authenticated issue read through the chosen tracker, validate complete body/reference/revision normalization, and agree criteria explicitly. The CLI itself does not fetch issues.
+- [ ] Test real project behavior and external environment effects; current worker fixtures are synthetic and suite execution/incremental review have separate roadmap tasks. Green machine gates must still hand back for human testing without a push or PR.
+
+These checks remain for the owner and do not block other local implementation.
+
 ## Gate engine (P3-03)
 
 - [ ] Run the same pinned plan in actual native and sequential clients; compare complete results and use genuinely independent refutation sessions. Unit fixtures supply synthetic workers and do not prove client isolation or model quality.
