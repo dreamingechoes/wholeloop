@@ -1,4 +1,5 @@
 import { stringify } from 'yaml'
+import { worktreeRecords } from '../worktrees/contracts.js'
 import type { Item, StateEvent } from './events.js'
 import { replayMailbox } from './mailbox.js'
 
@@ -8,6 +9,7 @@ export function projections(
 ): Map<string, string> {
   const files = new Map<string, string>()
   const links: Record<string, string[]> = {}
+  const workspaces = new Map(worktreeRecords(events).map((record) => [record.subject, record]))
   for (const item of [...items.values()].sort((a, b) => a.id.localeCompare(b.id))) {
     const { body, notes, links: refs, ...metadata } = item
     const noteText = notes.length
@@ -16,11 +18,17 @@ export function projections(
     const linkText = refs.length
       ? `\n## Links\n\n${refs.map((ref) => `- ${ref}`).join('\n')}\n`
       : ''
+    const workspace = workspaces.get(item.id)
+    const workspaceText = workspace
+      ? `\n## Workspace\n\n- Mode: ${workspace.mode}; status: ${workspace.status}\n- Path: ${workspace.path}\n- Branch: ${workspace.branch}\n- Base: ${workspace.base.ref} (${workspace.base.sha})\n- Ports: ${workspace.ports.start}-${workspace.ports.end}\n`
+      : ''
     files.set(
       `items/${item.id}/${item.kind}.md`,
-      `---\n${stringify(metadata)}---\n\n${body}\n${noteText}${linkText}`,
+      `---\n${stringify(metadata)}---\n\n${body}\n${workspaceText}${noteText}${linkText}`,
     )
     links[item.id] = refs
+    if (workspace)
+      files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }
   files.set('links.json', `${JSON.stringify(links, null, 2)}\n`)
   const mailbox = replayMailbox(events)

@@ -38,6 +38,17 @@ restricted libpq service and verify server read-only rejection, function privile
 and timeout behavior; process tests used a fixture executable, not a database.
 Failed or incomplete access must produce an explicit unknown rather than a baseline.
 
+## Worktree validation still pending
+
+On a representative project, verify dependency/setup commands, actual port
+binding, submodules/LFS, platform-specific Git behavior and the explicit checkout
+opt-out. Local tests used Git 2.49.0 on macOS with real temporary repositories,
+concurrent CLI creation, dirty source checkouts, stacked branches, locks and
+conservative prune. Linux and physical process interruption remain unrun. After
+an interruption, inspect stale lock ownership before clearing it and retrying the
+recorded intent. Stop currently records a lease; no worker/dev-server process
+controller is implemented. Open does not count as the person's test-it approval.
+
 ## Slicing validation still pending
 
 Exercise slice-work with real repository conventions and a challenger in slicing
@@ -45,7 +56,8 @@ mode. Verify that the declared single outcome and demonstration describe a real
 vertical user journey, and that all slices together deliver the scope. Local
 fixtures validate shape, inherited criteria, stable IDs, dependencies and at most
 one part per repository. Contract-first routing is automated; actual contract
-implementation, Git eligibility/worktrees and builder execution are later tasks.
+implementation and builder execution are later tasks. Worktree lifecycle has
+separate real Git tests and the owner checks above.
 Remote tracker items/relationships remain pending host writes until linked.
 
 ## Definition eval validation still pending

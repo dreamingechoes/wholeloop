@@ -13,6 +13,11 @@ import {
 } from '../research/contracts.js'
 import { type ScopeDefinition, validateScope } from '../scopes/contract.js'
 import { type Repository, type SliceDefinition, validateSlice } from '../slices/contract.js'
+import {
+  validWorktreeData,
+  type WorktreeEventData,
+  worktreeRecords,
+} from '../worktrees/contracts.js'
 import { replayMailbox } from './mailbox.js'
 
 export const KINDS = ['initiative', 'scope', 'slice', 'part', 'brief', 'review'] as const
@@ -54,6 +59,7 @@ export interface TrackerReference {
   handoff?: string
 }
 export type EventData =
+  | WorktreeEventData
   | {
       type: 'slice.defined'
       data: {
@@ -163,6 +169,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('worktree.')) return validWorktreeData(type, data)
   switch (type) {
     case 'slice.defined':
       if (
@@ -397,6 +404,8 @@ export function validateEvent(value: unknown): asserts value is StateEvent {
   for (const kind of ['slice', 'part'])
     if (value.type === `${kind}.defined` && !String(value.subject).startsWith(`${kind}-`))
       throw new Error(`${kind} definitions require the matching typed subject`)
+  if (value.type.startsWith('worktree.') && !/^(slice|part)-/.test(String(value.subject)))
+    throw new Error('Worktrees require a slice or part subject')
   if (value.type === 'research.planned') {
     const plan = value.data.plan as ResearchPlan
     if (plan.subject !== value.subject || plan.run !== value.data.run)
@@ -498,5 +507,6 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
     item.updatedAt = entry.ts
   }
   replayMailbox(events)
+  worktreeRecords(events)
   return items
 }

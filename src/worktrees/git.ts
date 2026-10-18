@@ -1,0 +1,67 @@
+import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { canonicalPath } from '../state/paths.js'
+
+export function git(root: string, args: readonly string[], hooks?: string): string {
+  const response = spawnSync(
+    'git',
+    [...(hooks ? ['-c', `core.hooksPath=${hooks}`] : []), ...args],
+    {
+      cwd: root,
+      encoding: 'utf8',
+      env: { ...process.env, GIT_OPTIONAL_LOCKS: '0', GIT_TERMINAL_PROMPT: '0' },
+      timeout: 30_000,
+      maxBuffer: 2 * 1024 * 1024,
+    },
+  )
+  if (response.error || response.status !== 0)
+    throw new Error(
+      `Git ${args[0]} failed; inspect repository permissions and the requested reference`,
+    )
+  return response.stdout
+}
+export function ancestor(root: string, head: string, base: string): boolean {
+  const response = spawnSync('git', ['merge-base', '--is-ancestor', head, base], {
+    cwd: root,
+    encoding: 'utf8',
+    env: { ...process.env, GIT_OPTIONAL_LOCKS: '0' },
+    timeout: 30_000,
+  })
+  if (response.status !== 0 && response.status !== 1)
+    throw new Error('Cannot establish branch ancestry; no cleanup is safe')
+  return response.status === 0
+}
+export function repository(root: string) {
+  const path = canonicalPath(git(root, ['rev-parse', '--show-toplevel']).trim())
+  const commonDir = canonicalPath(
+    git(root, ['rev-parse', '--path-format=absolute', '--git-common-dir']).trim(),
+  )
+  return { path, commonDir, key: createHash('sha256').update(commonDir).digest('hex').slice(0, 16) }
+}
+export function namedBase(root: string, input: string) {
+  if (!input.trim() || input.startsWith('-') || /[\n\r\0]/.test(input))
+    throw new Error('Provide a named base branch')
+  const ref = git(root, [
+    'rev-parse',
+    '--verify',
+    '--symbolic-full-name',
+    '--end-of-options',
+    input,
+  ]).trim()
+  if (!/^refs\/(heads|remotes)\/.+/.test(ref) || /[\n\r]/.test(ref))
+    throw new Error('Base must resolve to one named local or remote branch')
+  const sha = git(root, ['rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`]).trim()
+  return { ref, sha }
+}
+export function registeredWorktrees(root: string) {
+  const result: { path: string; branch: string; locked: boolean }[] = []
+  let current: { path: string; branch: string; locked: boolean } | undefined
+  for (const token of git(root, ['worktree', 'list', '--porcelain', '-z']).split('\0')) {
+    if (token.startsWith('worktree ')) {
+      current = { path: canonicalPath(token.slice(9)), branch: '', locked: false }
+      result.push(current)
+    } else if (current && token.startsWith('branch ')) current.branch = token.slice(7)
+    else if (current && (token === 'locked' || token.startsWith('locked '))) current.locked = true
+  }
+  return result
+}

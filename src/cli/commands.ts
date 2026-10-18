@@ -8,6 +8,41 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'worktree create',
+    arguments: '<id>',
+    options: ['--repo <path>', '--base <branch>', '--after <id>'],
+    schema: 'wholeloop/worktree-create@1',
+    summary: 'Allocate an isolated worktree from a recorded named base',
+  },
+  {
+    path: 'worktree open',
+    arguments: '<id>',
+    options: [],
+    schema: 'wholeloop/worktree-open@1',
+    summary: 'Show environment path ports and commands without starting them',
+  },
+  {
+    path: 'worktree stop',
+    arguments: '<id>',
+    options: ['--abandon', '--reason <why>'],
+    schema: 'wholeloop/worktree-stop@1',
+    summary: 'Stop the workspace lease while retaining files and branches',
+  },
+  {
+    path: 'worktree list',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/worktree-list@1',
+    summary: 'List recorded workspace allocations and lifecycle status',
+  },
+  {
+    path: 'worktree prune',
+    arguments: '[<id>]',
+    options: ['--dry-run'],
+    schema: 'wholeloop/worktree-prune@1',
+    summary: 'Remove only stopped clean merged or explicitly abandoned work',
+  },
+  {
     path: 'slices plan',
     arguments: '',
     options: ['--for <id>'],

@@ -3,7 +3,7 @@
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts and inherited required decisions; later workflows and external provider adoption remain planned. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
+> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later workflows and external provider adoption remain planned. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
 
 ---
 
@@ -34,10 +34,19 @@ $XDG_STATE_HOME/wholeloop/            default: ~/.local/state/wholeloop
 ├─ cursors.json                         per-reader read positions
 ├─ links.json                           id ↔ external refs (issue key, doc URL, PR)
 ├─ repos.json                           known repositories and their paths
-└─ worktrees/<repo>/<slice-id>/         one git worktree per slice or part being built
+└─ worktrees/<repo-key>/<slice-or-part-id>/         one git worktree per slice or part being built
 ```
 
 `WL_WORKSPACE` selects `$XDG_STATE_HOME/wholeloop/workspaces/<name>` (for example `work` and `personal`); unset uses the root store. Names contain lowercase letters, numbers, underscores and hyphens. Relative XDG paths are ignored.
+
+Workspace allocations are journaled before Git provisioning, then marked ready or
+failed. Their projections live at `items/<id>/worktree.json` and in the readable
+item's Workspace section; status includes them and resume links the projection.
+The separate worktree-control lock coordinates Git lifecycle operations without
+holding the journal lock across external mutations. The manager must be called
+outside a journal transaction. Worktree output lives under the store, while
+journal/lock metadata stays outside those Git checkouts. Retry and cleanup rules
+are recorded in [ADR-0030](../decisions/0030-worktree-intents-leases-and-conservative-pruning.md).
 
 ## Available commands
 

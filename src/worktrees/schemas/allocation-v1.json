@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/worktree-allocation@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "repository": {
+      "type": "string",
+      "pattern": "^/"
+    },
+    "commonDir": {
+      "type": "string",
+      "pattern": "^/"
+    },
+    "path": {
+      "type": "string",
+      "pattern": "^/"
+    },
+    "repoKey": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{16}$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["worktree", "checkout"]
+    },
+    "branch": {
+      "type": "string",
+      "pattern": "^wl/(slice|part)-[a-f0-9]{8}$"
+    },
+    "base": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string",
+          "pattern": "^refs/(heads|remotes)/.+"
+        },
+        "sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+        }
+      },
+      "required": ["ref", "sha"]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string",
+          "pattern": "^refs/(heads|remotes)/.+"
+        },
+        "sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+        }
+      },
+      "required": ["ref", "sha"]
+    },
+    "original": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+        }
+      },
+      "required": ["sha"]
+    },
+    "ports": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535
+        }
+      },
+      "required": ["start", "end"]
+    }
+  },
+  "required": [
+    "repository",
+    "commonDir",
+    "path",
+    "repoKey",
+    "mode",
+    "branch",
+    "base",
+    "target",
+    "original",
+    "ports"
+  ]
+}

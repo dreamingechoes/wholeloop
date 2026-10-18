@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: worktree-owned-provisioning
+    enforcers: [src/worktrees/manager.ts#WorktreeManager, src/worktrees/contracts.ts#worktreeRecords, test/unit/worktrees/worktrees.test.ts]
+  - id: worktree-safe-cleanup
+    enforcers: [src/worktrees/manager.ts#WorktreeManager, test/unit/worktrees/worktrees.test.ts]
+  - id: worktree-port-leases
+    enforcers: [src/worktrees/contracts.ts#allocatePorts, test/unit/worktrees/worktrees.test.ts]
   - id: slice-testable-outcome
     enforcers: [src/slices/contract.ts#validateSlice, src/slices/contract.ts#checkSlicePlan, test/unit/slices/slices.test.ts]
   - id: slice-contract-first-parts

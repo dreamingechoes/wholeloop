@@ -21,7 +21,7 @@
 
 ## P3-02 · Worktree manager
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-03
+**Status:** ✅ · **Size:** M · **Depends on:** P1-03
 
 **Goal** — Parallel builds that never touch the person's checkout.
 
@@ -29,9 +29,9 @@
 
 **Acceptance criteria:**
 
-- [ ] Two slices of the same repository build in parallel worktrees without interfering (integration test on a fixture repo).
-- [ ] The person's checkout is unchanged — branch, index and working tree — after any build (test).
-- [ ] `prune` removes only worktrees whose branches are merged or explicitly abandoned.
+- [x] Two slices of the same repository build in parallel worktrees without interfering (integration test on a fixture repo).
+- [x] The person's checkout is unchanged — branch, index and working tree — after any build (test).
+- [x] `prune` removes only worktrees whose branches are merged or explicitly abandoned.
 
 **Docs** — flow/build/build-slice, ADR-0013.
 

@@ -21,6 +21,7 @@ import { slicesCommand } from './slices.js'
 import { specCommand } from './spec.js'
 import { stateCommand } from './state.js'
 import { utilityCommand } from './utilities.js'
+import { worktreeCommand } from './worktree.js'
 
 export { EXIT, type Io } from './io.js'
 
@@ -72,6 +73,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path.startsWith('worktree '))
+      return worktreeCommand(command.path, parsed, root, json, io)
     if (command.path === 'eval definitions') return evalCommand(parsed, json, io)
     if (command.path.startsWith('challenge '))
       return challengeCommand(command.path, parsed, root, json, io)

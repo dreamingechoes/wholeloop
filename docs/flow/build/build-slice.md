@@ -3,7 +3,7 @@
 > **TL;DR** — Builds each slice in its **own git worktree** on its own branch, so several builders work at once — even in the same repository — while your checkout stays exactly as you left it. Builders follow the skills and conventions your repository already has, and every slice runs [`verify-works`](./verify-works.md) then [`review-code`](./review-code.md) until both are green. Give it a scope, a slice, an issue URL or a one-line fix. It finishes at green: no push, no PR.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P3-04](../../../roadmap/phase-3-build.md#p3-04--build-slice-and-the-builder).
+> **Status: 🚧 partial.** The worktree lifecycle, named bases, stacked branches, port reservations and explicit checkout opt-out are implemented with real Git fixtures. Builder execution and the gate loop remain planned. Tracked in [P3-04](../../../roadmap/phase-3-build.md#p3-04--build-slice-and-the-builder).
 
 ---
 
@@ -89,6 +89,50 @@ wl worktree open slice-0d4e
 ```
 
 Worktrees are removed by [`sync`](../utilities.md) once their PR is merged, or anytime with `wl worktree prune`. Rather have branches appear in the copy you already work in? Set `build.workspace: checkout` — slices of the same repository then take turns there instead of running side by side.
+
+## Available workspace lifecycle
+
+```text
+wl worktree create slice-0123abcd --base main --json
+wl worktree create slice-89abcdef --after slice-0123abcd --json
+wl worktree open slice-0123abcd --json
+wl worktree list --json
+wl worktree stop slice-0123abcd --json
+wl worktree prune slice-0123abcd --dry-run --json
+wl worktree prune slice-0123abcd --json
+```
+
+Create requires an open slice or repository part. A multi-repository slice uses
+its individual part IDs. The repository comes from the recorded definition or
+an explicit --repo root. Supply a named local/remote base; a raw commit is not a
+cleanup target. --after stacks on a recorded predecessor while retaining the
+original integration target. No fetch, push or commit occurs during provisioning.
+
+Allocation intent precedes Git mutations. Repeating create reuses active identity
+or recovers a matching unfinished intent. The person's branch, index and working
+files stay unchanged in default worktree mode, including dirty staged/untracked
+work. Provisioning disables checkout hooks for that Git invocation only; later
+builder commits retain normal hooks. Stale locks require owner inspection.
+
+Ten-port blocks are reserved within this store from 5200 through 6199. These are
+reservations, not live port probes. Open reports actual HEAD, path, ports and
+detected quality commands without starting anything or recording test-it approval.
+Status and resume link the external workspace projection.
+
+Stop records the lease state and preserves files/branches; this manager does not
+control worker/dev-server processes. To reject work explicitly, use
+`worktree stop <id> --abandon --reason "<why>"`. Prune removes only recorded stopped,
+clean work merged into its integration target or explicitly abandoned. It honors
+Git locks, preserves unmerged/dirty/changed-identity work and every topic branch,
+and continues checking other records when one cannot be cleaned. It never runs a
+broad Git metadata sweep or force removal. Dry-run records no lifecycle change.
+
+The checkout opt-out requires a clean, exclusive repository, creates its topic
+branch there, and restores the original branch or detached commit on eligible
+cleanup. It never deletes the person's directory. See
+[ADR-0030](../../decisions/0030-worktree-intents-leases-and-conservative-pruning.md).
+These lifecycle commands are available independently; build-slice remains an
+unavailable workflow until P3-04 supplies the builder and gates.
 
 ## Standalone use
 

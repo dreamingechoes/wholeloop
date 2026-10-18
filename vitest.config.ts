@@ -5,5 +5,7 @@ const { version } = JSON.parse(readFileSync(new URL('./package.json', import.met
 
 export default defineConfig({
   define: { __WL_VERSION__: JSON.stringify(version) },
-  test: { include: ['test/**/*.test.ts'] },
+  // Process/Git integration fixtures already exercise concurrency internally.
+  // Bound file workers so CPU contention does not consume their timeout budget.
+  test: { include: ['test/**/*.test.ts'], maxWorkers: 2 },
 })

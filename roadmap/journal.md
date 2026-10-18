@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P3-02 — recoverable isolated worktrees
+
+- Add worktree create/open/stop/list/prune with deterministic topic names, explicit named bases, stacked integration targets, external paths and disjoint ten-port leases. Preserve stopped/failed reservations until conservative pruning; expose allocations in status, resume and replayable projections.
+- Journal the intent before Git, serialize lifecycle mutations separately from the store lock, recover matching interrupted provisioning and preserve every branch. Prune only stopped, clean, owned, unlocked work merged into its recorded integration base or explicitly abandoned with a reason. The checkout opt-out is clean/exclusive and restores the original checkout on eligible cleanup. ADR-0030 records the safety/recovery boundaries.
+- Run real Git fixtures covering parallel processes, spaces in paths, exact original branch/index/files, interrupted ready receipts, symlink escapes, hooks, stacked bases, port exhaustion and cleanup refusal. All 368 tests passed. Bound test-file concurrency to two workers because the process fixtures already test concurrency and unrestricted workers exhausted existing five-second test timeouts; the timeouts remain unchanged.
+- Build, smoke, lint, typecheck, generated catalogs, docs, harness, Markdown and Mermaid checks passed. Only macOS/Node 24/Git 2.49 ran locally. Worktree open suggests commands without running tests or recording human approval; stop manages the lease, not arbitrary processes. Real project environments, ignored files, submodules/LFS, physical interruption recovery and Linux remain on the owner checklist and do not block further implementation.
+
+---
+
 ## 2026-10-18 · P3-01 — vertical slice plans and contract-first parts
 
 - Add slice-work with versioned metadata, standalone minimal initiative/scope entry, repository-first drafting guidance, slice planning/check/schema commands and a fixed slicing challenger mode. Require a single declared outcome, end-to-end demonstration, testable criteria and linked test cases.

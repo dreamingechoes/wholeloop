@@ -4,6 +4,7 @@ import { unread } from '../state/mailbox.js'
 import { StateStore } from '../state/store.js'
 import { next } from '../utilities/next.js'
 import { setup } from '../utilities/setup.js'
+import { worktreeRecords } from '../worktrees/contracts.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -35,6 +36,7 @@ export function utilityCommand(
         const id = positional[0]
         if (id && !ITEM_ID.test(id)) throw new CliError('status expects a typed item ID')
         const items = id ? [store.get(id)] : store.list()
+        const workspaces = worktreeRecords(store.events())
         const messages = unread(
           store.events(),
           value('--for') ?? 'conductor',
@@ -52,6 +54,9 @@ export function utilityCommand(
               status,
               updatedAt,
               flow: engine.plan(id),
+              ...(workspaces.some((workspace) => workspace.subject === id)
+                ? { workspace: workspaces.find((workspace) => workspace.subject === id) }
+                : {}),
             })),
             unreadCount: messages.filter((message) => !id || message.thread === id).length,
           },

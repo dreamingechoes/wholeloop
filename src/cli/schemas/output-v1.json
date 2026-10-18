@@ -8,6 +8,51 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/worktree-create@1"
+        }
+      },
+      "required": ["schema", "created", "record"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/worktree-open@1"
+        }
+      },
+      "required": ["schema", "record", "tested", "environment", "commands"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/worktree-stop@1"
+        }
+      },
+      "required": ["schema", "record", "processes"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/worktree-list@1"
+        }
+      },
+      "required": ["schema", "worktrees"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/worktree-prune@1"
+        }
+      },
+      "required": ["schema", "dryRun", "actions"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/slices-plan@1"
         }
       },
