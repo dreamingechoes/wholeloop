@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "id": "gitlab-issues",
+  "name": "GitLab Issues",
+  "description": "Publish wholeloop definitions through GitLab Issues.",
+  "access": {
+    "mcp": {
+      "server": "gitlab",
+      "install": {
+        "transport": "http",
+        "url": "https://gitlab.com/api/v4/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["tracker"],
+  "operations": {
+    "tracker.create-item": {
+      "tool": "save_work_item",
+      "args": {
+        "type_name": "Issue"
+      },
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.read-item": {
+      "tool": "get_work_item",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.update-item": {
+      "tool": "save_work_item",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.link-items": {
+      "tool": "link_work_items",
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "tracker.create-item": "handoff-artifact",
+    "tracker.read-item": "handoff-artifact",
+    "tracker.update-item": "handoff-artifact",
+    "tracker.link-items": "handoff-artifact"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "provenance": "synthetic host-boundary transcript; not a live authenticated recording",
+  "provider": "notion",
+  "request": {
+    "operation": "docs.create",
+    "tool": "notion-create-pages",
+    "input": {
+      "title": "Find past orders",
+      "body": "# Definition\n\nKeep init-12345678 linked.\n"
+    }
+  },
+  "response": {
+    "status": "succeeded",
+    "ref": "https://www.notion.so/00000000000000000000000000000042"
+  },
+  "read": {
+    "status": "succeeded",
+    "ref": "https://www.notion.so/00000000000000000000000000000042",
+    "body": "# Team document\n\nUnrelated section stays.\n",
+    "revision": "fixture-revision-1",
+    "complete": true
+  }
+}

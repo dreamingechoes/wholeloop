@@ -1,0 +1,23 @@
+{
+  "provenance": "synthetic host-boundary transcript; not a live authenticated recording",
+  "provider": "google-docs",
+  "request": {
+    "operation": "docs.create",
+    "tool": "gws",
+    "input": {
+      "title": "Find past orders",
+      "body": "# Definition\n\nKeep init-12345678 linked.\n"
+    }
+  },
+  "response": {
+    "status": "succeeded",
+    "ref": "https://docs.google.com/document/d/fixture/edit"
+  },
+  "read": {
+    "status": "succeeded",
+    "ref": "https://docs.google.com/document/d/fixture/edit",
+    "body": "# Team document\n\nUnrelated section stays.\n",
+    "revision": "fixture-revision-1",
+    "complete": true
+  }
+}

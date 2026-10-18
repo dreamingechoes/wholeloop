@@ -33,12 +33,13 @@
     "docs:check": "node dist/wl.mjs docs check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run lint && npm run typecheck && npm run build && npm run test && npm run smoke && npm run commits:check && npm run docs:check && node scripts/generate-commands.mjs --check && node scripts/generate-config.mjs --check && npm run harness:check && npm run lint:md && npm run lint:mermaid",
+    "check": "npm run lint && npm run typecheck && npm run build && npm run test && npm run smoke && npm run commits:check && npm run docs:check && node scripts/generate-commands.mjs --check && node scripts/generate-config.mjs --check && node scripts/generate-providers.mjs --check && npm run harness:check && npm run lint:md && npm run lint:mermaid",
     "harness:check": "node dist/wl.mjs harness check",
     "docs:commands": "npm run build && node scripts/generate-commands.mjs",
     "hooks:install": "npm run build && node scripts/install-hooks.mjs",
     "commits:check": "node scripts/check-commits.mjs",
-    "docs:config": "npm run build && node scripts/generate-config.mjs"
+    "docs:config": "npm run build && node scripts/generate-config.mjs",
+    "providers:catalog": "node scripts/generate-providers.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

@@ -6,7 +6,7 @@ metadata:
 ---
 # Cut scopes
 
-Read ask-never-guess, output-contract and scope-definition.
+Read destination-publication, ask-never-guess, output-contract and scope-definition.
 
 1. Call `wl step begin cut-scopes --for <initiative> --json`. Standalone use
    accepts `--input "<deliverable>" --owner "<person>"`; it creates an initiative

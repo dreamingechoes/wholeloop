@@ -1,0 +1,509 @@
+[
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "confluence",
+      "name": "Confluence",
+      "description": "Publish wholeloop definitions through Confluence.",
+      "access": {
+        "mcp": {
+          "server": "atlassian",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.atlassian.com/v2/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["docs"],
+      "operations": {
+        "docs.create": {
+          "tool": "createConfluenceContent",
+          "guidance": "guidance/usage.md"
+        },
+        "docs.read": {
+          "tool": "getConfluenceContent",
+          "guidance": "guidance/usage.md"
+        },
+        "docs.update": {
+          "tool": "updateConfluenceContent",
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "docs.create": "handoff-artifact",
+        "docs.read": "handoff-artifact",
+        "docs.update": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "docs.create": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n",
+      "docs.read": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n",
+      "docs.update": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "github-issues",
+      "name": "GitHub Issues",
+      "description": "Publish wholeloop definitions through GitHub Issues.",
+      "access": {
+        "mcp": {
+          "server": "github",
+          "install": {
+            "transport": "http",
+            "url": "https://api.githubcopilot.com/mcp/",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["tracker"],
+      "operations": {
+        "tracker.create-item": {
+          "tool": "issue_write",
+          "args": {
+            "method": "create"
+          },
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.read-item": {
+          "tool": "issue_read",
+          "args": {
+            "method": "get"
+          },
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.update-item": {
+          "tool": "issue_write",
+          "args": {
+            "method": "update"
+          },
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.transition": {
+          "tool": "issue_write",
+          "args": {
+            "method": "update"
+          },
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "tracker.create-item": "handoff-artifact",
+        "tracker.read-item": "handoff-artifact",
+        "tracker.update-item": "handoff-artifact",
+        "tracker.transition": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "tracker.create-item": "# GitHub Issues\n\n- Use the official GitHub MCP issues toolset; confirm the connected account/repository.\n- Require explicit owner and repo. For updates include issue_number; do not infer it from a title.\n- issue_write uses method create or update; issue_read uses method get.\n- Keep the wholeloop ID in the body and adopt its existing link before creating another issue.\n- Preserve labels, assignees and unrelated text on update. Transition only to the requested issue state.\n- Record the returned html_url as the tracker link. A tool error is not publication.\n- OAuth and permissions belong to the host client; do not copy credentials.\n- Unsupported relationship operations remain explicit local links, not guessed MCP calls.\n- Reference: [Official documentation](https://github.com/github/github-mcp-server)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n",
+      "tracker.read-item": "# GitHub Issues\n\n- Use the official GitHub MCP issues toolset; confirm the connected account/repository.\n- Require explicit owner and repo. For updates include issue_number; do not infer it from a title.\n- issue_write uses method create or update; issue_read uses method get.\n- Keep the wholeloop ID in the body and adopt its existing link before creating another issue.\n- Preserve labels, assignees and unrelated text on update. Transition only to the requested issue state.\n- Record the returned html_url as the tracker link. A tool error is not publication.\n- OAuth and permissions belong to the host client; do not copy credentials.\n- Unsupported relationship operations remain explicit local links, not guessed MCP calls.\n- Reference: [Official documentation](https://github.com/github/github-mcp-server)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n",
+      "tracker.update-item": "# GitHub Issues\n\n- Use the official GitHub MCP issues toolset; confirm the connected account/repository.\n- Require explicit owner and repo. For updates include issue_number; do not infer it from a title.\n- issue_write uses method create or update; issue_read uses method get.\n- Keep the wholeloop ID in the body and adopt its existing link before creating another issue.\n- Preserve labels, assignees and unrelated text on update. Transition only to the requested issue state.\n- Record the returned html_url as the tracker link. A tool error is not publication.\n- OAuth and permissions belong to the host client; do not copy credentials.\n- Unsupported relationship operations remain explicit local links, not guessed MCP calls.\n- Reference: [Official documentation](https://github.com/github/github-mcp-server)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n",
+      "tracker.transition": "# GitHub Issues\n\n- Use the official GitHub MCP issues toolset; confirm the connected account/repository.\n- Require explicit owner and repo. For updates include issue_number; do not infer it from a title.\n- issue_write uses method create or update; issue_read uses method get.\n- Keep the wholeloop ID in the body and adopt its existing link before creating another issue.\n- Preserve labels, assignees and unrelated text on update. Transition only to the requested issue state.\n- Record the returned html_url as the tracker link. A tool error is not publication.\n- OAuth and permissions belong to the host client; do not copy credentials.\n- Unsupported relationship operations remain explicit local links, not guessed MCP calls.\n- Reference: [Official documentation](https://github.com/github/github-mcp-server)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "gitlab-issues",
+      "name": "GitLab Issues",
+      "description": "Publish wholeloop definitions through GitLab Issues.",
+      "access": {
+        "mcp": {
+          "server": "gitlab",
+          "install": {
+            "transport": "http",
+            "url": "https://gitlab.com/api/v4/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["tracker"],
+      "operations": {
+        "tracker.create-item": {
+          "tool": "save_work_item",
+          "args": {
+            "type_name": "Issue"
+          },
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.read-item": {
+          "tool": "get_work_item",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.update-item": {
+          "tool": "save_work_item",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.link-items": {
+          "tool": "link_work_items",
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "tracker.create-item": "handoff-artifact",
+        "tracker.read-item": "handoff-artifact",
+        "tracker.update-item": "handoff-artifact",
+        "tracker.link-items": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "tracker.create-item": "# GitLab Issues\n\n- Use the official GitLab MCP endpoint; override its host for self-managed instances.\n- Confirm the namespace and supported version; save_work_item/get_work_item replace legacy issue tools.\n- Creation needs an explicit project_id (or group_id/URL), title and type_name Issue.\n- Updates need the existing work item URL or work_item_iid; omit fields that are not changing.\n- Resolve actual relationship types with the connected tool schema before link_work_items.\n- Do not create labels or choose milestones implicitly. Keep the wholeloop ID in the description.\n- Record the returned web_url; preserve a local artifact if tools or permissions are unavailable.\n- OAuth is managed by the client. No credential values belong in manifests or arguments.\n- Reference: [Official documentation](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/)\n- Mapping checked: 2026-10-18. Live version/account conformance remains pending.\n",
+      "tracker.read-item": "# GitLab Issues\n\n- Use the official GitLab MCP endpoint; override its host for self-managed instances.\n- Confirm the namespace and supported version; save_work_item/get_work_item replace legacy issue tools.\n- Creation needs an explicit project_id (or group_id/URL), title and type_name Issue.\n- Updates need the existing work item URL or work_item_iid; omit fields that are not changing.\n- Resolve actual relationship types with the connected tool schema before link_work_items.\n- Do not create labels or choose milestones implicitly. Keep the wholeloop ID in the description.\n- Record the returned web_url; preserve a local artifact if tools or permissions are unavailable.\n- OAuth is managed by the client. No credential values belong in manifests or arguments.\n- Reference: [Official documentation](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/)\n- Mapping checked: 2026-10-18. Live version/account conformance remains pending.\n",
+      "tracker.update-item": "# GitLab Issues\n\n- Use the official GitLab MCP endpoint; override its host for self-managed instances.\n- Confirm the namespace and supported version; save_work_item/get_work_item replace legacy issue tools.\n- Creation needs an explicit project_id (or group_id/URL), title and type_name Issue.\n- Updates need the existing work item URL or work_item_iid; omit fields that are not changing.\n- Resolve actual relationship types with the connected tool schema before link_work_items.\n- Do not create labels or choose milestones implicitly. Keep the wholeloop ID in the description.\n- Record the returned web_url; preserve a local artifact if tools or permissions are unavailable.\n- OAuth is managed by the client. No credential values belong in manifests or arguments.\n- Reference: [Official documentation](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/)\n- Mapping checked: 2026-10-18. Live version/account conformance remains pending.\n",
+      "tracker.link-items": "# GitLab Issues\n\n- Use the official GitLab MCP endpoint; override its host for self-managed instances.\n- Confirm the namespace and supported version; save_work_item/get_work_item replace legacy issue tools.\n- Creation needs an explicit project_id (or group_id/URL), title and type_name Issue.\n- Updates need the existing work item URL or work_item_iid; omit fields that are not changing.\n- Resolve actual relationship types with the connected tool schema before link_work_items.\n- Do not create labels or choose milestones implicitly. Keep the wholeloop ID in the description.\n- Record the returned web_url; preserve a local artifact if tools or permissions are unavailable.\n- OAuth is managed by the client. No credential values belong in manifests or arguments.\n- Reference: [Official documentation](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/)\n- Mapping checked: 2026-10-18. Live version/account conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "google-docs",
+      "name": "Google Docs",
+      "description": "Publish wholeloop definitions through Google Docs.",
+      "access": {
+        "cli": {
+          "binary": "gws"
+        }
+      },
+      "capabilities": ["docs"],
+      "operations": {
+        "docs.create": {
+          "tool": "gws",
+          "args": {
+            "argv": ["docs", "documents", "create"]
+          },
+          "guidance": "guidance/usage.md"
+        },
+        "docs.read": {
+          "tool": "gws",
+          "args": {
+            "argv": ["docs", "documents", "get"]
+          },
+          "guidance": "guidance/usage.md"
+        },
+        "docs.update": {
+          "tool": "gws",
+          "args": {
+            "argv": ["docs", "documents", "batchUpdate"]
+          },
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "docs.create": "handoff-artifact",
+        "docs.read": "handoff-artifact",
+        "docs.update": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "docs.create": "# Google Docs\n\n- Use the optional Google Workspace CLI gws and its own encrypted credential store.\n- The core declares operations; the host invokes gws with argv, --params JSON and --json request JSON.\n- Create returns an empty document ID; insert content using read-modify-write before reporting publication.\n- Get the full document (including tabs) and revisionId before every batchUpdate operation.\n- Preserve structural elements and unrelated tabs; do not flatten a rich document into guessed plain text.\n- Transform the fetched document into batch requests and carry writeControl.requiredRevisionId.\n- A stale revision fails; re-read and review before retrying. Never suppress writeControl on conflict.\n- Normalize the complete document JSON to ref/body/revision; body is the fetched JSON representation.\n- Use the returned documentId to record `https://docs.google.com/document/d/<id>/edit`.\n- Native Docs MCP currently exposes read/update only, so creation uses the optional CLI.\n- References: [Official documentation](https://github.com/googleworkspace/cli)\n- [API reference](https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/batchUpdate)\n- Mapping checked: 2026-10-18. No CLI was installed; live auth/conformance remains pending.\n",
+      "docs.read": "# Google Docs\n\n- Use the optional Google Workspace CLI gws and its own encrypted credential store.\n- The core declares operations; the host invokes gws with argv, --params JSON and --json request JSON.\n- Create returns an empty document ID; insert content using read-modify-write before reporting publication.\n- Get the full document (including tabs) and revisionId before every batchUpdate operation.\n- Preserve structural elements and unrelated tabs; do not flatten a rich document into guessed plain text.\n- Transform the fetched document into batch requests and carry writeControl.requiredRevisionId.\n- A stale revision fails; re-read and review before retrying. Never suppress writeControl on conflict.\n- Normalize the complete document JSON to ref/body/revision; body is the fetched JSON representation.\n- Use the returned documentId to record `https://docs.google.com/document/d/<id>/edit`.\n- Native Docs MCP currently exposes read/update only, so creation uses the optional CLI.\n- References: [Official documentation](https://github.com/googleworkspace/cli)\n- [API reference](https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/batchUpdate)\n- Mapping checked: 2026-10-18. No CLI was installed; live auth/conformance remains pending.\n",
+      "docs.update": "# Google Docs\n\n- Use the optional Google Workspace CLI gws and its own encrypted credential store.\n- The core declares operations; the host invokes gws with argv, --params JSON and --json request JSON.\n- Create returns an empty document ID; insert content using read-modify-write before reporting publication.\n- Get the full document (including tabs) and revisionId before every batchUpdate operation.\n- Preserve structural elements and unrelated tabs; do not flatten a rich document into guessed plain text.\n- Transform the fetched document into batch requests and carry writeControl.requiredRevisionId.\n- A stale revision fails; re-read and review before retrying. Never suppress writeControl on conflict.\n- Normalize the complete document JSON to ref/body/revision; body is the fetched JSON representation.\n- Use the returned documentId to record `https://docs.google.com/document/d/<id>/edit`.\n- Native Docs MCP currently exposes read/update only, so creation uses the optional CLI.\n- References: [Official documentation](https://github.com/googleworkspace/cli)\n- [API reference](https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/batchUpdate)\n- Mapping checked: 2026-10-18. No CLI was installed; live auth/conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "jira",
+      "name": "Jira",
+      "description": "Publish wholeloop definitions through Jira.",
+      "access": {
+        "mcp": {
+          "server": "atlassian",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.atlassian.com/v2/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["tracker"],
+      "operations": {
+        "tracker.create-item": {
+          "tool": "createJiraIssue",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.read-item": {
+          "tool": "getJiraIssue",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.update-item": {
+          "tool": "editJiraIssue",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.link-items": {
+          "tool": "createJiraIssueLink",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.transition": {
+          "tool": "transitionJiraIssue",
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "tracker.create-item": "handoff-artifact",
+        "tracker.read-item": "handoff-artifact",
+        "tracker.update-item": "handoff-artifact",
+        "tracker.link-items": "handoff-artifact",
+        "tracker.transition": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "tracker.create-item": "# Jira\n\n- Use the Atlassian Rovo MCP Jira tools and confirm cloudId/project before writes.\n- Discover required issue fields and allowed transitions in the current site's tool schema.\n- Carry the wholeloop ID and existing tracker key; an edit uses the existing key, never a new issue.\n- Preserve unrelated description sections and field values; use the site's supported rich-text format.\n- Resolve actual issue/transition/link type IDs rather than deriving them from names.\n- Record the returned issue URL. Missing create/edit permission becomes a local handoff.\n- OAuth belongs to the host. Never persist an API token in a manifest or fixture.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live site conformance remains pending.\n",
+      "tracker.read-item": "# Jira\n\n- Use the Atlassian Rovo MCP Jira tools and confirm cloudId/project before writes.\n- Discover required issue fields and allowed transitions in the current site's tool schema.\n- Carry the wholeloop ID and existing tracker key; an edit uses the existing key, never a new issue.\n- Preserve unrelated description sections and field values; use the site's supported rich-text format.\n- Resolve actual issue/transition/link type IDs rather than deriving them from names.\n- Record the returned issue URL. Missing create/edit permission becomes a local handoff.\n- OAuth belongs to the host. Never persist an API token in a manifest or fixture.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live site conformance remains pending.\n",
+      "tracker.update-item": "# Jira\n\n- Use the Atlassian Rovo MCP Jira tools and confirm cloudId/project before writes.\n- Discover required issue fields and allowed transitions in the current site's tool schema.\n- Carry the wholeloop ID and existing tracker key; an edit uses the existing key, never a new issue.\n- Preserve unrelated description sections and field values; use the site's supported rich-text format.\n- Resolve actual issue/transition/link type IDs rather than deriving them from names.\n- Record the returned issue URL. Missing create/edit permission becomes a local handoff.\n- OAuth belongs to the host. Never persist an API token in a manifest or fixture.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live site conformance remains pending.\n",
+      "tracker.link-items": "# Jira\n\n- Use the Atlassian Rovo MCP Jira tools and confirm cloudId/project before writes.\n- Discover required issue fields and allowed transitions in the current site's tool schema.\n- Carry the wholeloop ID and existing tracker key; an edit uses the existing key, never a new issue.\n- Preserve unrelated description sections and field values; use the site's supported rich-text format.\n- Resolve actual issue/transition/link type IDs rather than deriving them from names.\n- Record the returned issue URL. Missing create/edit permission becomes a local handoff.\n- OAuth belongs to the host. Never persist an API token in a manifest or fixture.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live site conformance remains pending.\n",
+      "tracker.transition": "# Jira\n\n- Use the Atlassian Rovo MCP Jira tools and confirm cloudId/project before writes.\n- Discover required issue fields and allowed transitions in the current site's tool schema.\n- Carry the wholeloop ID and existing tracker key; an edit uses the existing key, never a new issue.\n- Preserve unrelated description sections and field values; use the site's supported rich-text format.\n- Resolve actual issue/transition/link type IDs rather than deriving them from names.\n- Record the returned issue URL. Missing create/edit permission becomes a local handoff.\n- OAuth belongs to the host. Never persist an API token in a manifest or fixture.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live site conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "linear",
+      "name": "Linear",
+      "description": "Publish wholeloop definitions through Linear.",
+      "access": {
+        "mcp": {
+          "server": "linear",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.linear.app/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["tracker"],
+      "operations": {
+        "tracker.create-item": {
+          "tool": "save_issue",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.read-item": {
+          "tool": "get_issue",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.update-item": {
+          "tool": "save_issue",
+          "guidance": "guidance/usage.md"
+        },
+        "tracker.transition": {
+          "tool": "save_issue",
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "tracker.create-item": "handoff-artifact",
+        "tracker.read-item": "handoff-artifact",
+        "tracker.update-item": "handoff-artifact",
+        "tracker.transition": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "tracker.create-item": "# Linear\n\n- Use the official read-write Linear MCP endpoint and confirm the authenticated workspace/team.\n- save_issue creates without an id and updates with the existing id; do not use retired create_issue aliases.\n- Supply the real team identifier for creation and preserve the wholeloop ID in the description.\n- Fetch the existing issue before editing. Preserve unrelated description and metadata.\n- Resolve workflow states in the actual team before setting state; do not guess a status ID.\n- Record the returned issue URL. Permissions or unavailable tools leave publication pending.\n- Unsupported relationship mappings remain local; do not invent a tool name.\n- References: [Official documentation](https://linear.app/docs/mcp) and [Official documentation](https://linear.app/integrations/slack)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n",
+      "tracker.read-item": "# Linear\n\n- Use the official read-write Linear MCP endpoint and confirm the authenticated workspace/team.\n- save_issue creates without an id and updates with the existing id; do not use retired create_issue aliases.\n- Supply the real team identifier for creation and preserve the wholeloop ID in the description.\n- Fetch the existing issue before editing. Preserve unrelated description and metadata.\n- Resolve workflow states in the actual team before setting state; do not guess a status ID.\n- Record the returned issue URL. Permissions or unavailable tools leave publication pending.\n- Unsupported relationship mappings remain local; do not invent a tool name.\n- References: [Official documentation](https://linear.app/docs/mcp) and [Official documentation](https://linear.app/integrations/slack)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n",
+      "tracker.update-item": "# Linear\n\n- Use the official read-write Linear MCP endpoint and confirm the authenticated workspace/team.\n- save_issue creates without an id and updates with the existing id; do not use retired create_issue aliases.\n- Supply the real team identifier for creation and preserve the wholeloop ID in the description.\n- Fetch the existing issue before editing. Preserve unrelated description and metadata.\n- Resolve workflow states in the actual team before setting state; do not guess a status ID.\n- Record the returned issue URL. Permissions or unavailable tools leave publication pending.\n- Unsupported relationship mappings remain local; do not invent a tool name.\n- References: [Official documentation](https://linear.app/docs/mcp) and [Official documentation](https://linear.app/integrations/slack)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n",
+      "tracker.transition": "# Linear\n\n- Use the official read-write Linear MCP endpoint and confirm the authenticated workspace/team.\n- save_issue creates without an id and updates with the existing id; do not use retired create_issue aliases.\n- Supply the real team identifier for creation and preserve the wholeloop ID in the description.\n- Fetch the existing issue before editing. Preserve unrelated description and metadata.\n- Resolve workflow states in the actual team before setting state; do not guess a status ID.\n- Record the returned issue URL. Permissions or unavailable tools leave publication pending.\n- Unsupported relationship mappings remain local; do not invent a tool name.\n- References: [Official documentation](https://linear.app/docs/mcp) and [Official documentation](https://linear.app/integrations/slack)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "local-docs",
+      "name": "Local documents",
+      "description": "Store documents locally without integrations.",
+      "capabilities": ["docs"],
+      "access": {
+        "local": true
+      },
+      "operations": {
+        "docs.create": {
+          "tool": "wholeloop.local-docs.create"
+        },
+        "docs.read": {
+          "tool": "wholeloop.local-docs.read"
+        },
+        "docs.update": {
+          "tool": "wholeloop.local-docs.update"
+        },
+        "docs.link": {
+          "tool": "wholeloop.local-docs.link"
+        }
+      },
+      "degrade": {
+        "docs.create": "handoff-artifact",
+        "docs.read": "handoff-artifact",
+        "docs.update": "handoff-artifact",
+        "docs.link": "handoff-artifact"
+      }
+    },
+    "guidance": {}
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "local-tracker",
+      "name": "Local tracker",
+      "description": "Track work items in the external local store.",
+      "capabilities": ["tracker"],
+      "access": {
+        "local": true
+      },
+      "operations": {
+        "tracker.create-item": {
+          "tool": "wholeloop.local-tracker.create-item"
+        },
+        "tracker.read-item": {
+          "tool": "wholeloop.local-tracker.read-item"
+        },
+        "tracker.update-item": {
+          "tool": "wholeloop.local-tracker.update-item"
+        },
+        "tracker.link-items": {
+          "tool": "wholeloop.local-tracker.link-items"
+        },
+        "tracker.transition": {
+          "tool": "wholeloop.local-tracker.transition"
+        }
+      },
+      "degrade": {
+        "tracker.create-item": "handoff-artifact",
+        "tracker.read-item": "handoff-artifact",
+        "tracker.update-item": "handoff-artifact",
+        "tracker.link-items": "handoff-artifact",
+        "tracker.transition": "handoff-artifact"
+      }
+    },
+    "guidance": {}
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "native-code",
+      "name": "Native code",
+      "description": "Use the host CLI file tools for read-only code evidence.",
+      "capabilities": ["source.code"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "source.code.query": {
+          "tool": "wholeloop.native-code.query"
+        }
+      },
+      "degrade": {
+        "source.code.query": "open-question"
+      }
+    },
+    "guidance": {}
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "native-web",
+      "name": "Native web",
+      "description": "Use the host CLI web tools for read-only evidence.",
+      "capabilities": ["source.web"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "source.web.query": {
+          "tool": "wholeloop.native-web.query"
+        }
+      },
+      "degrade": {
+        "source.web.query": "open-question"
+      }
+    },
+    "guidance": {}
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "notion",
+      "name": "Notion",
+      "description": "Publish wholeloop definitions through Notion.",
+      "access": {
+        "mcp": {
+          "server": "notion",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.notion.com/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "capabilities": ["docs"],
+      "operations": {
+        "docs.create": {
+          "tool": "notion-create-pages",
+          "args": {
+            "allow_async": false
+          },
+          "guidance": "guidance/usage.md"
+        },
+        "docs.read": {
+          "tool": "notion-fetch",
+          "guidance": "guidance/usage.md"
+        },
+        "docs.update": {
+          "tool": "notion-update-page",
+          "args": {
+            "allow_async": false
+          },
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "docs.create": "handoff-artifact",
+        "docs.read": "handoff-artifact",
+        "docs.update": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "docs.create": "# Notion\n\n- Confirm the actual parent page/data source and writable properties from fetched schema.\n- notion-create-pages creates content; use an existing page ID for notion-update-page.\n- Every update first fetches the full page in the same read-modify-write operation.\n- Preserve unrelated content and block references; prefer a targeted edit over replacing a whole page.\n- Normalize complete fetched Markdown to ref/body/revision; truncation or hidden content blocks replacement.\n- allow_async false requests a synchronous write. A returned async_task is still pending: poll it in the host.\n- Record the page URL only on confirmed success. The core does not equate queued work with publication.\n- Discover host aliases for fetch/search; OpenAI MCP clients can drop the notion- prefix.\n- OAuth stays in the client store; do not create a plaintext integration-token config.\n- Reference: [Official documentation](https://developers.notion.com/guides/mcp/mcp-supported-tools)\n- Mapping checked: 2026-10-18. Live host/schema conformance remains pending.\n",
+      "docs.read": "# Notion\n\n- Confirm the actual parent page/data source and writable properties from fetched schema.\n- notion-create-pages creates content; use an existing page ID for notion-update-page.\n- Every update first fetches the full page in the same read-modify-write operation.\n- Preserve unrelated content and block references; prefer a targeted edit over replacing a whole page.\n- Normalize complete fetched Markdown to ref/body/revision; truncation or hidden content blocks replacement.\n- allow_async false requests a synchronous write. A returned async_task is still pending: poll it in the host.\n- Record the page URL only on confirmed success. The core does not equate queued work with publication.\n- Discover host aliases for fetch/search; OpenAI MCP clients can drop the notion- prefix.\n- OAuth stays in the client store; do not create a plaintext integration-token config.\n- Reference: [Official documentation](https://developers.notion.com/guides/mcp/mcp-supported-tools)\n- Mapping checked: 2026-10-18. Live host/schema conformance remains pending.\n",
+      "docs.update": "# Notion\n\n- Confirm the actual parent page/data source and writable properties from fetched schema.\n- notion-create-pages creates content; use an existing page ID for notion-update-page.\n- Every update first fetches the full page in the same read-modify-write operation.\n- Preserve unrelated content and block references; prefer a targeted edit over replacing a whole page.\n- Normalize complete fetched Markdown to ref/body/revision; truncation or hidden content blocks replacement.\n- allow_async false requests a synchronous write. A returned async_task is still pending: poll it in the host.\n- Record the page URL only on confirmed success. The core does not equate queued work with publication.\n- Discover host aliases for fetch/search; OpenAI MCP clients can drop the notion- prefix.\n- OAuth stays in the client store; do not create a plaintext integration-token config.\n- Reference: [Official documentation](https://developers.notion.com/guides/mcp/mcp-supported-tools)\n- Mapping checked: 2026-10-18. Live host/schema conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "repo-docs",
+      "name": "Repository docs",
+      "description": "Publish wholeloop definitions through Repository docs.",
+      "access": {
+        "native": true
+      },
+      "capabilities": ["docs"],
+      "operations": {
+        "docs.create": {
+          "tool": "native.write-file",
+          "args": {
+            "exclusive": true
+          },
+          "guidance": "guidance/usage.md"
+        },
+        "docs.read": {
+          "tool": "native.read-file",
+          "guidance": "guidance/usage.md"
+        },
+        "docs.update": {
+          "tool": "native.write-file",
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "docs.create": "handoff-artifact",
+        "docs.read": "handoff-artifact",
+        "docs.update": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "docs.create": "# Repository docs\n\n- This is intentional publication of documentation, never a runtime-state store.\n- Resolve the requested Markdown path under the repository docs/ directory and reject symlink escapes.\n- Ask for an explicit destination if none is known. Do not invent a tracked path.\n- The host maps native.read-file/write-file to its own file tools; the core never runs arbitrary shell text.\n- Create exclusively, without overwriting existing content. Update only through read-modify-write.\n- Preserve front matter, navigation and unrelated sections; follow repository docs conventions.\n- Normalize a full UTF-8 read to ref/body/revision (content digest for local concurrency checks).\n- Verify the expected digest before atomic replacement. A conflict requires a fresh read/review.\n- Report the relative path and optional code-host URL; do not commit or push as a side effect.\n- Native tool availability, path containment and concurrent-write behavior need host conformance.\n",
+      "docs.read": "# Repository docs\n\n- This is intentional publication of documentation, never a runtime-state store.\n- Resolve the requested Markdown path under the repository docs/ directory and reject symlink escapes.\n- Ask for an explicit destination if none is known. Do not invent a tracked path.\n- The host maps native.read-file/write-file to its own file tools; the core never runs arbitrary shell text.\n- Create exclusively, without overwriting existing content. Update only through read-modify-write.\n- Preserve front matter, navigation and unrelated sections; follow repository docs conventions.\n- Normalize a full UTF-8 read to ref/body/revision (content digest for local concurrency checks).\n- Verify the expected digest before atomic replacement. A conflict requires a fresh read/review.\n- Report the relative path and optional code-host URL; do not commit or push as a side effect.\n- Native tool availability, path containment and concurrent-write behavior need host conformance.\n",
+      "docs.update": "# Repository docs\n\n- This is intentional publication of documentation, never a runtime-state store.\n- Resolve the requested Markdown path under the repository docs/ directory and reject symlink escapes.\n- Ask for an explicit destination if none is known. Do not invent a tracked path.\n- The host maps native.read-file/write-file to its own file tools; the core never runs arbitrary shell text.\n- Create exclusively, without overwriting existing content. Update only through read-modify-write.\n- Preserve front matter, navigation and unrelated sections; follow repository docs conventions.\n- Normalize a full UTF-8 read to ref/body/revision (content digest for local concurrency checks).\n- Verify the expected digest before atomic replacement. A conflict requires a fresh read/review.\n- Report the relative path and optional code-host URL; do not commit or push as a side effect.\n- Native tool availability, path containment and concurrent-write behavior need host conformance.\n"
+    }
+  }
+]

@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "id": "google-docs",
+  "name": "Google Docs",
+  "description": "Publish wholeloop definitions through Google Docs.",
+  "access": {
+    "cli": {
+      "binary": "gws"
+    }
+  },
+  "capabilities": ["docs"],
+  "operations": {
+    "docs.create": {
+      "tool": "gws",
+      "args": {
+        "argv": ["docs", "documents", "create"]
+      },
+      "guidance": "guidance/usage.md"
+    },
+    "docs.read": {
+      "tool": "gws",
+      "args": {
+        "argv": ["docs", "documents", "get"]
+      },
+      "guidance": "guidance/usage.md"
+    },
+    "docs.update": {
+      "tool": "gws",
+      "args": {
+        "argv": ["docs", "documents", "batchUpdate"]
+      },
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "docs.create": "handoff-artifact",
+    "docs.read": "handoff-artifact",
+    "docs.update": "handoff-artifact"
+  }
+}

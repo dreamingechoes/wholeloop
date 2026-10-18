@@ -1,0 +1,16 @@
+{
+  "provenance": "synthetic host-boundary transcript; not a live authenticated recording",
+  "provider": "github-issues",
+  "request": {
+    "operation": "tracker.create-item",
+    "tool": "issue_write",
+    "input": {
+      "title": "Find past orders",
+      "body": "# Definition\n\nKeep init-12345678 linked.\n"
+    }
+  },
+  "response": {
+    "status": "succeeded",
+    "ref": "https://github.com/example/product/issues/42"
+  }
+}

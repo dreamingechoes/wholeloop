@@ -19,7 +19,12 @@
 MCP snippets for Claude, Codex, OpenCode and Copilot are golden-tested for HTTP
 and stdio. Merge a snippet into an isolated client configuration and verify an
 actual tool call and authentication before calling that integration supported.
-Registry detection only establishes declarations or executable presence. No live
+The eight destination providers have synthetic host-boundary transcripts, not
+live captured responses. Verify actual tool names/arguments, complete reads,
+rich-text preservation, revision conflicts and confirmed external links for each
+configured destination. Check Notion async results and aliases, GitLab version,
+Atlassian fields/permissions, and optional gws creation plus content insertion.
+No integration was installed. Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
 ## Definition challenger validation still pending

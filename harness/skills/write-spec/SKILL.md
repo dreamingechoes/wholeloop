@@ -6,7 +6,7 @@ metadata:
 ---
 # Write a specification
 
-Read ask-never-guess, output-contract and spec-definition.
+Read destination-publication, ask-never-guess, output-contract and spec-definition.
 
 1. Call `wl step begin write-spec --for <initiative> --json`. Standalone use accepts
    `--input "<problem>" --owner "<person>" --impact "<observable impact>"` without

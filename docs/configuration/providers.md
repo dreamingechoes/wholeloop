@@ -3,7 +3,7 @@
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. External provider execution, authenticated probes and the wider catalogue remain planned. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
+> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. Eight destination manifests, bundled guidance, a typed host invocation boundary and same-operation document updates are implemented with synthetic fixture transcripts. Authenticated remote execution and source/service catalogues remain pending. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
 
 ---
 
@@ -94,6 +94,60 @@ Defaults chosen for breadth of real-world use. **v1** ships with the phase that 
 | `design` | Figma | Penpot |
 
 One provider can serve several capabilities — PostHog covers product analytics, dashboards and flags; Confluence covers `docs` and `source.knowledge`.
+
+### Implemented destination mappings
+
+| ID | Mapping | Verification |
+| --- | --- | --- |
+| `github-issues` | Official GitHub MCP issues tools | Synthetic host transcript; live OAuth/toolset pending |
+| `gitlab-issues` | Official GitLab MCP work-item tools | Synthetic host transcript; self-managed version pending |
+| `jira` | Atlassian Rovo Jira tools | Synthetic host transcript; site fields/transitions pending |
+| `linear` | Official Linear MCP save/get issue | Synthetic host transcript; workspace schema pending |
+| `confluence` | Rovo create/read/update content | Synthetic host transcript; page-format/revision pending |
+| `notion` | Official create-pages/fetch/update-page | Synthetic host transcript; aliases/async behavior pending |
+| `google-docs` | Optional gws documents create/get/batchUpdate | Synthetic host transcript; CLI/auth/format pending |
+| `repo-docs` | Native files with a core repository-docs host | Real temporary-file tests; no automatic commit/push |
+
+These mappings were checked against official documentation on 2026-10-18:
+[GitHub](https://github.com/github/github-mcp-server),
+[GitLab](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/),
+[Atlassian](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/),
+[Linear](https://linear.app/integrations/slack),
+[Notion](https://developers.notion.com/guides/mcp/mcp-supported-tools), and
+[Google Workspace CLI](https://github.com/googleworkspace/cli).
+The [Docs MCP reference](https://developers.google.com/workspace/docs/api/reference/mcp)
+currently exposes read/update, so document creation uses optional gws. No tool was
+installed and no authenticated operation was performed here. Discover the actual
+live schema before translating generic input into vendor arguments.
+
+Canonical resources live under harness/providers. Run `npm run providers:catalog`
+after changing them, then `npm run lint:fix`; check enforces semantic catalog drift.
+The bundled registry returns guidanceText even without the source checkout.
+Repository/user resources also retain their file paths and inheritance precedence.
+
+### Read-modify-write boundary
+
+`performOperation` accepts taxonomy mappings through an injected host that owns
+authentication, tool invocation and vendor-specific response normalization. Fixed
+manifest arguments take precedence over caller input. Exact placeholders preserve
+JSON types; argument values are never interpolated into shell commands by the core.
+This is an execution interface for workflows, not an automatic remote command.
+
+Generic invocation rejects docs.update. `updateDocument` reads the same reference
+inside that invocation, requires a complete body and revision, then gives the
+snapshot to the transform. It passes source digest/revision with the new body;
+no-op changes skip the write. Truncated, pending or mismatched reads fail before
+the transform. Hosts apply native revision preconditions and preserve rich
+formats. A queued write remains pending. See
+[ADR-0026](../decisions/0026-destination-host-contract-and-document-updates.md).
+
+RepositoryDocuments publishes only explicit docs/*.md output, using exclusive
+creation, path containment, observed digest conflicts and atomic replacement.
+The writer lock stays external. Other editors do not share it, so this does not
+promise filesystem-wide compare-and-swap. Wholeloop runtime state never becomes
+tracked repository content. Record real links with `wl link <id> <URL> --json`
+after the host confirms success; Define completion still returns pending remote
+handoffs until a host performs that work.
 
 ## Available registry commands
 

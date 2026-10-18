@@ -4,6 +4,10 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: docs-same-operation-read
+    enforcers: [src/providers/operations.ts#updateDocument, src/providers/manifest.ts#validateProvider, test/unit/providers/destinations.test.ts]
+  - id: repo-docs-contained-output
+    enforcers: [src/providers/repo-docs.ts#RepositoryDocuments, test/unit/providers/destinations.test.ts]
   - id: definition-fixed-coverage
     enforcers: [src/definition/challenge.ts#challengePlan, test/unit/definition/definition.test.ts]
   - id: definition-structural-contradictions

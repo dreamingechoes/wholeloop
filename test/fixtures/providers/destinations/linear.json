@@ -1,0 +1,16 @@
+{
+  "provenance": "synthetic host-boundary transcript; not a live authenticated recording",
+  "provider": "linear",
+  "request": {
+    "operation": "tracker.create-item",
+    "tool": "save_issue",
+    "input": {
+      "title": "Find past orders",
+      "body": "# Definition\n\nKeep init-12345678 linked.\n"
+    }
+  },
+  "response": {
+    "status": "succeeded",
+    "ref": "https://linear.app/example/issue/PROD-42"
+  }
+}

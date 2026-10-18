@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "id": "jira",
+  "name": "Jira",
+  "description": "Publish wholeloop definitions through Jira.",
+  "access": {
+    "mcp": {
+      "server": "atlassian",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.atlassian.com/v2/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["tracker"],
+  "operations": {
+    "tracker.create-item": {
+      "tool": "createJiraIssue",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.read-item": {
+      "tool": "getJiraIssue",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.update-item": {
+      "tool": "editJiraIssue",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.link-items": {
+      "tool": "createJiraIssueLink",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.transition": {
+      "tool": "transitionJiraIssue",
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "tracker.create-item": "handoff-artifact",
+    "tracker.read-item": "handoff-artifact",
+    "tracker.update-item": "handoff-artifact",
+    "tracker.link-items": "handoff-artifact",
+    "tracker.transition": "handoff-artifact"
+  }
+}

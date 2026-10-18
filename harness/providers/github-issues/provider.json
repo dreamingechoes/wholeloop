@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "id": "github-issues",
+  "name": "GitHub Issues",
+  "description": "Publish wholeloop definitions through GitHub Issues.",
+  "access": {
+    "mcp": {
+      "server": "github",
+      "install": {
+        "transport": "http",
+        "url": "https://api.githubcopilot.com/mcp/",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["tracker"],
+  "operations": {
+    "tracker.create-item": {
+      "tool": "issue_write",
+      "args": {
+        "method": "create"
+      },
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.read-item": {
+      "tool": "issue_read",
+      "args": {
+        "method": "get"
+      },
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.update-item": {
+      "tool": "issue_write",
+      "args": {
+        "method": "update"
+      },
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.transition": {
+      "tool": "issue_write",
+      "args": {
+        "method": "update"
+      },
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "tracker.create-item": "handoff-artifact",
+    "tracker.read-item": "handoff-artifact",
+    "tracker.update-item": "handoff-artifact",
+    "tracker.transition": "handoff-artifact"
+  }
+}

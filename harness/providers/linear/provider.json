@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "linear",
+  "name": "Linear",
+  "description": "Publish wholeloop definitions through Linear.",
+  "access": {
+    "mcp": {
+      "server": "linear",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.linear.app/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["tracker"],
+  "operations": {
+    "tracker.create-item": {
+      "tool": "save_issue",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.read-item": {
+      "tool": "get_issue",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.update-item": {
+      "tool": "save_issue",
+      "guidance": "guidance/usage.md"
+    },
+    "tracker.transition": {
+      "tool": "save_issue",
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "tracker.create-item": "handoff-artifact",
+    "tracker.read-item": "handoff-artifact",
+    "tracker.update-item": "handoff-artifact",
+    "tracker.transition": "handoff-artifact"
+  }
+}

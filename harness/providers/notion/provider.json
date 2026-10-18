@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "id": "notion",
+  "name": "Notion",
+  "description": "Publish wholeloop definitions through Notion.",
+  "access": {
+    "mcp": {
+      "server": "notion",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.notion.com/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["docs"],
+  "operations": {
+    "docs.create": {
+      "tool": "notion-create-pages",
+      "args": {
+        "allow_async": false
+      },
+      "guidance": "guidance/usage.md"
+    },
+    "docs.read": {
+      "tool": "notion-fetch",
+      "guidance": "guidance/usage.md"
+    },
+    "docs.update": {
+      "tool": "notion-update-page",
+      "args": {
+        "allow_async": false
+      },
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "docs.create": "handoff-artifact",
+    "docs.read": "handoff-artifact",
+    "docs.update": "handoff-artifact"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "provenance": "synthetic host-boundary transcript; not a live authenticated recording",
+  "provider": "jira",
+  "request": {
+    "operation": "tracker.create-item",
+    "tool": "createJiraIssue",
+    "input": {
+      "title": "Find past orders",
+      "body": "# Definition\n\nKeep init-12345678 linked.\n"
+    }
+  },
+  "response": {
+    "status": "succeeded",
+    "ref": "https://example.atlassian.net/browse/PROD-42"
+  }
+}

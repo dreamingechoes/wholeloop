@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "id": "confluence",
+  "name": "Confluence",
+  "description": "Publish wholeloop definitions through Confluence.",
+  "access": {
+    "mcp": {
+      "server": "atlassian",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.atlassian.com/v2/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "capabilities": ["docs"],
+  "operations": {
+    "docs.create": {
+      "tool": "createConfluenceContent",
+      "guidance": "guidance/usage.md"
+    },
+    "docs.read": {
+      "tool": "getConfluenceContent",
+      "guidance": "guidance/usage.md"
+    },
+    "docs.update": {
+      "tool": "updateConfluenceContent",
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "docs.create": "handoff-artifact",
+    "docs.read": "handoff-artifact",
+    "docs.update": "handoff-artifact"
+  }
+}

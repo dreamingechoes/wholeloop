@@ -4,7 +4,7 @@ import { parse } from 'yaml'
 import { isObject } from '../config/schema.js'
 import { installedPackageRoot, mergeManifest } from '../extensions/common.js'
 import { inside } from '../state/paths.js'
-import { BUILTINS } from './builtins.js'
+import { BUILTIN_GUIDANCE, BUILTINS } from './builtins.js'
 import { PROVIDER_ID, type Provider, validateProvider } from './manifest.js'
 
 interface Candidate {
@@ -18,6 +18,7 @@ export interface LoadedProvider {
   manifest: Provider
   origin: string
   guidance: Record<string, string>
+  guidanceText: Record<string, string>
 }
 export interface Registry {
   providers: LoadedProvider[]
@@ -86,12 +87,14 @@ export function loadProviders(options: {
 
   const resolving = new Set<string>()
   const resources = new Map<string, Record<string, string>>()
+  const contents = new Map<string, Record<string, string>>()
   function materialize(candidate: Candidate): Provider {
     if (resolving.has(candidate.origin)) throw new Error('Provider inheritance cycle')
     resolving.add(candidate.origin)
     try {
       let value = candidate.value
       let inherited: Record<string, string> = {}
+      let inheritedText: Record<string, string> = {}
       if (typeof value.extends === 'string') {
         const ref = value.extends
         const id = ref.replace(/^builtin:/, '')
@@ -111,36 +114,56 @@ export function loadProviders(options: {
         if (!base) throw new Error('Missing provider inheritance base')
         value = mergeManifest(materialize(base) as unknown as Record<string, unknown>, value)
         inherited = resources.get(base.origin) ?? {}
+        inheritedText = contents.get(base.origin) ?? {}
       }
       validateProvider(value)
       const guidance: Record<string, string> = {}
-      if (candidate.directory)
-        for (const [name, operation] of Object.entries(value.operations))
-          if (operation.guidance) {
-            const rawOperation = isObject(candidate.value.operations)
-              ? candidate.value.operations[name]
-              : undefined
-            const own = isObject(rawOperation) && Object.hasOwn(rawOperation, 'guidance')
-            const file =
-              !own && inherited[name]
-                ? inherited[name]
-                : join(candidate.directory, operation.guidance)
-            if (
-              !file ||
-              !existsSync(file) ||
-              (own && !inside(realpathSync(candidate.directory), realpathSync(file)))
-            )
-              throw new Error('Guidance is missing or escapes its provider directory')
-            if (
-              readFileSync(file, 'utf8')
-                .split('\n')
-                .filter((_, index, lines) => index < lines.length - 1 || lines[index] !== '')
-                .length > 30
-            )
+      const guidanceText: Record<string, string> = {}
+      for (const [name, operation] of Object.entries(value.operations))
+        if (operation.guidance) {
+          const rawOperation = isObject(candidate.value.operations)
+            ? candidate.value.operations[name]
+            : undefined
+          const own = isObject(rawOperation) && Object.hasOwn(rawOperation, 'guidance')
+          const file =
+            !own && inherited[name]
+              ? inherited[name]
+              : candidate.directory
+                ? join(candidate.directory, operation.guidance)
+                : undefined
+          const embedded =
+            !own && inheritedText[name]
+              ? inheritedText[name]
+              : candidate.priority === 0
+                ? BUILTIN_GUIDANCE[candidate.id]?.[name]
+                : undefined
+          if (embedded !== undefined) {
+            if (embedded.trimEnd().split('\n').length > 30)
               throw new Error('Guidance exceeds its 30-line budget')
-            guidance[name] = file
+            guidanceText[name] = embedded
+            if (inherited[name]) guidance[name] = inherited[name]
+            continue
           }
+          if (
+            !file ||
+            !existsSync(file) ||
+            (own &&
+              candidate.directory &&
+              !inside(realpathSync(candidate.directory), realpathSync(file)))
+          )
+            throw new Error('Guidance is missing or escapes its provider directory')
+          if (
+            readFileSync(file, 'utf8')
+              .split('\n')
+              .filter((_, index, lines) => index < lines.length - 1 || lines[index] !== '').length >
+            30
+          )
+            throw new Error('Guidance exceeds its 30-line budget')
+          guidance[name] = file
+          guidanceText[name] = readFileSync(file, 'utf8')
+        }
       resources.set(candidate.origin, guidance)
+      contents.set(candidate.origin, guidanceText)
       return value
     } finally {
       resolving.delete(candidate.origin)
@@ -158,6 +181,7 @@ export function loadProviders(options: {
           manifest: materialize(candidate),
           origin: candidate.origin,
           guidance: resources.get(candidate.origin) ?? {},
+          guidanceText: contents.get(candidate.origin) ?? {},
         })
         break
       } catch (error) {

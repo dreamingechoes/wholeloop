@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "id": "repo-docs",
+  "name": "Repository docs",
+  "description": "Publish wholeloop definitions through Repository docs.",
+  "access": {
+    "native": true
+  },
+  "capabilities": ["docs"],
+  "operations": {
+    "docs.create": {
+      "tool": "native.write-file",
+      "args": {
+        "exclusive": true
+      },
+      "guidance": "guidance/usage.md"
+    },
+    "docs.read": {
+      "tool": "native.read-file",
+      "guidance": "guidance/usage.md"
+    },
+    "docs.update": {
+      "tool": "native.write-file",
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "docs.create": "handoff-artifact",
+    "docs.read": "handoff-artifact",
+    "docs.update": "handoff-artifact"
+  }
+}

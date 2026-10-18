@@ -1,0 +1,23 @@
+{
+  "provenance": "synthetic host-boundary transcript; not a live authenticated recording",
+  "provider": "repo-docs",
+  "request": {
+    "operation": "docs.create",
+    "tool": "native.write-file",
+    "input": {
+      "title": "Find past orders",
+      "body": "# Definition\n\nKeep init-12345678 linked.\n"
+    }
+  },
+  "response": {
+    "status": "succeeded",
+    "ref": "docs/spec.md"
+  },
+  "read": {
+    "status": "succeeded",
+    "ref": "docs/spec.md",
+    "body": "# Team document\n\nUnrelated section stays.\n",
+    "revision": "fixture-revision-1",
+    "complete": true
+  }
+}

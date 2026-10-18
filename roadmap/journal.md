@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P2-06 — destination code complete; live recordings pending
+
+- Add eight destination manifests and tool-specific bounded guidance, verified against official documentation: GitHub/GitLab Issues, Jira, Linear, Confluence, Notion, Google Docs through optional gws, and repository docs. No integration installation or authenticated write was performed.
+- Generate a self-contained provider catalog with drift checks and inherited embedded guidance. Add the typed host invocation boundary and mandatory same-operation document read-modify-write. Preserve full snapshot/revision, skip no-op updates, reject incomplete reads, and retain pending async status. ADR-0026 records the boundary.
+- Exercise actual temporary repository-docs creation/update, path escapes and stale conflicts. Run all eight provider tests through the isolated compiled CLI and synthetic host transcripts. Keep the live recorded-response acceptance criterion unchecked rather than relabelling synthetic output as a capture; park only that manual verification while implementation continues elsewhere.
+- Local check: 296 tests, build, smoke, lint, typecheck, docs, catalog drift, harness and Mermaid passed. Vendor normalization, OAuth, rich formats, remote revision semantics and real links remain on the owner checklist.
+
+---
+
 ## 2026-10-18 · P2-05 — challenger modes and definition checks
 
 - Add read-only problem/spec/criteria/scopes challenger plans with fixed coverage, source digests and transient challenge overrides. Tone and the additional counter-question limit change across dials; required checks and structural findings do not.

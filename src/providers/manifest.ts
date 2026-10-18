@@ -152,6 +152,8 @@ export function validateProvider(value: unknown): asserts value is Provider {
   if (!isObject(value.operations) || !Object.keys(value.operations).length)
     fail('operations', 'at least one taxonomy operation')
   const operations = value.operations as Record<string, unknown>
+  if (Object.hasOwn(operations, 'docs.update') && !Object.hasOwn(operations, 'docs.read'))
+    fail('operations.docs.update', 'docs.read for same-operation read-modify-write')
   const capabilities = value.capabilities as string[]
   for (const [operation, mapping] of Object.entries(operations)) {
     if (

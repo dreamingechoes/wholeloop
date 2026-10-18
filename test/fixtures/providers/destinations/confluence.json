@@ -1,0 +1,23 @@
+{
+  "provenance": "synthetic host-boundary transcript; not a live authenticated recording",
+  "provider": "confluence",
+  "request": {
+    "operation": "docs.create",
+    "tool": "createConfluenceContent",
+    "input": {
+      "title": "Find past orders",
+      "body": "# Definition\n\nKeep init-12345678 linked.\n"
+    }
+  },
+  "response": {
+    "status": "succeeded",
+    "ref": "https://example.atlassian.net/wiki/spaces/PROD/pages/42"
+  },
+  "read": {
+    "status": "succeeded",
+    "ref": "https://example.atlassian.net/wiki/spaces/PROD/pages/42",
+    "body": "# Team document\n\nUnrelated section stays.\n",
+    "revision": "fixture-revision-1",
+    "complete": true
+  }
+}

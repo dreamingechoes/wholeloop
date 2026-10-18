@@ -6,7 +6,7 @@ metadata:
 ---
 # Frame a problem
 
-Read ask-never-guess, output-contract and framing-evidence.
+Read destination-publication, ask-never-guess, output-contract and framing-evidence.
 
 1. Call `wl step begin frame-problem --input "<idea>" --owner "<person>" --json`.
    Omit unknown values for batched questions. Use `--for <initiative>` to refine

@@ -1,0 +1,16 @@
+{
+  "provenance": "synthetic host-boundary transcript; not a live authenticated recording",
+  "provider": "gitlab-issues",
+  "request": {
+    "operation": "tracker.create-item",
+    "tool": "save_work_item",
+    "input": {
+      "title": "Find past orders",
+      "body": "# Definition\n\nKeep init-12345678 linked.\n"
+    }
+  },
+  "response": {
+    "status": "succeeded",
+    "ref": "https://gitlab.com/example/product/-/issues/42"
+  }
+}
