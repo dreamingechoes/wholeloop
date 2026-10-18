@@ -9,12 +9,13 @@ export function publicationPlan(
   configuration: Record<string, unknown>,
   subject: string,
   artifact: string,
+  capabilities: readonly ('docs' | 'tracker')[] = ['docs', 'tracker'],
 ) {
   const registry = loadProviders(loadExtensionOptions({ root, userFile }))
   if (registry.problems.length)
     throw new Error('Resolve provider registry problems before publishing artifacts')
   return Object.fromEntries(
-    ['docs', 'tracker'].map((capability) => {
+    capabilities.map((capability) => {
       const operation = capability === 'docs' ? 'docs.create' : 'tracker.create-item'
       const configured =
         isObject(configuration.providers) && typeof configuration.providers[capability] === 'string'

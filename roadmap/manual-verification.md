@@ -22,6 +22,15 @@ actual tool call and authentication before calling that integration supported.
 Registry detection only establishes declarations or executable presence. No live
 provider operation, model session or OAuth flow was executed here.
 
+## Scope validation still pending
+
+Run cut-scopes with actual repository flag naming guidance and ask the challenger
+whether each cut can ship independently. Review the completed plan before
+approving. Exercise rejection, stable-key revision and choosing between multiple
+scopes. Local tracker references and dependency rollback are automated tests;
+remote tracker execution, actual links and semantic critique remain unverified.
+Child scopes exist as drafts and cannot bypass the initiative's pending approval.
+
 ## Spec validation still pending
 
 Run write-spec with a bound repository guide in a real host session. Verify that
@@ -79,7 +88,9 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
    actual framing must distinguish observed evidence from explicit TBD markers.
 3. Inspect `state get`, `open` and `step plan` for that ID. The next step is
    `write-spec`, now available. Complete a spec using the returned schema/sections
-   and verify that `next` stops at `approve-spec`; cut-scopes remains unavailable.
+   and verify that `next` stops at `approve-spec`; cut-scopes is now available. Approve the spec, complete a scope plan, and verify
+   that both initiative and child continuation stop at approve-scopes. After
+   approval, slice-work remains unavailable.
 4. Send a local `msg send --thread <id> --to builder --kind note --body "Ready"`.
    Read it with `msg read --for builder --reader a`, then repeat: the second
    read is empty. A different reader still sees it.

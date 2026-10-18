@@ -52,7 +52,7 @@
 
 ## P2-04 · `cut-scopes`
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P2-03
+**Status:** ✅ · **Size:** M · **Depends on:** P2-03
 
 **Goal** — Deliverables that can ship and be measured independently.
 
@@ -60,8 +60,8 @@
 
 **Acceptance criteria:**
 
-- [ ] Every metric of the spec is owned by at least one scope (shape check).
-- [ ] Scopes are mirrored as tracker items with links recorded in the store.
+- [x] Every metric of the spec is owned by at least one scope (shape check).
+- [x] Scopes are mirrored as tracker items with links recorded in the store.
 
 **Docs** — flow/define/cut-scopes.
 

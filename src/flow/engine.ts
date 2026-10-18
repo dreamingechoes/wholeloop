@@ -18,12 +18,14 @@ import {
 } from '../framing/contract.js'
 import { publicationPlan } from '../providers/publication.js'
 import { researchBrief } from '../research/report.js'
+import { checkScopePlan, parseScopePlan, scopeContext } from '../scopes/contract.js'
+import { publishScopes } from '../scopes/publish.js'
 import { checkSpec } from '../spec/contract.js'
 import { specTemplate } from '../spec/template.js'
 import { itemId, replay } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 import type { StateStore } from '../state/store.js'
-import { beginPlan, decisions, flowPlan, remembered } from './plan.js'
+import { beginPlan, decisions, decisionTrail, flowPlan, remembered } from './plan.js'
 import { checkShape, decisionBlocks, STEPS, stepDefinition } from './registry.js'
 
 const newRun = () => `run-${randomBytes(8).toString('hex')}`
@@ -124,7 +126,7 @@ export class FlowEngine {
       const input =
         options.input ??
         (sourceStart?.type === 'step.started' ? sourceStart.data.input : source?.title)
-      if (['frame-problem', 'write-spec'].includes(name) && !options.subject) {
+      if (['frame-problem', 'write-spec', 'cut-scopes'].includes(name) && !options.subject) {
         const matches = framingMatches(
           [...items.values()],
           events,
@@ -145,7 +147,7 @@ export class FlowEngine {
         subject = matches[0]
       }
       if (
-        ['frame-problem', 'write-spec'].includes(name) &&
+        ['frame-problem', 'write-spec', 'cut-scopes'].includes(name) &&
         subject?.kind !== undefined &&
         subject.kind !== 'initiative'
       )
@@ -221,6 +223,7 @@ export class FlowEngine {
           configuration,
           presets: loaded.presets,
         }),
+        bindings,
         templateSource,
         expectedImpact: name === 'write-spec' ? (impact ?? null) : null,
       }
@@ -245,7 +248,6 @@ export class FlowEngine {
           `Template — ${templateSource.kind}: ${templateSource.ref}. Preserve structured criteria and measurement metadata.`,
         )
       }
-      payload.bindings = bindings
       for (const resolution of Object.values(bindings))
         if (resolution.questions.length) {
           payload.missing.push(`slot:${resolution.slot}`)
@@ -257,7 +259,13 @@ export class FlowEngine {
         ? decisions(events, subject.id, [
             ...step.before,
             ...(name === 'open-pr' ? this.additions() : []),
-          ]).filter((decision) => decisionBlocks(name, decision.id))
+          ])
+            .concat(
+              decisionTrail(events, subject.id).filter(
+                (decision) => decision.subject !== subject.id,
+              ),
+            )
+            .filter((decision) => decisionBlocks(name, decision.id))
         : []
       if (pending.length)
         throw new CliError(
@@ -325,10 +333,16 @@ export class FlowEngine {
 
   plan(subject: string) {
     this.store.get(subject)
+    const events = this.store.events()
+    const plan = flowPlan(events, subject, this.additions())
     return {
       schema: 'wholeloop/step-plan@1',
       subject,
-      ...flowPlan(this.store.events(), subject, this.additions()),
+      ...plan,
+      pending: [
+        ...decisionTrail(events, subject).filter((decision) => decision.subject !== subject),
+        ...plan.pending.map((decision) => ({ ...decision, subject })),
+      ],
     }
   }
 
@@ -373,6 +387,29 @@ export class FlowEngine {
       if (latest?.type !== 'step.started')
         throw new CliError(`Begin ${name} for ${subject} before completing it`, EXIT.precondition)
       const run = latest.data.run
+      const blocking = decisionTrail(events, subject).filter((decision) =>
+        decisionBlocks(name, decision.id),
+      )
+      if (blocking.length)
+        throw new CliError(
+          `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
+          EXIT.input,
+        )
+      let scopes: ReturnType<typeof publishScopes> | undefined
+      if (name === 'cut-scopes') {
+        const plan = parseScopePlan(content)
+        checkScopePlan(plan, scopeContext(events, subject))
+        scopes = publishScopes({
+          root: this.root,
+          userFile: this.userFile,
+          configuration: this.config(),
+          subject,
+          run,
+          plan,
+          events,
+          append,
+        })
+      }
       if (name === 'research' && content !== researchBrief(events, subject, run))
         throw new CliError(
           'Complete research through the aggregated report; do not replace its evidence',
@@ -418,6 +455,7 @@ export class FlowEngine {
         step: name,
         run,
         artifact: path,
+        ...(scopes ? { scopes } : {}),
         ...(publication ? { publication } : {}),
         ...(outcome ? { outcome } : {}),
         receipt: {

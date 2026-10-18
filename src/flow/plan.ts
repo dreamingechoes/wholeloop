@@ -45,6 +45,30 @@ export function decisions(
     .map(([id, basis]) => ({ id, basis }))
 }
 
+export function decisionTrail(
+  events: readonly StateEvent[],
+  subject: string,
+): { id: string; basis: string; subject: string }[] {
+  const parents = new Map(
+    events.flatMap((entry) =>
+      entry.type === 'item.created' && entry.data.parent
+        ? [[entry.subject, entry.data.parent] as const]
+        : [],
+    ),
+  )
+  const result = []
+  const seen = new Set<string>()
+  let current: string | undefined = subject
+  while (current) {
+    if (seen.has(current)) throw new Error('Item parent cycle')
+    seen.add(current)
+    const id = current
+    result.push(...decisions(events, id).map((decision) => ({ ...decision, subject: id })))
+    current = parents.get(current)
+  }
+  return result
+}
+
 export function flowPlan(
   events: readonly StateEvent[],
   subject: string,
@@ -57,6 +81,17 @@ export function flowPlan(
   let furthest = -1
   for (const entry of events)
     if (entry.subject === subject) {
+      if (entry.type === 'item.created') {
+        const start =
+          entry.data.kind === 'scope'
+            ? 'slice-work'
+            : ['slice', 'part'].includes(entry.data.kind)
+              ? 'build-slice'
+              : entry.data.kind === 'review'
+                ? 'review-code'
+                : 'research'
+        furthest = Math.max(furthest, STEPS.findIndex((step) => step.name === start) - 1)
+      }
       if (entry.type === 'item.closed') closed = true
       if (entry.type === 'item.updated' && entry.data.status)
         closed = entry.data.status === 'closed'

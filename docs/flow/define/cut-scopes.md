@@ -3,7 +3,7 @@
 > **TL;DR** — Splits an approved spec into **scopes**: pieces you can release and measure independently. Often there is just one. Each scope gets a goal, the metrics it is responsible for, a delivery mode, a flag name and a simple/complex call, and can show up in your tracker too. Ends at the second **approve** decision point.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P2-04](../../../roadmap/phase-2-define.md#p2-04--cut-scopes).
+> **Status: 🚧 partial.** Local plans validate metric/story ownership, create stable child scopes and tracker references atomically, and stop for revision-bound approval. Remote tracker execution and live challenger sessions remain manual conformance. Tracked in [P2-04](../../../roadmap/phase-2-define.md#p2-04--cut-scopes).
 
 ---
 
@@ -14,7 +14,7 @@
 | **Block** | Define |
 | **Invoke** | `/wholeloop:cut-scopes` · `$wl-cut-scopes` · `/wl-cut-scopes` |
 | **Decision point** | **approve** the scopes |
-| **Reads** | An approved spec on an initiative (`init-xxxx`) · or a spec document / issue URL |
+| **Reads** | An approved spec on an initiative (`init-xxxx`) · or a standalone deliverable with an explicit metric catalog |
 | **Writes** | One scope per deliverable (`scope-xxxx`) under the initiative · optionally an epic-like tracker item per scope |
 | **Slots** | `flags.naming` (your flag naming convention) |
 | **Capabilities** | `tracker.create-item` · `tracker.link-items` (both optional) |
@@ -36,8 +36,8 @@ flowchart TD
   EACH --> CH["challenger: each scope<br/>shippable and measurable alone?"]
   CH --> AP{{"approve scopes"}}:::person
   AP -- "changes" --> CUT
-  AP -- "approved" --> S1["scope-xxxx"]:::define
-  AP -- "approved" --> S2["scope-yyyy"]:::define
+  CUT --> S1["scope-xxxx"]:::define
+  CUT --> S2["scope-yyyy"]:::define
   S1 & S2 -.-> TR["tracker items<br/>(if configured)"]:::opt
   classDef define fill:#d9f2e3,stroke:#1f7a45,color:#0b2e1a;
   classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
@@ -54,14 +54,36 @@ Every scope carries:
 | **Flag** | Named using your `flags.naming` convention; [`ramp-exposure`](../rollout/ramp-exposure.md) uses this exact name later |
 | **Complexity** | `simple` or `complex` — guides how finely [`slice-work`](../build/slice-work.md) splits it; the checks are identical either way |
 
-1. **No scope waits for another unless you say so.** Each one can go live the moment its own code is merged. If one really must come after another, write it down with `--after scope-xxxx`.
-2. **The harness suggests, the owner chooses.** Suggestions come from the spec's candidate list; the final split is made by the owner when approving.
+1. **No scope waits for another unless you say so.** Each one can go live the moment its own code is merged. If one really must come after another, put its stable plan key or existing scope ID in `after`. Cycles and cross-initiative references fail before any child updates.
+2. **The harness suggests, the owner chooses.** The default suggestion owns all spec stories and metrics; the final split is made by the owner when approving.
 3. **Planning the calendar is yours.** Sprints, cycles, quarters — the harness doesn't model any of them and doesn't try to.
 4. **You can add a scope whenever you like.** It just becomes one more child under the initiative; nothing else moves.
 
 ## Standalone use
 
-On its own it takes a spec document or issue URL, opens the initiative behind it and asks only what it can't find — typically who owns it. On an existing initiative you can target a single scope to add or adjust (`--scope scope-xxxx`).
+Begin with `wl step begin cut-scopes --input "Find past orders" --owner "Alex"
+--json`. It creates an initiative for the child scopes without fabricating earlier
+steps. Supply `metricIds` or a reasoned `measurementException` in the plan.
+URL adoption is tracked separately in P2-08. Revisions target the initiative and
+reuse each scope's stable `key`; omitted scopes remain until explicitly closed.
+
+`wl scopes plan --for <initiative> --json` returns the pinned spec reference,
+metric/story catalog, one suggested scope and batched delivery questions. Fill
+`wholeloop/scope-plan@1` YAML front matter using `wl scopes schema --json`, followed
+by Scope overview, Metric ownership, Delivery plan, Complexity and Open questions.
+A scope without metrics needs `measurementReason`; every scope needs a flag or
+`withoutFlagReason`, plus argued complexity. Read the returned `flags.naming`
+binding before drafting names.
+
+Complete with `wl step complete cut-scopes --for <initiative> --artifact <file>
+--json`. Local tracker references point to the created scope records. The exact
+plan, resolved dependencies and tracker status stay in the journal. Remote
+publication is a pending handoff, never a claimed external write. Child scopes
+exist as reviewable drafts before approval, and inherit the initiative's pending
+decisions. After `wl answer decision.approve-scopes=approved --for <initiative>
+--by <person> --json`, `next` chooses the sole open scope or asks which to use.
+[ADR-0024](../../decisions/0024-atomic-scope-plans-and-parent-approval.md) explains
+stable keys, atomic publication and the parent approval boundary.
 
 ## Run it
 

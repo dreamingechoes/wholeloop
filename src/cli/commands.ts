@@ -8,6 +8,20 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'scopes plan',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/scopes-plan@1',
+    summary: 'Suggest one scope and expose the metric ownership contract',
+  },
+  {
+    path: 'scopes schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/scopes-schema@1',
+    summary: 'Print the versioned scope plan schema',
+  },
+  {
     path: 'spec check',
     arguments: '<file>',
     options: [],

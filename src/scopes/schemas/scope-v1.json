@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/scope-definition@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_-]*$"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "stories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_-]*$"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "measurementReason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["feature", "proof-of-concept"]
+        },
+        "flag": {
+          "type": "string",
+          "minLength": 1
+        },
+        "withoutFlagReason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["mode"]
+    },
+    "complexity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["simple", "complex"]
+        },
+        "why": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["level", "why"]
+    },
+    "after": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": ["key", "title", "goal", "metrics", "delivery", "complexity"]
+}

@@ -5,7 +5,7 @@
 > `Agent = Model + Harness`. Everybody rents the same model. The harness — what context the agent gets, which tools it can reach, in what order things happen, where it stops and who decides, and how you know afterwards that it worked — is the half that is yours. `wholeloop` is that half, made portable.
 
 > [!NOTE]
-> **Status: early implementation.** The core CLI implements layered configuration, profiles and manifest catalogs, an external journal and mailbox, repository discovery, provider resolution, local framing with explicit outcomes, structured research briefs and validated specs with measurement plans. Contributor checks and commit hygiene are enforced. The end-to-end harness and published package remain pending. Follow progress in the [roadmap](./roadmap/README.md).
+> **Status: early implementation.** The core CLI implements layered configuration, profiles and manifest catalogs, an external journal and mailbox, repository discovery, provider resolution, local framing with explicit outcomes, structured research briefs and validated specs with measurement plans and stable measurable scopes. Contributor checks and commit hygiene are enforced. The end-to-end harness and published package remain pending. Follow progress in the [roadmap](./roadmap/README.md).
 
 ---
 

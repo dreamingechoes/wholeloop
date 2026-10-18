@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs and scope plans can complete. Generated CLI adapters, external provider execution, gates and later step behavior remain planned.
 
 ---
 
@@ -22,6 +22,8 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl scopes plan` | `wholeloop/scopes-plan@1` | Suggest one scope and expose the metric ownership contract |
+| `wl scopes schema` | `wholeloop/scopes-schema@1` | Print the versioned scope plan schema |
 | `wl spec check <file>` | `wholeloop/spec-check@1` | Check stories criteria metrics and rollout structure |
 | `wl spec schema` | `wholeloop/spec-schema@1` | Print the versioned spec metadata schema |
 | `wl research plan` | `wholeloop/research-plan@1` | Plan source angles and independent examination jobs |

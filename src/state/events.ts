@@ -11,6 +11,7 @@ import {
   validateRefutation,
   validateResult,
 } from '../research/contracts.js'
+import { type ScopeDefinition, validateScope } from '../scopes/contract.js'
 import { replayMailbox } from './mailbox.js'
 
 export const KINDS = ['initiative', 'scope', 'slice', 'part', 'brief', 'review'] as const
@@ -45,6 +46,22 @@ export type ItemPatch = Partial<Pick<Item, 'title' | 'owner' | 'body' | 'status'
 export const MESSAGE_KINDS = ['contract', 'handoff', 'status', 'question', 'note'] as const
 export type MessageKind = (typeof MESSAGE_KINDS)[number]
 export type EventData =
+  | {
+      type: 'scope.defined'
+      data: {
+        initiative: string
+        run: string
+        definition: ScopeDefinition
+        after: string[]
+        tracker: {
+          provider: string
+          operation: string
+          status: 'stored' | 'pending'
+          ref: string
+          handoff?: string
+        }
+      }
+    }
   | { type: 'frame.sourced'; data: { run: string; brief: string; artifact: string } }
   | { type: 'frame.decided'; data: { run: string } & FrameOutcome }
   | { type: 'research.planned'; data: { run: string; plan: ResearchPlan } }
@@ -94,6 +111,30 @@ function text(value: unknown, empty = false): value is string {
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
   switch (type) {
+    case 'scope.defined':
+      if (
+        !keys(data, ['initiative', 'run', 'definition', 'after', 'tracker']) ||
+        !text(data.initiative) ||
+        !/^init-[a-f0-9]{8}$/.test(data.initiative) ||
+        !runId(data.run) ||
+        !Array.isArray(data.after) ||
+        !data.after.every((ref) => text(ref) && /^scope-[a-f0-9]{8}$/.test(ref)) ||
+        !isObject(data.tracker) ||
+        !keys(data.tracker, ['provider', 'operation', 'status', 'ref', 'handoff']) ||
+        !text(data.tracker.provider) ||
+        data.tracker.operation !== 'tracker.create-item' ||
+        !['stored', 'pending'].includes(String(data.tracker.status)) ||
+        !text(data.tracker.ref) ||
+        (data.tracker.handoff !== undefined && !text(data.tracker.handoff))
+      )
+        return false
+      try {
+        validateScope(data.definition)
+        return true
+      } catch {
+        return false
+      }
+
     case 'frame.sourced':
       return (
         keys(data, ['run', 'brief', 'artifact']) &&
@@ -265,6 +306,8 @@ export function validateEvent(value: unknown): asserts value is StateEvent {
     !String(value.subject).startsWith(`${PREFIX[value.data.kind as ItemKind]}-`)
   )
     throw new Error('Item kind does not match its typed id')
+  if (value.type === 'scope.defined' && !String(value.subject).startsWith('scope-'))
+    throw new Error('Scope definitions require a scope subject')
   if (value.type === 'research.planned') {
     const plan = value.data.plan as ResearchPlan
     if (plan.subject !== value.subject || plan.run !== value.data.run)
@@ -316,6 +359,11 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
     }
     const item = items.get(entry.subject)
     if (!item) throw new Error(`Missing item: ${entry.subject}`)
+    if (
+      entry.type === 'scope.defined' &&
+      (item.kind !== 'scope' || item.parent !== entry.data.initiative)
+    )
+      throw new Error('Scope definition does not match its initiative parent')
     if (
       entry.type === 'decision.recorded' &&
       (!ids.has(entry.data.basis) || entry.data.basis === entry.id)

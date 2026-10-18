@@ -1,5 +1,6 @@
 import { stripCode } from '../docs/markdown.js'
 import { FRAME_SECTIONS } from '../framing/contract.js'
+import { SCOPE_SECTIONS } from '../scopes/contract.js'
 import { SPEC_SECTIONS } from '../spec/contract.js'
 import type { ItemKind } from '../state/events.js'
 
@@ -55,16 +56,10 @@ export const STEPS: readonly Step[] = Object.freeze(
         ? 'brief'
         : ['slice-work', 'build-slice', 'verify-works', 'review-code', 'open-pr'].includes(name)
           ? 'slice'
-          : [
-                'cut-scopes',
-                'prepare-launch',
-                'ramp-exposure',
-                'measure-impact',
-                'decide-next',
-              ].includes(name)
+          : ['prepare-launch', 'ramp-exposure', 'measure-impact', 'decide-next'].includes(name)
             ? 'scope'
             : 'initiative') as ItemKind,
-      available: ['frame-problem', 'research', 'write-spec'].includes(name),
+      available: ['frame-problem', 'research', 'write-spec', 'cut-scopes'].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
       after: Object.freeze(
@@ -81,11 +76,13 @@ export const STEPS: readonly Step[] = Object.freeze(
       sections: Object.freeze(
         name === 'frame-problem'
           ? [...FRAME_SECTIONS]
-          : name === 'write-spec'
-            ? [...SPEC_SECTIONS]
-            : name === 'research'
-              ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-              : [],
+          : name === 'cut-scopes'
+            ? [...SCOPE_SECTIONS]
+            : name === 'write-spec'
+              ? [...SPEC_SECTIONS]
+              : name === 'research'
+                ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+                : [],
       ),
     }),
   ),

@@ -686,6 +686,24 @@
         }
       },
       "required": ["schema", "specSchema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/scopes-plan@1"
+        }
+      },
+      "required": ["schema", "subject", "suggestedScopes"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/scopes-schema@1"
+        }
+      },
+      "required": ["schema", "scopeSchema"]
     }
   ],
   "$defs": {

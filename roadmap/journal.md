@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-18 · P2-04 — measurable scopes and inherited approval
+
+- Add cut-scopes, a versioned plan/schema, a single-scope suggestion and batched delivery questions. Read repository flag naming before drafting; retain explicit delivery/complexity reasons.
+- Pin spec identity and require metric/story coverage. Create stable-key child scopes and local tracker references in one transaction; reject unknown references, dependency cycles and implicit reopening. Omitted scopes remain intact. Remote tracker publication stays pending.
+- Carry revision-bound parent approvals into child plans and recheck them on completion, preventing stale approvals or explicit child IDs from bypassing review. Continue an initiative through its sole scope or ask which to use. ADR-0024 records these boundaries.
+- Verify schema defects, missing ownership rollback, local/remote tracker status, repeat identity, stored dependency cycles, source revisions, parent decisions, repository naming guidance, compiled CLI execution and deterministic rebuild. Semantic scope independence and actual remote mirroring remain owner/client verification.
+
+---
+
 ## 2026-10-18 · P2-03 — testable specs and pinned measurement plans
 
 - Add the write-spec skill and host drafting workflow, standalone problem/owner/impact entry, repository-first guidance and additive manifest template sections.

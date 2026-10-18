@@ -11,10 +11,10 @@ Read the shared ask-never-guess and output-contract protocols.
    one to continue. A remote URL currently returns an explicit limitation.
 2. Present returned questions together. A decision question belongs to a person;
    record their actual answer with `wl answer decision.<id>=approved|rejected
-   --for <item> --remember run --by <person> --json`, then rerun next.
+   --for <question.subject> --remember run --by <person> --json`, then rerun next.
 3. Read `contract` and show its preflight and style. Follow the corresponding
    canonical step skill only when the returned contract is available. The
-   current local path includes framing and write-spec, preserving their contracts.
+   current local path includes research, framing, write-spec and cut-scopes, preserving their contracts.
 4. After completing that artifact, show the receipt and call `wl next <id> --json`
    to inspect the next action. Stop on missing input, a required decision,
    an unavailable step or the person's request. Keep the same item ID.

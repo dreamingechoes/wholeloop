@@ -53,7 +53,34 @@ export function next(engine: FlowEngine, input?: string, owner?: string) {
       }
     subject = items[0]
   }
-  const plan = subject ? engine.plan(subject.id) : undefined
+  let plan = subject ? engine.plan(subject.id) : undefined
+  if (subject?.kind === 'initiative' && plan?.next === 'slice-work' && !plan.pending.length) {
+    const children = items.filter((item) => item.kind === 'scope' && item.parent === subject?.id)
+    if (children.length !== 1)
+      return {
+        code: children.length ? EXIT.input : EXIT.precondition,
+        payload: {
+          schema: 'wholeloop/next@1',
+          subject: subject.id,
+          action: null,
+          questions: children.length
+            ? [
+                {
+                  id: 'scope',
+                  prompt: 'Which scope should continue?',
+                  multi: false,
+                  options: children.map(({ id, title }) => ({ value: id, label: title })),
+                },
+              ]
+            : [],
+          stop: children.length
+            ? 'Choose an explicit scope ID.'
+            : 'No open scopes remain; inspect status before continuing.',
+        },
+      }
+    subject = children[0]
+    plan = subject ? engine.plan(subject.id) : undefined
+  }
   const blocking =
     plan?.pending.filter(
       (decision) => !plan.next || !stepDefinition(plan.next).after.includes(decision.id),
@@ -64,9 +91,10 @@ export function next(engine: FlowEngine, input?: string, owner?: string) {
       payload: {
         schema: 'wholeloop/next@1',
         subject: subject?.id,
-        questions: blocking.map(({ id, basis }) => ({
+        questions: blocking.map(({ id, basis, subject: decisionSubject }) => ({
           id: `decision.${id}`,
           basis,
+          subject: decisionSubject,
           prompt: `Record the human decision: ${id}`,
           multi: false,
           options: [

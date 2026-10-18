@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: scope-metric-coverage
+    enforcers: [src/scopes/contract.ts#checkScopePlan, test/unit/scopes/scopes.test.ts]
+  - id: scope-stable-publication
+    enforcers: [src/scopes/publish.ts#publishScopes, test/unit/scopes/scopes.test.ts]
+  - id: scope-parent-approval
+    enforcers: [src/flow/plan.ts#decisionTrail, src/flow/engine.ts, test/unit/scopes/scopes.test.ts]
   - id: spec-testable-definition
     enforcers: [src/spec/contract.ts#checkSpec, test/unit/spec/spec.test.ts]
   - id: spec-pinned-measurement

@@ -212,7 +212,7 @@ describe('spec entry templates and human approval', () => {
       ).toThrow('Complete write-spec')
       engine.complete('write-spec', id, artifact)
       engine.answer('decision.approve-spec', 'approved', { scope: 'run', subject: id, by: 'Alex' })
-      expect(next(engine, id).code).toBe(3)
+      expect(engine.plan(id).next).toBe('cut-scopes')
       engine.begin('write-spec', { subject: id })
       expect(engine.plan(id).pending.map((decision) => decision.id)).toEqual(['approve-spec'])
       expect(() =>
