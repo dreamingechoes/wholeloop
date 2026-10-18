@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: verify-suite-once
+    enforcers: [src/verification/suite.ts#runSuite, src/verification/state.ts#verificationRuns, test/unit/verification/verification.test.ts]
+  - id: verify-agreed-criteria
+    enforcers: [src/verification/workflow.ts#VerificationWorkflow, src/gates/workflow.ts#GateWorkflow, test/unit/verification/verification.test.ts]
+  - id: verify-observed-exit
+    enforcers: [src/gates/report.ts#gateReport, src/verification/workflow.ts#verificationReceipt, test/unit/verification/verification.test.ts]
+  - id: verify-test-sensitivity
+    enforcers: [src/verification/testability.ts#constantAssertions, src/gates/workflow.ts#GateWorkflow, test/unit/verification/verification.test.ts]
   - id: build-plan-before-code
     enforcers: [src/build/workflow.ts#BuildWorkflow, src/flow/plan.ts#decisions, test/unit/build/build.test.ts]
   - id: build-current-gates

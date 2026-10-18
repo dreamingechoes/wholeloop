@@ -1,5 +1,5 @@
 import { isObject } from '../config/schema.js'
-import type { GatePlan, GateResult, GateVote } from '../gates/contracts.js'
+import { type GateHost, inspectGateRound } from '../gates/execution.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
@@ -7,12 +7,9 @@ import { type BuilderPlan, latestBuilderPlan } from './contracts.js'
 import type { BuildWorkflow } from './workflow.js'
 
 export type BuildContext = ReturnType<BuildWorkflow['prepare']>
-export interface BuildHost {
+export interface BuildHost extends GateHost {
   plan(context: BuildContext): Promise<BuilderPlan>
   implement(context: BuildContext, findings: unknown): Promise<void>
-  inspect(plan: GatePlan, unit: GatePlan['units'][number]): Promise<GateResult>
-  refute(plan: GatePlan, finding: string, verifier: number): Promise<GateVote>
-  stopped(): boolean
 }
 export interface BuildOptions {
   base?: string
@@ -30,86 +27,6 @@ async function schedule<T>(
     const failure = settled.find((result) => result.status === 'rejected')
     if (failure?.status === 'rejected') throw failure.reason
   } else for (const input of inputs) await operation(input)
-}
-
-async function inspectRound(
-  workflow: BuildWorkflow,
-  plan: GatePlan,
-  host: BuildHost,
-  sequential: boolean,
-  checkPersonal: () => void,
-) {
-  const engine = workflow.engineFor(plan.subject)
-  const gates = new GateWorkflow(engine)
-  const current = gateRuns(engine.store.events())
-    .find((run) => run.run === plan.run)
-    ?.rounds.at(-1)
-  const unchanged = () => workspaceSnapshot(plan.repository).digest === plan.snapshot.digest
-  await schedule(
-    plan.units.filter((unit) => !current?.results.some((result) => result.unit === unit.id)),
-    async (unit) => {
-      if (host.stopped()) return
-      let result: GateResult
-      try {
-        result = await host.inspect(plan, unit)
-      } catch {
-        result = {
-          unit: unit.id,
-          status: 'unavailable',
-          evidence: [],
-          findings: [],
-          reason: 'Worker did not return evidence',
-        }
-      }
-      checkPersonal()
-      if (result.unit !== unit.id) throw new Error('Gate worker returned a different assignment')
-      try {
-        gates.submit(plan.subject, plan.run, plan.round, result)
-      } catch (error) {
-        if (unchanged()) throw error
-      }
-    },
-    sequential,
-  )
-  const submitted = gateRuns(engine.store.events())
-    .find((run) => run.run === plan.run)
-    ?.rounds.at(-1)
-  const jobs = (submitted?.results ?? [])
-    .flatMap((result) =>
-      result.findings.flatMap((finding) =>
-        Array.from({ length: plan.verifiers }, (_, index) => ({
-          finding: `${result.unit}:${finding.id}`,
-          verifier: index + 1,
-        })),
-      ),
-    )
-    .filter(
-      (job) =>
-        !submitted?.votes.some(
-          (vote) => vote.finding === job.finding && vote.verifier === job.verifier,
-        ),
-    )
-  await schedule(
-    jobs,
-    async (job) => {
-      if (host.stopped()) return
-      let vote: GateVote
-      try {
-        vote = await host.refute(plan, job.finding, job.verifier)
-      } catch {
-        return
-      }
-      checkPersonal()
-      if (vote.finding !== job.finding || vote.verifier !== job.verifier)
-        throw new Error('Refutation worker returned a different assignment')
-      try {
-        gates.submit(plan.subject, plan.run, plan.round, vote)
-      } catch (error) {
-        if (unchanged()) throw error
-      }
-    },
-    sequential,
-  )
 }
 
 /** Hosts own tools; the core owns plans, coverage, budgets and the stop before PR. */
@@ -210,7 +127,7 @@ export async function runBuild(
         const { plan } = gates.plan(subject, kind, {
           ...(prior?.decision?.report.verdict === 'PASS' ? { newRun: true } : {}),
         })
-        await inspectRound(workflow, plan, host, sequential, checkPersonal)
+        await inspectGateRound(engine, plan, host, sequential, checkPersonal)
         if (host.stopped()) return { status: 'stopped', subject }
         const result = gates.verdict(subject, kind)
         if (result.verdict === 'EXHAUSTED')

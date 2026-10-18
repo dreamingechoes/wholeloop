@@ -9,6 +9,8 @@ import { knownSlot } from '../discovery/rules.js'
 import { discover } from '../discovery/tree.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { replay, type StateEvent } from '../state/events.js'
+import { verificationCriteria } from '../verification/contracts.js'
+import { testabilityResult, testPath } from '../verification/testability.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { namedBase, repository } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
@@ -125,7 +127,22 @@ export class GateWorkflow {
     const policy = lenses.policy
     if (first && !options.newRun && first.policy !== policy)
       throw new Error('Gate policy changed mid-run; restore its pinned lens configuration')
-    let criteria = options.criteria
+    let recordedCriteria = verificationCriteria(events, subject)
+    if (!recordedCriteria && item.kind !== 'review') {
+      try {
+        recordedCriteria = buildCriteria(events, subject)
+      } catch {
+        /* Missing agreement is handled below. */
+      }
+    }
+    if (
+      gate === 'verify' &&
+      recordedCriteria &&
+      options.criteria &&
+      JSON.stringify(recordedCriteria) !== JSON.stringify(options.criteria)
+    )
+      throw new Error('Recorded agreed criteria cannot be overridden by a verification invocation')
+    let criteria = options.criteria ?? recordedCriteria
     if (gate === 'verify') {
       const parent = item.kind === 'part' ? item.parent : item.id
       const defined = [...events]
@@ -163,6 +180,26 @@ export class GateWorkflow {
           failSafe: true,
         })),
       )
+      if (paths.some(testPath))
+        lenses.units.push({
+          id: 'testability',
+          lens: 'testability',
+          asks: 'Check changed tests for known constant assertions and ask whether deleting the feature could leave them green.',
+          prompt:
+            'Core lint is additive; independently examine mutation sensitivity in the criterion checks.',
+          origin: 'builtin:testability',
+          failSafe: true,
+        })
+      if (paths.some(testPath))
+        lenses.units.push({
+          id: 'changed-tests',
+          lens: 'test-group',
+          asks: `Would these changed tests fail if the feature were removed? ${paths.filter(testPath).join(', ')}`,
+          prompt:
+            'Inspect behavior, assertions, setup and reachable failures; do not edit tests. Constant lint alone is insufficient.',
+          origin: 'builtin:changed-tests',
+          failSafe: true,
+        })
       const previousCriteria = first?.units.filter((unit) => unit.lens === 'acceptance')
       if (
         previousCriteria &&
@@ -247,6 +284,11 @@ export class GateWorkflow {
       }
       plan.refutations = Math.floor(plan.verifiers / 2) + 1
       append(subject, { type: 'gate.planned', data: { plan } })
+      if (plan.units.some((unit) => unit.id === 'testability'))
+        append(subject, {
+          type: 'gate.submitted',
+          data: { run: plan.run, round: plan.round, result: testabilityResult(plan) },
+        })
       return { schema: 'wholeloop/gate-plan@1', plan, budget, resumed: false }
     })
   }

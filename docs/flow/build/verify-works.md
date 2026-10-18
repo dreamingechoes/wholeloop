@@ -3,7 +3,7 @@
 > **TL;DR** — The quality gate for behaviour. It runs your repository's own checks a single time, takes the slice's acceptance criteria exactly as written, and gives each one to a read-only verifier that tests it against what the code really does. It also asks whether the tests you touched would notice if the feature broke. Every finding is challenged before it blocks. It reports; the builder repairs; the loop repeats until green.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Gate planning, per-criterion coverage, budgets, refutations and snapshot-bound verdicts are implemented. Actual suite execution, changed-test analysis and this step workflow are pending. Tracked in [P3-05](../../../roadmap/phase-3-build.md#p3-05--verify-works).
+> **Status: 🚧 partial.** Gate planning, per-criterion coverage, budgets, refutations and snapshot-bound verdicts are implemented. Actual once-per-round suite execution, standalone criteria questions, isolated branch workspaces, constant-assertion lint, semantic changed-test groups and canonical receipts are implemented with real process/Git fixtures and stubbed semantic workers. Live clients, authenticated PR resolution and broader mutation/visual checks remain owner verification. Tracked in [P3-05](../../../roadmap/phase-3-build.md#p3-05--verify-works).
 
 ---
 
@@ -53,6 +53,48 @@ flowchart TD
 5. **Doubt keeps correctness findings alive.** If nobody can show the behaviour is right, the finding stays.
 6. **Reads, never writes.** Verifiers have no edit tools wherever the CLI can enforce that, and the core checks the slice's worktree is untouched after each round — any change fails the round.
 7. **Bounded, and yours to tune.** Four rounds by default; change it per project (`gates.verify.rounds`) or per run (`--rounds verify=6`). Still red at the limit? The run stops, hands you every finding with its evidence, and asks whether to extend or stop.
+
+## Available verification commands
+
+```bash
+wl verify begin feature/orders --base main --owner Owner --by Owner --criteria criteria.json --json
+wl verify begin --for slice-0123abcd --json
+wl verify suite --for slice-0123abcd --run gate-0123456789abcdef --round 1 --json
+wl gate submit --for slice-0123abcd --file criterion-result.json --json
+wl gate verdict --for slice-0123abcd --gate verify --json
+wl verify complete --for slice-0123abcd --json
+```
+
+Criteria files use `wholeloop/criteria@1`. Missing criteria/ownership/base become
+questions (exit 2) before item creation. Recorded agreements cannot be overridden
+through flags. PR URLs also need a host-resolved local named `--branch`; no fetch
+or authentication occurs here. Raw step entry without agreement is rejected.
+
+Suite selection uses the resolved declared check/verify command, or the selected
+test plus that package's declared typecheck/lint. Instruction-file bindings need
+the host to read guidance and pass explicit declared refs, for example
+`--commands '["package.json#test","package.json#lint"]'`. No prose is executed.
+The runner uses argv/cwd, stops at the first failure, and defaults to 120000 ms per
+command (`--timeout` accepts 100–600000). More than 1 MiB of captured output or a
+timeout kills its POSIX process group. Linux execution remains unverified locally.
+
+The durable intent precedes execution. Concurrent/repeated callers share one
+receipt; an unfinished intent is ambiguous and cannot be retried in the same round.
+Seal the failed round and explicitly proceed within its budget after inspection.
+Raw stdout/stderr appear only in the current response; durable state keeps exit
+codes/signals and captured-byte digests. Cached calls return no old raw logs and
+expose `current: false` if code changed after the original execution.
+
+Changed test files add deterministic testability findings and a separate semantic
+changed-tests assignment. Lint recognizes constant passing expect(...).toBe/toEqual/
+toStrictEqual and assert.ok(true), skipping quoted examples/comments. It does not
+prove a whole test can fail, perform mutation testing or cover all languages.
+Actual failed suite execution remains a blocker even if findings meet a refutation
+quorum. Completion requires a successful recorded suite and current verify PASS.
+
+`harness/workflows/verification.ts` shares the suite output with a typed read-only
+host and uses the same gate scheduler as builds. Stubbed workers do not prove model
+quality or real client isolation. See [ADR-0033](../../decisions/0033-once-per-round-suites-and-explicit-verification-inputs.md).
 
 ## Standalone use
 

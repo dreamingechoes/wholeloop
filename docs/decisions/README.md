@@ -43,6 +43,7 @@
 | [0030](./0030-worktree-intents-leases-and-conservative-pruning.md) | Worktree intents, leases and conservative pruning | Accepted | 2026-10-18 |
 | [0031](./0031-pinned-gate-rounds-and-fail-safe-verdicts.md) | Pinned gate rounds and fail-safe verdicts | Accepted | 2026-10-18 |
 | [0032](./0032-repository-first-build-plans-and-gate-backed-receipts.md) | Repository-first build plans and gate-backed receipts | Accepted | 2026-10-18 |
+| [0033](./0033-once-per-round-suites-and-explicit-verification-inputs.md) | Once-per-round suites and explicit verification inputs | Accepted | 2026-10-18 |
 
 ## Lifecycle
 

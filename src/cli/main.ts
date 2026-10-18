@@ -23,6 +23,7 @@ import { slicesCommand } from './slices.js'
 import { specCommand } from './spec.js'
 import { stateCommand } from './state.js'
 import { utilityCommand } from './utilities.js'
+import { verificationCommand, verificationSuiteCommand } from './verification.js'
 import { worktreeCommand } from './worktree.js'
 
 export { EXIT, type Io } from './io.js'
@@ -75,6 +76,10 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (['verify begin', 'verify complete'].includes(command.path))
+      return verificationCommand(command.path, parsed, root, json, io)
+    if (command.path === 'verify suite')
+      throw new CliError('This command requires the asynchronous dispatcher')
     if (command.path.startsWith('build ')) return buildCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('worktree '))
@@ -124,6 +129,37 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
   } catch (error) {
     const code = error instanceof CliError ? error.code : EXIT.unexpected
     const message = error instanceof Error ? error.message : String(error)
+    if (json) io.out(JSON.stringify({ schema: 'wholeloop/error@1', code, message }))
+    else io.err(`wl: ${message}`)
+    return code
+  }
+}
+
+/** Preserve the synchronous programmatic router while the binary awaits process work. */
+export async function runAsync(
+  argv: readonly string[],
+  io: Io,
+  root = process.cwd(),
+): Promise<number> {
+  const args = argv.filter((arg) => arg !== '--json')
+  const command = COMMANDS.find((command) => command.path === 'verify suite')
+  if (
+    !command ||
+    args.slice(0, 2).join(' ') !== command.path ||
+    args.some((arg) => ['--help', '-h'].includes(arg))
+  )
+    return run(argv, io, root)
+  const json = argv.includes('--json')
+  try {
+    const parsed = parseArguments(
+      args.slice(2),
+      [],
+      command.options.map((option) => option.split(' ')[0] ?? option),
+    )
+    return await verificationSuiteCommand(parsed, root, json, io)
+  } catch (error) {
+    const code = error instanceof CliError ? error.code : EXIT.precondition
+    const message = error instanceof Error ? error.message : 'Asynchronous command failed'
     if (json) io.out(JSON.stringify({ schema: 'wholeloop/error@1', code, message }))
     else io.err(`wl: ${message}`)
     return code

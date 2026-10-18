@@ -69,6 +69,7 @@ export const STEPS: readonly Step[] = Object.freeze(
         'cut-scopes',
         'slice-work',
         'build-slice',
+        'verify-works',
       ].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
@@ -94,9 +95,11 @@ export const STEPS: readonly Step[] = Object.freeze(
                 ? [...SPEC_SECTIONS]
                 : name === 'build-slice'
                   ? ['Plan', 'Criteria', 'Verification', 'Review', 'Workspace', 'Environment']
-                  : name === 'research'
-                    ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-                    : [],
+                  : name === 'verify-works'
+                    ? ['Criteria', 'Suite', 'Testability', 'Verdict']
+                    : name === 'research'
+                      ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+                      : [],
       ),
     }),
   ),

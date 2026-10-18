@@ -1,5 +1,6 @@
 import { stringify } from 'yaml'
 import { gateRuns } from '../gates/state.js'
+import { verificationRuns } from '../verification/state.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import type { Item, StateEvent } from './events.js'
 import { replayMailbox } from './mailbox.js'
@@ -31,6 +32,11 @@ export function projections(
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }
+  for (const suite of verificationRuns(events))
+    files.set(
+      `items/${suite.subject}/verification/${suite.run}/${suite.round}.json`,
+      `${JSON.stringify(suite, null, 2)}\n`,
+    )
   for (const entry of events)
     if (entry.type === 'build.planned')
       files.set(

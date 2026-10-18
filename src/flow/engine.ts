@@ -30,6 +30,8 @@ import { specTemplate } from '../spec/template.js'
 import { itemId, replay } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 import type { StateStore } from '../state/store.js'
+import { verificationCriteria } from '../verification/contracts.js'
+import { verificationReceipt } from '../verification/workflow.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { beginPlan, decisions, decisionTrail, flowPlan, remembered } from './plan.js'
 import { checkShape, decisionBlocks, STEPS, stepDefinition } from './registry.js'
@@ -172,6 +174,14 @@ export class FlowEngine {
           EXIT.precondition,
         )
 
+      if (name === 'verify-works') {
+        if (!subject)
+          throw new CliError(
+            'Use verify begin to supply agreed criteria before standalone verification',
+            EXIT.input,
+          )
+        if (!verificationCriteria(events, subject.id)) buildCriteria(events, subject.id)
+      }
       if (name === 'build-slice') {
         if (!subject || !['slice', 'part'].includes(subject.kind))
           throw new CliError(
@@ -442,6 +452,11 @@ export class FlowEngine {
         throw new CliError(
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
+        )
+      if (name === 'verify-works' && content !== verificationReceipt(events, subject))
+        throw new CliError(
+          'Complete verification through its gate-backed receipt',
+          EXIT.precondition,
         )
       if (name === 'build-slice') {
         const workspace = worktreeRecords(events).find(

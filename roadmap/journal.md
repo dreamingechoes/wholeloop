@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-18 · P3-05 — executable verification and shared suite receipts
+
+- Add verify begin/suite/complete and the verifier role/skill. Standalone verification asks for missing criteria, ownership, comparison base and host-resolved PR head before mutation, then provisions an isolated branch worktree without invented prior steps. Invocation overrides cannot replace recorded criteria.
+- Select declared aggregate checks or test/typecheck/lint commands; instruction-file bindings require host-selected declared refs. Persist suite intent before argv execution, serialize concurrent callers through the journal and return cached receipts rather than rerunning. Interrupted intents remain explicit ambiguity. Bound commands/output and kill POSIX process groups on timeout; raw output is transient and durable receipts hold exit codes/signals and byte hashes. ADR-0033 records these choices.
+- Add core constant-assertion findings for changed tests plus a separate semantic test group. Skip strings/comments and preserve the limit: structural lint does not prove mutation sensitivity. Actual failed process observations remain mandatory even when all associated findings are refuted. Canonical completion requires its successful suite and current verify PASS.
+- Share read-only worker scheduling across builder and verification hosts. The binary awaits an async process dispatcher while the synchronous programmatic router remains compatible. Fix the isolated CLI fixture to resolve npm beside the running Node before replacing HOME, avoiding owner-specific asdf shims without changing production PATH behavior.
+- Verify 23 new cases with actual fixture processes/Git and synthetic semantic workers: once-only/cache/concurrent callers, interrupted intent, failed exit, timeout, mutation, criterion override rejection, PR questions, constant assertions/look-alikes, shared host execution and compiled async CLI. Local check: 449 tests plus build, smoke, lint, typecheck, docs, catalogs, harness, Markdown and Mermaid passed. Authenticated PR checkout, real-client isolation, broader mutation testing, external suite effects and Linux remain owner checks; the local execution was macOS/Node 24.
+
+---
+
 ## 2026-10-18 · P3-04 — repository-first builder host and green receipts
 
 - Add build route/agree/preflight/prepare/plan/complete/schema, the builder role and canonical skill, and a shared typed-host workflow. Route scopes to ready leaf work; require explicit testable criteria agreement for ad-hoc slices. Host issue reads pin complete same-reference revisions; CLI agreement records supplied evidence without claiming to fetch/authenticate it.

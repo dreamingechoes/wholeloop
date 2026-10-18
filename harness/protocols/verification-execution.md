@@ -1,0 +1,17 @@
+# Verification execution
+
+⛔ `verify-suite-once`: Execute only declared suite commands once per pinned round; preserve ambiguous interrupted intents and share the resulting receipt instead of relaunching tests.
+⛔ `verify-agreed-criteria`: Ask for missing criteria before creating standalone verification and never replace a recorded agreement through an invocation override.
+⛔ `verify-observed-exit`: An actual failed suite execution cannot become PASS through refutation; canonical verification completion needs a successful current suite receipt.
+⛔ `verify-test-sensitivity`: Check changed tests for known constant assertions and retain a separate read-only semantic sensitivity assignment.
+
+The runner uses argv and a workspace-contained cwd, never a generated shell string.
+A check/verify aggregate is selected directly; otherwise the selected test command
+shares its package's declared typecheck/lint commands. Instruction-file bindings
+need host interpretation into explicit declared refs. Stop on the first failed
+command. Timeout/output limits kill the runner process group on supported POSIX
+platforms. Raw output is transient; journal receipts keep exit codes and hashes.
+
+Constant lint recognizes a limited JavaScript assertion vocabulary and skips quoted
+fixtures/comments. It does not prove whole-test failure reachability or execute a
+mutation engine. Missing observations remain the semantic verifier's responsibility.

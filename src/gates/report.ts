@@ -11,6 +11,8 @@ export function gateReport(
   const missing = plan.units
     .filter((unit) => !results.some((result) => result.unit === unit.id && result.status === 'ok'))
     .map(({ id }) => id)
+  if (results.some((result) => result.unit === 'suite' && result.execution?.status === 'failed'))
+    missing.push('suite-execution')
   const kept: GateReport['kept'] = []
   const dropped: GateReport['dropped'] = []
   for (const unit of plan.units) {

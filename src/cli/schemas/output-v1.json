@@ -932,6 +932,33 @@
         }
       },
       "required": ["schema", "plan"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/verify-begin@1"
+        }
+      },
+      "required": ["schema", "status", "questions", "subject"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/verify-suite@1"
+        }
+      },
+      "required": ["schema", "subject", "run", "round", "cached", "result", "output"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/verify-complete@1"
+        }
+      },
+      "required": ["schema", "receipt"]
     }
   ],
   "$defs": {

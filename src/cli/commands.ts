@@ -8,6 +8,35 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'verify begin',
+    arguments: '[<branch|pr>]',
+    options: [
+      '--for <id>',
+      '--branch <name>',
+      '--base <branch>',
+      '--owner <person>',
+      '--by <person>',
+      '--criteria <file>',
+      '--rounds <verify=n>',
+    ],
+    schema: 'wholeloop/verify-begin@1',
+    summary: 'Begin verification from agreed criteria or ask before mutation',
+  },
+  {
+    path: 'verify suite',
+    arguments: '',
+    options: ['--for <id>', '--run <id>', '--round <n>', '--commands <json>', '--timeout <ms>'],
+    schema: 'wholeloop/verify-suite@1',
+    summary: 'Execute declared checks once in the pinned verify round',
+  },
+  {
+    path: 'verify complete',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/verify-complete@1',
+    summary: 'Complete verification from its suite receipt and current gate PASS',
+  },
+  {
     path: 'build route',
     arguments: '[<input>]',
     options: [],

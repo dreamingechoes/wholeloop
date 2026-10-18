@@ -68,7 +68,7 @@
 
 ## P3-05 · `verify-works`
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P3-03
+**Status:** ✅ · **Size:** M · **Depends on:** P3-03
 
 **Goal** — Does it work, and does it solve the problem?
 
@@ -76,8 +76,8 @@
 
 **Acceptance criteria:**
 
-- [ ] A changed test that cannot fail is reported (fixture).
-- [ ] Standalone on a PR without criteria asks for them instead of inventing them.
+- [x] A changed test that cannot fail is reported (fixture).
+- [x] Standalone on a PR without criteria asks for them instead of inventing them.
 
 **Docs** — flow/build/verify-works.
 

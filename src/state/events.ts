@@ -16,6 +16,8 @@ import {
 } from '../research/contracts.js'
 import { type ScopeDefinition, validateScope } from '../scopes/contract.js'
 import { type Repository, type SliceDefinition, validateSlice } from '../slices/contract.js'
+import { type VerificationEventData, validVerificationData } from '../verification/contracts.js'
+import { verificationRuns } from '../verification/state.js'
 import {
   validWorktreeData,
   type WorktreeEventData,
@@ -65,6 +67,7 @@ export type EventData =
   | WorktreeEventData
   | GateEventData
   | BuildEventData
+  | VerificationEventData
   | {
       type: 'slice.defined'
       data: {
@@ -174,6 +177,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('verify.')) return validVerificationData(type, data)
   if (type.startsWith('build.')) return validBuildData(type, data)
   if (type.startsWith('gate.')) return validGateData(type, data)
   if (type.startsWith('worktree.')) return validWorktreeData(type, data)
@@ -536,5 +540,6 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   replayMailbox(events)
   worktreeRecords(events)
   gateRuns(events)
+  verificationRuns(events)
   return items
 }

@@ -34,6 +34,7 @@ export interface GateResult {
   status: 'ok' | 'unavailable'
   evidence: string[]
   findings: GateFinding[]
+  execution?: { status: 'passed' | 'failed' }
   reason?: string
 }
 export interface GateVote {
@@ -91,6 +92,8 @@ export function validateGateResult(value: unknown): asserts value is GateResult 
     )
   )
     throw new Error('Gate findings need unique ids, locations and meaningful evidence')
+  if (result.execution && result.unit !== 'suite')
+    throw new Error('Only the suite unit carries process execution status')
   if (result.status === 'ok' && !result.evidence.length)
     throw new Error('A completed gate unit needs observed evidence, even with no findings')
   if (result.status === 'unavailable' && (!result.reason?.trim() || result.findings.length))
