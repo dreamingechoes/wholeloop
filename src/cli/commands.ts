@@ -8,6 +8,68 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'ramp begin',
+    arguments: '[<description>]',
+    options: ['--for <id>', '--owner <person>', '--file <file>'],
+    schema: 'wholeloop/ramp-begin@1',
+    summary: 'Pin a confirmed audience plan and evidence checks before ramping',
+  },
+  {
+    path: 'ramp requests',
+    arguments: '',
+    options: ['--for <id>', '--mode <observe|confirm>', '--at <timestamp>'],
+    schema: 'wholeloop/ramp-read-requests@1',
+    summary: 'Plan exact read-only evidence calls without querying services',
+  },
+  {
+    path: 'ramp observe',
+    arguments: '',
+    options: ['--for <id>', '--file <file>'],
+    schema: 'wholeloop/ramp-report@1',
+    summary: 'Import exact normalized read results and retain missing evidence as unknown',
+  },
+  {
+    path: 'ramp decide',
+    arguments: '<go|hold|rollback>',
+    options: [
+      '--for <id>',
+      '--basis <event-id>',
+      '--by <person>',
+      '--reason <text>',
+      '--ack <json>',
+    ],
+    schema: 'wholeloop/ramp-report@1',
+    summary: 'Record one stage decision against the evidence shown to the person',
+  },
+  {
+    path: 'ramp proposal',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/ramp-proposal@1',
+    summary: 'Produce an unapplied flag or manual exposure change proposal',
+  },
+  {
+    path: 'ramp confirm',
+    arguments: '',
+    options: ['--for <id>', '--file <file>', '--by <person>', '--evidence <ref>'],
+    schema: 'wholeloop/ramp-report@1',
+    summary: 'Confirm an externally performed change before advancing one stage',
+  },
+  {
+    path: 'ramp report',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/ramp-report@1',
+    summary: 'Resume the current stage, evidence and explicit decision',
+  },
+  {
+    path: 'ramp schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/ramp-schema@1',
+    summary: 'Print the versioned ramp plan input contract',
+  },
+  {
     path: 'launch begin',
     arguments: '[<description>]',
     options: ['--for <id>', '--owner <person>', '--measurement <file>'],

@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: ramp-exact-evidence
+    enforcers: [src/ramp/contracts.ts#rampRuns, src/providers/numeric.ts#numericEvidence, src/ramp/transcript.ts#rampResponseHost, test/unit/ramp/ramp.test.ts]
+  - id: ramp-human-stages
+    enforcers: [src/ramp/contracts.ts#rampRuns, src/ramp/workflow.ts#RampWorkflow, src/flow/engine.ts#complete, test/unit/ramp/ramp.test.ts]
+  - id: ramp-propose-only
+    enforcers: [src/ramp/publish.ts#dispatchRampProposal, src/providers/manifest.ts#validateProvider, test/unit/ramp/ramp.test.ts]
+  - id: ramp-window-control
+    enforcers: [src/ramp/contracts.ts#bindRampControl, src/ramp/contracts.ts#rampRuns, src/ramp/evidence.ts#collectRampEvidence, test/unit/ramp/ramp.test.ts]
   - id: launch-pinned-measurements
     enforcers: [src/launch/measurement.ts#scopeMeasurement, src/launch/contracts.ts#validateLaunchDraft, src/launch/artifacts.ts#launchArtifacts, test/unit/launch/launch.test.ts]
   - id: launch-draft-boundary

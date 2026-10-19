@@ -5,6 +5,8 @@ import { launchArtifacts } from '../launch/artifacts.js'
 import { launchRuns } from '../launch/contracts.js'
 import { launchDeliveries } from '../launch/publish.js'
 import { pullRequestPlans } from '../pull-requests/contracts.js'
+import { rampRuns } from '../ramp/contracts.js'
+import { rampProposals } from '../ramp/publish.js'
 import { reviewInputs } from '../review/state.js'
 import { verificationRuns } from '../verification/state.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
@@ -48,6 +50,11 @@ export function projections(
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }
+  for (const ramp of rampRuns(events))
+    files.set(
+      `items/${ramp.subject}/ramps/${ramp.run}.json`,
+      `${JSON.stringify({ ...ramp, proposals: rampProposals(events).filter((entry) => entry.run === ramp.run) }, null, 2)}\n`,
+    )
   for (const delivery of launchDeliveries(events))
     files.set(
       `items/${delivery.subject}/launches/${delivery.run}/dispatches/${delivery.key}.json`,

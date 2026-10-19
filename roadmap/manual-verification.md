@@ -4,6 +4,17 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## ramp-exposure and actual exposure changes (P4-02)
+
+- [ ] Authenticate source/flag providers in a disposable environment. Verify exact query semantics, units, timezones, complete windows and cohort ownership; normalized fixture numbers do not establish source correctness.
+- [ ] Inspect real flags.propose-change permissions and responses: create only a proposal, explicitly applied=false. Verify no toggle/apply action is possible through the selected client/server. Known route checks cannot prove opaque tools safe.
+- [ ] Exercise go/hold/rollback across real sessions and CLIs. Confirm person/reason/exact evidence, separate fresh flag reads, actual audience percentages and full windows after every confirmation or restored control. Inspect continuous control history externally; snapshots cannot prove stability between reads.
+- [ ] Inspect retained intent after an interrupted proposal before further writes. Never clear ambiguity or retry blindly; reconcile the actual remote request manually.
+- [ ] Verify manual-control attestations against actual external evidence and keep normalized response files sanitized, with no credentials or private logs. The core trusts explicit host observations.
+- [ ] Repeat CLI/process checks on Linux and supported Node versions. Local tests use macOS/Node 24 and synthetic hosts; no actual flag or remote proposal was changed/created.
+
+These checks do not block subsequent local implementation.
+
 ## prepare-launch and real no-send isolation (P4-01)
 
 - [ ] Complete the adapter test for every target CLI once P1 adapters/conformance are available: inspect the launcher's actual tool set and prove sending tools are unavailable. Canonical read-only metadata and synthetic typed hosts do not satisfy this acceptance criterion.

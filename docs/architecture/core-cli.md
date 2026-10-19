@@ -22,6 +22,14 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl ramp begin [<description>]` | `wholeloop/ramp-begin@1` | Pin a confirmed audience plan and evidence checks before ramping |
+| `wl ramp requests` | `wholeloop/ramp-read-requests@1` | Plan exact read-only evidence calls without querying services |
+| `wl ramp observe` | `wholeloop/ramp-report@1` | Import exact normalized read results and retain missing evidence as unknown |
+| `wl ramp decide <go\|hold\|rollback>` | `wholeloop/ramp-report@1` | Record one stage decision against the evidence shown to the person |
+| `wl ramp proposal` | `wholeloop/ramp-proposal@1` | Produce an unapplied flag or manual exposure change proposal |
+| `wl ramp confirm` | `wholeloop/ramp-report@1` | Confirm an externally performed change before advancing one stage |
+| `wl ramp report` | `wholeloop/ramp-report@1` | Resume the current stage, evidence and explicit decision |
+| `wl ramp schema` | `wholeloop/ramp-schema@1` | Print the versioned ramp plan input contract |
 | `wl launch begin [<description>]` | `wholeloop/launch-begin@1` | Pin launch measurements and repository voice before drafting |
 | `wl launch complete` | `wholeloop/launch-complete@1` | Store a validated launch kit with metric-linked dashboard specs |
 | `wl launch report` | `wholeloop/launch-report@1` | Show local artifacts and explicit provider draft/create handoffs |

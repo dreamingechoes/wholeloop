@@ -178,6 +178,30 @@ export function validateProvider(value: unknown): asserts value is Provider {
       (mapping.args !== undefined && !isObject(mapping.args))
     )
       fail(`operations.${operation}`, 'a tool mapping with optional args and guidance')
+    if (operation === 'flags.propose-change' && isObject(mapping)) {
+      const dangerous =
+        /(?:^|[._:/-])(?:toggle|setFlag|updateFlag|setEnabled|enableFlag|disableFlag|applyChange)(?:$|[._:/-])/i
+      const routes = isObject(mapping.args)
+        ? Object.entries(mapping.args)
+            .filter(([key]) =>
+              /^(?:method|action|operation|endpoint|path|url|command|argv)$/i.test(key),
+            )
+            .flatMap(([, value]) =>
+              typeof value === 'string'
+                ? [value]
+                : Array.isArray(value)
+                  ? value.filter((entry): entry is string => typeof entry === 'string')
+                  : [],
+            )
+        : []
+      if (
+        dangerous.test(String(mapping.tool)) ||
+        routes.some((value) => dangerous.test(value)) ||
+        (isObject(mapping.args) &&
+          (mapping.args.apply === true || mapping.args.proposalOnly === false))
+      )
+        fail(`operations.${operation}`, 'a proposal-only mapping without known toggle/apply routes')
+    }
     if (operation === 'comms.draft' && isObject(mapping)) {
       const dangerous = /(?:^|[._:/-])(?:send|sendMessage|postMessage|publish)(?:$|[._:/-])/i
       const routes = isObject(mapping.args)

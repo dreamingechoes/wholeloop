@@ -18,6 +18,8 @@ import {
   pullRequestPlans,
   validPullRequestData,
 } from '../pull-requests/contracts.js'
+import { type RampEventData, rampRuns, validRampData } from '../ramp/contracts.js'
+import { rampProposals } from '../ramp/publish.js'
 import {
   type AngleResult,
   type Refutation,
@@ -86,6 +88,7 @@ export type EventData =
   | PullRequestEventData
   | EnvironmentEventData
   | LaunchEventData
+  | RampEventData
   | {
       type: 'slice.defined'
       data: {
@@ -195,6 +198,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('ramp.')) return validRampData(type, data)
   if (type.startsWith('launch.')) return validLaunchData(type, data)
   if (type.startsWith('env.')) return validEnvironmentData(type, data)
   if (type.startsWith('pr.')) return validPullRequestData(type, data)
@@ -568,5 +572,7 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   environmentDeclarations(events)
   launchRuns(events)
   launchDeliveries(events)
+  rampRuns(events)
+  rampProposals(events)
   return items
 }

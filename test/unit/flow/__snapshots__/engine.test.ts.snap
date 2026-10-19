@@ -1102,12 +1102,10 @@ exports[`step begin contracts > prepare-launch: standalone empty, standalone inp
 exports[`step begin contracts > ramp-exposure: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
-      "after": [
-        "ramp",
-      ],
+      "after": [],
       "before": [],
     },
     "have": {},
@@ -1162,15 +1160,19 @@ exports[`step begin contracts > ramp-exposure: standalone empty, standalone inpu
     "schema": "wholeloop/step-begin@1",
     "step": "ramp-exposure",
     "subject": null,
-    "template": null,
+    "template": [
+      "Stages",
+      "Evidence",
+      "Decisions",
+      "Confirmations",
+      "Handoff",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
-      "after": [
-        "ramp",
-      ],
+      "after": [],
       "before": [],
     },
     "have": {},
@@ -1199,15 +1201,19 @@ exports[`step begin contracts > ramp-exposure: standalone empty, standalone inpu
     "schema": "wholeloop/step-begin@1",
     "step": "ramp-exposure",
     "subject": null,
-    "template": null,
+    "template": [
+      "Stages",
+      "Evidence",
+      "Decisions",
+      "Confirmations",
+      "Handoff",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
-      "after": [
-        "ramp",
-      ],
+      "after": [],
       "before": [],
     },
     "have": {},
@@ -1239,7 +1245,13 @@ exports[`step begin contracts > ramp-exposure: standalone empty, standalone inpu
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Stages",
+      "Evidence",
+      "Decisions",
+      "Confirmations",
+      "Handoff",
+    ],
   },
 ]
 `;

@@ -1,0 +1,471 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/ramp-events@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "ramp.planned": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "type": "string",
+              "const": "wholeloop/ramp-plan@1"
+            },
+            "environment": {
+              "type": "string",
+              "minLength": 1
+            },
+            "flag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "confirmedBy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sourceDigest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "stages": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_-]*$"
+                  },
+                  "audience": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "exposure": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "exit": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "checks": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_-]*$"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "operation": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "query": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "unit": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": ["lt", "lte", "eq", "gte", "gt"]
+                        },
+                        "threshold": {
+                          "type": "number"
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "lookbackHours": {
+                          "type": "number",
+                          "minimum": 0.001,
+                          "maximum": 8760
+                        },
+                        "timezone": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "provider",
+                        "operation",
+                        "query",
+                        "unit",
+                        "operator",
+                        "threshold",
+                        "required",
+                        "lookbackHours",
+                        "timezone"
+                      ]
+                    }
+                  }
+                },
+                "required": ["key", "audience", "enabled", "exposure", "exit", "checks"]
+              }
+            }
+          },
+          "required": ["schema", "environment", "confirmedBy", "stages"]
+        },
+        "criteria": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "origin": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": ["ref", "origin", "digest"]
+        }
+      },
+      "required": ["run", "plan", "criteria"]
+    },
+    "ramp.observed": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "stage": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "flag": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["observed", "unknown", "manual"]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "flag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "environment": {
+              "type": "string",
+              "minLength": 1
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "exposure": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "audience": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            },
+            "missing": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["status", "ref", "environment"]
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["pass", "fail", "unknown"]
+              },
+              "provider": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "query": {
+                "type": "string",
+                "minLength": 1
+              },
+              "queryDigest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "window": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "start": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "end": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["start", "end", "timezone"]
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {
+                "type": "number"
+              },
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "bodyDigest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "missing": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "key",
+              "status",
+              "provider",
+              "operation",
+              "query",
+              "queryDigest",
+              "window",
+              "unit"
+            ]
+          }
+        }
+      },
+      "required": ["run", "stage", "at", "flag", "checks"]
+    },
+    "ramp.decided": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "stage": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "basis": {
+          "type": "string",
+          "pattern": "^ev-[a-f0-9-]{36}$"
+        },
+        "by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcome": {
+          "type": "string",
+          "enum": ["go", "hold", "rollback"]
+        },
+        "acknowledgedRisks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          }
+        }
+      },
+      "required": ["run", "stage", "basis", "by", "reason", "outcome", "acknowledgedRisks"]
+    },
+    "ramp.confirmed": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "stage": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "basis": {
+          "type": "string",
+          "pattern": "^ev-[a-f0-9-]{36}$"
+        },
+        "by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["observed", "unknown", "manual"]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "flag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "environment": {
+              "type": "string",
+              "minLength": 1
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "exposure": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "audience": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            },
+            "missing": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["status", "ref", "environment"]
+        }
+      },
+      "required": ["run", "stage", "basis", "by", "at", "evidence"]
+    },
+    "ramp.proposal-planned": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "stage": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": ["run", "stage", "basis", "provider", "digest"]
+    },
+    "ramp.proposal-finished": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "stage": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["succeeded", "pending"]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["status", "ref"]
+        }
+      },
+      "required": ["run", "stage", "basis", "result"]
+    }
+  },
+  "required": ["ramp.planned", "ramp.observed", "ramp.decided", "ramp.confirmed"]
+}

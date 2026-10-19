@@ -22,6 +22,7 @@ import { launchReceipt } from '../launch/artifacts.js'
 import { LaunchWorkflow } from '../launch/workflow.js'
 import { publicationPlan } from '../providers/publication.js'
 import { pullRequestReceipt } from '../pull-requests/workflow.js'
+import { rampReceipt } from '../ramp/workflow.js'
 import { researchBrief } from '../research/report.js'
 import { reviewReceipt } from '../review/workflow.js'
 import { checkScopePlan, parseScopePlan, scopeContext } from '../scopes/contract.js'
@@ -457,6 +458,11 @@ export class FlowEngine {
         throw new CliError(
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
+        )
+      if (name === 'ramp-exposure' && content !== rampReceipt(events, subject))
+        throw new CliError(
+          'Complete ramping through its per-stage decisions and confirmations',
+          EXIT.precondition,
         )
       if (name === 'prepare-launch' && content !== launchReceipt(events, subject, run))
         throw new CliError(

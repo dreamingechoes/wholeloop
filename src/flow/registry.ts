@@ -75,6 +75,7 @@ export const STEPS: readonly Step[] = Object.freeze(
         'review-code',
         'open-pr',
         'prepare-launch',
+        'ramp-exposure',
       ].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
@@ -83,11 +84,9 @@ export const STEPS: readonly Step[] = Object.freeze(
           ? ['approve-spec']
           : name === 'cut-scopes'
             ? ['approve-scopes']
-            : name === 'ramp-exposure'
-              ? ['ramp']
-              : name === 'decide-next'
-                ? ['decide']
-                : [],
+            : name === 'decide-next'
+              ? ['decide']
+              : [],
       ),
       sections: Object.freeze(
         name === 'frame-problem'
@@ -115,9 +114,11 @@ export const STEPS: readonly Step[] = Object.freeze(
                               'Enablement',
                               'Handoffs',
                             ]
-                          : name === 'research'
-                            ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-                            : [],
+                          : name === 'ramp-exposure'
+                            ? ['Stages', 'Evidence', 'Decisions', 'Confirmations', 'Handoff']
+                            : name === 'research'
+                              ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+                              : [],
       ),
     }),
   ),

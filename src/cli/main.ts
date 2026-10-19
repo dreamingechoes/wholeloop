@@ -20,6 +20,7 @@ import { mailboxCommand } from './mailbox.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
 import { pullRequestCommand } from './pull-requests.js'
+import { rampCommand } from './ramp.js'
 import { researchCommand } from './research.js'
 import { reviewCommand } from './review.js'
 import { scopesCommand } from './scopes.js'
@@ -88,7 +89,11 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       return reviewCommand(command.path, parsed, root, json, io)
     if (['verify begin', 'verify complete'].includes(command.path))
       return verificationCommand(command.path, parsed, root, json, io)
-    if (command.path === 'verify suite' || command.path.startsWith('pr '))
+    if (
+      command.path === 'verify suite' ||
+      command.path.startsWith('pr ') ||
+      command.path.startsWith('ramp ')
+    )
       throw new CliError('This command requires the asynchronous dispatcher')
     if (command.path.startsWith('build ')) return buildCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)
@@ -155,7 +160,9 @@ export async function runAsync(
   const args = argv.filter((arg) => arg !== '--json')
   const command = COMMANDS.find(
     (command) =>
-      (command.path === 'verify suite' || command.path.startsWith('pr ')) &&
+      (command.path === 'verify suite' ||
+        command.path.startsWith('pr ') ||
+        command.path.startsWith('ramp ')) &&
       args.slice(0, 2).join(' ') === command.path,
   )
   if (
@@ -171,9 +178,11 @@ export async function runAsync(
       [],
       command.options.map((option) => option.split(' ')[0] ?? option),
     )
-    return command.path.startsWith('pr ')
-      ? await pullRequestCommand(command.path, parsed, root, json, io)
-      : await verificationSuiteCommand(parsed, root, json, io)
+    return command.path.startsWith('ramp ')
+      ? await rampCommand(command.path, parsed, root, json, io)
+      : command.path.startsWith('pr ')
+        ? await pullRequestCommand(command.path, parsed, root, json, io)
+        : await verificationSuiteCommand(parsed, root, json, io)
   } catch (error) {
     const code = error instanceof CliError ? error.code : EXIT.precondition
     const message = error instanceof Error ? error.message : 'Asynchronous command failed'

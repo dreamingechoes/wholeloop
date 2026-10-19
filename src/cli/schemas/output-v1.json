@@ -1079,6 +1079,46 @@
         }
       },
       "required": ["schema", "measurement"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/ramp-begin@1"
+        }
+      },
+      "required": ["schema", "status"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/ramp-read-requests@1"
+        }
+      },
+      "required": ["schema", "requests"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/ramp-report@1"
+        }
+      },
+      "required": ["schema", "index"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/ramp-proposal@1"
+        }
+      },
+      "required": ["schema", "applied"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/ramp-schema@1"
+        }
+      },
+      "required": ["schema", "plan"]
     }
   ],
   "$defs": {

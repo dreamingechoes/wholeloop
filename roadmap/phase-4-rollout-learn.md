@@ -28,7 +28,7 @@ criterion does not block dependent local rollout implementation.
 
 ## P4-02 · `ramp-exposure`
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P4-01
+**Status:** ✅ · **Size:** M · **Depends on:** P4-01
 
 **Goal** — Exposure grows only on evidence and only by a person's hand.
 
@@ -36,8 +36,8 @@ criterion does not block dependent local rollout implementation.
 
 **Acceptance criteria:**
 
-- [ ] A source that cannot be read reports *unknown*, never *pass* (test).
-- [ ] The decision is recorded per stage with who, when and the evidence shown.
+- [x] A source that cannot be read reports *unknown*, never *pass* (test).
+- [x] The decision is recorded per stage with who, when and the evidence shown.
 
 **Docs** — flow/rollout/ramp-exposure.
 

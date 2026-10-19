@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-19 · P4-02 — evidence-bound human exposure stages
+
+- Add ramp begin/requests/observe/decide/proposal/confirm/report/schema, a canonical skill and conductor SDK. Pin confirmed plans, actual ramp.criteria content and prepared launch measurement digests. Default stages are proposals; standalone entry creates no fake Define or merge history. ADR-0039 records the evidence and human-control boundaries.
+- Preserve exact query/provider/operation/window/timezone/unit and raw-content hashes, accept only normalized finite scalars, and keep unavailable/incompatible evidence unknown. Required unknown/failing checks block go; optional open checks require explicit acknowledgment. Every decision records person/time/reason and exact evidence event; later observations invalidate it.
+- Advance one stage only after a separate matching flag read or explicit manual attestation. Hold does not advance; confirmed rollback restarts at stage zero. Reject pre-exposure windows, detect changed/unavailable confirmed controls and require a fresh full window after restoration. Read snapshots do not prove continuous cohort stability.
+- Keep proposals unapplied. Explicit flags.propose-change SDK dispatch journals once per decision, requires applied=false, caches receipts and preserves ambiguity without retry. Reject recognized toggle/apply routes; actual opaque server semantics remain owner checks. CLI request planning invokes no remote; exact fingerprinted response imports deduplicate identical reads while retaining each criterion. Rebuild stage/proposal projections and bounded resume references outside repositories.
+- Verify sixteen new synthetic-host and compiled-CLI cases, including unknown versus actual zero, unit mismatch, explicit approvals, optional risks, stale/forged evidence, window boundaries, drift/restoration, rollback/manual controls, rebuild, receipt guards, read deduplication, unapplied proposal cache/ambiguity and known mutation mappings. Local check: 521 tests in 38 files, build, smoke, lint, typecheck, generated docs/catalogs and harness passed. Correct an unquoted placeholder caught by Markdown lint; final Markdown/Mermaid and docs/harness checks passed after the correction. No authenticated source, actual flag change or remote proposal ran. Linux, real client permissions/normalization and continuous control history remain on the manual checklist and do not block later implementation.
+
+---
+
 ## 2026-10-19 · P4-01 — local launch kits complete; adapter isolation pending
 
 - Add launch begin/complete/report/schema, a read-only launcher role/skill and typed drafting workflow. Ask missing standalone facts/measurements before mutation; create no fake Define/merge history. Load/pin actual comms.voice and launch.templates and supply effective profile instructions. Source scope measurements through the exact cut-scopes/spec revision, selecting owned metrics rather than the latest unrelated spec.
