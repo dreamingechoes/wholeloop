@@ -310,9 +310,17 @@ wl mcp add acme-support --target codex --json
 
 With no configuration, `docs.create` resolves to `local-docs` and `tracker.create-item` to `local-tracker`. `native-web` and `native-code` declare host-native evidence tools. The registry resolves operation mappings; it does not execute external tools or claim authentication. Steps currently store their artifacts through the core.
 
-Detection reads MCP declarations for all four tier-A clients and executable availability on `PATH`; `available: true` means declared/configured, and `authenticated: false` remains explicit. Config parsing errors omit contents. No detection command from a manifest is executed. Provider tests do not make network probes.
+Detection reads MCP declarations for all four tier-A clients plus Gemini and executable availability on `PATH`; `available: true` means declared/configured, and `authenticated: false` remains explicit. Config parsing errors omit contents. No detection command from a manifest is executed. Provider tests do not make network probes.
 
 `mcp add` prints a mergeable snippet with `applied: false`; it never overwrites client configuration or reads a token. OAuth is delegated to the client. Header authentication uses `token_env`, an environment variable name. Copilot remote headers do not expand environment references, so that recipe is explicitly rejected for Copilot instead of embedding credentials. Confirm authentication in a real client session.
+
+Gemini snippets merge into the native .gemini/settings.json mcpServers map (under
+GEMINI_CLI_HOME when set). HTTP recipes use httpUrl, with explicit OAuth enablement
+for requested OAuth and bearer environment placeholders for header auth; stdio
+uses command/args. Gemini 0.27.0 needs explicit OAuth enablement even where newer
+documentation permits discovery. Rendering never applies the snippet, expands a
+credential or contacts the server. Detection reads project/user declarations and
+allowed/excluded server metadata only. Actual auth/tool execution remains unverified.
 
 The renderers follow the official [Claude Code MCP configuration](https://code.claude.com/docs/en/mcp), [OpenAI MCP configuration](https://developers.openai.com/codex/mcp), [OpenCode MCP configuration](https://opencode.ai/docs/mcp-servers/) and [Copilot MCP configuration](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference#mcp-server-configuration), checked on 2026-10-18. Golden files verify generated shape; they are not native-client conformance runs.
 

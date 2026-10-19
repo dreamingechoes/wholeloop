@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
 
 ---
 
@@ -49,7 +49,8 @@ flowchart LR
   gen --> c2[".agents/skills · .codex/agents/*.toml<br/>Git fallback · config.toml MCP"]
   gen --> c3[".opencode/agents · commands<br/>JS plugin → wl guard"]
   gen --> c4[".github/agents · .github/hooks<br/>Agent Plugins manifest"]
-  gen -.-> c5[".gemini/ · .agents/ (Antigravity)<br/>.cursor/"]:::opt
+  gen --> c5[".gemini/skills · .gemini/agents<br/>gemini-extension.json · Git fallback"]
+  gen -.-> c6[".agents/ (Antigravity) · .cursor/"]:::opt
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
   classDef opt stroke-dasharray:5 3;
 ```
@@ -146,6 +147,7 @@ node dist/wl.mjs uninstall --target all --scope user --json
 | Codex | .agents/skills and CODEX_HOME/agents | .agents/skills and .codex/agents | explicit per-repository Git fallback |
 | OpenCode | XDG config/opencode or OPENCODE_CONFIG_DIR | .opencode/ | plugins/wholeloop.js |
 | Copilot | COPILOT_HOME or .copilot/ | .github/ | hooks/wholeloop.json |
+| Gemini | .gemini/ under HOME or GEMINI_CLI_HOME | .gemini/ | explicit per-repository Git fallback |
 
 All installed native names use wl-; generated Claude plugins retain their plugin
 namespace. Skills invoke their one packaged core through relative launchers; the
@@ -161,10 +163,46 @@ restart, project trust, compatibility precedence, permissions and Linux still ne
 actual conformance. Git-hook activation/removal remains a separate per-repository
 handoff. See [getting started](../getting-started.md) and [ADR-0050](../decisions/0050-owned-native-overlays-and-explicit-activation.md).
 
+## Gemini extension and native overlays
+
+`wl build --target gemini --out /tmp/wholeloop-gemini --json` emits a self-contained
+Gemini extension with gemini-extension.json, seventeen wl-prefixed skills, eight
+local agents, resources and checked launchers. `wl install --target gemini --scope
+user|project` uses owned .gemini/skills and agents overlays; uninstall retains the
+same ownership/refusal/backup boundaries. GEMINI_CLI_HOME overrides the home that
+contains .gemini and must be absolute. Shared native settings/auth are untouched.
+
+Agent definitions use explicit native tool lists and inherit the session model.
+Observers receive no shell, write, memory, wildcard MCP or delegation tool; the
+main session supplies command/provider observations. Preview subagent enablement
+remains native setup. Subagents cannot nest delegation; additional role work returns
+to the main session for sequential handoff. If structured questions are unavailable,
+the instructions return exact plain-text options and wait for explicit answers.
+
+Gemini 0.27.0's actual static loaders accepted all eight generated agents and
+seventeen skills under an isolated native home. Its installed registry uses
+search_file_content; newer documentation also uses grep_search. These observations
+do not prove a model session, runtime tool restrictions, native trust, hook activation
+or actual MCP access. No model/authenticated operation ran. The shared framing
+runner accepts --target gemini with explicit simulation/live evidence separation.
+
+Native hooks use the explicit Git fallback. Version 0.27.0 hydrates extensionPath
+into shell command text before execution; this renderer emits no command based on
+that unescaped root. A safe native transport remains future work. Generated MCP
+snippets use httpUrl, explicit requested OAuth and environment placeholders without
+credentials; declaration detection respects Gemini allowed/excluded server metadata.
+Doctor supports --target gemini; its default selection stays on tier A.
+
+Formats: [Gemini extension reference](https://geminicli.com/docs/extensions/reference/),
+[local subagents](https://geminicli.com/docs/core/subagents/),
+[MCP configuration](https://geminicli.com/docs/tools/mcp-server/).
+See [ADR-0053](../decisions/0053-gemini-extension-overlays-and-safe-hook-boundary.md)
+and the [manual checklist](../../roadmap/manual-verification.md).
+
 ## Standalone conformance
 
 The [standalone conformance runner](../architecture/determinism-and-testing.md#disposable-standalone-conformance)
-prepares project-local overlays for each tier-A target and exact version pin. Its
+prepares project-local overlays for each tier-A target and Gemini at an exact version pin. Its
 fixture mode reports simulation only; actual pinned live process/journal checks
 require an explicit --live run. Native authentication/trust/permissions, stdout
 protocol, hook activation and broader matrix entries stay separate. No actual

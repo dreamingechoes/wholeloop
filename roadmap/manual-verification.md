@@ -4,6 +4,19 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Gemini adapter, overlays and conformance (P5-01 component)
+
+- [ ] Review generated gemini-extension.json and native overlays, then load/link/install only in disposable native configurations. Enable preview subagents through explicit native setup, verify all seventeen skills/eight agents and actual invocation, and confirm inheritance/precedence. Actual 0.27.0 static loaders passed; that is not a model/runtime permission check.
+- [ ] Verify observer tool isolation, no shell/write/memory/MCP/delegation route, sequential main-session handoffs, inherited models and exact plain-text questions when ask is unavailable. Repeat against the intended current version; 0.27.0 uses search_file_content while newer documentation also names grep_search.
+- [ ] Exercise user/project install/uninstall, absolute GEMINI_CLI_HOME, external ownership/backups, relocation and special paths. --target all now includes Gemini; default doctor stays tier A, so select --target gemini explicitly.
+- [ ] Run the shared framing scenario with a new --target gemini run and exact --pin, then explicit --live after native trust/auth/permissions setup. Keep FIXTURE_PASS separate from actual process/journal evidence and inspect native external/ignored effects.
+- [ ] Review unapplied HTTP/stdio MCP snippets, exact live tools/arguments, OAuth discovery and header placeholders under the native credential store. Static detection observes declaration metadata only; no authenticated tool ran.
+- [ ] Keep the explicit per-repository Git fallback. Native hook emission is withheld because 0.27.0 substitutes extensionPath into shell text; adding a safe native binding is implementation work, not a manual checkmark.
+- [ ] Repeat on Linux and supported Node/client versions. Current generator/launcher/static-loader execution is macOS arm64/Node 24/Gemini 0.27.0 only.
+
+Antigravity adapter/hook/MCP/scenario work remains implementation. It does not wait
+for Gemini model, permission or authenticated-service checks.
+
 ## Generated references (P5-06 local controls)
 
 - [ ] After changing source contracts, rebuild before running docs check. Confirm command/config/provider sections describe that build, not an older executable on PATH.
@@ -24,7 +37,7 @@ local implementation while retaining native/host verification boundaries.
 - [ ] Inspect native logs, ambient plugins/compatible user skills, ignored files, Git metadata, external writes and any remote effects. This structural scenario does not validate native JSON protocol, read-only role isolation, hook activation or the broader P0-03 matrix.
 - [ ] Repeat on Linux and supported Node versions before claiming portability. Current simulation/compiled-runner execution is macOS arm64/Node 24.
 
-Automated four-target installed-launcher simulations report FIXTURE_PASS, never a
+Automated tier-A/Gemini installed-launcher simulations report FIXTURE_PASS, never a
 native conformance PASS. Preparation launches no model; --live is an explicit
 owner action that can use authenticated models and incur cost. Actual model runs
 remain unexecuted here and do not block further implementation.

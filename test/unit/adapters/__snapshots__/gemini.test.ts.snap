@@ -1,0 +1,132 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Gemini extension and native overlays > matches the Gemini native golden tree with an explicit Git fallback 1`] = `
+{
+  "agents/wl-reviewer.md": {
+    "content": "---
+name: wl-reviewer
+description: Observe assigned evidence.
+kind: local
+tools:
+  - read_file
+  - read_many_files
+  - list_directory
+  - glob
+  - search_file_content
+  - google_web_search
+  - web_fetch
+---
+The main session supplies wholeloopRoot from the checked packaged launcher. Read named protocols under wholeloopRoot/resources/protocols/; canonical wl commands mean Node with wholeloopRoot/bin/wl.mjs. If context is missing, return questions instead of guessing PATH. Canonical model tier: deep; inherit the session model.
+
+This observer has no shell, write, memory or MCP tool. Ask the main session for observed command/provider evidence. Gemini subagents cannot nest delegation; return further role work to the main session for sequential execution. If structured questions are unavailable, return plain-text options and wait for answers.
+
+# Review
+
+Report evidence without changing source.
+",
+    "mode": 420,
+  },
+  "bin/wl.mjs": {
+    "content": "#!/usr/bin/env node
+console.log("fixture core")
+",
+    "mode": 493,
+  },
+  "gemini-extension.json": {
+    "content": "{
+  "name": "wholeloop",
+  "version": "0.0.0",
+  "description": "Independent evidence-backed development steps with an external journal and explicit human decisions."
+}
+",
+    "mode": 420,
+  },
+  "resources/protocols/core-invariants.md": {
+    "content": "# Core invariants
+
+Keep state external.
+",
+    "mode": 420,
+  },
+  "skills/wl-next/SKILL.md": {
+    "content": "---
+name: wl-next
+description: Continue fixture work.
+---
+Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+
+# Next
+
+Call wl next --json.
+
+When a structured ask tool is unavailable, show the exact questions/options in plain text and stop for explicit answers. Never manufacture an approval.
+",
+    "mode": 420,
+  },
+  "skills/wl-next/scripts/wl.mjs": {
+    "content": "#!/usr/bin/env node
+await import(new URL("../../../bin/wl.mjs", import.meta.url))
+",
+    "mode": 493,
+  },
+  "wholeloop-artifacts.json": {
+    "content": "{
+  "schema": "wholeloop/adapter-artifacts@1",
+  "target": "gemini",
+  "version": "0.0.0",
+  "source": "e33dacf408124d29c71c39bac95029196bd4066e9f356a7f41c0bffeb55c46b1",
+  "core": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192",
+  "capabilities": {
+    "conformance": "unverified",
+    "skills": "rendered",
+    "agents": "rendered",
+    "hooks": "git-fallback",
+    "readOnly": "read-tool-allowlist",
+    "engines": [
+      "sequential"
+    ]
+  },
+  "skills": [
+    "wl-next"
+  ],
+  "agents": [
+    "wl-reviewer"
+  ],
+  "files": [
+    {
+      "path": "agents/wl-reviewer.md",
+      "mode": 420,
+      "sha256": "b5c1e7ed5da5b16d15f72cb9656577b51ec8d853a37516138eeb795618073ace"
+    },
+    {
+      "path": "resources/protocols/core-invariants.md",
+      "mode": 420,
+      "sha256": "3f3288d58749c3417d681dd95b043571f37238ca197402dd38aaab3e776a21a9"
+    },
+    {
+      "path": "skills/wl-next/SKILL.md",
+      "mode": 420,
+      "sha256": "18e54f00999eb2ab83cfd9041ebdcdbe6ad37f7139ff197953c5c36a7e30c303"
+    },
+    {
+      "path": "skills/wl-next/scripts/wl.mjs",
+      "mode": 493,
+      "sha256": "add502f552054a727698aa8e17bc78a730de1f32dbe67619a8a0555128bf8dd1"
+    },
+    {
+      "path": "gemini-extension.json",
+      "mode": 420,
+      "sha256": "b38f46fbd72c28b8b5c449e264fc866ca2ac586e197bc467bc6db0c89a71e55b"
+    },
+    {
+      "path": "bin/wl.mjs",
+      "mode": 493,
+      "sha256": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192"
+    }
+  ]
+}
+",
+    "mode": 420,
+  },
+}
+`;

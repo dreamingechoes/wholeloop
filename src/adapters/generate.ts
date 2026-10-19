@@ -3,17 +3,18 @@ import { posix } from 'node:path'
 import { canonicalDigest, validateCanonical } from './canonical.js'
 import { claudeAdapter } from './claude.js'
 import type { Adapter, RenderedFile } from './contracts.js'
+import { geminiAdapter } from './gemini.js'
 import { hookArtifacts } from './hooks.js'
 import { codexAdapter, copilotAdapter, opencodeAdapter } from './portable.js'
 
 export const artifactDigest = (content: string) =>
   createHash('sha256').update(content).digest('hex')
 export function adapterFor(id: string): Adapter {
-  const found = [claudeAdapter, codexAdapter, opencodeAdapter, copilotAdapter].find(
+  const found = [claudeAdapter, codexAdapter, opencodeAdapter, copilotAdapter, geminiAdapter].find(
     (adapter) => adapter.id === id,
   )
   if (found) return found
-  throw new Error('Choose --target claude|codex|opencode|copilot')
+  throw new Error('Choose --target claude|codex|opencode|copilot|gemini')
 }
 /** A pure render tree lets generation, installation and golden tests share one contract. */
 export function generateAdapter(

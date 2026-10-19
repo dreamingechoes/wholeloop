@@ -44,6 +44,12 @@ export function installLocations(target: string, context: InstallContext) {
   const personal = context.scope === 'user'
   const root = canonicalPath(context.root)
   const home = canonicalPath(context.home)
+  if (target === 'gemini') {
+    const base = personal
+      ? join(absolute(env.GEMINI_CLI_HOME, home), '.gemini')
+      : join(root, '.gemini')
+    return { skills: join(base, 'skills'), agents: join(base, 'agents') }
+  }
   if (target === 'claude') {
     const base = personal
       ? absolute(env.CLAUDE_CONFIG_DIR, join(home, '.claude'))
@@ -81,7 +87,7 @@ export function installLocations(target: string, context: InstallContext) {
       hooks: join(base, 'hooks'),
     }
   }
-  throw new Error('Choose an installed target: claude,codex,opencode,copilot')
+  throw new Error('Choose an installed target: claude,codex,opencode,copilot,gemini')
 }
 /** Pure native overlay rendering. It never rewrites shared client settings or copies credential stores. */
 export function installationPlan(
@@ -114,7 +120,9 @@ export function installationPlan(
     if (skill) {
       const directory = join(locations.skills, `wl-${skill}`)
       exclusive.push(directory)
-      let rendered = renderPortableSkill(content).content
+      const source = generated.files.get(adapterFor(target).paths('skill', skill))
+      if (!source) throw new Error('Generated native skill is missing')
+      let rendered = target === 'claude' ? renderPortableSkill(content).content : source.content
       if (target === 'claude')
         rendered = `---\n${stringify({ ...frontmatter(rendered), hooks })}---\n${rendered.replace(/^---\n[\s\S]*?\n---\n/, '')}`
       add(join(directory, 'SKILL.md'), rendered)

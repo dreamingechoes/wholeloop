@@ -172,6 +172,7 @@ describe('MCP rendering', () => {
     expect(renderMcp(provider, 'codex').snippet).toContain('bearer_token_env_var = "SUPPORT_AUTH"')
     expect(renderMcp(provider, 'claude').snippet).toContain(`Bearer \${SUPPORT_AUTH}`)
     expect(renderMcp(provider, 'opencode').snippet).toContain('Bearer {env:SUPPORT_AUTH}')
+    expect(renderMcp(provider, 'gemini').snippet).toContain(`Bearer \${SUPPORT_AUTH}`)
     expect(() => renderMcp(provider, 'copilot')).toThrow('do not expand')
   })
 })
@@ -199,6 +200,10 @@ describe('provider detection', () => {
         [
           join(home, '.copilot/mcp-config.json'),
           '{"mcpServers":{"support":{"type":"http","url":"https://example.com"}}}',
+        ],
+        [
+          join(home, '.gemini/settings.json'),
+          '{"mcpServers":{"support":{"httpUrl":"https://example.com"}}}',
         ],
       ]
       for (const [file, content] of files)

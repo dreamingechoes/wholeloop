@@ -3,7 +3,7 @@
 > **TL;DR** — The questions people ask in the first ten minutes, answered in a few lines each, with a link to the page that goes deeper.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local core, generated tier-A packages, installation and conformance tooling are available. Actual native model/permission checks, authenticated integrations and tier-B adapters remain open; the [manual checklist](../roadmap/manual-verification.md) separates verification from remaining implementation.
+> **Status: 🚧 partial.** The local core, generated tier-A packages, installation and conformance tooling are available. Actual native model/permission checks, authenticated integrations and the remaining tier-B adapters remain open; the [manual checklist](../roadmap/manual-verification.md) separates verification from remaining implementation.
 
 ---
 
@@ -13,7 +13,7 @@
 No. Every step is a complete entry point. Research a question, build a small fix, review a PR — nothing before it needs to have run. → [Standalone or flow](./concepts.md#standalone-or-flow--both-are-first-class)
 
 **Which CLI should I use?**
-The one you already use. Claude Code, Codex, OpenCode and Copilot CLI are tier A; Gemini CLI, Antigravity and Cursor follow. → [Platforms](./platforms/README.md)
+The one you already use. Claude Code, Codex, OpenCode and Copilot CLI are tier A; Gemini has a local extension/overlay renderer; Antigravity and Cursor adapters remain pending. → [Platforms](./platforms/README.md)
 
 **Can I switch CLI halfway through?**
 Yes. State lives in your store, not in a session. Run `next <id>` (or `wl resume <id>`) in the other CLI.
@@ -58,7 +58,7 @@ The [glossary](./glossary.md#if-your-team-says) maps common vocabularies.
 ## The project
 
 **Is it usable today?**
-The local CLI is usable for state, configuration, discovery, step contracts, gated workflows and generated client artifacts. Build it from this repository and follow [getting started](./getting-started.md). Actual tier-A client/model checks, authenticated integrations, tier-B adapters and public release work remain open; this is not a verified 1.0 release. Follow the [roadmap](../roadmap/README.md).
+The local CLI is usable for state, configuration, discovery, step contracts, gated workflows and generated client artifacts. Build it from this repository and follow [getting started](./getting-started.md). Actual tier-A client/model checks, authenticated integrations, the remaining tier-B adapters and public release work remain open; this is not a verified 1.0 release. Follow the [roadmap](../roadmap/README.md).
 
 **Can I contribute?**
 Yes. Read [CONTRIBUTING.md](../CONTRIBUTING.md) and pick a task from the roadmap.

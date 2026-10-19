@@ -1,7 +1,7 @@
 import { stringify as toml } from 'smol-toml'
 import type { Provider } from './manifest.js'
 
-export const MCP_TARGETS = ['claude', 'codex', 'opencode', 'copilot'] as const
+export const MCP_TARGETS = ['claude', 'codex', 'opencode', 'copilot', 'gemini'] as const
 export type McpTarget = (typeof MCP_TARGETS)[number]
 
 /** Print a mergeable snippet; never read credentials or overwrite a client's config. */
@@ -16,7 +16,22 @@ export function renderMcp(provider: Provider, target: McpTarget) {
   const header = recipe.auth === 'header' ? recipe.token_env : undefined
   let config: Record<string, unknown>
   let destination: string
-  if (target === 'codex') {
+  if (target === 'gemini') {
+    destination = '$HOME/.gemini/settings.json'
+    config = {
+      mcpServers: {
+        [mcp.server]:
+          recipe.transport === 'http'
+            ? {
+                httpUrl: recipe.url,
+                // 0.27.0 requires explicit OAuth enablement; current clients also accept this documented field.
+                ...(recipe.auth ? { oauth: { enabled: recipe.auth === 'oauth' } } : {}),
+                ...(header ? { headers: { Authorization: `Bearer \${${header}}` } } : {}),
+              }
+            : { command: recipe.command, args: recipe.args ?? [] },
+      },
+    }
+  } else if (target === 'codex') {
     destination = '$HOME/.codex/config.toml'
     config = {
       mcp_servers: {

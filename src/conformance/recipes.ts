@@ -3,6 +3,18 @@ import type { PreparedConformance, Scenario } from './contracts.js'
 /** Native skill discovery needs project customizations; the observer gate recipes deliberately disable them. */
 export function conformanceRecipe(run: PreparedConformance) {
   const common = { command: run.target, cwd: run.root }
+  if (run.target === 'gemini')
+    return {
+      ...common,
+      args: [
+        '--prompt',
+        'Follow the scenario on standard input.',
+        '--output-format',
+        'json',
+        '--include-directories',
+        run.state,
+      ],
+    }
   if (run.target === 'claude')
     return {
       ...common,

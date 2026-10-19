@@ -3,7 +3,7 @@
 > **TL;DR** — Install the `wl` CLI (or the plugin for your CLI), let it generate the skills for the agentic CLIs you use, run `wl doctor`, then invoke any step. Nothing needs configuring up front: what is missing becomes a question the first time it matters.
 
 > [!WARNING]
-> **Status: 🚧 partial — local source installation available.** The core, four native render targets, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; npm/marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
+> **Status: 🚧 partial — local source installation available.** The core, four tier-A native render targets plus Gemini, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; npm/marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
 
 ---
 
@@ -28,7 +28,7 @@ node dist/wl.mjs install --target claude,codex,opencode,copilot --scope user --d
 node dist/wl.mjs install --target claude,codex,opencode,copilot --scope user --json
 ```
 
-Target/scope are explicit; all selects the four tier-A clients. Installation creates
+Target/scope are explicit; all selects every implemented installation target: the four tier-A clients plus Gemini. Use a named target list when you want only those clients. Installation creates
 wl-prefixed native skills/agents and scoped/dedicated guard bindings, backed by a
 self-contained artifact per target. Claude loose native components use wl-* names;
 `build --target claude` still produces its separate plugin format. No general client
@@ -37,12 +37,12 @@ settings, MCP configuration, marketplace registry or credential store is rewritt
 | Scope | Native output | Packaged core/resources |
 | --- | --- | --- |
 | user | client skill/agent/hook directories, with absolute configured overrides | external store distributions |
-| project | .claude/, .agents/, .codex/, .opencode/ and .github/ native directories | .wholeloop/distribution/target, intentional distributable output |
+| project | .claude/, .agents/, .codex/, .opencode/, .github/ and .gemini/ native directories | .wholeloop/distribution/target, intentional distributable output |
 
 Project launchers/hooks use relative bindings and work after relocation. Runtime
 ownership receipts, locks, backups and all execution state remain in the external
 store. User roots are resolved at runtime, including CLAUDE_CONFIG_DIR, CODEX_HOME,
-OPENCODE_CONFIG_DIR, XDG_CONFIG_HOME and COPILOT_HOME; ambiguous relative native
+OPENCODE_CONFIG_DIR, XDG_CONFIG_HOME, COPILOT_HOME and GEMINI_CLI_HOME; ambiguous relative native
 overrides are refused. Inspect [platform layouts](./platforms/README.md#installing).
 
 Repeated matching installs report already-correct. Upgrades verify old ownership,
@@ -64,6 +64,25 @@ node dist/wl.mjs guard hooks install --repo /path/to/project --json
 Use the same external --store/workspace as Build/open-pr. Inspect existing Git hooks
 and the [guard ownership rules](./architecture/core-cli.md#hooks-and-guards) first.
 No model call, authentication or service publication is part of file installation.
+
+### Gemini from source
+
+```text
+node dist/wl.mjs build --target gemini --out /tmp/wholeloop-gemini --json
+node dist/wl.mjs install --target gemini --scope project --dry-run --json
+node dist/wl.mjs install --target gemini --scope project --json
+node dist/wl.mjs doctor --target gemini --json
+```
+
+The generated directory is also a Gemini extension for explicit native extension
+installation/linking; source-native overlays use .gemini/skills and agents directly.
+GEMINI_CLI_HOME overrides the home containing .gemini, rather than the .gemini
+folder itself. Preview agent enablement, trust and authentication are native setup;
+no personal settings or credentials are copied. Questions fall back to exact
+plain-text options when a structured ask tool is unavailable. The shared conformance
+runner accepts Gemini, while actual model/permission checks remain with the owner.
+Use the returned per-repository Git hook activation command: this target currently
+has no generated native hook binding. See [Gemini boundaries](./platforms/README.md#gemini-extension-and-native-overlays).
 
 Published npm/marketplace installation remains planned. Once released, npm global
 installation and the client plugin marketplace will be alternative entry points;

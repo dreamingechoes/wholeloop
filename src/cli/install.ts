@@ -3,6 +3,7 @@ import { homedir } from 'node:os'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
+import { TARGETS } from '../installation/contracts.js'
 import { manageInstallation } from '../installation/manage.js'
 import { storePath } from '../state/paths.js'
 import { VERSION } from '../version.js'
@@ -29,7 +30,7 @@ export function installationCommand(
           typeof options['--store'] === 'string' ? resolve(root, options['--store']) : storePath(),
         scope,
       },
-      targets: target === 'all' ? ['claude', 'codex', 'opencode', 'copilot'] : target.split(','),
+      targets: target === 'all' ? TARGETS : target.split(','),
       canonical: bundledCanonical(),
       core: readFileSync(fileURLToPath(import.meta.url), 'utf8'),
       version: VERSION,

@@ -12,7 +12,8 @@ import { loadProviders } from '../providers/load.js'
 import { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside, storePath } from '../state/paths.js'
 
-export const DOCTOR_TARGETS = ['claude', 'codex', 'opencode', 'copilot'] as const
+const DEFAULT_TARGETS = ['claude', 'codex', 'opencode', 'copilot'] as const
+export const DOCTOR_TARGETS = [...DEFAULT_TARGETS, 'gemini'] as const
 export interface DoctorCheck {
   id: string
   status: 'pass' | 'fail' | 'unknown' | 'skip'
@@ -39,6 +40,7 @@ export interface DoctorOptions {
   managed?: Pick<InstallInput, 'canonical' | 'core' | 'version'>
 }
 const installations: Record<string, string[]> = {
+  gemini: ['npm', 'install', '-g', '@google/gemini-cli'],
   claude: ['npm', 'install', '-g', '@anthropic-ai/claude-code'],
   codex: ['npm', 'install', '-g', '@openai/codex'],
   opencode: ['npm', 'install', '-g', 'opencode-ai'],
@@ -133,13 +135,13 @@ export function inspectArtifact(path: string, expected: ReturnType<typeof genera
 }
 /** Diagnosis observes availability, not authentication, client discovery or successful model execution. */
 export function doctor(options: DoctorOptions) {
-  const targets = options.targets ?? DOCTOR_TARGETS
+  const targets = options.targets ?? DEFAULT_TARGETS
   if (
     !targets.length ||
     new Set(targets).size !== targets.length ||
     targets.some((target) => !DOCTOR_TARGETS.includes(target as (typeof DOCTOR_TARGETS)[number]))
   )
-    throw new Error('Choose unique doctor targets: claude,codex,opencode,copilot')
+    throw new Error('Choose unique doctor targets: claude,codex,opencode,copilot,gemini')
   const checks: DoctorCheck[] = []
   const node = options.node ?? process.versions.node
   checks.push({

@@ -1,6 +1,6 @@
 import { accessSync, constants, readFileSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { delimiter, join } from 'node:path'
+import { delimiter, isAbsolute, join } from 'node:path'
 import { parse as parseToml } from 'smol-toml'
 import { isObject } from '../config/schema.js'
 import type { Provider } from './manifest.js'
@@ -82,9 +82,24 @@ export function detectMcp(root: string, home = homedir(), env: NodeJS.ProcessEnv
     },
     { target: 'copilot', file: join(root, '.github/mcp.json'), field: 'mcpServers' },
     { target: 'copilot', file: join(root, '.mcp.json'), field: 'mcpServers' },
+    ...(!env.GEMINI_CLI_HOME || isAbsolute(env.GEMINI_CLI_HOME)
+      ? [
+          {
+            target: 'gemini',
+            file: join(env.GEMINI_CLI_HOME || home, '.gemini/settings.json'),
+            field: 'mcpServers',
+          },
+        ]
+      : []),
+    { target: 'gemini', file: join(root, '.gemini/settings.json'), field: 'mcpServers' },
   ]
   const declarations: McpDeclaration[] = []
   const problems: { file: string; message: string }[] = []
+  if (env.GEMINI_CLI_HOME && !isAbsolute(env.GEMINI_CLI_HOME))
+    problems.push({
+      file: 'GEMINI_CLI_HOME',
+      message: 'Gemini home override must be absolute; contents omitted',
+    })
   for (const entry of paths) {
     let text: string
     try {
@@ -109,7 +124,13 @@ export function detectMcp(root: string, home = homedir(), env: NodeJS.ProcessEnv
             target: entry.target,
             server,
             file: entry.file,
-            enabled: config.enabled !== false && config.disabled !== true,
+            enabled:
+              config.enabled !== false &&
+              config.disabled !== true &&
+              (entry.target !== 'gemini' ||
+                !isObject(data.mcp) ||
+                ((!Array.isArray(data.mcp.excluded) || !data.mcp.excluded.includes(server)) &&
+                  (!Array.isArray(data.mcp.allowed) || data.mcp.allowed.includes(server)))),
           })
         }
     } catch {

@@ -3,7 +3,7 @@
 > **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model in seconds, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. A disposable four-target framing runner separates explicit simulation from owner-run pinned live processes and names missing journal events. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
+> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. A disposable tier-A/Gemini framing runner separates explicit simulation from owner-run pinned live processes and names missing journal events. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
 
 ---
 
@@ -73,6 +73,9 @@ recipe; it starts no client/model. Use the returned complete ID. Simulation call
 that target's installed launcher/core and reports FIXTURE_PASS with simulation
 evidence. It cannot populate the actual client conformance matrix. The synthetic
 facts and framing artifact live in harness/conformance/standalone-frame.json.
+
+Gemini is supported as an additional explicit target; tier-A acceptance remains
+a separate four-client requirement.
 
 For an actual model run, prepare a **new** fixture, review its project customization
 and arrange native trust, auth and permissions first. Then use conformance run with

@@ -35,7 +35,7 @@ export function manageInstallation(action: 'install' | 'uninstall', input: Insta
     new Set(input.targets).size !== input.targets.length ||
     input.targets.some((target) => !TARGETS.includes(target as (typeof TARGETS)[number]))
   )
-    throw new Error('Choose unique installation targets: claude,codex,opencode,copilot')
+    throw new Error('Choose unique installation targets: claude,codex,opencode,copilot,gemini')
   if (!['user', 'project'].includes(input.context.scope))
     throw new Error('Choose --scope user|project')
   const { context, identity, store, control, artifact, receiptPath } = installationScope(

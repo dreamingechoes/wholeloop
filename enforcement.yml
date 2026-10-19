@@ -4,6 +4,10 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: gemini-observer-tools
+    enforcers: [src/adapters/gemini.ts#geminiAdapter, test/unit/adapters/gemini.test.ts]
+  - id: gemini-explicit-fallback
+    enforcers: [src/adapters/gemini.ts#geminiAdapter, src/adapters/hooks.ts#hookArtifacts, test/unit/adapters/gemini.test.ts]
   - id: current-generated-references
     enforcers: [src/docs/references.ts#checkReferences, src/docs/references.ts#replaceReference, src/cli/docs.ts#docsCheck, test/unit/docs/references.test.ts]
   - id: explicit-reference-writes

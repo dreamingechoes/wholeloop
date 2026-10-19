@@ -3,7 +3,7 @@
 > **TL;DR** — Everything about `wholeloop`, from why it exists to how each step works and how to extend it. Read [concepts](./concepts.md) first; everything else assumes its vocabulary.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local core, all thirteen step contracts, generated tier-A artifacts, managed installation and explicit conformance tooling are implemented. Actual native-client/model checks, authenticated integrations, tier-B adapters and release automation remain open. Progress and owner checks: [roadmap](../roadmap/README.md) · [manual verification](../roadmap/manual-verification.md).
+> **Status: 🚧 partial.** The local core, all thirteen step contracts, generated tier-A artifacts, managed installation and explicit conformance tooling are implemented. Actual native-client/model checks, authenticated integrations, the remaining tier-B adapters and release automation remain open. Progress and owner checks: [roadmap](../roadmap/README.md) · [manual verification](../roadmap/manual-verification.md).
 
 ---
 

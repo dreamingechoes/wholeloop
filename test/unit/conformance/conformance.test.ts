@@ -71,7 +71,7 @@ function fakeClient(dir: string, version: string, body: string) {
 }
 
 describe('standalone conformance runner', () => {
-  it.each(['claude', 'codex', 'opencode', 'copilot'])(
+  it.each(['claude', 'codex', 'opencode', 'copilot', 'gemini'])(
     'executes installed %s launchers while retaining explicit simulation evidence',
     async (target) => {
       await fixture(async (ctx) => {

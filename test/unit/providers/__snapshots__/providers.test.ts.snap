@@ -121,6 +121,50 @@ exports[`MCP rendering > copilot stdio matches its golden configuration 1`] = `
 }
 `;
 
+exports[`MCP rendering > gemini http matches its golden configuration 1`] = `
+{
+  "applied": false,
+  "destination": "$HOME/.gemini/settings.json",
+  "format": "json",
+  "provider": "support",
+  "schema": "wholeloop/mcp-add@1",
+  "snippet": "{
+  "mcpServers": {
+    "support": {
+      "httpUrl": "https://mcp.example.com/mcp",
+      "oauth": {
+        "enabled": true
+      }
+    }
+  }
+}
+",
+  "target": "gemini",
+}
+`;
+
+exports[`MCP rendering > gemini stdio matches its golden configuration 1`] = `
+{
+  "applied": false,
+  "destination": "$HOME/.gemini/settings.json",
+  "format": "json",
+  "provider": "support",
+  "schema": "wholeloop/mcp-add@1",
+  "snippet": "{
+  "mcpServers": {
+    "support": {
+      "command": "test-mcp",
+      "args": [
+        "--readonly"
+      ]
+    }
+  }
+}
+",
+  "target": "gemini",
+}
+`;
+
 exports[`MCP rendering > opencode http matches its golden configuration 1`] = `
 {
   "applied": false,

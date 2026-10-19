@@ -6,7 +6,7 @@
 
 ## P5-01 · Adapters — Gemini CLI and Antigravity CLI
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-11
+**Status:** ⏸️ · **Size:** L · **Depends on:** P1-11
 
 **Goal** — Cover both of Google's CLIs.
 
@@ -16,7 +16,17 @@
 
 - [ ] The P1 conformance scenario passes on both CLIs (sequential or headless engine where needed).
 
-**Docs** — platforms.
+**Local implementation:** Gemini extension generation, strict local-agent tools/model
+inheritance, plain-text questions, owned user/project overlays, explicit doctor,
+unapplied MCP recipes/declaration detection and the shared fresh framing runner
+are implemented. Actual Gemini 0.27.0 static loaders accepted eight generated agents
+and seventeen skills; installed-launcher simulation remains simulation. Use the
+explicit Git fallback: native extension-root shell interpolation needs a verified
+safe binding before a hook can be emitted. Native enablement/permissions/model/MCP
+checks remain owner verification. Antigravity generation, own hook/MCP dialect and
+its scenario are still implementation work and do not wait on those checks.
+
+**Docs** — platforms, getting-started, configuration/providers, ADR-0053.
 
 ## P5-02 · Adapter — Cursor CLI
 
