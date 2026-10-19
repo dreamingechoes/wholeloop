@@ -4,6 +4,10 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: environment-traceable-undo
+    enforcers: [src/environment/contracts.ts#validEnvironmentData, src/environment/ledger.ts#EnvironmentLedger, src/environment/ledger.ts#environmentReceipt, test/unit/environment/environment.test.ts, test/unit/build/build.test.ts, test/unit/pull-requests/pull-requests.test.ts]
+  - id: environment-no-auto-undo
+    enforcers: [src/environment/ledger.ts#EnvironmentLedger, test/unit/environment/environment.test.ts]
   - id: pr-tested-before-publication
     enforcers: [src/pull-requests/workflow.ts#PullRequestWorkflow, src/pull-requests/contracts.ts#pullRequestPlans, test/unit/pull-requests/pull-requests.test.ts]
   - id: pr-draft-only

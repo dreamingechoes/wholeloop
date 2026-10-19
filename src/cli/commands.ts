@@ -8,6 +8,20 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'env declare',
+    arguments: '',
+    options: ['--for <id>', '--file <file>'],
+    schema: 'wholeloop/env-declare@1',
+    summary: 'Record a non-secret external write and its explicit undo recipe',
+  },
+  {
+    path: 'env report',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/env-report@1',
+    summary: 'Report external effects and undo recipes without executing them',
+  },
+  {
     path: 'pr prepare',
     arguments: '[<branch>]',
     options: [

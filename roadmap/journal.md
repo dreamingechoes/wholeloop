@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-19 · P3-09 — declarative environment effects and undo receipts
+
+- Add env declare/report with versioned immutable item/key declarations, explicit resource/effect/person and literal undo argv/cwd. Normalize cwd at runtime, preserve empty arguments/spaces, bound inputs and reject common credential-bearing flags/shapes/URLs without echoing values. Repeated semantically identical declarations are idempotent; conflicting keys roll back.
+- Aggregate this subtree plus shared ancestors without unrelated sibling effects. Render recipes in reverse declaration order, rebuild JSON/Markdown projections and keep bounded resume references. Build and PR receipts include all then-current declarations and undo commands; current reports retain later testing effects without rewriting historical step artifacts. ADR-0036 records these boundaries.
+- Keep declaration and execution separate: the ledger runs nothing, claims no cleanup success and does not infer an effect-free environment from an empty report. Actual resource ownership, dependency order, non-secret inputs and undo behavior remain owner verification.
+- Verify nine new cases plus extended Build/PR receipt fixtures: literal non-execution, reordered-input idempotence, duplicate/changed recipe rollback, hierarchy selection, rebuild, credential flag rejection, closed/unknown items and compiled CLI cwd resolution. Correct two fixture mistakes (nonexistent close method and symlink spelling comparison). Local check: 485 tests in 35 files plus build, smoke, lint, typecheck, generated docs/catalogs, harness, Markdown and Mermaid passed. No undo command or external service ran.
+
+---
+
 ## 2026-10-19 · P3-07 — tested draft plans and code-host publication
 
 - Add pr prepare/tested/open/reconcile and the canonical open-pr skill. Prepare is local and loads/pins the actual repository convention, clean named branch/commit, target, remote and body. Recognize GitHub and GitLab templates; require completed sections and the shared commit/PR authorship policy. Ask missing standalone facts before mutation and do not invent machine gates.

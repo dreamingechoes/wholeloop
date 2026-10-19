@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { EnvironmentLedger } from '../../../src/environment/ledger.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
 import { loadProviders, resolveProvider } from '../../../src/providers/load.js'
 import type { OperationCall, ProviderHost } from '../../../src/providers/operations.js'
@@ -209,10 +210,28 @@ describe('exact-plan human testing and draft publication', () => {
     fixture(async ({ engine, workflow, root }) => {
       const plan = prepared(workflow)
       const index = readFileSync(join(root, '.git/index'))
+      new EnvironmentLedger(engine.store).declare(plan.subject, {
+        key: 'fixture-data',
+        resource: 'fixture://db/orders',
+        effect: 'Seeded fixture orders',
+        undo: { cwd: root, argv: ['fixture-db', 'undo-orders'] },
+        by: 'Fixture owner',
+      })
       workflow.tested(plan.subject, 'Owner', 'Observed 400 for empty input')
       const calls: OperationCall[] = []
       const result = await workflow.publish(plan.subject, hostFor(plan.draft, calls))
       expect(result.status).toBe('published')
+      const receipt = engine.store
+        .events()
+        .findLast(
+          (event) =>
+            event.subject === plan.subject &&
+            event.type === 'step.completed' &&
+            event.data.step === 'open-pr',
+        )
+      expect(receipt?.type === 'step.completed' ? receipt.data.artifact.content : '').toContain(
+        'undo-orders',
+      )
       expect(calls[0]?.args.draft).toBe(true)
       expect(calls[0]?.args.approved).toBe(true)
       expect(calls[0]?.args.body).toContain('## Summary')

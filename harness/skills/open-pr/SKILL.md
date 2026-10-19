@@ -6,7 +6,7 @@ metadata:
 ---
 # Publish a tested draft
 
-Read ask-never-guess, output-contract and draft-publication.
+Read ask-never-guess, output-contract, draft-publication and environment-effects.
 
 1. Resolve the repository's open-pr.convention and read the actual template. Draft
    its body in an external, non-secret file with actual validation evidence. Keep
@@ -36,3 +36,7 @@ Read ask-never-guess, output-contract and draft-publication.
 8. Return the PR URL, branch/SHA/base, testing evidence, retained workspace and
    outside-repository effects/undo steps. External environment declarations follow
    the environment ledger. Human review, ready status and merge remain human.
+
+Declare external writes with explicit non-secret undo argv/cwd via `wl env declare`
+and include `wl env report --for <id> --json` in the hand-back. Recipes are not
+observed cleanup: never execute them automatically on completion or stop.

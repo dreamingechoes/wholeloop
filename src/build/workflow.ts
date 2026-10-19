@@ -6,6 +6,7 @@ import { isObject } from '../config/schema.js'
 import { lintCriteria, parseCriteria } from '../definition/criteria.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
+import { environmentReceipt } from '../environment/ledger.js'
 import { FlowEngine } from '../flow/engine.js'
 import { decisionTrail } from '../flow/plan.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
@@ -372,5 +373,5 @@ export function buildReceipt(
     .map((criterion) => `- ${criterion.id}: ${criterion.text}`)
     .join(
       '\n',
-    )}\n\n## Verification\n\n${gate('verify')}\n\n## Review\n\n${gate('review')}\n\n## Workspace\n\n${root}\nSnapshot: ${workspaceSnapshot(root).digest}\n\n## Environment\n\nExternal writes require declared undo steps. Human testing is still pending. No push or pull request was performed by this workflow.\n`
+    )}\n\n## Verification\n\n${gate('verify')}\n\n## Review\n\n${gate('review')}\n\n## Workspace\n\n${root}\nSnapshot: ${workspaceSnapshot(root).digest}\n\n## Environment\n\n${environmentReceipt(events, subject)}\nHuman testing is still pending. No push or pull request was performed by this workflow.\n`
 }

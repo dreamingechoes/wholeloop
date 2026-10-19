@@ -2,6 +2,11 @@ import { randomBytes, randomUUID } from 'node:crypto'
 import { isAbsolute } from 'node:path'
 import { type BuildEventData, validBuildData } from '../build/contracts.js'
 import { isObject } from '../config/schema.js'
+import {
+  type EnvironmentEventData,
+  environmentDeclarations,
+  validEnvironmentData,
+} from '../environment/contracts.js'
 import { STEP_NAMES, type StepName } from '../flow/registry.js'
 import { type FrameOutcome, validateFrameOutcome } from '../framing/contract.js'
 import type { GateEventData } from '../gates/contracts.js'
@@ -77,6 +82,7 @@ export type EventData =
   | VerificationEventData
   | ReviewEventData
   | PullRequestEventData
+  | EnvironmentEventData
   | {
       type: 'slice.defined'
       data: {
@@ -186,6 +192,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('env.')) return validEnvironmentData(type, data)
   if (type.startsWith('pr.')) return validPullRequestData(type, data)
   if (type.startsWith('review.')) return validReviewData(type, data)
   if (type.startsWith('verify.')) return validVerificationData(type, data)
@@ -554,5 +561,6 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   verificationRuns(events)
   reviewInputs(events)
   pullRequestPlans(events)
+  environmentDeclarations(events)
   return items
 }

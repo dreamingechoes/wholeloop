@@ -7,6 +7,7 @@ import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
+import { environmentReceipt } from '../environment/ledger.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { decisionTrail } from '../flow/plan.js'
 import { checkShape } from '../flow/registry.js'
@@ -386,5 +387,5 @@ export function pullRequestReceipt(events: readonly StateEvent[], subject: strin
   )
   if (started < 0 || published <= started)
     throw new Error('Begin open-pr before its published draft receipt')
-  return `# Draft PR receipt\n\n## Pull request\n\n${entry.pr.url}\nHead: ${entry.plan.branch} (${entry.plan.head}); target: ${entry.plan.base}.\n\n## Human testing\n\nEvidence: ${entry.tested}; approved plan: ${entry.event}.\n\n## Links\n\nWork item: ${subject}. Tracker and sibling references are carried in the PR body; unavailable remote tracker writes remain pending.\n\n## Environment\n\nWorkspace: ${entry.plan.root}. Retained for inspection; stop its lease and use conservative worktree prune after merge. Inspect external writes and supply undo steps; no server shutdown or data rollback is implied.\n\n## Next\n\nHuman review and merge. This workflow never marks ready, requests reviewers or merges.\n`
+  return `# Draft PR receipt\n\n## Pull request\n\n${entry.pr.url}\nHead: ${entry.plan.branch} (${entry.plan.head}); target: ${entry.plan.base}.\n\n## Human testing\n\nEvidence: ${entry.tested}; approved plan: ${entry.event}.\n\n## Links\n\nWork item: ${subject}. Tracker and sibling references are carried in the PR body; unavailable remote tracker writes remain pending.\n\n## Environment\n\nWorkspace: ${entry.plan.root}. Retained for inspection; stop its lease and use conservative worktree prune after merge. ${environmentReceipt(events, subject)} No server shutdown or data rollback is implied.\n\n## Next\n\nHuman review and merge. This workflow never marks ready, requests reviewers or merges.\n`
 }

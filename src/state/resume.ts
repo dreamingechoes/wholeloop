@@ -1,4 +1,5 @@
 import { latestBuilderPlan } from '../build/contracts.js'
+import { environmentEntries } from '../environment/ledger.js'
 import { decisionTrail, flowPlan } from '../flow/plan.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { replay, type StateEvent } from './events.js'
@@ -62,6 +63,9 @@ export function contextPack(
       owner: short(subject.owner, 80),
       status: subject.status,
       path: `items/${subject.id}/${subject.kind}.md`,
+      ...(environmentEntries(events, subject.id).length
+        ? { environment: `items/${subject.id}/environment.md` }
+        : {}),
       ...(latestBuilderPlan(events, subject.id)
         ? { builderPlan: `items/${subject.id}/build-plan.json` }
         : {}),

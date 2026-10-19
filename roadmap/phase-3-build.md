@@ -128,7 +128,7 @@
 
 ## P3-09 · Environment ledger
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P1-03
+**Status:** ✅ · **Size:** S · **Depends on:** P1-03
 
 **Goal** — Anything touched outside a repository can be undone.
 
@@ -136,7 +136,7 @@
 
 **Acceptance criteria:**
 
-- [ ] Every declared write appears in the receipt with its undo command.
+- [x] Every declared write appears in the receipt with its undo command.
 
 **Docs** — flow/build/build-slice, flow/build/open-pr.
 

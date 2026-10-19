@@ -6,7 +6,7 @@ metadata:
 ---
 # Build a slice
 
-Read ask-never-guess, output-contract, build-execution and gate-rounds.
+Read ask-never-guess, output-contract, build-execution, gate-rounds and environment-effects.
 
 1. Call `wl build route [<scope|slice|part|issue-url|sentence>] --json`. Ask missing
    questions together. For a scope use its ready leaf candidates and declared
@@ -36,3 +36,7 @@ Read ask-never-guess, output-contract, build-execution and gate-rounds.
 8. Call `wl build complete <id> --json`. The core rejects missing/stale gates and
    constructs its receipt. Report actual files, tests and environment writes.
    Finish at human testing through `wl worktree open`; no push or PR here.
+
+Declare external writes with explicit non-secret undo argv/cwd via `wl env declare`
+and include `wl env report --for <id> --json` in the hand-back. Recipes are not
+observed cleanup: never execute them automatically on completion or stop.

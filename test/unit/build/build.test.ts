@@ -7,6 +7,7 @@ import { stringify } from 'yaml'
 import { type BuildHost, runBuild, runBuildGroup } from '../../../harness/workflows/build.js'
 import type { BuilderPlan } from '../../../src/build/contracts.js'
 import { BuildWorkflow } from '../../../src/build/workflow.js'
+import { EnvironmentLedger } from '../../../src/environment/ledger.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
 import { workspaceSnapshot } from '../../../src/gates/snapshot.js'
 import { gateRuns } from '../../../src/gates/state.js'
@@ -150,6 +151,13 @@ describe('repository-first build orchestration', () => {
     'runs agreed ad-hoc work through both gates in %s mode and preserves the personal checkout',
     async (mode) =>
       fixture(async ({ engine, workflow, subject, root }) => {
+        new EnvironmentLedger(engine.store).declare(subject, {
+          key: 'fixture-data',
+          resource: 'fixture://local-database/orders',
+          effect: 'Seeded synthetic orders',
+          undo: { cwd: root, argv: ['fixture-db', 'remove-seed', '--name', 'orders'] },
+          by: 'Fixture owner',
+        })
         const personal = workspaceSnapshot(root)
         const result = await runBuild(workflow, subject, host(engine), { base: 'main', mode })
         expect(result.status).toBe('green')
@@ -164,6 +172,20 @@ describe('repository-first build orchestration', () => {
           ['review', 'PASS'],
         ])
         expect(engine.plan(subject).next).toBe('open-pr')
+        const receipt = engine.store
+          .events()
+          .findLast(
+            (event) =>
+              event.subject === subject &&
+              event.type === 'step.completed' &&
+              event.data.step === 'build-slice',
+          )
+        expect(receipt?.type === 'step.completed' ? receipt.data.artifact.content : '').toContain(
+          'fixture-db',
+        )
+        expect(receipt?.type === 'step.completed' ? receipt.data.artifact.content : '').toContain(
+          'remove-seed',
+        )
         expect(engine.store.get(subject).status).toBe('open')
         const complete = engine.store
           .events()

@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Once-per-round suites, incremental review with loaded/pinned rubrics and tested draft publication with gh/glab hosts are implemented. Generated CLI adapters, authenticated provider execution and later step behavior remain pending.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Once-per-round suites, incremental review with loaded/pinned rubrics and tested draft publication with gh/glab hosts and a declarative external-effect/undo ledger are implemented. Generated CLI adapters, authenticated provider execution and later step behavior remain pending.
 
 ---
 
@@ -22,6 +22,8 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl env declare` | `wholeloop/env-declare@1` | Record a non-secret external write and its explicit undo recipe |
+| `wl env report` | `wholeloop/env-report@1` | Report external effects and undo recipes without executing them |
 | `wl pr prepare [<branch>]` | `wholeloop/pr-prepare@1` | Prepare a repository-shaped draft without pushing or opening it |
 | `wl pr tested` | `wholeloop/pr-tested@1` | Record human testing and approval of the exact publication plan |
 | `wl pr open` | `wholeloop/pr-open@1` | Push the tested pinned commit and open its draft PR once |

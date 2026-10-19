@@ -235,5 +235,37 @@ Next         test it, then /wholeloop:open-pr slice-5e1a
 
 ---
 
+## External effects and undo
+
+Record outside-repository effects with `wl env declare --for <id> --file
+<non-secret-declaration.json> --json`. The declaration contains a stable key,
+resource, effect, person and explicit undo working directory/argv. Relative cwd in
+the CLI file resolves at runtime. Never include credential values; use the tool's
+own credential store or a credential-aware wrapper.
+
+`wl env report --for <id> --json` returns current effects and recipes, including
+this item's descendants and shared ancestor effects without unrelated siblings.
+Build and PR receipts include all declarations present at completion. Resume packs
+point to the current report, so later human-testing effects remain visible without
+rewriting a historical artifact. Undo is displayed in reverse declaration order;
+inspect actual dependencies first. The ledger executes nothing and does not claim
+that either the effect or cleanup succeeded. See [ADR-0036](../../decisions/0036-declarative-environment-undo-ledger.md).
+
+```json
+{
+  "key": "seed-orders",
+  "resource": "local-db://orders/demo-seed",
+  "effect": "Seeded local demo orders",
+  "by": "Project owner",
+  "undo": {
+    "cwd": ".",
+    "argv": ["project-db", "remove-seed", "--name", "demo-orders"]
+  }
+}
+```
+
+This is a recipe example, not a command the harness ran. Owner verification must
+exercise actual undo on disposable resources before relying on it for cleanup.
+
 <!-- docnav -->
 [◀ slice-work](slice-work.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [verify-works ▶](verify-works.md)

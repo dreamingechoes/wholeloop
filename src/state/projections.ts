@@ -1,4 +1,5 @@
 import { stringify } from 'yaml'
+import { environmentEntries, environmentReceipt } from '../environment/ledger.js'
 import { gateRuns } from '../gates/state.js'
 import { pullRequestPlans } from '../pull-requests/contracts.js'
 import { reviewInputs } from '../review/state.js'
@@ -31,6 +32,16 @@ export function projections(
       `---\n${stringify(metadata)}---\n\n${body}\n${workspaceText}${noteText}${linkText}`,
     )
     links[item.id] = refs
+    if (environmentEntries(events, item.id).length) {
+      files.set(
+        `items/${item.id}/environment.json`,
+        `${JSON.stringify(environmentEntries(events, item.id), null, 2)}\n`,
+      )
+      files.set(
+        `items/${item.id}/environment.md`,
+        `# Environment receipt\n\n${environmentReceipt(events, item.id)}`,
+      )
+    }
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }

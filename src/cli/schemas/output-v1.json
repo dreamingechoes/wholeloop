@@ -1015,6 +1015,22 @@
         }
       },
       "required": ["schema", "status"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/env-declare@1"
+        }
+      },
+      "required": ["schema", "receipt", "executed"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/env-report@1"
+        }
+      },
+      "required": ["schema", "receipt", "executed"]
     }
   ],
   "$defs": {
