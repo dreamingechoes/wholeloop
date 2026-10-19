@@ -1,0 +1,79 @@
+{
+  "schema": "wholeloop/provider-fixtures@1",
+  "provider": "launchdarkly",
+  "cases": [
+    {
+      "key": "flags-read-state",
+      "operation": "flags.read-state",
+      "input": {
+        "flag": "fixture-flag",
+        "environment": "disposable"
+      },
+      "calls": [
+        {
+          "tool": "wholeloop.flags.read-state",
+          "args": {
+            "flag": "fixture-flag",
+            "environment": "disposable",
+            "service": "launchdarkly"
+          },
+          "result": {
+            "status": "succeeded",
+            "ref": "fixture-flag",
+            "revision": "fixture-revision",
+            "complete": true,
+            "body": "{\"flag\":\"fixture-flag\",\"environment\":\"disposable\",\"enabled\":false,\"exposure\":0,\"audience\":\"all\"}"
+          }
+        }
+      ],
+      "result": {
+        "status": "succeeded",
+        "ref": "fixture-flag",
+        "revision": "fixture-revision",
+        "complete": true,
+        "body": "{\"flag\":\"fixture-flag\",\"environment\":\"disposable\",\"enabled\":false,\"exposure\":0,\"audience\":\"all\"}"
+      }
+    },
+    {
+      "key": "flags-propose-change",
+      "operation": "flags.propose-change",
+      "input": {
+        "flag": "fixture-flag",
+        "environment": "disposable",
+        "desired": {
+          "enabled": true,
+          "exposure": 10,
+          "audience": "all"
+        },
+        "apply": false,
+        "proposalOnly": true
+      },
+      "calls": [
+        {
+          "tool": "wholeloop.flags.propose-change",
+          "args": {
+            "flag": "fixture-flag",
+            "environment": "disposable",
+            "desired": {
+              "enabled": true,
+              "exposure": 10,
+              "audience": "all"
+            },
+            "apply": false,
+            "proposalOnly": true
+          },
+          "result": {
+            "status": "pending",
+            "ref": "fixture-proposal",
+            "body": "{\"applied\":false}"
+          }
+        }
+      ],
+      "result": {
+        "status": "pending",
+        "ref": "fixture-proposal",
+        "body": "{\"applied\":false}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "wholeloop/provider-fixtures@1",
+  "provider": "datadog",
+  "cases": [
+    {
+      "key": "source-observability-query",
+      "operation": "source.observability.query",
+      "input": {
+        "query": "count verified fixture events",
+        "window": {
+          "start": "2026-10-01T00:00:00Z",
+          "end": "2026-10-02T00:00:00Z",
+          "timezone": "UTC"
+        }
+      },
+      "calls": [
+        {
+          "tool": "get_datadog_metric",
+          "args": {
+            "query": "count verified fixture events",
+            "window": {
+              "start": "2026-10-01T00:00:00Z",
+              "end": "2026-10-02T00:00:00Z",
+              "timezone": "UTC"
+            }
+          },
+          "result": {
+            "status": "succeeded",
+            "ref": "https://example.com/fixture-query",
+            "complete": true,
+            "body": "{\"value\":0,\"unit\":\"events\"}"
+          }
+        }
+      ],
+      "result": {
+        "status": "succeeded",
+        "ref": "https://example.com/fixture-query",
+        "complete": true,
+        "body": "{\"value\":0,\"unit\":\"events\"}"
+      }
+    },
+    {
+      "key": "source-errors-query",
+      "operation": "source.errors.query",
+      "input": {
+        "query": "count verified fixture events",
+        "window": {
+          "start": "2026-10-01T00:00:00Z",
+          "end": "2026-10-02T00:00:00Z",
+          "timezone": "UTC"
+        }
+      },
+      "calls": [
+        {
+          "tool": "analyze_datadog_logs",
+          "args": {
+            "query": "count verified fixture events",
+            "window": {
+              "start": "2026-10-01T00:00:00Z",
+              "end": "2026-10-02T00:00:00Z",
+              "timezone": "UTC"
+            }
+          },
+          "result": {
+            "status": "succeeded",
+            "ref": "https://example.com/fixture-query",
+            "complete": true,
+            "body": "{\"value\":0,\"unit\":\"events\"}"
+          }
+        }
+      ],
+      "result": {
+        "status": "succeeded",
+        "ref": "https://example.com/fixture-query",
+        "complete": true,
+        "body": "{\"value\":0,\"unit\":\"events\"}"
+      }
+    }
+  ]
+}

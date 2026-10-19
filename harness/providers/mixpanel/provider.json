@@ -11,17 +11,23 @@
         "url": "https://mcp.mixpanel.com/mcp",
         "auth": "oauth"
       }
-    }
+    },
+    "native": true
   },
-  "capabilities": ["source.product-analytics"],
+  "capabilities": ["source.product-analytics", "dashboards"],
   "operations": {
     "source.product-analytics.query": {
       "tool": "Run-Query",
       "args": {},
       "guidance": "guidance/query.md"
+    },
+    "dashboards.create": {
+      "tool": "wholeloop.dashboard.handoff",
+      "guidance": "guidance/rollout.md"
     }
   },
   "degrade": {
-    "source.product-analytics.query": "open-question"
+    "source.product-analytics.query": "open-question",
+    "dashboards.create": "handoff-artifact"
   }
 }

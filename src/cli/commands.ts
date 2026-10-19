@@ -665,9 +665,9 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'provider test',
     arguments: '<id>',
-    options: [],
+    options: ['--fixtures <file>'],
     schema: 'wholeloop/provider-test@1',
-    summary: 'Validate a provider and inspect declared access without probing',
+    summary: 'Validate declared access or execute explicit offline binding fixtures',
   },
   {
     path: 'provider resolve',

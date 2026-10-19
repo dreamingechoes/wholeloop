@@ -1,0 +1,68 @@
+{
+  "schema": "wholeloop/provider-fixtures@1",
+  "provider": "metabase",
+  "cases": [
+    {
+      "key": "source-bi-query",
+      "operation": "source.bi.query",
+      "input": {
+        "query": "count verified fixture events",
+        "window": {
+          "start": "2026-10-01T00:00:00Z",
+          "end": "2026-10-02T00:00:00Z",
+          "timezone": "UTC"
+        }
+      },
+      "calls": [
+        {
+          "tool": "query",
+          "args": {
+            "query": "count verified fixture events",
+            "window": {
+              "start": "2026-10-01T00:00:00Z",
+              "end": "2026-10-02T00:00:00Z",
+              "timezone": "UTC"
+            }
+          },
+          "result": {
+            "status": "succeeded",
+            "ref": "https://example.com/fixture-query",
+            "complete": true,
+            "body": "{\"value\":0,\"unit\":\"events\"}"
+          }
+        }
+      ],
+      "result": {
+        "status": "succeeded",
+        "ref": "https://example.com/fixture-query",
+        "complete": true,
+        "body": "{\"value\":0,\"unit\":\"events\"}"
+      }
+    },
+    {
+      "key": "dashboards-create",
+      "operation": "dashboards.create",
+      "input": {
+        "body": "{\"metric\":{\"id\":\"fixture-metric\"},\"metricRef\":\"items/scope-12345678/measurement.json#/metrics/0\"}"
+      },
+      "calls": [
+        {
+          "tool": "wholeloop.dashboard.handoff",
+          "args": {
+            "body": "{\"metric\":{\"id\":\"fixture-metric\"},\"metricRef\":\"items/scope-12345678/measurement.json#/metrics/0\"}"
+          },
+          "result": {
+            "status": "pending",
+            "ref": "fixture-dashboard-handoff",
+            "body": "{\"createdRemotely\":false}"
+          }
+        }
+      ],
+      "result": {
+        "status": "pending",
+        "ref": "fixture-dashboard-handoff",
+        "body": "{\"createdRemotely\":false}"
+      }
+    }
+  ]
+}

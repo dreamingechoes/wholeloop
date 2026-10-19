@@ -3,7 +3,7 @@
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. Eight destination manifests, bundled guidance, a typed host invocation boundary and same-operation document updates are implemented with synthetic fixture transcripts. Eleven source mappings pin evidence queries and explicit unknowns, with a guarded PostgreSQL process host. GitHub/GitLab CLI code-host mappings and explicit draft-only publication hosts are tested locally. Authenticated remote execution and the remaining service catalogue remain pending. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
+> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. Eight destination manifests, bundled guidance, a typed host invocation boundary and same-operation document updates are implemented with synthetic fixture transcripts. Eleven source mappings pin evidence queries and explicit unknowns, with a guarded PostgreSQL process host. GitHub/GitLab CLI code-host mappings and explicit draft-only publication hosts are tested locally. Fourteen rollout provider targets have explicit offline binding fixtures plus native unsent drafts, unapplied flag proposals, metric-linked dashboard handoffs and config-file flag reads. Authenticated remote flag bridges and actual dashboard creation remain open P4-05 work; local artifacts are not remote objects. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
 
 ---
 
@@ -27,13 +27,66 @@ flowchart LR
     p1["PostHog · MCP"]
     p2["Notion · MCP"]
     p3["Linear · MCP"]
-    p4["Slack · MCP (draft only)"]
+    p4["Slack · native unsent draft"]
   end
   S --> R --> P
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
 A step never names a vendor, so swapping Confluence for Notion, or adding Zendesk as a research source, never touches a skill.
+
+## Rollout implementation boundaries
+
+| Target | Implemented locally | Still pending |
+| --- | --- | --- |
+| Slack · Microsoft Teams · email | Destination-labelled unsent JSON drafts in the external store | A person reviews and posts; no sending operation exists |
+| LaunchDarkly · Unleash · GrowthBook · PostHog | Explicit host-read contracts and stored unapplied proposals | Authenticated service read/normalization bridges and real cohort semantics |
+| Config-file flags | Contained explicit JSON reads and unapplied proposals | A person changes configuration through normal review |
+| PostHog · Mixpanel · Amplitude · Metabase · Grafana | Exact-metric JSON handoffs with source pointers | Actual remote chart creation and service-specific normalization |
+| Datadog · Grafana stack | Declared read-only query tool mappings and offline fixtures | Actual roster, site/datasource, auth and complete scalar normalization |
+| Figma | Official remote context-read mapping and offline fixture | Actual client access and referenced design observations |
+
+Run an explicit fixture after building:
+
+```bash
+wl provider test slack --fixtures test/fixtures/providers/rollout/slack.json --json
+wl provider test grafana --fixtures test/fixtures/providers/rollout/grafana.json --json
+```
+
+All fourteen fixture files live under test/fixtures/providers/rollout. Each covers
+every declared operation with exact tool/argument bindings and normalized results.
+Missing coverage, changed calls or malformed results fail. remoteProbed=false is
+mandatory: these synthetic fixtures establish no actual server schema, credentials
+or permissions. `wl provider test <id>` without a fixture only inspects metadata.
+
+An explicit SDK conductor can wrap its actual ProviderHost with `rolloutHost`
+from src/providers/rollout.ts. It implements native unsent drafts, flag proposals,
+dashboard handoffs and config reads. Other calls require an explicit host bridge;
+missing service access stays unknown. Providers are selected explicitly in config;
+adding a catalogue entry never selects it or authorizes remote execution.
+
+Config flags default to wholeloop.flags.json under the repository. The versioned
+shape is `{ "schema": "wholeloop/config-flags@1", "flags": [{ "flag": "orders",
+"environment": "disposable", "enabled": false, "exposure": 0, "audience": "all" }] }`.
+Use a repository manifest override for another contained file. A boolean alone
+cannot establish audience or percentage. The reader changes no repository bytes.
+
+Provider references checked 2026-10-19: [Figma](https://help.figma.com/hc/en-us/articles/39216419318551-Get-started-with-the-Figma-MCP-server),
+[Datadog setup](https://github.com/datadog-labs/mcp-server) and
+[tools](https://docs.datadoghq.com/mcp_server/tools/),
+[Grafana](https://github.com/grafana/mcp-grafana),
+[LaunchDarkly representation](https://launchdarkly.com/docs/fed-docs/api/feature-flags),
+[Unleash environment](https://docs.getunleash.io/api/get-feature-environment),
+[GrowthBook versioning](https://docs.growthbook.io/api/introduction) and
+[PostHog tool surface](https://github.com/PostHog/posthog/blob/master/services/mcp/README.md).
+These references describe upstream surfaces; their raw schemas are not replaced by
+our normalized fixtures. The Grafana recipe is a pinned read-only Prometheus/Loki
+container invocation; it was not pulled or run. Keep credentials in the host's
+credential store and pass environment names rather than secret values in recipes.
+
+P4-05 stays partial for real flag bridges and dashboard creation.
+[ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md)
+explains why local handoffs remain explicit instead of fabricated integrations.
 
 ## The capability taxonomy
 

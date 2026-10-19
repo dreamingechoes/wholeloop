@@ -107,7 +107,7 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 | `wl lens scaffold <id>` | `wholeloop/lens-scaffold@1` | Print or explicitly create a manifest kit |
 | `wl provider list` | `wholeloop/provider-list@1` | List providers with their origins and detection evidence |
 | `wl provider show <id>` | `wholeloop/provider-show@1` | Show one validated provider manifest |
-| `wl provider test <id>` | `wholeloop/provider-test@1` | Validate a provider and inspect declared access without probing |
+| `wl provider test <id>` | `wholeloop/provider-test@1` | Validate declared access or execute explicit offline binding fixtures |
 | `wl provider resolve <operation>` | `wholeloop/provider-resolve@1` | Resolve an operation to an explicit or built-in provider |
 | `wl provider scaffold <id>` | `wholeloop/provider-scaffold@1` | Print or explicitly create a provider manifest |
 | `wl mcp add <id>` | `wholeloop/mcp-add@1` | Print a credential-free MCP configuration snippet |

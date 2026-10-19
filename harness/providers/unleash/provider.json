@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "id": "unleash",
+  "name": "Unleash",
+  "description": "Read through an explicit host bridge and store unapplied flag proposals; never toggle flags.",
+  "capabilities": ["flags"],
+  "access": {
+    "native": true
+  },
+  "operations": {
+    "flags.read-state": {
+      "tool": "wholeloop.flags.read-state",
+      "args": {
+        "service": "unleash"
+      },
+      "guidance": "guidance/rollout.md"
+    },
+    "flags.propose-change": {
+      "tool": "wholeloop.flags.propose-change",
+      "args": {
+        "apply": false,
+        "proposalOnly": true
+      },
+      "guidance": "guidance/rollout.md"
+    }
+  },
+  "degrade": {
+    "flags.read-state": "open-question",
+    "flags.propose-change": "handoff-artifact"
+  }
+}

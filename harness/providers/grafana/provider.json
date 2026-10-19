@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "id": "grafana",
+  "name": "Grafana",
+  "description": "Read explicit Prometheus/Loki evidence and retain metric-pinned dashboard handoffs.",
+  "capabilities": ["source.observability", "source.errors", "dashboards"],
+  "access": {
+    "native": true,
+    "mcp": {
+      "server": "grafana",
+      "install": {
+        "transport": "stdio",
+        "command": "docker",
+        "args": [
+          "run",
+          "--rm",
+          "-i",
+          "-e",
+          "GRAFANA_URL",
+          "-e",
+          "GRAFANA_SERVICE_ACCOUNT_TOKEN",
+          "grafana/mcp-grafana:2.0.2",
+          "-t",
+          "stdio",
+          "--disable-write",
+          "--enabled-tools",
+          "prometheus,loki"
+        ]
+      }
+    }
+  },
+  "operations": {
+    "source.observability.query": {
+      "tool": "query_prometheus",
+      "guidance": "guidance/rollout.md"
+    },
+    "source.errors.query": {
+      "tool": "query_loki_logs",
+      "guidance": "guidance/rollout.md"
+    },
+    "dashboards.create": {
+      "tool": "wholeloop.dashboard.handoff",
+      "guidance": "guidance/rollout.md"
+    }
+  },
+  "degrade": {
+    "source.observability.query": "open-question",
+    "source.errors.query": "open-question",
+    "dashboards.create": "handoff-artifact"
+  }
+}

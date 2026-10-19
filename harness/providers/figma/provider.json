@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "id": "figma",
+  "name": "Figma",
+  "description": "Read design context through the official remote MCP host without editing designs.",
+  "capabilities": ["design"],
+  "access": {
+    "mcp": {
+      "server": "figma",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.figma.com/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "operations": {
+    "design.read-context": {
+      "tool": "get_design_context",
+      "guidance": "guidance/rollout.md"
+    }
+  },
+  "degrade": {
+    "design.read-context": "open-question"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "id": "email",
+  "name": "Email drafts",
+  "description": "Store an unsent destination-labelled draft for a person to review and post manually.",
+  "capabilities": ["comms"],
+  "access": {
+    "native": true
+  },
+  "operations": {
+    "comms.draft": {
+      "tool": "wholeloop.comms.draft",
+      "args": {
+        "draft": true,
+        "send": false
+      },
+      "guidance": "guidance/rollout.md"
+    }
+  },
+  "degrade": {
+    "comms.draft": "handoff-artifact"
+  }
+}

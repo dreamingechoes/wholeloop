@@ -73,7 +73,7 @@ criterion does not block dependent local rollout implementation.
 
 ## P4-05 · Rollout providers
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-08
+**Status:** ⏸️ · **Size:** L · **Depends on:** P1-08
 
 **Goal** — The launch and ramp steps work with the tools teams actually use.
 
@@ -81,8 +81,16 @@ criterion does not block dependent local rollout implementation.
 
 **Acceptance criteria:**
 
-- [ ] No manifest can map a send or toggle verb (validated).
-- [ ] Each provider passes `wl provider test` with fixtures.
+- [x] No manifest can map a send or toggle verb (validated).
+- [x] Each provider passes `wl provider test` with fixtures.
+
+**Local implementation:** offline fixtures cover every declared operation of all
+fourteen targets; native unsent drafts, unapplied proposals, config-file reads and
+metric-linked dashboard handoffs are implemented. Known sending/toggle routes are
+rejected. Fixtures do not establish opaque server semantics. Authenticated remote
+flag bridges and actual dashboard creation/normalization remain unimplemented;
+local dashboard output is explicitly pending. Keep P4-05 partial and continue
+independent local sync/grounding work. See the manual checklist and ADR-0042.
 
 **Docs** — configuration/providers.
 

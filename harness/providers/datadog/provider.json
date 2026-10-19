@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "id": "datadog",
+  "name": "Datadog",
+  "description": "Query explicit metric/log aggregates with missing results kept unknown.",
+  "capabilities": ["source.observability", "source.errors"],
+  "access": {
+    "mcp": {
+      "server": "datadog",
+      "install": {
+        "transport": "http",
+        "url": "https://mcp.datadoghq.com/v1/mcp",
+        "auth": "oauth"
+      }
+    }
+  },
+  "operations": {
+    "source.observability.query": {
+      "tool": "get_datadog_metric",
+      "guidance": "guidance/rollout.md"
+    },
+    "source.errors.query": {
+      "tool": "analyze_datadog_logs",
+      "guidance": "guidance/rollout.md"
+    }
+  },
+  "degrade": {
+    "source.observability.query": "open-question",
+    "source.errors.query": "open-question"
+  }
+}

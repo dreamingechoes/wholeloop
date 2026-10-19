@@ -11,9 +11,10 @@
         "url": "https://mcp.posthog.com/mcp?mode=tools",
         "auth": "oauth"
       }
-    }
+    },
+    "native": true
   },
-  "capabilities": ["source.product-analytics"],
+  "capabilities": ["source.product-analytics", "dashboards", "flags"],
   "operations": {
     "source.product-analytics.query": {
       "tool": "execute-sql",
@@ -21,9 +22,31 @@
         "query": "{{query}}"
       },
       "guidance": "guidance/query.md"
+    },
+    "dashboards.create": {
+      "tool": "wholeloop.dashboard.handoff",
+      "guidance": "guidance/rollout.md"
+    },
+    "flags.read-state": {
+      "tool": "wholeloop.flags.read-state",
+      "args": {
+        "service": "posthog"
+      },
+      "guidance": "guidance/rollout.md"
+    },
+    "flags.propose-change": {
+      "tool": "wholeloop.flags.propose-change",
+      "args": {
+        "apply": false,
+        "proposalOnly": true
+      },
+      "guidance": "guidance/rollout.md"
     }
   },
   "degrade": {
-    "source.product-analytics.query": "open-question"
+    "source.product-analytics.query": "open-question",
+    "dashboards.create": "handoff-artifact",
+    "flags.read-state": "open-question",
+    "flags.propose-change": "handoff-artifact"
   }
 }

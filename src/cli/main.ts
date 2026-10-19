@@ -21,6 +21,7 @@ import { learningCommand } from './learning.js'
 import { mailboxCommand } from './mailbox.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
+import { providerFixtureCommand } from './provider-test.js'
 import { pullRequestCommand } from './pull-requests.js'
 import { rampCommand } from './ramp.js'
 import { researchCommand } from './research.js'
@@ -94,6 +95,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (['verify begin', 'verify complete'].includes(command.path))
       return verificationCommand(command.path, parsed, root, json, io)
     if (
+      command.path === 'provider test' ||
       command.path === 'verify suite' ||
       command.path.startsWith('pr ') ||
       command.path.startsWith('ramp ') ||
@@ -165,7 +167,8 @@ export async function runAsync(
   const args = argv.filter((arg) => arg !== '--json')
   const command = COMMANDS.find(
     (command) =>
-      (command.path === 'verify suite' ||
+      (command.path === 'provider test' ||
+        command.path === 'verify suite' ||
         command.path.startsWith('pr ') ||
         command.path.startsWith('ramp ') ||
         command.path.startsWith('measure ')) &&
@@ -184,13 +187,15 @@ export async function runAsync(
       [],
       command.options.map((option) => option.split(' ')[0] ?? option),
     )
-    return command.path.startsWith('measure ')
-      ? await impactCommand(command.path, parsed, root, json, io)
-      : command.path.startsWith('ramp ')
-        ? await rampCommand(command.path, parsed, root, json, io)
-        : command.path.startsWith('pr ')
-          ? await pullRequestCommand(command.path, parsed, root, json, io)
-          : await verificationSuiteCommand(parsed, root, json, io)
+    return command.path === 'provider test'
+      ? await providerFixtureCommand(parsed, root, json, io)
+      : command.path.startsWith('measure ')
+        ? await impactCommand(command.path, parsed, root, json, io)
+        : command.path.startsWith('ramp ')
+          ? await rampCommand(command.path, parsed, root, json, io)
+          : command.path.startsWith('pr ')
+            ? await pullRequestCommand(command.path, parsed, root, json, io)
+            : await verificationSuiteCommand(parsed, root, json, io)
   } catch (error) {
     const code = error instanceof CliError ? error.code : EXIT.precondition
     const message = error instanceof Error ? error.message : 'Asynchronous command failed'

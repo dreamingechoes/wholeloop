@@ -1,0 +1,37 @@
+{
+  "schema": "wholeloop/provider-fixtures@1",
+  "provider": "figma",
+  "cases": [
+    {
+      "key": "design-read-context",
+      "operation": "design.read-context",
+      "input": {
+        "ref": "https://example.com/design",
+        "nodeId": "1:2"
+      },
+      "calls": [
+        {
+          "tool": "get_design_context",
+          "args": {
+            "ref": "https://example.com/design",
+            "nodeId": "1:2"
+          },
+          "result": {
+            "status": "succeeded",
+            "ref": "https://example.com/design",
+            "revision": "fixture-design",
+            "complete": true,
+            "body": "Fixture read-only design context"
+          }
+        }
+      ],
+      "result": {
+        "status": "succeeded",
+        "ref": "https://example.com/design",
+        "revision": "fixture-design",
+        "complete": true,
+        "body": "Fixture read-only design context"
+      }
+    }
+  ]
+}

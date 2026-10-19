@@ -168,7 +168,8 @@ export function detectProvider(
       }
     }
   }
-  if (provider.access.native)
+  // A native draft/handoff does not establish access to the same manifest's remote sources.
+  if (provider.access.native && !provider.access.mcp && !provider.access.cli)
     return {
       kind: 'native',
       available: true,

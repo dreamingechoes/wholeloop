@@ -11,17 +11,23 @@
         "url": "https://metabase.example.com/api/metabase-mcp",
         "auth": "oauth"
       }
-    }
+    },
+    "native": true
   },
-  "capabilities": ["source.bi"],
+  "capabilities": ["source.bi", "dashboards"],
   "operations": {
     "source.bi.query": {
       "tool": "query",
       "args": {},
       "guidance": "guidance/query.md"
+    },
+    "dashboards.create": {
+      "tool": "wholeloop.dashboard.handoff",
+      "guidance": "guidance/rollout.md"
     }
   },
   "degrade": {
-    "source.bi.query": "open-question"
+    "source.bi.query": "open-question",
+    "dashboards.create": "handoff-artifact"
   }
 }

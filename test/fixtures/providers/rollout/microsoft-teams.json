@@ -1,0 +1,35 @@
+{
+  "schema": "wholeloop/provider-fixtures@1",
+  "provider": "microsoft-teams",
+  "cases": [
+    {
+      "key": "comms-draft",
+      "operation": "comms.draft",
+      "input": {
+        "body": "Fixture rollout message",
+        "draft": true,
+        "send": false
+      },
+      "calls": [
+        {
+          "tool": "wholeloop.comms.draft",
+          "args": {
+            "body": "Fixture rollout message",
+            "draft": true,
+            "send": false
+          },
+          "result": {
+            "status": "succeeded",
+            "ref": "fixture-draft",
+            "body": "{\"draft\":true,\"sent\":false}"
+          }
+        }
+      ],
+      "result": {
+        "status": "succeeded",
+        "ref": "fixture-draft",
+        "body": "{\"draft\":true,\"sent\":false}"
+      }
+    }
+  ]
+}

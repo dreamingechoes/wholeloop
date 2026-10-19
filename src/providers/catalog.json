@@ -13,22 +13,29 @@
             "url": "https://mcp.amplitude.com/mcp",
             "auth": "oauth"
           }
-        }
+        },
+        "native": true
       },
-      "capabilities": ["source.product-analytics"],
+      "capabilities": ["source.product-analytics", "dashboards"],
       "operations": {
         "source.product-analytics.query": {
           "tool": "query_amplitude_data",
           "args": {},
           "guidance": "guidance/query.md"
+        },
+        "dashboards.create": {
+          "tool": "wholeloop.dashboard.handoff",
+          "guidance": "guidance/rollout.md"
         }
       },
       "degrade": {
-        "source.product-analytics.query": "open-question"
+        "source.product-analytics.query": "open-question",
+        "dashboards.create": "handoff-artifact"
       }
     },
     "guidance": {
-      "source.product-analytics.query": "# Amplitude evidence\n\n- Select the correct US/EU endpoint and project; load the project's AI Context and verify metric definitions.\n- Inspect the live query_amplitude_data schema through describe_tool when progressive discovery is enabled.\n- Translate the pinned analytics query into the supported segmentation/funnel/retention request.\n- Keep exact dates, timezone, cohorts and counting units; preserve query/chart references in evidence.\n- Use query tools only. Never manage taxonomy, create a cohort or change an experiment for research.\n- Call out sampling, missing events and incomplete access. Do not fabricate a metric baseline.\n- Unavailable data becomes an open question naming the owner who can provide it.\n- [Official reference](https://amplitude.com/docs/amplitude-ai/amplitude-mcp)\n- Mapping checked: 2026-10-18. Live project/schema conformance remains pending.\n"
+      "source.product-analytics.query": "# Amplitude evidence\n\n- Select the correct US/EU endpoint and project; load the project's AI Context and verify metric definitions.\n- Inspect the live query_amplitude_data schema through describe_tool when progressive discovery is enabled.\n- Translate the pinned analytics query into the supported segmentation/funnel/retention request.\n- Keep exact dates, timezone, cohorts and counting units; preserve query/chart references in evidence.\n- Use query tools only. Never manage taxonomy, create a cohort or change an experiment for research.\n- Call out sampling, missing events and incomplete access. Do not fabricate a metric baseline.\n- Unavailable data becomes an open question naming the owner who can provide it.\n- [Official reference](https://amplitude.com/docs/amplitude-ai/amplitude-mcp)\n- Mapping checked: 2026-10-18. Live project/schema conformance remains pending.\n",
+      "dashboards.create": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
     }
   },
   {
@@ -61,6 +68,43 @@
     },
     "guidance": {
       "source.bi.query": "# BigQuery evidence\n\n- Use execute_sql_readonly, never the unrestricted execute_sql tool.\n- Confirm project, dataset, region and billing scope. Use a principal with read-only dataset permissions.\n- Discover columns first; pin GoogleSQL, parameters, date boundaries and timezone.\n- Set bounded server timeouts and inspect dry-run cost estimates before an expensive real query.\n- Preserve job ID/location and poll incomplete jobs in the host; pending work is not an empty result.\n- Record row limits, errors and aggregation units. Missing access becomes an explicit open question.\n- Do not export sensitive raw rows merely to calculate an aggregate already supported in the warehouse.\n- [Read-only tool](https://docs.cloud.google.com/bigquery/docs/reference/mcp/tools_list/execute_sql_readonly)\n- Mapping checked: 2026-10-18. Live IAM, cost and job-conformance checks remain pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "config-flags",
+      "name": "Config-file flags",
+      "description": "Read through an explicit host bridge and store unapplied flag proposals; never toggle flags.",
+      "capabilities": ["flags"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "flags.read-state": {
+          "tool": "wholeloop.config-flags.read-state",
+          "args": {
+            "file": "wholeloop.flags.json"
+          },
+          "guidance": "guidance/rollout.md"
+        },
+        "flags.propose-change": {
+          "tool": "wholeloop.flags.propose-change",
+          "args": {
+            "apply": false,
+            "proposalOnly": true
+          },
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "flags.read-state": "open-question",
+        "flags.propose-change": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "flags.read-state": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "flags.propose-change": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
     }
   },
   {
@@ -110,6 +154,102 @@
       "docs.read": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n",
       "docs.update": "# Confluence\n\n- Confirm cloudId, space and parent content identity through the connected Rovo MCP schema.\n- Create page content only in the requested location; retain the wholeloop ID and returned link.\n- Every update uses the core read-modify-write helper: getConfluenceContent first in the same operation.\n- Preserve unrelated sections and macros; transform the fetched representation, not a guessed blank page.\n- Carry the fetched version into the update where the live schema supports optimistic concurrency.\n- A version conflict requires another read and review; never retry a blind overwrite.\n- Normalize a complete read to ref/body/revision; truncated or permission-redacted reads block writes.\n- Record the returned page URL only after a successful synchronous result.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live page-format conformance remains pending.\n",
       "source.knowledge.query": "# Confluence knowledge evidence\n\n- Use searchConfluence with explicit CQL for Confluence knowledge; confirm space/cloud scope and fetch cited content before drawing conclusions.\n- Preserve the exact query, page IDs, revision/timestamps and links; distinguish authored claims from your inference.\n- Respect pagination, truncation and permissions; a partial search is not proof of absence.\n- Knowledge collection is read-only: do not edit content or call destination write tools.\n- Missing access or evidence becomes an explicit open question naming the owner who can answer it.\n- Read the companion usage guidance for the official server reference and host-specific schema checks.\n- Mapping checked: 2026-10-18. Live search/fetch conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "datadog",
+      "name": "Datadog",
+      "description": "Query explicit metric/log aggregates with missing results kept unknown.",
+      "capabilities": ["source.observability", "source.errors"],
+      "access": {
+        "mcp": {
+          "server": "datadog",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.datadoghq.com/v1/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "operations": {
+        "source.observability.query": {
+          "tool": "get_datadog_metric",
+          "guidance": "guidance/rollout.md"
+        },
+        "source.errors.query": {
+          "tool": "analyze_datadog_logs",
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "source.observability.query": "open-question",
+        "source.errors.query": "open-question"
+      }
+    },
+    "guidance": {
+      "source.observability.query": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "source.errors.query": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "email",
+      "name": "Email drafts",
+      "description": "Store an unsent destination-labelled draft for a person to review and post manually.",
+      "capabilities": ["comms"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "comms.draft": {
+          "tool": "wholeloop.comms.draft",
+          "args": {
+            "draft": true,
+            "send": false
+          },
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "comms.draft": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "comms.draft": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "figma",
+      "name": "Figma",
+      "description": "Read design context through the official remote MCP host without editing designs.",
+      "capabilities": ["design"],
+      "access": {
+        "mcp": {
+          "server": "figma",
+          "install": {
+            "transport": "http",
+            "url": "https://mcp.figma.com/mcp",
+            "auth": "oauth"
+          }
+        }
+      },
+      "operations": {
+        "design.read-context": {
+          "tool": "get_design_context",
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "design.read-context": "open-question"
+      }
+    },
+    "guidance": {
+      "design.read-context": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
     }
   },
   {
@@ -363,6 +503,101 @@
   {
     "manifest": {
       "schema": 1,
+      "id": "grafana",
+      "name": "Grafana",
+      "description": "Read explicit Prometheus/Loki evidence and retain metric-pinned dashboard handoffs.",
+      "capabilities": ["source.observability", "source.errors", "dashboards"],
+      "access": {
+        "native": true,
+        "mcp": {
+          "server": "grafana",
+          "install": {
+            "transport": "stdio",
+            "command": "docker",
+            "args": [
+              "run",
+              "--rm",
+              "-i",
+              "-e",
+              "GRAFANA_URL",
+              "-e",
+              "GRAFANA_SERVICE_ACCOUNT_TOKEN",
+              "grafana/mcp-grafana:2.0.2",
+              "-t",
+              "stdio",
+              "--disable-write",
+              "--enabled-tools",
+              "prometheus,loki"
+            ]
+          }
+        }
+      },
+      "operations": {
+        "source.observability.query": {
+          "tool": "query_prometheus",
+          "guidance": "guidance/rollout.md"
+        },
+        "source.errors.query": {
+          "tool": "query_loki_logs",
+          "guidance": "guidance/rollout.md"
+        },
+        "dashboards.create": {
+          "tool": "wholeloop.dashboard.handoff",
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "source.observability.query": "open-question",
+        "source.errors.query": "open-question",
+        "dashboards.create": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "source.observability.query": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "source.errors.query": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "dashboards.create": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "growthbook",
+      "name": "GrowthBook",
+      "description": "Read through an explicit host bridge and store unapplied flag proposals; never toggle flags.",
+      "capabilities": ["flags"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "flags.read-state": {
+          "tool": "wholeloop.flags.read-state",
+          "args": {
+            "service": "growthbook"
+          },
+          "guidance": "guidance/rollout.md"
+        },
+        "flags.propose-change": {
+          "tool": "wholeloop.flags.propose-change",
+          "args": {
+            "apply": false,
+            "proposalOnly": true
+          },
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "flags.read-state": "open-question",
+        "flags.propose-change": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "flags.read-state": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "flags.propose-change": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
       "id": "intercom",
       "name": "Intercom",
       "description": "Retrieve read-only evidence from Intercom.",
@@ -445,6 +680,43 @@
       "tracker.update-item": "# Jira\n\n- Use the Atlassian Rovo MCP Jira tools and confirm cloudId/project before writes.\n- Discover required issue fields and allowed transitions in the current site's tool schema.\n- Carry the wholeloop ID and existing tracker key; an edit uses the existing key, never a new issue.\n- Preserve unrelated description sections and field values; use the site's supported rich-text format.\n- Resolve actual issue/transition/link type IDs rather than deriving them from names.\n- Record the returned issue URL. Missing create/edit permission becomes a local handoff.\n- OAuth belongs to the host. Never persist an API token in a manifest or fixture.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live site conformance remains pending.\n",
       "tracker.link-items": "# Jira\n\n- Use the Atlassian Rovo MCP Jira tools and confirm cloudId/project before writes.\n- Discover required issue fields and allowed transitions in the current site's tool schema.\n- Carry the wholeloop ID and existing tracker key; an edit uses the existing key, never a new issue.\n- Preserve unrelated description sections and field values; use the site's supported rich-text format.\n- Resolve actual issue/transition/link type IDs rather than deriving them from names.\n- Record the returned issue URL. Missing create/edit permission becomes a local handoff.\n- OAuth belongs to the host. Never persist an API token in a manifest or fixture.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live site conformance remains pending.\n",
       "tracker.transition": "# Jira\n\n- Use the Atlassian Rovo MCP Jira tools and confirm cloudId/project before writes.\n- Discover required issue fields and allowed transitions in the current site's tool schema.\n- Carry the wholeloop ID and existing tracker key; an edit uses the existing key, never a new issue.\n- Preserve unrelated description sections and field values; use the site's supported rich-text format.\n- Resolve actual issue/transition/link type IDs rather than deriving them from names.\n- Record the returned issue URL. Missing create/edit permission becomes a local handoff.\n- OAuth belongs to the host. Never persist an API token in a manifest or fixture.\n- Reference: [Official documentation](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/)\n- Mapping checked: 2026-10-18. Live site conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "launchdarkly",
+      "name": "LaunchDarkly",
+      "description": "Read through an explicit host bridge and store unapplied flag proposals; never toggle flags.",
+      "capabilities": ["flags"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "flags.read-state": {
+          "tool": "wholeloop.flags.read-state",
+          "args": {
+            "service": "launchdarkly"
+          },
+          "guidance": "guidance/rollout.md"
+        },
+        "flags.propose-change": {
+          "tool": "wholeloop.flags.propose-change",
+          "args": {
+            "apply": false,
+            "proposalOnly": true
+          },
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "flags.read-state": "open-question",
+        "flags.propose-change": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "flags.read-state": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "flags.propose-change": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
     }
   },
   {
@@ -580,22 +852,57 @@
             "url": "https://metabase.example.com/api/metabase-mcp",
             "auth": "oauth"
           }
-        }
+        },
+        "native": true
       },
-      "capabilities": ["source.bi"],
+      "capabilities": ["source.bi", "dashboards"],
       "operations": {
         "source.bi.query": {
           "tool": "query",
           "args": {},
           "guidance": "guidance/query.md"
+        },
+        "dashboards.create": {
+          "tool": "wholeloop.dashboard.handoff",
+          "guidance": "guidance/rollout.md"
         }
       },
       "degrade": {
-        "source.bi.query": "open-question"
+        "source.bi.query": "open-question",
+        "dashboards.create": "handoff-artifact"
       }
     },
     "guidance": {
-      "source.bi.query": "# Metabase evidence\n\n- Override the example endpoint with the actual instance before connecting; the admin must enable MCP.\n- Authenticate as a read-only user and inspect permitted databases, tables and saved questions.\n- Use query for read-only table/metric results; construct_query/execute_query can supply the query handle.\n- Preserve database/question IDs, native query or MBQL, parameters, timezone and date boundaries.\n- Follow continuation tokens and report the server's result cap rather than treating a page as all rows.\n- Do not edit a saved question or create a dashboard during evidence collection.\n- Cite the question/query reference and keep unavailable permissions/data as owner-assigned open questions.\n- [Official reference](https://www.metabase.com/docs/latest/ai/mcp)\n- Mapping checked: 2026-10-18. Instance endpoint and live permission checks remain pending.\n"
+      "source.bi.query": "# Metabase evidence\n\n- Override the example endpoint with the actual instance before connecting; the admin must enable MCP.\n- Authenticate as a read-only user and inspect permitted databases, tables and saved questions.\n- Use query for read-only table/metric results; construct_query/execute_query can supply the query handle.\n- Preserve database/question IDs, native query or MBQL, parameters, timezone and date boundaries.\n- Follow continuation tokens and report the server's result cap rather than treating a page as all rows.\n- Do not edit a saved question or create a dashboard during evidence collection.\n- Cite the question/query reference and keep unavailable permissions/data as owner-assigned open questions.\n- [Official reference](https://www.metabase.com/docs/latest/ai/mcp)\n- Mapping checked: 2026-10-18. Instance endpoint and live permission checks remain pending.\n",
+      "dashboards.create": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "microsoft-teams",
+      "name": "Microsoft Teams drafts",
+      "description": "Store an unsent destination-labelled draft for a person to review and post manually.",
+      "capabilities": ["comms"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "comms.draft": {
+          "tool": "wholeloop.comms.draft",
+          "args": {
+            "draft": true,
+            "send": false
+          },
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "comms.draft": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "comms.draft": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
     }
   },
   {
@@ -612,22 +919,29 @@
             "url": "https://mcp.mixpanel.com/mcp",
             "auth": "oauth"
           }
-        }
+        },
+        "native": true
       },
-      "capabilities": ["source.product-analytics"],
+      "capabilities": ["source.product-analytics", "dashboards"],
       "operations": {
         "source.product-analytics.query": {
           "tool": "Run-Query",
           "args": {},
           "guidance": "guidance/query.md"
+        },
+        "dashboards.create": {
+          "tool": "wholeloop.dashboard.handoff",
+          "guidance": "guidance/rollout.md"
         }
       },
       "degrade": {
-        "source.product-analytics.query": "open-question"
+        "source.product-analytics.query": "open-question",
+        "dashboards.create": "handoff-artifact"
       }
     },
     "guidance": {
-      "source.product-analytics.query": "# Mixpanel evidence\n\n- Confirm US/EU/IN region and the real project ID; authenticate through the host's OAuth store.\n- Discover events/properties and Get-Query-Schema before translating the pinned query into Run-Query JSON.\n- Query insights/funnels/flows/retention only; do not create reports or modify Lexicon/flags during research.\n- Preserve calendar dates, project timezone, identity/counting rules, filters and report type.\n- Record query/results references and any unverified entities or incomplete result warnings.\n- A missing baseline is unknown, not zero. Rate limits and permission failures remain open questions.\n- The host translates the core query string into the live Run-Query schema without silently changing it.\n- [Official reference](https://docs.mixpanel.com/docs/mcp)\n- Mapping checked: 2026-10-18. Live account/schema conformance remains pending.\n"
+      "source.product-analytics.query": "# Mixpanel evidence\n\n- Confirm US/EU/IN region and the real project ID; authenticate through the host's OAuth store.\n- Discover events/properties and Get-Query-Schema before translating the pinned query into Run-Query JSON.\n- Query insights/funnels/flows/retention only; do not create reports or modify Lexicon/flags during research.\n- Preserve calendar dates, project timezone, identity/counting rules, filters and report type.\n- Record query/results references and any unverified entities or incomplete result warnings.\n- A missing baseline is unknown, not zero. Rate limits and permission failures remain open questions.\n- The host translates the core query string into the live Run-Query schema without silently changing it.\n- [Official reference](https://docs.mixpanel.com/docs/mcp)\n- Mapping checked: 2026-10-18. Live account/schema conformance remains pending.\n",
+      "dashboards.create": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
     }
   },
   {
@@ -771,9 +1085,10 @@
             "url": "https://mcp.posthog.com/mcp?mode=tools",
             "auth": "oauth"
           }
-        }
+        },
+        "native": true
       },
-      "capabilities": ["source.product-analytics"],
+      "capabilities": ["source.product-analytics", "dashboards", "flags"],
       "operations": {
         "source.product-analytics.query": {
           "tool": "execute-sql",
@@ -781,14 +1096,39 @@
             "query": "{{query}}"
           },
           "guidance": "guidance/query.md"
+        },
+        "dashboards.create": {
+          "tool": "wholeloop.dashboard.handoff",
+          "guidance": "guidance/rollout.md"
+        },
+        "flags.read-state": {
+          "tool": "wholeloop.flags.read-state",
+          "args": {
+            "service": "posthog"
+          },
+          "guidance": "guidance/rollout.md"
+        },
+        "flags.propose-change": {
+          "tool": "wholeloop.flags.propose-change",
+          "args": {
+            "apply": false,
+            "proposalOnly": true
+          },
+          "guidance": "guidance/rollout.md"
         }
       },
       "degrade": {
-        "source.product-analytics.query": "open-question"
+        "source.product-analytics.query": "open-question",
+        "dashboards.create": "handoff-artifact",
+        "flags.read-state": "open-question",
+        "flags.propose-change": "handoff-artifact"
       }
     },
     "guidance": {
-      "source.product-analytics.query": "# PostHog evidence\n\n- Use the official MCP endpoint in tools mode; the default cli mode does not expose execute-sql directly.\n- Confirm organization, project and region; discover real event/property names before authoring HogQL.\n- Query through execute-sql with query:read permission, never flag/experiment mutation tools.\n- Pin the exact query, inclusive/exclusive timestamps, timezone, cohorts and aggregation unit.\n- Preserve returned column names, sample size and truncation warnings; a missing event is not a zero count.\n- Cite the project/query reference and distinguish observed rows from your interpretation.\n- Authentication, failed queries, sampling or incomplete results become an open question with an answerer.\n- [Official tools](https://github.com/PostHog/posthog/blob/master/services/mcp/schema/tool-definitions.json)\n- Mapping checked: 2026-10-18. Live project conformance remains pending.\n"
+      "source.product-analytics.query": "# PostHog evidence\n\n- Use the official MCP endpoint in tools mode; the default cli mode does not expose execute-sql directly.\n- Confirm organization, project and region; discover real event/property names before authoring HogQL.\n- Query through execute-sql with query:read permission, never flag/experiment mutation tools.\n- Pin the exact query, inclusive/exclusive timestamps, timezone, cohorts and aggregation unit.\n- Preserve returned column names, sample size and truncation warnings; a missing event is not a zero count.\n- Cite the project/query reference and distinguish observed rows from your interpretation.\n- Authentication, failed queries, sampling or incomplete results become an open question with an answerer.\n- [Official tools](https://github.com/PostHog/posthog/blob/master/services/mcp/schema/tool-definitions.json)\n- Mapping checked: 2026-10-18. Live project conformance remains pending.\n",
+      "dashboards.create": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "flags.read-state": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "flags.propose-change": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
     }
   },
   {
@@ -860,6 +1200,71 @@
     },
     "guidance": {
       "source.errors.query": "# Sentry evidence\n\n- Scope the official OAuth endpoint to the actual organization/project where practical.\n- Use search_events for counts/aggregations and event evidence; issue groups are not event counts.\n- Preserve dataset, environment, release, filters and exact time range from the measurement plan.\n- Inspect the live schema: supported absolute windows and natural-language translation vary by version.\n- Cite event/issue/query links and retain sample sizes or partial-result warnings.\n- Do not triage, resolve issues, change alert rules or invoke automated fixes during evidence collection.\n- A missing tool/provider key, permission error or unpinnable window remains an open question.\n- [Official server](https://mcp.sentry.dev/)\n- Mapping checked: 2026-10-18. Live search/window conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "slack",
+      "name": "Slack drafts",
+      "description": "Store an unsent destination-labelled draft for a person to review and post manually.",
+      "capabilities": ["comms"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "comms.draft": {
+          "tool": "wholeloop.comms.draft",
+          "args": {
+            "draft": true,
+            "send": false
+          },
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "comms.draft": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "comms.draft": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "unleash",
+      "name": "Unleash",
+      "description": "Read through an explicit host bridge and store unapplied flag proposals; never toggle flags.",
+      "capabilities": ["flags"],
+      "access": {
+        "native": true
+      },
+      "operations": {
+        "flags.read-state": {
+          "tool": "wholeloop.flags.read-state",
+          "args": {
+            "service": "unleash"
+          },
+          "guidance": "guidance/rollout.md"
+        },
+        "flags.propose-change": {
+          "tool": "wholeloop.flags.propose-change",
+          "args": {
+            "apply": false,
+            "proposalOnly": true
+          },
+          "guidance": "guidance/rollout.md"
+        }
+      },
+      "degrade": {
+        "flags.read-state": "open-question",
+        "flags.propose-change": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "flags.read-state": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n",
+      "flags.propose-change": "# Rollout provider boundary\n\n- Native comms drafts, flag proposals and dashboard handoffs use rolloutHost and\n  the external user store. They create no remote message, applied flag or chart.\n- Virtual wholeloop.flags.read-state needs an explicit authenticated host bridge.\n  Preserve exact flag/environment and full enabled/exposure/audience/revision.\n  Unsupported targeting, missing identities, partial reads or absent bridges stay\n  unknown; never flatten complex cohorts into an invented global percentage.\n- Service credentials stay in the host credential store. Resolve project/site/\n  datasource IDs explicitly. MCP tools require actual roster/argument inspection;\n  manifest names and normalized fixtures do not prove server semantics or access.\n- Return complete normalized scalar JSON with an exact unit for numeric queries.\n  Keep the original query/window/timezone and sanitized evidence reference. No\n  empty result is zero. Figma returns referenced design context, never edits.\n- Dashboard specs retain the exact metric and source pointer. Handoff means a\n  person creates the chart in the named service; never report remote creation.\n"
     }
   },
   {

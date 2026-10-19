@@ -178,7 +178,7 @@ export function validateProvider(value: unknown): asserts value is Provider {
       (mapping.args !== undefined && !isObject(mapping.args))
     )
       fail(`operations.${operation}`, 'a tool mapping with optional args and guidance')
-    if (operation === 'flags.propose-change' && isObject(mapping)) {
+    if (operation.startsWith('flags.') && isObject(mapping)) {
       const dangerous =
         /(?:^|[._:/-])(?:toggle|setFlag|updateFlag|setEnabled|enableFlag|disableFlag|applyChange)(?:$|[._:/-])/i
       const routes = isObject(mapping.args)

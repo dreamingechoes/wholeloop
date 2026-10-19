@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-19 · P4-05 — offline rollout contracts; remote bridges remain open
+
+- Add explicit provider test --fixtures execution with exact tool/argument/result transcripts, complete declared-operation coverage, duplicate/invalid fixture rejection and redacted failures. Metadata-only inspection stays unprobed. Fixtures make no authenticated call and do not establish actual server/tool/permission compatibility.
+- Add fourteen rollout targets: native Slack/Teams/email drafts, LaunchDarkly/Unleash/GrowthBook/PostHog/config flags, five dashboard handoffs, Datadog/Grafana read mappings and Figma context. Preserve prior source mappings and bundle guidance/catalogs. Check upstream primary references and pin the Grafana recipe to 2.0.2 with read-only Prometheus/Loki categories; no container was pulled or run.
+- Implement rolloutHost native artifacts in the external store: idempotent unsent drafts, explicitly unapplied flag proposals, pending exact-metric dashboard handoffs and contained explicit config-flag reads without repository writes. Return only control fields and a content revision. Missing virtual flag bridges fail instead of inventing disabled state; recognized toggle/apply mappings are rejected on reads as well as proposals.
+- Verify twenty-one new cases including every target's declared bindings, complete coverage, malformed/changed results, real local draft/proposal/handoff/config artifacts, repeat idempotence, send refusal, config containment/missing fields, absent bridges, known toggle routes and compiled CLI fixtures. The first full run exposed three real regressions: mixed native handoffs incorrectly made remote sources available to research. Require an MCP/CLI declaration for mixed providers and retain a dedicated detection regression instead of changing source/concurrency expectations. Final local check: 576 tests in 41 files plus build, smoke, lint, typecheck, generated references/catalogs, docs, harness, Markdown and Mermaid passed.
+- Keep P4-05 partial: remote flag readers and actual remote dashboard creation/normalization are unimplemented host-bridge work, not completed features or a claimed manual pass. Local chart specs explicitly report createdRemotely=false. Real client/API captures and permissions are needed to validate those bridges; preserve this gap in the roadmap/manual checklist and ADR-0042. Continue independent sync/grounding implementation with explicit typed hosts and local fixtures.
+
+---
+
 ## 2026-10-19 · P4-04 — challenged human outcomes and guarded closure
 
 - Add learn begin/challenge/decide/complete/report/schema and a challenger host that stops before the human outcome. Pin the exact completed impact report or clearly labelled self-report, original promise, unknowns/pending checkpoints, actual learn.decision guidance and effective profile. Require the current opposing argument, named person's written reason and acknowledgment of every gap; re-planning after changed evidence resets critique.

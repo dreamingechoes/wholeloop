@@ -4,6 +4,17 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Rollout providers and remaining bridges (P4-05)
+
+- [ ] Capture authenticated read-only client/API contracts for LaunchDarkly/Unleash/GrowthBook/PostHog so their service-specific bridges can be implemented and tested. This is open roadmap code work, not an owner test already passed. Virtual host contracts are not real readers; capture complete matching flag/environment observations and preserve unknown for complex targeting or missing access.
+- [ ] Capture actual dashboard-write tool schemas/permissions and target data-source requirements for PostHog/Mixpanel/Amplitude/Metabase/Grafana. Remote creation/normalization remains open roadmap code work. Current output is a pending exact-metric handoff with createdRemotely=false, not a remote chart.
+- [ ] Capture real MCP rosters/arguments, project/site/datasource IDs and permissions for Datadog/Grafana/Figma. Offline binding fixtures use synthetic normalized results and establish no remote compatibility.
+- [ ] Pull/verify the pinned Grafana container and read-only categories on supported platforms; pass credentials from the host store, never literal secret arguments or plaintext config. No container was pulled or run locally.
+- [ ] Review and manually post destination-labelled Slack/Teams/email drafts. Confirm no sending capability is present. Review/apply flag proposals externally; native proposal results are explicitly unapplied.
+- [ ] Exercise config-file reads/proposals and external-store conflict/idempotency on Linux and supported Node versions. The native reader requires explicit flag/environment/enabled/exposure/audience and never changes repository bytes.
+
+P4-05 remains partial. These bridge tasks do not block independent sync/grounding implementation.
+
 ## decide-next and actual follow-up (P4-04)
 
 - [ ] Run the challenger in each real client with supportive/balanced/adversarial profiles. Inspect actual opposing reasoning, all four coverage areas, question budgets and loaded learn.decision guidance. Fixture labels do not establish semantic critique or model independence.
