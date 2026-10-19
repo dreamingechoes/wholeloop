@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: build-topic-commits
+    enforcers: [src/guards/assess.ts#guardCommit, src/guards/git-hooks.ts#gitGuards, test/unit/guards/guards.test.ts]
+  - id: open-pr-publication-only
+    enforcers: [src/guards/assess.ts#guardPush, src/guards/git-hooks.ts#gitGuards, test/unit/guards/guards.test.ts]
+  - id: guard-bypass
+    enforcers: [src/guards/command.ts#gitInvocation, src/guards/assess.ts#guardTool, test/unit/guards/guards.test.ts]
+  - id: native-guard-preserves-permissions
+    enforcers: [src/adapters/hooks.ts#hookArtifacts, test/unit/guards/guards.test.ts]
   - id: artifacts-contained-source
     enforcers: [scripts/harness-assets.mjs#harnessAssets, src/adapters/canonical.ts#validateCanonical, test/unit/adapters/adapters.test.ts]
   - id: artifacts-owned-output
@@ -159,7 +167,7 @@ rules:
   - id: missing-input-blocks-mutation
     enforcers: [src/flow/engine.ts#begin, test/unit/utilities/utilities.test.ts]
   - id: external-runtime-state
-    enforcers: [src/state/paths.ts#assertExternal, test/unit/state/store.test.ts]
+    enforcers: [src/state/paths.ts#assertExternal, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, test/unit/state/store.test.ts, test/unit/guards/guards.test.ts]
   - id: recorded-step-skips
     enforcers: [src/flow/engine.ts#skip, test/unit/flow/engine.test.ts]
   - id: required-human-decisions

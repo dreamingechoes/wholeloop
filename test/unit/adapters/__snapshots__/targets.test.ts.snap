@@ -75,7 +75,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     "conformance": "unverified",
     "skills": "rendered",
     "agents": "rendered",
-    "hooks": "unimplemented",
+    "hooks": "git-fallback",
     "readOnly": "inherited-parent-and-checked-headless",
     "engines": [
       "headless",
@@ -157,6 +157,67 @@ Return concrete evidence.
 ",
     "mode": 420,
   },
+  "com.github.copilot/hooks/hooks.json": {
+    "content": "{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "exec": "node",
+        "args": [
+          "-e",
+          "const {join}=require('node:path');const {pathToFileURL}=require('node:url');const root=process.env.COPILOT_PLUGIN_ROOT;if(!root){process.stdout.write(JSON.stringify({permissionDecision:'deny',permissionDecisionReason:'wholeloop plugin root is unavailable.'}));}else{import(pathToFileURL(join(root,'hooks/run.mjs')).href).catch(()=>{process.stdout.write(JSON.stringify({permissionDecision:'deny',permissionDecisionReason:'wholeloop hook transport is unavailable.'}));});}",
+          "copilot"
+        ],
+        "timeoutSec": 15
+      }
+    ]
+  }
+}
+",
+    "mode": 420,
+  },
+  "hooks/check.mjs": {
+    "content": "import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+export const unavailable={schema:'wholeloop/guard@1',decision:'deny',policies:['guard-unavailable'],reasons:['wholeloop guard is unavailable; inspect the configured external store and packaged core.']}
+export function check(payload) {
+ try {
+  const input=JSON.stringify(payload)
+  if(Buffer.byteLength(input)>2097152)return unavailable
+  // A native client may run on Bun or ship its own executable as process.execPath.
+  const result=spawnSync('node',[fileURLToPath(new URL('../bin/wl.mjs',import.meta.url)),'guard','before-tool','--stdin','--json'],{input,encoding:'utf8',timeout:5000,maxBuffer:65536,shell:false})
+  if(result.error || ![0,2].includes(result.status))return unavailable
+  const decision=JSON.parse(result.stdout)
+  if(decision.schema!=='wholeloop/guard@1' || !['allow','deny'].includes(decision.decision) || result.status!==(decision.decision==='allow'?0:2) || !Array.isArray(decision.reasons))return unavailable
+  return decision
+ }catch{return unavailable}
+}
+",
+    "mode": 420,
+  },
+  "hooks/run.mjs": {
+    "content": "import { check, unavailable } from './check.mjs'
+const target=process.argv.at(-1)
+function emit(decision) {
+ // Empty success preserves the client's normal permission checks; an allow would bypass them.
+ if(decision.decision==='allow')return
+ const reason=decision.reasons.join(' ')
+ const output=target==='claude'?{hookSpecificOutput:{hookEventName:'PreToolUse',permissionDecision:'deny',permissionDecisionReason:reason}}:{permissionDecision:'deny',permissionDecisionReason:reason}
+ process.stdout.write(JSON.stringify(output)+'\\n')
+}
+let bytes=0;const chunks=[]
+const timer=setTimeout(()=>{emit(unavailable);process.exit(0)},5000)
+try {
+ for await(const chunk of process.stdin){bytes+=chunk.length;if(bytes>2097152)throw new Error('Input limit');chunks.push(chunk)}
+ clearTimeout(timer)
+ emit(check(JSON.parse(Buffer.concat(chunks).toString('utf8'))))
+}catch{clearTimeout(timer);emit(unavailable)}
+process.stdin.pause()
+",
+    "mode": 420,
+  },
   "plugin.json": {
     "content": "{
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
@@ -210,7 +271,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     "conformance": "unverified",
     "skills": "rendered",
     "agents": "rendered",
-    "hooks": "unimplemented",
+    "hooks": "native-and-git-fallback",
     "readOnly": "read-tool-allowlist",
     "engines": [
       "sequential"
@@ -247,6 +308,21 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
       "path": "plugin.json",
       "mode": 420,
       "sha256": "624e6eb27dbaa1e7daf83ef25d922676a23eefb316a0660c01f13274bd07ea8a"
+    },
+    {
+      "path": "hooks/check.mjs",
+      "mode": 420,
+      "sha256": "bedcccc33ea930225cca973690907b471955b6631f79252d5dc0eecced6112b8"
+    },
+    {
+      "path": "hooks/run.mjs",
+      "mode": 420,
+      "sha256": "b8ea3be241dd1e7d1b01c731f2f60cae5f62b3f4b9ed6d7f39c3dcfad526d1eb"
+    },
+    {
+      "path": "com.github.copilot/hooks/hooks.json",
+      "mode": 420,
+      "sha256": "0a52228e426269940e5c0e40db09dbe7d2d565d9da08f4b4949ed9bc2f662dd0"
     },
     {
       "path": "bin/wl.mjs",
@@ -287,6 +363,17 @@ Return concrete evidence.
 ",
     "mode": 420,
   },
+  ".opencode/plugins/wholeloop.js": {
+    "content": "import { check } from '../../hooks/check.mjs'
+export const Wholeloop = async ({ directory }) => ({
+ 'tool.execute.before': async (input, output) => {
+  const decision=check({event:'before-tool',tool:input.tool,args:output.args,cwd:directory})
+  if(decision.decision==='deny')throw new Error(decision.reasons.join(' '))
+ }
+})
+",
+    "mode": 420,
+  },
   ".opencode/skills/wl-next/SKILL.md": {
     "content": "---
 name: wl-next
@@ -311,6 +398,25 @@ await import(new URL("../../../../bin/wl.mjs", import.meta.url))
 console.log("fixture core")
 ",
     "mode": 493,
+  },
+  "hooks/check.mjs": {
+    "content": "import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+export const unavailable={schema:'wholeloop/guard@1',decision:'deny',policies:['guard-unavailable'],reasons:['wholeloop guard is unavailable; inspect the configured external store and packaged core.']}
+export function check(payload) {
+ try {
+  const input=JSON.stringify(payload)
+  if(Buffer.byteLength(input)>2097152)return unavailable
+  // A native client may run on Bun or ship its own executable as process.execPath.
+  const result=spawnSync('node',[fileURLToPath(new URL('../bin/wl.mjs',import.meta.url)),'guard','before-tool','--stdin','--json'],{input,encoding:'utf8',timeout:5000,maxBuffer:65536,shell:false})
+  if(result.error || ![0,2].includes(result.status))return unavailable
+  const decision=JSON.parse(result.stdout)
+  if(decision.schema!=='wholeloop/guard@1' || !['allow','deny'].includes(decision.decision) || result.status!==(decision.decision==='allow'?0:2) || !Array.isArray(decision.reasons))return unavailable
+  return decision
+ }catch{return unavailable}
+}
+",
+    "mode": 420,
   },
   "opencode.json": {
     "content": "{
@@ -337,7 +443,7 @@ Retain evidence.
     "conformance": "unverified",
     "skills": "rendered",
     "agents": "rendered",
-    "hooks": "unimplemented",
+    "hooks": "native-and-git-fallback",
     "readOnly": "deny-shell-and-edit",
     "engines": [
       "sequential"
@@ -374,6 +480,16 @@ Retain evidence.
       "path": "opencode.json",
       "mode": 420,
       "sha256": "3a1689520689222b217d5107e8e7becc3fbbd2aae41dc086435cd6a941b650c1"
+    },
+    {
+      "path": "hooks/check.mjs",
+      "mode": 420,
+      "sha256": "bedcccc33ea930225cca973690907b471955b6631f79252d5dc0eecced6112b8"
+    },
+    {
+      "path": ".opencode/plugins/wholeloop.js",
+      "mode": 420,
+      "sha256": "82835a75f58c25429473d99c8408d88c7b66e040868cc614ec4db9f8e8b7b8b4"
     },
     {
       "path": "bin/wl.mjs",

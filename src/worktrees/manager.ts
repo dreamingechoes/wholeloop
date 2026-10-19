@@ -242,6 +242,7 @@ export class WorktreeManager {
       head: git(record.path, ['rev-parse', 'HEAD']).trim(),
       tested: false,
       environment: {
+        WL_SUBJECT: subject,
         PORT: String(record.ports.start),
         WL_PORT_START: String(record.ports.start),
         WL_PORT_END: String(record.ports.end),

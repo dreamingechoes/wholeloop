@@ -59,6 +59,7 @@
 | [0046](./0046-bounded-headless-workers-and-shared-gate-aggregation.md) | Bounded headless workers and shared gate aggregation | Accepted | 2026-10-19 |
 | [0047](./0047-self-contained-client-artifacts-and-owned-output-upgrades.md) | Self-contained client artifacts and owned output upgrades | Accepted | 2026-10-19 |
 | [0048](./0048-native-target-layouts-and-checked-launcher-roots.md) | Native target layouts and checked launcher roots | Accepted | 2026-10-19 |
+| [0049](./0049-shared-guards-and-owned-git-fallbacks.md) | Shared guards and owned Git fallbacks | Accepted | 2026-10-19 |
 
 ## Lifecycle
 

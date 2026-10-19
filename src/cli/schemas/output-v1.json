@@ -8,6 +8,39 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/guard@1"
+        },
+        "decision": {
+          "enum": ["allow", "deny"]
+        },
+        "policies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["schema", "decision", "policies", "reasons"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/git-guards@1"
+        }
+      },
+      "required": ["schema", "repository", "hooks", "status"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/worktree-create@1"
         }
       },

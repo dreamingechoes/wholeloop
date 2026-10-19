@@ -113,7 +113,7 @@
 
 ## P3-08 · Guards — `wl guard` and git hooks
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-11
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-11
 
 **Goal** — The few things that must never happen are blocked everywhere.
 
@@ -122,9 +122,18 @@
 **Acceptance criteria:**
 
 - [ ] Payload fixtures from every tier-A CLI parse to the same normalised event.
-- [ ] Each policy is tested through both the CLI-hook path and the git-hook path.
+- [x] Each policy is tested through both the CLI-hook path and the git-hook path.
 
-**Docs** — architecture/core-cli (hooks and guards), ADR-0006.
+**Local implementation:** normalized authored native/SDK fixtures, shared policies,
+versioned/redacted CLI decisions, Claude/Copilot command bindings, the thin OpenCode
+plugin and explicit external Git-hook install/status/uninstall are implemented.
+Real fixture Git commits/pushes exercise assigned topics, exact tested requests,
+staged runtime rejection and prior-hook mutation. Codex-shaped SDK input is a
+synthetic parser fixture, not a captured/registered Codex CLI hook. Actual per-client
+capture/permission/timeout evidence remains owner verification, so the first
+criterion stays open; general installation integration remains P1-13.
+
+**Docs** — architecture/core-cli (hooks and guards), ADR-0006, ADR-0049.
 
 ## P3-09 · Environment ledger
 

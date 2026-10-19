@@ -45,7 +45,7 @@ describe('additional tier-A render targets', () => {
     expect(generated.manifest.agents).toEqual(['wl-reviewer'])
     expect(generated.manifest.capabilities).toMatchObject({
       conformance: 'unverified',
-      hooks: 'unimplemented',
+      hooks: id === 'codex' ? 'git-fallback' : 'native-and-git-fallback',
     })
   })
   it.each(['codex', 'opencode', 'copilot'])(

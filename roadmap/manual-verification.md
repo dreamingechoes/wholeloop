@@ -4,6 +4,19 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Common guards and Git fallback (P3-08)
+
+- [ ] Capture actual before-tool events on Claude/Copilot/OpenCode; compare schema, tool names, cwd, write paths and event ordering with the authored fixtures. The Codex-shaped SDK fixture is synthetic; verify its actual CLI Git fallback instead of treating desktop hooks as CLI support.
+- [ ] In disposable clients, try wrong-checkout/default-branch Build commits with the returned WL_SUBJECT environment, extra/deleted/stale push refs and reserved runtime writes. Normal native reads/permissions must retain their ordinary behavior; synthetic transport tests do not establish client enforcement.
+- [ ] Exercise inner/outer timeouts, inaccessible stores, managed policies and disabled hooks. Copilot outer hook timeouts can fail open; retain Git fallbacks and inspect real sandbox access to the external store.
+- [ ] Inspect existing hooks before an explicit guard hooks install on a disposable project. Verify original execution/exit codes and changed-file/config refusal; uninstall must restore only prior local configuration and retain the returned backup. Relative/multiple effective and worktree-specific hook paths need manual chaining.
+- [ ] Recover a physical interruption by inspecting the external ownership receipt/lock and current Git configuration. Do not delete prepared/changed files or steal locks. Reinstall after reviewing new original hook names or upgrading the pinned core.
+- [ ] Repeat actual Git-hook chaining, local bare SSH-shaped pushes, native root expansion, symlinks and timing fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64/Node 24 only.
+
+General install/uninstall/doctor integration remains code work in P1-13. No hooks
+were installed in this repository, no actual project push ran and no model session
+was executed by these synthetic/temporary tests.
+
 ## Additional tier-A artifacts (P1-11)
 
 - [ ] Load generated Codex/Copilot portable skill packages and install the appropriate native agent overlays, including Codex project/user TOML agents. Verify all seventeen prefixed skills/eight agents and their actual invocation; a portable skill package does not prove Codex agent discovery.
@@ -12,8 +25,8 @@
 - [ ] Inspect OpenCode/Copilot native permission behavior, inherited repository instructions and native external-directory asks. Static mappings and partial/native listings do not prove runtime enforcement, complete isolation or independent workers.
 - [ ] Repeat native discovery, launcher/symlink, permission and copied-runtime fixtures on Linux and supported Node versions.
 
-Hook registration remains unimplemented code. Native/headless model conformance
-is pending separately; neither blocks independent local guard/install work.
+Native guard bindings and the Codex Git fallback are implemented. Native/headless
+model conformance remains pending and does not block independent installation work.
 
 ## Generated Claude artifacts (P1-10)
 
@@ -22,8 +35,8 @@ is pending separately; neither blocks independent local guard/install work.
 - [ ] Exercise read-only roles against a disposable sentinel, including roles with shell access and managed policy. Confirm model tier aliases and batched missing-context questions; no independent model session has been run.
 - [ ] Repeat owned output, backup/mode/symlink and bundled runtime fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64 only.
 
-Guard hook registration and the other adapters remain unimplemented code, tracked
-separately; these manual checks do not block further local implementation.
+Native hook registration and the other tier-A renderers are implemented; actual
+hook capture and installed-client behavior remain owner checks.
 
 ## Headless gate processes (P5-03)
 

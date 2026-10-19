@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Once-per-round suites, incremental review with loaded/pinned rubrics and tested draft publication with gh/glab hosts and a declarative external-effect/undo ledger are implemented. Launch preparation pins measurement revisions and produces local kits with explicit draft/create handoffs; real adapter isolation remains pending. Canonical URL adoption and recoverable shared Define publication are available through explicit host contracts and CLI handoffs. A bounded headless gate process host provides local Claude/Codex recipes; self-contained artifact generation for all four tier-A targets is implemented. Hook registration and authenticated client conformance and provider execution remain pending.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Once-per-round suites, incremental review with loaded/pinned rubrics and tested draft publication with gh/glab hosts and a declarative external-effect/undo ledger are implemented. Launch preparation pins measurement revisions and produces local kits with explicit draft/create handoffs; real adapter isolation remains pending. Canonical URL adoption and recoverable shared Define publication are available through explicit host contracts and CLI handoffs. A bounded headless gate process host provides local Claude/Codex recipes; self-contained artifact generation for all four tier-A targets is implemented. Common guard policies, generated native bindings and explicit owned Git fallback management are implemented; actual client hook conformance and authenticated provider execution remain pending.
 
 ---
 
@@ -150,6 +150,11 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 | `wl docs nav` | `wholeloop/docs-nav@1` | Rewrite docnav footers from docs/nav.yml |
 | `wl docs check` | `wholeloop/docs-check@1` | Check documentation navigation, status, links and anchors |
 | `wl harness check` | `wholeloop/harness-check@1` | Check size budgets, front matter and enforcement |
+| `wl guard hooks <install\|uninstall\|status>` | `wholeloop/git-guards@1` | Explicitly manage owned external Git hooks and preserve originals |
+| `wl guard before-tool` | `wholeloop/guard@1` | Check transient native before-tool input without granting permissions |
+| `wl guard git-commit` | `wholeloop/guard@1` | Check staged runtime paths and the assigned Build topic workspace |
+| `wl guard git-push` | `wholeloop/guard@1` | Check an exact tested open-pr push from transient JSON stdin |
+| `wl guard state-write` | `wholeloop/guard@1` | Reject runtime state destinations inside any Git repository |
 | `wl guard commit-msg <file>` | `wholeloop/commit-check@1` | Validate a commit message without changing it |
 <!-- commands:end -->
 
@@ -255,7 +260,51 @@ A remembered answer is never asked again at that scope. A step that re-asks a se
 
 ## Hooks and guards
 
-All generated hooks, for every CLI, call one entry point: `wl guard <event>`. It normalises the payload (`tool_name` vs `toolName`, PascalCase vs camelCase events) and applies the same policies everywhere. Where a CLI has no usable hooks, **git hooks** installed by `wl install` carry the critical ones (no commit to the default branch, no push from a gated step). Details: [ADR-0006](../decisions/0006-orchestration-tiers.md).
+Generated Claude/Copilot command hooks and the thin OpenCode JS plugin delegate to
+`wl guard before-tool --stdin`. The core normalizes native names/JSON arguments;
+reports contain only wholeloop/guard@1 decisions and fixed policy reasons, never raw
+tool bodies, commands or remote URLs. Empty native success preserves the client's
+normal permission checks. Missing/invalid/timed-out core results deny. Codex CLI
+uses the Git fallback; desktop plugin support is not proof of a CLI hook surface.
+
+Build commits require their active assigned workspace/topic. Pass the environment
+returned by build prepare/worktree open, including WL_SUBJECT, to the builder; it
+identifies attempts from the original checkout without guessing a default branch.
+Unmanaged owner commits remain allowed. Pushes require one non-delete update bound
+to a clean pending, human-tested open-pr request with exact SHA, branch, remote and
+snapshot, current gated evidence and no unresolved ancestor decisions. Object-pinned
+producer pushes are supported; extra refs and known non-fast-forward history fail.
+
+Use guard state-write --path for the authoritative external destination check.
+StoreFiles also enforces that boundary on every real runtime mutation, including
+Git ancestors and symlinks. Known native writes and staged Git paths reject reserved
+.wholeloop runtime directories; explicit project settings/distribution output are
+separate writes. A generic shell cannot be classified as arbitrary file I/O.
+
+Install Git fallbacks explicitly, using the compiled core:
+
+```text
+wl guard hooks install --repo /path/to/project --json
+wl guard hooks status --repo /path/to/project --json
+wl guard hooks uninstall --repo /path/to/project --json
+```
+
+An optional --store pins the same external workspace store used by Build/open-pr.
+The installation places a hashed core and wrappers outside repositories, then sets
+one local core.hooksPath override. Existing executable hooks run at their original
+paths; guarded pre-commit/pre-push events are checked before and after them. Other
+existing hooks pass through. Uninstall restores only prior local values, preserving
+effective global settings, and retains the owned installation as a returned backup.
+Changed files/config, partial installs, relative/multiple effective hook paths or
+worktree-specific overrides require inspection/manual chaining. Original hooks are
+not copied; inspect new original hook names before reinstalling wrappers.
+
+These are cooperative hooks, not an adversarial sandbox or complete shell parser.
+Known simple bypass flags are denied natively; disabled hooks, aliases and compound
+programs retain native limits. Copilot outer timeouts can fail open, so keep the Git
+fallback. Authored payload/transport fixtures are synthetic; actual native captures,
+timeouts and cross-platform behavior remain owner checks. General install/uninstall/
+doctor integration remains P1-13. See [ADR-0049](../decisions/0049-shared-guards-and-owned-git-fallbacks.md).
 
 ---
 

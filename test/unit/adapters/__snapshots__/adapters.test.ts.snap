@@ -41,6 +41,66 @@ console.log("fixture core")
 ",
     "mode": 493,
   },
+  "hooks/check.mjs": {
+    "content": "import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+export const unavailable={schema:'wholeloop/guard@1',decision:'deny',policies:['guard-unavailable'],reasons:['wholeloop guard is unavailable; inspect the configured external store and packaged core.']}
+export function check(payload) {
+ try {
+  const input=JSON.stringify(payload)
+  if(Buffer.byteLength(input)>2097152)return unavailable
+  // A native client may run on Bun or ship its own executable as process.execPath.
+  const result=spawnSync('node',[fileURLToPath(new URL('../bin/wl.mjs',import.meta.url)),'guard','before-tool','--stdin','--json'],{input,encoding:'utf8',timeout:5000,maxBuffer:65536,shell:false})
+  if(result.error || ![0,2].includes(result.status))return unavailable
+  const decision=JSON.parse(result.stdout)
+  if(decision.schema!=='wholeloop/guard@1' || !['allow','deny'].includes(decision.decision) || result.status!==(decision.decision==='allow'?0:2) || !Array.isArray(decision.reasons))return unavailable
+  return decision
+ }catch{return unavailable}
+}
+",
+    "mode": 420,
+  },
+  "hooks/hooks.json": {
+    "content": "{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \\"\${CLAUDE_PLUGIN_ROOT}/hooks/run.mjs\\" claude",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
+",
+    "mode": 420,
+  },
+  "hooks/run.mjs": {
+    "content": "import { check, unavailable } from './check.mjs'
+const target=process.argv.at(-1)
+function emit(decision) {
+ // Empty success preserves the client's normal permission checks; an allow would bypass them.
+ if(decision.decision==='allow')return
+ const reason=decision.reasons.join(' ')
+ const output=target==='claude'?{hookSpecificOutput:{hookEventName:'PreToolUse',permissionDecision:'deny',permissionDecisionReason:reason}}:{permissionDecision:'deny',permissionDecisionReason:reason}
+ process.stdout.write(JSON.stringify(output)+'\\n')
+}
+let bytes=0;const chunks=[]
+const timer=setTimeout(()=>{emit(unavailable);process.exit(0)},5000)
+try {
+ for await(const chunk of process.stdin){bytes+=chunk.length;if(bytes>2097152)throw new Error('Input limit');chunks.push(chunk)}
+ clearTimeout(timer)
+ emit(check(JSON.parse(Buffer.concat(chunks).toString('utf8'))))
+}catch{clearTimeout(timer);emit(unavailable)}
+process.stdin.pause()
+",
+    "mode": 420,
+  },
   "resources/protocols/core-invariants.md": {
     "content": "# Core invariants
 
@@ -73,7 +133,7 @@ Call \`node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next --json\`.
     "conformance": "unverified",
     "skills": "rendered",
     "agents": "rendered",
-    "hooks": "unimplemented",
+    "hooks": "native-and-git-fallback",
     "readOnly": "tool-allowlist-and-plan-mode",
     "engines": [
       "headless",
@@ -106,6 +166,21 @@ Call \`node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next --json\`.
       "path": ".claude-plugin/plugin.json",
       "mode": 420,
       "sha256": "598dfdd0f79593786df6577a38e4bf1a72261c3a2b374f4a02e3e3cb72b2be2b"
+    },
+    {
+      "path": "hooks/check.mjs",
+      "mode": 420,
+      "sha256": "bedcccc33ea930225cca973690907b471955b6631f79252d5dc0eecced6112b8"
+    },
+    {
+      "path": "hooks/run.mjs",
+      "mode": 420,
+      "sha256": "b8ea3be241dd1e7d1b01c731f2f60cae5f62b3f4b9ed6d7f39c3dcfad526d1eb"
+    },
+    {
+      "path": "hooks/hooks.json",
+      "mode": 420,
+      "sha256": "86d0b90d10f4e6c39e40101e706ddd7a47b8c703746981adc2e1139502a3d5b7"
     },
     {
       "path": "bin/wl.mjs",

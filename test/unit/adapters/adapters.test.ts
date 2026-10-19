@@ -44,7 +44,7 @@ describe('canonical client artifact generation', () => {
     expect(Object.fromEntries(generated.files)).toMatchSnapshot()
     expect(generated.manifest.capabilities).toMatchObject({
       conformance: 'unverified',
-      hooks: 'unimplemented',
+      hooks: 'native-and-git-fallback',
     })
     expect(frontmatter(generated.files.get('agents/reviewer.md')?.content ?? '')).toMatchObject({
       tools: 'Read, Glob, Grep, Bash',

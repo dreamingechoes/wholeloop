@@ -17,6 +17,7 @@ import { flowCommand } from './flow.js'
 import { gateCommand } from './gate.js'
 import { generateCommand } from './generate.js'
 import { groundingCommand } from './grounding.js'
+import { guardCommand } from './guard.js'
 import { harnessCheck } from './harness.js'
 import { impactCommand } from './impact.js'
 import { EXIT, type Io } from './io.js'
@@ -101,6 +102,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (['verify begin', 'verify complete'].includes(command.path))
       return verificationCommand(command.path, parsed, root, json, io)
     if (
+      (command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
       command.path === 'fanout run' ||
       command.path === 'adopt' ||
       command.path.startsWith('share ') ||
@@ -180,7 +182,8 @@ export async function runAsync(
   const args = argv.filter((arg) => arg !== '--json')
   const command = COMMANDS.find(
     (command) =>
-      (command.path === 'fanout run' ||
+      ((command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
+        command.path === 'fanout run' ||
         command.path === 'adopt' ||
         command.path.startsWith('share ') ||
         command.path === 'eval grounding' ||
@@ -207,6 +210,8 @@ export async function runAsync(
         .filter((option) => option.includes(' '))
         .map((option) => option.split(' ')[0] ?? option),
     )
+    if (command.path.startsWith('guard '))
+      return await guardCommand(command.path, parsed, root, json, io)
     if (command.path === 'fanout run') return await fanoutCommand(parsed, root, json, io)
     if (command.path === 'adopt' || command.path.startsWith('share '))
       return await sharingCommand(command.path, parsed, root, json, io)

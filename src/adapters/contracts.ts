@@ -2,7 +2,7 @@ export interface AdapterCapabilities {
   conformance: 'unverified'
   skills: 'rendered'
   agents: 'rendered'
-  hooks: 'unimplemented'
+  hooks: 'native-and-git-fallback' | 'git-fallback'
   readOnly:
     | 'tool-allowlist-and-plan-mode'
     | 'inherited-parent-and-checked-headless'

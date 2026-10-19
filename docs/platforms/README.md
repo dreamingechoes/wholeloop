@@ -37,7 +37,7 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 | No parallel subagents | `headless` engine — `wl fanout` runs workers through the CLI's headless mode — or `sequential` ([engines](../architecture/orchestration-and-gates.md#three-engines-one-result)) |
 | Read-only not enforced | The core checks the worktree is unchanged after every gate round; a change fails the round |
 | No structured question tool | Plain-text questions with numbered options; the skill stops and waits |
-| No usable hooks | Git hooks installed by `wl install` carry the critical guards |
+| No usable hooks | Explicit `wl guard hooks install` carries the critical guards; general install is pending |
 | Different MCP dialects | `wl mcp add` renders each provider's neutral recipe into the target's format |
 
 ## What gets generated
@@ -46,7 +46,7 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 flowchart LR
   src["harness/<br/>skills · agents · hooks · providers"]:::core --> gen["wl build / wl install"]:::core
   gen --> c1[".claude/skills · .claude/agents<br/>hooks in settings · plugin.json"]
-  gen --> c2[".agents/skills · .codex/agents/*.toml<br/>hooks.json · config.toml MCP"]
+  gen --> c2[".agents/skills · .codex/agents/*.toml<br/>Git fallback · config.toml MCP"]
   gen --> c3[".opencode/agents · commands<br/>JS plugin → wl guard"]
   gen --> c4[".github/agents · .github/hooks<br/>Agent Plugins manifest"]
   gen -.-> c5[".gemini/ · .agents/ (Antigravity)<br/>.cursor/"]:::opt
@@ -77,7 +77,7 @@ its resolved plugin root to agents. Missing context is a question, not a PATH gu
 Model tiers render to native aliases and capabilities to explicit tool lists.
 Observer roles omit write tools and use plan restrictions; shell/managed policy
 behavior still needs real-client enforcement checks. The manifest reports native
-conformance unverified and hooks unimplemented. No permission bypass is emitted.
+conformance unverified; native guard bindings and explicit Git fallback management are rendered. No permission bypass is emitted.
 
 Generation is deterministic. An unchanged owned tree reports already-correct;
 upgrades preserve the previous tree at the backup path returned in the receipt.
@@ -125,7 +125,7 @@ new sandbox. Additional targets inherit the selected model and retain tier hints
 
 Codex agent files are installation overlays: loading a portable skill package alone
 does not prove native agent discovery. All target manifests retain conformance
-unverified and hooks unimplemented. Static/native listings do not establish a live
+unverified; OpenCode/Copilot native guard bindings and the Codex Git fallback are implemented. Static/native listings do not establish a live
 model run or permission enforcement. See [ADR-0048](../decisions/0048-native-target-layouts-and-checked-launcher-roots.md)
 and the [manual checklist](../../roadmap/manual-verification.md).
 

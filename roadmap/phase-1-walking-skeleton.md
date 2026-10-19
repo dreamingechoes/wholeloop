@@ -162,9 +162,9 @@
 **Local implementation:** the adapter interface, pure Claude skill/agent renderer,
 embedded canonical resources, bundled core, owned output/backup writer and golden
 fixtures are implemented. The actual Claude 2.1.299 static plugin validator passed
-in an isolated directory. Hook registration remains unimplemented code until the
-common guard is connected; local install/discovery/model execution remains an
-owner check. These gaps do not block independent local adapter implementation.
+in an isolated directory. Native guard registration is now implemented through the
+shared core; real hook capture, local install/discovery/model execution remain
+owner checks. These gaps do not block independent installation implementation.
 
 **Docs** — platforms, ADR-0047.
 
@@ -184,10 +184,10 @@ owner check. These gaps do not block independent local adapter implementation.
 **Local implementation:** all three native renderers, namespaced skills/agents,
 portable Codex/Copilot manifests, checked launcher/root binding, role restrictions
 and cross-target goldens are implemented. Codex's inherited permission limitation
-is explicit; mappings are not a claimed isolated native sandbox. Hook registration,
-including the thin OpenCode guard plugin, remains unimplemented code. Actual
-permission enforcement and model conformance remain owner verification; neither
-gap blocks independent common-guard/install implementation.
+is explicit; mappings are not a claimed isolated native sandbox. OpenCode/Copilot
+native hook bindings and the explicit Codex Git fallback now call the common guard.
+Actual payload capture, permission enforcement and model conformance remain owner
+verification; these checks do not block independent installation implementation.
 
 **Docs** — platforms, ADR-0048.
 

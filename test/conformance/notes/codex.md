@@ -18,3 +18,10 @@ Run the checklist in [README](./README.md) before promoting any capability.
 - Current official custom-agent documentation states that sandbox/approval settings are inherited from the parent and cannot be lowered through a custom-agent file. Generated TOML emits supported feature reductions and checked read-only parent/headless guidance; it does not emit a fake sandbox override.
 - Local features list confirms shell_tool, apps, plugins, memories and request_permissions_tool keys exist. This is a configuration/availability probe, not a custom-agent execution or permission-enforcement pass.
 - Golden TOML, launcher and packaged-root fixtures passed. Native discovery, actual read-only behavior and model execution remain unverified.
+
+## Guard transport implementation (2026-10-19)
+
+The generated Codex artifact declares the explicit Git fallback. A Codex-shaped
+SDK normalization fixture is authored and synthetic; it is not a captured CLI hook.
+No unsupported CLI hooks configuration is emitted.
+Real hook capture, timeout/managed-policy behavior and Linux remain owner checks.

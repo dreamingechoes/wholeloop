@@ -6,7 +6,7 @@ metadata:
 ---
 # Build a slice
 
-Read ask-never-guess, output-contract, build-execution, gate-rounds and environment-effects.
+Read ask-never-guess, output-contract, build-execution, gate-rounds, environment-effects and guards.
 
 1. Call `wl build route [<scope|slice|part|issue-url|sentence>] --json`. Ask missing
    questions together. For a scope use its ready leaf candidates and declared
@@ -22,6 +22,7 @@ Read ask-never-guess, output-contract, build-execution, gate-rounds and environm
    workspace mode and gate budgets. Every pace keeps both gates and all criteria.
 4. Prepare with `wl build prepare <id> --base <named-branch> --json`, or explicitly
    stack with `--after <predecessor-id>`. Retain the returned run and basis snapshot.
+   Pass the returned environment, including WL_SUBJECT, to builders.
 5. Ask the builder for wholeloop/builder-plan@1 from `wl build schema --json`.
    Record it with `wl build plan <id> --file <plan.json> --basis <snapshot> --json`
    before code changes. Show its steps/tests/assumptions. Unknown or contradicted

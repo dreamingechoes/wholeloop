@@ -41,7 +41,7 @@ function capabilities(
     conformance: 'unverified',
     skills: 'rendered',
     agents: 'rendered',
-    hooks: 'unimplemented',
+    hooks: headless ? 'git-fallback' : 'native-and-git-fallback',
     readOnly,
     engines: headless ? ['headless', 'sequential'] : ['sequential'],
   }

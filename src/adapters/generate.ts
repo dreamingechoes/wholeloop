@@ -3,6 +3,7 @@ import { posix } from 'node:path'
 import { canonicalDigest, validateCanonical } from './canonical.js'
 import { claudeAdapter } from './claude.js'
 import type { Adapter, RenderedFile } from './contracts.js'
+import { hookArtifacts } from './hooks.js'
 import { codexAdapter, copilotAdapter, opencodeAdapter } from './portable.js'
 
 export const artifactDigest = (content: string) =>
@@ -55,6 +56,7 @@ export function generateAdapter(
     mode: 0o644,
     content: `${JSON.stringify(adapter.manifest(version, { skills, agents }), null, 2)}\n`,
   })
+  for (const [path, file] of hookArtifacts(id)) files.set(path, file)
   files.set('bin/wl.mjs', { mode: 0o755, content: core })
   const manifest = {
     schema: 'wholeloop/adapter-artifacts@1',

@@ -284,6 +284,7 @@ export class BuildWorkflow {
       preflight,
       run: started.payload.run,
       workspace: workspace.record,
+      environment: new WorktreeManager(this.engineFor(subject)).open(subject).environment,
       snapshot: workspaceSnapshot(workspace.record.path).digest,
     }
   }

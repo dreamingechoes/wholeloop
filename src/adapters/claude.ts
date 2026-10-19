@@ -20,7 +20,7 @@ export const claudeAdapter: Adapter = {
     conformance: 'unverified',
     skills: 'rendered',
     agents: 'rendered',
-    hooks: 'unimplemented',
+    hooks: 'native-and-git-fallback',
     readOnly: 'tool-allowlist-and-plan-mode',
     engines: ['headless', 'sequential'],
   }),
