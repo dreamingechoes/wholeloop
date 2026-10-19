@@ -4,6 +4,12 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Coinstalled entrypoints and slot guidance (P1-07/P1-13 regression)
+
+- [ ] Upgrade unchanged owned older native output, then restart the intended clients. Confirm wholeloop skills/roles remain discoverable but do not compete as heuristic frame.template or review.rubric guidance. Routing markers are not native-loader or permission evidence.
+- [ ] Add a genuine repository guide and verify it wins. Add two equally explicit guides and verify the real choice is still asked. Existing configured bindings remain owner choices, including deliberate bindings to marked entrypoints.
+- [ ] Repeat multi-client user/project framing and cache invalidation on Linux and supported Node/client versions. Current real core regression coverage runs on macOS arm64/Node 24; actual native model execution remains separate.
+
 ## Gemini adapter, overlays and conformance (P5-01 component)
 
 - [ ] Review generated gemini-extension.json and native overlays, then load/link/install only in disposable native configurations. Enable preview subagents through explicit native setup, verify all seventeen skills/eight agents and actual invocation, and confirm inheritance/precedence. Actual 0.27.0 static loaders passed; that is not a model/runtime permission check.

@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { posix } from 'node:path'
+import { markEntrypoint } from '../harness/entrypoints.js'
 import { canonicalDigest, validateCanonical } from './canonical.js'
 import { claudeAdapter } from './claude.js'
 import type { Adapter, RenderedFile } from './contracts.js'
@@ -39,7 +40,8 @@ export function generateAdapter(
     if (skill) {
       skills.push(adapter.name('skill', skill))
       const path = adapter.paths('skill', skill)
-      files.set(path, adapter.renderSkill(skill, content))
+      const rendered = adapter.renderSkill(skill, content)
+      files.set(path, { ...rendered, content: markEntrypoint(rendered.content) })
       if (adapter.launchers) {
         const launcher = posix.join(posix.dirname(path), 'scripts/wl.mjs')
         const relative = posix.relative(posix.dirname(launcher), 'bin/wl.mjs')
@@ -50,7 +52,12 @@ export function generateAdapter(
       }
     } else if (agent) {
       agents.push(adapter.name('agent', agent))
-      files.set(adapter.paths('agent', agent), adapter.renderAgent(agent, content))
+      const path = adapter.paths('agent', agent)
+      const rendered = adapter.renderAgent(agent, content)
+      files.set(path, {
+        ...rendered,
+        content: markEntrypoint(rendered.content, path.endsWith('.toml') ? 'toml' : 'md'),
+      })
     } else files.set(path.replace(/^harness\//, 'resources/'), { mode: 0o644, content })
   }
   files.set(adapter.manifestPath, {

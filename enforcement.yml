@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: harness-entrypoints-not-guidance
+    enforcers: [src/harness/entrypoints.ts#markEntrypoint, src/harness/entrypoints.ts#isEntrypoint, src/adapters/generate.ts#generateAdapter, src/discovery/scan.ts#scan, src/discovery/resolve.ts#resolveSlot, test/unit/discovery/discovery.test.ts]
   - id: gemini-observer-tools
     enforcers: [src/adapters/gemini.ts#geminiAdapter, test/unit/adapters/gemini.test.ts]
   - id: gemini-explicit-fallback

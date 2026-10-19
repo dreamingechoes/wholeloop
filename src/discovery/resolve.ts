@@ -18,6 +18,7 @@ export function resolveSlot(
   if (repo.problems.length || options.user?.problems.length)
     throw new Error('Resolve discovery problems before selecting a binding')
   const candidates: Candidate[] = []
+  const excluded: { ref: string; origin: 'repo' | 'user'; reason: string }[] = []
   const pattern = SLOT_RULES.find(([name]) => name === slot)?.[1]
   for (const [origin, map] of [
     ['repo', repo],
@@ -32,6 +33,13 @@ export function resolveSlot(
           score: offset + 100,
           confident: true,
           reason: `Explicit metadata.wholeloop.slot tag for ${slot}`,
+        })
+      else if (asset.entrypoint)
+        excluded.push({
+          ref: asset.path,
+          origin,
+          reason:
+            'Wholeloop entrypoint; excluded from heuristic guidance unless explicitly tagged or configured',
         })
       else if (pattern && ['skill', 'agent', 'convention', 'design'].includes(asset.kind)) {
         const nameMatch = pattern.test(asset.name.toLowerCase())
@@ -83,6 +91,7 @@ export function resolveSlot(
     schema: 'wholeloop/resolve@1',
     slot,
     selected,
+    ...(excluded.length ? { excluded } : {}),
     candidates: candidates.map((candidate) => ({
       ...candidate,
       selected: selected?.ref === candidate.ref && selected?.origin === candidate.origin,

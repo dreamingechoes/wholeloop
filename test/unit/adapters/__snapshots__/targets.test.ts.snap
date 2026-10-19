@@ -13,6 +13,7 @@ apps = false
 plugins = false
 memories = false
 request_permissions_tool = false
+# wholeloop:entrypoint@1
 ",
     "mode": 420,
   },
@@ -55,6 +56,7 @@ Use the exact directory of this loaded SKILL.md reported by the client. If unava
 # Next
 
 Call wl next --json.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -92,7 +94,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": ".codex/agents/wl-reviewer.toml",
       "mode": 420,
-      "sha256": "cb789201728902473f642ed3c7552463940d18378e32f51c5aebebef4241ec79"
+      "sha256": "2c4d40df94564e46db8ce0010caf7d6eff310abf7d032e258dca702e1a25a15d"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -102,7 +104,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "ee89b3a9fe337d22ce0beb904bf89a07db0cce3bc5890220860fe7dca0dc134b"
+      "sha256": "7e72cdb720952201f725ee1266712dcef4692c638d7745c45d381843e3e06720"
     },
     {
       "path": "skills/wl-next/scripts/wl.mjs",
@@ -154,6 +156,7 @@ Canonical model tier: deep; inherit the selected session model. Read-only roles 
 # Review
 
 Return concrete evidence.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -251,6 +254,7 @@ Use the exact directory of this loaded SKILL.md reported by the client. If unava
 # Next
 
 Call wl next --json.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -287,7 +291,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "com.github.copilot/agents/wl-reviewer.agent.md",
       "mode": 420,
-      "sha256": "ee7c21be31303fb3e4f84eaffbd7a5d74ef68e2aa7b5f4fc7bfc43274873f514"
+      "sha256": "cd57664f829286060cb5db3eeb17411bbfe2574751b325154123354a4017cccd"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -297,7 +301,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "ee89b3a9fe337d22ce0beb904bf89a07db0cce3bc5890220860fe7dca0dc134b"
+      "sha256": "7e72cdb720952201f725ee1266712dcef4692c638d7745c45d381843e3e06720"
     },
     {
       "path": "skills/wl-next/scripts/wl.mjs",
@@ -360,6 +364,7 @@ Canonical model tier: deep; inherit the selected session model. Read-only roles 
 # Review
 
 Return concrete evidence.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -384,6 +389,7 @@ Use the exact directory of this loaded SKILL.md reported by the client. If unava
 # Next
 
 Call wl next --json.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -459,7 +465,7 @@ Retain evidence.
     {
       "path": ".opencode/agents/wl-reviewer.md",
       "mode": 420,
-      "sha256": "4f6151df5913c9967b4541bc098dfabee30182f63f2e7c54ec500aed49317409"
+      "sha256": "f117abe682b242904070d11e8a1f711e1d69addee13dba231d72d8ceb8d742c8"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -469,7 +475,7 @@ Retain evidence.
     {
       "path": ".opencode/skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "ee89b3a9fe337d22ce0beb904bf89a07db0cce3bc5890220860fe7dca0dc134b"
+      "sha256": "7e72cdb720952201f725ee1266712dcef4692c638d7745c45d381843e3e06720"
     },
     {
       "path": ".opencode/skills/wl-next/scripts/wl.mjs",

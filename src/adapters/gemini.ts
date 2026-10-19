@@ -1,4 +1,4 @@
-import { stringify } from 'yaml'
+import { Document, isSeq } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter } from './contracts.js'
 import { renderPortableSkill } from './portable.js'
@@ -44,11 +44,15 @@ export const geminiAdapter: Adapter = {
       ...(capabilities.includes('web') ? ['google_web_search', 'web_fetch'] : []),
     ]
     const native = { name: `wl-${name}`, description: metadata.description, kind: 'local', tools }
+    const header = new Document(native)
+    const allowed = header.get('tools', true)
+    // Native metadata must fit alongside the canonical role within the sixty-line budget.
+    if (isSeq(allowed)) allowed.flow = true
     const context = `The main session supplies wholeloopRoot from the checked packaged launcher. Read named protocols under wholeloopRoot/resources/protocols/; canonical wl commands mean Node with wholeloopRoot/bin/wl.mjs. If context is missing, return questions instead of guessing PATH. Canonical model tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the session model.\n\n`
     const boundaries = `${writable ? '' : 'This observer has no shell, write, memory or MCP tool. Ask the main session for observed command/provider evidence. '}Gemini subagents cannot nest delegation; return further role work to the main session for sequential execution. If structured questions are unavailable, return plain-text options and wait for answers.\n\n`
     return {
       mode: 0o644,
-      content: `---\n${stringify(native, { lineWidth: 0 })}---\n${context}${boundaries}${content.replace(/^---\n[\s\S]*?\n---\n/, '').trimStart()}`,
+      content: `---\n${header.toString({ lineWidth: 0 })}---\n${context}${boundaries}${content.replace(/^---\n[\s\S]*?\n---\n/, '').trimStart()}`,
     }
   },
 }

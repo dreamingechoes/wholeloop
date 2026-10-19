@@ -90,7 +90,8 @@ export function discover(root: string, store: StoreFiles, home = homedir()) {
   )
   const fingerprint = hash(
     JSON.stringify({
-      v: 1,
+      // The parser now distinguishes harness entrypoints even when another core cached the same bytes.
+      v: 2,
       repo: [...repo.files],
       user: [...user.files],
       warnings: [...repo.warnings, ...user.warnings],

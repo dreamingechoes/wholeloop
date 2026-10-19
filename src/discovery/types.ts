@@ -4,6 +4,7 @@ export interface Asset {
   name: string
   description: string
   slots: string[]
+  entrypoint?: true
 }
 export interface CommandAsset {
   ref: string

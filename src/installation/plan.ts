@@ -3,6 +3,7 @@ import { stringify } from 'yaml'
 import type { RenderedFile } from '../adapters/contracts.js'
 import { adapterFor, generateAdapter } from '../adapters/generate.js'
 import { renderPortableSkill } from '../adapters/portable.js'
+import { markEntrypoint } from '../harness/entrypoints.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import { canonicalPath } from '../state/paths.js'
 
@@ -125,7 +126,7 @@ export function installationPlan(
       let rendered = target === 'claude' ? renderPortableSkill(content).content : source.content
       if (target === 'claude')
         rendered = `---\n${stringify({ ...frontmatter(rendered), hooks })}---\n${rendered.replace(/^---\n[\s\S]*?\n---\n/, '')}`
-      add(join(directory, 'SKILL.md'), rendered)
+      add(join(directory, 'SKILL.md'), markEntrypoint(rendered))
       const launcher = join(directory, 'scripts/wl.mjs')
       const imported = modulePath(join(directory, 'scripts'), join(artifact, 'bin/wl.mjs'))
       add(

@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-19 · P1-07/P1-13 regression — coinstalled entrypoints are not team guidance
+
+- Reproduce a core regression with actual five-target installation plans: generated wholeloop framing entrypoints compete as frame.template guidance, so the preflight asks the owner to select a copy of the harness. Nested-distribution exclusion alone is insufficient. Preserve genuine repository/user guide precedence instead of selecting a native copy by path order.
+- Append terminal versioned Markdown/TOML routing comments to packaged skills/roles, including source-native Claude overlays. Inventory marked entrypoints with an additive flag and report heuristic exclusions, while keeping explicit slot tags and configured bindings valid. Markers do not prove ownership, executable provenance or native permissions. ADR-0054 records the scope and upgrade boundary.
+- Ignore quoted/fenced/indented marker examples, preserve valid Codex TOML and idempotent application, and bump the discovery fingerprint parser revision so older cached classifications cannot survive the same marked source bytes. Existing remembered explicit choices remain unchanged. Older unchanged owned installs need a normal upgrade, with retained backups, to acquire the marker.
+- Adding a routing line exposed Gemini challenger's exact sixty-line native budget. Render only its tool list compactly through the existing YAML library, preserving tool reductions and native schema. Actual Gemini 0.27.0 static loaders accepted all eight updated agents and seventeen skills with compact headers/routing comments; no model ran.
+- Verify five new cases: combined native inventory/explicit override, marker literals/TOML syntax, real compiled framing after five-client user/project installs, genuine guide selection/ambiguity and valid legacy cache invalidation. The original regression test failed before the fix. Update five native golden snapshots deliberately. Full local check passed 775 tests in 53 files (195.57 seconds), build/smoke, lint/typecheck, generated references/catalogs, 223-file docs, 139-file harness, Markdown and all 35 Mermaid diagrams. Correct an extra documentation blank line before the final Markdown phase.
+- Actual native model discovery/permissions, upgraded personal installations, Linux and other supported Node releases remain owner checks. No actual model/authenticated service call, personal configuration edit or project remote push ran. Continue Antigravity formats/hooks/MCP/scenario implementation after this regression commit.
+
 ## 2026-10-19 · P5-01 Gemini component — native extension, managed overlays and framing fixture
 
 - Add a dedicated Gemini extension renderer with gemini-extension.json, seventeen prefixed skills, eight strict local agents and the checked bundled core/resources. Match the actual 0.27.0 registry, inherit session models and preserve canonical tier hints. Reduce observers to explicit reads/declared web tools, with no shell/write/memory/MCP/delegation route. Keep main-session sequential role handoffs and exact plain-text question fallback when structured ask is unavailable. ADR-0053 records native/version boundaries.

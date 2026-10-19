@@ -1,11 +1,26 @@
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import {
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import { resolveSlot } from '../../../src/discovery/resolve.js'
 import { scan } from '../../../src/discovery/scan.js'
 import { discover, readInventory } from '../../../src/discovery/tree.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
+import { isEntrypoint, markEntrypoint } from '../../../src/harness/entrypoints.js'
+import { manageInstallation } from '../../../src/installation/manage.js'
+import { installationPlan } from '../../../src/installation/plan.js'
+import { canonicalPath } from '../../../src/state/paths.js'
 import { StateStore } from '../../../src/state/store.js'
 import fixtures from '../../fixtures/discovery/repos.json' with { type: 'json' }
 
@@ -92,6 +107,200 @@ describe('repository capability maps', () => {
 })
 
 describe('discovery cache and step bindings', () => {
+  it('invalidates a valid legacy inventory cache even when the marked source bytes are unchanged', () => {
+    const dir = canonicalPath(mkdtempSync(join(tmpdir(), 'wl-entrypoint-cache-')))
+    try {
+      const root = join(dir, 'repo')
+      const home = join(dir, 'home')
+      mkdirSync(root)
+      mkdirSync(home)
+      const skill = join(root, '.agents/skills/frame-problem/SKILL.md')
+      mkdirSync(dirname(skill), { recursive: true })
+      writeFileSync(
+        skill,
+        markEntrypoint('---\nname: frame-problem\ndescription: Framing entrypoint\n---\n# Frame\n'),
+      )
+      const store = new StateStore(join(dir, 'state'))
+      const first = discover(root, store.files, home)
+      expect(first.repo.assets[0]?.entrypoint).toBe(true)
+      const file = `cache/discovery/${readdirSync(store.files.path('cache/discovery'))[0]}`
+      const legacy = JSON.parse(store.files.read(file) ?? '{}')
+      for (const asset of legacy.repo.assets) delete asset.entrypoint
+      const hash = (value: string) => createHash('sha256').update(value).digest('hex')
+      const repo = readInventory(root)
+      const user = readInventory(home, [
+        '.agents/skills',
+        '.claude/skills',
+        '.codex/skills',
+        '.opencode/skills',
+        '.gemini/skills',
+        '.cursor/skills',
+        '.github/skills',
+      ])
+      legacy.fingerprint = hash(
+        JSON.stringify({
+          v: 1,
+          repo: [...repo.files],
+          user: [...user.files],
+          warnings: [...repo.warnings, ...user.warnings],
+        }),
+      )
+      legacy.checksum = hash(JSON.stringify([legacy.repo, legacy.user]))
+      store.files.atomic(file, JSON.stringify(legacy))
+      const current = discover(root, store.files, home)
+      expect(current.cached).toBe(false)
+      expect(current.repo.assets[0]?.entrypoint).toBe(true)
+      expect(resolveSlot('frame.template', current.repo).selected?.origin).toBe('harness')
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+  it('treats markers as routing hints while preserving fenced/quoted examples and explicit slot tags', () => {
+    const marker = '<!-- wholeloop:entrypoint@1 -->'
+    const content = '---\nname: frame-problem\ndescription: Real framing guide\n---\n# Guide\n'
+    const file = '.agents/skills/frame-problem/SKILL.md'
+    expect(isEntrypoint(`${content}\n\`\`\`html\n${marker}\n\`\`\`\n`)).toBe(false)
+    expect(isEntrypoint(`${content}\n    ${marker}\n`)).toBe(false)
+    const marked = markEntrypoint(content)
+    expect(isEntrypoint(marked)).toBe(true)
+    expect(markEntrypoint(marked)).toBe(marked)
+    const map = scan(new Map([[file, marked]]))
+    expect(map.assets[0]?.entrypoint).toBe(true)
+    expect(resolveSlot('frame.template', map).excluded).toContainEqual({
+      ref: file,
+      origin: 'repo',
+      reason: expect.stringContaining('entrypoint'),
+    })
+    const tagged = marked.replace(
+      'description: Real framing guide',
+      'description: Real framing guide\nmetadata:\n  wholeloop.slot: frame.template',
+    )
+    expect(resolveSlot('frame.template', scan(new Map([[file, tagged]]))).selected?.ref).toBe(file)
+    const native = 'name = "wl-reviewer"\ndeveloper_instructions = "Read evidence"\n'
+    expect(isEntrypoint(markEntrypoint(native, 'toml'), 'toml')).toBe(true)
+    expect(
+      isEntrypoint('developer_instructions = """\n# wholeloop:entrypoint@1\n"""\n', 'toml'),
+    ).toBe(false)
+    expect(isEntrypoint('broken = \n# wholeloop:entrypoint@1\n', 'toml')).toBe(false)
+  })
+  it.each(['user', 'project'] as const)(
+    'begins real framing after a five-client %s install and still asks about genuine competing guides',
+    (scope) => {
+      const dir = canonicalPath(mkdtempSync(join(tmpdir(), 'wl-entrypoint-flow-')))
+      try {
+        const root = join(dir, 'repository')
+        const home = join(dir, 'home')
+        mkdirSync(root)
+        mkdirSync(home)
+        const canonical = new Map(
+          [...bundledCanonical()].filter(([path]) =>
+            ['harness/skills/frame-problem/SKILL.md', 'harness/agents/reviewer.md'].includes(path),
+          ),
+        )
+        const context = { root, home, store: join(dir, 'state/wholeloop'), scope, env: {} }
+        const binary = resolve('dist/wl.mjs')
+        manageInstallation('install', {
+          context,
+          targets: ['claude', 'codex', 'opencode', 'copilot', 'gemini'],
+          canonical,
+          core: readFileSync(binary, 'utf8'),
+          version: '0.0.0',
+        })
+        const env: NodeJS.ProcessEnv = {
+          ...process.env,
+          HOME: home,
+          USERPROFILE: home,
+          XDG_CONFIG_HOME: join(home, '.config'),
+          XDG_STATE_HOME: join(dir, 'state'),
+          CODEX_HOME: join(home, '.codex'),
+          CLAUDE_CONFIG_DIR: join(home, '.claude'),
+          OPENCODE_CONFIG_DIR: join(home, '.config/opencode'),
+          COPILOT_HOME: join(home, '.copilot'),
+          GEMINI_CLI_HOME: home,
+        }
+        delete env.WL_WORKSPACE
+        delete env.WL_SUBJECT
+        const begin = (input: string) =>
+          spawnSync(
+            process.execPath,
+            [
+              binary,
+              'step',
+              'begin',
+              'frame-problem',
+              '--input',
+              input,
+              '--owner',
+              'Fixture Owner',
+              '--json',
+            ],
+            { cwd: root, env, encoding: 'utf8', timeout: 15000, maxBuffer: 1048576 },
+          )
+        const first = begin('Find the first synthetic order')
+        expect(first.status, first.stdout + first.stderr).toBe(0)
+        expect(JSON.parse(first.stdout).bindings['frame.template'].selected.origin).toBe('harness')
+        const guide = (tool: string, name: string) => {
+          const path = join(root, tool, 'skills', name, 'SKILL.md')
+          mkdirSync(dirname(path), { recursive: true })
+          writeFileSync(
+            path,
+            `---\nname: ${name}\ndescription: Team framing guide\nmetadata:\n  wholeloop.slot: frame.template\n---\n# Team guide\n`,
+          )
+        }
+        guide('.agents', 'team-frame')
+        const guided = begin('Find the second synthetic order')
+        expect(guided.status, guided.stdout + guided.stderr).toBe(0)
+        expect(JSON.parse(guided.stdout).bindings['frame.template'].selected.ref).toBe(
+          '.agents/skills/team-frame/SKILL.md',
+        )
+        guide('.claude', 'other-frame')
+        const ambiguous = begin('Find the third synthetic order')
+        expect(ambiguous.status).toBe(2)
+        expect(JSON.parse(ambiguous.stdout).questions[0].options).toHaveLength(2)
+      } finally {
+        rmSync(dir, { recursive: true, force: true })
+      }
+    },
+    60000,
+  )
+  it('keeps coinstalled harness entrypoints out of heuristic guidance while retaining explicit repository choices', () => {
+    const root = '/fixture/repository'
+    const context = {
+      root,
+      home: '/fixture/home',
+      store: '/fixture/state',
+      scope: 'project' as const,
+      env: {},
+    }
+    const files = new Map<string, string>()
+    for (const target of ['claude', 'codex', 'opencode', 'copilot', 'gemini']) {
+      const plan = installationPlan(
+        target,
+        context,
+        `${root}/.wholeloop/distribution/${target}`,
+        bundledCanonical(),
+        '#!/usr/bin/env node\nconsole.log("fixture")\n',
+        '0.0.0',
+      )
+      for (const file of plan.files) files.set(relative(root, file.path), file.content)
+    }
+    const map = scan(files)
+    expect(map.problems).toEqual([])
+    const result = resolveSlot('frame.template', map)
+    expect(result.selected?.origin).toBe('harness')
+    expect(result.questions).toEqual([])
+    files.set(
+      '.agents/skills/team-frame/SKILL.md',
+      '---\nname: team-frame\ndescription: Team framing template\nmetadata:\n  wholeloop.slot: frame.template\n---\n# Team guide\n',
+    )
+    expect(resolveSlot('frame.template', scan(files)).selected?.ref).toBe(
+      '.agents/skills/team-frame/SKILL.md',
+    )
+    const explicit = resolveSlot('frame.template', map, {
+      binding: '.claude/skills/wl-frame-problem/SKILL.md',
+    })
+    expect(explicit.selected?.origin).toBe('config')
+  })
   it('ignores packaged native copies and their aliases without hiding installed overlays', () => {
     const dir = mkdtempSync(join(tmpdir(), 'wholeloop-distribution-discovery-'))
     try {

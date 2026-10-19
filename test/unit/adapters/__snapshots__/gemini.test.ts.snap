@@ -7,14 +7,7 @@ exports[`Gemini extension and native overlays > matches the Gemini native golden
 name: wl-reviewer
 description: Observe assigned evidence.
 kind: local
-tools:
-  - read_file
-  - read_many_files
-  - list_directory
-  - glob
-  - search_file_content
-  - google_web_search
-  - web_fetch
+tools: [ read_file, read_many_files, list_directory, glob, search_file_content, google_web_search, web_fetch ]
 ---
 The main session supplies wholeloopRoot from the checked packaged launcher. Read named protocols under wholeloopRoot/resources/protocols/; canonical wl commands mean Node with wholeloopRoot/bin/wl.mjs. If context is missing, return questions instead of guessing PATH. Canonical model tier: deep; inherit the session model.
 
@@ -23,6 +16,7 @@ This observer has no shell, write, memory or MCP tool. Ask the main session for 
 # Review
 
 Report evidence without changing source.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -60,6 +54,7 @@ Use the exact directory of this loaded SKILL.md reported by the client. If unava
 Call wl next --json.
 
 When a structured ask tool is unavailable, show the exact questions/options in plain text and stop for explicit answers. Never manufacture an approval.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -96,7 +91,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "agents/wl-reviewer.md",
       "mode": 420,
-      "sha256": "b5c1e7ed5da5b16d15f72cb9656577b51ec8d853a37516138eeb795618073ace"
+      "sha256": "177120039a0908bd721b0addf11fdadd49be2e5c257c53a290b442e357898408"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -106,7 +101,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "18e54f00999eb2ab83cfd9041ebdcdbe6ad37f7139ff197953c5c36a7e30c303"
+      "sha256": "a70ab248939813c54fdbbbacc2a3ee9a2f192f5f01401a8eed007e070de774f5"
     },
     {
       "path": "skills/wl-next/scripts/wl.mjs",

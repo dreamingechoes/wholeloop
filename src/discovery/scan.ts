@@ -1,6 +1,7 @@
 import { posix } from 'node:path'
 import { parse } from 'yaml'
 import { isObject } from '../config/schema.js'
+import { isEntrypoint } from '../harness/entrypoints.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import { knownSlot } from './rules.js'
 import type { Asset, CapabilityMap } from './types.js'
@@ -130,6 +131,10 @@ export function scan(files: ReadonlyMap<string, string>): CapabilityMap {
           name: typeof metadata?.name === 'string' ? metadata.name : name,
           description: typeof metadata?.description === 'string' ? metadata.description : '',
           slots,
+          ...(['skill', 'agent'].includes(kind) &&
+          isEntrypoint(content, path.endsWith('.toml') ? 'toml' : 'md')
+            ? { entrypoint: true as const }
+            : {}),
         })
         continue
       }

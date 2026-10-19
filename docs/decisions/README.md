@@ -64,6 +64,7 @@
 | [0051](./0051-disposable-conformance-and-explicit-evidence.md) | Disposable conformance and explicit evidence | Accepted | 2026-10-19 |
 | [0052](./0052-generated-reference-checks-in-the-core.md) | Generated reference checks in the core | Accepted | 2026-10-19 |
 | [0053](./0053-gemini-extension-overlays-and-safe-hook-boundary.md) | Gemini extension overlays and safe hook boundary | Accepted | 2026-10-19 |
+| [0054](./0054-entrypoints-are-not-heuristic-repository-guidance.md) | Entrypoints are not heuristic repository guidance | Accepted | 2026-10-19 |
 
 ## Lifecycle
 

@@ -32,6 +32,7 @@ The conductor must supply wholeloopRoot as this plugin's absolute root. Read nam
 
 Read core-invariants.
 Return observed evidence.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -119,6 +120,7 @@ Use shared protocols under \${CLAUDE_PLUGIN_ROOT}/resources/protocols/. When del
 
 Read core-invariants.
 Call \`node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next --json\`.
+<!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
   },
@@ -150,7 +152,7 @@ Call \`node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next --json\`.
     {
       "path": "agents/reviewer.md",
       "mode": 420,
-      "sha256": "57e111bb2ee2e974f58ad9b1a87923fc42b6484206eb70d623d7e300081618e7"
+      "sha256": "55a0afe80854c8cc9e0ba0f5c9adf4eb80a8e9ee39b5defc886be930e8fe9a65"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -160,7 +162,7 @@ Call \`node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next --json\`.
     {
       "path": "skills/next/SKILL.md",
       "mode": 420,
-      "sha256": "d73581c7fdd6cc1a803e51e1ea2849242b7a6b99b4dc202c18f082fb750a18d8"
+      "sha256": "a2fab759d7bf1cbc952240ae090f2f6542fb0231de9188a6e82292ec8a6b07d5"
     },
     {
       "path": ".claude-plugin/plugin.json",

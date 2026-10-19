@@ -45,6 +45,11 @@ store. User roots are resolved at runtime, including CLAUDE_CONFIG_DIR, CODEX_HO
 OPENCODE_CONFIG_DIR, XDG_CONFIG_HOME, COPILOT_HOME and GEMINI_CLI_HOME; ambiguous relative native
 overrides are refused. Inspect [platform layouts](./platforms/README.md#installing).
 
+Packaged entrypoints are inventoried without competing as repository-specific
+slot guidance. Several client installs can coexist without asking which copy of
+the harness should fill frame.template; real conflicting team guides still ask.
+Older unchanged owned output needs an upgrade to receive that routing marker.
+
 Repeated matching installs report already-correct. Upgrades verify old ownership,
 skip unchanged files and retain replaced/removed bytes outside repositories. Edited
 or unowned files, unexpected private-tree contents and unsafe links are preserved
