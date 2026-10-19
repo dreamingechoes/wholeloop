@@ -178,6 +178,28 @@ export function validateProvider(value: unknown): asserts value is Provider {
       (mapping.args !== undefined && !isObject(mapping.args))
     )
       fail(`operations.${operation}`, 'a tool mapping with optional args and guidance')
+    if (operation === 'comms.draft' && isObject(mapping)) {
+      const dangerous = /(?:^|[._:/-])(?:send|sendMessage|postMessage|publish)(?:$|[._:/-])/i
+      const routes = isObject(mapping.args)
+        ? Object.entries(mapping.args)
+            .filter(([key]) =>
+              /^(?:method|action|operation|endpoint|path|url|command|argv)$/i.test(key),
+            )
+            .flatMap(([, value]) =>
+              typeof value === 'string'
+                ? [value]
+                : Array.isArray(value)
+                  ? value.filter((entry): entry is string => typeof entry === 'string')
+                  : [],
+            )
+        : []
+      if (
+        dangerous.test(String(mapping.tool)) ||
+        routes.some((value) => dangerous.test(value)) ||
+        (isObject(mapping.args) && (mapping.args.send === true || mapping.args.draft === false))
+      )
+        fail('operations.comms.draft', 'a draft-only mapping without a sending route')
+    }
     if (
       isObject(mapping) &&
       mapping.guidance !== undefined &&

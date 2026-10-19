@@ -147,6 +147,7 @@ function host(engine: FlowEngine, extra: Partial<BuildHost> = {}): BuildHost {
 }
 
 describe('repository-first build orchestration', () => {
+  // Worktree creation, two full Git gates and private review snapshots exceed unit-test budgets under process contention.
   it.each(['native', 'sequential'] as const)(
     'runs agreed ad-hoc work through both gates in %s mode and preserves the personal checkout',
     async (mode) =>
@@ -198,6 +199,7 @@ describe('repository-first build orchestration', () => {
         ).toHaveLength(0)
         expect(workflow.route(subject).candidates).toEqual([])
       }),
+    10000,
   )
 
   // This integration case intentionally runs three builder attempts and five real Git gate rounds.

@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: launch-pinned-measurements
+    enforcers: [src/launch/measurement.ts#scopeMeasurement, src/launch/contracts.ts#validateLaunchDraft, src/launch/artifacts.ts#launchArtifacts, test/unit/launch/launch.test.ts]
+  - id: launch-draft-boundary
+    enforcers: [src/launch/run.ts#LauncherHost, src/launch/publish.ts#dispatchLaunchArtifact, src/providers/manifest.ts#validateProvider, test/unit/launch/launch.test.ts]
+  - id: launch-once-publication
+    enforcers: [src/launch/publish.ts#launchDeliveries, src/launch/publish.ts#dispatchLaunchArtifact, test/unit/launch/launch.test.ts]
+  - id: launch-guidance-pins
+    enforcers: [src/launch/guidance.ts#launchGuidance, src/launch/workflow.ts#LaunchWorkflow, test/unit/launch/launch.test.ts]
   - id: gate-eval-observations
     enforcers: [src/gates/eval.ts#parseGatePredictions, src/gates/eval.ts#gateEvaluationReport, src/gates/report.ts#gateReport, test/unit/gates/eval.test.ts]
   - id: environment-traceable-undo

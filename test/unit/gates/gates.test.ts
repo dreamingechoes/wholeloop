@@ -178,6 +178,7 @@ describe('journaled bounded gate rounds', () => {
       }),
   )
 
+  // Three rounds submit every unit and refutation through real Git; this is an integration budget, not a timing assertion.
   it.each(['correctness', 'security'])(
     'keeps fail-safe %s findings when a verifier is silent or uncertain',
     (lens) =>
@@ -197,6 +198,7 @@ describe('journaled bounded gate rounds', () => {
         for (let slot = 1; slot <= 3; slot++) refute(workflow, third, `${lens}:unsafe-null`, slot)
         expect(workflow.verdict(subject, 'review').verdict).toBe('PASS')
       }),
+    10000,
   )
 
   it('exhausts with missing workers, refuses budget resets and extends only by explicit request', () =>

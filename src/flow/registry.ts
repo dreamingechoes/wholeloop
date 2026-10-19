@@ -74,6 +74,7 @@ export const STEPS: readonly Step[] = Object.freeze(
         'verify-works',
         'review-code',
         'open-pr',
+        'prepare-launch',
       ].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
@@ -105,9 +106,18 @@ export const STEPS: readonly Step[] = Object.freeze(
                       ? ['Rubric', 'Diff', 'Findings', 'Verdict']
                       : name === 'open-pr'
                         ? ['Pull request', 'Human testing', 'Links', 'Environment', 'Next']
-                        : name === 'research'
-                          ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-                          : [],
+                        : name === 'prepare-launch'
+                          ? [
+                              'Measurement plan',
+                              'Rollout plan',
+                              'Comms drafts',
+                              'Dashboards',
+                              'Enablement',
+                              'Handoffs',
+                            ]
+                          : name === 'research'
+                            ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+                            : [],
       ),
     }),
   ),

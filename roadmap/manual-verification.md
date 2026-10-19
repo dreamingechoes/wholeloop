@@ -4,6 +4,17 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## prepare-launch and real no-send isolation (P4-01)
+
+- [ ] Complete the adapter test for every target CLI once P1 adapters/conformance are available: inspect the launcher's actual tool set and prove sending tools are unavailable. Canonical read-only metadata and synthetic typed hosts do not satisfy this acceptance criterion.
+- [ ] Validate actual repository voice/template use and scope-pinned measurement ownership with a real launcher. Inspect semantic correctness of drafts, stage/audience coverage and original metric queries/targets/windows.
+- [ ] Authenticate draft/create providers in disposable projects and confirm actual remote unsent drafts, metric-linked dashboards and enablement docs. Known-route checks cannot prove opaque tool/server semantics; inspect real permissions and responses.
+- [ ] Interrupt after remote creation, inspect the retained intent and actual remote artifact, and reconcile manually before any further write. There is no blind retry of an ambiguous/pending launch publication.
+- [ ] Confirm actual merged work and current flag state before exposure. Preparing a kit deliberately does not claim either observation; no send or flag change was exercised locally.
+- [ ] Run the relevant process/CLI checks on supported Linux/Node versions. Local execution remains macOS/Node 24; provider/launcher workers were synthetic.
+
+The adapter criterion stays unchecked; it does not block dependent local rollout work.
+
 ## Gate evaluation and real model calibration (P3-10)
 
 - [ ] Review each labelled contract, defect and look-alike with actual repository standards. These are original authored snippets, not executed production regressions; case-level finding presence does not prove finding-level semantic precision.

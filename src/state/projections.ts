@@ -1,6 +1,9 @@
 import { stringify } from 'yaml'
 import { environmentEntries, environmentReceipt } from '../environment/ledger.js'
 import { gateRuns } from '../gates/state.js'
+import { launchArtifacts } from '../launch/artifacts.js'
+import { launchRuns } from '../launch/contracts.js'
+import { launchDeliveries } from '../launch/publish.js'
 import { pullRequestPlans } from '../pull-requests/contracts.js'
 import { reviewInputs } from '../review/state.js'
 import { verificationRuns } from '../verification/state.js'
@@ -44,6 +47,18 @@ export function projections(
     }
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
+  }
+  for (const delivery of launchDeliveries(events))
+    files.set(
+      `items/${delivery.subject}/launches/${delivery.run}/dispatches/${delivery.key}.json`,
+      `${JSON.stringify(delivery, null, 2)}\n`,
+    )
+  for (const launch of launchRuns(events)) {
+    const root = `items/${launch.subject}/launches/${launch.plan.run}`
+    files.set(`${root}/plan.json`, `${JSON.stringify(launch.plan, null, 2)}\n`)
+    files.set(`${root}/measurement.json`, `${JSON.stringify(launch.plan.source.plan, null, 2)}\n`)
+    for (const artifact of launchArtifacts(events, launch.subject, launch.plan.run))
+      files.set(artifact.path, `${artifact.body}\n`)
   }
   for (const plan of pullRequestPlans(events))
     files.set(

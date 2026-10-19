@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'launch begin',
+    arguments: '[<description>]',
+    options: ['--for <id>', '--owner <person>', '--measurement <file>'],
+    schema: 'wholeloop/launch-begin@1',
+    summary: 'Pin launch measurements and repository voice before drafting',
+  },
+  {
+    path: 'launch complete',
+    arguments: '',
+    options: ['--for <id>', '--file <file>'],
+    schema: 'wholeloop/launch-complete@1',
+    summary: 'Store a validated launch kit with metric-linked dashboard specs',
+  },
+  {
+    path: 'launch report',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/launch-report@1',
+    summary: 'Show local artifacts and explicit provider draft/create handoffs',
+  },
+  {
+    path: 'launch schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/launch-schema@1',
+    summary: 'Print measurement and launch draft input contracts',
+  },
+  {
     path: 'env declare',
     arguments: '',
     options: ['--for <id>', '--file <file>'],

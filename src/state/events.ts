@@ -11,6 +11,8 @@ import { STEP_NAMES, type StepName } from '../flow/registry.js'
 import { type FrameOutcome, validateFrameOutcome } from '../framing/contract.js'
 import type { GateEventData } from '../gates/contracts.js'
 import { gateRuns, validGateData } from '../gates/state.js'
+import { type LaunchEventData, launchRuns, validLaunchData } from '../launch/contracts.js'
+import { launchDeliveries } from '../launch/publish.js'
 import {
   type PullRequestEventData,
   pullRequestPlans,
@@ -83,6 +85,7 @@ export type EventData =
   | ReviewEventData
   | PullRequestEventData
   | EnvironmentEventData
+  | LaunchEventData
   | {
       type: 'slice.defined'
       data: {
@@ -192,6 +195,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('launch.')) return validLaunchData(type, data)
   if (type.startsWith('env.')) return validEnvironmentData(type, data)
   if (type.startsWith('pr.')) return validPullRequestData(type, data)
   if (type.startsWith('review.')) return validReviewData(type, data)
@@ -562,5 +566,7 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   reviewInputs(events)
   pullRequestPlans(events)
   environmentDeclarations(events)
+  launchRuns(events)
+  launchDeliveries(events)
   return items
 }

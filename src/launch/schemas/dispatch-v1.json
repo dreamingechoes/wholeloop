@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/launch-dispatch@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "launch.dispatch-planned": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "type": "string",
+          "enum": ["comms.draft", "dashboards.create", "docs.create"]
+        },
+        "bodyDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": ["run", "key", "provider", "operation", "bodyDigest"]
+    },
+    "launch.dispatch-finished": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["succeeded", "pending"]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["status", "ref"]
+        }
+      },
+      "required": ["run", "key", "result"]
+    }
+  },
+  "required": ["launch.dispatch-planned", "launch.dispatch-finished"]
+}

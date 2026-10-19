@@ -6,7 +6,7 @@
 
 ## P4-01 · `prepare-launch` and the `launcher`
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P3-07
+**Status:** ⏸️ · **Size:** L · **Depends on:** P3-07
 
 **Goal** — Everything a launch needs, drafted and ready, nothing sent.
 
@@ -15,7 +15,14 @@
 **Acceptance criteria:**
 
 - [ ] The `launcher` has no tool able to send a message (adapter test per CLI).
-- [ ] Each dashboard links back to the measurement-plan entry it implements.
+- [x] Each dashboard links back to the measurement-plan entry it implements.
+
+**Local implementation:** complete and fixture-tested. The core pins measurement
+revisions, loads repository voice/templates, stores complete kits and dispatches
+only explicit draft/create requests through a separate conductor host boundary.
+Per-CLI adapter denial tests remain pending with P1 adapters/conformance; canonical
+read-only metadata and synthetic hosts are not substitutes. This manual/client
+criterion does not block dependent local rollout implementation.
 
 **Docs** — flow/rollout/prepare-launch.
 

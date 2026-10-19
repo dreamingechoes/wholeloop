@@ -942,7 +942,7 @@ exports[`step begin contracts > open-pr: standalone empty, standalone input and 
 exports[`step begin contracts > prepare-launch: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1000,10 +1000,17 @@ exports[`step begin contracts > prepare-launch: standalone empty, standalone inp
     "schema": "wholeloop/step-begin@1",
     "step": "prepare-launch",
     "subject": null,
-    "template": null,
+    "template": [
+      "Measurement plan",
+      "Rollout plan",
+      "Comms drafts",
+      "Dashboards",
+      "Enablement",
+      "Handoffs",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1035,10 +1042,17 @@ exports[`step begin contracts > prepare-launch: standalone empty, standalone inp
     "schema": "wholeloop/step-begin@1",
     "step": "prepare-launch",
     "subject": null,
-    "template": null,
+    "template": [
+      "Measurement plan",
+      "Rollout plan",
+      "Comms drafts",
+      "Dashboards",
+      "Enablement",
+      "Handoffs",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1073,7 +1087,14 @@ exports[`step begin contracts > prepare-launch: standalone empty, standalone inp
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Measurement plan",
+      "Rollout plan",
+      "Comms drafts",
+      "Dashboards",
+      "Enablement",
+      "Handoffs",
+    ],
   },
 ]
 `;

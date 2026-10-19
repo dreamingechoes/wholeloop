@@ -1047,6 +1047,38 @@
         }
       },
       "required": ["schema", "corpusSha256", "cases"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/launch-begin@1"
+        }
+      },
+      "required": ["schema", "status"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/launch-complete@1"
+        }
+      },
+      "required": ["schema", "publication"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/launch-report@1"
+        }
+      },
+      "required": ["schema", "publication"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/launch-schema@1"
+        }
+      },
+      "required": ["schema", "measurement"]
     }
   ],
   "$defs": {

@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-19 · P4-01 — local launch kits complete; adapter isolation pending
+
+- Add launch begin/complete/report/schema, a read-only launcher role/skill and typed drafting workflow. Ask missing standalone facts/measurements before mutation; create no fake Define/merge history. Load/pin actual comms.voice and launch.templates and supply effective profile instructions. Source scope measurements through the exact cut-scopes/spec revision, selecting owned metrics rather than the latest unrelated spec.
+- Validate complete stage/metric coverage and reject invented metrics/query fields or fabricated receipts. Generate rollout/comms/support/one-pager/runbook artifacts and exact-metric dashboard specs with resolvable JSON pointers into the external measurement projection. Rebuild source/kit/delivery projections and retain local handoffs when providers are absent. ADR-0038 records revision, capability and observation boundaries.
+- Keep provider invocation outside the launcher interface. The conductor SDK dispatches only comms.draft, dashboards.create and docs.create after a completed kit, journaling intent first, caching receipts and preserving ambiguous outcomes. Successful comms need explicit unsent-draft evidence. Reject recognized sending tool/routes and static send=true/draft=false mappings. Do not claim merge/flag readiness, and keep ambiguous send state unknown. No actual model, provider, message or flag operation ran.
+- Verify twelve new local cases for loaded guidance, complete kits, exact dashboard provenance, rebuild/cache, measurement unknowns/exceptions, source revision/override rejection, stop behavior, draft/create dispatch, ambiguous outcomes, known sending routes and compiled CLI. The first full run had three five-second integration timeouts; the four affected cases passed serially. Give only the two-round Build table and three-round fail-safe table explicit ten-second integration budgets, retaining the general five-second limit and all assertions. Final local check: 505 tests in 37 files plus build, smoke, lint, typecheck, generated docs/catalogs, harness, Markdown and Mermaid passed. Final docs/harness checks passed after the new role/skill/ADR.
+- Park P4-01 only for its real per-CLI adapter no-send acceptance criterion; it stays unchecked until P1 adapters/conformance can execute. Canonical metadata and synthetic hosts do not establish live isolation or server semantics. Authenticated drafting/publication, interruption reconciliation and real readiness remain owner checks. Continue dependent local rollout work without waiting for that manual criterion.
+
+---
+
 ## 2026-10-19 · P3-10 — per-lens evaluation before and after refutation
 
 - Add twenty-four original labelled snippets: two defects and two look-alike negatives per built-in lens under explicit contracts/repository standards. Pin metadata, labels and exact source bytes to seed gate-v1-2026-10-19, digest 67c02ee9f3d68fd43997cf15d6c4e16750298b14ddaeb4979405b92d6ca2d52b. Export blind inputs with opaque IDs, questions and source only, ordered by ID rather than labelled filenames.

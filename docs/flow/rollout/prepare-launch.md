@@ -3,7 +3,7 @@
 > **TL;DR** — Turns a merged scope into a launch kit: a rollout plan, announcement drafts for every audience, dashboards built from the spec's measurement plan, and enablement material for the people who will answer questions about it. Everything is prepared; nothing is sent. A person reads, adjusts and sends.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P4-01](../../../roadmap/phase-4-rollout-learn.md#p4-01--prepare-launch-and-the-launcher).
+> **Status: 🚧 partial.** The local/core implementation includes pinned measurement inputs, loaded voice/templates, a read-only drafting host, complete local kits, exact-metric dashboard specs, handoffs and an intent-journaled draft/create publication boundary. Real per-CLI adapter no-send tests remain pending with P1 adapters/conformance; synthetic hosts do not satisfy that criterion. Authenticated provider execution and merge/flag observations remain owner verification. Tracked in [P4-01](../../../roadmap/phase-4-rollout-learn.md#p4-01--prepare-launch-and-the-launcher).
 
 ---
 
@@ -52,6 +52,27 @@ flowchart TD
 ## Standalone use
 
 Give it a description of what is shipping ("CSV export for the orders list, flag `orders_csv_export`, live next Tuesday") and it builds the same kit. Without a measurement plan it asks which two or three numbers tell you the launch went well, and where they live — it never picks metrics for you.
+
+The core commands are `wl launch begin --for <scope> --json`, `launch complete
+--for <id> --file <kit.json>`, `launch report --for <id>` and `launch schema`.
+Standalone entry supplies a description, --owner and --measurement. The core asks
+for missing success criteria rather than inventing measurement numbers or merge
+history. The source is the scope's exact cut-scopes/spec revision, with owned
+metric selection; invocation flags cannot replace it.
+
+The launcher receives actual voice/template content and profile instructions,
+without publication methods. Completion writes rollout/comms/enablement artifacts
+and dashboard specs outside the repository. Each dashboard carries an exact
+metricRef into its stored measurement.json, retaining query/unit/baseline/target/
+window and original revision. No chart values are inferred during drafting.
+
+`dispatchLaunchArtifact` is an explicit conductor SDK boundary for the three
+allowed draft/create operations. Its intent precedes the host call, completed
+results are cached and ambiguous outcomes stay retained for inspection. A comms
+success needs an explicit unsent draft observation. Known sending routes and
+send=true/draft=false mappings are rejected; real client permissions and opaque
+server semantics still require conformance. Missing providers return the complete
+local artifact for manual use. See [ADR-0038](../../decisions/0038-pinned-launch-kits-and-separate-publication-capabilities.md).
 
 ## Run it
 

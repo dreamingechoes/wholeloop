@@ -18,6 +18,8 @@ import {
   framingMatches,
   validateFrameOutcome,
 } from '../framing/contract.js'
+import { launchReceipt } from '../launch/artifacts.js'
+import { LaunchWorkflow } from '../launch/workflow.js'
 import { publicationPlan } from '../providers/publication.js'
 import { pullRequestReceipt } from '../pull-requests/workflow.js'
 import { researchBrief } from '../research/report.js'
@@ -408,6 +410,7 @@ export class FlowEngine {
     if (outcome && name !== 'frame-problem')
       throw new CliError('Framing outcomes apply only to frame-problem')
     if (outcome) validateFrameOutcome(outcome)
+    if (name === 'prepare-launch') new LaunchWorkflow(this).context(subject)
     let sections: readonly string[] = step.sections
     if (name === 'write-spec') {
       const configuration = this.config()
@@ -454,6 +457,11 @@ export class FlowEngine {
         throw new CliError(
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
+        )
+      if (name === 'prepare-launch' && content !== launchReceipt(events, subject, run))
+        throw new CliError(
+          'Complete launch preparation through its pinned kit receipt',
+          EXIT.precondition,
         )
       if (name === 'open-pr' && content !== pullRequestReceipt(events, subject))
         throw new CliError(
