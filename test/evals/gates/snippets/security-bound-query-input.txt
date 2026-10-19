@@ -1,0 +1,4 @@
+Trust boundary: request.search is untrusted. The driver binds positional parameters and does not interpolate them.
+async function search(request, db) {
+  return db.query('SELECT id FROM orders WHERE name = $1', [request.search]);
+}

@@ -1,0 +1,5 @@
+Input may contain 10000 IDs. The batch API returns the requested rows.
+async function index(ids, db) {
+  const rows = await db.readOrders(ids);
+  return new Map(rows.map(row => [row.id, row]));
+}

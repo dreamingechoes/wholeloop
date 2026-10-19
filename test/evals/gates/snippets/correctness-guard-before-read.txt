@@ -1,0 +1,5 @@
+Contract: missing accounts return null; present account names are strings.
+function label(account) {
+  if (account === null) return null;
+  return account.name.toLowerCase();
+}

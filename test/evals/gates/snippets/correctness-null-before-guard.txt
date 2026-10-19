@@ -1,0 +1,6 @@
+Contract: missing accounts return null. The repository has no implicit null-object conversion.
+function label(account) {
+  const text = account.name.toLowerCase();
+  if (account === null) return null;
+  return text;
+}

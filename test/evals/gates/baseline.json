@@ -1,0 +1,477 @@
+{
+  "schema": "wholeloop/gate-eval@1",
+  "seed": "gate-v1-2026-10-19",
+  "corpusSha256": "67c02ee9f3d68fd43997cf15d6c4e16750298b14ddaeb4979405b92d6ca2d52b",
+  "policySha256": "78d18a0468d8e1986a89ef70217e82ec15b5047f21329b09780b3ae910245647",
+  "evaluator": "synthetic-gate-arithmetic@1",
+  "provenance": "synthetic",
+  "verifiers": 3,
+  "cases": 24,
+  "lenses": [
+    {
+      "lens": "correctness",
+      "before": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 1,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 0.5,
+        "falseAlarmRate": 0.5,
+        "coverage": 1
+      },
+      "after": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 1,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 0.5,
+        "falseAlarmRate": 0.5,
+        "coverage": 1
+      }
+    },
+    {
+      "lens": "design-fit",
+      "before": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 1,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 0.5,
+        "falseAlarmRate": 0.5,
+        "coverage": 1
+      },
+      "after": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 2,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 1,
+        "falseAlarmRate": 0,
+        "coverage": 1
+      }
+    },
+    {
+      "lens": "performance",
+      "before": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 1,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 0.5,
+        "falseAlarmRate": 0.5,
+        "coverage": 1
+      },
+      "after": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 2,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 1,
+        "falseAlarmRate": 0,
+        "coverage": 1
+      }
+    },
+    {
+      "lens": "security",
+      "before": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 1,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 0.5,
+        "falseAlarmRate": 0.5,
+        "coverage": 1
+      },
+      "after": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 1,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 0.5,
+        "falseAlarmRate": 0.5,
+        "coverage": 1
+      }
+    },
+    {
+      "lens": "simplicity",
+      "before": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 1,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 0.5,
+        "falseAlarmRate": 0.5,
+        "coverage": 1
+      },
+      "after": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 2,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 1,
+        "falseAlarmRate": 0,
+        "coverage": 1
+      }
+    },
+    {
+      "lens": "change-shape",
+      "before": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 1,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 0.5,
+        "falseAlarmRate": 0.5,
+        "coverage": 1
+      },
+      "after": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 2,
+        "fn": 1,
+        "unknown": 0,
+        "recall": 0.5,
+        "precision": 1,
+        "falseAlarmRate": 0,
+        "coverage": 1
+      }
+    }
+  ],
+  "totals": {
+    "before": {
+      "tp": 6,
+      "fp": 6,
+      "tn": 6,
+      "fn": 6,
+      "unknown": 0,
+      "recall": 0.5,
+      "precision": 0.5,
+      "falseAlarmRate": 0.5,
+      "coverage": 1
+    },
+    "after": {
+      "tp": 6,
+      "fp": 2,
+      "tn": 10,
+      "fn": 6,
+      "unknown": 0,
+      "recall": 0.5,
+      "precision": 0.75,
+      "falseAlarmRate": 0.16666666666666666,
+      "coverage": 1
+    }
+  },
+  "verificationCoverage": 1,
+  "outcomes": [
+    {
+      "case": "case-ec54a0c6b149",
+      "lens": "correctness",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "kept": ["correctness:finding"],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-8db24935fedc",
+      "lens": "correctness",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-f97a1a84b65f",
+      "lens": "correctness",
+      "expected": false,
+      "before": true,
+      "after": true,
+      "kept": ["correctness:finding"],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-ae570ae41733",
+      "lens": "correctness",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-cfa90e4dea5b",
+      "lens": "design-fit",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "kept": ["design-fit:finding"],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-2f847bad512e",
+      "lens": "design-fit",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-6034969ab022",
+      "lens": "design-fit",
+      "expected": false,
+      "before": true,
+      "after": false,
+      "kept": [],
+      "dropped": ["design-fit:finding"],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-56d8fb48f0bd",
+      "lens": "design-fit",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-26fa56839119",
+      "lens": "performance",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "kept": ["performance:finding"],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-c2ca7aa9ae11",
+      "lens": "performance",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-392a8c4fb085",
+      "lens": "performance",
+      "expected": false,
+      "before": true,
+      "after": false,
+      "kept": [],
+      "dropped": ["performance:finding"],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-1920586d6740",
+      "lens": "performance",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-cd204fb3c22b",
+      "lens": "security",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "kept": ["security:finding"],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-8712c8434c13",
+      "lens": "security",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-facce28256b6",
+      "lens": "security",
+      "expected": false,
+      "before": true,
+      "after": true,
+      "kept": ["security:finding"],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-ac19c9317091",
+      "lens": "security",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-6ce0afdcafc5",
+      "lens": "simplicity",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "kept": ["simplicity:finding"],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-0b16ff284eb3",
+      "lens": "simplicity",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-74aa31428588",
+      "lens": "simplicity",
+      "expected": false,
+      "before": true,
+      "after": false,
+      "kept": [],
+      "dropped": ["simplicity:finding"],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-969f1e4d21e6",
+      "lens": "simplicity",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-02a91bd6f039",
+      "lens": "change-shape",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "kept": ["change-shape:finding"],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-3b13c058a5f7",
+      "lens": "change-shape",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    },
+    {
+      "case": "case-fea858b3070e",
+      "lens": "change-shape",
+      "expected": false,
+      "before": true,
+      "after": false,
+      "kept": [],
+      "dropped": ["change-shape:finding"],
+      "missing": [],
+      "verifierResponses": 3,
+      "verifierAssignments": 3
+    },
+    {
+      "case": "case-9c1f96ade16f",
+      "lens": "change-shape",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "kept": [],
+      "dropped": [],
+      "missing": [],
+      "verifierResponses": 0,
+      "verifierAssignments": 0
+    }
+  ]
+}

@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-10-19 · P3-10 — per-lens evaluation before and after refutation
+
+- Add twenty-four original labelled snippets: two defects and two look-alike negatives per built-in lens under explicit contracts/repository standards. Pin metadata, labels and exact source bytes to seed gate-v1-2026-10-19, digest 67c02ee9f3d68fd43997cf15d6c4e16750298b14ddaeb4979405b92d6ca2d52b. Export blind inputs with opaque IDs, questions and source only, ordered by ID rather than labelled filenames.
+- Add eval gates and npm run eval:gates. Require complete explicit observations, evaluator/provenance, exact digest and supported quorum; reuse the runtime result/vote validators and gateReport arithmetic. Missing cases, duplicate/unassigned slots, wrong lenses and changed seeds fail. Unavailable responses stay unknown, do not become confusion negatives and carry coverage; zero denominators remain null. ADR-0037 records the case-level/semantic limits.
+- Record synthetic-gate-arithmetic@1 honestly: before TP 6 / FP 6 / TN 6 / FN 6, after TP 6 / FP 2 / TN 10 / FN 6. Recall stays 0.5; false-alarm rate changes from 0.5 to 1/6. Correctness/security retain the cautious false alarm because one verifier disagrees. These are controlled arithmetic fixtures, not model-quality or population estimates; no model or snippet executed.
+- Verify eight new cases for baseline reproduction, independent before/after counts, unknown coverage, harmful unanimous refutations, larger quorums/silence, malformed predictions, blind exports, byte/label/path binding and byte-identical compiled CLI reports. Local check: 493 tests in 36 files plus build, smoke, lint, typecheck, generated docs/catalogs, harness, Markdown and Mermaid passed; final docs/harness checks passed after the new guide/ADR/protocol. Real blind workers, independent sessions, semantic label/finding matching and workload calibration remain owner verification and do not block subsequent local workflows.
+
+---
+
 ## 2026-10-19 · P3-09 — declarative environment effects and undo receipts
 
 - Add env declare/report with versioned immutable item/key declarations, explicit resource/effect/person and literal undo argv/cwd. Normalize cwd at runtime, preserve empty arguments/spaces, bound inputs and reject common credential-bearing flags/shapes/URLs without echoing values. Repeated semantically identical declarations are idempotent; conflicting keys roll back.

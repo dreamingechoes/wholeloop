@@ -1,0 +1,6 @@
+Input may contain 10000 order IDs. db.readOrders(ids) is the supported single-round-trip API.
+async function list(ids, db) {
+  const rows = [];
+  for (const id of ids) rows.push(await db.readOrder(id));
+  return rows;
+}

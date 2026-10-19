@@ -1,0 +1,4 @@
+Input may contain 100000 rows. A single mutable local map is allowed and does not escape until return.
+function index(rows) {
+  return rows.reduce((all, row) => ({ ...all, [row.id]: row }), {});
+}

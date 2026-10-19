@@ -47,6 +47,7 @@
 | [0034](./0034-private-incremental-review-inputs-and-pinned-rubrics.md) | Private incremental review inputs and pinned rubrics | Accepted | 2026-10-19 |
 | [0035](./0035-tested-draft-plans-and-once-only-publication.md) | Tested draft plans and once-only publication | Accepted | 2026-10-19 |
 | [0036](./0036-declarative-environment-undo-ledger.md) | Declarative environment undo ledger | Accepted | 2026-10-19 |
+| [0037](./0037-gate-evaluation-observations-and-refutation-matrices.md) | Gate evaluation observations and refutation matrices | Accepted | 2026-10-19 |
 
 ## Lifecycle
 

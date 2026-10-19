@@ -1,0 +1,6 @@
+Contract: missing accounts, suspended accounts and active accounts produce three distinct responses.
+function access(account) {
+  if (!account) return 'missing';
+  if (account.suspended) return 'suspended';
+  return 'active';
+}

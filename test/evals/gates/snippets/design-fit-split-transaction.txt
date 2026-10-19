@@ -1,0 +1,5 @@
+Repository rule: order insertion and inventory reservation must commit in one UnitOfWork.
+async function place(order, db) {
+  await db.orders.insert(order);
+  await db.inventory.reserve(order.lines);
+}

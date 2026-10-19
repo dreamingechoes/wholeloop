@@ -1,0 +1,3 @@
+Agreed outcome: reject empty order input. No billing behavior is in scope.
+orders/handler.ts: add an empty-input guard returning 400.
+billing/config.ts: change automaticRefunds from false to true.

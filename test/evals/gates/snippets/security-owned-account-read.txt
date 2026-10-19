@@ -1,0 +1,5 @@
+Contract: authentication establishes user.accountId. External accountId input is ignored by this endpoint.
+async function account(request, db) {
+  requireAuthenticated(request.user);
+  return db.accounts.read(request.user.accountId);
+}

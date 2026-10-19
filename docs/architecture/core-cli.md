@@ -54,6 +54,7 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 | `wl slices plan` | `wholeloop/slices-plan@1` | Suggest vertical work and expose inherited acceptance criteria |
 | `wl slices check <file>` | `wholeloop/slices-check@1` | Validate slice outcomes tests repositories and dependencies |
 | `wl slices schema` | `wholeloop/slices-schema@1` | Print the versioned slice plan schema |
+| `wl eval gates <corpus>` | `wholeloop/gate-eval@1` | Measure each review lens before and after active refutations |
 | `wl eval definitions <corpus>` | `wholeloop/definition-eval@1` | Measure labelled definition defects and false alarms |
 | `wl challenge plan <problem\|spec\|criteria\|scopes\|slicing>` | `wholeloop/challenge-plan@1` | Lint a definition and render fixed challenger coverage |
 | `wl challenge schema` | `wholeloop/challenge-schema@1` | Print the standalone criteria metadata schema |

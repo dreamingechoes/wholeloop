@@ -1,0 +1,4 @@
+Contract: run these three independent health probes. All are required; measured total is below the budget.
+async function health(probes) {
+  return Promise.all([probes.database(), probes.cache(), probes.queue()]);
+}

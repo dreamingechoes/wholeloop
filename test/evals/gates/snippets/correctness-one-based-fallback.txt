@@ -1,0 +1,4 @@
+Contract: page indices are one-based. Missing or zero input selects the first page.
+function selectedPage(input) {
+  return Number(input) || 1;
+}

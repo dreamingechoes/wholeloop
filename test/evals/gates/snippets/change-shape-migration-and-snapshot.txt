@@ -1,0 +1,3 @@
+Agreed outcome: add a nullable delivery note. Repository policy requires migration plus generated schema snapshot.
+db/migrations/add-delivery-note.sql: add the nullable column.
+db/schema.snapshot.json: regenerate the schema metadata for that column.

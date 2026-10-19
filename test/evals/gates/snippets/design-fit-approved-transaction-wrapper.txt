@@ -1,0 +1,7 @@
+Repository rule: orderWriter.run supplies a transaction-scoped writer.
+async function place(order, orderWriter) {
+  return orderWriter.run(async tx => {
+    await tx.orders.insert(order);
+    await tx.inventory.reserve(order.lines);
+  });
+}

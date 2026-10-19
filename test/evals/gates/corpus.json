@@ -1,0 +1,174 @@
+{
+  "schema": "wholeloop/gate-corpus@1",
+  "seed": "gate-v1-2026-10-19",
+  "cases": [
+    {
+      "id": "case-ec54a0c6b149",
+      "lens": "correctness",
+      "artifact": "snippets/correctness-null-before-guard.txt",
+      "defect": true,
+      "why": "The nullable account is dereferenced before its guard, so missing accounts throw."
+    },
+    {
+      "id": "case-8db24935fedc",
+      "lens": "correctness",
+      "artifact": "snippets/correctness-zero-page-lost.txt",
+      "defect": true,
+      "why": "Page zero is valid but the truthiness fallback silently selects page one."
+    },
+    {
+      "id": "case-f97a1a84b65f",
+      "lens": "correctness",
+      "artifact": "snippets/correctness-guard-before-read.txt",
+      "defect": false,
+      "why": "The nullable input is rejected before access; the alleged null dereference is unreachable."
+    },
+    {
+      "id": "case-ae570ae41733",
+      "lens": "correctness",
+      "artifact": "snippets/correctness-one-based-fallback.txt",
+      "defect": false,
+      "why": "Zero is invalid under this explicit one-based contract, so falling back to one is intended."
+    },
+    {
+      "id": "case-cfa90e4dea5b",
+      "lens": "design-fit",
+      "artifact": "snippets/design-fit-split-transaction.txt",
+      "defect": true,
+      "why": "The repository requires one UnitOfWork for these related writes; independent calls can leave partial state."
+    },
+    {
+      "id": "case-2f847bad512e",
+      "lens": "design-fit",
+      "artifact": "snippets/design-fit-core-imports-adapter.txt",
+      "defect": true,
+      "why": "The pure pricing core imports storage directly, violating the documented injected-rate boundary."
+    },
+    {
+      "id": "case-6034969ab022",
+      "lens": "design-fit",
+      "artifact": "snippets/design-fit-approved-transaction-wrapper.txt",
+      "defect": false,
+      "why": "The injected writer is the approved transactional boundary; its two operations share the same transaction."
+    },
+    {
+      "id": "case-56d8fb48f0bd",
+      "lens": "design-fit",
+      "artifact": "snippets/design-fit-pure-injected-rate.txt",
+      "defect": false,
+      "why": "The pricing function follows the repository boundary by consuming rates as an argument."
+    },
+    {
+      "id": "case-26fa56839119",
+      "lens": "performance",
+      "artifact": "snippets/performance-query-per-row.txt",
+      "defect": true,
+      "why": "An unbounded per-order query creates thousands of round trips where the repository exposes one batch read."
+    },
+    {
+      "id": "case-c2ca7aa9ae11",
+      "lens": "performance",
+      "artifact": "snippets/performance-quadratic-copy.txt",
+      "defect": true,
+      "why": "Copying every accumulated property for each input row makes the unbounded index build quadratic."
+    },
+    {
+      "id": "case-392a8c4fb085",
+      "lens": "performance",
+      "artifact": "snippets/performance-bounded-health-probes.txt",
+      "defect": false,
+      "why": "Exactly three independently required probes meet the stated budget; the loop is not input-sized or an N+1."
+    },
+    {
+      "id": "case-1920586d6740",
+      "lens": "performance",
+      "artifact": "snippets/performance-batch-index.txt",
+      "defect": false,
+      "why": "One batch read and a linear local map avoid per-row I/O and repeated accumulator copies."
+    },
+    {
+      "id": "case-cd204fb3c22b",
+      "lens": "security",
+      "artifact": "snippets/security-missing-owner-check.txt",
+      "defect": true,
+      "why": "An authenticated requester can read another account by supplying its identifier; no ownership check occurs."
+    },
+    {
+      "id": "case-8712c8434c13",
+      "lens": "security",
+      "artifact": "snippets/security-sql-concatenation.txt",
+      "defect": true,
+      "why": "User-controlled search text reaches SQL syntax without parameter binding."
+    },
+    {
+      "id": "case-facce28256b6",
+      "lens": "security",
+      "artifact": "snippets/security-bound-query-input.txt",
+      "defect": false,
+      "why": "The external value is bound as data; the query text remains constant."
+    },
+    {
+      "id": "case-ac19c9317091",
+      "lens": "security",
+      "artifact": "snippets/security-owned-account-read.txt",
+      "defect": false,
+      "why": "The lookup uses the authenticated identity rather than an external account identifier."
+    },
+    {
+      "id": "case-6ce0afdcafc5",
+      "lens": "simplicity",
+      "artifact": "snippets/simplicity-duplicate-validation-engine.txt",
+      "defect": true,
+      "why": "A second configurable parsing engine duplicates the existing shared validator with no required behavioral difference."
+    },
+    {
+      "id": "case-0b16ff284eb3",
+      "lens": "simplicity",
+      "artifact": "snippets/simplicity-redundant-mode-tree.txt",
+      "defect": true,
+      "why": "Four nested identical return branches obscure a condition already represented by enabled."
+    },
+    {
+      "id": "case-74aa31428588",
+      "lens": "simplicity",
+      "artifact": "snippets/simplicity-required-domain-branches.txt",
+      "defect": false,
+      "why": "The explicit branches own distinct contract outcomes; flattening them to one boolean would lose behavior."
+    },
+    {
+      "id": "case-969f1e4d21e6",
+      "lens": "simplicity",
+      "artifact": "snippets/simplicity-shared-validator-use.txt",
+      "defect": false,
+      "why": "The shared validator expresses the required behavior directly with no duplicate engine."
+    },
+    {
+      "id": "case-02a91bd6f039",
+      "lens": "change-shape",
+      "artifact": "snippets/change-shape-unrelated-billing-toggle.txt",
+      "defect": true,
+      "why": "An order-input fix also changes an unrelated production billing behavior outside the agreed outcome."
+    },
+    {
+      "id": "case-3b13c058a5f7",
+      "lens": "change-shape",
+      "artifact": "snippets/change-shape-unrelated-dependency-upgrade.txt",
+      "defect": true,
+      "why": "A copy-only change upgrades unrelated runtime dependencies without a dependency requirement."
+    },
+    {
+      "id": "case-fea858b3070e",
+      "lens": "change-shape",
+      "artifact": "snippets/change-shape-migration-and-snapshot.txt",
+      "defect": false,
+      "why": "The migration and generated snapshot are necessary artifacts of the same single schema change."
+    },
+    {
+      "id": "case-9c1f96ade16f",
+      "lens": "change-shape",
+      "artifact": "snippets/change-shape-vertical-contract-pair.txt",
+      "defect": false,
+      "why": "The API and UI edits jointly deliver the one agreed behavior; separate files do not imply separate concerns."
+    }
+  ]
+}

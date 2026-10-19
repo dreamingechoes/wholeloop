@@ -1,0 +1,4 @@
+Trust boundary: request.search is arbitrary external text. db.query accepts a SQL string and optional parameters.
+async function search(request, db) {
+  return db.query("SELECT id FROM orders WHERE name = '" + request.search + "'");
+}

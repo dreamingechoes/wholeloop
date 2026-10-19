@@ -1,0 +1,4 @@
+Agreed outcome: correct a button label. No dependency behavior changes are requested or needed.
+ui/export-button.tsx: change Exprot to Export.
+package.json: upgrade every runtime dependency to its next major version.
+package-lock.json: replace the dependency graph.

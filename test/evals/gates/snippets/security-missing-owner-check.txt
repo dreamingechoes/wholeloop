@@ -1,0 +1,5 @@
+Trust boundary: request.accountId is user controlled. Authentication alone does not authorize another account.
+async function account(request, db) {
+  requireAuthenticated(request.user);
+  return db.accounts.read(request.accountId);
+}

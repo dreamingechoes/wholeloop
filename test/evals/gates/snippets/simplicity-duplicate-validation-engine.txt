@@ -1,0 +1,7 @@
+Repository rule: validateOrder already owns these exact order fields. No new format or customization is requested.
+function validateOrderAgain(input) {
+  const engine = new GenericRuleEngine();
+  engine.register('id', new StringRule());
+  engine.register('lines', new ArrayRule(new OrderLineRule()));
+  return engine.execute(input);
+}

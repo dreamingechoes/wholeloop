@@ -3,7 +3,7 @@
 > **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model in seconds, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. Live model evals, gate corpora and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
+> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. Live model measurements and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
 
 ---
 
@@ -97,6 +97,30 @@ See the [corpus instructions](../../test/evals/definition/README.md),
 Scoring exits zero even when it reports misses; callers choose regression
 thresholds independently. Baseline reproduction and confusion arithmetic run in
 the unit suite.
+
+### Per-lens gate report
+
+Run `npm run eval:gates -- --json`, or `wl eval gates <corpus> --predictions <file>
+--json`. Twenty-four original snippets cover labelled defects and look-alikes for
+all six built-in lenses. The committed baseline is explicitly synthetic: before
+TP 6 / FP 6 / TN 6 / FN 6; after TP 6 / FP 2 / TN 10 / FN 6. Recall stays 0.5 and
+the false-alarm rate changes from 0.5 to 1/6. Correctness/security preserve their
+cautious false positives when one verifier disagrees. This is arithmetic evidence,
+not a model-quality measurement or a claim about production defect rates.
+
+The runner uses the real gateReport aggregation, including fail-safe unanimity.
+It reports unavailable responses as unknown with coverage, never invented negatives,
+and leaves undefined ratios null. Incorrect refutations can also lose true defects.
+Predictions bind the exact corpus digest, provenance and every assigned case/slot.
+No snippets, models or network operations execute during scoring.
+
+For real collection export `--inputs` (opaque IDs, questions and source only), hide
+the gold labels/reasons and collect independent reviewer/refuter observations.
+Case-level finding presence does not establish the semantic correctness of every
+finding; validate reasoning, locations and labels separately. See the
+[gate seed guide](../../test/evals/gates/README.md),
+[baseline](../../test/evals/gates/baseline.json) and
+[ADR-0037](../decisions/0037-gate-evaluation-observations-and-refutation-matrices.md).
 
 ## Enforcement — every hard rule executes somewhere
 

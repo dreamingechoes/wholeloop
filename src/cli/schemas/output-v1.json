@@ -1031,6 +1031,22 @@
         }
       },
       "required": ["schema", "receipt", "executed"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/gate-eval@1"
+        }
+      },
+      "required": ["schema", "corpusSha256", "totals"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/gate-eval-inputs@1"
+        }
+      },
+      "required": ["schema", "corpusSha256", "cases"]
     }
   ],
   "$defs": {

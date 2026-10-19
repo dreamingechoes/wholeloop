@@ -1,0 +1,4 @@
+Contract: page indices are zero-based. Omitted input defaults to zero.
+function selectedPage(input) {
+  return Number(input) || 1;
+}

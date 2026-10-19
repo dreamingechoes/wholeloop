@@ -1,0 +1,4 @@
+Repository architecture: the pricing core is pure; adapters fetch rates.
+export function price(cart, rates) {
+  return sum(cart, rates);
+}

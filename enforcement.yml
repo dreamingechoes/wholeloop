@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: gate-eval-observations
+    enforcers: [src/gates/eval.ts#parseGatePredictions, src/gates/eval.ts#gateEvaluationReport, src/gates/report.ts#gateReport, test/unit/gates/eval.test.ts]
   - id: environment-traceable-undo
     enforcers: [src/environment/contracts.ts#validEnvironmentData, src/environment/ledger.ts#EnvironmentLedger, src/environment/ledger.ts#environmentReceipt, test/unit/environment/environment.test.ts, test/unit/build/build.test.ts, test/unit/pull-requests/pull-requests.test.ts]
   - id: environment-no-auto-undo

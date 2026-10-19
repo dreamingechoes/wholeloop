@@ -40,7 +40,8 @@
     "commits:check": "node scripts/check-commits.mjs",
     "docs:config": "npm run build && node scripts/generate-config.mjs",
     "providers:catalog": "node scripts/generate-providers.mjs",
-    "eval:definitions": "npm run build && node dist/wl.mjs eval definitions test/evals/definition/corpus.json"
+    "eval:definitions": "npm run build && node dist/wl.mjs eval definitions test/evals/definition/corpus.json",
+    "eval:gates": "npm run build && node dist/wl.mjs eval gates test/evals/gates/corpus.json --predictions test/evals/gates/baseline-predictions.json"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

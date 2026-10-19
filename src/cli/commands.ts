@@ -269,6 +269,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Print the versioned slice plan schema',
   },
   {
+    path: 'eval gates',
+    arguments: '<corpus>',
+    options: ['--predictions <file>', '--inputs'],
+    schema: 'wholeloop/gate-eval@1',
+    summary: 'Measure each review lens before and after active refutations',
+  },
+  {
     path: 'eval definitions',
     arguments: '<corpus>',
     options: ['--predictions <file>'],

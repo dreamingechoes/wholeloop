@@ -31,3 +31,6 @@ Read ask-never-guess, output-contract, gate-rounds and review-input.
    inspect ambiguous remote outcomes before retrying. Never approve, request
    changes, push, merge or post comments by default.
 7. Keep human testing separate and identify unavailable live-client evidence.
+
+For labelled regression evaluation read gate-evaluation; export blind inputs and
+collect actual independent observations before interpreting quality rates.

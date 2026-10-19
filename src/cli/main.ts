@@ -9,7 +9,7 @@ import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav } from './docs.js'
 import { environmentCommand } from './environment.js'
 import { CliError } from './errors.js'
-import { evalCommand } from './eval.js'
+import { evalCommand, gateEvalCommand } from './eval.js'
 import { extensionCommand } from './extensions.js'
 import { flowCommand } from './flow.js'
 import { gateCommand } from './gate.js'
@@ -91,6 +91,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('worktree '))
       return worktreeCommand(command.path, parsed, root, json, io)
+    if (command.path === 'eval gates') return gateEvalCommand(parsed, json, io)
     if (command.path === 'eval definitions') return evalCommand(parsed, json, io)
     if (command.path.startsWith('challenge '))
       return challengeCommand(command.path, parsed, root, json, io)

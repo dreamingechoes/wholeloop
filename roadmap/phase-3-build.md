@@ -142,7 +142,7 @@
 
 ## P3-10 · Gate eval corpus
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P3-05, P3-06
+**Status:** ✅ · **Size:** M · **Depends on:** P3-05, P3-06
 
 **Goal** — Know each lens's false-positive and false-negative rates.
 
@@ -150,7 +150,7 @@
 
 **Acceptance criteria:**
 
-- [ ] Per-lens confusion matrix produced on demand; baseline recorded.
+- [x] Per-lens confusion matrix produced on demand; baseline recorded.
 
 **Docs** — architecture/determinism-and-testing.
 

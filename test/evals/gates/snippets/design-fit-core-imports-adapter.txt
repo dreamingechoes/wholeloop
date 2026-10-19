@@ -1,0 +1,6 @@
+Repository architecture: pricing accepts rates as data; only adapters may import database clients.
+import { database } from './adapters/database';
+export async function price(cart) {
+  const rates = await database.readRates();
+  return sum(cart, rates);
+}

@@ -1,0 +1,4 @@
+Agreed outcome: expose and display the order delivery note, end to end.
+api/order-contract.ts: add nullable deliveryNote to the public response.
+ui/order-details.tsx: display deliveryNote when present.
+test/order-details.test.tsx: assert the returned note is visible.

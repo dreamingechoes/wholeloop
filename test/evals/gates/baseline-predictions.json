@@ -1,0 +1,597 @@
+{
+  "schema": "wholeloop/gate-predictions@1",
+  "corpusSha256": "67c02ee9f3d68fd43997cf15d6c4e16750298b14ddaeb4979405b92d6ca2d52b",
+  "evaluator": "synthetic-gate-arithmetic@1",
+  "provenance": "synthetic",
+  "verifiers": 3,
+  "results": [
+    {
+      "case": "case-ec54a0c6b149",
+      "result": {
+        "unit": "correctness",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/correctness-null-before-guard.txt:1",
+            "text": "The nullable account is dereferenced before its guard, so missing accounts throw.",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "correctness:finding",
+          "verifier": 1,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "correctness:finding",
+          "verifier": 2,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "correctness:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-8db24935fedc",
+      "result": {
+        "unit": "correctness",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-f97a1a84b65f",
+      "result": {
+        "unit": "correctness",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/correctness-guard-before-read.txt:1",
+            "text": "Synthetic alleged defect on a labelled look-alike",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "correctness:finding",
+          "verifier": 1,
+          "outcome": "refute",
+          "reason": "The nullable input is rejected before access; the alleged null dereference is unreachable.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "correctness:finding",
+          "verifier": 2,
+          "outcome": "refute",
+          "reason": "The nullable input is rejected before access; the alleged null dereference is unreachable.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "correctness:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-ae570ae41733",
+      "result": {
+        "unit": "correctness",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-cfa90e4dea5b",
+      "result": {
+        "unit": "design-fit",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/design-fit-split-transaction.txt:1",
+            "text": "The repository requires one UnitOfWork for these related writes; independent calls can leave partial state.",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "design-fit:finding",
+          "verifier": 1,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "design-fit:finding",
+          "verifier": 2,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "design-fit:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-2f847bad512e",
+      "result": {
+        "unit": "design-fit",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-6034969ab022",
+      "result": {
+        "unit": "design-fit",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/design-fit-approved-transaction-wrapper.txt:1",
+            "text": "Synthetic alleged defect on a labelled look-alike",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "design-fit:finding",
+          "verifier": 1,
+          "outcome": "refute",
+          "reason": "The injected writer is the approved transactional boundary; its two operations share the same transaction.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "design-fit:finding",
+          "verifier": 2,
+          "outcome": "refute",
+          "reason": "The injected writer is the approved transactional boundary; its two operations share the same transaction.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "design-fit:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-56d8fb48f0bd",
+      "result": {
+        "unit": "design-fit",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-26fa56839119",
+      "result": {
+        "unit": "performance",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/performance-query-per-row.txt:1",
+            "text": "An unbounded per-order query creates thousands of round trips where the repository exposes one batch read.",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "performance:finding",
+          "verifier": 1,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "performance:finding",
+          "verifier": 2,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "performance:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-c2ca7aa9ae11",
+      "result": {
+        "unit": "performance",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-392a8c4fb085",
+      "result": {
+        "unit": "performance",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/performance-bounded-health-probes.txt:1",
+            "text": "Synthetic alleged defect on a labelled look-alike",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "performance:finding",
+          "verifier": 1,
+          "outcome": "refute",
+          "reason": "Exactly three independently required probes meet the stated budget; the loop is not input-sized or an N+1.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "performance:finding",
+          "verifier": 2,
+          "outcome": "refute",
+          "reason": "Exactly three independently required probes meet the stated budget; the loop is not input-sized or an N+1.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "performance:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-1920586d6740",
+      "result": {
+        "unit": "performance",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-cd204fb3c22b",
+      "result": {
+        "unit": "security",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/security-missing-owner-check.txt:1",
+            "text": "An authenticated requester can read another account by supplying its identifier; no ownership check occurs.",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "security:finding",
+          "verifier": 1,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "security:finding",
+          "verifier": 2,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "security:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-8712c8434c13",
+      "result": {
+        "unit": "security",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-facce28256b6",
+      "result": {
+        "unit": "security",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/security-bound-query-input.txt:1",
+            "text": "Synthetic alleged defect on a labelled look-alike",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "security:finding",
+          "verifier": 1,
+          "outcome": "refute",
+          "reason": "The external value is bound as data; the query text remains constant.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "security:finding",
+          "verifier": 2,
+          "outcome": "refute",
+          "reason": "The external value is bound as data; the query text remains constant.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "security:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-ac19c9317091",
+      "result": {
+        "unit": "security",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-6ce0afdcafc5",
+      "result": {
+        "unit": "simplicity",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/simplicity-duplicate-validation-engine.txt:1",
+            "text": "A second configurable parsing engine duplicates the existing shared validator with no required behavioral difference.",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "simplicity:finding",
+          "verifier": 1,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "simplicity:finding",
+          "verifier": 2,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "simplicity:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-0b16ff284eb3",
+      "result": {
+        "unit": "simplicity",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-74aa31428588",
+      "result": {
+        "unit": "simplicity",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/simplicity-required-domain-branches.txt:1",
+            "text": "Synthetic alleged defect on a labelled look-alike",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "simplicity:finding",
+          "verifier": 1,
+          "outcome": "refute",
+          "reason": "The explicit branches own distinct contract outcomes; flattening them to one boolean would lose behavior.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "simplicity:finding",
+          "verifier": 2,
+          "outcome": "refute",
+          "reason": "The explicit branches own distinct contract outcomes; flattening them to one boolean would lose behavior.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "simplicity:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-969f1e4d21e6",
+      "result": {
+        "unit": "simplicity",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-02a91bd6f039",
+      "result": {
+        "unit": "change-shape",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/change-shape-unrelated-billing-toggle.txt:1",
+            "text": "An order-input fix also changes an unrelated production billing behavior outside the agreed outcome.",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "change-shape:finding",
+          "verifier": 1,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "change-shape:finding",
+          "verifier": 2,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "change-shape:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-3b13c058a5f7",
+      "result": {
+        "unit": "change-shape",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    },
+    {
+      "case": "case-fea858b3070e",
+      "result": {
+        "unit": "change-shape",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": [
+          {
+            "id": "finding",
+            "location": "snippets/change-shape-migration-and-snapshot.txt:1",
+            "text": "Synthetic alleged defect on a labelled look-alike",
+            "evidence": ["Synthetic gate arithmetic fixture; no live reviewer ran"]
+          }
+        ]
+      },
+      "votes": [
+        {
+          "finding": "change-shape:finding",
+          "verifier": 1,
+          "outcome": "refute",
+          "reason": "The migration and generated snapshot are necessary artifacts of the same single schema change.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "change-shape:finding",
+          "verifier": 2,
+          "outcome": "refute",
+          "reason": "The migration and generated snapshot are necessary artifacts of the same single schema change.",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        },
+        {
+          "finding": "change-shape:finding",
+          "verifier": 3,
+          "outcome": "confirm",
+          "reason": "Synthetic confirmer preserves the alleged defect",
+          "evidence": ["Synthetic verifier fixture; no independent session ran"]
+        }
+      ]
+    },
+    {
+      "case": "case-9c1f96ade16f",
+      "result": {
+        "unit": "change-shape",
+        "status": "ok",
+        "evidence": ["Synthetic fixture observation; not live execution evidence"],
+        "findings": []
+      },
+      "votes": []
+    }
+  ]
+}

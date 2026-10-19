@@ -1,0 +1,4 @@
+Repository rule: validateOrder owns the exact required fields and returns the needed error format.
+function check(input) {
+  return validateOrder(input);
+}
