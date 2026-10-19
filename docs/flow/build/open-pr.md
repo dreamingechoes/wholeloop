@@ -1,9 +1,9 @@
 # open-pr — publish a tested change as a draft pull request
 
-> **TL;DR** — The last step of Build, and the first time anything leaves your machine. You try the change in its slice's worktree; only then is the slice branch pushed and a draft PR opened per repository, written the way your repo writes PRs and linked to the work it delivers. It ends by handing back everything it touched outside the repository and how to undo it. Merging stays with you.
+> **TL;DR** — The last step of Build, and the first time anything leaves your machine. You try the change in its slice's worktree; only then is the slice branch pushed and a draft PR opened per repository, written the way your repo writes PRs and linked to the work it delivers. It ends by handing back its PR and retained workspace; declared external writes are integrated by P3-09. Merging stays with you.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P3-07](../../../roadmap/phase-3-build.md#p3-07--open-pr-and-code-host-providers).
+> **Status: ✅ implemented locally.** Local plans, exact-plan human testing, draft-only publication/reconciliation, gh/glab API hosts, template checks and canonical receipts are tested. Authenticated execution, actual client adapters, later sibling back-links and remote tracker mirroring remain owner/host verification. Environment ledger integration follows in P3-09. Tracked in [P3-07](../../../roadmap/phase-3-build.md#p3-07--open-pr-and-code-host-providers).
 
 ---
 
@@ -46,9 +46,9 @@ flowchart TD
 
 1. **You try it in the slice's worktree.** `wl worktree open <slice>` prints the worktree path, a free port allocated for it and the commands to run the change — so you can test this slice while your usual checkout, and other slices, keep running untouched. Your answer is recorded with the slice.
 2. **Pushing is part of your approval.** The slice branch is pushed only after you say it works, as part of this step. No other step pushes.
-3. **The repo decides what a PR looks like.** A PR template, a repo PR skill or recent PR titles found by `wl discover` shape the body; the harness adds the links and the verification summary, never a template of its own on top.
+3. **The repo decides what a PR looks like.** A PR template, a repo PR skill found by `wl discover` shape the body; the harness adds the links and the verification summary, never a template of its own on top.
 4. **Always a draft.** Marking it ready, requesting reviewers and merging are yours.
-5. **One PR per repository.** A slice that spans repos opens one PR per part, from each part's own branch, each linked to the others and to the shared contract.
+5. **One PR per repository.** A slice that spans repos opens one PR per part, from each part's own branch, each carrying stored tracker/contract and already-known sibling references. Later sibling back-links need a host handoff.
 6. **Everything is handed back.** Worktrees, servers started on their ports, local data seeded, containers: each listed with the command that reverses it. Worktrees stay until the PR merges, then [`sync`](../utilities.md#sync) removes them — or `wl worktree prune` does it by hand.
 
 ## Standalone use
@@ -60,6 +60,36 @@ flowchart TD
 | `--repo api,web` | PRs only for those parts of a multi-repo slice |
 
 Without a slice there are no verdicts to report, and the PR body says the gates were not run — never that they passed.
+
+The executable commands are:
+
+```bash
+wl pr prepare --for <part-or-slice> --body-file <external-draft.md> --json
+wl worktree open <part-or-slice> --json
+# After the person explicitly reports a successful test:
+wl pr tested --for <id> --by <person> --note "Observed the expected behavior" --json
+wl pr open --for <id> --json
+# If a request was interrupted, inspect the remote and read its observed URL:
+wl pr reconcile --for <id> --url <observed-pr-url> --json
+```
+
+Prepare never publishes. Configure providers.codehost as github or gitlab, or pass
+`--provider` while preparing. Standalone use supplies `--base`, `--owner`, `--title`
+and `--body-file` for the currently checked-out branch. Missing facts are questions;
+there is no implicit checkout, commit, fork or fabricated gate result. Branches must
+be clean and contain commits beyond their named target. Finish authorized commits
+before final gates and human testing: a commit changes the gate snapshot.
+
+The plan pins its body and repository convention. Human testing includes who and
+what they tried; a generic decision alone cannot publish. Any new plan or code
+requires fresh testing. A durable request prevents duplicate push/create attempts
+on resume. Only a matching open draft can complete. API hosts use CLI credential
+stores and JSON stdin; no credential or temporary body file is written by them.
+See [ADR-0035](../../decisions/0035-tested-draft-plans-and-once-only-publication.md).
+
+Stored tracker and known sibling references go into the body. Local links and a
+part's parent slice are updated; unavailable remote tracker mirroring and earlier
+PR back-links remain explicit handoffs. No authenticated publication was exercised.
 
 ## Run it
 

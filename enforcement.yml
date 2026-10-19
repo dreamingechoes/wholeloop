@@ -4,6 +4,16 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: pr-tested-before-publication
+    enforcers: [src/pull-requests/workflow.ts#PullRequestWorkflow, src/pull-requests/contracts.ts#pullRequestPlans, test/unit/pull-requests/pull-requests.test.ts]
+  - id: pr-draft-only
+    enforcers: [src/pull-requests/contracts.ts#pullRequestPlans, src/pull-requests/codehost.ts#CliCodehostHost, test/unit/pull-requests/pull-requests.test.ts]
+  - id: pr-once-request
+    enforcers: [src/pull-requests/workflow.ts#PullRequestWorkflow, src/pull-requests/contracts.ts#pullRequestPlans, test/unit/pull-requests/pull-requests.test.ts]
+  - id: pr-repository-convention
+    enforcers: [src/pull-requests/workflow.ts#convention, src/pull-requests/workflow.ts#PullRequestWorkflow, test/unit/pull-requests/pull-requests.test.ts]
+  - id: pr-no-tool-attribution
+    enforcers: [src/git/commit.ts#hasToolAttribution, src/pull-requests/workflow.ts#PullRequestWorkflow, test/unit/pull-requests/pull-requests.test.ts]
   - id: review-incremental-input
     enforcers: [src/review/input.ts#prepareReviewInput, src/review/snapshots.ts#ReviewSnapshots, src/review/state.ts#reviewInputs, test/unit/review/review.test.ts]
   - id: review-pinned-rubric

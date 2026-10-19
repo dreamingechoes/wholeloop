@@ -7,6 +7,11 @@ import { type FrameOutcome, validateFrameOutcome } from '../framing/contract.js'
 import type { GateEventData } from '../gates/contracts.js'
 import { gateRuns, validGateData } from '../gates/state.js'
 import {
+  type PullRequestEventData,
+  pullRequestPlans,
+  validPullRequestData,
+} from '../pull-requests/contracts.js'
+import {
   type AngleResult,
   type Refutation,
   type ResearchPlan,
@@ -71,6 +76,7 @@ export type EventData =
   | BuildEventData
   | VerificationEventData
   | ReviewEventData
+  | PullRequestEventData
   | {
       type: 'slice.defined'
       data: {
@@ -180,6 +186,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('pr.')) return validPullRequestData(type, data)
   if (type.startsWith('review.')) return validReviewData(type, data)
   if (type.startsWith('verify.')) return validVerificationData(type, data)
   if (type.startsWith('build.')) return validBuildData(type, data)
@@ -546,5 +553,6 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   gateRuns(events)
   verificationRuns(events)
   reviewInputs(events)
+  pullRequestPlans(events)
   return items
 }

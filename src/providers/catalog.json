@@ -115,6 +115,50 @@
   {
     "manifest": {
       "schema": 1,
+      "id": "github",
+      "name": "GitHub code host",
+      "description": "Publish tested branches as draft pull requests through the authenticated CLI.",
+      "capabilities": ["codehost"],
+      "access": {
+        "cli": {
+          "binary": "gh"
+        }
+      },
+      "operations": {
+        "codehost.open-draft-pr": {
+          "tool": "gh.api",
+          "guidance": "guidance/usage.md"
+        },
+        "codehost.read-pr": {
+          "tool": "gh.api",
+          "guidance": "guidance/usage.md"
+        },
+        "codehost.pr-status": {
+          "tool": "gh.api",
+          "guidance": "guidance/usage.md"
+        },
+        "codehost.comment-pr": {
+          "tool": "gh.api",
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "codehost.open-draft-pr": "handoff-artifact",
+        "codehost.read-pr": "handoff-artifact",
+        "codehost.pr-status": "handoff-artifact",
+        "codehost.comment-pr": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "codehost.open-draft-pr": "# Github code-host operations\n\nUse gh's own credential store; never copy tokens into files or argv.\nOpen only after the exact plan has human test evidence and approval. Push its\npinned commit to the named remote branch without force, then create an open draft.\nKeep the named target and repository identity; do not fork or guess another remote.\nSend title/body JSON through stdin to gh api, not a shell or temporary body file.\nRead complete PR identity, source SHA/branch, target, draft and merged state.\nA missing field is unavailable evidence, never an inferred pass or merge.\nComment only when explicitly requested; keep its idempotency key for reconciliation.\nAn interrupted push/create/comment has an ambiguous outcome: inspect remote state\nbefore retrying. Never mark ready, request reviewers, merge, close or delete.\n",
+      "codehost.read-pr": "# Github code-host operations\n\nUse gh's own credential store; never copy tokens into files or argv.\nOpen only after the exact plan has human test evidence and approval. Push its\npinned commit to the named remote branch without force, then create an open draft.\nKeep the named target and repository identity; do not fork or guess another remote.\nSend title/body JSON through stdin to gh api, not a shell or temporary body file.\nRead complete PR identity, source SHA/branch, target, draft and merged state.\nA missing field is unavailable evidence, never an inferred pass or merge.\nComment only when explicitly requested; keep its idempotency key for reconciliation.\nAn interrupted push/create/comment has an ambiguous outcome: inspect remote state\nbefore retrying. Never mark ready, request reviewers, merge, close or delete.\n",
+      "codehost.pr-status": "# Github code-host operations\n\nUse gh's own credential store; never copy tokens into files or argv.\nOpen only after the exact plan has human test evidence and approval. Push its\npinned commit to the named remote branch without force, then create an open draft.\nKeep the named target and repository identity; do not fork or guess another remote.\nSend title/body JSON through stdin to gh api, not a shell or temporary body file.\nRead complete PR identity, source SHA/branch, target, draft and merged state.\nA missing field is unavailable evidence, never an inferred pass or merge.\nComment only when explicitly requested; keep its idempotency key for reconciliation.\nAn interrupted push/create/comment has an ambiguous outcome: inspect remote state\nbefore retrying. Never mark ready, request reviewers, merge, close or delete.\n",
+      "codehost.comment-pr": "# Github code-host operations\n\nUse gh's own credential store; never copy tokens into files or argv.\nOpen only after the exact plan has human test evidence and approval. Push its\npinned commit to the named remote branch without force, then create an open draft.\nKeep the named target and repository identity; do not fork or guess another remote.\nSend title/body JSON through stdin to gh api, not a shell or temporary body file.\nRead complete PR identity, source SHA/branch, target, draft and merged state.\nA missing field is unavailable evidence, never an inferred pass or merge.\nComment only when explicitly requested; keep its idempotency key for reconciliation.\nAn interrupted push/create/comment has an ambiguous outcome: inspect remote state\nbefore retrying. Never mark ready, request reviewers, merge, close or delete.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
       "id": "github-issues",
       "name": "GitHub Issues",
       "description": "Publish wholeloop definitions through GitHub Issues.",
@@ -171,6 +215,50 @@
       "tracker.read-item": "# GitHub Issues\n\n- Use the official GitHub MCP issues toolset; confirm the connected account/repository.\n- Require explicit owner and repo. For updates include issue_number; do not infer it from a title.\n- issue_write uses method create or update; issue_read uses method get.\n- Keep the wholeloop ID in the body and adopt its existing link before creating another issue.\n- Preserve labels, assignees and unrelated text on update. Transition only to the requested issue state.\n- Record the returned html_url as the tracker link. A tool error is not publication.\n- OAuth and permissions belong to the host client; do not copy credentials.\n- Unsupported relationship operations remain explicit local links, not guessed MCP calls.\n- Reference: [Official documentation](https://github.com/github/github-mcp-server)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n",
       "tracker.update-item": "# GitHub Issues\n\n- Use the official GitHub MCP issues toolset; confirm the connected account/repository.\n- Require explicit owner and repo. For updates include issue_number; do not infer it from a title.\n- issue_write uses method create or update; issue_read uses method get.\n- Keep the wholeloop ID in the body and adopt its existing link before creating another issue.\n- Preserve labels, assignees and unrelated text on update. Transition only to the requested issue state.\n- Record the returned html_url as the tracker link. A tool error is not publication.\n- OAuth and permissions belong to the host client; do not copy credentials.\n- Unsupported relationship operations remain explicit local links, not guessed MCP calls.\n- Reference: [Official documentation](https://github.com/github/github-mcp-server)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n",
       "tracker.transition": "# GitHub Issues\n\n- Use the official GitHub MCP issues toolset; confirm the connected account/repository.\n- Require explicit owner and repo. For updates include issue_number; do not infer it from a title.\n- issue_write uses method create or update; issue_read uses method get.\n- Keep the wholeloop ID in the body and adopt its existing link before creating another issue.\n- Preserve labels, assignees and unrelated text on update. Transition only to the requested issue state.\n- Record the returned html_url as the tracker link. A tool error is not publication.\n- OAuth and permissions belong to the host client; do not copy credentials.\n- Unsupported relationship operations remain explicit local links, not guessed MCP calls.\n- Reference: [Official documentation](https://github.com/github/github-mcp-server)\n- Mapping checked: 2026-10-18. Live account conformance remains pending.\n"
+    }
+  },
+  {
+    "manifest": {
+      "schema": 1,
+      "id": "gitlab",
+      "name": "GitLab code host",
+      "description": "Publish tested branches as draft pull requests through the authenticated CLI.",
+      "capabilities": ["codehost"],
+      "access": {
+        "cli": {
+          "binary": "glab"
+        }
+      },
+      "operations": {
+        "codehost.open-draft-pr": {
+          "tool": "glab.api",
+          "guidance": "guidance/usage.md"
+        },
+        "codehost.read-pr": {
+          "tool": "glab.api",
+          "guidance": "guidance/usage.md"
+        },
+        "codehost.pr-status": {
+          "tool": "glab.api",
+          "guidance": "guidance/usage.md"
+        },
+        "codehost.comment-pr": {
+          "tool": "glab.api",
+          "guidance": "guidance/usage.md"
+        }
+      },
+      "degrade": {
+        "codehost.open-draft-pr": "handoff-artifact",
+        "codehost.read-pr": "handoff-artifact",
+        "codehost.pr-status": "handoff-artifact",
+        "codehost.comment-pr": "handoff-artifact"
+      }
+    },
+    "guidance": {
+      "codehost.open-draft-pr": "# Gitlab code-host operations\n\nUse glab's own credential store; never copy tokens into files or argv.\nOpen only after the exact plan has human test evidence and approval. Push its\npinned commit to the named remote branch without force, then create an open draft.\nKeep the named target and repository identity; do not fork or guess another remote.\nSend title/body JSON through stdin to glab api, not a shell or temporary body file.\nRead complete PR identity, source SHA/branch, target, draft and merged state.\nA missing field is unavailable evidence, never an inferred pass or merge.\nComment only when explicitly requested; keep its idempotency key for reconciliation.\nAn interrupted push/create/comment has an ambiguous outcome: inspect remote state\nbefore retrying. Never mark ready, request reviewers, merge, close or delete.\n",
+      "codehost.read-pr": "# Gitlab code-host operations\n\nUse glab's own credential store; never copy tokens into files or argv.\nOpen only after the exact plan has human test evidence and approval. Push its\npinned commit to the named remote branch without force, then create an open draft.\nKeep the named target and repository identity; do not fork or guess another remote.\nSend title/body JSON through stdin to glab api, not a shell or temporary body file.\nRead complete PR identity, source SHA/branch, target, draft and merged state.\nA missing field is unavailable evidence, never an inferred pass or merge.\nComment only when explicitly requested; keep its idempotency key for reconciliation.\nAn interrupted push/create/comment has an ambiguous outcome: inspect remote state\nbefore retrying. Never mark ready, request reviewers, merge, close or delete.\n",
+      "codehost.pr-status": "# Gitlab code-host operations\n\nUse glab's own credential store; never copy tokens into files or argv.\nOpen only after the exact plan has human test evidence and approval. Push its\npinned commit to the named remote branch without force, then create an open draft.\nKeep the named target and repository identity; do not fork or guess another remote.\nSend title/body JSON through stdin to glab api, not a shell or temporary body file.\nRead complete PR identity, source SHA/branch, target, draft and merged state.\nA missing field is unavailable evidence, never an inferred pass or merge.\nComment only when explicitly requested; keep its idempotency key for reconciliation.\nAn interrupted push/create/comment has an ambiguous outcome: inspect remote state\nbefore retrying. Never mark ready, request reviewers, merge, close or delete.\n",
+      "codehost.comment-pr": "# Gitlab code-host operations\n\nUse glab's own credential store; never copy tokens into files or argv.\nOpen only after the exact plan has human test evidence and approval. Push its\npinned commit to the named remote branch without force, then create an open draft.\nKeep the named target and repository identity; do not fork or guess another remote.\nSend title/body JSON through stdin to glab api, not a shell or temporary body file.\nRead complete PR identity, source SHA/branch, target, draft and merged state.\nA missing field is unavailable evidence, never an inferred pass or merge.\nComment only when explicitly requested; keep its idempotency key for reconciliation.\nAn interrupted push/create/comment has an ambiguous outcome: inspect remote state\nbefore retrying. Never mark ready, request reviewers, merge, close or delete.\n"
     }
   },
   {

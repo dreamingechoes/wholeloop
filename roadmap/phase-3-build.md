@@ -98,7 +98,7 @@
 
 ## P3-07 · `open-pr` and code-host providers
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P3-04
+**Status:** ✅ · **Size:** M · **Depends on:** P3-04
 
 **Goal** — A draft PR per repository, only after a person tested it.
 
@@ -106,8 +106,8 @@
 
 **Acceptance criteria:**
 
-- [ ] No push and no PR before the **test it** decision is recorded (test).
-- [ ] The PR body follows the repo template when one exists and carries no tool attribution.
+- [x] No push and no PR before the **test it** decision is recorded (test).
+- [x] The PR body follows the repo template when one exists and carries no tool attribution.
 
 **Docs** — flow/build/open-pr.
 

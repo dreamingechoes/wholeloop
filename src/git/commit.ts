@@ -23,16 +23,22 @@ export function checkCommit(message: string): string[] {
   if (!lines.slice(2).some((line) => line.trim() && !line.startsWith('#'))) {
     problems.push('Add a body explaining why the change is needed and what was verified.')
   }
-  for (const line of lines) {
-    if (
-      (/^\s*co-authored-by\s*:/i.test(line) && TOOL.test(line)) ||
-      /\b(generated|made)\s+(with|by)\b/i.test(line)
-    ) {
-      problems.push('Remove tool attribution from the commit message (ADR-0017).')
-    }
-  }
+  if (hasToolAttribution(message))
+    problems.push('Remove tool attribution from the commit message (ADR-0017).')
   if (message.includes('`') || message.includes('$(')) {
     problems.push('Do not use backticks or shell command substitutions in commit messages.')
   }
   return [...new Set(problems)]
+}
+
+/** Shared by commits and PR drafts so publication cannot weaken authorship policy. */
+export function hasToolAttribution(message: string): boolean {
+  return message
+    .split(/\r?\n/)
+    .some(
+      (line) =>
+        (/^\s*co-authored-by\s*:/i.test(line) && TOOL.test(line)) ||
+        /\b(generated|made)\s+(with|by)\b/i.test(line) ||
+        (/\b(written|authored) by\b/i.test(line) && TOOL.test(line)),
+    )
 }

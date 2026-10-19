@@ -8,6 +8,42 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'pr prepare',
+    arguments: '[<branch>]',
+    options: [
+      '--for <id>',
+      '--base <branch>',
+      '--owner <person>',
+      '--title <text>',
+      '--body-file <file>',
+      '--provider <id>',
+      '--remote <name>',
+    ],
+    schema: 'wholeloop/pr-prepare@1',
+    summary: 'Prepare a repository-shaped draft without pushing or opening it',
+  },
+  {
+    path: 'pr tested',
+    arguments: '',
+    options: ['--for <id>', '--by <person>', '--note <text>'],
+    schema: 'wholeloop/pr-tested@1',
+    summary: 'Record human testing and approval of the exact publication plan',
+  },
+  {
+    path: 'pr open',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/pr-open@1',
+    summary: 'Push the tested pinned commit and open its draft PR once',
+  },
+  {
+    path: 'pr reconcile',
+    arguments: '',
+    options: ['--for <id>', '--url <url>'],
+    schema: 'wholeloop/pr-open@1',
+    summary: 'Read a pending remote PR instead of repeating an ambiguous write',
+  },
+  {
     path: 'review begin',
     arguments: '[<branch|pr>]',
     options: [

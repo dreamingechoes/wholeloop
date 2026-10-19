@@ -3,7 +3,7 @@
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. Eight destination manifests, bundled guidance, a typed host invocation boundary and same-operation document updates are implemented with synthetic fixture transcripts. Eleven source mappings pin evidence queries and explicit unknowns, with a guarded PostgreSQL process host. Authenticated remote execution and the remaining service catalogue remain pending. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
+> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. Eight destination manifests, bundled guidance, a typed host invocation boundary and same-operation document updates are implemented with synthetic fixture transcripts. Eleven source mappings pin evidence queries and explicit unknowns, with a guarded PostgreSQL process host. GitHub/GitLab CLI code-host mappings and explicit draft-only publication hosts are tested locally. Authenticated remote execution and the remaining service catalogue remain pending. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
 
 ---
 
@@ -62,7 +62,7 @@ Every source has one verb: **`query`**.
 | --- | --- | --- |
 | `docs` | `create` · `read` · `update` (always read-modify-write) · `link` | Define, Rollout, Learn |
 | `tracker` | `create-item` · `read-item` · `update-item` · `link-items` · `transition` | cut-scopes, slice-work, sync |
-| `codehost` | `open-draft-pr` · `read-pr` · `pr-status` | open-pr, review-code, sync |
+| `codehost` | `open-draft-pr` · `read-pr` · `pr-status` · `comment-pr` | open-pr, review-code, sync |
 | `dashboards` | `create` · `update` · `read` | prepare-launch, measure-impact |
 | `flags` | `read-state` · `propose-change` | cut-scopes, ramp-exposure |
 | `comms` | `draft` | prepare-launch, measure-impact |
@@ -247,6 +247,16 @@ sequenceDiagram
 With nothing configured, everything lands in the local store as Markdown — the flow works with zero integrations. Configure a `docs` and `tracker` provider and each step also publishes there as it goes, which is what lets someone else pick the work up from a URL.
 
 ---
+
+### Tested code-host boundary
+
+`github` uses gh api; `gitlab` uses glab api. Both resolve one explicit remote,
+push a pinned tested commit and verify a matching open draft response. Read/status
+normalize source SHA/branch, target, repository, draft and merge state. Bodies use
+stdin and each CLI's credential store. Optional comments reconcile a stable round
+marker before posting. Local tests use synthetic API-shaped responses and a
+separate real push to a temporary local bare repository; live authentication,
+self-managed versions and network interruption remain owner verification.
 
 <!-- docnav -->
 [◀ Interaction profile](profile.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Repo skills ▶](repo-skills.md)

@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "id": "gitlab",
+  "name": "GitLab code host",
+  "description": "Publish tested branches as draft pull requests through the authenticated CLI.",
+  "capabilities": ["codehost"],
+  "access": {
+    "cli": {
+      "binary": "glab"
+    }
+  },
+  "operations": {
+    "codehost.open-draft-pr": {
+      "tool": "glab.api",
+      "guidance": "guidance/usage.md"
+    },
+    "codehost.read-pr": {
+      "tool": "glab.api",
+      "guidance": "guidance/usage.md"
+    },
+    "codehost.pr-status": {
+      "tool": "glab.api",
+      "guidance": "guidance/usage.md"
+    },
+    "codehost.comment-pr": {
+      "tool": "glab.api",
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "codehost.open-draft-pr": "handoff-artifact",
+    "codehost.read-pr": "handoff-artifact",
+    "codehost.pr-status": "handoff-artifact",
+    "codehost.comment-pr": "handoff-artifact"
+  }
+}

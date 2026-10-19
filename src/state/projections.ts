@@ -1,5 +1,6 @@
 import { stringify } from 'yaml'
 import { gateRuns } from '../gates/state.js'
+import { pullRequestPlans } from '../pull-requests/contracts.js'
 import { reviewInputs } from '../review/state.js'
 import { verificationRuns } from '../verification/state.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
@@ -33,6 +34,11 @@ export function projections(
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }
+  for (const plan of pullRequestPlans(events))
+    files.set(
+      `items/${plan.subject}/pull-requests/${plan.event}.json`,
+      `${JSON.stringify(plan, null, 2)}\n`,
+    )
   for (const { subject, input } of reviewInputs(events))
     files.set(
       `items/${subject}/reviews/${input.run}/${input.round}.json`,

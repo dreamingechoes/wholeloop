@@ -47,6 +47,7 @@ export function fileKind(path: string): Asset['kind'] | 'runner' | undefined {
     /(?:^|\/)\.github\/(?:PULL_REQUEST_TEMPLATE|pull_request_template|ISSUE_TEMPLATE)/i.test(
       path,
     ) ||
+    /(?:^|\/)\.gitlab\/merge_request_templates\/[^/]+\.md$/.test(path) ||
     /(?:^|\/)docs\/adr\/[^/]+\.md$/.test(path)
   )
     return 'convention'
@@ -115,6 +116,8 @@ export function scan(files: ReadonlyMap<string, string>): CapabilityMap {
             : Array.isArray(tagged) && tagged.every((value) => typeof value === 'string')
               ? tagged
               : []
+        if (/^\.gitlab\/merge_request_templates\/[^/]+\.md$/.test(path))
+          slots.push('open-pr.convention')
         if (slots.some((slot) => !knownSlot(slot)))
           throw new Error(`Unknown wholeloop slot: ${slots.find((slot) => !knownSlot(slot))}`)
         result.assets.push({

@@ -779,7 +779,7 @@ exports[`step begin contracts > measure-impact: standalone empty, standalone inp
 exports[`step begin contracts > open-pr: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -839,10 +839,16 @@ exports[`step begin contracts > open-pr: standalone empty, standalone input and 
     "schema": "wholeloop/step-begin@1",
     "step": "open-pr",
     "subject": null,
-    "template": null,
+    "template": [
+      "Pull request",
+      "Human testing",
+      "Links",
+      "Environment",
+      "Next",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -876,10 +882,16 @@ exports[`step begin contracts > open-pr: standalone empty, standalone input and 
     "schema": "wholeloop/step-begin@1",
     "step": "open-pr",
     "subject": null,
-    "template": null,
+    "template": [
+      "Pull request",
+      "Human testing",
+      "Links",
+      "Environment",
+      "Next",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -916,7 +928,13 @@ exports[`step begin contracts > open-pr: standalone empty, standalone input and 
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Pull request",
+      "Human testing",
+      "Links",
+      "Environment",
+      "Next",
+    ],
   },
 ]
 `;

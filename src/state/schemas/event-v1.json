@@ -2473,6 +2473,209 @@
           ]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "pr.planned"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "plan": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "root": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^/"
+                },
+                "repository": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^https://"
+                },
+                "remote": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "branch": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "base": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "head": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{40,64}$"
+                },
+                "snapshot": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "provider": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "convention": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "origin": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    }
+                  },
+                  "required": ["ref", "origin", "digest"]
+                },
+                "gated": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "root",
+                "repository",
+                "remote",
+                "branch",
+                "base",
+                "head",
+                "snapshot",
+                "title",
+                "body",
+                "provider",
+                "convention",
+                "gated"
+              ]
+            }
+          },
+          "required": ["plan"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "pr.tested"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "plan": {
+              "type": "string",
+              "pattern": "^ev-[a-f0-9-]{36}$"
+            },
+            "by": {
+              "type": "string",
+              "minLength": 1
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "snapshot": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": ["plan", "by", "note", "snapshot"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "pr.requested"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "plan": {
+              "type": "string",
+              "pattern": "^ev-[a-f0-9-]{36}$"
+            }
+          },
+          "required": ["plan"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "pr.published"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "plan": {
+              "type": "string",
+              "pattern": "^ev-[a-f0-9-]{36}$"
+            },
+            "pr": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^https://"
+                },
+                "repository": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^https://"
+                },
+                "head": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "base": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{40,64}$"
+                },
+                "draft": {
+                  "type": "boolean"
+                },
+                "merged": {
+                  "type": "boolean"
+                },
+                "state": {
+                  "type": "string",
+                  "enum": ["open", "closed", "merged"]
+                }
+              },
+              "required": ["url", "repository", "head", "base", "sha", "draft", "merged", "state"]
+            }
+          },
+          "required": ["plan", "pr"]
+        }
+      }
     }
   ]
 }

@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "id": "github",
+  "name": "GitHub code host",
+  "description": "Publish tested branches as draft pull requests through the authenticated CLI.",
+  "capabilities": ["codehost"],
+  "access": {
+    "cli": {
+      "binary": "gh"
+    }
+  },
+  "operations": {
+    "codehost.open-draft-pr": {
+      "tool": "gh.api",
+      "guidance": "guidance/usage.md"
+    },
+    "codehost.read-pr": {
+      "tool": "gh.api",
+      "guidance": "guidance/usage.md"
+    },
+    "codehost.pr-status": {
+      "tool": "gh.api",
+      "guidance": "guidance/usage.md"
+    },
+    "codehost.comment-pr": {
+      "tool": "gh.api",
+      "guidance": "guidance/usage.md"
+    }
+  },
+  "degrade": {
+    "codehost.open-draft-pr": "handoff-artifact",
+    "codehost.read-pr": "handoff-artifact",
+    "codehost.pr-status": "handoff-artifact",
+    "codehost.comment-pr": "handoff-artifact"
+  }
+}

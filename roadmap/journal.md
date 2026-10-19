@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-19 · P3-07 — tested draft plans and code-host publication
+
+- Add pr prepare/tested/open/reconcile and the canonical open-pr skill. Prepare is local and loads/pins the actual repository convention, clean named branch/commit, target, remote and body. Recognize GitHub and GitLab templates; require completed sections and the shared commit/PR authorship policy. Ask missing standalone facts before mutation and do not invent machine gates.
+- Require explicit human test notes and exact-plan approval before any publication host call. Changed code or a revised draft invalidates approval; a bare test-it decision cannot substitute for actual recorded test evidence. Planned build items retain their current verify/review requirements. Finish authorized commits before final gates because HEAD/index are part of the gate snapshot.
+- Journal one request before external work, cache completed PRs and preserve ambiguous attempts for a complete same-reference read. Validate matching open draft, repository, source SHA/branch and target before recording publication/completion. Keep local links and parent-slice links; carry stored tracker and known sibling references. Remote tracker writes and later sibling back-links remain explicit host handoffs.
+- Add gh/glab API mappings and bounded argv/stdin process hosts. Push the pinned object without force, then create draft-only JSON requests through existing credential stores. Normalize read/status, reject unrelated references and incomplete responses, redact raw errors and reconcile review-comment markers before posting again. ADR-0035 records crash, credential, race and host limitations; no authenticated remote operation ran.
+- Verify sixteen new fixtures: real temporary Git repositories, a real push to a local bare repository, actual process stdin/error handling, synthetic GitHub/GitLab response contracts, exact approval invalidation, lost/concurrent writes, reconciliation, malformed drafts, templates, compiled CLI and comment reuse. Local check: 476 tests in 34 files plus build, smoke, lint, typecheck, generated docs/catalogs, harness, Markdown and Mermaid passed. Final docs/harness checks passed after the new skill/ADR. Live authentication, real-client isolation, remote races and Linux remain owner verification.
+
+---
+
 ## 2026-10-19 · P3-06 — private incremental review and repository rubrics
 
 - Add review begin/input/comment-plan/complete, the reviewer role and canonical skill. Standalone review asks for owner/base and a host-resolved PR head before mutation, creates an isolated review item/worktree and does not invent criteria or earlier steps. Current-PASS completion requires its canonical input-backed receipt.

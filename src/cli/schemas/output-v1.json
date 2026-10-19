@@ -991,6 +991,30 @@
         }
       },
       "required": ["schema", "input", "published"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/pr-prepare@1"
+        }
+      },
+      "required": ["schema", "status"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/pr-tested@1"
+        }
+      },
+      "required": ["schema", "snapshot"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/pr-open@1"
+        }
+      },
+      "required": ["schema", "status"]
     }
   ],
   "$defs": {

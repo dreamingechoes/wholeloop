@@ -36,6 +36,8 @@ export function decisions(
         entry.type === 'item.created',
     )?.id
   if (basis) for (const id of before) required.set(id, basis)
+  const publication = relevant.findLast((entry) => entry.type === 'pr.planned')
+  if (publication && before.includes('test-it')) required.set('test-it', publication.id)
   return [...required]
     .filter(([id, basis]) => {
       const last = [...relevant]
@@ -101,6 +103,8 @@ export function flowPlan(
       if (entry.type === 'item.closed') closed = true
       if (entry.type === 'item.updated' && entry.data.status)
         closed = entry.data.status === 'closed'
+      if (entry.type === 'pr.planned')
+        furthest = Math.max(furthest, STEPS.findIndex((step) => step.name === 'open-pr') - 1)
       if (entry.type === 'step.started') active = entry.data.step
       if (entry.type === 'step.completed' && entry.data.step === 'build-slice')
         furthest = Math.max(

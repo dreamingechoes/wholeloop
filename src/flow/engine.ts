@@ -19,6 +19,7 @@ import {
   validateFrameOutcome,
 } from '../framing/contract.js'
 import { publicationPlan } from '../providers/publication.js'
+import { pullRequestReceipt } from '../pull-requests/workflow.js'
 import { researchBrief } from '../research/report.js'
 import { reviewReceipt } from '../review/workflow.js'
 import { checkScopePlan, parseScopePlan, scopeContext } from '../scopes/contract.js'
@@ -453,6 +454,11 @@ export class FlowEngine {
         throw new CliError(
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
+        )
+      if (name === 'open-pr' && content !== pullRequestReceipt(events, subject))
+        throw new CliError(
+          'Complete PR publication through its tested draft receipt',
+          EXIT.precondition,
         )
       if (name === 'review-code' && content !== reviewReceipt(events, subject))
         throw new CliError('Complete reviews through their gate-backed receipt', EXIT.precondition)
