@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: sync-exact-merges
+    enforcers: [src/sync/contracts.ts#syncState, src/sync/contracts.ts#syncProofs, src/sync/workflow.ts#SyncWorkflow, test/unit/sync/sync.test.ts]
+  - id: sync-delivery-outcome
+    enforcers: [src/sync/contracts.ts#syncReady, src/sync/contracts.ts#syncState, src/flow/plan.ts#flowPlan, test/unit/sync/sync.test.ts]
+  - id: sync-tracker-recovery
+    enforcers: [src/sync/workflow.ts#transition, src/sync/contracts.ts#syncState, test/unit/sync/sync.test.ts]
+  - id: sync-conservative-cleanup
+    enforcers: [src/sync/workflow.ts#SyncWorkflow, src/worktrees/manager.ts#prune, test/unit/sync/sync.test.ts, test/unit/worktrees/worktrees.test.ts]
   - id: learning-human-call
     enforcers: [src/learning/contracts.ts#learningRuns, src/learning/workflow.ts#LearningWorkflow, src/learning/run.ts#runLearning, test/unit/learning/learning.test.ts]
   - id: learning-iteration-link

@@ -4518,6 +4518,193 @@
           "required": ["run", "idea", "decision"]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "sync.merged"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "plan": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pr": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^https://"
+                },
+                "repository": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^https://"
+                },
+                "head": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "base": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{40,64}$"
+                },
+                "draft": {
+                  "type": "boolean"
+                },
+                "merged": {
+                  "type": "boolean"
+                },
+                "state": {
+                  "type": "string",
+                  "enum": ["open", "closed", "merged"]
+                }
+              },
+              "required": ["url", "repository", "head", "base", "sha", "draft", "merged", "state"]
+            },
+            "origin": {
+              "type": "string",
+              "enum": ["host", "import"]
+            }
+          },
+          "required": ["plan", "pr", "origin"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "sync.closed"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "proofs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": ["proofs"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "sync.delivery-ready"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "slices": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "proofs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": ["slices", "proofs"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "sync.transition-planned"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "state": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["provider", "ref", "state"]
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["key", "basis", "target", "from", "revision"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "sync.transition-recorded"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["key", "ref"]
+        }
+      }
     }
   ]
 }

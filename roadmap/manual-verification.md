@@ -4,6 +4,17 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## sync and actual service agreement (P4-06)
+
+- [ ] Authenticate code-host reads in disposable GitHub/GitLab projects and verify complete exact PR/head/base/repository/commit identity across normal, closed-unmerged, rebased and squash-merged outcomes. Imported fixture observations do not prove those remote facts.
+- [ ] Bind actual tracker providers/references/state IDs through the SDK host. Verify complete revision-bound read, conditional transition and observed final state, including provider permission errors and concurrent human edits. The CLI has no authenticated tracker executor.
+- [ ] Interrupt after tracker transition and reconcile by reads without repeating writes. Verify manually reopened tracker/local work is retained and old publication plans cannot re-close it.
+- [ ] Schedule sync with explicit repository/store context. Inspect unbound tracker handoffs and unknown reads rather than treating exit success as proof of every service's health.
+- [ ] Stop worktree leases deliberately, inspect processes/ignored files and confirm local integration before cleanup. Remote squash/rebase merges may be retained by the ancestry guard; sync never fetches, stops processes, forces removal or deletes branches.
+- [ ] Repeat real Git/CLI cleanup and recovery checks on Linux/supported Node versions. Local tests use synthetic providers plus temporary real Git worktrees on macOS/Node 24; no actual wholeloop worktree or remote service was changed.
+
+These checks do not block subsequent local grounding work.
+
 ## Rollout providers and remaining bridges (P4-05)
 
 - [ ] Capture authenticated read-only client/API contracts for LaunchDarkly/Unleash/GrowthBook/PostHog so their service-specific bridges can be implemented and tested. This is open roadmap code work, not an owner test already passed. Virtual host contracts are not real readers; capture complete matching flag/environment observations and preserve unknown for complex targeting or missing access.

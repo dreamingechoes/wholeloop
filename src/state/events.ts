@@ -35,6 +35,7 @@ import { type ReviewEventData, validReviewData } from '../review/contracts.js'
 import { reviewInputs } from '../review/state.js'
 import { type ScopeDefinition, validateScope } from '../scopes/contract.js'
 import { type Repository, type SliceDefinition, validateSlice } from '../slices/contract.js'
+import { type SyncEventData, syncState, validSyncData } from '../sync/contracts.js'
 import { type VerificationEventData, validVerificationData } from '../verification/contracts.js'
 import { verificationRuns } from '../verification/state.js'
 import {
@@ -94,6 +95,7 @@ export type EventData =
   | RampEventData
   | ImpactEventData
   | LearningEventData
+  | SyncEventData
   | {
       type: 'slice.defined'
       data: {
@@ -203,6 +205,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('sync.')) return validSyncData(type, data)
   if (type.startsWith('learn.')) return validLearningData(type, data)
   if (type.startsWith('impact.')) return validImpactData(type, data)
   if (type.startsWith('ramp.')) return validRampData(type, data)
@@ -579,6 +582,7 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   environmentDeclarations(events)
   launchRuns(events)
   launchDeliveries(events)
+  syncState(events)
   learningRuns(events)
   impactRuns(events)
   impactDeliveries(events)

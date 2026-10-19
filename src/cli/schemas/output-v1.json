@@ -1227,6 +1227,15 @@
         }
       },
       "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/sync@1"
+        }
+      },
+      "required": ["schema"]
     }
   ],
   "$defs": {

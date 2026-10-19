@@ -3,6 +3,7 @@ import { isObject } from '../config/schema.js'
 import type { Profile } from '../profile/presets.js'
 import { renderProfile } from '../profile/render.js'
 import type { Item, StateEvent } from '../state/events.js'
+import { syncReady, syncState } from '../sync/contracts.js'
 import { STEPS, type Step, type StepName } from './registry.js'
 
 export function decisions(
@@ -121,6 +122,11 @@ export function flowPlan(
         if (active === entry.data.step) active = undefined
       }
     }
+  if (syncReady(syncState(events), subject))
+    furthest = Math.max(
+      furthest,
+      STEPS.findIndex((step) => step.name === 'open-pr'),
+    )
   const next = closed
     ? undefined
     : (active ??

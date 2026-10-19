@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-10-19 · P4-06 — exact merge synchronization and recoverable tracker status
+
+- Add sync with per-item repository/provider context, real gh/glab read hosts and explicit labelled normalized imports. Match complete published PR URL/repository/head/base/commit and non-draft merged state; unknown, mismatched and closed-unmerged sources never close work. Replay validates merge/closure/delivery receipts and prevents fabricated proof lists.
+- Close parts before slices and require every current repository part even when the slice also owns a PR. Manual closure establishes no delivery. Mark scopes delivery-ready only after every certified slice and route to prepare-launch without fabricated step completions; final scope/initiative closure remains decide-next. Reopening invalidates old publication eligibility and stale projections until a new tested plan.
+- Support explicit SDK tracker provider/ref/state targets with certified basis, complete revision-bound current reads, journaled unique intent, conditional transition and observed final state. Reconcile lost writes through reads; preserve ambiguity and later human edits without repeating or reapplying a write. Missing hosts/targets stay handoffs. The CLI supplies code-host reads/imports, not an authenticated tracker executor.
+- Reuse existing conservative worktree cleanup outside the journal lock for certified merged work. Retain active/dirty/locked/non-owned/not-locally-merged allocations and every branch; stop no processes and fetch nothing. Add sync projections/resume refs and generic asynchronous routing for the one-word command. ADR-0043 records delivery versus outcome and recovery boundaries.
+- Verify nineteen new cases for exact identity/state failures, unknown reads, multi-part closure including a parent PR, manual/reopened status, forged proof rollback, tracker read/write/verify and lost-response reconciliation, external-edit preservation, explicit handoffs, actual stopped merged Git-worktree pruning with branch retention, compiled imports, byte-identical rebuild and a no-change second run. Targeted sync/flow/utility tests passed; final local check: 595 tests in 42 files plus build, smoke, lint, typecheck, generated references/catalogs, docs, harness, Markdown and Mermaid passed.
+- No authenticated code-host/tracker operation or actual project cleanup ran. Real server/revision semantics, imported-observation truth, scheduling, physical interruptions, squash/rebase integration cleanup and Linux remain owner checks and do not block grounding implementation.
+
+---
+
 ## 2026-10-19 · P4-05 — offline rollout contracts; remote bridges remain open
 
 - Add explicit provider test --fixtures execution with exact tool/argument/result transcripts, complete declared-operation coverage, duplicate/invalid fixture rejection and redacted failures. Metadata-only inspection stays unprobed. Fixtures make no authenticated call and do not establish actual server/tool/permission compatibility.

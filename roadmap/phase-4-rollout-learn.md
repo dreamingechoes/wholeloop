@@ -96,7 +96,7 @@ independent local sync/grounding work. See the manual checklist and ADR-0042.
 
 ## P4-06 · `sync`
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P3-07
+**Status:** ✅ · **Size:** M · **Depends on:** P3-07
 
 **Goal** — Reality, the store and the team's tracker agree.
 
@@ -104,8 +104,14 @@ independent local sync/grounding work. See the manual checklist and ADR-0042.
 
 **Acceptance criteria:**
 
-- [ ] Running `sync` twice in a row changes nothing the second time (test).
-- [ ] No item is closed whose PR is not merged.
+- [x] Running `sync` twice in a row changes nothing the second time (test).
+- [x] No item is closed whose PR is not merged.
+
+**Local delivery semantics:** scope delivery-ready requires every slice certified
+merged/closed; the scope stays open for its final human learning decision. Tracker
+transitions use explicit SDK targets/hosts and observed final state; unbound
+references remain handoffs. Cleanup retains active/dirty/not-locally-merged work.
+Real server, scheduling and cross-platform checks remain on the manual checklist.
 
 **Docs** — flow/utilities (`sync`).
 

@@ -12,6 +12,7 @@ import { pullRequestPlans } from '../pull-requests/contracts.js'
 import { rampRuns } from '../ramp/contracts.js'
 import { rampProposals } from '../ramp/publish.js'
 import { reviewInputs } from '../review/state.js'
+import { syncBasis, syncReady, syncState } from '../sync/contracts.js'
 import { verificationRuns } from '../verification/state.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import type { Item, StateEvent } from './events.js'
@@ -54,6 +55,13 @@ export function projections(
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }
+  const synchronization = syncState(events)
+  for (const [subject] of synchronization.items)
+    if (events.some((event) => event.subject === subject && event.type.startsWith('sync.')))
+      files.set(
+        `items/${subject}/sync.json`,
+        `${JSON.stringify({ basis: syncBasis(synchronization, subject) ?? null, deliveryReady: syncReady(synchronization, subject), merge: synchronization.merged.get(subject) ?? null, transitions: [...synchronization.transitions.values()].filter((entry) => entry.subject === subject) }, null, 2)}\n`,
+      )
   for (const learning of learningRuns(events)) {
     files.set(
       `items/${learning.subject}/learning/${learning.plan.run}.json`,

@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'sync',
+    arguments: '',
+    options: ['--for <id>', '--file <file>', '--prune <on|off>'],
+    schema: 'wholeloop/sync@1',
+    summary: 'Reconcile exact PR merges, delivery readiness and conservative cleanup',
+  },
+  {
     path: 'learn begin',
     arguments: '[<description>]',
     options: ['--for <id>', '--owner <person>', '--leaning <outcome>', '--reported <file>'],

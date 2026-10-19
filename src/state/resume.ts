@@ -4,6 +4,7 @@ import { decisionTrail, flowPlan } from '../flow/plan.js'
 import { impactRuns } from '../impact/contracts.js'
 import { learningRuns } from '../learning/contracts.js'
 import { rampRuns } from '../ramp/contracts.js'
+import { syncBasis, syncState } from '../sync/contracts.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { replay, type StateEvent } from './events.js'
 import { unread } from './mailbox.js'
@@ -66,6 +67,9 @@ export function contextPack(
       owner: short(subject.owner, 80),
       status: subject.status,
       path: `items/${subject.id}/${subject.kind}.md`,
+      ...(syncBasis(syncState(events), subject.id)
+        ? { sync: `items/${subject.id}/sync.json` }
+        : {}),
       ...(learningRuns(events).some((record) => record.subject === subject.id)
         ? { learning: `items/${subject.id}/learning.json` }
         : {}),

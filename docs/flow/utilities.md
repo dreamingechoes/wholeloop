@@ -3,7 +3,7 @@
 > **TL;DR** — Four helpers that move you around the flow rather than through one step of it. `next` is the single front door: it figures out where things stand and runs forward to the next decision. `status` shows what is where and what is waiting on whom. `setup` configures your profile, providers and CLIs. `sync` keeps the store and your external tools in agreement.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status` and `wl setup` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem). Generated client installation remains pending conformance. The scenarios below describe the target flow; picking up from a URL remains [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
+> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status`, `wl setup` and evidence-backed `wl sync` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem). Generated client installation remains pending conformance. The scenarios below describe the target flow; picking up from a URL remains [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` implementation/owner checks are tracked in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
 
 ---
 
@@ -129,28 +129,40 @@ Nothing has to be configured up front: every step asks for what it needs the fir
 
 ## sync
 
-**Make the store and your tools agree.** Reality first: merged PRs, closed issues and flag states are read, the store is updated to match, and external items are moved to reflect it.
+**Make the store and your tools agree.** Read exact published PR merge observations, certify slice/part delivery and preserve unresolved sources. Explicit SDK tracker targets use revision-bound reads/transitions; flags and arbitrary issues are not inferred.
 
 ```mermaid
 flowchart LR
-  R["reality<br/>PRs · issues · flags"] --> S["store"]:::core --> T["tracker items"]
-  S --> W["worktrees of merged<br/>slices removed"]
+  R["reality<br/>exact published PR merges"] --> S["store"]:::core --> T["tracker items"]
+  S --> W["stopped clean merged<br/>worktrees pruned"]
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
-- **A merged PR closes its slice** and removes the slice's worktree; when every slice of a scope is closed, the scope moves to Rollout.
-- **Tracker items follow** — transitioned to match, never moved backwards without asking.
-- **Idempotent and safe on a schedule.** Running it twice changes nothing the second time; a CLI's scheduler or plain `cron` can run `wl sync` headless.
-- **Reports, never guesses.** A PR it can't match to a slice is listed, not assigned.
+- **Exact merges close delivery work.** Match the published PR URL/repository/head/base/commit and complete non-draft merged state. A closed-unmerged PR or changed head cannot close its item. Every repository part needs certified closure before its slice; manually closed work does not count.
+- **Scopes become delivery-ready.** Every current slice must have certified merge evidence. The scope remains open for rollout/learning and routes to prepare-launch; decide-next owns final outcome closure. Reopened work invalidates old readiness and needs a newly tested PR plan.
+- **Tracker targets are explicit.** An SDK conductor supplies provider/ref/exact target state and a tracker host. Read a complete matching current revision, journal intent, transition only certified work and observe final state. Missing bindings stay handoffs. Later external edits are reported without reapplying old targets.
+- **Uncertain writes are read-reconciled.** A lost transition response keeps its intent. A later read may confirm success; otherwise preserve ambiguity without a second write. Repeated unchanged work adds no journal events.
+- **Cleanup is conservative.** Reuse stopped/clean/owned/locally-merged worktree pruning outside the state lock. Retain active/dirty/locked/unmerged work, branches and processes. Squash/rebase merges may need local integration confirmation or explicit owner cleanup.
 
-```text
-> /wholeloop:sync
-
-▸ checked 6 open slices against GitHub
-✓ slice-0d4e  PR #151 merged → closed · worktree removed · ENG-482 → Done
-✓ scope-a9e0  all slices closed → ready for prepare-launch
-? PR #155     no matching slice — link it with: wl link <slice> #155
+```bash
+wl sync --json
+wl sync --for scope-a9e0b1c2 --prune off --json
+wl sync --for scope-a9e0b1c2 --file normalized-pr-observations.json --json
 ```
+
+Default code-host reads use gh/glab and their credential stores; the command does
+not push, merge or fetch. An imported wholeloop/sync-observations@1 file contains
+observations with exact published plan event/ref and a normalized complete result
+or explicit unavailable reason. Imports are labelled and prove no authentication.
+Unknown source reads preserve open work and return a precondition exit code.
+
+The SDK `SyncWorkflow.run` accepts a codehost factory and optional tracker host,
+plus explicit per-item provider/ref/state targets. Target references/state IDs are
+never guessed or derived from unresolved publication placeholders. The CLI has no
+authenticated tracker executor; that bridge remains the host's responsibility.
+Reports include changes, unknown observations, delivery readiness, tracker outcomes
+and retained/pruned worktrees. [ADR-0043](../decisions/0043-certified-delivery-sync-and-recoverable-tracker-status.md)
+explains the distinction between delivered code and a decided product outcome.
 
 ---
 
@@ -160,7 +172,7 @@ flowchart LR
 
 **"Can a teammate continue my work?"** Yes, if the work lives in a shared tool (tracker, docs, PRs). They run `next <URL>` and it rebuilds what's needed on their machine. Purely local work stays on yours.
 
-**"Will `sync` overwrite edits made in the tracker?"** No. External edits win on content; `sync` only moves status and links to match what really happened.
+**"Will `sync` overwrite edits made in the tracker?"** Content is never rewritten. Explicit SDK targets move status only after current reads; later external state edits are reported as drift and preserved. Unbound references remain handoffs.
 
 ---
 

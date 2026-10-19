@@ -30,6 +30,7 @@ import { scopesCommand } from './scopes.js'
 import { slicesCommand } from './slices.js'
 import { specCommand } from './spec.js'
 import { stateCommand } from './state.js'
+import { syncCommand } from './sync.js'
 import { utilityCommand } from './utilities.js'
 import { verificationCommand, verificationSuiteCommand } from './verification.js'
 import { worktreeCommand } from './worktree.js'
@@ -95,6 +96,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (['verify begin', 'verify complete'].includes(command.path))
       return verificationCommand(command.path, parsed, root, json, io)
     if (
+      command.path === 'sync' ||
       command.path === 'provider test' ||
       command.path === 'verify suite' ||
       command.path.startsWith('pr ') ||
@@ -167,35 +169,38 @@ export async function runAsync(
   const args = argv.filter((arg) => arg !== '--json')
   const command = COMMANDS.find(
     (command) =>
-      (command.path === 'provider test' ||
+      (command.path === 'sync' ||
+        command.path === 'provider test' ||
         command.path === 'verify suite' ||
         command.path.startsWith('pr ') ||
         command.path.startsWith('ramp ') ||
         command.path.startsWith('measure ')) &&
-      args.slice(0, 2).join(' ') === command.path,
+      args.slice(0, command.path.split(' ').length).join(' ') === command.path,
   )
   if (
     !command ||
-    args.slice(0, 2).join(' ') !== command.path ||
+    args.slice(0, command.path.split(' ').length).join(' ') !== command.path ||
     args.some((arg) => ['--help', '-h'].includes(arg))
   )
     return run(argv, io, root)
   const json = argv.includes('--json')
   try {
     const parsed = parseArguments(
-      args.slice(2),
+      args.slice(command.path.split(' ').length),
       [],
       command.options.map((option) => option.split(' ')[0] ?? option),
     )
-    return command.path === 'provider test'
-      ? await providerFixtureCommand(parsed, root, json, io)
-      : command.path.startsWith('measure ')
-        ? await impactCommand(command.path, parsed, root, json, io)
-        : command.path.startsWith('ramp ')
-          ? await rampCommand(command.path, parsed, root, json, io)
-          : command.path.startsWith('pr ')
-            ? await pullRequestCommand(command.path, parsed, root, json, io)
-            : await verificationSuiteCommand(parsed, root, json, io)
+    return command.path === 'sync'
+      ? await syncCommand(parsed, root, json, io)
+      : command.path === 'provider test'
+        ? await providerFixtureCommand(parsed, root, json, io)
+        : command.path.startsWith('measure ')
+          ? await impactCommand(command.path, parsed, root, json, io)
+          : command.path.startsWith('ramp ')
+            ? await rampCommand(command.path, parsed, root, json, io)
+            : command.path.startsWith('pr ')
+              ? await pullRequestCommand(command.path, parsed, root, json, io)
+              : await verificationSuiteCommand(parsed, root, json, io)
   } catch (error) {
     const code = error instanceof CliError ? error.code : EXIT.precondition
     const message = error instanceof Error ? error.message : 'Asynchronous command failed'
