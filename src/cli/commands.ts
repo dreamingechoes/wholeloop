@@ -8,6 +8,27 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'conformance prepare',
+    arguments: '',
+    options: ['--target <cli>', '--pin <version>', '--store <path>'],
+    schema: 'wholeloop/conformance-prepared@1',
+    summary: 'Prepare a disposable native framing fixture without launching a client',
+  },
+  {
+    path: 'conformance run',
+    arguments: '<id>',
+    options: ['--fixture', '--live', '--timeout <ms>', '--store <path>'],
+    schema: 'wholeloop/conformance-report@1',
+    summary: 'Run one explicitly simulated or live pinned-client framing scenario',
+  },
+  {
+    path: 'conformance report',
+    arguments: '<id>',
+    options: ['--store <path>'],
+    schema: 'wholeloop/conformance-report@1',
+    summary: 'Rejudge process and journal evidence with named missing events',
+  },
+  {
     path: 'eval grounding',
     arguments: '<corpus.json>',
     options: ['--predictions <file>', '--inputs'],

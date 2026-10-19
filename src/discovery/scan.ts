@@ -8,6 +8,8 @@ import type { Asset, CapabilityMap } from './types.js'
 const TOOL_DIR = '\\.(?:agents|claude|codex|opencode|gemini|cursor|github)'
 const SKILL = new RegExp(`(?:^|/)${TOOL_DIR}/skills/.+/SKILL\\.md$`)
 const AGENT = new RegExp(`(?:^|/)${TOOL_DIR}/agents/.+\\.(?:md|toml)$`)
+export const isGeneratedDistribution = (path: string) =>
+  /(?:^|\/)\.wholeloop\/distribution(?:\/|$)/.test(path)
 const PRIORITY: Record<string, number> = {
   check: 190,
   verify: 190,
@@ -32,6 +34,8 @@ function packageManager(path: string, files: ReadonlyMap<string, string>): strin
 }
 
 export function fileKind(path: string): Asset['kind'] | 'runner' | undefined {
+  // A bundled adapter may contain native-looking paths; scanning it duplicates the installed overlay.
+  if (isGeneratedDistribution(path)) return undefined
   if (SKILL.test(path)) return 'skill'
   if (AGENT.test(path)) return 'agent'
   if (

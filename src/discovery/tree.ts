@@ -4,7 +4,7 @@ import { homedir } from 'node:os'
 import { join, relative, sep } from 'node:path'
 import type { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
-import { fileKind, scan } from './scan.js'
+import { fileKind, isGeneratedDistribution, scan } from './scan.js'
 import type { CapabilityMap } from './types.js'
 
 const IGNORE = new Set([
@@ -34,8 +34,10 @@ export function readInventory(
   const seen = new Set<string>()
   const boundary = canonicalPath(root)
   function walk(directory: string): void {
+    if (isGeneratedDistribution(relative(root, directory).split(sep).join('/'))) return
     if (!existsSync(directory)) return
     const actual = realpathSync(directory)
+    if (isGeneratedDistribution(relative(boundary, actual).split(sep).join('/'))) return
     if (!inside(boundary, actual)) {
       warnings.push(`Skipped external symlink: ${relative(root, directory)}`)
       return

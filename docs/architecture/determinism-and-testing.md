@@ -3,7 +3,7 @@
 > **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model in seconds, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
+> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. A disposable four-target framing runner separates explicit simulation from owner-run pinned live processes and names missing journal events. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
 
 ---
 
@@ -57,6 +57,54 @@ Gate and fan-out workflows are tested by running the **real workflow code** with
 ## Conformance across CLIs
 
 A fixture repository, a scripted scenario (for example: standalone `build-slice "add a --version flag"`) and, per tier-A CLI, a headless run with pinned versions. Assertions are **structural** — journal events, item states, files on the branch — never on the model's wording. The result feeds the generated [compatibility matrix](../platforms/README.md).
+
+## Disposable standalone conformance
+
+Build the core, then prepare a fixture with an exact installed client version:
+
+```bash
+wl conformance prepare --target codex --pin 0.163.0 --json
+wl conformance report cf-<returned-id> --json
+wl conformance run cf-<returned-id> --fixture --json
+```
+
+Preparation returns an external disposable repository, prompt and shell-free native
+recipe; it starts no client/model. Use the returned complete ID. Simulation calls
+that target's installed launcher/core and reports FIXTURE_PASS with simulation
+evidence. It cannot populate the actual client conformance matrix. The synthetic
+facts and framing artifact live in harness/conformance/standalone-frame.json.
+
+For an actual model run, prepare a **new** fixture, review its project customization
+and arrange native trust, auth and permissions first. Then use conformance run with
+--live instead of --fixture. Live execution can use authenticated models and incur
+cost. The runner probes the selected binary version before sending the scenario;
+missing/mismatched versions fail. A process has a 180-second default deadline,
+overridable with --timeout in milliseconds (100–600000), and a 1 MiB combined output
+limit. Cancellation terminates the worker group. No resume or permission bypass is
+emitted. A failed/interrupted fixture is consumed; inspect it and prepare another.
+
+Control, ownership and state stay outside Git. Per-run XDG roots isolate wholeloop
+user configuration/state, while native authentication remains in its existing
+store. These are fresh processes, not hermetic client environments: ambient client
+settings, compatible skills/plugins and native logs may remain. No credentials are
+copied and native stdout/stderr is discarded rather than saved in reports.
+
+The structural judge requires one initiative with the fixture owner/repository,
+one standalone frame-problem start and same-run completion, the full artifact shape
+and projection, a go outcome and no continuation/skip/approval. A random note marker
+is present only in the installed skill and must appear between start and completion.
+The observed repository snapshot must stay unchanged. Missing fields name their
+journal event, alongside the CLI and step. Reports include source/scenario/core
+hashes and process status; report rechecks retained evidence without launching work.
+UNRUN exits 3, failed reports exit 4, and fixture/live structural passes exit 0.
+
+A live PASS covers only this scenario's process/journal contract. It does not prove
+native JSON protocol, the actual loader, hook activation, permission isolation,
+semantic challenge quality or truthful narrative evidence. Ignored files, Git
+configuration, external writes and remote effects need separate inspection. Native
+startup files can trigger workspace-change failures; investigate them rather than
+silently weakening the baseline. See [ADR-0051](../decisions/0051-disposable-conformance-and-explicit-evidence.md)
+and the [manual checklist](../../roadmap/manual-verification.md).
 
 ## Evals — measuring the checks themselves
 

@@ -61,6 +61,7 @@
 | [0048](./0048-native-target-layouts-and-checked-launcher-roots.md) | Native target layouts and checked launcher roots | Accepted | 2026-10-19 |
 | [0049](./0049-shared-guards-and-owned-git-fallbacks.md) | Shared guards and owned Git fallbacks | Accepted | 2026-10-19 |
 | [0050](./0050-owned-native-overlays-and-explicit-activation.md) | Owned native overlays and explicit activation | Accepted | 2026-10-19 |
+| [0051](./0051-disposable-conformance-and-explicit-evidence.md) | Disposable conformance and explicit evidence | Accepted | 2026-10-19 |
 
 ## Lifecycle
 

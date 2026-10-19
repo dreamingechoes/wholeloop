@@ -92,6 +92,30 @@ describe('repository capability maps', () => {
 })
 
 describe('discovery cache and step bindings', () => {
+  it('ignores packaged native copies and their aliases without hiding installed overlays', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'wholeloop-distribution-discovery-'))
+    try {
+      const installed = '.opencode/skills/wl-frame-problem/SKILL.md'
+      const bundled = '.wholeloop/distribution/opencode/.opencode/skills/wl-frame-problem/SKILL.md'
+      const content = '---\nname: wl-frame-problem\ndescription: Frame a problem\n---\n'
+      for (const file of [installed, bundled]) {
+        mkdirSync(dirname(join(dir, file)), { recursive: true })
+        writeFileSync(join(dir, file), content)
+      }
+      symlinkSync(join(dir, '.wholeloop/distribution'), join(dir, 'packaged-alias'))
+      expect([...readInventory(dir).files.keys()]).toEqual([installed])
+      const map = scan(
+        new Map([
+          [installed, content],
+          [bundled, content],
+        ]),
+      )
+      expect(map.assets.map((asset) => asset.path)).toEqual([installed])
+      expect(resolveSlot('frame.template', map).selected?.ref).toBe(installed)
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
   it('invalidates on content changes, ignores dependencies and guards symlink boundaries', () => {
     const dir = mkdtempSync(join(tmpdir(), 'wholeloop-discovery-'))
     try {

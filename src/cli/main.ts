@@ -6,6 +6,7 @@ import { challengeCommand } from './challenge.js'
 import { COMMANDS } from './commands.js'
 import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
+import { conformanceCommand } from './conformance.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav } from './docs.js'
 import { doctorCommand } from './doctor.js'
@@ -106,6 +107,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (
       (command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
       command.path === 'fanout run' ||
+      command.path.startsWith('conformance ') ||
       command.path === 'adopt' ||
       command.path.startsWith('share ') ||
       command.path === 'eval grounding' ||
@@ -189,6 +191,7 @@ export async function runAsync(
     (command) =>
       ((command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
         command.path === 'fanout run' ||
+        command.path.startsWith('conformance ') ||
         command.path === 'adopt' ||
         command.path.startsWith('share ') ||
         command.path === 'eval grounding' ||
@@ -218,6 +221,8 @@ export async function runAsync(
     if (command.path.startsWith('guard '))
       return await guardCommand(command.path, parsed, root, json, io)
     if (command.path === 'fanout run') return await fanoutCommand(parsed, root, json, io)
+    if (command.path.startsWith('conformance '))
+      return await conformanceCommand(command.path, parsed, root, json, io)
     if (command.path === 'adopt' || command.path.startsWith('share '))
       return await sharingCommand(command.path, parsed, root, json, io)
     return command.path === 'eval grounding'

@@ -6,6 +6,40 @@
   "oneOf": [
     {
       "type": "object",
+      "properties": { "schema": { "const": "wholeloop/conformance-prepared@1" } },
+      "required": [
+        "schema",
+        "id",
+        "cli",
+        "pin",
+        "root",
+        "state",
+        "prompt",
+        "recipe",
+        "evidence",
+        "limitations"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": { "schema": { "const": "wholeloop/conformance-report@1" } },
+      "required": [
+        "schema",
+        "id",
+        "cli",
+        "pin",
+        "step",
+        "scenario",
+        "core",
+        "evidence",
+        "status",
+        "missing",
+        "problems",
+        "limitations"
+      ]
+    },
+    {
+      "type": "object",
       "properties": {
         "schema": {
           "const": "wholeloop/install@1"

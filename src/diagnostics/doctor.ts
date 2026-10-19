@@ -44,9 +44,14 @@ const installations: Record<string, string[]> = {
   opencode: ['npm', 'install', '-g', 'opencode-ai'],
   copilot: ['npm', 'install', '-g', '@github/copilot'],
 }
-export function versionProbe(binary: string, env: NodeJS.ProcessEnv = process.env): VersionProbe {
+export function versionProbe(
+  binary: string,
+  env: NodeJS.ProcessEnv = process.env,
+  cwd?: string,
+): VersionProbe {
   const result = spawnSync(binary, ['--version'], {
     env,
+    ...(cwd ? { cwd } : {}),
     encoding: 'utf8',
     timeout: 2500,
     // Version checks have no interactive work to preserve; SIGTERM handlers must not defeat the deadline.

@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: conformance-evidence-boundary
+    enforcers: [src/conformance/run.ts#runConformance, src/conformance/judge.ts#judgeConformance, test/unit/conformance/conformance.test.ts]
+  - id: conformance-fresh-fixture
+    enforcers: [src/conformance/prepare.ts#prepareConformance, src/conformance/prepare.ts#readConformance, src/conformance/run.ts#runConformance, test/unit/conformance/conformance.test.ts]
+  - id: generated-distribution-not-guidance
+    enforcers: [src/discovery/scan.ts#fileKind, src/discovery/tree.ts#readInventory, test/unit/discovery/discovery.test.ts, test/unit/conformance/conformance.test.ts]
   - id: owned-native-output
     enforcers: [src/installation/receipts.ts#readReceipt, src/installation/receipts.ts#allowed, src/installation/files.ts#checkOwned, src/installation/files.ts#writeOwned, src/installation/manage.ts#manageInstallation, test/unit/installation/installation.test.ts]
   - id: external-installation-control

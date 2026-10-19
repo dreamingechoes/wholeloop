@@ -4,6 +4,20 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Disposable standalone framing conformance (P1-14)
+
+- [ ] Build, then prepare one fresh run per actual tier-A client with --target and its exact --pin version. Inspect returned fixture/prompt/native recipe and executable resolution; a version token alone is not binary provenance. Retain source/scenario/core hashes.
+- [ ] Arrange native trust, auth/model selection and external-state permissions without modifying the fixture baseline. Invoke `conformance run <id> --live --json`, inspect process/journal/artifact results and record each actual result. Native customizations remain enabled; no permission bypass or credential copy is performed. Client startup files may trigger an explicit workspace-change failure.
+- [ ] Confirm the real installed skill supplies the random note marker, creates one owned standalone initiative, completes framing with a go receipt and stops before write-spec. A marker proves instruction consumption, not an adversarial loader attestation; review narrative evidence/challenge quality separately.
+- [ ] Exercise actual timeouts, cancellation and native failures; the report must name CLI, step and missing events without retaining stdout/stderr. Interrupted/failed fixtures cannot be retried or relabelled. Inspect retained evidence and prepare a new run.
+- [ ] Inspect native logs, ambient plugins/compatible user skills, ignored files, Git metadata, external writes and any remote effects. This structural scenario does not validate native JSON protocol, read-only role isolation, hook activation or the broader P0-03 matrix.
+- [ ] Repeat on Linux and supported Node versions before claiming portability. Current simulation/compiled-runner execution is macOS arm64/Node 24.
+
+Automated four-target installed-launcher simulations report FIXTURE_PASS, never a
+native conformance PASS. Preparation launches no model; --live is an explicit
+owner action that can use authenticated models and incur cost. Actual model runs
+remain unexecuted here and do not block further implementation.
+
 ## Native installation and observed diagnostics (P1-13)
 
 - [ ] Run native user/project install/uninstall with explicit targets in disposable client configurations. Verify all seventeen wl-prefixed skills/eight roles, native discovery, restart/trust behavior, permission inheritance and compatibility precedence. Filesystem/transport fixtures do not establish actual client activation.

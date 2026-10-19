@@ -25,7 +25,7 @@ A generic harness that ignores your repository writes generic code. Your repo ma
 
 The result is a **capability map**, cached in the external store and refreshed when selected file contents change. `wl discover --json` returns declarations and parse problems; it never executes scripts. Package scripts carry structured `argv` plus `cwd`, and nested packages inherit a declared workspace package manager. Go, Rust, pytest, RSpec, Make, just and Taskfile runners are detected from their declarations; detection does not prove that a runner is installed or that its tests pass.
 
-Discovery skips dependency/build directories, files over 1 MiB and external or broken repository symlinks, reporting warnings. Internal symlinks are followed once. User discovery scans only skill directories, with lower precedence than repository assets. Codex TOML agents are inventoried by path; format and read-only conformance still require P0-03. Invalid metadata or runner configuration blocks resolution instead of silently choosing from a partial map.
+Discovery excludes .wholeloop/distribution and internal aliases into it: packaged native copies must not compete with installed overlays for the same slot. It skips dependency/build directories, files over 1 MiB and external or broken repository symlinks, reporting warnings. Internal symlinks are followed once. User discovery scans only skill directories, with lower precedence than repository assets. Codex TOML agents are inventoried by path; format and read-only conformance still require P0-03. Invalid metadata or runner configuration blocks resolution instead of silently choosing from a partial map.
 
 ## Slots
 

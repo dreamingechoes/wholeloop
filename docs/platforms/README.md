@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets and self-contained core packaging are implemented; hook registration and actual discovery/permissions remain pending. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
 
 ---
 
@@ -88,8 +88,8 @@ sources are not copied with broken imports; their executable CLI paths are bundl
 Golden/compiled CLI fixtures passed, including executing the copied core outside
 this checkout. Claude 2.1.299 plugin validate --strict also returned Validation
 passed for an isolated generated plugin. This static check is not installation,
-skill discovery, model execution or a live conformance pass. Hooks remain code work,
-and actual discovery/install/Linux checks remain in the
+skill discovery, model execution or a live conformance pass. Native guard bindings are implemented;
+actual discovery/install/Linux checks remain in the
 [manual checklist](../../roadmap/manual-verification.md). See
 [ADR-0047](../decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md).
 
@@ -160,6 +160,15 @@ empty parents. Source/plugin generation remains available independently. Native
 restart, project trust, compatibility precedence, permissions and Linux still need
 actual conformance. Git-hook activation/removal remains a separate per-repository
 handoff. See [getting started](../getting-started.md) and [ADR-0050](../decisions/0050-owned-native-overlays-and-explicit-activation.md).
+
+## Standalone conformance
+
+The [standalone conformance runner](../architecture/determinism-and-testing.md#disposable-standalone-conformance)
+prepares project-local overlays for each tier-A target and exact version pin. Its
+fixture mode reports simulation only; actual pinned live process/journal checks
+require an explicit --live run. Native authentication/trust/permissions, stdout
+protocol, hook activation and broader matrix entries stay separate. No actual
+model results have been recorded by the local fixture tests.
 
 ## Adding a CLI
 

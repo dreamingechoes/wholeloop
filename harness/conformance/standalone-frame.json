@@ -1,0 +1,16 @@
+{
+  "schema": "wholeloop/conformance-scenario@1",
+  "id": "standalone-frame-v1",
+  "step": "frame-problem",
+  "input": "Find an earlier synthetic order by its receipt number",
+  "owner": "Fixture Owner",
+  "facts": [
+    "This is a synthetic fixture, not a production observation.",
+    "The sample customer has twelve invented past orders and a receipt number.",
+    "The proposed problem is locating that earlier order; checkout and payment changes are out of scope.",
+    "Support evidence, baseline, target, validation, effort and business priority are unknown; identify their owners instead of inventing values.",
+    "Use framing outcome go for this fixture and stop before starting write-spec."
+  ],
+  "readme": "# Synthetic order retrieval\n\nThis repository is a disposable conformance fixture. It contains no production data, remote, service credentials or deployment target.\n",
+  "artifact": "# Synthetic order retrieval framing\n\n## Problem\nLocate an earlier synthetic order by receipt number.\n\n## Who it is for\nThe fictional customer with twelve invented past orders.\n\n## Evidence and hypothesis\nTBD: support evidence; who: support lead\nHypothesis: a receipt lookup makes the earlier order easier to locate.\n\n## Expected impact\nTBD: observed baseline and target; who: product analyst\n\n## Who validated it\nTBD: customer validation; who: product owner\n\n## Cost and priority\nTBD: effort and business priority; who: engineering lead\n\n## Stop conditions\nStop if validation shows no material retrieval problem.\n\n## Scope hint\nReceipt lookup only; checkout and payment changes are out of scope.\n\n## Owner\nFixture Owner\n"
+}

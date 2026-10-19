@@ -236,7 +236,7 @@ checks do not block the local P1-14 conformance runner.
 
 ## P1-14 · Conformance harness v1
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-12, P1-13
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-12, P1-13
 
 **Goal** — Prove the same scenario passes on all tier-A CLIs.
 
@@ -245,9 +245,17 @@ checks do not block the local P1-14 conformance runner.
 **Acceptance criteria:**
 
 - [ ] The scenario passes on Claude Code, Codex, OpenCode and Copilot CLI.
-- [ ] A failure report names the CLI, the step and the missing journal event.
+- [x] A failure report names the CLI, the step and the missing journal event.
 
-**Docs** — architecture/determinism-and-testing, platforms.
+**Local implementation:** a bundled synthetic scenario, disposable seeded repositories,
+real project installer/launchers, four native headless recipes, exact version
+preflight, bounded execution/cancellation and a replay/projection/marker judge are
+implemented. Preparation, simulation and explicit live process evidence are distinct.
+Fixtures cannot close the real-client criterion. Missing native trust/permissions,
+actual model runs and Linux/other Node checks remain with the owner. These checks
+do not block other implementation.
+
+**Docs** — architecture/determinism-and-testing, platforms, ADR-0051.
 
 ---
 
