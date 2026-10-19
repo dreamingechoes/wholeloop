@@ -34,7 +34,7 @@
 
 ## P5-03 · Headless fan-out engine
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P3-03
+**Status:** ⏸️ · **Size:** L · **Depends on:** P3-03
 
 **Goal** — Parallel, isolated gate lenses on any CLI with a headless mode.
 
@@ -43,9 +43,17 @@
 **Acceptance criteria:**
 
 - [ ] The same gate run gives the same verdict under native, headless and sequential engines (stubbed workflow test + one real conformance run).
-- [ ] A crashed worker is reported, never counted as a refutation.
+- [x] A crashed worker is reported, never counted as a refutation.
 
-**Docs** — architecture/orchestration-and-gates, ADR-0006.
+**Local implementation:** bounded process transport, shell-free stdin prompts,
+per-assignment sessions, timeout/output/concurrency limits, owned-group cancellation,
+exact response validation, round locks and the existing gate aggregator are tested.
+Native/headless/sequential synthetic verdict parity passes. Claude/Codex recipes
+are help-probed and tested through synthetic PATH clients; real conformance remains
+open. OpenCode/Copilot recipes are still unimplemented adapter work, not a claimed
+manual pass. Neither gap blocks independent local generator/guard implementation.
+
+**Docs** — architecture/orchestration-and-gates, ADR-0006, ADR-0046.
 
 ## P5-04 · Nightly conformance and the generated matrix
 

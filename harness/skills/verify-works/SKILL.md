@@ -6,7 +6,7 @@ metadata:
 ---
 # Verify behavior
 
-Read ask-never-guess, output-contract, gate-rounds and verification-execution.
+Read headless-gates, ask-never-guess, output-contract, gate-rounds and verification-execution.
 
 1. Begin with `wl verify begin --for <slice-or-part> --json`. Standalone branch
    use supplies its name, named comparison `--base`, explicit `--owner`, `--by`
@@ -34,3 +34,9 @@ Read ask-never-guess, output-contract, gate-rounds and verification-execution.
    builder within the recorded budget; this checker never repairs code itself.
 8. Keep human testing separate. Report absent rendering sources, live-client
    isolation gaps and other unavailable observations instead of implying coverage.
+
+When the conductor explicitly selects headless, use `wl fanout run verify --for
+<id> --engine headless --adapter claude|codex --json` after the same planned inputs
+and actual suite receipt.
+The process host submits results/refutations and seals the same core verdict;
+continue with this skill's completion/handoff instead of dispatching workers twice.

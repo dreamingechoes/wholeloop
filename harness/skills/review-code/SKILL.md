@@ -6,7 +6,7 @@ metadata:
 ---
 # Review craft
 
-Read ask-never-guess, output-contract, gate-rounds and review-input.
+Read headless-gates, ask-never-guess, output-contract, gate-rounds and review-input.
 
 1. Use `wl review begin --for <slice-or-part> --json`. A standalone branch uses
    its name, a named comparison `--base` and explicit `--owner`. Missing ownership,
@@ -34,3 +34,9 @@ Read ask-never-guess, output-contract, gate-rounds and review-input.
 
 For labelled regression evaluation read gate-evaluation; export blind inputs and
 collect actual independent observations before interpreting quality rates.
+
+When the conductor explicitly selects headless, use `wl fanout run review --for
+<id> --engine headless --adapter claude|codex --json` after the same planned inputs
+are pinned.
+The process host submits results/refutations and seals the same core verdict;
+continue with this skill's completion/handoff instead of dispatching workers twice.

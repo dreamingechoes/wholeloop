@@ -1281,6 +1281,26 @@
         }
       },
       "required": ["schema", "status", "key", "request"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/fanout@1"
+        }
+      },
+      "required": [
+        "schema",
+        "engine",
+        "adapter",
+        "subject",
+        "run",
+        "round",
+        "status",
+        "cached",
+        "workers",
+        "verdict"
+      ]
     }
   ],
   "$defs": {

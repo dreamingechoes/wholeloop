@@ -3,7 +3,7 @@
 > **TL;DR** — Eight short agent roles do the work. They run on whichever **engine** the CLI supports best — native subagents, headless worker processes, or one after another — and the result is the same, because everything that decides (lens sets, thresholds, round caps, aggregation) lives in the core, not in the engine.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review, live client engines and the remaining roles are pending. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
+> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with Claude/Codex recipes are implemented locally; actual client engines and read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
 
 ---
 
@@ -66,6 +66,50 @@ flowchart LR
 | **sequential** | Anything else | Slowest; identical coverage |
 
 The engine is chosen by the adapter's declared capabilities and can be overridden per run. **Coverage never depends on it.**
+
+## Local headless process transport
+
+Plan a gate through its normal workflow before selecting the process transport:
+
+```text
+wl gate plan review --for review-01234567 --repo . --base main --json
+wl fanout run review --for review-01234567 --engine headless --adapter codex --concurrency 4 --timeout 120 --json
+```
+
+Current recipes support claude and codex. They were checked against installed
+help and primary documentation, then executed with synthetic PATH clients; no
+real model conformance is claimed. OpenCode/Copilot headless recipes remain
+unimplemented. Native/sequential SDK hosts remain available independently.
+
+Each assignment gets a separate process, session and external-store directory.
+Prompts travel through stdin, with the exact pinned patch/rubric and suite metadata
+when present. The response must match its assignment digest/run/round and unit or
+finding/verifier; only validated responses enter the same gate submit/verdict path.
+Verification requires the actual once-per-round suite first; the process host does
+not convert a semantic answer into a machine execution result.
+
+Concurrency is 1–16 (default 4), timeout is 0.1–600 seconds (default 120), input is
+bounded to 2 MiB and combined output to 1 MiB. Timeout/cancellation terminates then
+kills the owned POSIX process group. Missing/failed/invalid inspections become
+unavailable; failed refuters contribute no vote. Observed workspace changes stop
+the run and preserve edits. A failed round retains its ordinary budget and needs
+explicit gate planning rather than an automatic repair or reset.
+
+The transport stores worker status/exit metadata under `fanout/<run>/<round>/`;
+it retains no prompt bodies or raw stdout/stderr. Client-owned internal logs and
+managed policy still need live review. Decided rounds return cached verdicts;
+undecided rounds skip recorded units/votes. A round ownership lock prevents two
+conductors from spawning the same round concurrently. Inspect its owner.json and
+confirm the process stopped before recovering a lock left by a physical crash.
+
+Claude uses read-only built-in tools, non-interactive denials and disabled ordinary
+customizations/MCP. Codex uses an ephemeral read-only sandbox, no approval prompts,
+ignored user config and a working directory outside the project; its prompt names
+the repository to inspect. Neither recipe uses a permission bypass or resume flag.
+These settings and snapshot checks do not prove the absence of ignored/transient
+writes, managed-hook effects or external side effects. See
+[ADR-0046](../decisions/0046-bounded-headless-workers-and-shared-gate-aggregation.md)
+and the [owner checklist](../../roadmap/manual-verification.md).
 
 ## Gates
 

@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-19 · P5-03 — bounded headless process transport; live adapters remain open
+
+- Add fanout run for explicit existing review/verify rounds with one shell-free stdin-fed process and external-store directory per assignment. Pin complete plan/review/suite identity and validate exact run/round/unit or finding/verifier plus existing public schemas. Reuse inspectGateRound/submit/refutation/verdict without changing coverage, thresholds, budgets or repair ownership. Verification requires its actual once-per-round suite first.
+- Bound concurrency to 1–16, timeout to 100–600000 ms, input to 2 MiB and combined output to 1 MiB. Terminate then kill owned POSIX groups on timeout/cancellation. Crashed/invalid inspections remain unavailable; failed refuters add no vote. Detect observed workspace mutations, preserve edits and stop other workers. Retain status/exit metadata only, not prompt bodies or raw output. Round locks prevent concurrent conductors and require owner inspection after physical crashes; decided rounds cache without respawning.
+- Add Claude/Codex recipes from installed help and primary docs with read-only/non-interactive restrictions and no reused conversation. Start Codex outside project configuration with ephemeral read-only execution; restrict Claude to read tools and disable ordinary customization/MCP. Parse only successful final structured responses. Actual managed policies/hooks, client logs, authentication and transient/ignored/external effects remain unverified. ADR-0046 records this boundary; no real model call ran.
+- Verify eighteen new process cases: isolated PIDs/directories, actual concurrency, native/headless/sequential verdict/quorum parity, crash/timeout/output overflow/wrong assignment/wrong unit/malformed replies, failed refutation, active/queued cancellation, mutation preservation, stale locks, missing plans/suites, budgets, both compiled synthetic client transports and failed final-output decoding. All 646 tests in 45 files passed; full local check passed build, smoke, lint, typecheck, generated references/catalogs, docs, harness, Markdown and all 35 Mermaid diagrams. Correct raw command placeholders found by the early Markdown check before the final full run.
+- Keep P5-03 partial: real per-client conformance remains an unchecked acceptance criterion, and OpenCode/Copilot recipes remain code work. Record both honestly without blocking other local tasks. Continue the P1 adapter/generator foundation using explicit unverified capability declarations; owner checks stay collected for the end.
+
+---
+
 ## 2026-10-19 · P2-08 — canonical URL adoption and recoverable shared Define publication
 
 - Add next URL/adopt with canonical credential-free HTTPS identity, tracking/fragment normalization, stored-link matching and explicit cross-initiative ambiguity. Import only complete matching revision-bound docs/items, batch missing owner/title before mutation, retain source digest/context and distinguish host reads from labelled imports. Concurrent/repeated adoption creates one initiative and no fabricated approval or completed step.

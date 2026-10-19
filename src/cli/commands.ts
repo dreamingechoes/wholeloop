@@ -578,6 +578,19 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Aggregate evidence into a replayable research brief',
   },
   {
+    path: 'fanout run',
+    arguments: '<verify|review>',
+    options: [
+      '--for <id>',
+      '--engine <headless>',
+      '--adapter <claude|codex>',
+      '--concurrency <1..16>',
+      '--timeout <seconds>',
+    ],
+    schema: 'wholeloop/fanout@1',
+    summary: 'Collect bounded isolated headless gate workers without changing coverage',
+  },
+  {
     path: 'adopt',
     arguments: '<URL>',
     options: [

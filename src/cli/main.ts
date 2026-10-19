@@ -11,6 +11,7 @@ import { environmentCommand } from './environment.js'
 import { CliError } from './errors.js'
 import { evalCommand, gateEvalCommand } from './eval.js'
 import { extensionCommand } from './extensions.js'
+import { fanoutCommand } from './fanout.js'
 import { flowCommand } from './flow.js'
 import { gateCommand } from './gate.js'
 import { groundingCommand } from './grounding.js'
@@ -98,6 +99,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (['verify begin', 'verify complete'].includes(command.path))
       return verificationCommand(command.path, parsed, root, json, io)
     if (
+      command.path === 'fanout run' ||
       command.path === 'adopt' ||
       command.path.startsWith('share ') ||
       command.path === 'eval grounding' ||
@@ -174,7 +176,8 @@ export async function runAsync(
   const args = argv.filter((arg) => arg !== '--json')
   const command = COMMANDS.find(
     (command) =>
-      (command.path === 'adopt' ||
+      (command.path === 'fanout run' ||
+        command.path === 'adopt' ||
         command.path.startsWith('share ') ||
         command.path === 'eval grounding' ||
         command.path === 'sync' ||
@@ -200,6 +203,7 @@ export async function runAsync(
         .filter((option) => option.includes(' '))
         .map((option) => option.split(' ')[0] ?? option),
     )
+    if (command.path === 'fanout run') return await fanoutCommand(parsed, root, json, io)
     if (command.path === 'adopt' || command.path.startsWith('share '))
       return await sharingCommand(command.path, parsed, root, json, io)
     return command.path === 'eval grounding'
