@@ -170,7 +170,7 @@ owner check. These gaps do not block independent local adapter implementation.
 
 ## P1-11 · Adapters — Codex, OpenCode, Copilot CLI
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P1-10
+**Status:** ⏸️ · **Size:** L · **Depends on:** P1-10
 
 **Goal** — Same harness, four tier-A targets.
 
@@ -178,10 +178,18 @@ owner check. These gaps do not block independent local adapter implementation.
 
 **Acceptance criteria:**
 
-- [ ] Golden files for each adapter; one canonical change updates all four outputs.
+- [x] Golden files for each adapter; one canonical change updates all four outputs.
 - [ ] Read-only roles map to each CLI's strongest available restriction.
 
-**Docs** — platforms.
+**Local implementation:** all three native renderers, namespaced skills/agents,
+portable Codex/Copilot manifests, checked launcher/root binding, role restrictions
+and cross-target goldens are implemented. Codex's inherited permission limitation
+is explicit; mappings are not a claimed isolated native sandbox. Hook registration,
+including the thin OpenCode guard plugin, remains unimplemented code. Actual
+permission enforcement and model conformance remain owner verification; neither
+gap blocks independent common-guard/install implementation.
+
+**Docs** — platforms, ADR-0048.
 
 ## P1-12 · First skills — `next`, `status`, `setup`, `frame-problem`
 

@@ -3,8 +3,12 @@ export interface AdapterCapabilities {
   skills: 'rendered'
   agents: 'rendered'
   hooks: 'unimplemented'
-  readOnly: 'tool-allowlist-and-plan-mode'
-  engines: readonly ['headless', 'sequential']
+  readOnly:
+    | 'tool-allowlist-and-plan-mode'
+    | 'inherited-parent-and-checked-headless'
+    | 'deny-shell-and-edit'
+    | 'read-tool-allowlist'
+  engines: readonly ('headless' | 'sequential')[]
 }
 export interface RenderedFile {
   content: string
@@ -12,9 +16,15 @@ export interface RenderedFile {
 }
 export interface Adapter {
   id: string
+  manifestPath: string
+  launchers?: boolean
   capabilities(): AdapterCapabilities
   renderSkill(name: string, content: string): RenderedFile
   renderAgent(name: string, content: string): RenderedFile
+  name(kind: 'skill' | 'agent', name: string): string
   paths(kind: 'skill' | 'agent', name: string): string
-  manifest(version: string): unknown
+  manifest(
+    version: string,
+    components?: { skills: readonly string[]; agents: readonly string[] },
+  ): unknown
 }

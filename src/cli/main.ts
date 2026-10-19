@@ -1,4 +1,5 @@
 import { VERSION } from '../version.js'
+import { adapterRoot } from './adapter-root.js'
 import { parseArguments } from './arguments.js'
 import { buildCommand } from './build.js'
 import { challengeCommand } from './challenge.js'
@@ -112,6 +113,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       command.path.startsWith('measure ')
     )
       throw new CliError('This command requires the asynchronous dispatcher')
+    if (command.path === 'adapter root') return adapterRoot(json, io)
     if (command.path === 'build') return generateCommand(parsed, root, json, io)
     if (command.path.startsWith('build ')) return buildCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)

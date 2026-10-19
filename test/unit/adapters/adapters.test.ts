@@ -115,7 +115,7 @@ describe('canonical client artifact generation', () => {
     }
   })
   it('rejects invalid canonical paths/front matter/budgets and unsupported targets', () => {
-    expect(() => generateAdapter('other', canonical, core, '0.0.0')).toThrow(/unimplemented/)
+    expect(() => generateAdapter('other', canonical, core, '0.0.0')).toThrow(/Choose/)
     expect(() => generateAdapter('claude', canonical, 'not a built executable', '0.0.0')).toThrow(
       /built executable/,
     )

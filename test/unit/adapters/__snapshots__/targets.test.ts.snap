@@ -1,0 +1,389 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`additional tier-A render targets > codex matches its native golden tree 1`] = `
+{
+  ".codex/agents/wl-reviewer.toml": {
+    "content": "name = "wl-reviewer"
+description = "Observe the assigned fixture."
+developer_instructions = "The conductor supplies wholeloopRoot from the packaged adapter root command. For every canonical wl command invoke Node with wholeloopRoot/bin/wl.mjs. Read shared protocols under wholeloopRoot/resources/protocols/. If the root or required evidence is absent, return a question; do not guess PATH or manufacture coverage.\\n\\nCanonical model tier: deep; inherit the current model unless the caller explicitly chooses an available model.\\nThis role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\\n\\n# Review\\n\\nReturn concrete evidence.\\n"
+
+[features]
+shell_tool = false
+apps = false
+plugins = false
+memories = false
+request_permissions_tool = false
+",
+    "mode": 420,
+  },
+  "bin/wl.mjs": {
+    "content": "#!/usr/bin/env node
+console.log("fixture core")
+",
+    "mode": 493,
+  },
+  "plugin.json": {
+    "content": "{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "wholeloop",
+  "version": "0.0.0",
+  "description": "Define, build, roll out and learn through independent evidence-backed development steps.",
+  "author": {
+    "name": "Iván González Sáiz"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/dreamingechoes/wholeloop",
+  "repository": "https://github.com/dreamingechoes/wholeloop"
+}
+",
+    "mode": 420,
+  },
+  "resources/protocols/core-invariants.md": {
+    "content": "# Core invariants
+
+Retain evidence.
+",
+    "mode": 420,
+  },
+  "skills/wl-next/SKILL.md": {
+    "content": "---
+name: wl-next
+description: Continue fixture work.
+---
+Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+
+# Next
+
+Call wl next --json.
+",
+    "mode": 420,
+  },
+  "skills/wl-next/scripts/wl.mjs": {
+    "content": "#!/usr/bin/env node
+await import(new URL("../../../bin/wl.mjs", import.meta.url))
+",
+    "mode": 493,
+  },
+  "wholeloop-artifacts.json": {
+    "content": "{
+  "schema": "wholeloop/adapter-artifacts@1",
+  "target": "codex",
+  "version": "0.0.0",
+  "source": "b7830fb19468a571424312b6d3f14bf0c7b0318d4ef7e439e36dd0b085901256",
+  "core": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192",
+  "capabilities": {
+    "conformance": "unverified",
+    "skills": "rendered",
+    "agents": "rendered",
+    "hooks": "unimplemented",
+    "readOnly": "inherited-parent-and-checked-headless",
+    "engines": [
+      "headless",
+      "sequential"
+    ]
+  },
+  "skills": [
+    "wl-next"
+  ],
+  "agents": [
+    "wl-reviewer"
+  ],
+  "files": [
+    {
+      "path": ".codex/agents/wl-reviewer.toml",
+      "mode": 420,
+      "sha256": "cb789201728902473f642ed3c7552463940d18378e32f51c5aebebef4241ec79"
+    },
+    {
+      "path": "resources/protocols/core-invariants.md",
+      "mode": 420,
+      "sha256": "7c090ea8f5ce89d37a815c6ed0704a9b5a4584b4eccae977b3b4c20e49f5e1fa"
+    },
+    {
+      "path": "skills/wl-next/SKILL.md",
+      "mode": 420,
+      "sha256": "ee89b3a9fe337d22ce0beb904bf89a07db0cce3bc5890220860fe7dca0dc134b"
+    },
+    {
+      "path": "skills/wl-next/scripts/wl.mjs",
+      "mode": 493,
+      "sha256": "add502f552054a727698aa8e17bc78a730de1f32dbe67619a8a0555128bf8dd1"
+    },
+    {
+      "path": "plugin.json",
+      "mode": 420,
+      "sha256": "624e6eb27dbaa1e7daf83ef25d922676a23eefb316a0660c01f13274bd07ea8a"
+    },
+    {
+      "path": "bin/wl.mjs",
+      "mode": 493,
+      "sha256": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192"
+    }
+  ]
+}
+",
+    "mode": 420,
+  },
+}
+`;
+
+exports[`additional tier-A render targets > copilot matches its native golden tree 1`] = `
+{
+  "bin/wl.mjs": {
+    "content": "#!/usr/bin/env node
+console.log("fixture core")
+",
+    "mode": 493,
+  },
+  "com.github.copilot/agents/wl-reviewer.agent.md": {
+    "content": "---
+name: wl-reviewer
+description: Observe the assigned fixture.
+tools:
+  - view
+  - glob
+  - grep
+  - web_fetch
+include-custom-instructions: true
+infer: false
+---
+The conductor supplies wholeloopRoot from the packaged adapter root command. For every canonical wl command invoke Node with wholeloopRoot/bin/wl.mjs. Read shared protocols under wholeloopRoot/resources/protocols/. If the root or required evidence is absent, return a question; do not guess PATH or manufacture coverage.
+
+Canonical model tier: deep; inherit the selected session model. Read-only roles receive no shell or write tool; the conductor supplies observed command/provider results when needed.
+
+# Review
+
+Return concrete evidence.
+",
+    "mode": 420,
+  },
+  "plugin.json": {
+    "content": "{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "wholeloop",
+  "version": "0.0.0",
+  "description": "Define, build, roll out and learn through independent evidence-backed development steps.",
+  "author": {
+    "name": "Iván González Sáiz"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/dreamingechoes/wholeloop",
+  "repository": "https://github.com/dreamingechoes/wholeloop"
+}
+",
+    "mode": 420,
+  },
+  "resources/protocols/core-invariants.md": {
+    "content": "# Core invariants
+
+Retain evidence.
+",
+    "mode": 420,
+  },
+  "skills/wl-next/SKILL.md": {
+    "content": "---
+name: wl-next
+description: Continue fixture work.
+---
+Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+
+# Next
+
+Call wl next --json.
+",
+    "mode": 420,
+  },
+  "skills/wl-next/scripts/wl.mjs": {
+    "content": "#!/usr/bin/env node
+await import(new URL("../../../bin/wl.mjs", import.meta.url))
+",
+    "mode": 493,
+  },
+  "wholeloop-artifacts.json": {
+    "content": "{
+  "schema": "wholeloop/adapter-artifacts@1",
+  "target": "copilot",
+  "version": "0.0.0",
+  "source": "b7830fb19468a571424312b6d3f14bf0c7b0318d4ef7e439e36dd0b085901256",
+  "core": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192",
+  "capabilities": {
+    "conformance": "unverified",
+    "skills": "rendered",
+    "agents": "rendered",
+    "hooks": "unimplemented",
+    "readOnly": "read-tool-allowlist",
+    "engines": [
+      "sequential"
+    ]
+  },
+  "skills": [
+    "wl-next"
+  ],
+  "agents": [
+    "wl-reviewer"
+  ],
+  "files": [
+    {
+      "path": "com.github.copilot/agents/wl-reviewer.agent.md",
+      "mode": 420,
+      "sha256": "ee7c21be31303fb3e4f84eaffbd7a5d74ef68e2aa7b5f4fc7bfc43274873f514"
+    },
+    {
+      "path": "resources/protocols/core-invariants.md",
+      "mode": 420,
+      "sha256": "7c090ea8f5ce89d37a815c6ed0704a9b5a4584b4eccae977b3b4c20e49f5e1fa"
+    },
+    {
+      "path": "skills/wl-next/SKILL.md",
+      "mode": 420,
+      "sha256": "ee89b3a9fe337d22ce0beb904bf89a07db0cce3bc5890220860fe7dca0dc134b"
+    },
+    {
+      "path": "skills/wl-next/scripts/wl.mjs",
+      "mode": 493,
+      "sha256": "add502f552054a727698aa8e17bc78a730de1f32dbe67619a8a0555128bf8dd1"
+    },
+    {
+      "path": "plugin.json",
+      "mode": 420,
+      "sha256": "624e6eb27dbaa1e7daf83ef25d922676a23eefb316a0660c01f13274bd07ea8a"
+    },
+    {
+      "path": "bin/wl.mjs",
+      "mode": 493,
+      "sha256": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192"
+    }
+  ]
+}
+",
+    "mode": 420,
+  },
+}
+`;
+
+exports[`additional tier-A render targets > opencode matches its native golden tree 1`] = `
+{
+  ".opencode/agents/wl-reviewer.md": {
+    "content": "---
+description: Observe the assigned fixture.
+mode: subagent
+permission:
+  "*": deny
+  external_directory: allow
+  read: allow
+  glob: allow
+  grep: allow
+  skill: allow
+  webfetch: allow
+  websearch: allow
+---
+The conductor supplies wholeloopRoot from the packaged adapter root command. For every canonical wl command invoke Node with wholeloopRoot/bin/wl.mjs. Read shared protocols under wholeloopRoot/resources/protocols/. If the root or required evidence is absent, return a question; do not guess PATH or manufacture coverage.
+
+Canonical model tier: deep; inherit the selected session model. Read-only roles receive no shell or edit permission; the conductor supplies observed command/provider results when needed.
+
+# Review
+
+Return concrete evidence.
+",
+    "mode": 420,
+  },
+  ".opencode/skills/wl-next/SKILL.md": {
+    "content": "---
+name: wl-next
+description: Continue fixture work.
+---
+Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+
+# Next
+
+Call wl next --json.
+",
+    "mode": 420,
+  },
+  ".opencode/skills/wl-next/scripts/wl.mjs": {
+    "content": "#!/usr/bin/env node
+await import(new URL("../../../../bin/wl.mjs", import.meta.url))
+",
+    "mode": 493,
+  },
+  "bin/wl.mjs": {
+    "content": "#!/usr/bin/env node
+console.log("fixture core")
+",
+    "mode": 493,
+  },
+  "opencode.json": {
+    "content": "{
+  "$schema": "https://opencode.ai/config.json"
+}
+",
+    "mode": 420,
+  },
+  "resources/protocols/core-invariants.md": {
+    "content": "# Core invariants
+
+Retain evidence.
+",
+    "mode": 420,
+  },
+  "wholeloop-artifacts.json": {
+    "content": "{
+  "schema": "wholeloop/adapter-artifacts@1",
+  "target": "opencode",
+  "version": "0.0.0",
+  "source": "b7830fb19468a571424312b6d3f14bf0c7b0318d4ef7e439e36dd0b085901256",
+  "core": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192",
+  "capabilities": {
+    "conformance": "unverified",
+    "skills": "rendered",
+    "agents": "rendered",
+    "hooks": "unimplemented",
+    "readOnly": "deny-shell-and-edit",
+    "engines": [
+      "sequential"
+    ]
+  },
+  "skills": [
+    "wl-next"
+  ],
+  "agents": [
+    "wl-reviewer"
+  ],
+  "files": [
+    {
+      "path": ".opencode/agents/wl-reviewer.md",
+      "mode": 420,
+      "sha256": "4f6151df5913c9967b4541bc098dfabee30182f63f2e7c54ec500aed49317409"
+    },
+    {
+      "path": "resources/protocols/core-invariants.md",
+      "mode": 420,
+      "sha256": "7c090ea8f5ce89d37a815c6ed0704a9b5a4584b4eccae977b3b4c20e49f5e1fa"
+    },
+    {
+      "path": ".opencode/skills/wl-next/SKILL.md",
+      "mode": 420,
+      "sha256": "ee89b3a9fe337d22ce0beb904bf89a07db0cce3bc5890220860fe7dca0dc134b"
+    },
+    {
+      "path": ".opencode/skills/wl-next/scripts/wl.mjs",
+      "mode": 493,
+      "sha256": "97aaf4cd7ee9b4e80dbef372362aaf8a582b497cb109b4e98df4a4b0fad868eb"
+    },
+    {
+      "path": "opencode.json",
+      "mode": 420,
+      "sha256": "3a1689520689222b217d5107e8e7becc3fbbd2aae41dc086435cd6a941b650c1"
+    },
+    {
+      "path": "bin/wl.mjs",
+      "mode": 493,
+      "sha256": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192"
+    }
+  ]
+}
+",
+    "mode": 420,
+  },
+}
+`;

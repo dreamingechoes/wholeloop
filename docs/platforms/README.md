@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local Claude artifact generation and self-contained core packaging are implemented; hooks, the other generated targets and actual discovery/permissions remain pending. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets and self-contained core packaging are implemented; hook registration and actual discovery/permissions remain pending. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
 
 ---
 
@@ -92,6 +92,42 @@ skill discovery, model execution or a live conformance pass. Hooks remain code w
 and actual discovery/install/Linux checks remain in the
 [manual checklist](../../roadmap/manual-verification.md). See
 [ADR-0047](../decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md).
+
+### Additional tier-A targets
+
+```text
+wl build --target codex --out /tmp/wholeloop-codex --json
+wl build --target opencode --out /tmp/wholeloop-opencode --json
+wl build --target copilot --out /tmp/wholeloop-copilot --json
+```
+
+| Target | Skill tree | Agent tree | Metadata |
+| --- | --- | --- | --- |
+| Codex | `skills/wl-*/SKILL.md` | `.codex/agents/wl-*.toml` project/user overlays | Agent Plugins 1.0 root `plugin.json` |
+| OpenCode | `.opencode/skills/wl-*/SKILL.md` | `.opencode/agents/wl-*.md` | Native `opencode.json` |
+| Copilot | `skills/wl-*/SKILL.md` | `com.github.copilot/agents/wl-*.agent.md` | Agent Plugins 1.0 root `plugin.json` |
+
+Every non-Claude skill includes a tiny scripts/wl.mjs launcher importing the one
+packaged core. Use the exact loaded skill directory reported by the client; if it
+is absent, ask rather than invent a path. Call that launcher with adapter root
+--json for the verified artifact root and pass the result to agents. Root validation
+checks layout/version/executable hash and refuses source-checkout/corrupted claims.
+Launchers work through directory symlinks without duplicating the executable.
+
+OpenCode/Copilot observers receive no shell/write channel; command/provider evidence
+comes from the conductor. OpenCode read roles can read shared resources outside the
+checkout; writer roles retain native external-directory asks. Copilot agents explicitly
+inherit repository instructions and do not opt into automatic inferred delegation.
+Codex agent files cannot lower the parent's sandbox/approval policy: supported
+feature reductions are rendered, while checked read-only parent/headless execution
+and the core snapshot checks remain necessary. Do not interpret instructions as a
+new sandbox. Additional targets inherit the selected model and retain tier hints.
+
+Codex agent files are installation overlays: loading a portable skill package alone
+does not prove native agent discovery. All target manifests retain conformance
+unverified and hooks unimplemented. Static/native listings do not establish a live
+model run or permission enforcement. See [ADR-0048](../decisions/0048-native-target-layouts-and-checked-launcher-roots.md)
+and the [manual checklist](../../roadmap/manual-verification.md).
 
 ## Installing
 

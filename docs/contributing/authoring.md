@@ -109,10 +109,11 @@ An adapter implements one interface:
 | `renderMcp(provider)` | the CLI's MCP dialect |
 | `headless(prompt, opts)` | the command line for headless workers |
 
-The first local adapter is src/adapters/claude.ts, with a pure renderer and owned
+Local adapters are src/adapters/claude.ts and src/adapters/portable.ts, with pure renderers and an owned
 output writer. npm run build embeds bounded canonical resources into the executable;
 `wl build --target claude --out <directory>` renders a distribution tree. Golden
-fixtures and a compiled self-contained execution test cover that path. Hook
+fixtures and a compiled self-contained execution test cover that path. The same build command accepts codex, opencode and copilot. Tiny skill launchers
+and adapter root resolve the packaged core through symlinked overlays. Hook
 registration and actual client conformance remain pending; generated manifests
 state those gaps explicitly. See [ADR-0047](../decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md).
 

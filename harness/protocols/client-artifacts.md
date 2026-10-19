@@ -10,7 +10,8 @@
   conductor's resolved plugin root instead of guessing an executable on PATH.
 
 A rendered artifact is not installed or proven conformant. Current generation
-supports Claude skills/agents/resources and a plugin manifest only; hooks and
-other targets remain unimplemented. Keep conformance unverified until the actual
+supports Claude, Codex, OpenCode and Copilot native trees, resources and packaged
+cores. Codex/Copilot use portable manifests; OpenCode uses its native config.
+Hook registration remains unimplemented. Keep conformance unverified until the actual
 client discovers and executes the generated components. Static manifest validation
 and synthetic golden tests establish separate, narrower facts.

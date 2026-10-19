@@ -4,6 +4,17 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Additional tier-A artifacts (P1-11)
+
+- [ ] Load generated Codex/Copilot portable skill packages and install the appropriate native agent overlays, including Codex project/user TOML agents. Verify all seventeen prefixed skills/eight agents and their actual invocation; a portable skill package does not prove Codex agent discovery.
+- [ ] In actual clients, verify loaded skill-directory reporting, launcher execution, checked artifact roots and conductor handoff after relocation and symlinked installation. Missing context must ask rather than selecting another wl on PATH.
+- [ ] Exercise disposable read-only sentinels and actual command/provider handoffs. Codex custom agents inherit the parent sandbox; verify the checked read-only parent/headless path rather than trusting instructions or an unsupported per-role sandbox override.
+- [ ] Inspect OpenCode/Copilot native permission behavior, inherited repository instructions and native external-directory asks. Static mappings and partial/native listings do not prove runtime enforcement, complete isolation or independent workers.
+- [ ] Repeat native discovery, launcher/symlink, permission and copied-runtime fixtures on Linux and supported Node versions.
+
+Hook registration remains unimplemented code. Native/headless model conformance
+is pending separately; neither blocks independent local guard/install work.
+
 ## Generated Claude artifacts (P1-10)
 
 - [ ] Install a generated plugin in an isolated real client configuration, list all seventeen skills/eight agents and invoke a unique marker. Static plugin validate passed locally; it does not establish discovery or execution.

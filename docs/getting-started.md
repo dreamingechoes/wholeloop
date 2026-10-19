@@ -3,7 +3,7 @@
 > **TL;DR** — Install the `wl` CLI (or the plugin for your CLI), let it generate the skills for the agentic CLIs you use, run `wl doctor`, then invoke any step. Nothing needs configuring up front: what is missing becomes a question the first time it matters.
 
 > [!WARNING]
-> **Status: 🚧 partial — not installable yet.** The core and local Claude artifact generator are implemented; distribution and personal installation remain pending. Use the [local generation instructions](./platforms/README.md#available-local-generation) to inspect a self-contained output tree without installing it. The installation steps below describe the intended experience. Packaging lands in [P1-13](../roadmap/phase-1-walking-skeleton.md#p1-13--wl-install-wl-uninstall-wl-doctor) and [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution).
+> **Status: 🚧 partial — not installable yet.** The core and local tier-A artifact generators are implemented; distribution and personal installation remain pending. Use the [local generation instructions](./platforms/README.md#available-local-generation) to inspect a self-contained output tree without installing it. The installation steps below describe the intended experience. Packaging lands in [P1-13](../roadmap/phase-1-walking-skeleton.md#p1-13--wl-install-wl-uninstall-wl-doctor) and [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution).
 
 ---
 

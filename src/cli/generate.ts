@@ -19,7 +19,7 @@ export function generateCommand(
     const target = options['--target']
     const output = options['--out']
     if (positional.length || typeof target !== 'string' || typeof output !== 'string')
-      throw new Error('Use build --target claude --out <directory>')
+      throw new Error('Use build --target claude|codex|opencode|copilot --out <directory>')
     const generated = generateAdapter(
       target,
       bundledCanonical(),

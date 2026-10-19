@@ -578,9 +578,16 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Aggregate evidence into a replayable research brief',
   },
   {
+    path: 'adapter root',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/adapter-root@1',
+    summary: 'Resolve a packaged core root from its matching ownership manifest',
+  },
+  {
     path: 'build',
     arguments: '',
-    options: ['--target <claude>', '--out <directory>', '--dry-run'],
+    options: ['--target <claude|codex|opencode|copilot>', '--out <directory>', '--dry-run'],
     schema: 'wholeloop/adapter-build@1',
     summary: 'Render a self-contained client artifact tree without installing it',
   },

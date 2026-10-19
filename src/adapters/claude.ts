@@ -15,6 +15,7 @@ function body(content: string) {
 /** Plugin skills expand this variable; subagents receive its resolved value from their conductor. */
 export const claudeAdapter: Adapter = {
   id: 'claude',
+  manifestPath: '.claude-plugin/plugin.json',
   capabilities: () => ({
     conformance: 'unverified',
     skills: 'rendered',
@@ -23,6 +24,7 @@ export const claudeAdapter: Adapter = {
     readOnly: 'tool-allowlist-and-plan-mode',
     engines: ['headless', 'sequential'],
   }),
+  name: (_kind, name) => name,
   paths: (kind, name) => (kind === 'skill' ? `skills/${name}/SKILL.md` : `agents/${name}.md`),
   manifest: (version) => ({
     name: 'wholeloop',

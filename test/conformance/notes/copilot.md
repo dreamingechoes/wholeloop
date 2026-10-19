@@ -12,3 +12,9 @@ Observed on macOS arm64, 2026-10-18.
 - Headless structured output: **unverified**; help is not a successful run.
 
 Run the checklist in [README](./README.md) before promoting any capability.
+
+## 2026-10-19 · Generated portable package probe
+
+- Rechecked Copilot CLI 1.0.83 on macOS arm64. Mount the generated portable artifact with --plugin-dir under a temporary COPILOT_HOME and run plugin list. Exit 0 lists wholeloop under External Plugins with no reported error.
+- This proves a local package is recognized, not that every component was discovered or that a role obeys its tool restrictions. No plugin was installed into personal configuration and no model/session, source query or message ran.
+- Actual skill/agent invocation, read-only sentinels, hook behavior and Linux remain unverified.

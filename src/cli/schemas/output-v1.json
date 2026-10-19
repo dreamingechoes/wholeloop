@@ -1310,6 +1310,15 @@
         }
       },
       "required": ["schema", "output", "status", "backup", "manifest"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/adapter-root@1"
+        }
+      },
+      "required": ["schema", "root", "target", "version", "source"]
     }
   ],
   "$defs": {
