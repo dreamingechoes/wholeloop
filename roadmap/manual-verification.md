@@ -4,15 +4,20 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
-## Observed diagnostics (P1-13, installation still in progress)
+## Native installation and observed diagnostics (P1-13)
 
+- [ ] Run native user/project install/uninstall with explicit targets in disposable client configurations. Verify all seventeen wl-prefixed skills/eight roles, native discovery, restart/trust behavior, permission inheritance and compatibility precedence. Filesystem/transport fixtures do not establish actual client activation.
+- [ ] Verify source-installed Claude scoped skill/agent hooks, Copilot dedicated user/project hooks, OpenCode helper import and Codex per-repository Git fallback. Generated plugins are a separate delivery format; no shared settings/MCP/auth store is rewritten.
+- [ ] Repeat project relocation and user config overrides, including URL/shell-special paths. Inspect ownership receipts in the external store, backups of replaced/removed bytes, edited/unowned refusal and missing-file uninstall; no automatic adoption/force option exists.
+- [ ] Interrupt actual installs/upgrades/uninstalls, inspect the pending receipt/lock and recover all pending targets together only after confirming the writer stopped. Synthetic mixed-version recovery is not physical-crash evidence; unknown staging files or edited backups need manual preservation/inspection.
 - [ ] Run doctor with the actual installed clients and explicit artifact directories. Confirm each reported token comes from the intended executable/PATH and inspect vendor requirements separately; a version does not prove native skills, hooks, permissions or authentication.
 - [ ] On each platform, exercise selected missing clients, failed/slow version commands, stale/copied artifact hashes/modes and malformed declarations. Failures must offer instructions and repair/diagnostic argv without exposing raw output or config values.
 - [ ] Verify the atomic external-store probe and cleanup under real permissions/filesystems, including inaccessible and symlinked Git destinations. Inspect any failed cleanup; retain other state and do not repair permissions automatically.
 - [ ] Repeat on Linux and supported Node releases. Current automated execution is macOS arm64/Node 24; npm recipes for current Claude/Copilot require Node 22 or newer even though the bundled core supports Node 20.
 
-General install/uninstall, owned activation and complete P1-13 acceptance remain
-code work. The diagnostics report does not claim that those features exist.
+Native install/uninstall and managed doctor inspection are implemented. Actual
+activation and corrective commands requiring the owner's platform/configuration
+choices remain verification. Those checks do not block independent conformance code.
 
 ## Common guards and Git fallback (P3-08)
 
@@ -23,9 +28,9 @@ code work. The diagnostics report does not claim that those features exist.
 - [ ] Recover a physical interruption by inspecting the external ownership receipt/lock and current Git configuration. Do not delete prepared/changed files or steal locks. Reinstall after reviewing new original hook names or upgrading the pinned core.
 - [ ] Repeat actual Git-hook chaining, local bare SSH-shaped pushes, native root expansion, symlinks and timing fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64/Node 24 only.
 
-General install/uninstall/doctor integration remains code work in P1-13. No hooks
-were installed in this repository, no actual project push ran and no model session
-was executed by these synthetic/temporary tests.
+Native installation returns explicit per-repository Git activation/removal commands.
+No hooks were installed in this repository, no actual project push ran and no model
+session was executed by these synthetic/temporary tests.
 
 ## Additional tier-A artifacts (P1-11)
 

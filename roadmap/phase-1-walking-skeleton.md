@@ -209,7 +209,7 @@ verification; these checks do not block independent installation implementation.
 
 ## P1-13 · `wl install`, `wl uninstall`, `wl doctor`
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P1-11
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-11
 
 **Goal** — From zero to working on a new machine in minutes.
 
@@ -217,16 +217,20 @@ verification; these checks do not block independent installation implementation.
 
 **Acceptance criteria:**
 
-- [ ] Install then uninstall leaves no file behind (test in a temp HOME).
+- [x] Install then uninstall leaves no file behind (test in a temp HOME).
 - [ ] Doctor explains every failure with the command that fixes it.
 
-**Local implementation:** doctor now observes bounded client versions, layered
-provider/MCP availability, actual external-store write/rename probes with owned
-cleanup and currentness of every expected file in an explicit generated artifact.
-Failures include repair/diagnostic commands; it never upgrades availability into
-authentication or native conformance. General install/uninstall, their ownership
-receipts and activation checks remain implementation work, so both full-item
-acceptance criteria stay open.
+**Local implementation:** four-target user/project native overlays, relative checked
+launchers, scoped/dedicated hooks, external ownership/backups, preflighted dry runs,
+semantic idempotency, upgrades, clean uninstall and recorded pending recovery are
+implemented. Full-package fixtures restore temporary HOME/project trees exactly;
+smaller catalogs exercise ownership edges. Doctor now checks owned scopes as well
+as versions, actual store writes and explicit standalone artifacts. Installed files
+remain distinct from native activation/authentication; Git hooks retain explicit
+per-repository activation/removal. Actual clients, physical recovery, Linux/other
+Node releases and corrective commands needing the owner's platform/configuration
+choices remain verification, so the second full-item criterion stays open. These
+checks do not block the local P1-14 conformance runner.
 
 **Docs** — getting-started.
 

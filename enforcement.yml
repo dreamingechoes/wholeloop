@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: owned-native-output
+    enforcers: [src/installation/receipts.ts#readReceipt, src/installation/receipts.ts#allowed, src/installation/files.ts#checkOwned, src/installation/files.ts#writeOwned, src/installation/manage.ts#manageInstallation, test/unit/installation/installation.test.ts]
+  - id: external-installation-control
+    enforcers: [src/state/files.ts#StoreFiles, src/installation/receipts.ts#installationScope, src/installation/manage.ts#manageInstallation, test/unit/installation/installation.test.ts]
+  - id: recover-pending-installation
+    enforcers: [src/installation/receipts.ts#readReceipt, src/installation/receipts.ts#saveReceipt, src/installation/files.ts#archive, src/installation/manage.ts#manageInstallation, test/unit/installation/installation.test.ts]
+  - id: installation-is-not-activation
+    enforcers: [src/installation/manage.ts#manageInstallation, src/installation/inspect.ts#inspectInstallation, src/diagnostics/doctor.ts#doctor, test/unit/installation/installation.test.ts]
   - id: diagnostics-observed-availability
     enforcers: [src/diagnostics/doctor.ts#doctor, src/diagnostics/doctor.ts#versionProbe, src/diagnostics/doctor.ts#probeStore, test/unit/diagnostics/doctor.test.ts]
   - id: build-topic-commits

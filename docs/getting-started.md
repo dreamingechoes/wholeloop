@@ -3,7 +3,7 @@
 > **TL;DR** — Install the `wl` CLI (or the plugin for your CLI), let it generate the skills for the agentic CLIs you use, run `wl doctor`, then invoke any step. Nothing needs configuring up front: what is missing becomes a question the first time it matters.
 
 > [!WARNING]
-> **Status: 🚧 partial — not installable yet.** The core, local tier-A artifact generators, common guards and observed doctor diagnostics are implemented; distribution and personal installation remain pending. Use the [local generation instructions](./platforms/README.md#available-local-generation) to inspect a self-contained output tree without installing it. The installation steps below describe the intended experience. Packaging lands in [P1-13](../roadmap/phase-1-walking-skeleton.md#p1-13--wl-install-wl-uninstall-wl-doctor) and [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution).
+> **Status: 🚧 partial — local source installation available.** The core, four native render targets, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; npm/marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
 
 ---
 
@@ -18,26 +18,56 @@
 
 ## 1. Install
 
-Pick one path.
-
-**As a Claude Code plugin** — the core is bundled inside, nothing else to install:
-
-```text
-/plugin marketplace add dreamingechoes/wholeloop
-/plugin install wholeloop
-```
-
-**As a CLI, for any combination of agentic CLIs:**
+From a source checkout (development requires Node 22 or newer):
 
 ```bash
-npm install -g wholeloop
-wl install --target claude,codex,opencode,copilot --scope user
+npm ci
+npm run check
+npm run build
+node dist/wl.mjs install --target claude,codex,opencode,copilot --scope user --dry-run --json
+node dist/wl.mjs install --target claude,codex,opencode,copilot --scope user --json
 ```
 
-| `--scope` | Installs into | Use when |
+Target/scope are explicit; all selects the four tier-A clients. Installation creates
+wl-prefixed native skills/agents and scoped/dedicated guard bindings, backed by a
+self-contained artifact per target. Claude loose native components use wl-* names;
+`build --target claude` still produces its separate plugin format. No general client
+settings, MCP configuration, marketplace registry or credential store is rewritten.
+
+| Scope | Native output | Packaged core/resources |
 | --- | --- | --- |
-| `user` | your home folders for each CLI | you want `wholeloop` everywhere, just for you |
-| `project` | the current repository (`.claude/`, `.agents/`, `.opencode/`, `.github/`…) | the whole team should get it with the repo |
+| user | client skill/agent/hook directories, with absolute configured overrides | external store distributions |
+| project | .claude/, .agents/, .codex/, .opencode/ and .github/ native directories | .wholeloop/distribution/target, intentional distributable output |
+
+Project launchers/hooks use relative bindings and work after relocation. Runtime
+ownership receipts, locks, backups and all execution state remain in the external
+store. User roots are resolved at runtime, including CLAUDE_CONFIG_DIR, CODEX_HOME,
+OPENCODE_CONFIG_DIR, XDG_CONFIG_HOME and COPILOT_HOME; ambiguous relative native
+overrides are refused. Inspect [platform layouts](./platforms/README.md#installing).
+
+Repeated matching installs report already-correct. Upgrades verify old ownership,
+skip unchanged files and retain replaced/removed bytes outside repositories. Edited
+or unowned files, unexpected private-tree contents and unsafe links are preserved
+and refused. There is no force/adoption option. After an interruption, inspect the
+pending external receipt; uninstall must include all pending targets and recognizes
+only recorded old/new bytes. Physical interruption recovery still needs owner checks.
+
+Installation reports files installed, with native activation unverified. Restart or
+reload the selected client, accept project trust where required and verify actual
+skills/agents/permissions. Git fallbacks are a separate per-repository action; use
+the concrete command returned by install, or the available compiled core:
+
+```text
+node dist/wl.mjs guard hooks install --repo /path/to/project --json
+```
+
+Use the same external --store/workspace as Build/open-pr. Inspect existing Git hooks
+and the [guard ownership rules](./architecture/core-cli.md#hooks-and-guards) first.
+No model call, authentication or service publication is part of file installation.
+
+Published npm/marketplace installation remains planned. Once released, npm global
+installation and the client plugin marketplace will be alternative entry points;
+the source path above is available now.
 
 ## 2. Check
 
@@ -64,10 +94,14 @@ atomic external-store write/rename probe. It removes only probe files/directorie
 it created, preserving existing state. A store under Git, including symlink targets,
 is rejected before writing; probe/cleanup failures remain failures.
 
-Generated-file currentness is checked only with one explicit target/artifact pair.
+Doctor automatically checks owned user/project receipts and native/artifact files.
+It distinguishes current, stale, changed, pending, invalid and absent ownership;
+absence of a local receipt does not prove absence of unmanaged components.
+An explicit target/artifact pair additionally checks standalone generated output.
 Every expected file, executable mode, manifest and source/core hash must match this
 build; changed output is preserved and the remedy builds into a fresh directory.
-Without that input, artifact status is unknown. A matching artifact is not proof
+Without that input, the standalone artifact check remains unknown; managed scope
+checks are reported separately. A matching artifact is not proof
 of native client installation/discovery, sandbox enforcement or a model run. All
 reports retain conformance unverified and authenticated false.
 
@@ -109,9 +143,18 @@ Team-wide choices go into `.wholeloop/config.yml` in the repository ([configurat
 ## Uninstall
 
 ```bash
-wl uninstall --target all --scope user      # removes generated files; your store stays
-rm -rf ~/.local/state/wholeloop           # only if you also want your history gone
+node dist/wl.mjs uninstall --target all --scope user --dry-run --json
+node dist/wl.mjs uninstall --target all --scope user --json
 ```
+
+Uninstall removes only observed unchanged owned files, accepts already missing owned
+files and cleans newly created empty parents while retaining unrelated data. External
+history/backups remain. Separately activated Git hooks are managed separately; use
+the returned Node/core guard hooks uninstall command, backed by a retained external
+core even after the native tree is removed, if
+you want to retire those repository policies. Pending native removal still needs a
+client restart and verification. A cloned project can run its checked-in distribution
+without a local receipt, but another scope/store cannot automatically adopt ownership.
 
 ## Troubleshooting
 

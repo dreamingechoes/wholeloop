@@ -4,7 +4,7 @@ description: Choose a wholeloop interaction profile and docs or tracker provider
 ---
 # Set preferences
 
-Read the shared ask-never-guess and output-contract protocols.
+Read the shared ask-never-guess, output-contract and installation protocols.
 
 1. Call `wl setup --json` to obtain profile, provider and remember-scope choices.
    Present the returned questions together; preserve free-text choices.
@@ -22,6 +22,9 @@ pass its single --target and --artifact. Inspect its repair/diagnostic commands
 without running installation or permission changes automatically.
 ⛔ `diagnostics-observed-availability` — versions/declarations are observations,
 not authentication, actual client discovery or model/permission conformance.
+
+For an explicit installation request, use install/uninstall with exact targets and
+scope; report ownership, retained backups and pending activation from the core.
 
 Zero integrations is supported through `local-docs` and `local-tracker`.
 Setup does not install adapters, modify MCP configuration, authenticate or make

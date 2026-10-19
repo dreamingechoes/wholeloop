@@ -1004,6 +1004,20 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Check size budgets, front matter and enforcement',
   },
   {
+    path: 'install',
+    arguments: '',
+    options: ['--target <cli,...|all>', '--scope <user|project>', '--store <path>', '--dry-run'],
+    schema: 'wholeloop/install@1',
+    summary: 'Install owned native components without rewriting shared client settings',
+  },
+  {
+    path: 'uninstall',
+    arguments: '',
+    options: ['--target <cli,...|all>', '--scope <user|project>', '--store <path>', '--dry-run'],
+    schema: 'wholeloop/uninstall@1',
+    summary: 'Remove unchanged owned native components and retain external backups',
+  },
+  {
     path: 'doctor',
     arguments: '',
     options: ['--target <cli,...>', '--store <path>', '--artifact <path>'],

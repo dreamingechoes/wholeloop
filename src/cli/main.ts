@@ -21,6 +21,7 @@ import { groundingCommand } from './grounding.js'
 import { guardCommand } from './guard.js'
 import { harnessCheck } from './harness.js'
 import { impactCommand } from './impact.js'
+import { installationCommand } from './install.js'
 import { EXIT, type Io } from './io.js'
 import { launchCommand } from './launch.js'
 import { learningCommand } from './learning.js'
@@ -116,6 +117,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       command.path.startsWith('measure ')
     )
       throw new CliError('This command requires the asynchronous dispatcher')
+    if (command.path === 'install' || command.path === 'uninstall')
+      return installationCommand(command.path, parsed, root, json, io)
     if (command.path === 'doctor') return doctorCommand(parsed, root, json, io)
     if (command.path === 'adapter root') return adapterRoot(json, io)
     if (command.path === 'build') return generateCommand(parsed, root, json, io)

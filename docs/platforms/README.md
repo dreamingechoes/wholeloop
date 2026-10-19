@@ -131,18 +131,35 @@ and the [manual checklist](../../roadmap/manual-verification.md).
 
 ## Installing
 
-```text
-# as a plugin (Claude Code; Copilot and Codex can read the same marketplace)
-/plugin marketplace add dreamingechoes/wholeloop
-/plugin install wholeloop
+Use the built core for an explicit native overlay installation:
 
-# or for any combination of CLIs
-npm i -g wholeloop
-wl install --target claude,codex,opencode,copilot --scope user
-wl doctor
+```text
+node dist/wl.mjs install --target all --scope user --dry-run --json
+node dist/wl.mjs install --target all --scope user --json
+node dist/wl.mjs doctor --json
+node dist/wl.mjs uninstall --target all --scope user --json
 ```
 
-`--scope user` installs for you everywhere; `--scope project` writes into the current repository for the whole team.
+| Target | Personal root | Project root | Native guard binding |
+| --- | --- | --- | --- |
+| Claude | .claude/skills and agents, or CLAUDE_CONFIG_DIR | .claude/ | scoped skill/agent frontmatter |
+| Codex | .agents/skills and CODEX_HOME/agents | .agents/skills and .codex/agents | explicit per-repository Git fallback |
+| OpenCode | XDG config/opencode or OPENCODE_CONFIG_DIR | .opencode/ | plugins/wholeloop.js |
+| Copilot | COPILOT_HOME or .copilot/ | .github/ | hooks/wholeloop.json |
+
+All installed native names use wl-; generated Claude plugins retain their plugin
+namespace. Skills invoke their one packaged core through relative launchers; the
+conductor passes its checked artifact root to roles. User distributions and all
+ownership/control/backups stay in the external store. Project distribution is
+explicit generated output at .wholeloop/distribution/target and relocates with the
+checkout. Existing shared settings/credentials are never read/re-emitted by install.
+
+Current matching installs are idempotent; observed edits/unowned data are refused.
+Uninstall retains backups/history and removes matching owned files plus created
+empty parents. Source/plugin generation remains available independently. Native
+restart, project trust, compatibility precedence, permissions and Linux still need
+actual conformance. Git-hook activation/removal remains a separate per-repository
+handoff. See [getting started](../getting-started.md) and [ADR-0050](../decisions/0050-owned-native-overlays-and-explicit-activation.md).
 
 ## Adding a CLI
 

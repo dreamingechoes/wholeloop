@@ -8,6 +8,40 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/install@1"
+        }
+      },
+      "required": [
+        "schema",
+        "scope",
+        "targets",
+        "receipt",
+        "status",
+        "conformance",
+        "authenticated"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/uninstall@1"
+        }
+      },
+      "required": [
+        "schema",
+        "scope",
+        "targets",
+        "receipt",
+        "status",
+        "conformance",
+        "authenticated"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/doctor@1"
         }
       },

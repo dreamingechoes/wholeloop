@@ -22,7 +22,7 @@ export function portableManifest(version: string) {
     ...(claudeAdapter.manifest(version) as Record<string, unknown>),
   }
 }
-function skill(content: string) {
+export function renderPortableSkill(content: string) {
   const metadata = frontmatter(content) ?? {}
   if (`wl-${String(metadata.name)}`.length > 64)
     throw new Error('Namespaced skill names must fit the 64-character skill budget')
@@ -60,7 +60,7 @@ export const codexAdapter: Adapter = {
       ? { extensions: { 'com.openai': { onboardingSkill: './skills/wl-setup/SKILL.md' } } }
       : {}),
   }),
-  renderSkill: (_name, content) => skill(content),
+  renderSkill: (_name, content) => renderPortableSkill(content),
   renderAgent: (name, content) => {
     const { metadata, capabilities, tier } = definition(content)
     const observer = !capabilities.includes('write')
@@ -95,7 +95,7 @@ export const opencodeAdapter: Adapter = {
   paths: (kind, name) =>
     kind === 'skill' ? `.opencode/skills/wl-${name}/SKILL.md` : `.opencode/agents/wl-${name}.md`,
   manifest: () => ({ $schema: 'https://opencode.ai/config.json' }),
-  renderSkill: (_name, content) => skill(content),
+  renderSkill: (_name, content) => renderPortableSkill(content),
   renderAgent: (name, content) => {
     const { metadata, capabilities, tier } = definition(content)
     const writable = capabilities.includes('write')
@@ -126,7 +126,7 @@ export const copilotAdapter: Adapter = {
       ? `skills/wl-${name}/SKILL.md`
       : `com.github.copilot/agents/wl-${name}.agent.md`,
   manifest: (version) => portableManifest(version),
-  renderSkill: (_name, content) => skill(content),
+  renderSkill: (_name, content) => renderPortableSkill(content),
   renderAgent: (name, content) => {
     const { metadata, capabilities, tier } = definition(content)
     const writable = capabilities.includes('write')

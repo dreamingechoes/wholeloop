@@ -30,8 +30,11 @@ export function doctorCommand(
     typeof options['--artifact'] === 'string' ? resolve(root, options['--artifact']) : undefined
   if (artifact && targets?.length !== 1)
     throw new CliError('Use exactly one --target with --artifact')
+  const canonical = bundledCanonical()
+  const core = readFileSync(fileURLToPath(import.meta.url), 'utf8')
   const report = doctor({
     root,
+    managed: { canonical, core, version: VERSION },
     home: homedir(),
     store: typeof options['--store'] === 'string' ? resolve(root, options['--store']) : storePath(),
     ...(targets ? { targets } : {}),
@@ -40,12 +43,7 @@ export function doctorCommand(
           artifact: {
             path: artifact,
             target: targets?.[0] ?? '',
-            expected: generateAdapter(
-              targets?.[0] ?? '',
-              bundledCanonical(),
-              readFileSync(fileURLToPath(import.meta.url), 'utf8'),
-              VERSION,
-            ),
+            expected: generateAdapter(targets?.[0] ?? '', canonical, core, VERSION),
           },
         }
       : {}),
