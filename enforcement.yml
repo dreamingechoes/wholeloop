@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: shared-publication-recovery
+    enforcers: [src/sharing/contracts.ts#sharingState, src/sharing/contracts.ts#queueSharedArtifacts, src/sharing/workflow.ts#SharingWorkflow, test/unit/sharing/sharing.test.ts]
   - id: grounding-exact-provenance
     enforcers: [src/grounding/eval.ts#groundingEval, src/grounding/eval.ts#groundingPredictions, test/unit/grounding/grounding.test.ts]
   - id: grounding-complete-observations

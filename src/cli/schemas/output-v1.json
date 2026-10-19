@@ -1254,6 +1254,33 @@
         }
       },
       "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/adopt@1"
+        }
+      },
+      "required": ["schema", "status", "questions"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/share-report@1"
+        }
+      },
+      "required": ["schema", "initiative", "mode", "targets", "publications"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/share-request@1"
+        }
+      },
+      "required": ["schema", "status", "key", "request"]
     }
   ],
   "$defs": {

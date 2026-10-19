@@ -1,5 +1,6 @@
 import { FlowEngine } from '../flow/engine.js'
 import { configuredCheckpoints, impactSchedule } from '../impact/schedule.js'
+import { SharingWorkflow } from '../sharing/workflow.js'
 import { ITEM_ID } from '../state/events.js'
 import { unread } from '../state/mailbox.js'
 import { StateStore } from '../state/store.js'
@@ -9,6 +10,7 @@ import { worktreeRecords } from '../worktrees/contracts.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { sharedRead } from './sharing-read.js'
 
 export function utilityCommand(
   command: string,
@@ -32,8 +34,34 @@ export function utilityCommand(
     else {
       const store = new StateStore()
       const engine = new FlowEngine(store, root)
-      if (command === 'next') result = next(engine, positional[0], value('--owner'))
-      else {
+      if (command === 'next') {
+        const input = positional[0]
+        if (value('--file')) {
+          if (!input || !/^https?:\/\//i.test(input))
+            throw new CliError('next --file requires an HTTPS work URL')
+          const provider = value('--provider')
+          const kind = value('--kind')
+          if (!provider || (kind !== 'docs' && kind !== 'tracker'))
+            throw new CliError('Provide --provider and --kind docs|tracker')
+          const adopted = new SharingWorkflow(engine).importRead(
+            input,
+            sharedRead(value('--file') ?? '', input, provider, kind),
+            {
+              provider,
+              kind,
+              ...(value('--owner') ? { owner: value('--owner') as string } : {}),
+              ...(value('--title') ? { title: value('--title') as string } : {}),
+            },
+          )
+          result =
+            adopted.status === 'question'
+              ? {
+                  code: EXIT.input,
+                  payload: { ...adopted, schema: 'wholeloop/next@1', action: null },
+                }
+              : next(engine, adopted.subject, value('--owner'))
+        } else result = next(engine, input, value('--owner'))
+      } else {
         const id = positional[0]
         if (id && !ITEM_ID.test(id)) throw new CliError('status expects a typed item ID')
         const items = id ? [store.get(id)] : store.list()

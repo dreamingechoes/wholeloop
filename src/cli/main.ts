@@ -28,6 +28,7 @@ import { rampCommand } from './ramp.js'
 import { researchCommand } from './research.js'
 import { reviewCommand } from './review.js'
 import { scopesCommand } from './scopes.js'
+import { sharingCommand } from './sharing.js'
 import { slicesCommand } from './slices.js'
 import { specCommand } from './spec.js'
 import { stateCommand } from './state.js'
@@ -97,6 +98,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (['verify begin', 'verify complete'].includes(command.path))
       return verificationCommand(command.path, parsed, root, json, io)
     if (
+      command.path === 'adopt' ||
+      command.path.startsWith('share ') ||
       command.path === 'eval grounding' ||
       command.path === 'sync' ||
       command.path === 'provider test' ||
@@ -171,7 +174,9 @@ export async function runAsync(
   const args = argv.filter((arg) => arg !== '--json')
   const command = COMMANDS.find(
     (command) =>
-      (command.path === 'eval grounding' ||
+      (command.path === 'adopt' ||
+        command.path.startsWith('share ') ||
+        command.path === 'eval grounding' ||
         command.path === 'sync' ||
         command.path === 'provider test' ||
         command.path === 'verify suite' ||
@@ -195,6 +200,8 @@ export async function runAsync(
         .filter((option) => option.includes(' '))
         .map((option) => option.split(' ')[0] ?? option),
     )
+    if (command.path === 'adopt' || command.path.startsWith('share '))
+      return await sharingCommand(command.path, parsed, root, json, io)
     return command.path === 'eval grounding'
       ? await groundingCommand(parsed, json, io)
       : command.path === 'sync'

@@ -5,6 +5,12 @@
 > [!NOTE]
 > **Status: 🚧 partial.** Core source planning, structured submissions, active-refutation aggregation, a journaled brief and canonical researcher/challenger resources are implemented and tested with stubbed agents. Eleven source mappings have bounded guidance and query fixtures; pending/partial observations remain explicit unknowns. Native/sequential scheduling shares one workflow; live client fan-out, independent sessions, source authentication and external publication remain unverified or planned. Tracked in [P2-01](../../../roadmap/phase-2-define.md#p2-01--research).
 
+Completed artifacts can join the initiative's explicit shared outbox, including a
+research brief adopted into that initiative. The conductor publishes through the
+selected host and records links only after verifying the complete exact chunk.
+The CLI persists requests and labelled read imports; authenticated tool execution
+remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
+
 ---
 
 ## Available core workflow

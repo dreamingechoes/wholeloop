@@ -34,6 +34,7 @@ import {
 import { type ReviewEventData, validReviewData } from '../review/contracts.js'
 import { reviewInputs } from '../review/state.js'
 import { type ScopeDefinition, validateScope } from '../scopes/contract.js'
+import { type SharingEventData, sharingState, validSharingData } from '../sharing/contracts.js'
 import { type Repository, type SliceDefinition, validateSlice } from '../slices/contract.js'
 import { type SyncEventData, syncState, validSyncData } from '../sync/contracts.js'
 import { type VerificationEventData, validVerificationData } from '../verification/contracts.js'
@@ -96,6 +97,7 @@ export type EventData =
   | ImpactEventData
   | LearningEventData
   | SyncEventData
+  | SharingEventData
   | {
       type: 'slice.defined'
       data: {
@@ -205,6 +207,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('share.')) return validSharingData(type, data)
   if (type.startsWith('sync.')) return validSyncData(type, data)
   if (type.startsWith('learn.')) return validLearningData(type, data)
   if (type.startsWith('impact.')) return validImpactData(type, data)
@@ -582,6 +585,7 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   environmentDeclarations(events)
   launchRuns(events)
   launchDeliveries(events)
+  sharingState(events)
   syncState(events)
   learningRuns(events)
   impactRuns(events)

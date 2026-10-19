@@ -30,6 +30,7 @@ import { researchBrief } from '../research/report.js'
 import { reviewReceipt } from '../review/workflow.js'
 import { checkScopePlan, parseScopePlan, scopeContext } from '../scopes/contract.js'
 import { publishScopes } from '../scopes/publish.js'
+import { queueSharedArtifacts } from '../sharing/contracts.js'
 import { checkSlicePlan, parseSlicePlan, slicingContext } from '../slices/contract.js'
 import { publishSlices } from '../slices/publish.js'
 import { blockingDependencies } from '../slices/routing.js'
@@ -574,6 +575,7 @@ export class FlowEngine {
               },
             })
       }
+      queueSharedArtifacts(events, append)
       return {
         schema: 'wholeloop/step-complete@1',
         subject,

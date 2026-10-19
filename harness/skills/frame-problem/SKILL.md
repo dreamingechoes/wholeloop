@@ -40,4 +40,4 @@ Read destination-publication, ask-never-guess, output-contract and framing-evide
    pending handoffs until a host performs the operation and records its link.
    A go hands off to the spec; an unavailable next step is a limitation to state.
 
-URL adoption and live external publishing remain later integration work.
+Follow destination-publication for the explicit shared outbox after completion.

@@ -3,7 +3,7 @@
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later workflows and external provider adoption remain planned. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
+> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later Build/Rollout/Learn workflows and canonical URL adoption/shared outboxes are implemented locally. Live adapter execution remains an owner conformance check. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
 
 ---
 
@@ -47,6 +47,30 @@ holding the journal lock across external mutations. The manager must be called
 outside a journal transaction. Worktree output lives under the store, while
 journal/lock metadata stays outside those Git checkouts. Retry and cleanup rules
 are recorded in [ADR-0030](../decisions/0030-worktree-intents-leases-and-conservative-pruning.md).
+
+## Shared work and the publication outbox
+
+URL adoption matches canonical stored links before importing a complete provider
+read. An imported initiative retains its source revision/digest and host/import
+origin; reading a document never fabricates Define completion or approval.
+
+share.mode pins an initiative's explicit local/shared choice and destinations.
+share.queued binds a completed Define event to one target. Completion atomically
+queues work without remote I/O; switching to shared queues earlier artifacts too.
+Research inherits destinations only after unambiguous initiative adoption.
+
+The conductor journals share.requested before external I/O. Existing resources
+require a fresh full read and conditional revision update; unrelated content is
+preserved. A fresh same-reference read must contain the exact marker-bound chunk
+before share.published and links can be recorded. Requested entries with no receipt
+stay ambiguous and cannot be automatically retried. Pausing local does not revoke
+an intent already handed to a client, and destinations remain pinned on resumption.
+
+Rebuild emits `items/<initiative>/sharing.json` and `outbox/<key>.json` entirely from
+the journal; resume points to sharing.json without loading document bodies into
+its bounded context. CLI normalized read imports remain labelled separately from
+actual host reads. See [ADR-0045](../decisions/0045-canonical-url-adoption-and-recoverable-shared-publication.md)
+and the [utility commands](../flow/utilities.md#adopt-a-url-and-publish-define-artifacts).
 
 ## Available commands
 

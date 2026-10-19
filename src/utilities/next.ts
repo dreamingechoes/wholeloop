@@ -4,17 +4,43 @@ import type { FlowEngine } from '../flow/engine.js'
 import { stepDefinition } from '../flow/registry.js'
 import { framingMatches } from '../framing/contract.js'
 import { configuredCheckpoints, impactSchedule } from '../impact/schedule.js'
+import { canonicalSharedUrl, linkedSharedItem } from '../sharing/contracts.js'
 import { blockingDependencies, buildChildren } from '../slices/routing.js'
 import { ITEM_ID } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 
 /** Route recorded identities and scoped title matches before starting new work. */
 export function next(engine: FlowEngine, input?: string, owner?: string) {
-  if (input && /^https?:\/\//i.test(input))
-    throw new CliError(
-      'URL adoption is not implemented; use a stored item ID or an idea',
-      EXIT.precondition,
-    )
+  if (input && /^https?:\/\//i.test(input)) {
+    const ref = canonicalSharedUrl(input)
+    const stored = linkedSharedItem(engine.store.events(), ref)
+    if (!stored)
+      return {
+        code: EXIT.input,
+        payload: {
+          schema: 'wholeloop/next@1',
+          action: null,
+          ref,
+          questions: [
+            {
+              id: 'source',
+              multi: false,
+              options: [],
+              prompt:
+                'Which docs or tracker provider owns this URL? Supply a complete revision-bound read with --file, --provider and --kind.',
+            },
+            {
+              id: 'identity',
+              multi: false,
+              options: [],
+              prompt:
+                'Confirm the initiative owner and title with --owner and --title if the source does not supply them.',
+            },
+          ],
+        },
+      }
+    input = stored
+  }
   const items = engine.store.list().filter((item) => item.status === 'open')
   let subject = input && ITEM_ID.test(input) ? engine.store.get(input) : undefined
   if (input && !ITEM_ID.test(input)) {

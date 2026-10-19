@@ -4705,6 +4705,188 @@
           "required": ["key", "ref"]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "share.adopted"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^https://"
+            },
+            "provider": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "enum": ["docs", "tracker"],
+              "type": "string"
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "origin": {
+              "enum": ["host", "import"],
+              "type": "string"
+            }
+          },
+          "required": ["ref", "provider", "kind", "revision", "digest", "origin"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "share.mode"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "enum": ["local", "shared"],
+              "type": "string"
+            },
+            "by": {
+              "type": "string",
+              "minLength": 1
+            },
+            "targets": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[a-z][a-z0-9-]*$"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "enum": ["docs", "tracker"],
+                    "type": "string"
+                  },
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^https://"
+                  }
+                },
+                "required": ["key", "provider", "kind"]
+              }
+            }
+          },
+          "required": ["mode", "by", "targets"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "share.queued"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "artifact": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^ev-[a-f0-9-]{36}$"
+            },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^[a-z][a-z0-9-]*$"
+                },
+                "provider": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "kind": {
+                  "enum": ["docs", "tracker"],
+                  "type": "string"
+                },
+                "ref": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^https://"
+                }
+              },
+              "required": ["key", "provider", "kind"]
+            }
+          },
+          "required": ["key", "artifact", "target"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "share.requested"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": ["key"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "share.published"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^https://"
+            },
+            "origin": {
+              "enum": ["host", "import"],
+              "type": "string"
+            }
+          },
+          "required": ["key", "ref", "origin"]
+        }
+      }
     }
   ]
 }

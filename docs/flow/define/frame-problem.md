@@ -3,7 +3,7 @@
 > **TL;DR** — Give it a rough idea — one sentence, a copied thread, a research brief — and it works through a short, fixed list of questions: what hurts and for whom, what supports that, what would change if we got it right, and what would make us walk away. It opens the **initiative**, names the person who owns it, and finishes with a clear call: write the spec next, or record why not.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The core enforces all eight framing questions plus ownership, explicit TBD markers, completed-brief adoption, normalized-title reuse and argued dropped/on-hold outcomes. Local docs/tracker publication references the existing store records; remote destinations return pending handoffs. Canonical skill escalation to research follows the challenge style. Live client behavior, URL adoption and remote publication remain unverified or planned. [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
+> **Status: 🚧 partial.** The core enforces all eight framing questions plus ownership, explicit TBD markers, completed-brief adoption, normalized-title reuse and argued dropped/on-hold outcomes. Local docs/tracker publication references the existing store records; remote destinations return pending handoffs. Canonical skill escalation to research follows the challenge style. Canonical URL adoption, per-initiative shared outboxes and explicit host publication/reconciliation are implemented locally; authenticated client execution remains unverified. [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
 
 ---
 
@@ -138,7 +138,7 @@ Next                /wholeloop:write-spec init-41c2
 
 **"I have no numbers and nobody has confirmed it yet."** Use `TBD` and name who could fill it in. An honest gap beats a confident guess every time.
 
-**"Will I end up with two initiatives for the same idea?"** A matching explicit ID, completed-brief relation or normalized title in the same recorded repository reuses the initiative. Ambiguous matches require an ID; semantic duplicate detection and URL adoption remain planned. [ADR-0022](../../decisions/0022-framing-identity-and-explicit-outcomes.md) explains why.
+**"Will I end up with two initiatives for the same idea?"** A matching explicit ID, completed-brief relation or normalized title in the same recorded repository reuses the initiative. Ambiguous matches require an ID; canonical URL adoption also reuses stored links through next. Semantic duplicate detection remains planned. [ADR-0022](../../decisions/0022-framing-identity-and-explicit-outcomes.md) explains why.
 
 **"Can I already sketch the solution here?"** Save it for [`write-spec`](./write-spec.md); this step is only about the problem.
 

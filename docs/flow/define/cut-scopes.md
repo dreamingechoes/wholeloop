@@ -5,6 +5,12 @@
 > [!NOTE]
 > **Status: 🚧 partial.** Local plans validate metric/story ownership, create stable child scopes and tracker references atomically, and stop for revision-bound approval. Remote tracker execution and live challenger sessions remain manual conformance. Tracked in [P2-04](../../../roadmap/phase-2-define.md#p2-04--cut-scopes).
 
+Completed artifacts can join the initiative's explicit shared outbox, including a
+research brief adopted into that initiative. The conductor publishes through the
+selected host and records links only after verifying the complete exact chunk.
+The CLI persists requests and labelled read imports; authenticated tool execution
+remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
+
 ---
 
 ## At a glance

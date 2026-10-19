@@ -118,7 +118,7 @@ block implementing the remaining local workflows.
 
 ## P2-08 · Adopt from a URL, publish as you go
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P2-06
+**Status:** ✅ · **Size:** M · **Depends on:** P2-06
 
 **Goal** — Anyone can pick up shared work; shared mode keeps tools in step.
 
@@ -126,8 +126,8 @@ block implementing the remaining local workflows.
 
 **Acceptance criteria:**
 
-- [ ] Adopting the same URL twice yields one initiative.
-- [ ] Switching an initiative to shared publishes what exists and records the links.
+- [x] Adopting the same URL twice yields one initiative.
+- [x] Switching an initiative to shared publishes what exists and records the links.
 
 **Docs** — flow/utilities (`next`), architecture/state-and-messaging.
 

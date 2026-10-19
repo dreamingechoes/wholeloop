@@ -4,6 +4,7 @@ import { decisionTrail, flowPlan } from '../flow/plan.js'
 import { impactRuns } from '../impact/contracts.js'
 import { learningRuns } from '../learning/contracts.js'
 import { rampRuns } from '../ramp/contracts.js'
+import { sharingState } from '../sharing/contracts.js'
 import { syncBasis, syncState } from '../sync/contracts.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { replay, type StateEvent } from './events.js'
@@ -67,6 +68,9 @@ export function contextPack(
       owner: short(subject.owner, 80),
       status: subject.status,
       path: `items/${subject.id}/${subject.kind}.md`,
+      ...(sharingState(events).modes.has(subject.id)
+        ? { sharing: `items/${subject.id}/sharing.json` }
+        : {}),
       ...(syncBasis(syncState(events), subject.id)
         ? { sync: `items/${subject.id}/sync.json` }
         : {}),

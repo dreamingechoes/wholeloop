@@ -55,6 +55,7 @@
 | [0042](./0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md) | Offline provider fixtures and explicit rollout handoffs | Accepted | 2026-10-19 |
 | [0043](./0043-certified-delivery-sync-and-recoverable-tracker-status.md) | Certified delivery sync and recoverable tracker status | Accepted | 2026-10-19 |
 | [0044](./0044-grounding-fixtures-and-exact-numeric-provenance.md) | Grounding fixtures and exact numeric provenance | Accepted | 2026-10-19 |
+| [0045](./0045-canonical-url-adoption-and-recoverable-shared-publication.md) | Canonical URL adoption and recoverable shared publication | Accepted | 2026-10-19 |
 
 ## Lifecycle
 

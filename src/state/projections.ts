@@ -12,6 +12,7 @@ import { pullRequestPlans } from '../pull-requests/contracts.js'
 import { rampRuns } from '../ramp/contracts.js'
 import { rampProposals } from '../ramp/publish.js'
 import { reviewInputs } from '../review/state.js'
+import { sharingState } from '../sharing/contracts.js'
 import { syncBasis, syncReady, syncState } from '../sync/contracts.js'
 import { verificationRuns } from '../verification/state.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
@@ -55,6 +56,17 @@ export function projections(
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
   }
+  const sharing = sharingState(events)
+  for (const [subject, mode] of sharing.modes)
+    files.set(
+      `items/${subject}/sharing.json`,
+      `${JSON.stringify({ ...mode, publications: [...sharing.queue].filter(([, entry]) => entry.root === subject).map(([key, entry]) => ({ key, ...entry })) }, null, 2)}\n`,
+    )
+  for (const [key, entry] of sharing.queue)
+    files.set(
+      `items/${entry.root}/outbox/${key}.json`,
+      `${JSON.stringify({ key, ...entry }, null, 2)}\n`,
+    )
   const synchronization = syncState(events)
   for (const [subject] of synchronization.items)
     if (events.some((event) => event.subject === subject && event.type.startsWith('sync.')))

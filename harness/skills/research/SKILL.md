@@ -6,7 +6,7 @@ metadata:
 ---
 # Research a question
 
-Read source-evidence, ask-never-guess, output-contract and core-invariants.
+Read destination-publication, source-evidence, ask-never-guess, output-contract and core-invariants.
 
 1. Begin `wl step begin research --input "<question>" --owner "<person>" --json`.
    For an attached brief, use `--parent <initiative-or-scope>`; the recorded parent
@@ -21,7 +21,7 @@ Read source-evidence, ask-never-guess, output-contract and core-invariants.
    through `wl research submit --for <brief-id> --file <report> --json`. If native
    fan-out is unavailable, run the same jobs sequentially with the same coverage.
    The shared `research` workflow implements both scheduling modes for adapters.
-5. Read the plan again for examination assignments. Give each slot to an
+5. Read destination-publication and the plan again for examination assignments. Give each slot to an
    independent challenger. Each returns a structured vote through `wl research
    examine --for <brief-id> --file <vote> --json`. A failed worker is uncertainty,
    never a refutation. Do not reuse one worker's answer as multiple votes.
@@ -29,7 +29,8 @@ Read source-evidence, ask-never-guess, output-contract and core-invariants.
    aggregate can complete the artifact; missing workers become open questions,
    and a claim drops only after the pinned active-refutation majority.
 7. Show the brief receipt, evidence, retained/dropped claims and open questions.
-   Continue with `step begin frame-problem --from <brief-id> --json` when requested. External publishing remains later integration work.
+   Continue with `step begin frame-problem --from <brief-id> --json` when requested. Adopted briefs use the initiative
+   shared outbox through destination-publication.
 
 Host adapters still need live conformance. Do not claim parallelism, source
 access or authentication that the current client cannot establish.

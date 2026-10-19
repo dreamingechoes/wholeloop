@@ -3,7 +3,7 @@
 > **TL;DR** — Four helpers that move you around the flow rather than through one step of it. `next` is the single front door: it figures out where things stand and runs forward to the next decision. `status` shows what is where and what is waiting on whom. `setup` configures your profile, providers and CLIs. `sync` keeps the store and your external tools in agreement.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status`, `wl setup` and evidence-backed `wl sync` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem). Generated client installation remains pending conformance. The scenarios below describe the target flow; picking up from a URL remains [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` implementation/owner checks are tracked in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
+> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status`, `wl setup` and evidence-backed `wl sync` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem). Generated client installation remains pending conformance. URL adoption and explicit shared publication are implemented locally in [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` implementation/owner checks are tracked in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
 
 ---
 
@@ -34,8 +34,7 @@ question before creating an item; no input selects the sole open item or asks
 which one to continue. IDs reuse unfinished runs. After framing completion it
 can begin the spec and then stops at its required approval. Later unavailable
 steps remain explicit limits. Pending decisions
-become questions for a person, never automatic approvals. URL adoption and
-`--through` routing remain planned.
+become questions for a person, never automatic approvals. `--through` routing remains planned.
 
 `status` reports stored items, owners, step plans, pending decisions and unread
 message counts without consuming messages or writing the store. It does not yet
@@ -50,6 +49,61 @@ The canonical skills live in `harness/skills/`; live client execution awaits the
 adapter/conformance tasks, while compiled CLI workflow tests exercise these paths.
 
 The remaining examples show the broader target behavior.
+
+## Adopt a URL and publish Define artifacts
+
+`wl next <HTTPS-URL> --json` matches stored adoption/document/tracker/PR links first.
+Fragments and known tracking parameters do not create new identities; semantic
+queries remain distinct. Multiple initiatives require an explicit ID. For an
+unknown URL, next asks for the source provider/kind and owner/title. It never
+invents an authenticated fetch or approvals from imported prose.
+
+A client reads the document/item and normalizes a complete result with its exact
+reference, body and revision. Save sanitized observations outside the repository:
+
+```json
+{"schema":"wholeloop/shared-read@1","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42","result":{"status":"succeeded","ref":"https://docs.example.com/work/42","body":"# Order search\n\nShared context.","revision":"observed-revision","complete":true}}
+```
+
+```text
+wl next https://docs.example.com/work/42 --provider notion --kind docs --file /tmp/shared-read.json --owner Alex --json
+wl adopt https://docs.example.com/work/42 --provider notion --kind docs --file /tmp/shared-read.json --owner Alex --json
+```
+
+`adopt` stops after import; `next` continues the stored initiative. A missing
+owner/title becomes batched questions before writing anything. Tracker bodies
+normalize to a JSON string containing title, body and optional owner. Imports are
+labelled observations; they do not prove that this process authenticated a tool.
+
+Each initiative defaults to local. To share, provide a destination array such as
+`[{"key":"team-docs","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42"}]`.
+Omit ref to create a separate resource per artifact; supply ref to append into an
+existing document/item. Explicit HTTPS destinations are pinned across mode changes.
+
+```text
+wl share mode --for init-0123abcd --mode shared --by Alex --file /tmp/targets.json --json
+wl share requests --for init-0123abcd --json
+wl share request --for init-0123abcd --key <outbox-key> --json
+wl share reconcile --for init-0123abcd --key <outbox-key> --ref <published-URL> --file /tmp/published-read.json --json
+wl share report --for init-0123abcd --json
+wl share mode --for init-0123abcd --mode local --by Alex --json
+```
+
+Shared mode queues all completed research, framing, specification and scope
+artifacts belonging to the initiative, including an unambiguously adopted research
+brief. Future completions queue in the same journal transaction. A standalone
+unadopted brief has no initiative destinations and stays local.
+
+The conductor consumes these requests through an explicit ProviderHost. The SDK
+SharingWorkflow.mode(..., host) publishes existing artifacts; complete(..., host)
+completes and flushes future work. The CLI queues and exposes a once-only intent:
+it does not authenticate or execute opaque MCP writers. After share request, the
+client performs the requested create or fresh read/append/conditional update,
+then supplies a separate complete read for reconciliation. Only exact artifact
+content earns a published receipt and stored link; the local CLI receipt alone
+means queued. A lost response remains ambiguous: find the resource and read it,
+never blindly repeat the write. Local mode pauses new requests, while a request
+already handed to a client remains that client's responsibility.
 
 ## next
 

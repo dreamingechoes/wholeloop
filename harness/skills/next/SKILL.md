@@ -6,9 +6,12 @@ description: Continue wholeloop work from an item ID or begin framing a new idea
 
 Read the shared ask-never-guess and output-contract protocols.
 
-1. Call `wl next ["<idea-or-id>"] --json`, adding `--owner <person>` only when
+1. Call `wl next ["<idea-id-or-URL>"] --json`, adding `--owner <person>` only when
    ownership is known. No input either selects the sole open item or asks which
-   one to continue. A remote URL currently returns an explicit limitation.
+   one to continue. A stored URL reuses its linked identity. For an unknown URL, answer source and
+   identity questions, read it through the chosen provider, then supply a labelled
+   wholeloop/shared-read@1 file with --provider, --kind and known owner/title.
+   Adoption imports context, never approvals or completed steps.
 2. Present returned questions together. A decision question belongs to a person;
    record their actual answer with `wl answer decision.<id>=approved|rejected
    --for <question.subject> --remember run --by <person> --json`, then rerun next.

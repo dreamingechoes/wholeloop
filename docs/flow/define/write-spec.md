@@ -5,6 +5,12 @@
 > [!NOTE]
 > **Status: 🚧 partial.** The core supports standalone/initiative entry, repository-first template routing, versioned spec metadata, deterministic shape/wording checks, local publication and revision-bound approval. Canonical drafting and challenger resources are available; live model critique, source queries and remote publication still need client/provider conformance. Tracked in [P2-03](../../../roadmap/phase-2-define.md#p2-03--write-spec).
 
+Completed artifacts can join the initiative's explicit shared outbox, including a
+research brief adopted into that initiative. The conductor publishes through the
+selected host and records links only after verifying the complete exact chunk.
+The CLI persists requests and labelled read imports; authenticated tool execution
+remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
+
 ---
 
 ## Available core commands

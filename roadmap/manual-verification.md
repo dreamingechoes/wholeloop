@@ -4,6 +4,16 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## URL adoption and shared publication (P2-08)
+
+- [ ] In each real client, adopt one actual docs URL and one tracker item using authenticated complete revision-bound reads. Confirm URL variants reuse one initiative, unresolved owner/title questions appear together, and imports fabricate no approval or completed Define step.
+- [ ] Select explicit sandbox destinations, switch to shared and publish existing artifacts through the conductor. Complete each Define step and verify its outbox is consumed; a bare CLI completion queues without an authenticated writer.
+- [ ] Confirm the real provider's conditional revision semantics preserve unrelated/concurrent edits and its complete read normalizes the exact published chunk. CLI imported observations are labelled imports, not proof of a live tool call.
+- [ ] Interrupt after a remote create/update and before its response/receipt. Locate and read the resource, reconcile once, and confirm no client blindly retries the write. Local mode pauses new requests but cannot revoke already handed-off work.
+- [ ] Resume/rebuild from another real CLI, inspect pinned destinations and sharing/outbox projections outside the repository, and repeat local fixtures on Linux and supported Node versions.
+
+These owner checks do not block independent local implementation.
+
 ## Grounding corpus and real workers (P4-07)
 
 - [ ] Review every original dataset label and trap reason independently; verify source/unit/query/window semantics before treating the seed as representative.

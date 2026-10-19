@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Once-per-round suites, incremental review with loaded/pinned rubrics and tested draft publication with gh/glab hosts and a declarative external-effect/undo ledger are implemented. Launch preparation pins measurement revisions and produces local kits with explicit draft/create handoffs; real adapter isolation remains pending. Generated CLI adapters, authenticated provider execution and later step behavior remain pending.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Once-per-round suites, incremental review with loaded/pinned rubrics and tested draft publication with gh/glab hosts and a declarative external-effect/undo ledger are implemented. Launch preparation pins measurement revisions and produces local kits with explicit draft/create handoffs; real adapter isolation remains pending. Canonical URL adoption and recoverable shared Define publication are available through explicit host contracts and CLI handoffs. Generated CLI adapters and authenticated provider execution remain pending.
 
 ---
 
@@ -95,7 +95,13 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 | `wl research submit` | `wholeloop/research-submit@1` | Record a validated source result in the journal |
 | `wl research examine` | `wholeloop/research-examine@1` | Record one independent claim examination |
 | `wl research complete` | `wholeloop/research-complete@1` | Aggregate evidence into a replayable research brief |
-| `wl next [<idea\|id>]` | `wholeloop/next@1` | Continue stored work or begin evidence-based framing |
+| `wl adopt <URL>` | `wholeloop/adopt@1` | Adopt a revision-bound shared source without inventing approvals |
+| `wl share mode` | `wholeloop/share-report@1` | Select explicit shared destinations and queue completed Define artifacts |
+| `wl share report` | `wholeloop/share-report@1` | Inspect shared publication receipts and ambiguity |
+| `wl share requests` | `wholeloop/share-report@1` | Inspect queued Define publication chunks without authorizing writes |
+| `wl share request` | `wholeloop/share-request@1` | Journal one publication intent before the conductor writes |
+| `wl share reconcile` | `wholeloop/share-report@1` | Verify an exact published chunk from a labelled complete read |
+| `wl next [<idea\|id\|URL>]` | `wholeloop/next@1` | Continue stored work or begin evidence-based framing |
 | `wl status [<id>]` | `wholeloop/status@1` | Inspect work and pending decisions without mutation |
 | `wl setup` | `wholeloop/setup@1` | Ask for or explicitly save scoped profile and provider choices |
 | `wl template list` | `wholeloop/template-list@1` | List validated manifests and their origins |

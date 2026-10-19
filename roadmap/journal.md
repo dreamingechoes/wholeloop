@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-19 · P2-08 — canonical URL adoption and recoverable shared Define publication
+
+- Add next URL/adopt with canonical credential-free HTTPS identity, tracking/fragment normalization, stored-link matching and explicit cross-initiative ambiguity. Import only complete matching revision-bound docs/items, batch missing owner/title before mutation, retain source digest/context and distinguish host reads from labelled imports. Concurrent/repeated adoption creates one initiative and no fabricated approval or completed step.
+- Add explicit per-initiative local/shared mode with pinned destinations, atomic outbox creation for existing/future completed Define artifacts and unambiguously adopted research briefs. Keep standalone briefs local until adoption. The synchronous core queues only; SDK mode/complete wrappers flush through a supplied ProviderHost. CLI mode/requests/request/reconcile/report expose that same conductor boundary without claiming an authenticated MCP writer.
+- Journal one artifact/target intent before external I/O. Preserve unrelated docs/tracker content with fresh revision reads and conditional updates, then require a separate complete same-reference read containing the exact marker-bound chunk before recording publication and links. Cache receipts, preserve lost-write ambiguity, refuse blind retries, pause new requests in local mode and retain pinned destinations on resumption. Rebuild sharing/outbox projections and bounded resume pointers outside repositories. ADR-0045 records these identity and recovery choices.
+- Verify twenty-one new cases including canonical variants, cached/concurrent adoption, missing identity, six incomplete/mismatched reads, existing links/ambiguity, default local mode, switch-and-publish, future completion, adopted research, docs/tracker preservation, lost responses, exact-content verification, local pause, pinned targets, forged receipts, rebuild and compiled CLI handoffs. Update the old unsupported-URL fixture to require the new adoption questions. All 628 tests in 44 files passed; lint/typecheck/build/smoke/generated references/catalogs/docs/harness passed. Correct two Markdown path spans found by the final docs lint and rerun documentation/Markdown/Mermaid checks.
+- Authenticated destination normalization/revision semantics, actual client outbox consumption, physical interruptions, imported-observation truth and Linux/other Node versions remain owner verification. No real provider write, project push or publication ran. Proceed to P5-03 headless engine; its real-client conformance stays a separate pending criterion.
+
+---
+
 ## 2026-10-19 · P4-07 — sandboxed numeric grounding and absent-metric traps
 
 - Add eval grounding and npm run eval:grounding with twenty original cases against the actual collectRampEvidence/collectImpact functions and an isolated data-only host. Pin seed grounding-v1-2026-10-19 and exact-byte digest 7342426d30c616b89f69e3a5a9533002bed2dd0992f20030625718bf7ae78899. No model, network, database or production query executes.

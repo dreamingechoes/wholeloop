@@ -128,7 +128,12 @@ describe('minimal local skill workflow', () => {
         cli('answer', 'decision.approve-spec=approved', '--for', one, '--by', 'Alex').code,
       ).toBe(0)
       expect(cli('next', one).payload.contract.step).toBe('frame-problem')
-      expect(cli('next', 'https://example.com/spec').code).toBe(3)
+      const adoption = cli('next', 'https://example.com/spec')
+      expect(adoption.code).toBe(2)
+      expect(adoption.payload.questions.map((question) => question.id)).toEqual([
+        'source',
+        'identity',
+      ])
     }))
 
   it('keeps status read-only with unread messages and an empty store', () =>
