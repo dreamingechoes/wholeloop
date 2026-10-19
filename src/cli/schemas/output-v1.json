@@ -1236,6 +1236,24 @@
         }
       },
       "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/grounding-eval@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/grounding-inputs@1"
+        }
+      },
+      "required": ["schema"]
     }
   ],
   "$defs": {

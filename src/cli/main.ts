@@ -13,6 +13,7 @@ import { evalCommand, gateEvalCommand } from './eval.js'
 import { extensionCommand } from './extensions.js'
 import { flowCommand } from './flow.js'
 import { gateCommand } from './gate.js'
+import { groundingCommand } from './grounding.js'
 import { harnessCheck } from './harness.js'
 import { impactCommand } from './impact.js'
 import { EXIT, type Io } from './io.js'
@@ -96,6 +97,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (['verify begin', 'verify complete'].includes(command.path))
       return verificationCommand(command.path, parsed, root, json, io)
     if (
+      command.path === 'eval grounding' ||
       command.path === 'sync' ||
       command.path === 'provider test' ||
       command.path === 'verify suite' ||
@@ -169,7 +171,8 @@ export async function runAsync(
   const args = argv.filter((arg) => arg !== '--json')
   const command = COMMANDS.find(
     (command) =>
-      (command.path === 'sync' ||
+      (command.path === 'eval grounding' ||
+        command.path === 'sync' ||
         command.path === 'provider test' ||
         command.path === 'verify suite' ||
         command.path.startsWith('pr ') ||
@@ -187,20 +190,24 @@ export async function runAsync(
   try {
     const parsed = parseArguments(
       args.slice(command.path.split(' ').length),
-      [],
-      command.options.map((option) => option.split(' ')[0] ?? option),
+      command.options.filter((option) => !option.includes(' ')),
+      command.options
+        .filter((option) => option.includes(' '))
+        .map((option) => option.split(' ')[0] ?? option),
     )
-    return command.path === 'sync'
-      ? await syncCommand(parsed, root, json, io)
-      : command.path === 'provider test'
-        ? await providerFixtureCommand(parsed, root, json, io)
-        : command.path.startsWith('measure ')
-          ? await impactCommand(command.path, parsed, root, json, io)
-          : command.path.startsWith('ramp ')
-            ? await rampCommand(command.path, parsed, root, json, io)
-            : command.path.startsWith('pr ')
-              ? await pullRequestCommand(command.path, parsed, root, json, io)
-              : await verificationSuiteCommand(parsed, root, json, io)
+    return command.path === 'eval grounding'
+      ? await groundingCommand(parsed, json, io)
+      : command.path === 'sync'
+        ? await syncCommand(parsed, root, json, io)
+        : command.path === 'provider test'
+          ? await providerFixtureCommand(parsed, root, json, io)
+          : command.path.startsWith('measure ')
+            ? await impactCommand(command.path, parsed, root, json, io)
+            : command.path.startsWith('ramp ')
+              ? await rampCommand(command.path, parsed, root, json, io)
+              : command.path.startsWith('pr ')
+                ? await pullRequestCommand(command.path, parsed, root, json, io)
+                : await verificationSuiteCommand(parsed, root, json, io)
   } catch (error) {
     const code = error instanceof CliError ? error.code : EXIT.precondition
     const message = error instanceof Error ? error.message : 'Asynchronous command failed'

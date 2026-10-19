@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-10-19 · P4-07 — sandboxed numeric grounding and absent-metric traps
+
+- Add eval grounding and npm run eval:grounding with twenty original cases against the actual collectRampEvidence/collectImpact functions and an isolated data-only host. Pin seed grounding-v1-2026-10-19 and exact-byte digest 7342426d30c616b89f69e3a5a9533002bed2dd0992f20030625718bf7ae78899. No model, network, database or production query executes.
+- Judge structured assertions against metric/unit/query hash/source/body hash and authored datapoints. Reject right-looking numbers from wrong provenance, omitted genuine observations, incomplete/duplicate cases, changed corpus digests and unknown-with-value. Actual zero and a signed points delta remain observations; absent/partial/wrong-unit/string/empty/non-finite/unsupported-source traps remain unknown. Failed scores exit 4.
+- Export opaque, deterministically shuffled blind inputs without labels/reasons or unsupported-query counterfactual values. External predictions identify evaluator/provenance, which is metadata rather than proof of a real independent run. Report each seeded step and explicitly list framing/research/launch/decision narrative as unevaluated. ADR-0044 records this scope and semantic boundary.
+- Record the synthetic core-grounding-collectors@1 baseline honestly: six numeric assertions, all grounded; fourteen trap metrics, all unknown; each of ramp/impact has three grounded assertions, seven unknown traps and zero failures. This is structural regression evidence on a small authored seed, not model quality, production truth or a causal estimate.
+- Verify twelve cases for baseline reproduction, zero/signed values, five provenance corruptions, all fourteen reassuring-zero hallucinations, omitted real zero, digest/evaluator/coverage errors, malformed corpora, blind exports and byte-identical compiled CLI runs with failed-score exit. Correct a fixture's expected exit code and missing export import without weakening the judge. npm eval:grounding ran; full local check passed 607 tests in 43 files plus build, smoke, lint, typecheck, generated references/catalogs, docs, harness, Markdown and Mermaid.
+- Real blind workers, independently reviewed labels, narrative/qualitative statistics, production query/cohort semantics, workload calibration and Linux remain owner verification. Those checks do not block local URL adoption/shared-publication implementation using the completed P2-06 host contract.
+
+---
+
 ## 2026-10-19 · P4-06 — exact merge synchronization and recoverable tracker status
 
 - Add sync with per-item repository/provider context, real gh/glab read hosts and explicit labelled normalized imports. Match complete published PR URL/repository/head/base/commit and non-draft merged state; unknown, mismatched and closed-unmerged sources never close work. Replay validates merge/closure/delivery receipts and prevents fabricated proof lists.

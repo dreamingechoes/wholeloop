@@ -4,6 +4,16 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Grounding corpus and real workers (P4-07)
+
+- [ ] Review every original dataset label and trap reason independently; verify source/unit/query/window semantics before treating the seed as representative.
+- [ ] Export blind inputs and isolate real workers from labels, this guide, the corpus and baseline. Collect complete digest-bound predictions and preserve actual model/client/query execution records separately; provenance metadata alone proves nothing.
+- [ ] Score the exact seed and inspect every failed or missing assertion, including real zero, wrong sources/units and absent metrics. Compare real worker results with prior real worker results, not the synthetic core baseline as model-quality evidence.
+- [ ] Evaluate research/framing prose, launch/decision narrative and qualitative statistics separately. This seed covers structured ramp/impact numeric collectors only and explicitly lists the other steps as unevaluated.
+- [ ] Add real escaped failures with reviewed original fixtures and calibrate meaningful workload thresholds. The twenty-case seed establishes no population rate or causal production effect.
+
+These checks do not block subsequent independent local implementation.
+
 ## sync and actual service agreement (P4-06)
 
 - [ ] Authenticate code-host reads in disposable GitHub/GitLab projects and verify complete exact PR/head/base/repository/commit identity across normal, closed-unmerged, rebased and squash-merged outcomes. Imported fixture observations do not prove those remote facts.

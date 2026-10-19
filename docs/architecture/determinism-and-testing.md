@@ -3,7 +3,7 @@
 > **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model in seconds, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. Live model measurements and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
+> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
 
 ---
 
@@ -121,6 +121,30 @@ finding; validate reasoning, locations and labels separately. See the
 [gate seed guide](../../test/evals/gates/README.md),
 [baseline](../../test/evals/gates/baseline.json) and
 [ADR-0037](../decisions/0037-gate-evaluation-observations-and-refutation-matrices.md).
+
+### Seeded structured grounding
+
+Run `npm run eval:grounding -- --json`, or `wl eval grounding <corpus> --json`.
+Twenty original sandbox cases exercise actual ramp/impact collectors: six present
+finite values (including actual zero and signed deltas) and fourteen absent,
+incomplete, wrong-unit, nonnumeric, empty, non-finite or unsupported-operation traps.
+The fixed synthetic baseline grounds all six values and keeps every trap unknown.
+It is a deterministic normalization regression, not a live model measurement.
+
+The judge requires exact metric/unit/query/source/body provenance, complete case
+coverage, explicit unknown reasons and an exact corpus digest. Right-looking values
+from unrelated sources and omitted genuine observations fail. Failed grounding
+returns exit 4. External predictions carry evaluator/provenance, but metadata alone
+proves no real execution. Export --inputs for opaque shuffled source observations
+without labels/reasons, hide the corpus/guide/baseline and preserve actual host
+records separately. --inputs and --predictions cannot be combined.
+
+The report explicitly lists frame-problem, research, prepare-launch and decide-next
+as unevaluated: narrative numbers, qualitative statistics, production query truth
+and causal interpretations remain separate semantic checks. See the
+[grounding seed guide](../../test/evals/grounding/README.md),
+[baseline](../../test/evals/grounding/baseline.json) and
+[ADR-0044](../decisions/0044-grounding-fixtures-and-exact-numeric-provenance.md).
 
 ## Enforcement — every hard rule executes somewhere
 

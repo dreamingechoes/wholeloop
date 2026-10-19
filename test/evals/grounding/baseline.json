@@ -1,0 +1,550 @@
+{
+  "schema": "wholeloop/grounding-eval@1",
+  "seed": "grounding-v1-2026-10-19",
+  "corpusDigest": "7342426d30c616b89f69e3a5a9533002bed2dd0992f20030625718bf7ae78899",
+  "evaluator": {
+    "name": "core-grounding-collectors@1",
+    "provenance": "synthetic",
+    "note": "Actual ramp/impact collectors against an isolated scripted dataset; no model, network or production query ran."
+  },
+  "passed": true,
+  "cases": [
+    {
+      "id": "g01",
+      "step": "ramp-exposure",
+      "metric": "m01",
+      "expected": "observed",
+      "prediction": {
+        "id": "g01",
+        "step": "ramp-exposure",
+        "metric": "m01",
+        "status": "observed",
+        "unit": "points",
+        "queryDigest": "d9d295cc5fa2d6edb900c88b2019bd2ec8904f0de5a7e85c028f6a7ed91570c6",
+        "value": 17,
+        "sourceRef": "https://example.com/grounding/g01",
+        "bodyDigest": "ca20e72ccafe1afc28f79fcbd334a31ee8040763858d5eda1d02fefdef7c8224"
+      },
+      "grounded": true,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m01",
+        "queryDigest": "d9d295cc5fa2d6edb900c88b2019bd2ec8904f0de5a7e85c028f6a7ed91570c6",
+        "unit": "points",
+        "source": "https://example.com/grounding/g01",
+        "bodyDigest": "ca20e72ccafe1afc28f79fcbd334a31ee8040763858d5eda1d02fefdef7c8224"
+      },
+      "issue": null
+    },
+    {
+      "id": "g02",
+      "step": "ramp-exposure",
+      "metric": "m02",
+      "expected": "observed",
+      "prediction": {
+        "id": "g02",
+        "step": "ramp-exposure",
+        "metric": "m02",
+        "status": "observed",
+        "unit": "points",
+        "queryDigest": "9350580627051987cfda365c3742584ce64e026b25a827df66741f1a7bdecdbf",
+        "value": 0,
+        "sourceRef": "https://example.com/grounding/g02",
+        "bodyDigest": "32dcb7a8d55e5380f3af0c6234e8b243106d41f9b3586ac235f414637a6ec195"
+      },
+      "grounded": true,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m02",
+        "queryDigest": "9350580627051987cfda365c3742584ce64e026b25a827df66741f1a7bdecdbf",
+        "unit": "points",
+        "source": "https://example.com/grounding/g02",
+        "bodyDigest": "32dcb7a8d55e5380f3af0c6234e8b243106d41f9b3586ac235f414637a6ec195"
+      },
+      "issue": null
+    },
+    {
+      "id": "g03",
+      "step": "ramp-exposure",
+      "metric": "m03",
+      "expected": "observed",
+      "prediction": {
+        "id": "g03",
+        "step": "ramp-exposure",
+        "metric": "m03",
+        "status": "observed",
+        "unit": "points",
+        "queryDigest": "a2e5838727ec0b9a225cc508ea3c6e7887d27fff3869cbe5547b507a6378f65a",
+        "value": -2,
+        "sourceRef": "https://example.com/grounding/g03",
+        "bodyDigest": "079676559c4f87f0353d563e795e953853b89845176ac18c4cc622701e1d1f34"
+      },
+      "grounded": true,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m03",
+        "queryDigest": "a2e5838727ec0b9a225cc508ea3c6e7887d27fff3869cbe5547b507a6378f65a",
+        "unit": "points",
+        "source": "https://example.com/grounding/g03",
+        "bodyDigest": "079676559c4f87f0353d563e795e953853b89845176ac18c4cc622701e1d1f34"
+      },
+      "issue": null
+    },
+    {
+      "id": "g04",
+      "step": "ramp-exposure",
+      "metric": "m04",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g04",
+        "step": "ramp-exposure",
+        "metric": "m04",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "7156fba2c32c1b09e1d87cce2245b607aaba7d8a0c2760690773c85fd5bac49a",
+        "reason": "The source did not return complete observed evidence; confirm access and query completion"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m04",
+        "queryDigest": "7156fba2c32c1b09e1d87cce2245b607aaba7d8a0c2760690773c85fd5bac49a",
+        "unit": "points",
+        "source": "https://example.com/grounding/g04",
+        "bodyDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "issue": null
+    },
+    {
+      "id": "g05",
+      "step": "ramp-exposure",
+      "metric": "m05",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g05",
+        "step": "ramp-exposure",
+        "metric": "m05",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "5c2cca341667706441ee2aa1baa708407586e9923b21eb79ef0829f5661a181b",
+        "reason": "The source did not return complete observed evidence; confirm access and query completion"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m05",
+        "queryDigest": "5c2cca341667706441ee2aa1baa708407586e9923b21eb79ef0829f5661a181b",
+        "unit": "points",
+        "source": "https://example.com/grounding/g05",
+        "bodyDigest": "f2c3898b58d113cd2ed2a5098b2314ef95dcefcdd68345cf92f8343ee2635d18"
+      },
+      "issue": null
+    },
+    {
+      "id": "g06",
+      "step": "ramp-exposure",
+      "metric": "m06",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g06",
+        "step": "ramp-exposure",
+        "metric": "m06",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "8ac840bf9ef1669d14433bb09ff55cd76dccdb7da7c145473316b61e1b052dc5",
+        "reason": "The source scalar, unit or evidence reference is missing/incompatible; no value was inferred"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m06",
+        "queryDigest": "8ac840bf9ef1669d14433bb09ff55cd76dccdb7da7c145473316b61e1b052dc5",
+        "unit": "points",
+        "source": "https://example.com/grounding/g06",
+        "bodyDigest": "46c3cbee3b7b2cd826f9c3f2bc751ae851f070f2fea7aedae16dacb869a9d78f"
+      },
+      "issue": null
+    },
+    {
+      "id": "g07",
+      "step": "ramp-exposure",
+      "metric": "m07",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g07",
+        "step": "ramp-exposure",
+        "metric": "m07",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "7e5dd59db32aa46a75baf9e270e1bcfc62fa057d4440b85b744644dd1661c66d",
+        "reason": "The source scalar, unit or evidence reference is missing/incompatible; no value was inferred"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m07",
+        "queryDigest": "7e5dd59db32aa46a75baf9e270e1bcfc62fa057d4440b85b744644dd1661c66d",
+        "unit": "points",
+        "source": "https://example.com/grounding/g07",
+        "bodyDigest": "96ac9ae8f0e5e68babfc42ae1ca4a61f31b936e8ff55ffa5be9f592471ca30e5"
+      },
+      "issue": null
+    },
+    {
+      "id": "g08",
+      "step": "ramp-exposure",
+      "metric": "m08",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g08",
+        "step": "ramp-exposure",
+        "metric": "m08",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "c8621c8f19fae1eaa175cbc1e267988923816c91492d13eca948a2a7a4567899",
+        "reason": "The source scalar, unit or evidence reference is missing/incompatible; no value was inferred"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m08",
+        "queryDigest": "c8621c8f19fae1eaa175cbc1e267988923816c91492d13eca948a2a7a4567899",
+        "unit": "points",
+        "source": "https://example.com/grounding/g08",
+        "bodyDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "issue": null
+    },
+    {
+      "id": "g09",
+      "step": "ramp-exposure",
+      "metric": "m09",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g09",
+        "step": "ramp-exposure",
+        "metric": "m09",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "ccefcc6a72839d294cd5520de8e55cbdfa8126125df526d45d046fb120643d4f",
+        "reason": "The source scalar, unit or evidence reference is missing/incompatible; no value was inferred"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m09",
+        "queryDigest": "ccefcc6a72839d294cd5520de8e55cbdfa8126125df526d45d046fb120643d4f",
+        "unit": "points",
+        "source": "https://example.com/grounding/g09",
+        "bodyDigest": "5b76f9a6e0f30548237857e6fa7d33b5c3c17969c6240dfe7462aa431e8123d3"
+      },
+      "issue": null
+    },
+    {
+      "id": "g10",
+      "step": "ramp-exposure",
+      "metric": "m10",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g10",
+        "step": "ramp-exposure",
+        "metric": "m10",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "19d67d793639e0f83f273644eb8c1692e3a14a8b3d1a58f9b8a5f30883681345",
+        "reason": "The named provider does not support this read-only query; confirm its manifest and source configuration"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m10",
+        "queryDigest": "19d67d793639e0f83f273644eb8c1692e3a14a8b3d1a58f9b8a5f30883681345",
+        "unit": "points",
+        "source": "https://example.com/grounding/g10",
+        "bodyDigest": "b8828d1f7828aa40e75ac2724256cab89a8cc4c3876af8536ff3af9601037d69"
+      },
+      "issue": null
+    },
+    {
+      "id": "g11",
+      "step": "measure-impact",
+      "metric": "m11",
+      "expected": "observed",
+      "prediction": {
+        "id": "g11",
+        "step": "measure-impact",
+        "metric": "m11",
+        "status": "observed",
+        "unit": "points",
+        "queryDigest": "0d460bef737ed0ff4b1c82909ecf07cb11b84d707db0fbec3b38035b47c50a0d",
+        "value": 17,
+        "sourceRef": "https://example.com/grounding/g11",
+        "bodyDigest": "ca20e72ccafe1afc28f79fcbd334a31ee8040763858d5eda1d02fefdef7c8224"
+      },
+      "grounded": true,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m11",
+        "queryDigest": "0d460bef737ed0ff4b1c82909ecf07cb11b84d707db0fbec3b38035b47c50a0d",
+        "unit": "points",
+        "source": "https://example.com/grounding/g11",
+        "bodyDigest": "ca20e72ccafe1afc28f79fcbd334a31ee8040763858d5eda1d02fefdef7c8224"
+      },
+      "issue": null
+    },
+    {
+      "id": "g12",
+      "step": "measure-impact",
+      "metric": "m12",
+      "expected": "observed",
+      "prediction": {
+        "id": "g12",
+        "step": "measure-impact",
+        "metric": "m12",
+        "status": "observed",
+        "unit": "points",
+        "queryDigest": "78d8cf57afbd4cd1ea46fb8f89b117136f2bc30826185128f4132747665e23b9",
+        "value": 0,
+        "sourceRef": "https://example.com/grounding/g12",
+        "bodyDigest": "32dcb7a8d55e5380f3af0c6234e8b243106d41f9b3586ac235f414637a6ec195"
+      },
+      "grounded": true,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m12",
+        "queryDigest": "78d8cf57afbd4cd1ea46fb8f89b117136f2bc30826185128f4132747665e23b9",
+        "unit": "points",
+        "source": "https://example.com/grounding/g12",
+        "bodyDigest": "32dcb7a8d55e5380f3af0c6234e8b243106d41f9b3586ac235f414637a6ec195"
+      },
+      "issue": null
+    },
+    {
+      "id": "g13",
+      "step": "measure-impact",
+      "metric": "m13",
+      "expected": "observed",
+      "prediction": {
+        "id": "g13",
+        "step": "measure-impact",
+        "metric": "m13",
+        "status": "observed",
+        "unit": "points",
+        "queryDigest": "54ba123528a94004dbafc60b5f035da5a3f45e3796fe6c49332863bf1212d681",
+        "value": -2,
+        "sourceRef": "https://example.com/grounding/g13",
+        "bodyDigest": "079676559c4f87f0353d563e795e953853b89845176ac18c4cc622701e1d1f34"
+      },
+      "grounded": true,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m13",
+        "queryDigest": "54ba123528a94004dbafc60b5f035da5a3f45e3796fe6c49332863bf1212d681",
+        "unit": "points",
+        "source": "https://example.com/grounding/g13",
+        "bodyDigest": "079676559c4f87f0353d563e795e953853b89845176ac18c4cc622701e1d1f34"
+      },
+      "issue": null
+    },
+    {
+      "id": "g14",
+      "step": "measure-impact",
+      "metric": "m14",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g14",
+        "step": "measure-impact",
+        "metric": "m14",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "be9e3a564d42cf015553fa334673f8face0f9b27f64cef5ebd5178a24cdf8210",
+        "reason": "The source did not return complete observed evidence; confirm access and query completion"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m14",
+        "queryDigest": "be9e3a564d42cf015553fa334673f8face0f9b27f64cef5ebd5178a24cdf8210",
+        "unit": "points",
+        "source": "https://example.com/grounding/g14",
+        "bodyDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "issue": null
+    },
+    {
+      "id": "g15",
+      "step": "measure-impact",
+      "metric": "m15",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g15",
+        "step": "measure-impact",
+        "metric": "m15",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "c42c8da4c495e9355f873ab8c91ba0e30d34ef6712b0cbbf9a10881eb96afdf2",
+        "reason": "The source did not return complete observed evidence; confirm access and query completion"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m15",
+        "queryDigest": "c42c8da4c495e9355f873ab8c91ba0e30d34ef6712b0cbbf9a10881eb96afdf2",
+        "unit": "points",
+        "source": "https://example.com/grounding/g15",
+        "bodyDigest": "f2c3898b58d113cd2ed2a5098b2314ef95dcefcdd68345cf92f8343ee2635d18"
+      },
+      "issue": null
+    },
+    {
+      "id": "g16",
+      "step": "measure-impact",
+      "metric": "m16",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g16",
+        "step": "measure-impact",
+        "metric": "m16",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "8251e5f8584f0d6fa8848472007f65b3c555e4d0fbaf7c61669bc0140286991c",
+        "reason": "The source scalar, unit or evidence reference is missing/incompatible; no value was inferred"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m16",
+        "queryDigest": "8251e5f8584f0d6fa8848472007f65b3c555e4d0fbaf7c61669bc0140286991c",
+        "unit": "points",
+        "source": "https://example.com/grounding/g16",
+        "bodyDigest": "46c3cbee3b7b2cd826f9c3f2bc751ae851f070f2fea7aedae16dacb869a9d78f"
+      },
+      "issue": null
+    },
+    {
+      "id": "g17",
+      "step": "measure-impact",
+      "metric": "m17",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g17",
+        "step": "measure-impact",
+        "metric": "m17",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "4afbfb90c31edf4cca2a87d35e59c7d55640807c8ac5ccf1f3bc2d69d25e3fc3",
+        "reason": "The source scalar, unit or evidence reference is missing/incompatible; no value was inferred"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m17",
+        "queryDigest": "4afbfb90c31edf4cca2a87d35e59c7d55640807c8ac5ccf1f3bc2d69d25e3fc3",
+        "unit": "points",
+        "source": "https://example.com/grounding/g17",
+        "bodyDigest": "96ac9ae8f0e5e68babfc42ae1ca4a61f31b936e8ff55ffa5be9f592471ca30e5"
+      },
+      "issue": null
+    },
+    {
+      "id": "g18",
+      "step": "measure-impact",
+      "metric": "m18",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g18",
+        "step": "measure-impact",
+        "metric": "m18",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "a0d18e9485f67b2688938a01394f93221f66763718ac1e1395cdb6a1170e769d",
+        "reason": "The source scalar, unit or evidence reference is missing/incompatible; no value was inferred"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m18",
+        "queryDigest": "a0d18e9485f67b2688938a01394f93221f66763718ac1e1395cdb6a1170e769d",
+        "unit": "points",
+        "source": "https://example.com/grounding/g18",
+        "bodyDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "issue": null
+    },
+    {
+      "id": "g19",
+      "step": "measure-impact",
+      "metric": "m19",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g19",
+        "step": "measure-impact",
+        "metric": "m19",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "02bcff3015371d571217cee6443be03f3bdf633814d9b8d4d5a29ca04e67fd3c",
+        "reason": "The source scalar, unit or evidence reference is missing/incompatible; no value was inferred"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m19",
+        "queryDigest": "02bcff3015371d571217cee6443be03f3bdf633814d9b8d4d5a29ca04e67fd3c",
+        "unit": "points",
+        "source": "https://example.com/grounding/g19",
+        "bodyDigest": "5b76f9a6e0f30548237857e6fa7d33b5c3c17969c6240dfe7462aa431e8123d3"
+      },
+      "issue": null
+    },
+    {
+      "id": "g20",
+      "step": "measure-impact",
+      "metric": "m20",
+      "expected": "unknown",
+      "prediction": {
+        "id": "g20",
+        "step": "measure-impact",
+        "metric": "m20",
+        "status": "unknown",
+        "unit": "points",
+        "queryDigest": "4740557c95c872ed6c34576acb09171d4aa8e8e11f428109c2bf2d0c71244864",
+        "reason": "The named provider does not support this read-only query; confirm its manifest and source configuration"
+      },
+      "grounded": false,
+      "passed": true,
+      "evidence": {
+        "query": "read sandbox metric m20",
+        "queryDigest": "4740557c95c872ed6c34576acb09171d4aa8e8e11f428109c2bf2d0c71244864",
+        "unit": "points",
+        "source": "https://example.com/grounding/g20",
+        "bodyDigest": "b8828d1f7828aa40e75ac2724256cab89a8cc4c3876af8536ff3af9601037d69"
+      },
+      "issue": null
+    }
+  ],
+  "perStep": [
+    {
+      "step": "ramp-exposure",
+      "cases": 10,
+      "numericAssertions": 3,
+      "groundedAssertions": 3,
+      "trapMetrics": 7,
+      "unknownTraps": 7,
+      "failures": 0
+    },
+    {
+      "step": "measure-impact",
+      "cases": 10,
+      "numericAssertions": 3,
+      "groundedAssertions": 3,
+      "trapMetrics": 7,
+      "unknownTraps": 7,
+      "failures": 0
+    }
+  ],
+  "coverage": {
+    "evaluated": ["ramp-exposure", "measure-impact"],
+    "notEvaluated": ["frame-problem", "research", "prepare-launch", "decide-next"]
+  },
+  "limitations": "Structured numeric grounding and deliberate missing-data traps only. Free-form narrative, qualitative statistics, model behavior and production source truth require separate host evaluation."
+}

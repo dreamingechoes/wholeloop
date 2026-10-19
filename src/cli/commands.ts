@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'eval grounding',
+    arguments: '<corpus.json>',
+    options: ['--predictions <file>', '--inputs'],
+    schema: 'wholeloop/grounding-eval@1',
+    summary: 'Score traceable numeric assertions and deliberately absent sandbox metrics',
+  },
+  {
     path: 'sync',
     arguments: '',
     options: ['--for <id>', '--file <file>', '--prune <on|off>'],

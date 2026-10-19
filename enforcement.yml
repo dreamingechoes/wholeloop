@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: grounding-exact-provenance
+    enforcers: [src/grounding/eval.ts#groundingEval, src/grounding/eval.ts#groundingPredictions, test/unit/grounding/grounding.test.ts]
+  - id: grounding-complete-observations
+    enforcers: [src/grounding/eval.ts#predictionsInput, src/grounding/eval.ts#groundingCorpus, test/unit/grounding/grounding.test.ts]
+  - id: grounding-blind-boundary
+    enforcers: [src/grounding/eval.ts#groundingInputs, src/grounding/eval.ts#groundingEval, test/unit/grounding/grounding.test.ts]
   - id: sync-exact-merges
     enforcers: [src/sync/contracts.ts#syncState, src/sync/contracts.ts#syncProofs, src/sync/workflow.ts#SyncWorkflow, test/unit/sync/sync.test.ts]
   - id: sync-delivery-outcome

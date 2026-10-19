@@ -117,7 +117,7 @@ Real server, scheduling and cross-platform checks remain on the manual checklist
 
 ## P4-07 · Grounding eval corpus
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P4-03
+**Status:** ✅ · **Size:** M · **Depends on:** P4-03
 
 **Goal** — Prove the data steps do not invent numbers.
 
@@ -125,7 +125,7 @@ Real server, scheduling and cross-platform checks remain on the manual checklist
 
 **Acceptance criteria:**
 
-- [ ] Every asserted number traces to a datapoint; every trap metric is reported as unknown.
+- [x] Every asserted number traces to a datapoint; every trap metric is reported as unknown.
 
 **Docs** — architecture/determinism-and-testing.
 

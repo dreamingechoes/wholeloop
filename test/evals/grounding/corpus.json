@@ -1,0 +1,371 @@
+{
+  "schema": "wholeloop/grounding-corpus@1",
+  "seed": "grounding-v1-2026-10-19",
+  "at": "2026-10-01T00:00:00.000Z",
+  "cases": [
+    {
+      "id": "g01",
+      "step": "ramp-exposure",
+      "metric": "m01",
+      "query": "read sandbox metric m01",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g01",
+        "complete": true,
+        "body": "{\"value\":17,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "observed",
+        "reason": "The exact finite scalar is present.",
+        "value": 17
+      }
+    },
+    {
+      "id": "g02",
+      "step": "ramp-exposure",
+      "metric": "m02",
+      "query": "read sandbox metric m02",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g02",
+        "complete": true,
+        "body": "{\"value\":0,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "observed",
+        "reason": "Zero is explicitly observed, not inferred.",
+        "value": 0
+      }
+    },
+    {
+      "id": "g03",
+      "step": "ramp-exposure",
+      "metric": "m03",
+      "query": "read sandbox metric m03",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g03",
+        "complete": true,
+        "body": "{\"value\":-2,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "observed",
+        "reason": "A signed error-budget delta is explicitly observed.",
+        "value": -2
+      }
+    },
+    {
+      "id": "g04",
+      "step": "ramp-exposure",
+      "metric": "m04",
+      "query": "read sandbox metric m04",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "pending",
+        "ref": "https://example.com/grounding/g04",
+        "complete": false
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "This metric was deliberately never collected."
+      }
+    },
+    {
+      "id": "g05",
+      "step": "ramp-exposure",
+      "metric": "m05",
+      "query": "read sandbox metric m05",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g05",
+        "complete": false,
+        "body": "{\"value\":4,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "Incomplete results cannot assert a number."
+      }
+    },
+    {
+      "id": "g06",
+      "step": "ramp-exposure",
+      "metric": "m06",
+      "query": "read sandbox metric m06",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g06",
+        "complete": true,
+        "body": "{\"value\":7,\"unit\":\"seconds\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "No silent unit conversion is allowed."
+      }
+    },
+    {
+      "id": "g07",
+      "step": "ramp-exposure",
+      "metric": "m07",
+      "query": "read sandbox metric m07",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g07",
+        "complete": true,
+        "body": "{\"value\":\"0\",\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "A numeric-looking string is not an observed scalar."
+      }
+    },
+    {
+      "id": "g08",
+      "step": "ramp-exposure",
+      "metric": "m08",
+      "query": "read sandbox metric m08",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g08",
+        "complete": true,
+        "body": "[]"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "An empty dataset is not zero."
+      }
+    },
+    {
+      "id": "g09",
+      "step": "ramp-exposure",
+      "metric": "m09",
+      "query": "read sandbox metric m09",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g09",
+        "complete": true,
+        "body": "{\"value\":1e400,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "A non-finite parse cannot ground a numeric claim."
+      }
+    },
+    {
+      "id": "g10",
+      "step": "ramp-exposure",
+      "metric": "m10",
+      "query": "read sandbox metric m10",
+      "operation": "source.product-analytics.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g10",
+        "complete": true,
+        "body": "{\"value\":9,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "The named provider has no matching source capability."
+      }
+    },
+    {
+      "id": "g11",
+      "step": "measure-impact",
+      "metric": "m11",
+      "query": "read sandbox metric m11",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g11",
+        "complete": true,
+        "body": "{\"value\":17,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "observed",
+        "reason": "The exact finite scalar is present.",
+        "value": 17
+      }
+    },
+    {
+      "id": "g12",
+      "step": "measure-impact",
+      "metric": "m12",
+      "query": "read sandbox metric m12",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g12",
+        "complete": true,
+        "body": "{\"value\":0,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "observed",
+        "reason": "Zero is explicitly observed, not inferred.",
+        "value": 0
+      }
+    },
+    {
+      "id": "g13",
+      "step": "measure-impact",
+      "metric": "m13",
+      "query": "read sandbox metric m13",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g13",
+        "complete": true,
+        "body": "{\"value\":-2,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "observed",
+        "reason": "A signed error-budget delta is explicitly observed.",
+        "value": -2
+      }
+    },
+    {
+      "id": "g14",
+      "step": "measure-impact",
+      "metric": "m14",
+      "query": "read sandbox metric m14",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "pending",
+        "ref": "https://example.com/grounding/g14",
+        "complete": false
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "This metric was deliberately never collected."
+      }
+    },
+    {
+      "id": "g15",
+      "step": "measure-impact",
+      "metric": "m15",
+      "query": "read sandbox metric m15",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g15",
+        "complete": false,
+        "body": "{\"value\":4,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "Incomplete results cannot assert a number."
+      }
+    },
+    {
+      "id": "g16",
+      "step": "measure-impact",
+      "metric": "m16",
+      "query": "read sandbox metric m16",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g16",
+        "complete": true,
+        "body": "{\"value\":7,\"unit\":\"seconds\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "No silent unit conversion is allowed."
+      }
+    },
+    {
+      "id": "g17",
+      "step": "measure-impact",
+      "metric": "m17",
+      "query": "read sandbox metric m17",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g17",
+        "complete": true,
+        "body": "{\"value\":\"0\",\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "A numeric-looking string is not an observed scalar."
+      }
+    },
+    {
+      "id": "g18",
+      "step": "measure-impact",
+      "metric": "m18",
+      "query": "read sandbox metric m18",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g18",
+        "complete": true,
+        "body": "[]"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "An empty dataset is not zero."
+      }
+    },
+    {
+      "id": "g19",
+      "step": "measure-impact",
+      "metric": "m19",
+      "query": "read sandbox metric m19",
+      "operation": "source.errors.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g19",
+        "complete": true,
+        "body": "{\"value\":1e400,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "A non-finite parse cannot ground a numeric claim."
+      }
+    },
+    {
+      "id": "g20",
+      "step": "measure-impact",
+      "metric": "m20",
+      "query": "read sandbox metric m20",
+      "operation": "source.product-analytics.query",
+      "unit": "points",
+      "response": {
+        "status": "succeeded",
+        "ref": "https://example.com/grounding/g20",
+        "complete": true,
+        "body": "{\"value\":9,\"unit\":\"points\"}"
+      },
+      "truth": {
+        "status": "unknown",
+        "reason": "The named provider has no matching source capability."
+      }
+    }
+  ]
+}
