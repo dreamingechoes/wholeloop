@@ -58,7 +58,7 @@ criterion does not block dependent local rollout implementation.
 
 ## P4-04 · `decide-next`
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P4-03
+**Status:** ✅ · **Size:** M · **Depends on:** P4-03
 
 **Goal** — Every scope ends with an explicit, recorded decision.
 
@@ -66,8 +66,8 @@ criterion does not block dependent local rollout implementation.
 
 **Acceptance criteria:**
 
-- [ ] An initiative closes only when every scope is decided.
-- [ ] *Iterate* creates or reopens a framed idea linked to the evidence.
+- [x] An initiative closes only when every scope is decided.
+- [x] *Iterate* creates or reopens a framed idea linked to the evidence.
 
 **Docs** — flow/learn/decide-next.
 

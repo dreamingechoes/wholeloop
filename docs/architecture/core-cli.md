@@ -22,6 +22,12 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl learn begin [<description>]` | `wholeloop/learning-begin@1` | Pin outcome evidence and the leaning to challenge |
+| `wl learn challenge` | `wholeloop/learning-report@1` | Record a counterargument against the exact current leaning |
+| `wl learn decide <keep\|iterate\|kill\|unflag>` | `wholeloop/learning-decision@1` | Record a human outcome and close only fully decided scopes |
+| `wl learn complete` | `wholeloop/learning-complete@1` | Recover canonical decision completion and conditional closure |
+| `wl learn report` | `wholeloop/learning-report@1` | Show evidence, the counterargument and proposed follow-up |
+| `wl learn schema` | `wholeloop/learning-schema@1` | Print counterargument, reported-evidence and iteration contracts |
 | `wl measure begin [<description>]` | `wholeloop/impact-begin@1` | Pin a due checkpoint and its exact measurement plan |
 | `wl measure requests` | `wholeloop/impact-read-requests@1` | Plan exact source reads without querying services |
 | `wl measure observe` | `wholeloop/impact-report@1` | Record normalized observations and preserve missing datapoints as unknown |

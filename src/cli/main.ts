@@ -17,6 +17,7 @@ import { harnessCheck } from './harness.js'
 import { impactCommand } from './impact.js'
 import { EXIT, type Io } from './io.js'
 import { launchCommand } from './launch.js'
+import { learningCommand } from './learning.js'
 import { mailboxCommand } from './mailbox.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
@@ -82,6 +83,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path.startsWith('learn '))
+      return learningCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('launch '))
       return launchCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('env '))

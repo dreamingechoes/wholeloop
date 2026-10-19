@@ -7,6 +7,7 @@ import { impactReport } from '../impact/report.js'
 import { launchArtifacts } from '../launch/artifacts.js'
 import { launchRuns } from '../launch/contracts.js'
 import { launchDeliveries } from '../launch/publish.js'
+import { learningFollowups, learningRuns } from '../learning/contracts.js'
 import { pullRequestPlans } from '../pull-requests/contracts.js'
 import { rampRuns } from '../ramp/contracts.js'
 import { rampProposals } from '../ramp/publish.js'
@@ -52,6 +53,16 @@ export function projections(
     }
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
+  }
+  for (const learning of learningRuns(events)) {
+    files.set(
+      `items/${learning.subject}/learning/${learning.plan.run}.json`,
+      `${JSON.stringify({ ...learning, followups: learningFollowups(learning) }, null, 2)}\n`,
+    )
+    files.set(
+      `items/${learning.subject}/learning.json`,
+      `${JSON.stringify({ ...learning, followups: learningFollowups(learning) }, null, 2)}\n`,
+    )
   }
   for (const delivery of impactDeliveries(events))
     files.set(

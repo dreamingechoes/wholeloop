@@ -51,6 +51,7 @@
 | [0038](./0038-pinned-launch-kits-and-separate-publication-capabilities.md) | Pinned launch kits and separate publication capabilities | Accepted | 2026-10-19 |
 | [0039](./0039-evidence-bound-human-exposure-stages.md) | Evidence-bound human exposure stages | Accepted | 2026-10-19 |
 | [0040](./0040-pinned-impact-observations-and-report-layouts.md) | Pinned impact observations and report layouts | Accepted | 2026-10-19 |
+| [0041](./0041-challenged-learning-decisions-and-scope-closure.md) | Challenged learning decisions and scope closure | Accepted | 2026-10-19 |
 
 ## Lifecycle
 

@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: learning-human-call
+    enforcers: [src/learning/contracts.ts#learningRuns, src/learning/workflow.ts#LearningWorkflow, src/learning/run.ts#runLearning, test/unit/learning/learning.test.ts]
+  - id: learning-iteration-link
+    enforcers: [src/learning/contracts.ts#learningRuns, src/learning/workflow.ts#frameDraft, test/unit/learning/learning.test.ts]
+  - id: learning-closure
+    enforcers: [src/learning/contracts.ts#learningRuns, src/learning/finalize.ts#closeLearningScope, src/flow/engine.ts#complete, test/unit/learning/learning.test.ts]
+  - id: learning-proposals-only
+    enforcers: [src/learning/contracts.ts#learningFollowups, src/learning/run.ts#LearningHost, test/unit/learning/learning.test.ts]
   - id: impact-pinned-values
     enforcers: [src/impact/contracts.ts#impactRuns, src/impact/report.ts#impactReport, src/impact/evidence.ts#collectImpact, test/unit/impact/impact.test.ts]
   - id: impact-explicit-unknown

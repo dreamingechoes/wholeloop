@@ -1182,6 +1182,51 @@
         }
       },
       "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/learning-begin@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/learning-complete@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/learning-decision@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/learning-report@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/learning-schema@1"
+        }
+      },
+      "required": ["schema"]
     }
   ],
   "$defs": {

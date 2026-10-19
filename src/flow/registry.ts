@@ -77,17 +77,12 @@ export const STEPS: readonly Step[] = Object.freeze(
         'prepare-launch',
         'ramp-exposure',
         'measure-impact',
+        'decide-next',
       ].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
       after: Object.freeze(
-        name === 'write-spec'
-          ? ['approve-spec']
-          : name === 'cut-scopes'
-            ? ['approve-scopes']
-            : name === 'decide-next'
-              ? ['decide']
-              : [],
+        name === 'write-spec' ? ['approve-spec'] : name === 'cut-scopes' ? ['approve-scopes'] : [],
       ),
       sections: Object.freeze(
         name === 'frame-problem'
@@ -119,15 +114,24 @@ export const STEPS: readonly Step[] = Object.freeze(
                             ? ['Stages', 'Evidence', 'Decisions', 'Confirmations', 'Handoff']
                             : name === 'measure-impact'
                               ? ['Checkpoint', 'Measurements', 'Unknowns', 'Handoff']
-                              : name === 'research'
+                              : name === 'decide-next'
                                 ? [
-                                    'Question',
-                                    'Owner',
-                                    'Claims',
-                                    'Dropped claims',
-                                    'Open questions',
+                                    'Evidence',
+                                    'Counterargument',
+                                    'Decision',
+                                    'Unknowns',
+                                    'Follow-up',
+                                    'Handoff',
                                   ]
-                                : [],
+                                : name === 'research'
+                                  ? [
+                                      'Question',
+                                      'Owner',
+                                      'Claims',
+                                      'Dropped claims',
+                                      'Open questions',
+                                    ]
+                                  : [],
       ),
     }),
   ),

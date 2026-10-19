@@ -21,6 +21,8 @@ import {
 import { impactReceipt } from '../impact/report.js'
 import { launchReceipt } from '../launch/artifacts.js'
 import { LaunchWorkflow } from '../launch/workflow.js'
+import { learningReceipt } from '../learning/contracts.js'
+import { closeLearningScope } from '../learning/finalize.js'
 import { publicationPlan } from '../providers/publication.js'
 import { pullRequestReceipt } from '../pull-requests/workflow.js'
 import { rampReceipt } from '../ramp/workflow.js'
@@ -460,6 +462,11 @@ export class FlowEngine {
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
         )
+      if (name === 'decide-next' && content !== learningReceipt(events, subject))
+        throw new CliError(
+          'Learning completion requires its canonical challenged human decision',
+          EXIT.precondition,
+        )
       if (name === 'measure-impact' && content !== impactReceipt(events, subject))
         throw new CliError(
           'Impact completion requires its canonical evidence-backed receipt',
@@ -540,6 +547,7 @@ export class FlowEngine {
         type: 'step.completed',
         data: { step: step.name, run, artifact: { path, content } },
       })
+      if (name === 'decide-next') closeLearningScope(events, append, subject)
       if (name === 'frame-problem') {
         append(subject, {
           type: 'frame.decided',

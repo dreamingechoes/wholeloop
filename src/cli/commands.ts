@@ -8,6 +8,55 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'learn begin',
+    arguments: '[<description>]',
+    options: ['--for <id>', '--owner <person>', '--leaning <outcome>', '--reported <file>'],
+    schema: 'wholeloop/learning-begin@1',
+    summary: 'Pin outcome evidence and the leaning to challenge',
+  },
+  {
+    path: 'learn challenge',
+    arguments: '',
+    options: ['--for <id>', '--file <file>'],
+    schema: 'wholeloop/learning-report@1',
+    summary: 'Record a counterargument against the exact current leaning',
+  },
+  {
+    path: 'learn decide',
+    arguments: '<keep|iterate|kill|unflag>',
+    options: [
+      '--for <id>',
+      '--basis <challenge-event>',
+      '--by <person>',
+      '--reason <text>',
+      '--ack <json>',
+      '--iteration <file>',
+    ],
+    schema: 'wholeloop/learning-decision@1',
+    summary: 'Record a human outcome and close only fully decided scopes',
+  },
+  {
+    path: 'learn complete',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/learning-complete@1',
+    summary: 'Recover canonical decision completion and conditional closure',
+  },
+  {
+    path: 'learn report',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/learning-report@1',
+    summary: 'Show evidence, the counterargument and proposed follow-up',
+  },
+  {
+    path: 'learn schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/learning-schema@1',
+    summary: 'Print counterargument, reported-evidence and iteration contracts',
+  },
+  {
     path: 'measure begin',
     arguments: '[<description>]',
     options: [

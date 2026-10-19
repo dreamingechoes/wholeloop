@@ -326,12 +326,10 @@ exports[`step begin contracts > cut-scopes: standalone empty, standalone input a
 exports[`step begin contracts > decide-next: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
-      "after": [
-        "decide",
-      ],
+      "after": [],
       "before": [],
     },
     "have": {},
@@ -386,15 +384,20 @@ exports[`step begin contracts > decide-next: standalone empty, standalone input 
     "schema": "wholeloop/step-begin@1",
     "step": "decide-next",
     "subject": null,
-    "template": null,
+    "template": [
+      "Evidence",
+      "Counterargument",
+      "Decision",
+      "Unknowns",
+      "Follow-up",
+      "Handoff",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
-      "after": [
-        "decide",
-      ],
+      "after": [],
       "before": [],
     },
     "have": {},
@@ -423,15 +426,20 @@ exports[`step begin contracts > decide-next: standalone empty, standalone input 
     "schema": "wholeloop/step-begin@1",
     "step": "decide-next",
     "subject": null,
-    "template": null,
+    "template": [
+      "Evidence",
+      "Counterargument",
+      "Decision",
+      "Unknowns",
+      "Follow-up",
+      "Handoff",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
-      "after": [
-        "decide",
-      ],
+      "after": [],
       "before": [],
     },
     "have": {},
@@ -463,7 +471,14 @@ exports[`step begin contracts > decide-next: standalone empty, standalone input 
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Evidence",
+      "Counterargument",
+      "Decision",
+      "Unknowns",
+      "Follow-up",
+      "Handoff",
+    ],
   },
 ]
 `;

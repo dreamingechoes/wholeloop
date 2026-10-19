@@ -15,6 +15,7 @@ import { type ImpactEventData, impactRuns, validImpactData } from '../impact/con
 import { impactDeliveries } from '../impact/publish.js'
 import { type LaunchEventData, launchRuns, validLaunchData } from '../launch/contracts.js'
 import { launchDeliveries } from '../launch/publish.js'
+import { type LearningEventData, learningRuns, validLearningData } from '../learning/contracts.js'
 import {
   type PullRequestEventData,
   pullRequestPlans,
@@ -92,6 +93,7 @@ export type EventData =
   | LaunchEventData
   | RampEventData
   | ImpactEventData
+  | LearningEventData
   | {
       type: 'slice.defined'
       data: {
@@ -201,6 +203,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('learn.')) return validLearningData(type, data)
   if (type.startsWith('impact.')) return validImpactData(type, data)
   if (type.startsWith('ramp.')) return validRampData(type, data)
   if (type.startsWith('launch.')) return validLaunchData(type, data)
@@ -576,6 +579,7 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   environmentDeclarations(events)
   launchRuns(events)
   launchDeliveries(events)
+  learningRuns(events)
   impactRuns(events)
   impactDeliveries(events)
   rampRuns(events)

@@ -3,7 +3,7 @@
 > **TL;DR** — The step that closes the line. With the checkpoint evidence in front of you, you choose one of four outcomes — keep, iterate, kill or unflag — and say why. The decision is recorded, the scope closes, any clean-up is proposed as work, and whatever was learned is carried into the next idea instead of being lost in someone's notes.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P4-04](../../../roadmap/phase-4-rollout-learn.md#p4-04--decide-next).
+> **Status: 🚧 partial.** Local evidence-pinned counterarguments, explicit outcomes, linked framing drafts, cleanup proposals and guarded closure are fixture-tested. Real semantic/client verification and external follow-up execution remain owner checks. Tracked in [P4-04](../../../roadmap/phase-4-rollout-learn.md#p4-04--decide-next).
 
 ---
 
@@ -34,8 +34,8 @@ flowchart TD
   CH --> D{{"decide"}}:::person
   D -- keep --> K["stays on · flag scheduled for removal"]
   D -- iterate --> I["new idea opened from<br/>what we learned"]
-  D -- kill --> X["flag off · removal work proposed<br/>reason kept on record"]
-  D -- unflag --> U["flag removed from code<br/>behaviour stays"]
+  D -- kill --> X["you disable the flag<br/>removal work proposed"]
+  D -- unflag --> U["flag removal proposed<br/>behaviour stays"]
   K & I & X & U --> R["decision + reasoning recorded<br/>scope closed"]:::learn
   R --> AI{"all scopes of the<br/>initiative decided?"}
   AI -- yes --> CI["initiative closed"]
@@ -50,14 +50,14 @@ flowchart TD
 | **keep** | It worked well enough to stay as is | A task to remove the flag and dead branches |
 | **iterate** | Right direction, not there yet | A new or reopened idea in [`frame-problem`](../define/frame-problem.md), seeded with the evidence |
 | **kill** | It didn't earn its place | Flag off (by you), a task to remove the code, the reasoning archived |
-| **unflag** | Done and permanent | A task to delete the flag; behaviour unchanged |
+| **unflag** | Choose permanence; propose flag removal | A task to delete the flag; behaviour unchanged |
 
 1. **Evidence and promise, side by side.** The decision screen shows what the spec said would happen next to what did, including every metric that stayed unknown.
 2. **A deliberate counter-argument.** The challenger makes the best case against your leaning. With `challenge: supportive` it's a short note; with `adversarial` it pushes hard. Either way, the decision is yours.
 3. **Reasoning is required.** One or two sentences, in your words. A decision without a reason can't be revisited honestly six months later.
 4. **Killing is a valid ending.** A recorded "no, and here's why" is a result, not a failure — and it stops the same idea from being re-proposed without new evidence.
 5. **Closing is the point.** The scope is done when it's decided, not when it's merged. When every scope of an initiative is decided, the initiative closes too.
-6. **Learning travels.** `iterate` creates an idea that already carries the evidence; the other outcomes still add their lessons to the initiative, where future `research` can find them.
+6. **Learning travels.** `iterate` creates an idea that already carries the evidence; the other outcomes retain their exact evidence, reason and proposals on the closed scope, discoverable through its initiative and store.
 
 ## Standalone use
 
@@ -65,26 +65,49 @@ Point it at a scope, or describe what shipped and what you observed. Without che
 
 ## Run it
 
-```text
-> /wholeloop:decide-next scope-a9e0
-
-Decide — scope-a9e0 "orders date filter"
-Promise   ≥ 15% of visits use it · time to find ≤ 25 s · fewer "can't find order" tickets
-Result    18.4% ✓ · 29 s ~ · tickets ? (no source)
-
-Challenger  "Keep is tempting, but the main promise was speed and it missed by 4 s.
-             Iterating on presets ('last month') could close the gap cheaply."
-
-Outcome?   [ Keep ]  [ Iterate ]  [ Kill ]  [ Unflag ]
-> Iterate — usage is there; presets should get us under 25 s
-
-Recorded  iterate · "usage is there; presets should get us under 25 s"
-Produced
-  Decision            scope-a9e0 (closed)                 wl open scope-a9e0 --decision
-  New idea            init-9b70 "date presets for orders" wl open init-9b70
-  Follow-up           ENG-517 remove flag after presets ship
-Next              frame-problem init-9b70 — or stop here
+```bash
+wl learn begin --for scope-a9e0 --leaning keep --json
+wl learn report --for scope-a9e0 --json
+# A challenger reads the actual plan, report and repository guidance.
+wl learn challenge --for scope-a9e0 --file counterargument.json --json
+wl learn decide iterate --for scope-a9e0 --basis <challenge-event> --by Alex --reason "The evidence supports refining the date selection" --ack '["checkpoint:d30"]' --iteration idea.json --json
+wl learn report --for scope-a9e0 --json
 ```
+
+`wl learn schema` exposes the counterargument, self-report and iteration fields.
+Counterarguments use wholeloop/learning-challenge@1 with basis (the exact plan
+event), against, alternative, argument, limits and by. The alternative must differ
+from the leaning. Profile tone and additional question budget change; the four
+coverage areas stay fixed. Actual learn.decision instructions are loaded and pinned.
+A changed report/guidance/profile needs a new begin and counterargument.
+
+The person must supply a written reason and --ack containing every returned
+unknown/pending-checkpoint key, including an early decision before later
+checkpoints. A missing reason, absent challenge or stale basis cannot close work.
+Measured evidence cannot be replaced by an invocation's self-report. Standalone
+--reported supplies summary/promise/refs/by and optional flag, clearly labelled
+self-reported; it never creates numerical observations.
+
+Iteration input supplies title/problem/audience/impact. The core creates an open
+initiative with a full framing draft, evidence link and owner-labelled questions
+for validation, cost/priority and stop conditions. frame-problem starts and remains
+incomplete. Optional existing selects a closed pre-spec idea in the same repository;
+reopening a developed initiative or the current parent is rejected to preserve
+old scope approvals. No prior validation, spec or future Build is invented.
+
+Keep/unflag propose flag-removal work; kill proposes human disablement/code cleanup.
+Unflag needs a confirmed flag identity. These are unapplied proposals, not actual
+flag/code changes or automatically published tracker tasks. The decision workflow
+has no provider or mutation host. Explicit future work goes through normal Build.
+
+Canonical completion closes the scope, then its initiative only if every scope has
+a completed learning decision. A manually closed sibling does not count. Reopened
+scopes lose eligibility; reopen a closed parent before creating another scope.
+The scope/parent closure shares one atomic journal batch. If a decision is stored
+before interruption, `wl learn complete --for <id> --json` recovers completion
+without duplicating the decision or iteration. Projections and resume refs retain
+all evidence and proposals. [ADR-0041](../../decisions/0041-challenged-learning-decisions-and-scope-closure.md)
+records the human, iteration and closure boundaries.
 
 | CLI | Invoke |
 | --- | --- |
@@ -105,7 +128,7 @@ Next              frame-problem init-9b70 — or stop here
 
 **"Who should make the call?"** The owner named at [`frame-problem`](../define/frame-problem.md). The step shows who that is and records who actually decided.
 
-**"Will it remove the flag for me?"** It proposes the work as a tracker item or an ad-hoc slice. Removing the flag in code goes through [`build-slice`](../build/build-slice.md) like any other change.
+**"Will it remove the flag for me?"** It records a local cleanup proposal; publishing a tracker item or agreeing a Build slice is explicit future work. Removing the flag in code goes through [`build-slice`](../build/build-slice.md) like any other change.
 
 ---
 

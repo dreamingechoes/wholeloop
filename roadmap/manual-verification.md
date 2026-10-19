@@ -4,6 +4,17 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## decide-next and actual follow-up (P4-04)
+
+- [ ] Run the challenger in each real client with supportive/balanced/adversarial profiles. Inspect actual opposing reasoning, all four coverage areas, question budgets and loaded learn.decision guidance. Fixture labels do not establish semantic critique or model independence.
+- [ ] Inspect actual checkpoint query/cohort truth and self-reported references, all unknowns and pending checkpoints before the human outcome. The core checks identity and coverage, not causality or the honesty of supplied person/reason fields.
+- [ ] Verify iteration drafts carry the exact evidence and unresolved validation/cost/stop questions. Complete frame-problem explicitly; reopened pre-spec ideas must retain prior history without reusing developed scope approvals.
+- [ ] Review proposed flag/code cleanup and implement or publish it through an explicitly authorized follow-up. Keep/kill/unflag change no actual flag or code, and local proposals are not remote tracker tasks.
+- [ ] Interrupt around decision persistence and canonical closure, then recover with learn complete. Verify one iteration/decision, no premature parent closure, and reopened-scope eligibility. Automated recovery rebuilds a real journal prefix; it does not simulate physical power loss.
+- [ ] Repeat CLI/process and canonical path checks on Linux/supported Node versions. Local verification uses macOS/Node 24 and synthetic challenger responses; no model, authenticated publication or production change ran.
+
+These checks do not block subsequent local implementation.
+
 ## measure-impact and real grounding (P4-03)
 
 - [ ] Execute pinned queries against disposable real sources; inspect event/cohort definitions, units, source references, timezones and complete rolling windows. Normalized fixtures establish arithmetic, not provider truth or causality.

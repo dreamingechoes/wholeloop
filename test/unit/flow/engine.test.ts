@@ -79,17 +79,6 @@ describe('flow engine', () => {
       expect(engine.plan(subject).available).toBe(true)
     }))
 
-  it('keeps future steps as explicit stubs without fabricated completion', () =>
-    fixture((engine) => {
-      const result = engine.begin('decide-next', { input: 'Find orders', owner: 'Alex' })
-      expect(result.code).toBe(3)
-      expect(result.payload.available).toBe(false)
-      expect(engine.store.events()).toEqual([])
-      expect(() => engine.complete('decide-next', 'init-12345678', '# Spec')).toThrow(
-        'not implemented',
-      )
-    }))
-
   it('requires and preserves skip reasons in the journal and later preflights', () =>
     fixture((engine) => {
       const item = engine.store.create({

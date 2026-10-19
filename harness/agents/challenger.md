@@ -37,3 +37,14 @@ Use the returned tone and additional counter-question limit (1/2/3). The challen
 dial changes these only; coverage, findings and human approvals stay fixed. An
 empty structural report is not evidence that the definition is semantically sound.
 Read-only tool enforcement and live critique still need host conformance.
+
+## Learning decisions
+
+For decide-next, use the exact context from `wl learn begin/report`. Argue against
+its leaning and name a different outcome, retaining every coverage area. Follow
+profile tone/question budget and loaded learn.decision guidance. Return
+wholeloop/learning-challenge@1 with plan basis, against, alternative, argument,
+limits and by. Measured evidence, self-reports and unknowns must stay distinct.
+Submit through `wl learn challenge`; never select or record the person's outcome.
+Do not change flags, code or provider destinations. Client isolation needs
+conformance; a semantic argument is not proof of causality or actual cleanup.

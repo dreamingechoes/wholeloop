@@ -4232,6 +4232,292 @@
           "required": ["key", "result"]
         }
       }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "learn.planned"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "leaning": {
+              "type": "string",
+              "enum": ["keep", "iterate", "kill", "unflag"]
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": ["checkpoint", "reported"]
+                },
+                "basis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "promise": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "unknowns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                },
+                "flag": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reported": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "summary": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "promise": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "refs": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "by": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "flag": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["summary", "promise", "refs", "by"]
+                }
+              },
+              "required": ["kind", "basis", "ref", "digest", "promise", "unknowns"]
+            },
+            "checkpoints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "profile": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "challenge": {
+                  "type": "string",
+                  "enum": ["supportive", "balanced", "adversarial"]
+                },
+                "instructions": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["challenge", "instructions"]
+            },
+            "guidance": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "origin": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": ["ref", "origin", "digest"]
+            }
+          },
+          "required": ["run", "leaning", "evidence", "checkpoints", "profile", "guidance"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "learn.challenged"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "challenge": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "schema": {
+                  "type": "string",
+                  "const": "wholeloop/learning-challenge@1"
+                },
+                "basis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "against": {
+                  "type": "string",
+                  "enum": ["keep", "iterate", "kill", "unflag"]
+                },
+                "alternative": {
+                  "type": "string",
+                  "enum": ["keep", "iterate", "kill", "unflag"]
+                },
+                "argument": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "limits": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "by": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["schema", "basis", "against", "alternative", "argument", "limits", "by"]
+            }
+          },
+          "required": ["run", "challenge"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "learn.decided"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "outcome": {
+              "type": "string",
+              "enum": ["keep", "iterate", "kill", "unflag"]
+            },
+            "by": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "acknowledgedUnknowns": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "iteration": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^init-[a-f0-9]{8}$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "problem": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "audience": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "impact": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "existing": {
+                  "type": "string",
+                  "pattern": "^init-[a-f0-9]{8}$"
+                }
+              },
+              "required": ["id", "title", "problem", "audience", "impact"]
+            }
+          },
+          "required": ["run", "basis", "outcome", "by", "reason", "acknowledgedUnknowns"]
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "learn.iteration-linked"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^run-[a-f0-9]{16}$"
+            },
+            "idea": {
+              "type": "string",
+              "pattern": "^init-[a-f0-9]{8}$"
+            },
+            "decision": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["run", "idea", "decision"]
+        }
+      }
     }
   ]
 }

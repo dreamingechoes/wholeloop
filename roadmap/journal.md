@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-10-19 · P4-04 — challenged human outcomes and guarded closure
+
+- Add learn begin/challenge/decide/complete/report/schema and a challenger host that stops before the human outcome. Pin the exact completed impact report or clearly labelled self-report, original promise, unknowns/pending checkpoints, actual learn.decision guidance and effective profile. Require the current opposing argument, named person's written reason and acknowledgment of every gap; re-planning after changed evidence resets critique.
+- Retain all four coverage areas across profile styles with one/two/three additional question budgets. Keep recorded decisions immutable and repeatable without duplicate work. Unflag requires a known flag identity. Keep/kill/unflag create local unapplied cleanup proposals only; no actual flag, code, tracker publication or Build runs.
+- Iterate atomically records its call and creates/reopens an evidence-linked framing draft with all framing sections, owner-labelled validation/cost/stop questions and an active incomplete frame-problem run. Reopen only explicit closed pre-spec ideas without children in the same canonical repository; preserve developed initiatives and the current parent. Fix a real /tmp versus canonical-path comparison exposed by the reopen fixture.
+- Guard canonical completion and atomically close the scope plus an eligible initiative. Replay prevents generic parent closure until every scope has a completed learning decision; manually closed or reopened siblings do not count. Reopen a parent before adding another scope. Rebuild decision/proposal projections and resume refs outside repositories. ADR-0041 records the identity, recovery and semantic limits.
+- Verify seventeen new fixtures for standalone questions, missing/stale challenge and reasons, exact unknown acknowledgment, every outcome, cached decisions, new/reopened framing drafts, unsafe idea reuse, multi-scope closure/bypasses/reopening, actual checkpoint revisions, profile/guidance, journal-prefix recovery, canonical receipts, rebuild and compiled CLI. Return the post-completion report rather than a stale pre-closure view; keep a recovery test that does not duplicate an iteration or decision. Preserve the original owner in both metadata and framing questions when reopening an idea. Final local check: 555 tests in 40 files plus build, smoke, lint, typecheck, generated references/catalogs, docs, harness, Markdown and Mermaid passed.
+- No real model, authenticated destination or production change ran. Real counterargument quality, person/self-report truth, source causality, client permissions, physical interruption and follow-up execution remain owner verification, without blocking later local tasks.
+
+---
+
 ## 2026-10-19 · P4-03 — source-linked impact checkpoints and explicit digests
 
 - Add measure begin/requests/observe/format/complete/report/schedule/digest/schema and the read-only analyst workflow. Pin scope/launch measurement revisions, exact queries/windows/units, actual launch anchors and report guidance. Ask standalone facts before creating history, reject early checkpoints and launch-anchor drift, support configured/custom offsets and expose due work in status/next without starting it implicitly.
