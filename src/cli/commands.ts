@@ -1004,6 +1004,14 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Check size budgets, front matter and enforcement',
   },
   {
+    path: 'doctor',
+    arguments: '',
+    options: ['--target <cli,...>', '--store <path>', '--artifact <path>'],
+    schema: 'wholeloop/doctor@1',
+    summary:
+      'Observe versions, external-store writes, provider declarations and optional artifact drift',
+  },
+  {
     path: 'guard hooks',
     arguments: '<install|uninstall|status>',
     options: ['--store <path>', '--repo <path>'],

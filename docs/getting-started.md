@@ -3,7 +3,7 @@
 > **TL;DR** — Install the `wl` CLI (or the plugin for your CLI), let it generate the skills for the agentic CLIs you use, run `wl doctor`, then invoke any step. Nothing needs configuring up front: what is missing becomes a question the first time it matters.
 
 > [!WARNING]
-> **Status: 🚧 partial — not installable yet.** The core and local tier-A artifact generators are implemented; distribution and personal installation remain pending. Use the [local generation instructions](./platforms/README.md#available-local-generation) to inspect a self-contained output tree without installing it. The installation steps below describe the intended experience. Packaging lands in [P1-13](../roadmap/phase-1-walking-skeleton.md#p1-13--wl-install-wl-uninstall-wl-doctor) and [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution).
+> **Status: 🚧 partial — not installable yet.** The core, local tier-A artifact generators, common guards and observed doctor diagnostics are implemented; distribution and personal installation remain pending. Use the [local generation instructions](./platforms/README.md#available-local-generation) to inspect a self-contained output tree without installing it. The installation steps below describe the intended experience. Packaging lands in [P1-13](../roadmap/phase-1-walking-skeleton.md#p1-13--wl-install-wl-uninstall-wl-doctor) and [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution).
 
 ---
 
@@ -41,18 +41,44 @@ wl install --target claude,codex,opencode,copilot --scope user
 
 ## 2. Check
 
+The source-built core can diagnose the local environment now:
+
 ```text
-$ wl doctor
-✓ node 22.11.0
-✓ git 2.47 — worktrees available
-✓ claude code 2.1.290 · skills current
-✓ codex 0.98.0 · skills current
-• opencode not found — skipped
-✓ store ~/.local/state/wholeloop writable
-• providers: web, codebase, local docs, local tracker · detected MCP: notion, sentry
+wl doctor --json
+wl doctor --target codex --artifact /path/to/generated-codex --store /external/store --json
 ```
 
-Every ✗ comes with the command that fixes it.
+The versioned wholeloop/doctor@1 report distinguishes pass/fail/unknown/skip. Default
+checks skip unobserved optional clients if another tier-A CLI reports a version;
+explicit targets must all report versions. Fixed reason codes distinguish missing
+executables, timeouts, output limits, failed launches/exits and malformed replies.
+A missing binary gets an install recipe; an existing failed command gets a diagnostic
+command rather than an automatic reinstall. Exit 3 means at least one required check
+needs attention. Each failure includes instructions and an argv command for repair
+or further diagnosis. Nothing is installed or repaired automatically.
+
+Doctor observes Node/Git/client versions with bounded shell-free version commands
+(2500 ms, 64 KiB, hard termination so a SIGTERM handler cannot defeat the deadline),
+checks layered provider/MCP declarations without authentication, and performs a real
+atomic external-store write/rename probe. It removes only probe files/directories
+it created, preserving existing state. A store under Git, including symlink targets,
+is rejected before writing; probe/cleanup failures remain failures.
+
+Generated-file currentness is checked only with one explicit target/artifact pair.
+Every expected file, executable mode, manifest and source/core hash must match this
+build; changed output is preserved and the remedy builds into a fresh directory.
+Without that input, artifact status is unknown. A matching artifact is not proof
+of native client installation/discovery, sandbox enforcement or a model run. All
+reports retain conformance unverified and authenticated false.
+
+The suggested npm client-install recipes are documented by
+[Claude](https://code.claude.com/docs/en/setup),
+[Codex](https://developers.openai.com/codex/cli/),
+[OpenCode](https://opencode.ai/docs/) and
+[Copilot](https://docs.github.com/en/copilot/get-started/cli-quickstart).
+Use a compatible runtime/package manager and inspect these commands before running
+them; the current Claude/Copilot npm recipes require Node 22 or newer, while the
+bundled wholeloop core supports Node 20. Native client requirements remain separate.
 
 ## 3. Your first step
 

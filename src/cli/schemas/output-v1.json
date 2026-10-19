@@ -8,6 +8,15 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/doctor@1"
+        }
+      },
+      "required": ["schema", "status", "checks", "providers", "conformance", "authenticated"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/guard@1"
         },
         "decision": {

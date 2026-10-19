@@ -209,7 +209,7 @@ verification; these checks do not block independent installation implementation.
 
 ## P1-13 · `wl install`, `wl uninstall`, `wl doctor`
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-11
+**Status:** 🔄 · **Size:** M · **Depends on:** P1-11
 
 **Goal** — From zero to working on a new machine in minutes.
 
@@ -219,6 +219,14 @@ verification; these checks do not block independent installation implementation.
 
 - [ ] Install then uninstall leaves no file behind (test in a temp HOME).
 - [ ] Doctor explains every failure with the command that fixes it.
+
+**Local implementation:** doctor now observes bounded client versions, layered
+provider/MCP availability, actual external-store write/rename probes with owned
+cleanup and currentness of every expected file in an explicit generated artifact.
+Failures include repair/diagnostic commands; it never upgrades availability into
+authentication or native conformance. General install/uninstall, their ownership
+receipts and activation checks remain implementation work, so both full-item
+acceptance criteria stay open.
 
 **Docs** — getting-started.
 

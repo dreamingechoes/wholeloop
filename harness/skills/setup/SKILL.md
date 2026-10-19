@@ -17,6 +17,12 @@ Read the shared ask-never-guess and output-contract protocols.
    <id> --json`. Detection is not authentication. For a requested MCP client,
    `wl mcp add <id> --target <cli> --json` prints a snippet to review and merge.
 
+For local setup failures, call `wl doctor --json`; with a known generated artifact,
+pass its single --target and --artifact. Inspect its repair/diagnostic commands
+without running installation or permission changes automatically.
+⛔ `diagnostics-observed-availability` — versions/declarations are observations,
+not authentication, actual client discovery or model/permission conformance.
+
 Zero integrations is supported through `local-docs` and `local-tracker`.
 Setup does not install adapters, modify MCP configuration, authenticate or make
 external provider calls. Report those pending actions explicitly.

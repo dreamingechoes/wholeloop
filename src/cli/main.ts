@@ -8,6 +8,7 @@ import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav } from './docs.js'
+import { doctorCommand } from './doctor.js'
 import { environmentCommand } from './environment.js'
 import { CliError } from './errors.js'
 import { evalCommand, gateEvalCommand } from './eval.js'
@@ -115,6 +116,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       command.path.startsWith('measure ')
     )
       throw new CliError('This command requires the asynchronous dispatcher')
+    if (command.path === 'doctor') return doctorCommand(parsed, root, json, io)
     if (command.path === 'adapter root') return adapterRoot(json, io)
     if (command.path === 'build') return generateCommand(parsed, root, json, io)
     if (command.path.startsWith('build ')) return buildCommand(command.path, parsed, root, json, io)

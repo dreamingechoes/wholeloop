@@ -4,6 +4,16 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Observed diagnostics (P1-13, installation still in progress)
+
+- [ ] Run doctor with the actual installed clients and explicit artifact directories. Confirm each reported token comes from the intended executable/PATH and inspect vendor requirements separately; a version does not prove native skills, hooks, permissions or authentication.
+- [ ] On each platform, exercise selected missing clients, failed/slow version commands, stale/copied artifact hashes/modes and malformed declarations. Failures must offer instructions and repair/diagnostic argv without exposing raw output or config values.
+- [ ] Verify the atomic external-store probe and cleanup under real permissions/filesystems, including inaccessible and symlinked Git destinations. Inspect any failed cleanup; retain other state and do not repair permissions automatically.
+- [ ] Repeat on Linux and supported Node releases. Current automated execution is macOS arm64/Node 24; npm recipes for current Claude/Copilot require Node 22 or newer even though the bundled core supports Node 20.
+
+General install/uninstall, owned activation and complete P1-13 acceptance remain
+code work. The diagnostics report does not claim that those features exist.
+
 ## Common guards and Git fallback (P3-08)
 
 - [ ] Capture actual before-tool events on Claude/Copilot/OpenCode; compare schema, tool names, cwd, write paths and event ordering with the authored fixtures. The Codex-shaped SDK fixture is synthetic; verify its actual CLI Git fallback instead of treating desktop hooks as CLI support.

@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: diagnostics-observed-availability
+    enforcers: [src/diagnostics/doctor.ts#doctor, src/diagnostics/doctor.ts#versionProbe, src/diagnostics/doctor.ts#probeStore, test/unit/diagnostics/doctor.test.ts]
   - id: build-topic-commits
     enforcers: [src/guards/assess.ts#guardCommit, src/guards/git-hooks.ts#gitGuards, test/unit/guards/guards.test.ts]
   - id: open-pr-publication-only

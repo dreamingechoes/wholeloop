@@ -1,0 +1,339 @@
+import { spawnSync } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
+import { existsSync, lstatSync, readFileSync, rmdirSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { dirname, join, resolve } from 'node:path'
+import { artifactDigest, type generateAdapter } from '../adapters/generate.js'
+import { loadConfig, loadExtensionOptions } from '../config/load.js'
+import { detectMcp, detectProvider } from '../providers/detect.js'
+import { loadProviders } from '../providers/load.js'
+import { StoreFiles } from '../state/files.js'
+import { canonicalPath, inside, storePath } from '../state/paths.js'
+
+export const DOCTOR_TARGETS = ['claude', 'codex', 'opencode', 'copilot'] as const
+export interface DoctorCheck {
+  id: string
+  status: 'pass' | 'fail' | 'unknown' | 'skip'
+  summary: string
+  version?: string
+  reason?: string
+  repair?: { instruction: string; command: string[] }
+}
+export interface VersionProbe {
+  version?: string
+  status: 'observed' | 'unavailable' | 'invalid'
+  reason?: 'missing' | 'timeout' | 'output-limit' | 'exit' | 'launch' | 'invalid-version'
+}
+export interface DoctorOptions {
+  root: string
+  home: string
+  store: string
+  userFile?: string
+  targets?: readonly string[]
+  artifact?: { path: string; target: string; expected: ReturnType<typeof generateAdapter> }
+  env?: NodeJS.ProcessEnv
+  probe?: (binary: string) => VersionProbe
+  node?: string
+}
+const installations: Record<string, string[]> = {
+  claude: ['npm', 'install', '-g', '@anthropic-ai/claude-code'],
+  codex: ['npm', 'install', '-g', '@openai/codex'],
+  opencode: ['npm', 'install', '-g', 'opencode-ai'],
+  copilot: ['npm', 'install', '-g', '@github/copilot'],
+}
+export function versionProbe(binary: string, env: NodeJS.ProcessEnv = process.env): VersionProbe {
+  const result = spawnSync(binary, ['--version'], {
+    env,
+    encoding: 'utf8',
+    timeout: 2500,
+    // Version checks have no interactive work to preserve; SIGTERM handlers must not defeat the deadline.
+    killSignal: 'SIGKILL',
+    maxBuffer: 65536,
+    shell: false,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  if (result.error || result.status !== 0) {
+    const code = (result.error as NodeJS.ErrnoException | undefined)?.code
+    return {
+      status: 'unavailable',
+      reason:
+        code === 'ENOENT'
+          ? 'missing'
+          : code === 'ETIMEDOUT'
+            ? 'timeout'
+            : code === 'ENOBUFS'
+              ? 'output-limit'
+              : result.error
+                ? 'launch'
+                : 'exit',
+    }
+  }
+  // Retain only a version token, never raw client output or warning/config values.
+  const match = /\bv?(\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?)\b/.exec(result.stdout)
+  return match?.[1]
+    ? { status: 'observed', version: match[1] }
+    : { status: 'invalid', reason: 'invalid-version' }
+}
+/** A real unique write/rename probe, with cleanup restricted to files/directories it created. */
+export function probeStore(root: string) {
+  const files = new StoreFiles(root)
+  const relative = `diagnostics/probe-${randomUUID()}`
+  const path = files.path(relative)
+  const missing: string[] = []
+  let directory = dirname(path)
+  while (!existsSync(directory)) {
+    missing.push(directory)
+    directory = dirname(directory)
+  }
+  const failures: unknown[] = []
+  try {
+    files.atomic(relative, 'wholeloop store write probe\n')
+  } catch (error) {
+    failures.push(error)
+  }
+  try {
+    if (existsSync(path)) rmSync(path)
+  } catch (error) {
+    failures.push(error)
+  }
+  for (const directory of missing)
+    try {
+      rmdirSync(directory)
+    } catch (error) {
+      if (!['ENOTEMPTY', 'EEXIST', 'ENOENT'].includes((error as NodeJS.ErrnoException).code ?? ''))
+        failures.push(error)
+    }
+  if (failures.length) throw new AggregateError(failures, 'Store probe or cleanup failed')
+}
+export function inspectArtifact(path: string, expected: ReturnType<typeof generateAdapter>) {
+  const root = canonicalPath(path)
+  if (lstatSync(resolve(path)).isSymbolicLink()) throw new Error('Artifact root is a symlink')
+  for (const [relative, file] of expected.files) {
+    const absolute = join(root, relative)
+    const stat = lstatSync(absolute)
+    if (
+      !inside(root, canonicalPath(absolute)) ||
+      !stat.isFile() ||
+      stat.isSymbolicLink() ||
+      stat.size > 4 * 1024 * 1024 ||
+      (stat.mode & 0o777) !== file.mode ||
+      artifactDigest(readFileSync(absolute, 'utf8')) !== artifactDigest(file.content)
+    )
+      throw new Error('Generated artifact is missing, edited or stale')
+  }
+  return expected.manifest
+}
+/** Diagnosis observes availability, not authentication, client discovery or successful model execution. */
+export function doctor(options: DoctorOptions) {
+  const targets = options.targets ?? DOCTOR_TARGETS
+  if (
+    !targets.length ||
+    new Set(targets).size !== targets.length ||
+    targets.some((target) => !DOCTOR_TARGETS.includes(target as (typeof DOCTOR_TARGETS)[number]))
+  )
+    throw new Error('Choose unique doctor targets: claude,codex,opencode,copilot')
+  const checks: DoctorCheck[] = []
+  const node = options.node ?? process.versions.node
+  checks.push({
+    id: 'node',
+    status: Number(node.split('.')[0]) >= 20 ? 'pass' : 'fail',
+    summary: 'The published core requires Node 20 or newer.',
+    version: node,
+    ...(Number(node.split('.')[0]) >= 20
+      ? {}
+      : {
+          repair: {
+            instruction:
+              'Install a supported Node release using your platform runtime manager, then rerun this check.',
+            command: ['node', '--version'],
+          },
+        }),
+  })
+  const probe = options.probe ?? ((binary: string) => versionProbe(binary, options.env))
+  const git = probe('git')
+  const parts = git.version?.split('.').map(Number) ?? []
+  const gitUsable =
+    git.status === 'observed' && ((parts[0] ?? 0) > 2 || (parts[0] === 2 && (parts[1] ?? 0) >= 30))
+  checks.push({
+    id: 'git',
+    status: gitUsable ? 'pass' : 'fail',
+    summary:
+      'Git 2.30 or newer is required; actual workflow/platform compatibility still needs verification.',
+    ...(git.version ? { version: git.version } : {}),
+    ...(git.reason ? { reason: git.reason } : {}),
+    ...(!gitUsable
+      ? {
+          repair: {
+            instruction:
+              'Install/update Git with your platform package manager and verify its version.',
+            command: ['git', '--version'],
+          },
+        }
+      : {}),
+  })
+  let found = 0
+  for (const target of targets) {
+    const observed = probe(target)
+    const available = observed.status === 'observed'
+    if (available) found++
+    checks.push({
+      id: `cli.${target}`,
+      status: available ? 'pass' : options.targets ? 'fail' : 'skip',
+      summary: available
+        ? 'Version observed; native discovery, permissions and authentication remain unverified.'
+        : `The ${target} version command is missing, failed, timed out or returned no version.`,
+      ...(observed.version ? { version: observed.version } : {}),
+      ...(observed.reason ? { reason: observed.reason } : {}),
+      ...(!available
+        ? {
+            repair: {
+              instruction:
+                observed.reason === 'missing' || !observed.reason
+                  ? 'Install the selected CLI or repair PATH, then rerun doctor. The npm recipes require Node 22 or newer; authentication remains a separate action.'
+                  : 'Inspect the existing version command: timeout is 2500 ms, output is limited to 64 KiB and nonzero/malformed replies stay unobserved. No reinstallation or authentication was attempted.',
+              command:
+                observed.reason === 'missing' || !observed.reason
+                  ? (installations[target] ?? [])
+                  : [target, '--version'],
+            },
+          }
+        : {}),
+    })
+  }
+  if (!found && !options.targets)
+    checks.push({
+      id: 'cli.any',
+      status: 'fail',
+      summary: 'No selected tier-A CLI reported a version.',
+      repair: {
+        instruction: 'Install at least one supported CLI and rerun doctor.',
+        command: installations.codex ?? [],
+      },
+    })
+  try {
+    probeStore(options.store)
+    checks.push({
+      id: 'store',
+      status: 'pass',
+      summary:
+        'An actual atomic write/rename probe succeeded and its temporary files were removed.',
+    })
+  } catch {
+    checks.push({
+      id: 'store',
+      status: 'fail',
+      summary:
+        'The store is inside Git, inaccessible or its probe/cleanup failed; no journal was changed.',
+      repair: {
+        instruction:
+          'Choose an external accessible store or inspect ownership/permissions before retrying.',
+        command: ['wl', 'doctor', '--store', storePath({}, options.home), '--json'],
+      },
+    })
+  }
+  let providerSummary: { id: string; kind: string; available: boolean; authenticated: false }[] = []
+  try {
+    loadConfig({ root: options.root, ...(options.userFile ? { userFile: options.userFile } : {}) })
+    const registry = loadProviders(
+      loadExtensionOptions({
+        root: options.root,
+        ...(options.userFile ? { userFile: options.userFile } : {}),
+      }),
+    )
+    const detection = detectMcp(options.root, options.home, options.env)
+    providerSummary = registry.providers.map((provider) => {
+      const detected = detectProvider(provider.manifest, detection.declarations, options.env?.PATH)
+      return {
+        id: provider.manifest.id,
+        kind: detected.kind,
+        available: detected.available,
+        authenticated: false,
+      }
+    })
+    const problems = registry.problems.length + detection.problems.length
+    checks.push({
+      id: 'providers',
+      status: problems ? 'fail' : 'pass',
+      summary: problems
+        ? 'Provider manifests or MCP declarations need inspection; contents omitted.'
+        : 'Provider availability inspected without executing manifest commands or contacting services.',
+      ...(problems
+        ? {
+            repair: {
+              instruction:
+                'Inspect provider/MCP declarations and correct their syntax; do not copy credentials into reports.',
+              command: ['wl', 'provider', 'list', '--json'],
+            },
+          }
+        : {}),
+    })
+  } catch {
+    checks.push({
+      id: 'providers',
+      status: 'fail',
+      summary: 'Layered configuration or provider loading failed; contents omitted.',
+      repair: {
+        instruction:
+          'Inspect layered configuration and extension declarations, correct invalid values and rerun doctor.',
+        command: ['wl', 'config', 'show', '--json'],
+      },
+    })
+  }
+  if (options.artifact) {
+    try {
+      inspectArtifact(options.artifact.path, options.artifact.expected)
+      checks.push({
+        id: 'artifacts',
+        status: 'pass',
+        summary:
+          'Every expected generated file, executable mode, manifest and source/core hash matches the current build.',
+      })
+    } catch {
+      checks.push({
+        id: 'artifacts',
+        status: 'fail',
+        summary: 'The artifact is missing, changed, unsafe or from another source/core version.',
+        repair: {
+          instruction:
+            'Preserve edited output. Build into a new directory and inspect the returned ownership manifest.',
+          command: [
+            'wl',
+            'build',
+            '--target',
+            options.artifact.target,
+            '--out',
+            `${resolve(options.artifact.path)}-fresh`,
+            '--json',
+          ],
+        },
+      })
+    }
+  } else
+    checks.push({
+      id: 'artifacts',
+      status: 'unknown',
+      summary:
+        'No explicit artifact directory was checked; installed client discovery/currentness is unverified.',
+      repair: {
+        instruction:
+          'Generate an artifact, then supply its directory and target to doctor. This does not install or activate it.',
+        command: [
+          'wl',
+          'build',
+          '--target',
+          targets[0] ?? 'codex',
+          '--out',
+          join(tmpdir(), 'wholeloop-doctor-artifact'),
+          '--json',
+        ],
+      },
+    })
+  return {
+    schema: 'wholeloop/doctor@1',
+    status: checks.some((check) => check.status === 'fail') ? 'needs-attention' : 'observed',
+    checks,
+    providers: providerSummary,
+    conformance: 'unverified',
+    authenticated: false,
+  }
+}
