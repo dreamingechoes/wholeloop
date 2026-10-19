@@ -1,0 +1,548 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/impact-events@1",
+  "type": "object",
+  "properties": {
+    "impact.planned": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "plan": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "$id": "wholeloop/measurement-plan@1",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "schema": {
+                  "type": "string",
+                  "const": "wholeloop/measurement-plan@1"
+                },
+                "impact": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "metrics": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_-]*$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "unit": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "source": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "provider": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9_-]*$"
+                          },
+                          "operation": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "query": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": ["provider", "operation", "query"]
+                      },
+                      "baseline": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "enum": ["known", "unknown"]
+                          },
+                          "value": {
+                            "type": "number"
+                          },
+                          "evidence": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "missing": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "who": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": ["status"]
+                      },
+                      "target": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "operator": {
+                            "type": "string",
+                            "enum": ["lt", "lte", "eq", "gte", "gt"]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": ["operator", "value"]
+                      },
+                      "window": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "days": {
+                            "type": "integer",
+                            "minimum": 1
+                          },
+                          "timezone": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": ["days", "timezone"]
+                      },
+                      "trackingStory": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_-]*$"
+                      }
+                    },
+                    "required": ["id", "name", "unit", "source", "baseline", "target", "window"]
+                  },
+                  "minItems": 0
+                },
+                "rollout": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "strategy": {
+                      "type": "string",
+                      "enum": ["flagged", "direct", "manual"]
+                    },
+                    "flag": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "stages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "audience": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "exposure": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 100
+                          },
+                          "exit": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": ["name", "audience", "exposure", "exit"]
+                      },
+                      "minItems": 1
+                    },
+                    "rollback": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["strategy", "stages", "rollback"]
+                },
+                "measurementException": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "who": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["reason", "who"]
+                }
+              },
+              "required": ["schema", "impact", "metrics", "rollout"]
+            }
+          },
+          "required": ["ref", "revision", "digest", "plan"]
+        },
+        "checkpoint": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_+-]{0,63}$"
+        },
+        "launchedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "afterDays": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3650
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "qualitative": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "provider": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "query": {
+                "type": "string",
+                "minLength": 1
+              },
+              "days": {
+                "type": "number",
+                "minimum": 0.001,
+                "maximum": 3650
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["id", "provider", "operation", "query", "days", "timezone"]
+          }
+        },
+        "guidance": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "origin": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": ["ref", "origin", "digest"]
+        }
+      },
+      "required": [
+        "run",
+        "source",
+        "checkpoint",
+        "launchedAt",
+        "afterDays",
+        "at",
+        "qualitative",
+        "guidance"
+      ]
+    },
+    "impact.observed": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": ["observed", "unknown"],
+                "type": "string"
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "window": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "start": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "end": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["start", "end", "timezone"]
+              },
+              "value": {
+                "type": "number"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "bodyDigest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "missing": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["id", "status", "window"]
+          }
+        },
+        "qualitative": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": ["observed", "unknown"],
+                "type": "string"
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "window": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "start": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "end": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["start", "end", "timezone"]
+              },
+              "value": {
+                "type": "number"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "bodyDigest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "missing": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["id", "status", "window"]
+          }
+        }
+      },
+      "required": ["run", "metrics", "qualitative"]
+    },
+    "impact.formatted": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^run-[a-f0-9]{16}$"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "metrics": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "qualitative": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": ["title", "metrics", "qualitative"]
+          }
+        }
+      },
+      "required": ["run", "basis", "sections"]
+    },
+    "impact.dispatch-planned": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "subjects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["draft", "doc-comment"]
+            },
+            "provider": {
+              "type": "string",
+              "minLength": 1
+            },
+            "subject": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["kind", "provider"]
+        }
+      },
+      "required": ["digest", "key", "subjects", "target"]
+    },
+    "impact.dispatch-finished": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["succeeded", "pending"]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["status", "ref"]
+        }
+      },
+      "required": ["key", "result"]
+    }
+  }
+}

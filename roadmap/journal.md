@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-10-19 · P4-03 — source-linked impact checkpoints and explicit digests
+
+- Add measure begin/requests/observe/format/complete/report/schedule/digest/schema and the read-only analyst workflow. Pin scope/launch measurement revisions, exact queries/windows/units, actual launch anchors and report guidance. Ask standalone facts before creating history, reject early checkpoints and launch-anchor drift, support configured/custom offsets and expose due work in status/next without starting it implicitly.
+- Preserve complete normalized finite scalars and genuine zero; missing providers, unsupported operations, unit mismatches and unavailable outputs stay unknown. Compute target verdicts/deltas in core; partial progress requires improvement from a known unmet baseline. Derived overflow stays unknown. Keep bounded sanitized qualitative quotes with source/query/window/hash separately from metric assertions. Reuse exact fingerprinted read import/planning across ramp and impact without remote execution.
+- Load actual learn.report instructions and let the host choose a complete ID-only heading/order layout. Core constructs all numeric rows and provenance, invalidates stale layouts and guards canonical completion. Rebuild immutable run/latest checkpoint/delivery projections and bounded resume refs outside repositories. Repeated reports retain history; the explicit measurement exception invents no metric.
+- Prepare stable multi-scope draft/comment blocks from completed reports. Explicit conductor dispatch creates unsent comms drafts or appends marker-bound document notes through a fresh same-operation read/revision, preserving unrelated content. Journal intent, cache receipts and retain ambiguity without retry. Document-body notes are not native threaded comments; tracker/native-thread extensions remain host-specific. ADR-0040 records these boundaries.
+- Verify eighteen local cases for questions, due dates, exact queries, partial/missed/met arithmetic, absent data versus zero, unsupported reads, overflow, immutable inputs, malformed replay, layout/guidance drift, byte-identical rebuild, configured scheduling, grouped analysts, stop, measurement exceptions, explicit transcript imports, stable digests, same-read document preservation, ambiguous writes and compiled CLI. Initial fixtures exposed an empty mandatory parent section before subheadings; add meaningful parent content and correct the invented-receipt fixture to reach the canonical guard. Final local check: 539 tests in 39 files plus build, smoke, lint, typecheck, generated references/catalogs, docs, harness, Markdown and Mermaid passed.
+- No actual model, authenticated source, remote draft or document update ran. Real query/cohort semantics, causal interpretation, client isolation, normalization, sensitive quotes, authenticated writes/interruption and Linux remain owner checks; these do not block the next implementation item.
+
+---
+
 ## 2026-10-19 · P4-02 — evidence-bound human exposure stages
 
 - Add ramp begin/requests/observe/decide/proposal/confirm/report/schema, a canonical skill and conductor SDK. Pin confirmed plans, actual ramp.criteria content and prepared launch measurement digests. Default stages are proposals; standalone entry creates no fake Define or merge history. ADR-0039 records the evidence and human-control boundaries.

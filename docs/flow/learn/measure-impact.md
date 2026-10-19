@@ -3,7 +3,7 @@
 > **TL;DR** — At each checkpoint — launch, day 7, day 30 by default — it runs the measurement plan the spec pinned, against the sources that plan names, and lays every result beside its target with a verdict. It adds what people are saying, and it never fills a gap with a guess: a number it couldn't read is reported as missing. The outcome is the evidence `decide-next` needs.
 
 > [!NOTE]
-> **Status: 📐 design.** Tracked in [P4-03](../../../roadmap/phase-4-rollout-learn.md#p4-03--measure-impact-and-the-analyst).
+> **Status: 🚧 partial.** Local checkpoint planning, exact normalized reads, grounded arithmetic, qualitative quotes, repository-guided layouts and explicit draft/document-note dispatch are fixture-tested. Real clients, source semantics and publication remain owner verification. Tracked in [P4-03](../../../roadmap/phase-4-rollout-learn.md#p4-03--measure-impact-and-the-analyst).
 
 ---
 
@@ -42,12 +42,12 @@ flowchart TD
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
-1. **The plan is pinned, not reinvented.** The query, source and window written at spec time are reused as-is, so day 30 measures the same thing day 0 promised. Changing a definition is allowed, but recorded, with both values shown.
+1. **The plan is pinned, not reinvented.** The query, source and window written at spec time are reused as-is, so day 30 measures the same thing day 0 promised. The checkpoint pins its exact source revision; an invocation cannot override its measurement contract. History retains earlier reports.
 2. **Checkpoints are configurable.** Launch, D+7 and D+30 by default; a team can set its own (`learn.checkpoints`), and a scope can add one ("pilot exit").
-3. **Every number has a receipt.** Each value links to the query or dashboard it came from. The challenger checks that nothing in the report lacks one.
+3. **Every number has a receipt.** Each value links to the query or dashboard it came from. The core checks value/reference/window coverage and constructs numeric rows; live semantic grounding evaluation remains separate.
 4. **Gaps stay gaps.** An unreachable source, a missing event, an empty window → **unknown**, with what is missing and who could fix it. Never an estimate dressed as a measurement.
 5. **Numbers and voices.** Support tickets, feedback and notes go in a separate section, so anecdotes inform the decision without being mistaken for metrics.
-6. **Digest mode.** `--digest` summarises every scope currently in Learn, as a comms **draft** for a person to post and a comment on each scope's document or tracker item.
+6. **Digest mode.** `wl measure digest` prepares a comms **draft** and per-scope comment blocks from the latest completed reports of open scopes, or explicit --for IDs. The conductor can explicitly create unsent drafts or append notes to scope documents; nothing is published by planning a digest.
 
 ## Standalone use
 
@@ -55,27 +55,56 @@ Give it a metric and a time range ("export success rate since 1 September, in Me
 
 ## Run it
 
-```text
-> /wholeloop:measure-impact scope-a9e0 --checkpoint D+30
-
-Measure — scope-a9e0 "orders date filter" · D+30
-Plan      pinned at write-spec · 3 metrics · 1 guardrail
-
-Metric                          Baseline   Target    Actual    Verdict
-  Visits using the filter        —          ≥ 15%     18.4%     ✓ met
-  Time to find an order (p50)    41 s       ≤ 25 s    29 s      ~ partly
-  Support tickets "find order"   22/mo      ≤ 10/mo   ?         ? unknown — support source not connected
-Guardrail
-  p95 /orders latency            380 ms     ≤ +10%    +6%       ✓ held
-
-What people say  3 notes from the sales team: date presets requested ("last month")
-Receipts         each value links to its PostHog insight / Datadog query
-
-Produced
-  Checkpoint report   scope-a9e0 · D+30        wl open scope-a9e0 --report D+30
-  Published           Notion · Orders date filter / Impact
-Next              decide-next scope-a9e0
+```bash
+wl measure schema --json
+wl measure begin --for scope-a9e0 --checkpoint d30 --json
+wl measure requests --for scope-a9e0 --json
+# The host executes exact read requests and normalizes bounded source responses.
+wl measure observe --for scope-a9e0 --file observations.json --json
+wl measure report --for scope-a9e0 --json
+wl measure complete --for scope-a9e0 --json
+wl measure schedule --for scope-a9e0 --json
+wl measure digest --for scope-a9e0,scope-b1f2 --json
 ```
+
+Standalone begin supplies a description, --owner, --measurement (the same explicit
+contract used by launch) and an evidence-backed --launched-at timestamp. A final
+ramp confirmation may supply that anchor; prepared drafts cannot. The anchor stays
+pinned across checkpoints. --at fixes the historical window end; queries use the
+original metric's rolling days/timezone and exact unit. Not-yet-due checkpoints
+leave no synthetic history. learn.checkpoints defaults to launch/d7/d30; custom
+names require --after-days. Status exposes dates and next points at due work.
+
+The CLI plans/imports reads; it authenticates no service itself. Normalized results
+use wholeloop/impact-read-responses@1, the exact request run/at and one result or
+unavailable reason per fingerprint. Scalar JSON bodies are `{ "value": 18,
+"unit": "seconds" }`. The SDK can use ImpactWorkflow directly; runImpact gives
+one read-only analyst each source and a separate layout interface.
+
+Optional --qualitative takes agreed queries with id/provider/operation/query/days/
+timezone. Supported sources are support, feedback, meetings and knowledge; bodies
+normalize to `{ "text": "sanitized source quote" }`. Quotes remain separate from
+metric assertions. Do not put credentials or private logs in response files.
+
+Actual learn.report instructions are loaded and pinned. A custom report uses
+`wl measure format --for <id> --file <layout.json>` before completion: each section
+has a plain title plus metric and qualitative ID arrays. The host chooses headings
+and order, while the core preserves every value and mandatory source metadata.
+Harness defaults have a built-in layout. New evidence invalidates old layouts.
+Partial progress requires a known unmet baseline and a result closer to the target;
+unknown baseline or regression from an already met baseline cannot imply progress.
+
+Every numeric row links to its exact stored query, raw-content hash, observation
+reference/window and metric contract. Missing observations retain reasons. Reports
+measure comparison, not causal attribution. Completion retains canonical artifacts,
+and repeated checkpoints keep immutable earlier histories with latest projections.
+
+Digest planning is local. Explicit SDK dispatchImpactDigest creates comms.draft only
+or appends a stable marker-bound note through fresh same-operation docs.update;
+it preserves unrelated content. It journals intent and retains ambiguity without
+retry. These notes are document-body comments, not native threaded comments.
+[ADR-0040](../../decisions/0040-pinned-impact-observations-and-report-layouts.md)
+records the grounding, layout and publication boundaries.
 
 | CLI | Invoke | Parallel analysts |
 | --- | --- | --- |
@@ -92,9 +121,9 @@ Next              decide-next scope-a9e0
 
 ## Gotchas & FAQ
 
-**"It says unknown for a metric I know is fine."** Then the source behind it isn't reachable from here. Connect the provider (`wl mcp add …`) and re-run; the checkpoint updates in place.
+**"It says unknown for a metric I know is fine."** Then the source behind it isn't reachable from here. Connect the provider (`wl mcp add …`) and re-run; a new observation/report retains the prior history.
 
-**"Can I compare against a different baseline?"** Yes, with `--baseline`, and both values stay in the report so the change is visible.
+**"Can I compare against a different baseline?"** An invocation cannot override the pinned baseline. Record a new agreed measurement revision and retain earlier reports for comparison; unknown baselines remain explicit.
 
 **"Nobody remembers to run D+30."** [`status`](../utilities.md#status) lists every checkpoint that is due, and `next` brings you here when one is.
 

@@ -18,6 +18,7 @@ import {
   framingMatches,
   validateFrameOutcome,
 } from '../framing/contract.js'
+import { impactReceipt } from '../impact/report.js'
 import { launchReceipt } from '../launch/artifacts.js'
 import { LaunchWorkflow } from '../launch/workflow.js'
 import { publicationPlan } from '../providers/publication.js'
@@ -458,6 +459,11 @@ export class FlowEngine {
         throw new CliError(
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
+        )
+      if (name === 'measure-impact' && content !== impactReceipt(events, subject))
+        throw new CliError(
+          'Impact completion requires its canonical evidence-backed receipt',
+          EXIT.precondition,
         )
       if (name === 'ramp-exposure' && content !== rampReceipt(events, subject))
         throw new CliError(

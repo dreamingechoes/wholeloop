@@ -43,7 +43,7 @@ criterion does not block dependent local rollout implementation.
 
 ## P4-03 · `measure-impact` and the `analyst`
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P2-07
+**Status:** ✅ · **Size:** L · **Depends on:** P2-07
 
 **Goal** — Real numbers against the promise, reproducibly.
 
@@ -51,8 +51,8 @@ criterion does not block dependent local rollout implementation.
 
 **Acceptance criteria:**
 
-- [ ] Every number in the report links to the query and source it came from.
-- [ ] A missing datapoint is reported as unknown with the reason (test with a stub provider).
+- [x] Every number in the report links to the query and source it came from.
+- [x] A missing datapoint is reported as unknown with the reason (test with a stub provider).
 
 **Docs** — flow/learn/measure-impact.
 

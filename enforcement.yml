@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: impact-pinned-values
+    enforcers: [src/impact/contracts.ts#impactRuns, src/impact/report.ts#impactReport, src/impact/evidence.ts#collectImpact, test/unit/impact/impact.test.ts]
+  - id: impact-explicit-unknown
+    enforcers: [src/providers/numeric.ts#numericEvidence, src/impact/evidence.ts#collectImpact, src/impact/contracts.ts#impactRuns, test/unit/impact/impact.test.ts]
+  - id: impact-checkpoint-report
+    enforcers: [src/impact/workflow.ts#ImpactWorkflow, src/impact/contracts.ts#validateLayout, src/flow/engine.ts#complete, test/unit/impact/impact.test.ts]
+  - id: impact-draft-publication
+    enforcers: [src/impact/publish.ts#dispatchImpactDigest, src/providers/operations.ts#updateDocument, test/unit/impact/impact.test.ts]
   - id: ramp-exact-evidence
     enforcers: [src/ramp/contracts.ts#rampRuns, src/providers/numeric.ts#numericEvidence, src/ramp/transcript.ts#rampResponseHost, test/unit/ramp/ramp.test.ts]
   - id: ramp-human-stages

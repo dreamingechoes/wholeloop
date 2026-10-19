@@ -4,6 +4,18 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## measure-impact and real grounding (P4-03)
+
+- [ ] Execute pinned queries against disposable real sources; inspect event/cohort definitions, units, source references, timezones and complete rolling windows. Normalized fixtures establish arithmetic, not provider truth or causality.
+- [ ] Verify actual launch anchors and configured checkpoint offsets, including custom names and late execution. Inspect due dates in status/next and source ownership for scopes cut from earlier specs.
+- [ ] Run read-only analysts in actual clients and verify source isolation, loaded learn.report guidance and complete layouts. Inspect quotes for sensitive material and numeric assertions; source text is not a verified metric.
+- [ ] Review actual unknown reasons with owners and preserve genuine zero values. Test permissions, absent metrics, malformed responses and unit mismatches without invented estimates.
+- [ ] Authenticate comms.draft and docs providers in disposable destinations. Confirm unsent drafts, fresh complete document reads, exact revision updates, preserved unrelated content and one marker-bound appended note. Native threaded/tracker comments need host-specific extensions.
+- [ ] Interrupt publication, inspect the retained intent and actual remote outcome before any new write. Do not clear ambiguity or retry blindly.
+- [ ] Repeat CLI/process checks on Linux and supported Node versions. Local workers/providers were synthetic on macOS/Node 24; no live query, draft or document write ran.
+
+These checks do not block further local implementation.
+
 ## ramp-exposure and actual exposure changes (P4-02)
 
 - [ ] Authenticate source/flag providers in a disposable environment. Verify exact query semantics, units, timezones, complete windows and cohort ownership; normalized fixture numbers do not establish source correctness.

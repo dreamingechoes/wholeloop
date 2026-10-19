@@ -76,6 +76,7 @@ export const STEPS: readonly Step[] = Object.freeze(
         'open-pr',
         'prepare-launch',
         'ramp-exposure',
+        'measure-impact',
       ].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
@@ -116,9 +117,17 @@ export const STEPS: readonly Step[] = Object.freeze(
                             ]
                           : name === 'ramp-exposure'
                             ? ['Stages', 'Evidence', 'Decisions', 'Confirmations', 'Handoff']
-                            : name === 'research'
-                              ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-                              : [],
+                            : name === 'measure-impact'
+                              ? ['Checkpoint', 'Measurements', 'Unknowns', 'Handoff']
+                              : name === 'research'
+                                ? [
+                                    'Question',
+                                    'Owner',
+                                    'Claims',
+                                    'Dropped claims',
+                                    'Open questions',
+                                  ]
+                                : [],
       ),
     }),
   ),

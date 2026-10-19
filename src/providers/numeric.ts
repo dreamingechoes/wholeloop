@@ -27,7 +27,14 @@ export async function numericEvidence(
   const unknown = (missing: string): NumericEvidence => ({ status: 'unknown', unit, missing })
   if (!provider)
     return unknown('The named source provider is unavailable; confirm its configuration and access')
-  const source = await querySource(provider, request, host)
+  let source: Awaited<ReturnType<typeof querySource>>
+  try {
+    source = await querySource(provider, request, host)
+  } catch {
+    return unknown(
+      'The named provider does not support this read-only query; confirm its manifest and source configuration',
+    )
+  }
   if (source.status !== 'observed' || !source.evidence)
     return unknown(source.question?.missing ?? 'No complete source observation')
   const { content, ref } = source.evidence

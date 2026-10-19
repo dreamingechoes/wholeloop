@@ -1,4 +1,5 @@
 import { FlowEngine } from '../flow/engine.js'
+import { configuredCheckpoints, impactSchedule } from '../impact/schedule.js'
 import { ITEM_ID } from '../state/events.js'
 import { unread } from '../state/mailbox.js'
 import { StateStore } from '../state/store.js'
@@ -54,6 +55,15 @@ export function utilityCommand(
               status,
               updatedAt,
               flow: engine.plan(id),
+              ...(impactSchedule(store.events(), id, configuredCheckpoints(engine.config()))
+                ? {
+                    impact: impactSchedule(
+                      store.events(),
+                      id,
+                      configuredCheckpoints(engine.config()),
+                    ),
+                  }
+                : {}),
               ...(workspaces.some((workspace) => workspace.subject === id)
                 ? { workspace: workspaces.find((workspace) => workspace.subject === id) }
                 : {}),

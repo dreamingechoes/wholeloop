@@ -3,6 +3,7 @@ import { EXIT } from '../cli/io.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { stepDefinition } from '../flow/registry.js'
 import { framingMatches } from '../framing/contract.js'
+import { configuredCheckpoints, impactSchedule } from '../impact/schedule.js'
 import { blockingDependencies, buildChildren } from '../slices/routing.js'
 import { ITEM_ID } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
@@ -150,6 +151,29 @@ export function next(engine: FlowEngine, input?: string, owner?: string) {
         })),
         action: null,
         plan,
+      },
+    }
+  const due =
+    subject && plan?.next === 'decide-next'
+      ? impactSchedule(
+          engine.store.events(),
+          subject.id,
+          configuredCheckpoints(engine.config()),
+        )?.checkpoints.find((checkpoint) => checkpoint.status === 'due')
+      : undefined
+  if (subject && due)
+    return {
+      code: EXIT.ok,
+      payload: {
+        schema: 'wholeloop/next@1',
+        subject: subject.id,
+        questions: [],
+        action: {
+          step: 'measure-impact',
+          command: `wl measure begin --for ${subject.id} --checkpoint ${due.key}`,
+        },
+        checkpoint: due,
+        stop: 'A measured scope has a due checkpoint; begin it explicitly before collecting new evidence.',
       },
     }
   if (plan && !plan.next)

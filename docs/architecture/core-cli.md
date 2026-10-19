@@ -22,6 +22,15 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl measure begin [<description>]` | `wholeloop/impact-begin@1` | Pin a due checkpoint and its exact measurement plan |
+| `wl measure requests` | `wholeloop/impact-read-requests@1` | Plan exact source reads without querying services |
+| `wl measure observe` | `wholeloop/impact-report@1` | Record normalized observations and preserve missing datapoints as unknown |
+| `wl measure format` | `wholeloop/impact-report@1` | Apply a repository-guided layout without rewriting measured values |
+| `wl measure complete` | `wholeloop/impact-complete@1` | Store the canonical checkpoint report with traceable values |
+| `wl measure report` | `wholeloop/impact-report@1` | Show query-linked measurements, verdicts and qualitative signals |
+| `wl measure schedule` | `wholeloop/impact-schedule@1` | List checkpoint due dates, missing offsets and measured status |
+| `wl measure digest` | `wholeloop/impact-digest@1` | Prepare an unsent impact digest and per-scope comment bodies |
+| `wl measure schema` | `wholeloop/impact-schema@1` | Print measurement, qualitative query and report layout contracts |
 | `wl ramp begin [<description>]` | `wholeloop/ramp-begin@1` | Pin a confirmed audience plan and evidence checks before ramping |
 | `wl ramp requests` | `wholeloop/ramp-read-requests@1` | Plan exact read-only evidence calls without querying services |
 | `wl ramp observe` | `wholeloop/ramp-report@1` | Import exact normalized read results and retain missing evidence as unknown |

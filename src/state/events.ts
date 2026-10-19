@@ -11,6 +11,8 @@ import { STEP_NAMES, type StepName } from '../flow/registry.js'
 import { type FrameOutcome, validateFrameOutcome } from '../framing/contract.js'
 import type { GateEventData } from '../gates/contracts.js'
 import { gateRuns, validGateData } from '../gates/state.js'
+import { type ImpactEventData, impactRuns, validImpactData } from '../impact/contracts.js'
+import { impactDeliveries } from '../impact/publish.js'
 import { type LaunchEventData, launchRuns, validLaunchData } from '../launch/contracts.js'
 import { launchDeliveries } from '../launch/publish.js'
 import {
@@ -89,6 +91,7 @@ export type EventData =
   | EnvironmentEventData
   | LaunchEventData
   | RampEventData
+  | ImpactEventData
   | {
       type: 'slice.defined'
       data: {
@@ -198,6 +201,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('impact.')) return validImpactData(type, data)
   if (type.startsWith('ramp.')) return validRampData(type, data)
   if (type.startsWith('launch.')) return validLaunchData(type, data)
   if (type.startsWith('env.')) return validEnvironmentData(type, data)
@@ -572,6 +576,8 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   environmentDeclarations(events)
   launchRuns(events)
   launchDeliveries(events)
+  impactRuns(events)
+  impactDeliveries(events)
   rampRuns(events)
   rampProposals(events)
   return items

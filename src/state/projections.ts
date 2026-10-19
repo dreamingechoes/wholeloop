@@ -1,6 +1,9 @@
 import { stringify } from 'yaml'
 import { environmentEntries, environmentReceipt } from '../environment/ledger.js'
 import { gateRuns } from '../gates/state.js'
+import { impactRuns } from '../impact/contracts.js'
+import { impactDeliveries } from '../impact/publish.js'
+import { impactReport } from '../impact/report.js'
 import { launchArtifacts } from '../launch/artifacts.js'
 import { launchRuns } from '../launch/contracts.js'
 import { launchDeliveries } from '../launch/publish.js'
@@ -49,6 +52,21 @@ export function projections(
     }
     if (workspace)
       files.set(`items/${item.id}/worktree.json`, `${JSON.stringify(workspace, null, 2)}\n`)
+  }
+  for (const delivery of impactDeliveries(events))
+    files.set(
+      `items/${delivery.subject}/impact/deliveries/${delivery.key}.json`,
+      `${JSON.stringify(delivery, null, 2)}\n`,
+    )
+  for (const impact of impactRuns(events)) {
+    files.set(
+      `items/${impact.subject}/impact/${impact.plan.run}.json`,
+      `${JSON.stringify(impact, null, 2)}\n`,
+    )
+    files.set(
+      `items/${impact.subject}/impact/${impact.plan.checkpoint}.json`,
+      `${JSON.stringify(impactReport(impact), null, 2)}\n`,
+    )
   }
   for (const ramp of rampRuns(events))
     files.set(

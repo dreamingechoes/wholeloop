@@ -1119,6 +1119,69 @@
         }
       },
       "required": ["schema", "plan"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/impact-begin@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/impact-complete@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/impact-digest@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/impact-read-requests@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/impact-report@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/impact-schedule@1"
+        }
+      },
+      "required": ["schema"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/impact-schema@1"
+        }
+      },
+      "required": ["schema"]
     }
   ],
   "$defs": {

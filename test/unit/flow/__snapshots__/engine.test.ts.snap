@@ -640,7 +640,7 @@ exports[`step begin contracts > frame-problem: standalone empty, standalone inpu
 exports[`step begin contracts > measure-impact: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -698,10 +698,15 @@ exports[`step begin contracts > measure-impact: standalone empty, standalone inp
     "schema": "wholeloop/step-begin@1",
     "step": "measure-impact",
     "subject": null,
-    "template": null,
+    "template": [
+      "Checkpoint",
+      "Measurements",
+      "Unknowns",
+      "Handoff",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -733,10 +738,15 @@ exports[`step begin contracts > measure-impact: standalone empty, standalone inp
     "schema": "wholeloop/step-begin@1",
     "step": "measure-impact",
     "subject": null,
-    "template": null,
+    "template": [
+      "Checkpoint",
+      "Measurements",
+      "Unknowns",
+      "Handoff",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -771,7 +781,12 @@ exports[`step begin contracts > measure-impact: standalone empty, standalone inp
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Checkpoint",
+      "Measurements",
+      "Unknowns",
+      "Handoff",
+    ],
   },
 ]
 `;

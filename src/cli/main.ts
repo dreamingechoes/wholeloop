@@ -14,6 +14,7 @@ import { extensionCommand } from './extensions.js'
 import { flowCommand } from './flow.js'
 import { gateCommand } from './gate.js'
 import { harnessCheck } from './harness.js'
+import { impactCommand } from './impact.js'
 import { EXIT, type Io } from './io.js'
 import { launchCommand } from './launch.js'
 import { mailboxCommand } from './mailbox.js'
@@ -92,7 +93,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (
       command.path === 'verify suite' ||
       command.path.startsWith('pr ') ||
-      command.path.startsWith('ramp ')
+      command.path.startsWith('ramp ') ||
+      command.path.startsWith('measure ')
     )
       throw new CliError('This command requires the asynchronous dispatcher')
     if (command.path.startsWith('build ')) return buildCommand(command.path, parsed, root, json, io)
@@ -162,7 +164,8 @@ export async function runAsync(
     (command) =>
       (command.path === 'verify suite' ||
         command.path.startsWith('pr ') ||
-        command.path.startsWith('ramp ')) &&
+        command.path.startsWith('ramp ') ||
+        command.path.startsWith('measure ')) &&
       args.slice(0, 2).join(' ') === command.path,
   )
   if (
@@ -178,11 +181,13 @@ export async function runAsync(
       [],
       command.options.map((option) => option.split(' ')[0] ?? option),
     )
-    return command.path.startsWith('ramp ')
-      ? await rampCommand(command.path, parsed, root, json, io)
-      : command.path.startsWith('pr ')
-        ? await pullRequestCommand(command.path, parsed, root, json, io)
-        : await verificationSuiteCommand(parsed, root, json, io)
+    return command.path.startsWith('measure ')
+      ? await impactCommand(command.path, parsed, root, json, io)
+      : command.path.startsWith('ramp ')
+        ? await rampCommand(command.path, parsed, root, json, io)
+        : command.path.startsWith('pr ')
+          ? await pullRequestCommand(command.path, parsed, root, json, io)
+          : await verificationSuiteCommand(parsed, root, json, io)
   } catch (error) {
     const code = error instanceof CliError ? error.code : EXIT.precondition
     const message = error instanceof Error ? error.message : 'Asynchronous command failed'
