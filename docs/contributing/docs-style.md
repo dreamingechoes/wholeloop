@@ -27,6 +27,30 @@ Every page starts, after the title and TL;DR, with exactly one of:
 
 Banners are updated **in the same change** that moves the behaviour.
 
+## Generated references
+
+Build first, then run `wl docs check` to check navigation, status banners, links,
+anchors and the current command/config/provider tables. Reference comparison uses
+the built core's contracts, not a person's resolved configuration or authenticated
+services. Rebuild after changing source definitions. Missing pages or missing,
+reversed or duplicate marker pairs fail; an absent marker must never turn a check
+into an empty successful comparison.
+
+`wl docs reference` checks tables without changing files and exits 4 on drift.
+`wl docs reference --write` explicitly regenerates all three sections; --kind
+commands/config/providers selects one. It preflights every selected page/marker
+before writing, preserves surrounding prose and skips unchanged pages. The write
+batch is not a crash-atomic multi-file transaction; inspect an interrupted write
+and regenerate after restoring any incomplete markers. Valid semantic stale tables
+are replaced from source, while malformed ownership markers require inspection.
+
+Use `npm run docs:references` to build and regenerate together. Existing docs:commands
+and docs:config scripts delegate to the same renderer; docs:providers updates the
+manifest-derived mapping table. The provider source JSON catalog has its separate
+providers:catalog check. Generated mapping rows describe declared operations/access,
+not authenticated availability or actual server behavior. The platform matrix is
+still awaiting P5-04 live evidence and is not generated from simulation passes.
+
 ## Page templates
 
 ### Step page (`docs/flow/<block>/<step>.md`)

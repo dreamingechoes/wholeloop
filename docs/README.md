@@ -3,7 +3,7 @@
 > **TL;DR** — Everything about `wholeloop`, from why it exists to how each step works and how to extend it. Read [concepts](./concepts.md) first; everything else assumes its vocabulary.
 
 > [!NOTE]
-> **Status: 📐 design.** The project is being built in the open — pages say clearly what exists and what is planned. Progress: [roadmap](../roadmap/README.md).
+> **Status: 🚧 partial.** The local core, all thirteen step contracts, generated tier-A artifacts, managed installation and explicit conformance tooling are implemented. Actual native-client/model checks, authenticated integrations, tier-B adapters and release automation remain open. Progress and owner checks: [roadmap](../roadmap/README.md) · [manual verification](../roadmap/manual-verification.md).
 
 ---
 

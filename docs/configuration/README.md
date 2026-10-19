@@ -96,7 +96,7 @@ Maps such as slots merge per key; arrays replace rather than concatenate, so a h
 
 ## Key reference
 
-Source: `src/config/schema.json`. Regenerate with `npm run docs:config`; CI checks drift.
+Source: `src/config/schema.json`. Regenerate with `npm run docs:config` or `wl docs reference --kind config --write`; docs check and CI check drift.
 
 <!-- config:start -->
 | Key | Kind | Values | Default |

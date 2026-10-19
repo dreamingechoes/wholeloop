@@ -3,7 +3,7 @@
 > **TL;DR** — The questions people ask in the first ten minutes, answered in a few lines each, with a link to the page that goes deeper.
 
 > [!NOTE]
-> **Status: 📐 design.** Answers describe the target behaviour; progress is tracked in the [roadmap](../roadmap/README.md).
+> **Status: 🚧 partial.** The local core, generated tier-A packages, installation and conformance tooling are available. Actual native model/permission checks, authenticated integrations and tier-B adapters remain open; the [manual checklist](../roadmap/manual-verification.md) separates verification from remaining implementation.
 
 ---
 
@@ -22,7 +22,7 @@ Yes. State lives in your store, not in a session. Run `next <id>` (or `wl resume
 No. With nothing configured, everything is local Markdown. Configure providers when you want artifacts shared. → [Providers](./configuration/providers.md)
 
 **Will it touch my working copy?**
-No. Builds happen in dedicated git worktrees; your checkout can be dirty and on any branch. → [build-slice](./flow/build/build-slice.md)
+Build execution uses dedicated git worktrees; your checkout can be dirty and on any branch. Explicit project installation, configuration and artifact-generation commands write the project files you request. Runtime journals and ownership stay outside repositories. → [build-slice](./flow/build/build-slice.md)
 
 **Will it merge, send a message or flip a flag?**
 Never. There is no verb for any of those in the provider contract. → [Capabilities](./configuration/providers.md#the-capability-taxonomy)
@@ -30,7 +30,7 @@ Never. There is no verb for any of those in the provider contract. → [Capabili
 ## Trust
 
 **How do I know what it is about to do?**
-Every run starts with a preflight and ends with a receipt; in between it narrates one line per event. "Stop" halts it immediately.
+Core step commands return preflights and receipts. Canonical skills require one-line narration and a stop handoff; actual native behavior still needs verification. Headless cancellation terminates owned worker groups, while interrupted external effects retain their recorded recovery state.
 
 **What if it does not know something?**
 It asks. Anything a source cannot answer becomes an open question, never a plausible guess. → [Philosophy](./philosophy.md#1-ask-never-guess)
@@ -58,7 +58,7 @@ The [glossary](./glossary.md#if-your-team-says) maps common vocabularies.
 ## The project
 
 **Is it usable today?**
-Not yet — it is in the design phase. Follow the [roadmap](../roadmap/README.md).
+The local CLI is usable for state, configuration, discovery, step contracts, gated workflows and generated client artifacts. Build it from this repository and follow [getting started](./getting-started.md). Actual tier-A client/model checks, authenticated integrations, tier-B adapters and public release work remain open; this is not a verified 1.0 release. Follow the [roadmap](../roadmap/README.md).
 
 **Can I contribute?**
 Yes. Read [CONTRIBUTING.md](../CONTRIBUTING.md) and pick a task from the roadmap.

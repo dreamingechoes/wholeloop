@@ -146,6 +146,50 @@ Defaults chosen for breadth of real-world use. **v1** ships with the phase that 
 | `comms` | Slack · Microsoft Teams · email (draft) | Discord · Google Chat |
 | `design` | Figma | Penpot |
 
+### Generated declared mappings
+
+These rows come from the bundled manifests. They describe declarations, not live
+server support, authentication, operation semantics or a selected provider. Native
+bridges can remain pending handoffs; the verification limits below still apply.
+
+<!-- providers:start -->
+| ID | Capabilities | Declared operations | Access |
+| --- | --- | --- | --- |
+| `amplitude` | `dashboards` · `source.product-analytics` | `dashboards.create` · `source.product-analytics.query` | native host · MCP: amplitude |
+| `bigquery` | `source.bi` | `source.bi.query` | MCP: bigquery |
+| `config-flags` | `flags` | `flags.propose-change` · `flags.read-state` | native host |
+| `confluence` | `docs` · `source.knowledge` | `docs.create` · `docs.read` · `docs.update` · `source.knowledge.query` | MCP: atlassian |
+| `datadog` | `source.errors` · `source.observability` | `source.errors.query` · `source.observability.query` | MCP: datadog |
+| `email` | `comms` | `comms.draft` | native host |
+| `figma` | `design` | `design.read-context` | MCP: figma |
+| `github` | `codehost` | `codehost.comment-pr` · `codehost.open-draft-pr` · `codehost.pr-status` · `codehost.read-pr` | CLI: gh |
+| `github-issues` | `tracker` | `tracker.create-item` · `tracker.read-item` · `tracker.transition` · `tracker.update-item` | MCP: github |
+| `gitlab` | `codehost` | `codehost.comment-pr` · `codehost.open-draft-pr` · `codehost.pr-status` · `codehost.read-pr` | CLI: glab |
+| `gitlab-issues` | `tracker` | `tracker.create-item` · `tracker.link-items` · `tracker.read-item` · `tracker.update-item` | MCP: gitlab |
+| `google-docs` | `docs` | `docs.create` · `docs.read` · `docs.update` | CLI: gws |
+| `grafana` | `dashboards` · `source.errors` · `source.observability` | `dashboards.create` · `source.errors.query` · `source.observability.query` | native host · MCP: grafana |
+| `growthbook` | `flags` | `flags.propose-change` · `flags.read-state` | native host |
+| `intercom` | `source.support` | `source.support.query` | MCP: intercom |
+| `jira` | `tracker` | `tracker.create-item` · `tracker.link-items` · `tracker.read-item` · `tracker.transition` · `tracker.update-item` | MCP: atlassian |
+| `launchdarkly` | `flags` | `flags.propose-change` · `flags.read-state` | native host |
+| `linear` | `tracker` | `tracker.create-item` · `tracker.read-item` · `tracker.transition` · `tracker.update-item` | MCP: linear |
+| `local-docs` | `docs` | `docs.create` · `docs.link` · `docs.read` · `docs.update` | local |
+| `local-tracker` | `tracker` | `tracker.create-item` · `tracker.link-items` · `tracker.read-item` · `tracker.transition` · `tracker.update-item` | local |
+| `metabase` | `dashboards` · `source.bi` | `dashboards.create` · `source.bi.query` | native host · MCP: metabase |
+| `microsoft-teams` | `comms` | `comms.draft` | native host |
+| `mixpanel` | `dashboards` · `source.product-analytics` | `dashboards.create` · `source.product-analytics.query` | native host · MCP: mixpanel |
+| `native-code` | `source.code` | `source.code.query` | native host |
+| `native-web` | `source.web` | `source.web.query` | native host |
+| `notion` | `docs` · `source.knowledge` | `docs.create` · `docs.read` · `docs.update` · `source.knowledge.query` | MCP: notion |
+| `postgresql` | `source.bi` | `source.bi.query` | CLI: psql |
+| `posthog` | `dashboards` · `flags` · `source.product-analytics` | `dashboards.create` · `flags.propose-change` · `flags.read-state` · `source.product-analytics.query` | native host · MCP: posthog |
+| `repo-docs` | `docs` | `docs.create` · `docs.read` · `docs.update` | native host |
+| `sentry` | `source.errors` | `source.errors.query` | MCP: sentry |
+| `slack` | `comms` | `comms.draft` | native host |
+| `unleash` | `flags` | `flags.propose-change` · `flags.read-state` | native host |
+| `zendesk` | `source.support` | `source.support.query` | CLI: curl |
+<!-- providers:end -->
+
 One provider can serve several capabilities — PostHog covers product analytics, dashboards and flags; Confluence covers `docs` and `source.knowledge`.
 
 ### Implemented destination mappings
@@ -174,7 +218,7 @@ installed and no authenticated operation was performed here. Discover the actual
 live schema before translating generic input into vendor arguments.
 
 Canonical resources live under harness/providers. Run `npm run providers:catalog`
-after changing them, then `npm run lint:fix`; check enforces semantic catalog drift.
+after changing them, then `npm run docs:providers` and `npm run lint:fix`. The provider JSON catalog check enforces semantic source drift; docs check independently verifies the generated declared-mapping table against the built-in registry.
 The bundled registry returns guidanceText even without the source checkout.
 Repository/user resources also retain their file paths and inheritance precedence.
 

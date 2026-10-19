@@ -4,6 +4,17 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Generated references (P5-06 local controls)
+
+- [ ] After changing source contracts, rebuild before running docs check. Confirm command/config/provider sections describe that build, not an older executable on PATH.
+- [ ] On Linux and supported Node releases, repeat read-only drift detection, explicit selective/full regeneration, malformed-marker refusal and preservation of surrounding prose. Current compiled execution is macOS arm64/Node 24 only.
+- [ ] If regeneration is interrupted during writes, inspect the affected pages/markers before rerunning. All selected markers are preflighted, but filesystem failures do not provide multi-file crash atomicity.
+
+The generated provider table records declarations only. Native capability-matrix
+collection/generation and remaining per-CLI onboarding refinements are still
+implementation work, separate from these manual checks. Overview pages now reflect
+local implementation while retaining native/host verification boundaries.
+
 ## Disposable standalone framing conformance (P1-14)
 
 - [ ] Build, then prepare one fresh run per actual tier-A client with --target and its exact --pin version. Inspect returned fixture/prompt/native recipe and executable resolution; a version token alone is not binary provenance. Retain source/scenario/core hashes.

@@ -4,6 +4,10 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: current-generated-references
+    enforcers: [src/docs/references.ts#checkReferences, src/docs/references.ts#replaceReference, src/cli/docs.ts#docsCheck, test/unit/docs/references.test.ts]
+  - id: explicit-reference-writes
+    enforcers: [src/cli/docs.ts#docsReference, test/unit/docs/references.test.ts]
   - id: conformance-evidence-boundary
     enforcers: [src/conformance/run.ts#runConformance, src/conformance/judge.ts#judgeConformance, test/unit/conformance/conformance.test.ts]
   - id: conformance-fresh-fixture

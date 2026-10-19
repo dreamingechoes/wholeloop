@@ -8,7 +8,7 @@ import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
 import { conformanceCommand } from './conformance.js'
 import { discoveryCommand } from './discovery.js'
-import { docsCheck, docsNav } from './docs.js'
+import { docsCheck, docsNav, docsReference } from './docs.js'
 import { doctorCommand } from './doctor.js'
 import { environmentCommand } from './environment.js'
 import { CliError } from './errors.js'
@@ -163,6 +163,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
         return docsNav(root, json, io)
       case 'docs check':
         return docsCheck(root, json, io)
+      case 'docs reference':
+        return docsReference(parsed, root, json, io)
       case 'harness check':
         return harnessCheck(root, json, io)
       case 'guard commit-msg':

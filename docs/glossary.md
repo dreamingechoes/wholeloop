@@ -3,7 +3,7 @@
 > **TL;DR** — Every term `wholeloop` uses, in one line each, plus how it maps to vocabulary your team may already have.
 
 > [!NOTE]
-> **Status: 📐 design.** Terms describe the target design; they change with the [decisions](./decisions/README.md) that introduce them.
+> **Status: 🚧 partial.** These terms describe the implemented local core and canonical role contracts. Native engine availability and authenticated provider behavior retain the limits in [platforms](./platforms/README.md) and [providers](./configuration/providers.md); definitions do not establish conformance.
 
 ---
 

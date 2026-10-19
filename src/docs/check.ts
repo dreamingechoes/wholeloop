@@ -5,7 +5,7 @@ import { type Nav, renderFooter, withFooter } from './nav.js'
 export interface Problem {
   file: string
   line?: number
-  rule: 'docnav' | 'nav' | 'link' | 'anchor' | 'banner'
+  rule: 'docnav' | 'nav' | 'link' | 'anchor' | 'banner' | 'generated'
   message: string
 }
 

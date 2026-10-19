@@ -6,6 +6,11 @@
   "oneOf": [
     {
       "type": "object",
+      "properties": { "schema": { "const": "wholeloop/docs-reference@1" } },
+      "required": ["schema", "status", "written", "stale", "updated", "checked"]
+    },
+    {
+      "type": "object",
       "properties": { "schema": { "const": "wholeloop/conformance-prepared@1" } },
       "required": [
         "schema",

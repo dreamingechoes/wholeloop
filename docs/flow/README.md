@@ -3,7 +3,7 @@
 > **TL;DR** — Define shapes the problem, Build ships it right, Rollout releases it with care, Learn measures and decides. Each step is a skill you can run on its own; `next` chains them and stops wherever a person has to decide.
 
 > [!NOTE]
-> **Status: 📐 design.** Behaviour described here is tracked in the [roadmap](../../roadmap/README.md).
+> **Status: 🚧 partial.** All thirteen local step cores and canonical skills are implemented, including human decisions, recoverable handoffs and measured closure. Generated clients still need actual model/permission checks; remote dashboard/flag bridges and unsupported transports remain open. Per-step pages and the [manual checklist](../../roadmap/manual-verification.md) state those limits.
 
 ---
 
@@ -52,9 +52,9 @@ flowchart LR
 | Build | 6 | [`verify-works`](./build/verify-works.md) | Does it work, and does it solve the problem? | until green |
 | Build | 7 | [`review-code`](./build/review-code.md) | Is it well written? | until green |
 | Build | 8 | [`open-pr`](./build/open-pr.md) | A draft PR per repository, after you tested it | **test it** · **merge** |
-| Rollout | 9 | [`prepare-launch`](./rollout/prepare-launch.md) | Comms drafted, dashboards built, enablement written — nothing sent | — |
+| Rollout | 9 | [`prepare-launch`](./rollout/prepare-launch.md) | Comms drafts, measurement/rollout plans, dashboard handoffs and enablement — nothing sent | — |
 | Rollout | 10 | [`ramp-exposure`](./rollout/ramp-exposure.md) | A staged ramp plan with exit criteria checked at each stage | **ramp** |
-| Learn | 11 | [`measure-impact`](./learn/measure-impact.md) | Real numbers vs the promise at launch, D+7 and D+30 | — |
+| Learn | 11 | [`measure-impact`](./learn/measure-impact.md) | Grounded measurements or explicit unknowns at launch, D+7 and D+30 | — |
 | Learn | 12 | [`decide-next`](./learn/decide-next.md) | Keep, iterate, kill or unflag — recorded, and fed back | **decide** |
 | — | — | [utilities](./utilities.md) | `next` · `status` · `setup` · `sync` | — |
 

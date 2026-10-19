@@ -3,7 +3,7 @@
 > **TL;DR** — Ten ideas carry the whole design. Once they click, the rest of the docs are reference material: the **work tree**, **steps and blocks**, **standalone vs flow**, **decision points**, the **step contract**, **state and mailbox**, **repo-first slots**, **providers**, the **interaction profile**, and the **gates**.
 
 > [!NOTE]
-> **Status: 📐 design.** Describes the target behaviour. Implementation is tracked in the [roadmap](../roadmap/README.md).
+> **Status: 🚧 partial.** The local work hierarchy, thirteen step contracts, decision gates, external journal/mailbox, slots, providers and profiles are implemented. Canonical skill interaction describes the client contract; actual native execution, permission isolation and authenticated transports remain separate verification. See the [roadmap](../roadmap/README.md) and [manual checklist](../roadmap/manual-verification.md).
 
 ---
 

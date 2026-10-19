@@ -1011,11 +1011,18 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Rewrite docnav footers from docs/nav.yml',
   },
   {
+    path: 'docs reference',
+    arguments: '',
+    options: ['--kind <commands|config|providers>', '--write'],
+    schema: 'wholeloop/docs-reference@1',
+    summary: 'Check generated reference sections or explicitly regenerate their tables',
+  },
+  {
     path: 'docs check',
     arguments: '',
     options: [],
     schema: 'wholeloop/docs-check@1',
-    summary: 'Check documentation navigation, status, links and anchors',
+    summary: 'Check navigation, status, links, anchors and generated references',
   },
   {
     path: 'harness check',
