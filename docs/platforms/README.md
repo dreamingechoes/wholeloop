@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 📐 design.** Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
+> **Status: 🚧 partial.** Local Claude artifact generation and self-contained core packaging are implemented; hooks, the other generated targets and actual discovery/permissions remain pending. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
 
 ---
 
@@ -58,6 +58,40 @@ flowchart LR
 - **Agents** are written with abstract capabilities (`read`, `write`, `shell`, `web`) and a model tier; each adapter maps them to that CLI's tool names or permission map.
 - **Names** are namespaced where the CLI has no plugin namespace: `wholeloop:research` in Claude Code, `wl-research` elsewhere.
 - **Golden files** pin every adapter's output; a change in generated files is a reviewed diff.
+
+## Available local generation
+
+```text
+wl build --target claude --out /tmp/wholeloop-claude --dry-run --json
+wl build --target claude --out /tmp/wholeloop-claude --json
+claude plugin validate /tmp/wholeloop-claude --strict
+```
+
+This creates a distribution tree, without installing it or editing client/MCP
+configuration: seventeen skills, eight agents, shared canonical resources,
+.claude-plugin/plugin.json, an executable bin/wl.mjs and a versioned ownership/hash
+manifest. The core embeds its canonical resources, so the output works away from
+the source checkout. Plugin skills call their bundled core; a conductor supplies
+its resolved plugin root to agents. Missing context is a question, not a PATH guess.
+
+Model tiers render to native aliases and capabilities to explicit tool lists.
+Observer roles omit write tools and use plan restrictions; shell/managed policy
+behavior still needs real-client enforcement checks. The manifest reports native
+conformance unverified and hooks unimplemented. No permission bypass is emitted.
+
+Generation is deterministic. An unchanged owned tree reports already-correct;
+upgrades preserve the previous tree at the backup path returned in the receipt.
+Changed files/modes, unsafe links and unowned directories are refused. Select a
+new output path to preserve deliberate local edits. TypeScript host workflow
+sources are not copied with broken imports; their executable CLI paths are bundled.
+
+Golden/compiled CLI fixtures passed, including executing the copied core outside
+this checkout. Claude 2.1.299 plugin validate --strict also returned Validation
+passed for an isolated generated plugin. This static check is not installation,
+skill discovery, model execution or a live conformance pass. Hooks remain code work,
+and actual discovery/install/Linux checks remain in the
+[manual checklist](../../roadmap/manual-verification.md). See
+[ADR-0047](../decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md).
 
 ## Installing
 

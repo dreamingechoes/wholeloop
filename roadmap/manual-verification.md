@@ -4,6 +4,16 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-19.
 
+## Generated Claude artifacts (P1-10)
+
+- [ ] Install a generated plugin in an isolated real client configuration, list all seventeen skills/eight agents and invoke a unique marker. Static plugin validate passed locally; it does not establish discovery or execution.
+- [ ] Confirm plugin-root substitution and conductor root handoff select the copied core in paths with spaces, including after moving the artifact tree away from the source checkout.
+- [ ] Exercise read-only roles against a disposable sentinel, including roles with shell access and managed policy. Confirm model tier aliases and batched missing-context questions; no independent model session has been run.
+- [ ] Repeat owned output, backup/mode/symlink and bundled runtime fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64 only.
+
+Guard hook registration and the other adapters remain unimplemented code, tracked
+separately; these manual checks do not block further local implementation.
+
 ## Headless gate processes (P5-03)
 
 - [ ] Execute one pinned review and verification round with actual native, headless and sequential workers. Compare coverage/quorum/verdict, independently inspect evidence quality and record exact client versions. Synthetic parity tests do not establish real model equivalence.

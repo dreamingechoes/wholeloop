@@ -14,6 +14,7 @@ import { extensionCommand } from './extensions.js'
 import { fanoutCommand } from './fanout.js'
 import { flowCommand } from './flow.js'
 import { gateCommand } from './gate.js'
+import { generateCommand } from './generate.js'
 import { groundingCommand } from './grounding.js'
 import { harnessCheck } from './harness.js'
 import { impactCommand } from './impact.js'
@@ -111,6 +112,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       command.path.startsWith('measure ')
     )
       throw new CliError('This command requires the asynchronous dispatcher')
+    if (command.path === 'build') return generateCommand(parsed, root, json, io)
     if (command.path.startsWith('build ')) return buildCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('worktree '))

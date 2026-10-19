@@ -1301,6 +1301,15 @@
         "workers",
         "verdict"
       ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/adapter-build@1"
+        }
+      },
+      "required": ["schema", "output", "status", "backup", "manifest"]
     }
   ],
   "$defs": {

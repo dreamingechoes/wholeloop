@@ -148,7 +148,7 @@
 
 ## P1-10 · Adapter — Claude Code
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-05, P0-03
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-05, P0-03
 
 **Goal** — The first generated target, shaped by the spike's findings.
 
@@ -156,10 +156,17 @@
 
 **Acceptance criteria:**
 
-- [ ] `wl build --target claude` output matches golden files.
+- [x] `wl build --target claude` output matches golden files.
 - [ ] The generated plugin installs locally and lists every skill.
 
-**Docs** — platforms.
+**Local implementation:** the adapter interface, pure Claude skill/agent renderer,
+embedded canonical resources, bundled core, owned output/backup writer and golden
+fixtures are implemented. The actual Claude 2.1.299 static plugin validator passed
+in an isolated directory. Hook registration remains unimplemented code until the
+common guard is connected; local install/discovery/model execution remains an
+owner check. These gaps do not block independent local adapter implementation.
+
+**Docs** — platforms, ADR-0047.
 
 ## P1-11 · Adapters — Codex, OpenCode, Copilot CLI
 

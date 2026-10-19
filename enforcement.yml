@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: artifacts-contained-source
+    enforcers: [scripts/harness-assets.mjs#harnessAssets, src/adapters/canonical.ts#validateCanonical, test/unit/adapters/adapters.test.ts]
+  - id: artifacts-owned-output
+    enforcers: [src/adapters/write.ts#writeAdapter, test/unit/adapters/adapters.test.ts]
+  - id: artifacts-bundled-core
+    enforcers: [src/adapters/generate.ts#generateAdapter, src/adapters/claude.ts#claudeAdapter, test/unit/adapters/adapters.test.ts]
   - id: headless-exact-assignment
     enforcers: [src/fanout/host.ts#HeadlessHost, src/gates/workflow.ts#submit, test/unit/fanout/fanout.test.ts]
   - id: headless-bounded-workers

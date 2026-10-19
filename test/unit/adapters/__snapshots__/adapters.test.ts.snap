@@ -1,0 +1,121 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`canonical client artifact generation > renders the Claude golden tree and keeps the core executable 1`] = `
+{
+  ".claude-plugin/plugin.json": {
+    "content": "{
+  "name": "wholeloop",
+  "version": "0.0.0",
+  "description": "Define, build, roll out and learn through independent evidence-backed development steps.",
+  "author": {
+    "name": "Iván González Sáiz"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/dreamingechoes/wholeloop",
+  "repository": "https://github.com/dreamingechoes/wholeloop"
+}
+",
+    "mode": 420,
+  },
+  "agents/reviewer.md": {
+    "content": "---
+name: reviewer
+description: Observe one assigned fixture.
+tools: Read, Glob, Grep, Bash
+model: opus
+permissionMode: plan
+disallowedTools: Write, Edit, NotebookEdit, mcp__*
+---
+The conductor must supply wholeloopRoot as this plugin's absolute root. Read named shared protocols under wholeloopRoot/resources/protocols/ and invoke its bundled bin/wl.mjs with Node for every wl command. If that root is missing, return a question instead of guessing PATH.
+
+# Review
+
+Read core-invariants.
+Return observed evidence.
+",
+    "mode": 420,
+  },
+  "bin/wl.mjs": {
+    "content": "#!/usr/bin/env node
+console.log("fixture core")
+",
+    "mode": 493,
+  },
+  "resources/protocols/core-invariants.md": {
+    "content": "# Core invariants
+
+Use recorded facts.
+",
+    "mode": 420,
+  },
+  "skills/next/SKILL.md": {
+    "content": "---
+name: next
+description: Continue recorded fixture work.
+---
+Use shared protocols under \${CLAUDE_PLUGIN_ROOT}/resources/protocols/. When delegating, pass wholeloopRoot=\${CLAUDE_PLUGIN_ROOT} explicitly to each agent. The bundled core owns state; never replace it with another executable found on PATH.
+
+# Next
+
+Read core-invariants.
+Call \`node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next --json\`.
+",
+    "mode": 420,
+  },
+  "wholeloop-artifacts.json": {
+    "content": "{
+  "schema": "wholeloop/adapter-artifacts@1",
+  "target": "claude",
+  "version": "0.0.0",
+  "source": "3ba39cf7685b678313e953c0c4483963c34fd1aee451bea425c22071219f548c",
+  "core": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192",
+  "capabilities": {
+    "conformance": "unverified",
+    "skills": "rendered",
+    "agents": "rendered",
+    "hooks": "unimplemented",
+    "readOnly": "tool-allowlist-and-plan-mode",
+    "engines": [
+      "headless",
+      "sequential"
+    ]
+  },
+  "skills": [
+    "next"
+  ],
+  "agents": [
+    "reviewer"
+  ],
+  "files": [
+    {
+      "path": "agents/reviewer.md",
+      "mode": 420,
+      "sha256": "57e111bb2ee2e974f58ad9b1a87923fc42b6484206eb70d623d7e300081618e7"
+    },
+    {
+      "path": "resources/protocols/core-invariants.md",
+      "mode": 420,
+      "sha256": "a67cf0724a359b1ea592a760436d07fbf0210c7250141993534219cc8a54bba1"
+    },
+    {
+      "path": "skills/next/SKILL.md",
+      "mode": 420,
+      "sha256": "d73581c7fdd6cc1a803e51e1ea2849242b7a6b99b4dc202c18f082fb750a18d8"
+    },
+    {
+      "path": ".claude-plugin/plugin.json",
+      "mode": 420,
+      "sha256": "598dfdd0f79593786df6577a38e4bf1a72261c3a2b374f4a02e3e3cb72b2be2b"
+    },
+    {
+      "path": "bin/wl.mjs",
+      "mode": 493,
+      "sha256": "ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192"
+    }
+  ]
+}
+",
+    "mode": 420,
+  },
+}
+`;

@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-10-19 · P1-10 — self-contained Claude generation; hooks and live discovery remain open
+
+- Add the adapter interface and build --target claude --out with explicit dry run. Embed bounded regular canonical Markdown/JSON/YAML resources at development build time, reject symlinked/escaping inputs and omit unbundled TypeScript workflow sources. Render seventeen skills/eight agents, shared resources, a documented plugin manifest, executable copied core and versioned source/core/file hashes/modes. The installed output does not depend on this source checkout.
+- Rewrite plugin skill commands to the bundled core through the documented plugin-root substitution. Require the conductor to pass the resolved root to agents; absent root returns a question rather than guessing PATH. Map declared tool capabilities and model tiers, with observer write tools removed and native plan restrictions. Native permission/managed-policy behavior remains unverified. Leave hook capability explicitly unimplemented until the common guard is connected instead of registering a missing command.
+- Refuse unowned/edited/missing/mode-changed/unsafe output. Unchanged owned trees report already-correct; upgrades stage a new artifact tree and retain the exact previous tree at a returned backup path. Distribution artifacts are intentional build output, not repository runtime state. ADR-0047 records ownership, source containment, core version binding and conformance boundaries.
+- Verify seventeen cases covering golden native output, complete embedded resources, deterministic ordering/source changes, capability/tier mappings, invalid paths/front matter/budgets, symlink/size refusal, unchanged/upgrade behavior, eight unsafe output modes, forged ownership paths and compiled generation/copied-core version/framing execution outside the checkout. Final review adds a bounded regular ownership-manifest preflight and a symlink fixture. All 663 tests in 46 files passed; full local check passed build, smoke, lint, typecheck, generated references/catalogs, docs, harness, Markdown and all 35 Mermaid diagrams.
+- Run actual Claude 2.1.299 plugin validate --strict against an isolated generated artifact: Validation passed. Upgrade that same owned output with a retained backup and validate again: Validation passed. No plugin installation, actual skill listing/model execution, personal config edit or credential copy ran. Record static evidence separately in the conformance note.
+- Keep P1-10 partial: hook registration is remaining code, and real install/discovery/permissions plus Linux/other Node versions remain owner checks. Continue other local adapter and common-guard implementation; those checks do not block it.
+
+---
+
 ## 2026-10-19 · P5-03 — bounded headless process transport; live adapters remain open
 
 - Add fanout run for explicit existing review/verify rounds with one shell-free stdin-fed process and external-store directory per assignment. Pin complete plan/review/suite identity and validate exact run/round/unit or finding/verifier plus existing public schemas. Reuse inspectGateRound/submit/refutation/verdict without changing coverage, thresholds, budgets or repair ownership. Verification requires its actual once-per-round suite first.

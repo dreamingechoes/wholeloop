@@ -578,6 +578,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Aggregate evidence into a replayable research brief',
   },
   {
+    path: 'build',
+    arguments: '',
+    options: ['--target <claude>', '--out <directory>', '--dry-run'],
+    schema: 'wholeloop/adapter-build@1',
+    summary: 'Render a self-contained client artifact tree without installing it',
+  },
+  {
     path: 'fanout run',
     arguments: '<verify|review>',
     options: [
