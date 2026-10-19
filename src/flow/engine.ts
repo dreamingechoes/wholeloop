@@ -20,6 +20,7 @@ import {
 } from '../framing/contract.js'
 import { publicationPlan } from '../providers/publication.js'
 import { researchBrief } from '../research/report.js'
+import { reviewReceipt } from '../review/workflow.js'
 import { checkScopePlan, parseScopePlan, scopeContext } from '../scopes/contract.js'
 import { publishScopes } from '../scopes/publish.js'
 import { checkSlicePlan, parseSlicePlan, slicingContext } from '../slices/contract.js'
@@ -453,6 +454,8 @@ export class FlowEngine {
           `Required decisions: ${blocking.map((decision) => decision.id).join(', ')}`,
           EXIT.input,
         )
+      if (name === 'review-code' && content !== reviewReceipt(events, subject))
+        throw new CliError('Complete reviews through their gate-backed receipt', EXIT.precondition)
       if (name === 'verify-works' && content !== verificationReceipt(events, subject))
         throw new CliError(
           'Complete verification through its gate-backed receipt',

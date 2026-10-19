@@ -8,6 +8,40 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'review begin',
+    arguments: '[<branch|pr>]',
+    options: [
+      '--for <id>',
+      '--branch <name>',
+      '--base <branch>',
+      '--owner <person>',
+      '--rounds <review=n>',
+    ],
+    schema: 'wholeloop/review-begin@1',
+    summary: 'Begin an isolated review with pinned rubric and incremental input',
+  },
+  {
+    path: 'review input',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/review-context@1',
+    summary: 'Load the exact round patch and repository rubric for reviewers',
+  },
+  {
+    path: 'review comment-plan',
+    arguments: '',
+    options: ['--for <id>', '--pr <url>'],
+    schema: 'wholeloop/review-comment-plan@1',
+    summary: 'Draft a codehost comment without publishing it',
+  },
+  {
+    path: 'review complete',
+    arguments: '',
+    options: ['--for <id>'],
+    schema: 'wholeloop/review-complete@1',
+    summary: 'Complete a review from its input and current gate PASS',
+  },
+  {
     path: 'verify begin',
     arguments: '[<branch|pr>]',
     options: [

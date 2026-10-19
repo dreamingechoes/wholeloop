@@ -959,6 +959,38 @@
         }
       },
       "required": ["schema", "receipt"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/review-begin@1"
+        }
+      },
+      "required": ["schema", "status"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/review-context@1"
+        }
+      },
+      "required": ["schema", "input"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/review-complete@1"
+        }
+      },
+      "required": ["schema", "receipt"]
+    },
+    {
+      "properties": {
+        "schema": {
+          "const": "wholeloop/review-comment-plan@1"
+        }
+      },
+      "required": ["schema", "input", "published"]
     }
   ],
   "$defs": {

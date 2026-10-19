@@ -1365,7 +1365,7 @@ exports[`step begin contracts > research: standalone empty, standalone input and
 exports[`step begin contracts > review-code: standalone empty, standalone input and initiative 1`] = `
 [
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1423,10 +1423,15 @@ exports[`step begin contracts > review-code: standalone empty, standalone input 
     "schema": "wholeloop/step-begin@1",
     "step": "review-code",
     "subject": null,
-    "template": null,
+    "template": [
+      "Rubric",
+      "Diff",
+      "Findings",
+      "Verdict",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1458,10 +1463,15 @@ exports[`step begin contracts > review-code: standalone empty, standalone input 
     "schema": "wholeloop/step-begin@1",
     "step": "review-code",
     "subject": null,
-    "template": null,
+    "template": [
+      "Rubric",
+      "Diff",
+      "Findings",
+      "Verdict",
+    ],
   },
   {
-    "available": false,
+    "available": true,
     "bindings": {},
     "decision": {
       "after": [],
@@ -1496,7 +1506,12 @@ exports[`step begin contracts > review-code: standalone empty, standalone input 
       "id": "init-12345678",
       "kind": "initiative",
     },
-    "template": null,
+    "template": [
+      "Rubric",
+      "Diff",
+      "Findings",
+      "Verdict",
+    ],
   },
 ]
 `;

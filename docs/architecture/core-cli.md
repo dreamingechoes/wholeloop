@@ -3,7 +3,7 @@
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Generated CLI adapters, live external provider execution, incremental review and later step behavior remain planned.
+> **Status: 🚧 partial.** The router, layered configuration, profile, external state, mailbox, step engine, repository discovery, extension catalogs and local next/status/setup utilities are implemented. The registry contains all thirteen steps; local framing, structured research briefs and validated specs, scope plans and vertical slice plans can complete; build-slice completes through current host-supplied verify/review evidence. The worktree manager provisions isolated environments and conservative cleanup; journaled gates enforce coverage, budgets, refutations and snapshot-bound verdicts. Once-per-round suites and incremental review with loaded/pinned rubrics are implemented. Generated CLI adapters, authenticated provider execution and later step behavior remain pending.
 
 ---
 
@@ -22,6 +22,10 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl review begin [<branch\|pr>]` | `wholeloop/review-begin@1` | Begin an isolated review with pinned rubric and incremental input |
+| `wl review input` | `wholeloop/review-context@1` | Load the exact round patch and repository rubric for reviewers |
+| `wl review comment-plan` | `wholeloop/review-comment-plan@1` | Draft a codehost comment without publishing it |
+| `wl review complete` | `wholeloop/review-complete@1` | Complete a review from its input and current gate PASS |
 | `wl verify begin [<branch\|pr>]` | `wholeloop/verify-begin@1` | Begin verification from agreed criteria or ask before mutation |
 | `wl verify suite` | `wholeloop/verify-suite@1` | Execute declared checks once in the pinned verify round |
 | `wl verify complete` | `wholeloop/verify-complete@1` | Complete verification from its suite receipt and current gate PASS |

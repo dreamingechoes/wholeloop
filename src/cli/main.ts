@@ -18,6 +18,7 @@ import { mailboxCommand } from './mailbox.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
 import { researchCommand } from './research.js'
+import { reviewCommand } from './review.js'
 import { scopesCommand } from './scopes.js'
 import { slicesCommand } from './slices.js'
 import { specCommand } from './spec.js'
@@ -76,6 +77,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path.startsWith('review '))
+      return reviewCommand(command.path, parsed, root, json, io)
     if (['verify begin', 'verify complete'].includes(command.path))
       return verificationCommand(command.path, parsed, root, json, io)
     if (command.path === 'verify suite')

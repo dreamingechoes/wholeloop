@@ -2,7 +2,17 @@
 
 > Automated results and pending work are separate. A checked roadmap task means
 > its local acceptance checks passed, not that every target CLI or platform has
-> been exercised. Updated 2026-10-18.
+> been exercised. Updated 2026-10-19.
+
+## review-code and incremental inputs (P3-06)
+
+- [ ] Exercise the canonical skill in each real client. Confirm loaded repo rubric content and the incremental patch reach every reviewer/refuter; recheck prior kept findings even when unchanged in the new patch.
+- [ ] Resolve an authenticated PR head through the host and inspect its isolated named-branch workspace. The CLI does not fetch or authenticate PRs.
+- [ ] Repeat exact-index, mode, symlink and interruption/recovery fixtures on Linux and supported Node/Git versions. Local execution used macOS/Node 24/Git 2.49.
+- [ ] Inspect sensitive project paths before snapshotting. Filename/content exclusions are conservative, not encryption or a complete secret detector. Preserve private objects alongside the journal when moving state.
+- [ ] After configuring a codehost.comment-pr provider, explicitly request a test comment, confirm no approval/request-changes is emitted and reconcile an ambiguous network outcome before retrying. Synthetic host tests did not publish anything.
+
+These checks do not block other local implementation.
 
 ## verify-works and process execution (P3-05)
 
@@ -19,7 +29,7 @@ These checks do not block the remaining local implementation.
 - [ ] Run the canonical skill in each actual client. Confirm the preflight appears before provisioning, resolved repository build instructions are loaded, and all writes stay in the allocated workspace. Typed-host fixtures are local conformance scenarios, not live client captures.
 - [ ] Confirm native/sequential workers are independent and genuinely read-only in gates. Exercise guided/staged/parallel pacing, an interrupted partial gate and cancellation of already-running workers.
 - [ ] Exercise an authenticated issue read through the chosen tracker, validate complete body/reference/revision normalization, and agree criteria explicitly. The CLI itself does not fetch issues.
-- [ ] Test real project behavior and external environment effects; current worker fixtures are synthetic and suite execution/incremental review have separate roadmap tasks. Green machine gates must still hand back for human testing without a push or PR.
+- [ ] Test real project behavior and external environment effects; current worker fixtures are synthetic; suite execution and incremental review have local fixtures but require actual host observations. Green machine gates must still hand back for human testing without a push or PR.
 
 These checks remain for the owner and do not block other local implementation.
 

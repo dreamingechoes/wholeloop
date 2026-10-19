@@ -11,7 +11,7 @@ export const TAXONOMY = {
   'source.meetings': ['query'],
   docs: ['create', 'read', 'update', 'link'],
   tracker: ['create-item', 'read-item', 'update-item', 'link-items', 'transition'],
-  codehost: ['open-draft-pr', 'read-pr', 'pr-status'],
+  codehost: ['open-draft-pr', 'read-pr', 'pr-status', 'comment-pr'],
   dashboards: ['create', 'update', 'read'],
   flags: ['read-state', 'propose-change'],
   comms: ['draft'],

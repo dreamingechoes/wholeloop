@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-19 · P3-06 — private incremental review and repository rubrics
+
+- Add review begin/input/comment-plan/complete, the reviewer role and canonical skill. Standalone review asks for owner/base and a host-resolved PR head before mutation, creates an isolated review item/worktree and does not invent criteria or earlier steps. Current-PASS completion requires its canonical input-backed receipt.
+- Capture changed-file trees through external Git objects and unique scratch indexes. Compare round one to the pinned base and later rounds to prior uncommitted snapshots, including newly changed paths, deletions, reverts, executable modes and symlink targets. Pin patch/rubric digests and reconstruct inputs on resume; reject missing objects, duplicate/late inputs and weakened rubric bytes/bindings. ADR-0034 records retention, secret-exclusion and host boundaries.
+- Load actual repository/user rubric content for reviewers and refuters in both Build and standalone hosts. Carry previous kept findings for rechecking. Draft codehost.comment-pr locally and require an explicit typed host request to publish; tests use a custom synthetic provider and post nothing. Built-in GitHub/GitLab execution follows in P3-07.
+- Find and fix a real index mutation: Git diff refreshed stat entries when a file was restored to its original bytes even with optional locks disabled. Disable diff.autoRefreshIndex and retain an exact-index regression alongside containment checks. Correct fixture configuration/version and ensure preparation commits actually succeed.
+- Verify eleven new real-Git/compiled-CLI fixtures with synthetic semantic workers, plus existing Build cases. Local check: 460 tests in 33 files, build, smoke, lint, typecheck, generated catalogs/docs, harness, Markdown and Mermaid passed. Final targeted review checks cover explicit deterministic diff flags. Live clients/models, authenticated PR resolution/comments, semantic rechecking, sensitive-source review and Linux remain owner checks and do not block subsequent implementation.
+
+---
+
 ## 2026-10-18 · P3-05 — executable verification and shared suite receipts
 
 - Add verify begin/suite/complete and the verifier role/skill. Standalone verification asks for missing criteria, ownership, comparison base and host-resolved PR head before mutation, then provisions an isolated branch worktree without invented prior steps. Invocation overrides cannot replace recorded criteria.

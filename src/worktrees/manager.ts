@@ -58,8 +58,8 @@ export class WorktreeManager {
   create(subject: string, options: { repo?: string; base?: string; after?: string } = {}) {
     return this.controlled((hooks) => {
       const item = this.engine.store.get(subject)
-      if (!['slice', 'part'].includes(item.kind) || item.status === 'closed')
-        throw new Error('Create worktrees for an open slice or repository part')
+      if (!['slice', 'part', 'review'].includes(item.kind) || item.status === 'closed')
+        throw new Error('Create worktrees for an open slice, repository part or standalone review')
       const definition = [...this.engine.store.events()]
         .reverse()
         .find((entry) => entry.subject === subject && entry.type === 'slice.defined')

@@ -48,7 +48,16 @@ export function changedPaths(root: string, base: string): string[] {
   return [
     ...new Set(
       [
-        ...git(root, ['diff', '--name-only', '-z', base, '--']).split('\0'),
+        // Git may otherwise refresh stat-only index entries when a file is restored.
+        ...git(root, [
+          '-c',
+          'diff.autoRefreshIndex=false',
+          'diff',
+          '--name-only',
+          '-z',
+          base,
+          '--',
+        ]).split('\0'),
         ...git(root, ['ls-files', '--others', '--exclude-standard', '-z']).split('\0'),
       ].filter(Boolean),
     ),

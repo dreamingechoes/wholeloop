@@ -3,7 +3,7 @@
 > **TL;DR** — The quality gate for craft. Six reviewers each look at the change through one fixed lens — correctness, design fit, performance, security, simplicity, change shape — using your repository's own review guidance where it has one. Every finding is challenged before it blocks, and what survives goes back to the builder. It never edits code.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The gate core implements six lenses, custom manifests, budgets, active refutations and snapshot-bound verdicts. Rubric loading, incremental inputs, remote comments and this step workflow are pending. Tracked in [P3-06](../../../roadmap/phase-3-build.md#p3-06--review-code).
+> **Status: ✅ implemented locally.** Six lenses, loaded/pinned rubrics, private incremental round inputs, standalone review and gate-backed completion are tested. Comment drafting and an explicit typed codehost host call are available; built-in GitHub/GitLab hosts follow in P3-07. Live client/model inspection and authenticated comments remain owner verification. Tracked in [P3-06](../../../roadmap/phase-3-build.md#p3-06--review-code).
 
 ---
 
@@ -70,10 +70,25 @@ flowchart TD
 
 | You give it | It reviews |
 | --- | --- |
-| nothing | the current branch against its base |
+| nothing | the current named branch; asks for owner and comparison base |
 | `slice-0d4e` | that slice's worktree, with its criteria as context |
-| `#142` or a PR URL | that PR; add `--comment` to post findings on it |
+| a PR URL | asks for a host-resolved local named `--branch`; no implicit remote fetch |
 | a branch name | that branch |
+
+The executable core uses `wl review begin <branch> --base <base> --owner <person>
+--json`, `review input --for <id>` and `review complete --for <id>`. Existing slices
+use `review begin --for <id>`. A PR URL also needs `--branch <resolved-local-head>`.
+The host supplies semantic reviewers/refuters and enforces read-only tools.
+
+Private changed-file objects and scratch indexes stay in the external store;
+rounds include uncommitted edits, new/deleted files, modes and symlink targets.
+The repository index is never used as scratch space. Inputs are bounded and
+sensitive filenames/recognized credential shapes are refused. This is not an
+exhaustive secret detector: inspect other sensitive source paths before reviewing.
+Preserve these objects with the journal; rebuilding projections cannot recreate
+missing source blobs. Rubric changes within a run fail rather than weaken review.
+Prior kept findings remain in context for rechecking, even if absent from the new
+patch. See [ADR-0034](../../decisions/0034-private-incremental-review-inputs-and-pinned-rubrics.md).
 
 ## Run it
 
@@ -117,7 +132,7 @@ Next      builder, round 2 of 3 (only the new diff is reviewed)
 
 **"Too many nitpicks."** Findings that can't survive a challenge are dropped. If noise still gets through, that is a calibration case for the eval corpus, not a reason to remove a lens.
 
-**"Can it post the review on the PR?"** Yes, with `--comment`, through your `codehost` provider. It never approves or requests changes on your behalf.
+**"Can it post the review on the PR?"** Draft locally with `wl review comment-plan --for <id> --pr <url> --json`. A configured provider must support codehost.comment-pr. Only an explicitly requested typed host call publishes; the CLI draft does not. Reconcile ambiguous remote outcomes before retrying. No authenticated comments were posted by the local tests.
 
 ---
 

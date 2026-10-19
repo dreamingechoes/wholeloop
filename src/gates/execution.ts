@@ -1,12 +1,23 @@
 import type { FlowEngine } from '../flow/engine.js'
+import type { ReviewContext } from '../review/contracts.js'
+import { prepareReviewInput } from '../review/input.js'
 import type { GatePlan, GateResult, GateVote } from './contracts.js'
 import { workspaceSnapshot } from './snapshot.js'
 import { gateRuns } from './state.js'
 import { GateWorkflow } from './workflow.js'
 
 export interface GateHost {
-  inspect(plan: GatePlan, unit: GatePlan['units'][number]): Promise<GateResult>
-  refute(plan: GatePlan, finding: string, verifier: number): Promise<GateVote>
+  inspect(
+    plan: GatePlan,
+    unit: GatePlan['units'][number],
+    review?: ReviewContext,
+  ): Promise<GateResult>
+  refute(
+    plan: GatePlan,
+    finding: string,
+    verifier: number,
+    review?: ReviewContext,
+  ): Promise<GateVote>
   stopped(): boolean
 }
 async function schedule<T>(
@@ -29,6 +40,8 @@ export async function inspectGateRound(
   sequential: boolean,
   checkPersonal: () => void,
 ) {
+  const review = plan.gate === 'review' ? prepareReviewInput(engine, plan) : undefined
+  if (review && !review.current) throw new Error('Review input is stale')
   const gates = new GateWorkflow(engine)
   const current = gateRuns(engine.store.events())
     .find((run) => run.run === plan.run)
@@ -40,7 +53,7 @@ export async function inspectGateRound(
       if (host.stopped()) return
       let result: GateResult
       try {
-        result = await host.inspect(plan, unit)
+        result = await host.inspect(plan, unit, review)
       } catch {
         result = {
           unit: unit.id,
@@ -93,7 +106,7 @@ export async function inspectGateRound(
       if (host.stopped()) return
       let vote: GateVote
       try {
-        vote = await host.refute(plan, job.finding, job.verifier)
+        vote = await host.refute(plan, job.finding, job.verifier, review)
       } catch {
         return
       }

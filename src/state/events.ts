@@ -14,6 +14,8 @@ import {
   validateRefutation,
   validateResult,
 } from '../research/contracts.js'
+import { type ReviewEventData, validReviewData } from '../review/contracts.js'
+import { reviewInputs } from '../review/state.js'
 import { type ScopeDefinition, validateScope } from '../scopes/contract.js'
 import { type Repository, type SliceDefinition, validateSlice } from '../slices/contract.js'
 import { type VerificationEventData, validVerificationData } from '../verification/contracts.js'
@@ -68,6 +70,7 @@ export type EventData =
   | GateEventData
   | BuildEventData
   | VerificationEventData
+  | ReviewEventData
   | {
       type: 'slice.defined'
       data: {
@@ -177,6 +180,7 @@ function references(value: unknown, kinds: string): boolean {
   )
 }
 function validData(type: string, data: Record<string, unknown>): boolean {
+  if (type.startsWith('review.')) return validReviewData(type, data)
   if (type.startsWith('verify.')) return validVerificationData(type, data)
   if (type.startsWith('build.')) return validBuildData(type, data)
   if (type.startsWith('gate.')) return validGateData(type, data)
@@ -415,8 +419,8 @@ export function validateEvent(value: unknown): asserts value is StateEvent {
   for (const kind of ['slice', 'part'])
     if (value.type === `${kind}.defined` && !String(value.subject).startsWith(`${kind}-`))
       throw new Error(`${kind} definitions require the matching typed subject`)
-  if (value.type.startsWith('worktree.') && !/^(slice|part)-/.test(String(value.subject)))
-    throw new Error('Worktrees require a slice or part subject')
+  if (value.type.startsWith('worktree.') && !/^(slice|part|review)-/.test(String(value.subject)))
+    throw new Error('Worktrees require a slice, part or review subject')
   if (value.type === 'research.planned') {
     const plan = value.data.plan as ResearchPlan
     if (plan.subject !== value.subject || plan.run !== value.data.run)
@@ -541,5 +545,6 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
   worktreeRecords(events)
   gateRuns(events)
   verificationRuns(events)
+  reviewInputs(events)
   return items
 }

@@ -55,13 +55,15 @@ export const STEPS: readonly Step[] = Object.freeze(
       slots: Object.freeze(STEP_SLOTS[name]),
       kind: (name === 'research'
         ? 'brief'
-        : name === 'slice-work'
-          ? 'scope'
-          : ['build-slice', 'verify-works', 'review-code', 'open-pr'].includes(name)
-            ? 'slice'
-            : ['prepare-launch', 'ramp-exposure', 'measure-impact', 'decide-next'].includes(name)
-              ? 'scope'
-              : 'initiative') as ItemKind,
+        : name === 'review-code'
+          ? 'review'
+          : name === 'slice-work'
+            ? 'scope'
+            : ['build-slice', 'verify-works', 'review-code', 'open-pr'].includes(name)
+              ? 'slice'
+              : ['prepare-launch', 'ramp-exposure', 'measure-impact', 'decide-next'].includes(name)
+                ? 'scope'
+                : 'initiative') as ItemKind,
       available: [
         'frame-problem',
         'research',
@@ -70,6 +72,7 @@ export const STEPS: readonly Step[] = Object.freeze(
         'slice-work',
         'build-slice',
         'verify-works',
+        'review-code',
       ].includes(name),
       optional: name === 'research',
       before: Object.freeze(name === 'open-pr' ? ['test-it'] : []),
@@ -97,9 +100,11 @@ export const STEPS: readonly Step[] = Object.freeze(
                   ? ['Plan', 'Criteria', 'Verification', 'Review', 'Workspace', 'Environment']
                   : name === 'verify-works'
                     ? ['Criteria', 'Suite', 'Testability', 'Verdict']
-                    : name === 'research'
-                      ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
-                      : [],
+                    : name === 'review-code'
+                      ? ['Rubric', 'Diff', 'Findings', 'Verdict']
+                      : name === 'research'
+                        ? ['Question', 'Owner', 'Claims', 'Dropped claims', 'Open questions']
+                        : [],
       ),
     }),
   ),

@@ -4,6 +4,14 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: review-incremental-input
+    enforcers: [src/review/input.ts#prepareReviewInput, src/review/snapshots.ts#ReviewSnapshots, src/review/state.ts#reviewInputs, test/unit/review/review.test.ts]
+  - id: review-pinned-rubric
+    enforcers: [src/review/input.ts#reviewRubric, src/review/input.ts#prepareReviewInput, test/unit/review/review.test.ts]
+  - id: review-private-index
+    enforcers: [src/review/snapshots.ts#ReviewSnapshots, src/gates/snapshot.ts#changedPaths, test/unit/review/review.test.ts]
+  - id: review-explicit-comment
+    enforcers: [src/review/comments.ts#publishReviewComment, test/unit/review/review.test.ts]
   - id: verify-suite-once
     enforcers: [src/verification/suite.ts#runSuite, src/verification/state.ts#verificationRuns, test/unit/verification/verification.test.ts]
   - id: verify-agreed-criteria

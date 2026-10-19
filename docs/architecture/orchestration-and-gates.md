@@ -197,5 +197,15 @@ Every pace runs the same lenses, the same verification, the same round budget an
 
 ---
 
+## Incremental review context
+
+Build and standalone review share the same read-only scheduler. Each reviewer and
+refuter receives the actual pinned repository rubric, exact private patch and
+prior kept findings. New rounds compare changed-file manifests, including edits
+without commits; they do not replay the full branch diff. The core guards index
+bytes and current snapshot receipts. Semantic rechecking of earlier blockers and
+actual tool isolation remain host responsibilities. Private objects must accompany
+the journal on recovery. See [ADR-0034](../decisions/0034-private-incremental-review-inputs-and-pinned-rubrics.md).
+
 <!-- docnav -->
 [◀ State and messaging](state-and-messaging.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Determinism and testing ▶](determinism-and-testing.md)

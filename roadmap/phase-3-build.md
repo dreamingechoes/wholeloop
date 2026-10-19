@@ -83,7 +83,7 @@
 
 ## P3-06 · `review-code`
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P3-03
+**Status:** ✅ · **Size:** M · **Depends on:** P3-03
 
 **Goal** — Is it well written, by this repository's standards?
 
@@ -91,8 +91,8 @@
 
 **Acceptance criteria:**
 
-- [ ] Round 2 receives only the diff since round 1 (test).
-- [ ] A repo review skill bound to the slot is used as the rubric.
+- [x] Round 2 receives only the diff since round 1 (test).
+- [x] A repo review skill bound to the slot is used as the rubric.
 
 **Docs** — flow/build/review-code.
 
