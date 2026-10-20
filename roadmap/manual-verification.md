@@ -39,6 +39,15 @@ model, permission and MCP checks do not block other roadmap code.
 - [ ] Prepare a fresh --target cursor run with the exact observed calendar pin, then explicitly run --live after native trust/auth/model setup. Inspect native output/external effects separately from structural journal verdicts. Synthetic agent stdin/calendar tests and installed-core simulation do not prove native conformance.
 - [ ] Review unapplied URL/stdio MCP snippets and environment references, then verify native OAuth/actual tools through the client's credential store. No token is expanded/copied by rendering or detection. Repeat on Linux and supported Node/client versions.
 
+## Local distribution preview and publication (P5-05)
+
+- [ ] Register the exported relative marketplace in an isolated real Claude configuration, install wholeloop@wholeloop and confirm all seventeen skills/eight agents, copied core and hook activation after moving the delivery tree. Native strict validation passed locally; it is not installation/discovery.
+- [ ] Test each exported native target with its real client and credential store. Repeat owned output/backup/unknown-file/dry-run/relocation checks on Linux and supported Node/client versions; current automated execution is macOS arm64 only.
+- [ ] Choose public repository visibility and hosting explicitly, verify npm ownership and configure trusted publishing/provenance once release automation is implemented. The local exporter changes neither repository visibility nor package privacy and performs no publication.
+- [ ] Record actual fresh-machine installation time and release notes without attribution after delivery activation. npm archives, conventional changelog automation and optional compiled binaries remain code work.
+
+These owner checks do not block remaining release tooling or other roadmap implementation.
+
 ## Generated references (P5-06 local controls)
 
 - [ ] After changing source contracts, rebuild before running docs check. Confirm command/config/provider/adapter sections describe that build, not an older executable on PATH.

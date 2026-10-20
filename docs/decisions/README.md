@@ -72,6 +72,7 @@
 | [0059](./0059-conformance-observations-and-regression-candidates.md) | Conformance observations and regression candidates | Accepted | 2026-10-20 |
 | [0060](./0060-cursor-observer-workers-and-private-native-policy.md) | Cursor observer workers and private native policy | Accepted | 2026-10-20 |
 | [0061](./0061-generated-local-adapter-declarations.md) | Generated local adapter declarations | Accepted | 2026-10-20 |
+| [0062](./0062-owned-seven-client-distribution-previews.md) | Owned seven-client distribution previews | Accepted | 2026-10-20 |
 
 ## Lifecycle
 

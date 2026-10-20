@@ -28,10 +28,7 @@ export function generateCommand(
       readFileSync(fileURLToPath(import.meta.url), 'utf8'),
       VERSION,
     )
-    const result =
-      options['--dry-run'] === true
-        ? { output: resolve(root, output), status: 'planned', backup: null }
-        : writeAdapter(resolve(root, output), generated)
+    const result = writeAdapter(resolve(root, output), generated, options['--dry-run'] === true)
     io.out(
       JSON.stringify(
         { schema: 'wholeloop/adapter-build@1', ...result, manifest: generated.manifest },

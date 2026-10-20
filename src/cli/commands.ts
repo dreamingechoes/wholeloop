@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'release artifacts',
+    arguments: '',
+    options: ['--out <directory>', '--dry-run'],
+    schema: 'wholeloop/distribution-build@1',
+    summary: 'Export owned seven-client delivery previews and a local Claude marketplace',
+  },
+  {
     path: 'conformance prepare',
     arguments: '',
     options: ['--target <cli>', '--pin <version>', '--store <path>'],

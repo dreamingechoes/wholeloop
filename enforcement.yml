@@ -57,7 +57,9 @@ rules:
   - id: artifacts-contained-source
     enforcers: [scripts/harness-assets.mjs#harnessAssets, src/adapters/canonical.ts#validateCanonical, test/unit/adapters/adapters.test.ts]
   - id: artifacts-owned-output
-    enforcers: [src/adapters/write.ts#writeAdapter, test/unit/adapters/adapters.test.ts]
+    enforcers: [src/adapters/write.ts#writeAdapter, src/adapters/owned-output.ts#writeOwnedArtifacts, test/unit/adapters/adapters.test.ts, test/unit/adapters/distribution.test.ts]
+  - id: distribution-local-preview
+    enforcers: [src/adapters/distribution.ts#generateDistribution, src/cli/release.ts#releaseArtifacts, test/unit/adapters/distribution.test.ts]
   - id: artifacts-bundled-core
     enforcers: [src/adapters/generate.ts#generateAdapter, src/adapters/claude.ts#claudeAdapter, src/cli/adapter-root.ts#adapterRoot, test/unit/adapters/adapters.test.ts, test/unit/adapters/targets.test.ts]
   - id: headless-exact-assignment

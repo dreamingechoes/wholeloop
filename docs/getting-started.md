@@ -3,7 +3,7 @@
 > **TL;DR** — Install the `wl` CLI (or the plugin for your CLI), let it generate the skills for the agentic CLIs you use, run `wl doctor`, then invoke any step. Nothing needs configuring up front: what is missing becomes a question the first time it matters.
 
 > [!WARNING]
-> **Status: 🚧 partial — local source installation available.** The core, four tier-A native render targets plus Gemini/Antigravity/Cursor, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; npm/marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
+> **Status: 🚧 partial — local source installation available.** The core, four tier-A native render targets plus Gemini/Antigravity/Cursor, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; published npm/remote-marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
 
 ---
 
@@ -93,6 +93,35 @@ activation; file installation does not activate it. See [Gemini boundaries](./pl
 Published npm/marketplace installation remains planned. Once released, npm global
 installation and the client plugin marketplace will be alternative entry points;
 the source path above is available now.
+
+### Review a local delivery preview
+
+```text
+wl release artifacts --out /tmp/wholeloop-delivery --dry-run --json
+wl release artifacts --out /tmp/wholeloop-delivery --json
+claude plugin validate /tmp/wholeloop-delivery --strict
+```
+
+The export contains all seven independent native trees plus a relative Claude
+marketplace entry, each with the same built version/source/core. Root metadata
+records file hashes/modes, local target summaries and publication not performed.
+Version 0.0.0 remains a development preview. Static validation checks metadata;
+actual installation/discovery and model conformance remain separate.
+
+Dry runs render and preflight ownership without writing. Existing unowned,
+changed, missing or extra entries are refused before idempotency/replacement.
+Unchanged owned output reports already-correct; an owned upgrade retains its prior
+tree in the returned backup. Interrupted filesystem replacement is not claimed
+crash-atomic. Preserve unexpected output and choose a fresh directory.
+
+To test registration yourself in an isolated real client configuration, use
+claude plugin marketplace add /tmp/wholeloop-delivery and then
+claude plugin install wholeloop@wholeloop. These commands change that client's
+settings; export and validation do not register it. Remote installation requires
+a hosted copy of the complete delivery tree and an explicit owner publication
+choice. npm automation/provenance, release notes, compiled binaries and actual
+public distribution remain P5-05 work. See
+[ADR-0062](./decisions/0062-owned-seven-client-distribution-previews.md).
 
 ## 2. Check
 

@@ -111,7 +111,7 @@ No native acceptance is inferred from the matrix's synthetic tests.
 
 ## P5-05 · Distribution
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-13
+**Status:** 🔄 · **Size:** M · **Depends on:** P1-13
 
 **Goal** — One command to install, wherever you work.
 
@@ -123,7 +123,15 @@ No native acceptance is inferred from the matrix's synthetic tests.
 - [ ] A fresh machine goes from nothing to `wl doctor` green in under five minutes for each tier-A CLI (documented run).
 - [ ] Release notes contain no tool attribution.
 
-**Docs** — getting-started, ADR-0015.
+**Local implementation:** release artifacts exports seven independently valid
+native delivery trees and a relative local Claude marketplace from one exact
+source/core/version. Root/child integrity manifests, read-only dry-run preflight,
+complete ownership validation, idempotency and backup-preserving upgrades are tested.
+Native Claude static marketplace validation passes without registration or models.
+Public hosting, npm ownership/automation/provenance, conventional release notes,
+optional binaries and actual publication remain separate work/owner decisions.
+
+**Docs** — getting-started, ADR-0015, ADR-0062.
 
 ## P5-06 · Generated references and docs pass
 

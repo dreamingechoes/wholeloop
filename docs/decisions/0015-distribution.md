@@ -15,7 +15,7 @@ Bare names like `wholeloop` are already taken on npm.
    - `wl install --target <cli,…> --scope user|project` generates and installs adapters.
 2. **Claude Code plugin** via a marketplace in this repository, with the core **bundled as one self-contained JS file** — no separate install.
 3. **Agent Plugins 1.0** root `plugin.json` for Codex, Cursor and Copilot, which read that format (Codex and Copilot also read the Claude marketplace file).
-4. **Gemini CLI extension** in Phase 5; Antigravity imports Gemini extensions.
+4. **Gemini CLI extension** in Phase 5; Antigravity has its own closed native plugin format, refined in [ADR-0055](./0055-antigravity-native-overlays-and-pinned-hook-transport.md).
 5. **Compiled binaries later** (`bun build --compile`), attached to releases, for machines without Node.
 6. **Docs need no hosting.** They are written to render on GitHub; no third-party documentation host is required.
 7. **Repository:** `github.com/dreamingechoes/wholeloop`, a personal repository (never an organisation), **private** until the owner decides to open it — at the latest as part of the first public release ([P5-05](../../roadmap/phase-5-reach-release.md#p5-05--distribution)). Install paths in the docs that rely on a public repository (the plugin marketplace) only work from then on.
