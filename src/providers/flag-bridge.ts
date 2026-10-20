@@ -1,5 +1,6 @@
 import { isObject, validate } from '../config/schema.js'
 import { measurementDigest } from '../launch/measurement.js'
+import { growthBookFlag } from './growthbook.js'
 import type { ProviderHost } from './operations.js'
 import schema from './schemas/flag-bridge-v1.json' with { type: 'json' }
 import { unleashFlag } from './unleash.js'
@@ -59,10 +60,11 @@ export function flagReadPlan(configuration: unknown, flag: string, environment: 
     path = `api/v2/flags/${encodeURIComponent(config.project)}/${encodeURIComponent(flag)}`
   else if (config.provider === 'unleash')
     path = `api/admin/projects/${encodeURIComponent(config.project)}/features/${encodeURIComponent(flag)}`
+  else if (config.provider === 'growthbook') path = `v1/features/${encodeURIComponent(flag)}`
   else throw new Error('This flag service bridge is not implemented')
   const url = new URL(path, config.baseUrl)
   if (config.provider === 'launchdarkly') url.searchParams.set('env', environment)
-  else url.searchParams.set('variantEnvironments', 'true')
+  else if (config.provider === 'unleash') url.searchParams.set('variantEnvironments', 'true')
   return {
     schema: 'wholeloop/flag-read@1',
     status: 'planned',
@@ -205,7 +207,10 @@ export function remoteFlagHost(
         const signal = controller.signal
         const response = await (options.fetch ?? globalThis.fetch)(plan.request.url, {
           method: 'GET',
-          headers: { Authorization: credential, Accept: 'application/json' },
+          headers: {
+            Authorization: config.provider === 'growthbook' ? `Bearer ${credential}` : credential,
+            Accept: 'application/json',
+          },
           redirect: 'error',
           credentials: 'omit',
           signal,
@@ -228,9 +233,11 @@ export function remoteFlagHost(
         }
         const raw: unknown = JSON.parse(Buffer.concat(chunks).toString('utf8'))
         const result =
-          config.provider === 'unleash'
-            ? unleashFlag(raw, call.args.flag, call.args.environment, config.project)
-            : launchDarklyFlag(raw, call.args.flag, call.args.environment)
+          config.provider === 'growthbook'
+            ? growthBookFlag(raw, call.args.flag, call.args.environment, config.project)
+            : config.provider === 'unleash'
+              ? unleashFlag(raw, call.args.flag, call.args.environment, config.project)
+              : launchDarklyFlag(raw, call.args.flag, call.args.environment)
         const ref = new URL(plan.request.url)
         ref.search = ''
         return {

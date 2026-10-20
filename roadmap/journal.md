@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-20 · P4-05 GrowthBook — published rules and explicit hash cohorts
+
+- Extend the explicit bounded read-only host with GrowthBook feature GET/Bearer authentication and exact API prefix/project/environment. Read only published revisions/live JSON boolean controls, ignore drafts, and reject unsupported identity/scope/targeting/dependency/holdout/indirection/schedule/experiment state. Cross-check any supplied SDK definition rather than accepting contradictory force/hash/coverage. ADR-0078 records the semantics.
+- Normalize default/force and one ordinary id rollout, including reverse boolean values. Label hash-dependent cohorts contexts with id because missing IDs retain fallback; do not claim all-context exposure. Shift canonical decimal coefficients/complements with integer arithmetic so 0.29 yields exactly 29/71 and refuse unrepresentable partial boundaries. Emit only scalar configured state, revision and a query-free resource reference; preserve existing formats and actual ramp normalization.
+- Focused reader checks passed 125 cases across three files. Actual Node 20.0.0 macOS arm64 executes the signal-bearing GrowthBook host with synthetic transport and exact 0.29 forward/reverse arithmetic (29/71); this is subset runtime evidence. Full local check passed 1497 tests in 76 files (219.11 seconds), actual isolated npm packaging PASS, build/smoke, lint/typecheck, references/catalogs, 255-file docs, 142-file harness, 254-file Markdown and all 35 Mermaid diagrams. Existing 197 compatibility declarations/150 commands remain unchanged. HTTP responses remain synthetic; no actual authenticated GrowthBook request, native model, personal configuration, CI/issue operation, publication, version/privacy/ref/tag change or project push ran. PostHog and remote dashboards remain code work; actual service/SDK/application/Linux acceptance remains owner verification.
+
 ## 2026-10-20 · P4-05 Unleash — exact environments and unfiltered strategies
 
 - Extend the existing explicit GET-only host with the Admin full-feature resource and variantEnvironments=true. Preserve configured HTTPS subpaths, bind project/feature/non-archived state and empty dependencies, and select exactly one named environment with explicit variants. Reuse bounded credential-store transport, cancellation/redaction and query-free references. ADR-0077 records why token-implied environments and summed strategy percentages are insufficient.

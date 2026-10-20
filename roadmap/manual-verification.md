@@ -6,6 +6,8 @@
 
 ## Remote rollout bridge (P4-05 component)
 
+- [ ] In a disposable GrowthBook project, verify the explicit reader uses the published revision and live environment controls despite contradictory drafts. Compare default/force/forward/reverse/zero/full state, JSON boolean handling, project scope, compiled definitions and decimal percentages against the actual management API/SDK. Confirm hashed cohorts are labelled contexts with id and cannot satisfy all-context ramp claims; check missing-ID fallback behavior separately. Current responses are synthetic; actual credentials/API/native/Linux acceptance remains open.
+
 - [ ] Run development checks on supported development Node versions and repeat built-CLI/provider runtime scenarios across supported Node/platform versions. Actual Node 20.0.0 macOS arm64 passes only the compiled flag preview and synthetic signal-bearing host subset; Node 24 unit tests cover success/cancellation listener cleanup. Linux, complete Node 20 behavior and actual native/server acceptance remain unverified.
 
 - [ ] In a disposable Unleash project, configure the explicit Admin reader and authorize a read with the exact deployment/subpath/project/environment. Compare default and default-stickiness percentage/disabled state with the native console, verify environment variants are fetched, and inspect dependency/targeted/union/release-plan/safeguard refusal. Current tests use synthetic responses and source API contracts; actual authentication/version/native/Linux behavior remains unverified.

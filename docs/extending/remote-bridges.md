@@ -1,9 +1,9 @@
 # Remote rollout bridges — explicit reads and conservative normalization
 
-> **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly and Unleash have separate conservative normalizers; complex targeting remains unknown.
+> **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash and GrowthBook have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local LaunchDarkly/Unleash REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other flag services and remote dashboard creation remain open.
+> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other flag services and remote dashboard creation remain open.
 
 ---
 
@@ -73,6 +73,27 @@ not measured traffic or every SDK context's evaluation. Disabled environments
 retain their explicit state with zero configured exposure. No proposal/toggle is
 performed. See [ADR-0077](../decisions/0077-explicit-unleash-environments-and-unrestricted-strategies.md).
 
+## GrowthBook published rules and cohorts
+
+Use provider=growthbook and the same v1 configuration. GrowthBook Cloud uses
+`https://api.growthbook.io/api/`; select the exact HTTPS API prefix for a self-hosted
+deployment. The reader uses a Bearer credential from the host store and fetches
+one named feature, then binds its owning project and exact environment.
+
+Only published revision/live environment controls are used; draft values are
+ignored. The reader parses JSON booleans, supports defaults/unrestricted force
+and one ordinary id rollout, and checks any supplied compiled SDK definition for
+consistent controls. Dependencies, holdouts, indirections, targeting, schedules,
+experiments, unions and custom hash attributes remain unknown.
+
+A distinct nonzero hashed rollout is labelled **contexts with id**. Contexts without
+id retain the default and must not be silently included in a ramp labelled all.
+Defaults/forces and equal-value rules have audience=all. Forward/reverse coverage
+uses decimal coefficient arithmetic so a configured 0.29 compares as 29%, while
+unrepresentable partial boundary percentages are refused. This describes configured
+exposure; actual SDK context behavior and application fallback still need verification.
+See [ADR-0078](../decisions/0078-published-growthbook-rules-and-explicit-hash-cohorts.md).
+
 ## Host composition and ramp
 
 Source hosts can supply a credential-store resolver and optional transport/signal
@@ -91,7 +112,7 @@ and no bridge result authorizes a manual exposure change or approval.
 
 ## Remaining work
 
-GrowthBook/PostHog readers and actual dashboard creation/normalization need
+The PostHog reader and actual dashboard creation/normalization need
 their own service-specific contracts. Existing dashboard files remain handoffs with
 createdRemotely=false. Current tests use local synthetic HTTP responses, not captured
 live service evidence. Owner checks are in [manual verification](../../roadmap/manual-verification.md).

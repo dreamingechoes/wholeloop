@@ -88,6 +88,7 @@
 | [0075](./0075-disabled-nightly-pipeline-and-separated-issue-authority.md) | Disabled nightly pipeline and separated issue authority | Accepted | 2026-10-20 |
 | [0076](./0076-explicit-read-only-flag-bridges-and-conservative-cohorts.md) | Explicit read-only flag bridges and conservative cohorts | Accepted | 2026-10-20 |
 | [0077](./0077-explicit-unleash-environments-and-unrestricted-strategies.md) | Explicit Unleash environments and unrestricted strategies | Accepted | 2026-10-20 |
+| [0078](./0078-published-growthbook-rules-and-explicit-hash-cohorts.md) | Published GrowthBook rules and explicit hash cohorts | Accepted | 2026-10-20 |
 
 ## Lifecycle
 
