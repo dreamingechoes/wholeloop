@@ -184,7 +184,7 @@ describe('discovery cache and step bindings', () => {
     expect(isEntrypoint('broken = \n# wholeloop:entrypoint@1\n', 'toml')).toBe(false)
   })
   it.each(['user', 'project'] as const)(
-    'begins real framing after a six-client %s install and still asks about genuine competing guides',
+    'begins real framing after a seven-client %s install and still asks about genuine competing guides',
     (scope) => {
       const dir = canonicalPath(mkdtempSync(join(tmpdir(), 'wl-entrypoint-flow-')))
       try {
@@ -201,7 +201,7 @@ describe('discovery cache and step bindings', () => {
         const binary = resolve('dist/wl.mjs')
         manageInstallation('install', {
           context,
-          targets: ['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity'],
+          targets: ['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity', 'cursor'],
           canonical,
           core: readFileSync(binary, 'utf8'),
           version: '0.0.0',
@@ -273,7 +273,15 @@ describe('discovery cache and step bindings', () => {
       env: {},
     }
     const files = new Map<string, string>()
-    for (const target of ['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity']) {
+    for (const target of [
+      'claude',
+      'codex',
+      'opencode',
+      'copilot',
+      'gemini',
+      'antigravity',
+      'cursor',
+    ]) {
       const plan = installationPlan(
         target,
         context,

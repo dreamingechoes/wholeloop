@@ -1,9 +1,17 @@
 import { antigravityHook } from './antigravity-hook.js'
 import type { RenderedFile } from './contracts.js'
+import { cursorHook } from './cursor-hook.js'
 import { geminiHook } from './gemini-hook.js'
 
 /** Native bindings contain transport only. Policy and all state interpretation stay in the core. */
 export function hookArtifacts(target: string, core?: string): Map<string, RenderedFile> {
+  if (target === 'cursor')
+    return new Map([
+      [
+        'hooks/hooks.json',
+        { mode: 0o644, content: `${JSON.stringify(cursorHook(core ?? ''), null, 2)}\n` },
+      ],
+    ])
   if (target === 'antigravity')
     return new Map([
       [

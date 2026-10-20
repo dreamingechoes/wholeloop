@@ -36,7 +36,7 @@ export function manageInstallation(action: 'install' | 'uninstall', input: Insta
     input.targets.some((target) => !TARGETS.includes(target as (typeof TARGETS)[number]))
   )
     throw new Error(
-      'Choose unique installation targets: claude,codex,opencode,copilot,gemini,antigravity',
+      'Choose unique installation targets: claude,codex,opencode,copilot,gemini,antigravity,cursor',
     )
   if (!['user', 'project'].includes(input.context.scope))
     throw new Error('Choose --scope user|project')

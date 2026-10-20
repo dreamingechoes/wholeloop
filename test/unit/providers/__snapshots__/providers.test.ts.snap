@@ -162,6 +162,48 @@ exports[`MCP rendering > copilot stdio matches its golden configuration 1`] = `
 }
 `;
 
+exports[`MCP rendering > cursor http matches its golden configuration 1`] = `
+{
+  "applied": false,
+  "destination": "$HOME/.cursor/mcp.json",
+  "format": "json",
+  "provider": "support",
+  "schema": "wholeloop/mcp-add@1",
+  "snippet": "{
+  "mcpServers": {
+    "support": {
+      "url": "https://mcp.example.com/mcp"
+    }
+  }
+}
+",
+  "target": "cursor",
+}
+`;
+
+exports[`MCP rendering > cursor stdio matches its golden configuration 1`] = `
+{
+  "applied": false,
+  "destination": "$HOME/.cursor/mcp.json",
+  "format": "json",
+  "provider": "support",
+  "schema": "wholeloop/mcp-add@1",
+  "snippet": "{
+  "mcpServers": {
+    "support": {
+      "type": "stdio",
+      "command": "test-mcp",
+      "args": [
+        "--readonly"
+      ]
+    }
+  }
+}
+",
+  "target": "cursor",
+}
+`;
+
 exports[`MCP rendering > gemini http matches its golden configuration 1`] = `
 {
   "applied": false,

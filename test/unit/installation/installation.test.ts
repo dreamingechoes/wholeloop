@@ -19,6 +19,12 @@ import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import { artifactDigest } from '../../../src/adapters/generate.js'
 import { doctor } from '../../../src/diagnostics/doctor.js'
 import { frontmatter } from '../../../src/harness/frontmatter.js'
+import {
+  INSTALL_RECEIPT_BYTES,
+  metadata,
+  type Receipt,
+  TARGETS,
+} from '../../../src/installation/contracts.js'
 import { inspectInstallation } from '../../../src/installation/inspect.js'
 import { type InstallInput, manageInstallation } from '../../../src/installation/manage.js'
 import {
@@ -26,6 +32,7 @@ import {
   installationPlan,
   installLocations,
 } from '../../../src/installation/plan.js'
+import { installationScope, readReceipt, saveReceipt } from '../../../src/installation/receipts.js'
 
 const targets = ['claude', 'codex', 'opencode', 'copilot']
 const currentCore = () => readFileSync(resolve('dist/wl.mjs'), 'utf8')
@@ -63,6 +70,7 @@ function fixture(
     CLAUDE_CONFIG_DIR: join(home, '.claude'),
     OPENCODE_CONFIG_DIR: join(home, '.config/opencode'),
     COPILOT_HOME: join(home, '.copilot'),
+    GEMINI_CLI_HOME: home,
     GIT_CONFIG_NOSYSTEM: '1',
     GIT_CONFIG_GLOBAL: join(dir, 'no-global-config'),
   }
@@ -118,6 +126,59 @@ function installed(input: InstallInput) {
 }
 
 describe('owned native installation and retained external history', () => {
+  it('retains a complete seven-client recovery catalog while bounding receipt reads and writes', () =>
+    fixture(({ context }) => {
+      const scope = installationScope(context)
+      const components = TARGETS.map((target) =>
+        metadata(
+          installationPlan(
+            target,
+            scope.context,
+            scope.artifact(target),
+            bundledCanonical(),
+            currentCore(),
+            '0.0.0',
+          ),
+        ),
+      )
+      const receipt: Receipt = {
+        schema: 'wholeloop/install-receipt@1',
+        identity: scope.identity,
+        scope: 'user',
+        components,
+        directories: [],
+        pending: {
+          kind: 'install',
+          targets: [...TARGETS],
+          before: components,
+          after: components,
+          backup: 'backups/00000000-0000-0000-0000-000000000000',
+        },
+      }
+      saveReceipt(scope.control, scope.receiptPath, receipt)
+      const saved = scope.control.read(scope.receiptPath) ?? ''
+      expect(Buffer.byteLength(saved)).toBeGreaterThan(1024 * 1024)
+      expect(
+        readReceipt(
+          scope.control,
+          scope.receiptPath,
+          scope.context,
+          scope.identity,
+          scope.artifact,
+        ),
+      ).toEqual(receipt)
+      expect(() =>
+        saveReceipt(scope.control, scope.receiptPath, {
+          ...receipt,
+          directories: ['x'.repeat(INSTALL_RECEIPT_BYTES)],
+        }),
+      ).toThrow('bounded receipt budget')
+      expect(scope.control.read(scope.receiptPath)).toBe(saved)
+      scope.control.atomic('oversized.json', ' '.repeat(INSTALL_RECEIPT_BYTES + 1))
+      expect(() =>
+        readReceipt(scope.control, 'oversized.json', scope.context, scope.identity, scope.artifact),
+      ).toThrow('Unsafe installation receipt')
+    }))
   it.each(['user', 'project'] as const)(
     'round-trips all four targets at %s scope without touching existing settings',
     (scope) =>
@@ -689,7 +750,7 @@ describe('owned native installation and retained external history', () => {
           ).status,
         ).toBe('pass')
         const removed = call('uninstall')
-        expect(removed.status, removed.stderr).toBe(0)
+        expect(removed.status, removed.stdout || removed.stderr).toBe(0)
         expect(JSON.parse(removed.stdout).status).toBe('uninstalled')
         expect(tree(context.home)).toEqual([])
         const handoff = JSON.parse(removed.stdout).removal.command as string[]

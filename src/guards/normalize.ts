@@ -48,6 +48,14 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
       throw new Error('Invalid tool arguments; contents omitted')
     }
   if (!isObject(args)) throw new Error('Tool arguments must be an object; contents omitted')
+  const cursor = value.workspace_roots !== undefined
+  if (
+    cursor &&
+    (!Array.isArray(value.workspace_roots) ||
+      value.workspace_roots.length > 32 ||
+      value.workspace_roots.some((path) => typeof path !== 'string' || !isAbsolute(path)))
+  )
+    throw new Error('Invalid native workspace roots; contents omitted')
   const workspaces = value.workspacePaths
   if (
     call &&
@@ -96,7 +104,9 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
     nativeDirectory ??
     (tool === 'run_shell_command'
       ? (args.dir_path ?? value.cwd ?? root)
-      : (args.workdir ?? args.cwd ?? value.cwd ?? root))
+      : tool === 'shell' && cursor
+        ? (args.working_directory ?? value.cwd ?? root)
+        : (args.workdir ?? args.cwd ?? value.cwd ?? root))
   if (typeof directory !== 'string' || !directory.trim())
     throw new Error('Hook payload needs its working directory')
   const cwd = canonicalPath(resolve(root, directory))
@@ -105,7 +115,7 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
       ? 'state-write'
       : /^(bash|shell|exec_command|run_shell_command|run_command|powershell)$/.test(tool)
         ? 'shell'
-        : /^(write|edit|create|apply_patch|write_file|edit_file|replace|str_replace_editor|write_to_file|replace_file_content|multi_replace_file_content)$/.test(
+        : /^(write|edit|create|delete|delete_file|apply_patch|write_file|edit_file|replace|str_replace_editor|write_to_file|replace_file_content|multi_replace_file_content)$/.test(
               tool,
             )
           ? 'write'

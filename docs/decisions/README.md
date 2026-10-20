@@ -67,6 +67,7 @@
 | [0054](./0054-entrypoints-are-not-heuristic-repository-guidance.md) | Entrypoints are not heuristic repository guidance | Accepted | 2026-10-19 |
 | [0055](./0055-antigravity-native-overlays-and-pinned-hook-transport.md) | Antigravity native overlays and pinned hook transport | Accepted | 2026-10-19 |
 | [0056](./0056-gemini-hook-roots-through-native-environment.md) | Gemini hook roots through the native environment | Accepted | 2026-10-20 |
+| [0057](./0057-cursor-native-formats-and-non-granting-hooks.md) | Cursor native formats and non-granting hooks | Accepted | 2026-10-20 |
 
 ## Lifecycle
 

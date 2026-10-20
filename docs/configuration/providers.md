@@ -310,7 +310,7 @@ wl mcp add acme-support --target codex --json
 
 With no configuration, `docs.create` resolves to `local-docs` and `tracker.create-item` to `local-tracker`. `native-web` and `native-code` declare host-native evidence tools. The registry resolves operation mappings; it does not execute external tools or claim authentication. Steps currently store their artifacts through the core.
 
-Detection reads MCP declarations for all four tier-A clients plus Gemini/Antigravity and executable availability on `PATH`; `available: true` means declared/configured, and `authenticated: false` remains explicit. Config parsing errors omit contents. No detection command from a manifest is executed. Provider tests do not make network probes.
+Detection reads MCP declarations for all four tier-A clients plus Gemini/Antigravity/Cursor and executable availability on `PATH`; `available: true` means declared/configured, and `authenticated: false` remains explicit. Config parsing errors omit contents. No detection command from a manifest is executed. Provider tests do not make network probes.
 
 `mcp add` prints a mergeable snippet with `applied: false`; it never overwrites client configuration or reads a token. OAuth is delegated to the client. Header authentication uses `token_env`, an environment variable name. Copilot remote headers do not expand environment references, so that recipe is explicitly rejected for Copilot and Antigravity instead of embedding credentials. Confirm authentication in a real client session.
 
@@ -327,6 +327,12 @@ merge into .agents/mcp_config.json). HTTP uses serverUrl; stdio uses command/arg
 OAuth discovery stays native. Header recipes are refused because safe environment
 expansion is unverified. Detection reads only declarations and disabled/enabled
 metadata. See the official [MCP format](https://www.antigravity.google/docs/mcp).
+
+Cursor snippets target .cursor/mcp.json under HOME (or a manual project merge).
+HTTP uses url, stdio uses type/command/args, and header recipes contain only a
+Bearer environment reference such as ${env:SUPPORT_AUTH}. OAuth stays native;
+rendering does not expand a value or authenticate. Detection reads declaration
+metadata only. See the official [MCP format](https://cursor.com/docs/mcp).
 
 The renderers follow the official [Claude Code MCP configuration](https://code.claude.com/docs/en/mcp), [OpenAI MCP configuration](https://developers.openai.com/codex/mcp), [OpenCode MCP configuration](https://opencode.ai/docs/mcp-servers/) and [Copilot MCP configuration](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference#mcp-server-configuration), checked on 2026-10-18. Golden files verify generated shape; they are not native-client conformance runs.
 

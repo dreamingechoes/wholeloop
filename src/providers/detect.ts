@@ -63,6 +63,8 @@ export function detectMcp(root: string, home = homedir(), env: NodeJS.ProcessEnv
     ? env.XDG_CONFIG_HOME
     : join(home, '.config')
   const paths = [
+    { target: 'cursor', file: join(home, '.cursor/mcp.json'), field: 'mcpServers' },
+    { target: 'cursor', file: join(root, '.cursor/mcp.json'), field: 'mcpServers' },
     {
       target: 'antigravity',
       file: join(home, '.gemini/config/mcp_config.json'),

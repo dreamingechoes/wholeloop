@@ -31,6 +31,14 @@
 Both local hook transports are implemented. Actual Gemini/Antigravity activation,
 model, permission and MCP checks do not block other roadmap code.
 
+## Cursor native activation (P5-02)
+
+- [ ] Load generated native plugins or owned overlays in disposable client configuration. Verify seventeen skills/eight roles, native manifest precedence over the portable skills-only manifest, inherited models, foreground handoffs and readonly observers. Version/help and pure hook validators are metadata/contract evidence, not actual model/role isolation.
+- [ ] Verify preToolUse activation, empty responses preserving native permissions, failClosed behavior, denied runtime Write/Delete and guarded Shell mutations. Test working_directory, multiple roots, missing/changed core and relocated special paths. Inspect actual MCP/provider behavior under readonly before assuming isolation.
+- [ ] Repeat user/project install/uninstall and preserve unrelated rules. Existing shared hooks.json must be refused before any selected client writes. Standalone plugins require explicit absolute CURSOR_PLUGIN_ROOT environment data; managed overlays bind their owned core without root substitution into shell text.
+- [ ] Prepare a fresh --target cursor run with the exact observed calendar pin, then explicitly run --live after native trust/auth/model setup. Inspect native output/external effects separately from structural journal verdicts. Synthetic agent stdin/calendar tests and installed-core simulation do not prove native conformance.
+- [ ] Review unapplied URL/stdio MCP snippets and environment references, then verify native OAuth/actual tools through the client's credential store. No token is expanded/copied by rendering or detection. Repeat on Linux and supported Node/client versions.
+
 ## Generated references (P5-06 local controls)
 
 - [ ] After changing source contracts, rebuild before running docs check. Confirm command/config/provider sections describe that build, not an older executable on PATH.
@@ -51,7 +59,7 @@ local implementation while retaining native/host verification boundaries.
 - [ ] Inspect native logs, ambient plugins/compatible user skills, ignored files, Git metadata, external writes and any remote effects. This structural scenario does not validate native JSON protocol, read-only role isolation, hook activation or the broader P0-03 matrix.
 - [ ] Repeat on Linux and supported Node versions before claiming portability. Current simulation/compiled-runner execution is macOS arm64/Node 24.
 
-Automated tier-A/Gemini/Antigravity installed-launcher simulations report FIXTURE_PASS, never a
+Automated tier-A/Gemini/Antigravity/Cursor installed-launcher simulations report FIXTURE_PASS, never a
 native conformance PASS. Preparation launches no model; --live is an explicit
 owner action that can use authenticated models and incur cost. Actual model runs
 remain unexecuted here and do not block further implementation.

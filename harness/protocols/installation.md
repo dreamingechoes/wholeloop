@@ -29,3 +29,6 @@ Doctor can inspect owned user/project scopes without activation. Current means
 matching owned bytes/source/core; absent means no local ownership receipt, not no
 native components. Stale output can be upgraded; changed/invalid/interrupted state
 needs preservation and the report's diagnostic/recovery action.
+
+Bound ownership receipt reads/writes at 4 MiB while retaining every pending recovery
+catalog. Reject oversized writes before replacing the last recoverable receipt.

@@ -4,6 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: cursor-native-readonly
+    enforcers: [src/adapters/cursor.ts#cursorAdapter, test/unit/adapters/cursor.test.ts]
+  - id: cursor-non-granting-hook
+    enforcers: [src/adapters/cursor-hook.ts#cursorHook, src/adapters/pinned-guard.ts#pinnedGuardCommand, src/guards/normalize.ts#normalizeTool, test/unit/adapters/cursor.test.ts]
+  - id: cursor-owned-hook-slot
+    enforcers: [src/installation/plan.ts#installationPlan, src/installation/manage.ts#manageInstallation, test/unit/adapters/cursor.test.ts]
   - id: gemini-safe-hook-root
     enforcers: [src/adapters/gemini-hook.ts#geminiHook, src/adapters/pinned-guard.ts#pinnedGuardCommand, src/guards/normalize.ts#normalizeTool, test/unit/adapters/gemini-hook.test.ts]
   - id: antigravity-observer-tools
@@ -27,7 +33,7 @@ rules:
   - id: generated-distribution-not-guidance
     enforcers: [src/discovery/scan.ts#fileKind, src/discovery/tree.ts#readInventory, test/unit/discovery/discovery.test.ts, test/unit/conformance/conformance.test.ts]
   - id: owned-native-output
-    enforcers: [src/installation/receipts.ts#readReceipt, src/installation/receipts.ts#allowed, src/installation/files.ts#checkOwned, src/installation/files.ts#writeOwned, src/installation/manage.ts#manageInstallation, test/unit/installation/installation.test.ts]
+    enforcers: [src/installation/receipts.ts#readReceipt, src/installation/receipts.ts#saveReceipt, src/installation/receipts.ts#allowed, src/installation/files.ts#checkOwned, src/installation/files.ts#writeOwned, src/installation/manage.ts#manageInstallation, test/unit/installation/installation.test.ts]
   - id: external-installation-control
     enforcers: [src/state/files.ts#StoreFiles, src/installation/receipts.ts#installationScope, src/installation/manage.ts#manageInstallation, test/unit/installation/installation.test.ts]
   - id: recover-pending-installation

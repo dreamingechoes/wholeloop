@@ -2,6 +2,7 @@ import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { stringify } from 'yaml'
 import { antigravityHook } from '../adapters/antigravity-hook.js'
 import type { RenderedFile } from '../adapters/contracts.js'
+import { cursorHook } from '../adapters/cursor-hook.js'
 import { adapterFor, generateAdapter } from '../adapters/generate.js'
 import { renderPortableSkill } from '../adapters/portable.js'
 import { markEntrypoint } from '../harness/entrypoints.js'
@@ -24,7 +25,7 @@ export interface InstallPlan {
   artifact: string
   files: InstalledFile[]
   exclusive: string[]
-  locations: { skills: string; agents: string; hooks?: string; plugin?: string }
+  locations: { skills: string; agents: string; hooks?: string; plugin?: string; rules?: string }
   source: string
   core: string
   version: string
@@ -51,6 +52,15 @@ export function installLocations(
   const personal = context.scope === 'user'
   const root = canonicalPath(context.root)
   const home = canonicalPath(context.home)
+  if (target === 'cursor') {
+    const base = join(personal ? home : root, '.cursor')
+    return {
+      skills: join(base, 'skills'),
+      agents: join(base, 'agents'),
+      hooks: base,
+      rules: join(base, 'rules'),
+    }
+  }
   if (target === 'antigravity') {
     const base = personal
       ? join(home, '.gemini/antigravity-cli/plugins/wholeloop')
@@ -105,7 +115,9 @@ export function installLocations(
       hooks: join(base, 'hooks'),
     }
   }
-  throw new Error('Choose an installed target: claude,codex,opencode,copilot,gemini,antigravity')
+  throw new Error(
+    'Choose an installed target: claude,codex,opencode,copilot,gemini,antigravity,cursor',
+  )
 }
 /** Pure native overlay rendering. It never rewrites shared client settings or copies credential stores. */
 export function installationPlan(
@@ -182,6 +194,15 @@ export function installationPlan(
       join(locations.hooks, 'wholeloop.json'),
       `${JSON.stringify({ version: 1, hooks: { preToolUse: [{ type: 'command', exec: 'node', args: [executable, 'copilot'], ...(project ? { cwd: '.' } : {}), timeoutSec: 15 }] } }, null, 2)}\n`,
     )
+  }
+  if (target === 'cursor' && locations.hooks && locations.rules) {
+    add(
+      join(locations.hooks, 'hooks.json'),
+      `${JSON.stringify(cursorHook(generated.manifest.core, context.scope === 'user' ? { kind: 'user', root: artifact } : { kind: 'project' }), null, 2)}\n`,
+    )
+    const rule = generated.files.get('rules/wholeloop.mdc')
+    if (!rule) throw new Error('Generated Cursor rule is missing')
+    add(join(locations.rules, 'wl-wholeloop.mdc'), rule.content)
   }
   if (target === 'antigravity' && locations.hooks) {
     add(

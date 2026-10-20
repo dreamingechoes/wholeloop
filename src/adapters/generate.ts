@@ -5,6 +5,7 @@ import { antigravityAdapter } from './antigravity.js'
 import { canonicalDigest, validateCanonical } from './canonical.js'
 import { claudeAdapter } from './claude.js'
 import type { Adapter, RenderedFile } from './contracts.js'
+import { cursorAdapter } from './cursor.js'
 import { geminiAdapter } from './gemini.js'
 import { hookArtifacts } from './hooks.js'
 import { codexAdapter, copilotAdapter, opencodeAdapter } from './portable.js'
@@ -19,9 +20,10 @@ export function adapterFor(id: string): Adapter {
     copilotAdapter,
     geminiAdapter,
     antigravityAdapter,
+    cursorAdapter,
   ].find((adapter) => adapter.id === id)
   if (found) return found
-  throw new Error('Choose --target claude|codex|opencode|copilot|gemini|antigravity')
+  throw new Error('Choose --target claude|codex|opencode|copilot|gemini|antigravity|cursor')
 }
 /** A pure render tree lets generation, installation and golden tests share one contract. */
 export function generateAdapter(
@@ -70,6 +72,11 @@ export function generateAdapter(
     mode: 0o644,
     content: `${JSON.stringify(adapter.manifest(version, { skills, agents }), null, 2)}\n`,
   })
+  for (const [path, file] of adapter.artifacts?.(version) ?? []) {
+    if (files.has(path))
+      throw new Error('Adapter artifacts must not replace a generated entrypoint')
+    files.set(path, file)
+  }
   for (const [path, file] of hookArtifacts(id, artifactDigest(core))) files.set(path, file)
   files.set('bin/wl.mjs', { mode: 0o755, content: core })
   const manifest = {

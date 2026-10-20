@@ -37,7 +37,7 @@ ADR-0055 and ADR-0056.
 
 ## P5-02 · Adapter — Cursor CLI
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-11
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-11
 
 **Goal** — Cover Cursor's terminal agent.
 
@@ -46,6 +46,15 @@ ADR-0055 and ADR-0056.
 **Acceptance criteria:**
 
 - [ ] The P1 conformance scenario passes; read-only roles use `readonly`.
+
+**Local implementation:** native/portable manifests, seventeen skills/eight inherited
+roles with native readonly observers, opt-in rule, owned user/project overlays,
+non-granting fail-closed hooks, MCP recipes/detection, explicit agent doctor and
+fresh stdin framing are implemented. Shared hook slots refuse unowned policy;
+standalone roots require explicit CURSOR_PLUGIN_ROOT environment data. Native
+version/help and pure hook validators were checked, while installed-core simulations
+remain FIXTURE_PASS. Actual client discovery/permissions/model/MCP and the live
+scenario remain owner checks. See ADR-0057; these checks do not block P5-03.
 
 **Docs** — platforms.
 

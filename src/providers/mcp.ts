@@ -8,6 +8,7 @@ export const MCP_TARGETS = [
   'copilot',
   'gemini',
   'antigravity',
+  'cursor',
 ] as const
 export type McpTarget = (typeof MCP_TARGETS)[number]
 
@@ -23,7 +24,20 @@ export function renderMcp(provider: Provider, target: McpTarget) {
   const header = recipe.auth === 'header' ? recipe.token_env : undefined
   let config: Record<string, unknown>
   let destination: string
-  if (target === 'antigravity') {
+  if (target === 'cursor') {
+    destination = '$HOME/.cursor/mcp.json'
+    config = {
+      mcpServers: {
+        [mcp.server]:
+          recipe.transport === 'http'
+            ? {
+                url: recipe.url,
+                ...(header ? { headers: { Authorization: `Bearer \${env:${header}}` } } : {}),
+              }
+            : { type: 'stdio', command: recipe.command, args: recipe.args ?? [] },
+      },
+    }
+  } else if (target === 'antigravity') {
     destination = '$HOME/.gemini/config/mcp_config.json'
     config = {
       mcpServers: {

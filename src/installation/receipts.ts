@@ -4,7 +4,14 @@ import { artifactDigest } from '../adapters/generate.js'
 import { isObject } from '../config/schema.js'
 import { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
-import { type Component, type OwnedFile, type Pending, type Receipt, TARGETS } from './contracts.js'
+import {
+  type Component,
+  INSTALL_RECEIPT_BYTES,
+  type OwnedFile,
+  type Pending,
+  type Receipt,
+  TARGETS,
+} from './contracts.js'
 import { exists } from './files.js'
 import { type InstallContext, installLocations } from './plan.js'
 
@@ -40,6 +47,12 @@ export function allowed(file: OwnedFile, component: Component, context: InstallC
     file.path === join(component.locations.plugin, 'plugin.json')
   )
     return true
+  if (
+    component.target === 'cursor' &&
+    component.locations.rules &&
+    file.path === join(component.locations.rules, 'wl-wholeloop.mdc')
+  )
+    return true
   const skill = file.path.slice(component.locations.skills.length + 1)
   if (
     inside(component.locations.skills, file.path) &&
@@ -59,7 +72,7 @@ export function allowed(file: OwnedFile, component: Component, context: InstallC
         component.locations.hooks,
         component.target === 'opencode'
           ? 'wholeloop.js'
-          : component.target === 'antigravity'
+          : ['antigravity', 'cursor'].includes(component.target)
             ? 'hooks.json'
             : 'wholeloop.json',
       )
@@ -81,7 +94,7 @@ export function readReceipt(
       directories: [],
     }
   const stat = lstatSync(store.path(path))
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1024 * 1024)
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > INSTALL_RECEIPT_BYTES)
     throw new Error('Unsafe installation receipt; preserve it for recovery')
   const value: unknown = JSON.parse(store.read(path) ?? '')
   if (
@@ -243,9 +256,9 @@ export function sameComponent(a: Component, b: Component | undefined) {
 
 export function saveReceipt(store: StoreFiles, path: string, receipt: Receipt) {
   const content = `${JSON.stringify(receipt, null, 2)}\n`
-  if (Buffer.byteLength(content) > 1024 * 1024)
+  if (Buffer.byteLength(content) > INSTALL_RECEIPT_BYTES)
     throw new Error(
-      'Installation ownership metadata exceeds its bounded receipt budget; preserve the pending installation and inspect its component plan',
+      'Installation ownership metadata exceeds its bounded receipt budget; preserve the current installation and inspect its component plan',
     )
   store.atomic(path, content)
 }

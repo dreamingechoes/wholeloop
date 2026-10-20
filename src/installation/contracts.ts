@@ -1,6 +1,9 @@
 import { artifactDigest } from '../adapters/generate.js'
 import type { InstallContext, InstalledFile, InstallPlan } from './plan.js'
 
+// Recovery can retain current, previous and replacement catalogs together for all seven clients.
+export const INSTALL_RECEIPT_BYTES = 4 * 1024 * 1024
+
 export interface InstallationResult {
   schema: 'wholeloop/install@1' | 'wholeloop/uninstall@1'
   scope: 'user' | 'project'
@@ -24,7 +27,15 @@ export interface InstallationResult {
     command: string[]
   }
 }
-export const TARGETS = ['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity'] as const
+export const TARGETS = [
+  'claude',
+  'codex',
+  'opencode',
+  'copilot',
+  'gemini',
+  'antigravity',
+  'cursor',
+] as const
 export interface OwnedFile {
   path: string
   sha256: string

@@ -20,7 +20,7 @@ export function generateCommand(
     const output = options['--out']
     if (positional.length || typeof target !== 'string' || typeof output !== 'string')
       throw new Error(
-        'Use build --target claude|codex|opencode|copilot|gemini|antigravity --out <directory>',
+        'Use build --target claude|codex|opencode|copilot|gemini|antigravity|cursor --out <directory>',
       )
     const generated = generateAdapter(
       target,

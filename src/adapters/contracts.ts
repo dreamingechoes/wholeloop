@@ -8,6 +8,7 @@ export interface AdapterCapabilities {
     | 'inherited-parent-and-checked-headless'
     | 'deny-shell-and-edit'
     | 'read-tool-allowlist'
+    | 'native-readonly'
   engines: readonly ('headless' | 'sequential')[]
 }
 export interface RenderedFile {
@@ -18,6 +19,7 @@ export interface Adapter {
   id: string
   manifestPath: string
   launchers?: boolean
+  artifacts?(version: string): ReadonlyMap<string, RenderedFile>
   capabilities(): AdapterCapabilities
   renderSkill(name: string, content: string): RenderedFile
   renderAgent(name: string, content: string): RenderedFile

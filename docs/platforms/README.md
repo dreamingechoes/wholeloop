@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini and Antigravity and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
 
 ---
 
@@ -50,7 +50,8 @@ flowchart LR
   gen --> c3[".opencode/agents · commands<br/>JS plugin → wl guard"]
   gen --> c4[".github/agents · .github/hooks<br/>Agent Plugins manifest"]
   gen --> c5[".gemini/skills · .gemini/agents<br/>gemini-extension.json · environment-bound hooks"]
-  gen -.-> c6[".agents/ (Antigravity) · .cursor/"]:::opt
+  gen --> c6[".agents/ (Antigravity) · named hooks.json"]
+  gen --> c7[".cursor/ agents · skills · rules · hooks<br/>native and portable manifests"]
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
   classDef opt stroke-dasharray:5 3;
 ```
@@ -147,6 +148,7 @@ node dist/wl.mjs uninstall --target all --scope user --json
 | Codex | .agents/skills and CODEX_HOME/agents | .agents/skills and .codex/agents | explicit per-repository Git fallback |
 | OpenCode | XDG config/opencode or OPENCODE_CONFIG_DIR | .opencode/ | plugins/wholeloop.js |
 | Copilot | COPILOT_HOME or .copilot/ | .github/ | hooks/wholeloop.json |
+| Cursor | .cursor/ | .cursor/ | non-granting preToolUse with failClosed |
 | Antigravity | .gemini/antigravity-cli/plugins/wholeloop | .agents/ | named hooks.json map |
 | Gemini | .gemini/ under HOME or GEMINI_CLI_HOME | .gemini/ | extension BeforeTool; loose overlays keep Git fallback |
 
@@ -232,10 +234,42 @@ Formats: [Gemini extension reference](https://geminicli.com/docs/extensions/refe
 See [ADR-0053](../decisions/0053-gemini-extension-overlays-and-safe-hook-boundary.md)
 and the [manual checklist](../../roadmap/manual-verification.md).
 
+## Cursor plugin and native overlays
+
+`wl build --target cursor --out /tmp/wholeloop-cursor --json` emits a full native
+.cursor-plugin/plugin.json and a separate portable root plugin.json with the
+canonical Agent Plugins schema. The native manifest provides seventeen skills,
+eight agents, the opt-in invocation rule and preToolUse hooks. Portable discovery
+covers skills/MCP only. Observer roles set readonly true; all roles inherit the
+selected model and run in the foreground. Wholeloop handoffs remain sequential.
+Native readonly is not proof of actual provider or MCP restrictions.
+
+Owned user/project installation uses .cursor/skills, agents, rules and hooks.json.
+The one prefixed rule coexists with unrelated rules. Existing unowned/edited
+hooks.json is refused before any selected client writes. User artifacts/ownership
+stay external; project distribution relocates through CURSOR_PROJECT_DIR binding.
+No shared settings/authentication or native MCP configuration is rewritten.
+Ownership receipts retain complete recovery catalogs within a 4 MiB read/write
+budget; oversized metadata is refused before replacing the current receipt.
+
+Hooks pin the exact target/core, fail closed and return an empty response for
+allowed tools, leaving native permission policy intact. Standalone plugins need an
+explicit absolute CURSOR_PLUGIN_ROOT environment value before native loading;
+managed overlays bind their artifact automatically. Root values never enter shell
+syntax. Missing or changed context denies. The installed pure hook validator
+accepted empty/deny responses and the config, but full activation remains unverified.
+
+Doctor --target cursor probes agent. Version/help observed 2026.07.16-899851b;
+calendar pins also pass the shared runner's exact-version preflight. Fresh framing
+uses agent --print with piped input, the native sandbox and normal trust/permissions.
+No force, trust bypass or MCP auto-approval flag is emitted. Simulation remains
+FIXTURE_PASS; actual model, role, permission and MCP checks remain with the owner.
+See [ADR-0057](../decisions/0057-cursor-native-formats-and-non-granting-hooks.md).
+
 ## Standalone conformance
 
 The [standalone conformance runner](../architecture/determinism-and-testing.md#disposable-standalone-conformance)
-prepares project-local overlays for each tier-A target plus Gemini/Antigravity at an exact version pin. Its
+prepares project-local overlays for each tier-A target plus Gemini/Antigravity/Cursor at an exact version pin. Its
 fixture mode reports simulation only; actual pinned live process/journal checks
 require an explicit --live run. Native authentication/trust/permissions, stdout
 protocol, hook activation and broader matrix entries stay separate. No actual

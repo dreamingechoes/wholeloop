@@ -71,7 +71,7 @@ function fakeClient(dir: string, version: string, body: string, binary = 'codex'
 }
 
 describe('standalone conformance runner', () => {
-  it.each(['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity'])(
+  it.each(['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity', 'cursor'])(
     'executes installed %s launchers while retaining explicit simulation evidence',
     async (target) => {
       await fixture(async (ctx) => {
@@ -126,6 +126,28 @@ describe('standalone conformance runner', () => {
       expect(JSON.parse(readFileSync(received, 'utf8')).message.content).toContain(
         'wl-agy-frame-problem',
       )
+    })
+  })
+
+  it('preflights the Cursor calendar version and keeps the scenario on stdin', async () => {
+    await fixture(async (ctx, dir) => {
+      const pin = '2026.07.16-899851b'
+      const prepared = prepareConformance(ctx, 'cursor', pin)
+      const received = join(dir, 'received.txt')
+      const env = fakeClient(
+        dir,
+        pin,
+        `;(async()=>{let input='';for await(const chunk of process.stdin)input+=chunk;if(!input.includes('wl-frame-problem')||process.argv.includes(input)||!process.argv.includes('enabled'))process.exit(8);(await import('node:fs')).writeFileSync(${JSON.stringify(received)},input);})()`,
+        'agent',
+      )
+      const report = await runConformance(ctx, prepared.id, 'live', { env })
+      expect(report.process, JSON.stringify(report)).toMatchObject({
+        status: 'succeeded',
+        code: 0,
+        version: pin,
+      })
+      expect(report.status).toBe('FAIL')
+      expect(readFileSync(received, 'utf8')).toContain('wl-frame-problem')
     })
   })
 

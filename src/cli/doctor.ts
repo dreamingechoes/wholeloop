@@ -26,7 +26,7 @@ export function doctorCommand(
       targets.some((target) => !DOCTOR_TARGETS.includes(target as (typeof DOCTOR_TARGETS)[number])))
   )
     throw new CliError(
-      'Choose unique doctor targets: claude,codex,opencode,copilot,gemini,antigravity',
+      'Choose unique doctor targets: claude,codex,opencode,copilot,gemini,antigravity,cursor',
     )
   const artifact =
     typeof options['--artifact'] === 'string' ? resolve(root, options['--artifact']) : undefined

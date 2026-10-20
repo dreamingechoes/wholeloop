@@ -13,7 +13,7 @@ import { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside, storePath } from '../state/paths.js'
 
 const DEFAULT_TARGETS = ['claude', 'codex', 'opencode', 'copilot'] as const
-export const DOCTOR_TARGETS = [...DEFAULT_TARGETS, 'gemini', 'antigravity'] as const
+export const DOCTOR_TARGETS = [...DEFAULT_TARGETS, 'gemini', 'antigravity', 'cursor'] as const
 export interface DoctorCheck {
   id: string
   status: 'pass' | 'fail' | 'unknown' | 'skip'
@@ -40,6 +40,7 @@ export interface DoctorOptions {
   managed?: Pick<InstallInput, 'canonical' | 'core' | 'version'>
 }
 const installations: Record<string, string[]> = {
+  cursor: ['agent', '--version'],
   antigravity: ['agy', '--version'],
   gemini: ['npm', 'install', '-g', '@google/gemini-cli'],
   claude: ['npm', 'install', '-g', '@anthropic-ai/claude-code'],
@@ -184,7 +185,9 @@ export function doctor(options: DoctorOptions) {
   })
   let found = 0
   for (const target of targets) {
-    const observed = probe(target === 'antigravity' ? 'agy' : target)
+    const observed = probe(
+      target === 'antigravity' ? 'agy' : target === 'cursor' ? 'agent' : target,
+    )
     const available = observed.status === 'observed'
     if (available) found++
     checks.push({
@@ -205,7 +208,10 @@ export function doctor(options: DoctorOptions) {
               command:
                 observed.reason === 'missing' || !observed.reason
                   ? (installations[target] ?? [])
-                  : [target === 'antigravity' ? 'agy' : target, '--version'],
+                  : [
+                      target === 'antigravity' ? 'agy' : target === 'cursor' ? 'agent' : target,
+                      '--version',
+                    ],
             },
           }
         : {}),

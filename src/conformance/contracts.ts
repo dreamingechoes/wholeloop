@@ -7,6 +7,7 @@ export const CONFORMANCE_TARGETS = [
   'copilot',
   'gemini',
   'antigravity',
+  'cursor',
 ] as const
 export const CONFORMANCE_ID = /^cf-[a-f0-9]{24}$/
 export interface Scenario {

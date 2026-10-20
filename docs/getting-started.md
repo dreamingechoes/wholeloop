@@ -3,7 +3,7 @@
 > **TL;DR** — Install the `wl` CLI (or the plugin for your CLI), let it generate the skills for the agentic CLIs you use, run `wl doctor`, then invoke any step. Nothing needs configuring up front: what is missing becomes a question the first time it matters.
 
 > [!WARNING]
-> **Status: 🚧 partial — local source installation available.** The core, four tier-A native render targets plus Gemini/Antigravity, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; npm/marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
+> **Status: 🚧 partial — local source installation available.** The core, four tier-A native render targets plus Gemini/Antigravity/Cursor, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; npm/marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
 
 ---
 
@@ -28,7 +28,7 @@ node dist/wl.mjs install --target claude,codex,opencode,copilot --scope user --d
 node dist/wl.mjs install --target claude,codex,opencode,copilot --scope user --json
 ```
 
-Target/scope are explicit; all selects every implemented installation target: the four tier-A clients plus Gemini and Antigravity. Use a named target list when you want only those clients. Installation creates
+Target/scope are explicit; all selects every implemented installation target: the four tier-A clients plus Gemini, Antigravity and Cursor. Use a named target list when you want only those clients. Installation creates
 wl-prefixed native skills/agents and scoped/dedicated guard bindings, backed by a
 self-contained artifact per target. Claude loose native components use wl-* names;
 `build --target claude` still produces its separate plugin format. No general client
@@ -37,7 +37,7 @@ settings, MCP configuration, marketplace registry or credential store is rewritt
 | Scope | Native output | Packaged core/resources |
 | --- | --- | --- |
 | user | client skill/agent/hook directories, with absolute configured overrides | external store distributions |
-| project | .claude/, .agents/, .codex/, .opencode/, .github/ and .gemini/ native directories | .wholeloop/distribution/target, intentional distributable output |
+| project | .claude/, .agents/, .codex/, .opencode/, .github/, .gemini/ and .cursor/ native directories | .wholeloop/distribution/target, intentional distributable output |
 
 Project launchers/hooks use relative bindings and work after relocation. Runtime
 ownership receipts, locks, backups and all execution state remain in the external
@@ -204,6 +204,28 @@ Standalone plugin output is available through build --target antigravity.
 See [native boundaries](./platforms/README.md#antigravity-plugin-and-native-overlays)
 before enabling a disposable native client; local transport tests do not establish
 actual native activation or authentication.
+
+## Cursor setup
+
+Build first, then inspect `wl install --target cursor --scope project --dry-run
+--json`. Explicit install writes owned .cursor skills/agents, one opt-in rule and
+preToolUse hooks. Native observer agents set readonly; all roles inherit models.
+Existing shared hooks.json is refused, while unrelated rules remain untouched.
+Use `wl doctor --target cursor --json` for agent version/owned-file diagnosis and
+`wl uninstall --target cursor --scope project --json` for retained owned removal.
+
+Standalone native plugin delivery needs an explicit root environment binding:
+
+```text
+node dist/wl.mjs build --target cursor --out /tmp/wholeloop-cursor --json
+CURSOR_PLUGIN_ROOT=/tmp/wholeloop-cursor agent --plugin-dir /tmp/wholeloop-cursor
+```
+
+That command explicitly starts a native client; arrange its trust, authentication
+and model setup yourself. Managed overlays bind roots automatically. This does not
+install/publish a marketplace package. Hook root data stays outside shell syntax;
+missing context denies. Native discovery/readonly/MCP and actual framing remain
+[owner checks](../roadmap/manual-verification.md#cursor-native-activation-p5-02).
 
 <!-- docnav -->
 [◀ Philosophy](philosophy.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)

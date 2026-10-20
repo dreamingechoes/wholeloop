@@ -609,7 +609,7 @@ export const COMMANDS: readonly Command[] = [
     path: 'build',
     arguments: '',
     options: [
-      '--target <claude|codex|opencode|copilot|gemini|antigravity>',
+      '--target <claude|codex|opencode|copilot|gemini|antigravity|cursor>',
       '--out <directory>',
       '--dry-run',
     ],
