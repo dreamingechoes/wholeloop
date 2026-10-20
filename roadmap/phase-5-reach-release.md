@@ -180,19 +180,22 @@ those gaps do not block independent implementation. See ADR-0052, ADR-0061 and A
 
 **Acceptance criteria:**
 
-- [ ] Every schema has a version and a compatibility test.
+- [x] Every schema has a version and a compatibility test.
 - [ ] The 1.0 release is tagged and announced.
 
-**Local implementation:** source/compiled command output registration now checks
-all declared commands against unique versioned JSON Schema branches. All thirty-six
-source schema files have draft declarations and unique version-one identities;
-gate/suite maps keep exact prior payload-rule compatibility fixtures. This is the
-registration audit, not the complete schema freeze/deprecation policy or semantic
-validator compatibility suite. Those remain code/documentation work; actual
-release/tag/announcement remains owner activation. P5-04/P5-05 are parked between
-components while this audit runs, not blocked from further code by manual checks.
+**Local implementation:** source/compiled command registration checks every declared
+output. The v1 candidate records thirty-eight source schemas, 135 output variants,
+thirteen step definitions, 144 command signatures and five exit codes. Individual
+compatibility cases retain declaration identities, command options/signatures and
+exit meanings; public adapter/distribution manifests validate before emission.
+The compatibility/deprecation policy preserves existing 1.x contracts and requires
+new identities/migrations for changed formats. Conservative fingerprints do not
+prove runtime semantics or native support. Actual release/tag/announcement,
+released README status and remaining delivery/native acceptance remain open;
+package version/privacy are unchanged. Further collector, headless and distribution
+code does not wait for owner checks and adds new identities to this candidate.
 
-**Docs** — ADR-0065; versioning/deprecation ADR and released README status remain pending.
+**Docs** — compatibility policy, ADR-0065, ADR-0066; released README status remains pending.
 
 ---
 

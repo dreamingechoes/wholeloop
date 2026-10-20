@@ -60,9 +60,10 @@ collection and remaining per-CLI onboarding refinements are still
 implementation work, separate from these manual checks. Overview pages now reflect
 local implementation while retaining native/host verification boundaries.
 
-## Public output and event-map identities (P5-07 component)
+## Public contracts and v1 candidate (P5-07 component)
 
-- [ ] On a disposable external copy of an older store, repeat gate/suite reads and projection rebuild after upgrade. Root schema metadata/wrappers must not rewrite journal envelopes or change payload acceptance. Exact prior rule hashes and local replay tests passed; physical upgrade/Linux/other supported Node execution remain owner checks. Registration is not the full v1 schema freeze or deprecation acceptance.
+- [ ] On a disposable external copy of an older store, repeat gate/suite reads and projection rebuild after upgrade. Root schema metadata/wrappers must not rewrite journal envelopes or change payload acceptance. Exact prior rule hashes and local replay tests passed; physical upgrade/Linux/other supported Node execution remain owner checks.
+- [ ] Review the v1 candidate's schema/step/command/exit boundaries against actual supported workflows and release-note breaking intent. Repeat declaration checks on Linux/supported development Node versions and installed-core checks on supported runtime Node versions. Fingerprints flag changes without proving runtime semantics; no current surface is deprecated and actual release/tag/announcement remains unperformed.
 
 ## Disposable standalone framing conformance (P1-14)
 

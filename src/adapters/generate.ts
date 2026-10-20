@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { posix } from 'node:path'
+import { validate } from '../config/schema.js'
 import { markEntrypoint } from '../harness/entrypoints.js'
 import { antigravityAdapter } from './antigravity.js'
 import { canonicalDigest, validateCanonical } from './canonical.js'
@@ -9,6 +10,7 @@ import { cursorAdapter } from './cursor.js'
 import { geminiAdapter } from './gemini.js'
 import { hookArtifacts } from './hooks.js'
 import { codexAdapter, copilotAdapter, opencodeAdapter } from './portable.js'
+import artifactSchema from './schemas/artifacts-v1.json' with { type: 'json' }
 
 export const artifactDigest = (content: string) =>
   createHash('sha256').update(content).digest('hex')
@@ -95,6 +97,8 @@ export function generateAdapter(
       sha256: artifactDigest(file.content),
     })),
   }
+  if (validate(manifest, artifactSchema).length)
+    throw new Error('Generated adapter manifest violates its versioned contract')
   files.set('wholeloop-artifacts.json', {
     mode: 0o644,
     content: `${JSON.stringify(manifest, null, 2)}\n`,

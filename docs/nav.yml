@@ -28,6 +28,7 @@ pages:
   - { path: configuration/repo-skills.md, title: Repo skills }
   - { path: extending/README.md, title: Extending }
   - { path: extending/providers.md, title: Writing a provider }
+  - { path: extending/compatibility.md, title: Compatibility }
   - { path: extending/lenses-templates-profiles.md, title: "Lenses, templates, profiles" }
   - { path: platforms/README.md, title: Platforms }
   - { path: architecture/README.md, title: Architecture }

@@ -10,20 +10,7 @@ import output from '../../src/cli/schemas/output-v1.json' with { type: 'json' }
 import { conformanceMatrix } from '../../src/conformance/matrix.js'
 import { releaseNotes } from '../../src/release/notes.js'
 import eventData from '../fixtures/contracts/event-data-v1.json' with { type: 'json' }
-
-function schemaFiles(directory: string): string[] {
-  return readdirSync(directory, { withFileTypes: true })
-    .flatMap((entry) => {
-      const path = `${directory}/${entry.name}`
-      if (entry.isDirectory()) return schemaFiles(path)
-      return entry.isFile() &&
-        path.endsWith('.json') &&
-        /\/(?:schemas\/[^/]+|schema)\.json$/.test(path)
-        ? [path]
-        : []
-    })
-    .sort()
-}
+import { sourceSchemas } from '../support/contracts.js'
 
 describe('public JSON contract registration', () => {
   it.each(eventData)('preserves the prior event payload rules in $file', ({ file, sha256 }) => {
@@ -99,12 +86,12 @@ describe('public JSON contract registration', () => {
     }
   })
   it('keeps source schema identities unique', () => {
-    const ids = schemaFiles('src').map((file) => JSON.parse(readFileSync(file, 'utf8')).$id)
+    const ids = sourceSchemas().map(({ schema }) => (schema as { $id: string }).$id)
     expect(ids.length).toBeGreaterThan(0)
     expect(new Set(ids).size).toBe(ids.length)
   })
-  it.each(schemaFiles('src'))('versions the public schema %s at one', (file) => {
-    const schema = JSON.parse(readFileSync(file, 'utf8'))
+  it.each(sourceSchemas())('versions the public schema $file at one', ({ schema: declaration }) => {
+    const schema = declaration as { $schema: string; $id: string }
     expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema')
     expect(schema.$id).toMatch(/^wholeloop\/[a-z][a-z0-9-]*@1$/)
   })

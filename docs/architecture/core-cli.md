@@ -27,6 +27,12 @@ journal format; no event migration follows. Registration does not establish the
 complete v1 compatibility freeze or native execution. See
 [ADR-0065](../decisions/0065-public-output-schema-registration.md).
 
+The v1 candidate now adds per-declaration compatibility fingerprints, retained
+command/exit contracts and explicit delivery-manifest validation. This freezes
+declarations for review without publishing 1.0 or proving runtime semantics. New
+identities and optional command flags remain additive; read the
+[compatibility and deprecation policy](../extending/compatibility.md).
+
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |

@@ -1,0 +1,1168 @@
+{
+  "schema": "wholeloop/compatibility-baseline@1",
+  "status": "v1-candidate",
+  "contracts": {
+    "output:wholeloop/adapter-build@1": "5645c8083b6e6b3613387d56d0000f8b64c3dd14f590d451a28684870f2efaa1",
+    "output:wholeloop/adapter-root@1": "1b0fa21a0a574158b51c80cebe1aad235341fb7f66e26be9f7d45a8de2bd56c9",
+    "output:wholeloop/adopt@1": "57e39f8c84344bc9f37572fb1f0b238b03fecf20b1ae416e9f39b1f4940c5f7e",
+    "output:wholeloop/answer@1": "997927961cd2a62caa36ea3b12d27a51825a48fd498f261cda20763e11c7d9d4",
+    "output:wholeloop/build-agree@1": "27e509aca396785812ebd5c5c36e74ab43ab33cec45609f327eb63f192c47a5a",
+    "output:wholeloop/build-complete@1": "f00fd6bc51c7654c8bd8ffa10ee1c6527f7f2419c1ceb277dfc6958eee155efa",
+    "output:wholeloop/build-plan@1": "6175cca7b3592300a64f994b147b3debac60a06992f40f581006d24b1ab8a671",
+    "output:wholeloop/build-preflight@1": "a381115bfa10d6a1808be1732dad9b0ffd0278fb238aa7824f2c7c00d92bea73",
+    "output:wholeloop/build-prepare@1": "5c4916084cd93129e0ccfc447ce026c26183e581291081a7e0a45dfa9fb80f17",
+    "output:wholeloop/build-route@1": "ceb72971dac01d610419b4bb0f95d7e13282d38f5c9f85fd38647878e1ffe3b6",
+    "output:wholeloop/build-schema@1": "5e6bb247aafee6004f614e9dd5b5f22f99a1a294a1d26e9964a64c1019954353",
+    "output:wholeloop/challenge-plan@1": "0511afd0abe2173f4d1acc0bec2c667e3ad1f5d0fb2e331667fbfce30c7564ce",
+    "output:wholeloop/challenge-schema@1": "b72f06f8962317dfc1df7898307780b462bd3c95d47de22e9e74087100b51750",
+    "output:wholeloop/commit-check@1": "7b4fbf78e29ddca161eb6b13509c74b248db142181aff64daa0051c1962e90aa",
+    "output:wholeloop/config-schema@1": "6848a91bfe348168f222deb734b4e60d93aa546641f1f679be340ca86852ad6e",
+    "output:wholeloop/config-show@1": "5085e0832e3fa86016a7b48d60bdf5642dab2b1449c931fb543ff092a4697d5b",
+    "output:wholeloop/conformance-matrix@1": "abb95bd440964c7c5979118f61262badd7402e4a468c367ca7cf049665b0f788",
+    "output:wholeloop/conformance-prepared@1": "bf97f4e45ee318fba2b58eaf88be81443282f05919a47f6025f6c1acff1a0081",
+    "output:wholeloop/conformance-report@1": "85782c44e8e65c525987dd626eeeb13378b814de5b1e3b588e9925420611ccd9",
+    "output:wholeloop/definition-eval@1": "c66d09548cd04bb800bbbfc03ec6f963b6f3250b9e26520b4433cf8e43f498eb",
+    "output:wholeloop/discover@1": "2824eb189ef5f01e9284e372969693edafeb9fd9ccf6e5e0aa09c9142e245cd5",
+    "output:wholeloop/distribution-build@1": "f18cd3a346475b2c91976270351ba5e73ff26edf9b9124b953f2034fe2c8752f",
+    "output:wholeloop/docs-check@1": "4bb244fb8df4a3184449a074327c0f86fe13029db4b535b1c0bc597b812d1ef6",
+    "output:wholeloop/docs-nav@1": "d350396f13edb2e4257338a13f8d92c2a2ddd4b5d87b1fe41f4426f9bd3ca9ed",
+    "output:wholeloop/docs-reference@1": "3c7993883139195d8b66980e2239a918267f605c71ac4b084baad2d9f04089c3",
+    "output:wholeloop/doctor@1": "d090b5aaaaa3caf1e57914cd99d375d55f1a0726af3ec0161e1192125a40592b",
+    "output:wholeloop/env-declare@1": "071ea56f67f9e24761d3e84a5426e341060d96ff5520ed07d0998e769d9796ee",
+    "output:wholeloop/env-report@1": "e390bd17527c5fca58de842c27b3d2e20cb9683936361a6ef3f6ae2976a468e6",
+    "output:wholeloop/error@1": "0d2b62d9164348f3edd836cf0cbfebefceeb7e7eb5399fdcac92931b0c8f3664",
+    "output:wholeloop/fanout@1": "a8738769261ba532c6dd1321f78eabc35e4a72009c23364c8ca512ce9c8fce7a",
+    "output:wholeloop/gate-eval-inputs@1": "2ca5f8e9c56df4a36bc5e3a6cb544cfb303219e4fdfa0219c42e308db1a3aa17",
+    "output:wholeloop/gate-eval@1": "513536b16c4f83f33dc1d7959e0ca32d5ad61944124d7f3ecd54406432fe767d",
+    "output:wholeloop/gate-plan@1": "e47981d1a5a780f48806449737683f6c18eccba8b930e07217fd6fb8aa56626d",
+    "output:wholeloop/gate-schema@1": "83ab108b5d2565ffbc64951061a8fb47ce01bd4535a2b7e9ea5bc4e00456c2a7",
+    "output:wholeloop/gate-submit@1": "ea3f9ab14242b5133e6dd2aa11a3dc38b6874a40f00e212521e45217a5dd4039",
+    "output:wholeloop/gate-verdict@1": "db911d4739a42dbd7e73b38f66c2af20beecf3cc4130b5244d4e457e6f87076c",
+    "output:wholeloop/git-guards@1": "d671ad3dc9d21da18a4cab593f6b26194f27e62f7442c863f99a8ef785fa7b18",
+    "output:wholeloop/grounding-eval@1": "ad8cc121cdb6d3d88b3e5d3cef68337eac6e272b78d65c8679b8f4bc09f28c93",
+    "output:wholeloop/grounding-inputs@1": "cdb006702f4edfe6907b2b103edddfe1403652485b475e33333b25bf7d719013",
+    "output:wholeloop/guard@1": "57acac54390807015073307508eee2d640e60c367b7c06128fd6bc3159f32b2d",
+    "output:wholeloop/handoff@1": "68d9bf497e7b00695cc6cc2927658fa298580eca24572b97bef405be7b88fcbd",
+    "output:wholeloop/harness-check@1": "156c6ddfe6b70169ee2bfbb013d433dd2c892cf570228a586458791f1367842e",
+    "output:wholeloop/help@1": "d3ade6d3691f66688c0d622c618b60f2b3c71178d940dab72be077e8a32ae5db",
+    "output:wholeloop/impact-begin@1": "d1c13b4e1086f61508a04141cf96402dce2db91779497df7a76917cc92b7b953",
+    "output:wholeloop/impact-complete@1": "eac8874d8c6c973a2751eb10d90fe500f668bccc13b52f8caad26d936ee86822",
+    "output:wholeloop/impact-digest@1": "84bb8e3e814008066893a3d6e76d65aa326068345d3cc65848dbfbf07f9808f7",
+    "output:wholeloop/impact-read-requests@1": "5dbf7a59d3aeddcc1092e35e8f391c67bd72e2060669b697d713c82afd5c0c81",
+    "output:wholeloop/impact-report@1": "28a52f1e4197cd7c15e805f504ac1e245331fa1745426da200285152c124871f",
+    "output:wholeloop/impact-schedule@1": "fe1519d79dde09a590b5bce9106547bd4f6ab6afb84e3add7e8205026c0f2c3c",
+    "output:wholeloop/impact-schema@1": "2bd45470d23c672518c77db75988674e95bd1d6672bbddbef8396d2fdca7961e",
+    "output:wholeloop/install@1": "5ae677cd927b20f9ad6379bdba482d0146781bc70421236fee050e0b57b1a39b",
+    "output:wholeloop/launch-begin@1": "57b3345853242d25e247ce112dea8632b70d691916bb743c48184517909a0e09",
+    "output:wholeloop/launch-complete@1": "73e43e7159b271edb3da7158cb16c1d0ebe0532e4aed226a40ad6f8694ccd03f",
+    "output:wholeloop/launch-report@1": "51f095affe9d850a88e088c00d444ce8dcb6a11fec5d3ffc6ac6b78d4d18647b",
+    "output:wholeloop/launch-schema@1": "1f9a84ee0bb8ca974e24e0f306c59c7c7a715582b43d14424f72bf31a030f964",
+    "output:wholeloop/learning-begin@1": "3720a995cfc471b637eeb277a83aed1253c36cefa6ef98b531eb9a2cd1545013",
+    "output:wholeloop/learning-complete@1": "2c166d8544f140ce35ec91317ed26870131a3218be81858762693f2c8918411a",
+    "output:wholeloop/learning-decision@1": "38abd2cfedf0d8e45ca431aa71fdd6a2b4006b4b4246985a02b00c904ee948aa",
+    "output:wholeloop/learning-report@1": "7ddc29ad9c3fc997b223077483d7ae1bb1c27eb1a0875a71f641101addd6d2f1",
+    "output:wholeloop/learning-schema@1": "28a2f571e4565f63a822945791086c57df4c012b293d530315c20c8824beacec",
+    "output:wholeloop/lens-list@1": "edafa35f99b2eb3df74f101197d35cc1f22bbf6601256f27aae97a817cd1aa18",
+    "output:wholeloop/lens-scaffold@1": "e4e8057e760db50c05652eccfa1abc2d3a55aa47f574f92a5e1a734f9864e011",
+    "output:wholeloop/lens-test@1": "954cb560537210e85e66ba3fa6a175573d197b6d908a524fdf09bb32a4f2a798",
+    "output:wholeloop/link@1": "6e9f9f74b4b3546e26fdc2e4d4061fb6ac6c74a4a14570b09fab79d591ef9bdb",
+    "output:wholeloop/mcp-add@1": "98e1cb3f4ef608b047089235c093997a45412954329804b325dedf4ec165aa95",
+    "output:wholeloop/msg-read@1": "7750b5470c94b08c29e73dde85b03b29364b95e1178c8f50c6d97fdd3b9d3dcb",
+    "output:wholeloop/msg-send@1": "f052072b863264496d389fb561bdd257bdaaa29e22426e9d162b85221b4da867",
+    "output:wholeloop/next@1": "f6ace4de38951bfa02502a24007a439fef51386014194b0c4772b33f1d34978a",
+    "output:wholeloop/note@1": "420a6031b8aaba205705f00f7b3e1b5425744cf94b12e16e045d3846174b668d",
+    "output:wholeloop/open@1": "7cb4394eba8cc152bdf7dcb112c162da99cbae1fccdbd4d3ea3985a9ae07e7c2",
+    "output:wholeloop/pr-open@1": "768d9cf5f20012f1ac5a7f5f5087cd237341940ab6ce20f285e1773fa7d3cb6c",
+    "output:wholeloop/pr-prepare@1": "10fd5005b6a525344da33caa10a23e4a81631d3468dded26ed4eb5d547c5d070",
+    "output:wholeloop/pr-tested@1": "54c720f24f8885856e4dbc62a3250f3c1c1d7ed2e1374e456303b7403c3e6f2f",
+    "output:wholeloop/profile-list@1": "1cff1edccad88937cdf99e8bf7e878ceca1b8d96ca44a140930069440ab9b916",
+    "output:wholeloop/profile-preset@1": "de56fc972e5d58b9c1255bc8bf304d8e00c0b1f37207a86a96aa86f0cc1969d5",
+    "output:wholeloop/profile-scaffold@1": "efe64c20e43c8b19032f18b5311e5cc6e089850ed246264bfd0fa3f2731cf38c",
+    "output:wholeloop/profile-set@1": "97fdfdf8fafb08601989972072ff68b4da770a4de9759e90031723c6e556ec74",
+    "output:wholeloop/profile-show@1": "d338854c46c4e46e0f03b599b4126a7210b8d8c7e3f53702783af0b58b9d83df",
+    "output:wholeloop/profile-test@1": "a8b4d161fabc34af869898073698edd452f85a570c6c9d685d3b1650d0cae333",
+    "output:wholeloop/provider-list@1": "c98840cdcf98000a0cb9462bef6b394c4a0521e617869030aaffa90c6d8c5083",
+    "output:wholeloop/provider-resolve@1": "ddfe0ea502f238eab13e8b27080dd75cb9d41e3b53dbdde81238f15c4ae0cd49",
+    "output:wholeloop/provider-scaffold@1": "dde5517e48d71dade1efd215eb44232d26e0d710588c2423019e81c7159dc746",
+    "output:wholeloop/provider-show@1": "1ded9e84109616746a02b23d2e0b08e358d7268f4f17b90bf599db5b0d01e6ec",
+    "output:wholeloop/provider-test@1": "d2b765e45c321e9ab1a6fcf0833a1ef5649cc447200c04da694efc2f32580a33",
+    "output:wholeloop/ramp-begin@1": "e29fa86f84221d8008f8e4e61aeb385f44a2bdc04e79bbb329d7a712351e65e2",
+    "output:wholeloop/ramp-proposal@1": "2f0f84b2f915e888b14ed7dda83c645160fbb06d058b89f902b4a6335244e5fe",
+    "output:wholeloop/ramp-read-requests@1": "988be08bfcfa628bb86396e600ba08ccb397aa03b8735094cbc64ca6ae51926d",
+    "output:wholeloop/ramp-report@1": "c59c13ba517b8a46470ea97f130bb97202c47479ee0673b589ddba899ad0c416",
+    "output:wholeloop/ramp-schema@1": "dfb6a12daa059dc90aa948362c3fdf147a5dd1c403adeca5db0c4c99dbcb3ea1",
+    "output:wholeloop/release-notes@1": "4488bcf194fa288571e882a92dfa24eb54bc49f4863b83a4062eec96862b1082",
+    "output:wholeloop/research-complete@1": "3501ce443276e6cea16e5b12a6ed3210a47a04709b18cb94d8dd8bbd6e0cb532",
+    "output:wholeloop/research-examine@1": "e15f4614b1038c68ab3604bb7ce031bc63a31e37175b60e1c538e9cc0e90d245",
+    "output:wholeloop/research-plan@1": "4ed9b402afcf3d83fb1d5eabc2b5f8496a835408228153cce0e1979052d23d9f",
+    "output:wholeloop/research-submit@1": "f56df306bd38839de35430470d9ac9ad86877db0085dbb5fc636d7fae54923ed",
+    "output:wholeloop/resolve@1": "5b610ba0accc0f694e92ef86ee65b9271caaa17ae7edda38fe57f03b0bd94f06",
+    "output:wholeloop/resume@1": "d3ad1c72f8347bab82e524e755d459e4199ddb3be63a9e450add0e7422cf26a0",
+    "output:wholeloop/review-begin@1": "6c547fc8ee0c3f022780de6dfa1c4625eb95d4e9b32156bd5f5cbdfa2bb1662b",
+    "output:wholeloop/review-comment-plan@1": "cf4d423f73e7b0a9b1bbbeab6bc83ee27d3f9f669e06c6613ec4ab79b286135d",
+    "output:wholeloop/review-complete@1": "dfb573ed33f0e829093ace5a1e384d49474581c85ae54c3636105f157f1c1ebc",
+    "output:wholeloop/review-context@1": "1b75304f4b5a28858ba5d5005bd89c5e1d821a354fedefadac546975aeef7227",
+    "output:wholeloop/scopes-plan@1": "11fda02a326eaf4bb863fc15a87a6b2d023ea8251f8a23062e92e06540e7030a",
+    "output:wholeloop/scopes-schema@1": "182e7db1816f6f223d0912ad3868ce5ba157e1542054b1f640c7012a21f588f1",
+    "output:wholeloop/setup@1": "7b160a5fe7ac41a03408294a8b1d161f39e73e486e678a2e6879bd6ea79f54b1",
+    "output:wholeloop/share-report@1": "6b54d389dd86870c8bb4a479c524ea0debd27c716c711ada02c260749ad40df6",
+    "output:wholeloop/share-request@1": "0df0899896a7876fc5cd9695eee2d73248a5eade2dc5c524f32f4e5e89e7dd76",
+    "output:wholeloop/slices-check@1": "c6a4192b4930787acf59c84c0bff5b57c7045cb1454c99ae69df49498994753d",
+    "output:wholeloop/slices-plan@1": "1499e921780b51c149804e20fce68ad30869397be923f77df5b50b717976b68d",
+    "output:wholeloop/slices-schema@1": "e95fcd8af4cd11a91694724ac4de0fefd46f1a864a04d0fd8f1153adfa9cee13",
+    "output:wholeloop/spec-check@1": "f11f3786fa56001c49873cfa8ceced99a39f6f229c6520db431bc6fb912a1f0d",
+    "output:wholeloop/spec-schema@1": "9501e37ecb646e97ecb3825640b2e2b58f81f5c40eeab2083b5e6886319d944a",
+    "output:wholeloop/state-create@1": "7af1bf57ae094afd23f0cf5e299549b48cc7b551f65d2fb4fec47cc31dadc365",
+    "output:wholeloop/state-get@1": "922ca2df1e3aabeb821223800d1d119550a9dc2e69767921058992845835b636",
+    "output:wholeloop/state-list@1": "5eee8ca6a20c2d822afe1083d8133152ea9f0b017ff6b843ca002b5dfe3efed3",
+    "output:wholeloop/state-rebuild@1": "b98ec65a1bfcb436c2c7775c9ec5384147b6cec50a6f02e7f33beb18015654af",
+    "output:wholeloop/state-show@1": "279a831c31e39f0c581abfdb8181c1d5d00ad95f84ccb6f18e1698fac08f1663",
+    "output:wholeloop/state-update@1": "c5923bef79026dca4fccdeca1cf5c486bfde41a3329994ce261a0e22880ab72d",
+    "output:wholeloop/status@1": "daf40279518c0f201980026a77b0118f4656afa5e905d573b91b0595d0f8afcb",
+    "output:wholeloop/step-begin@1": "881c20ebba1318e8edc01fc0b92951a476404d4d33e338e5dbb7edf84f1104af",
+    "output:wholeloop/step-complete@1": "f65f283ee383b1e220c2c42211b8de394c5094c886aeb7cb9832db9381e33bf7",
+    "output:wholeloop/step-plan@1": "3a9fbdefdf85927282ae48267932f606326a9fd69d06819787293983fa18b124",
+    "output:wholeloop/step-skip@1": "78408bb586779406d4af43c8b7360e7cf78bd74013d284a9bee0834972405dff",
+    "output:wholeloop/sync@1": "d00b59476942cda161dbcc9da6698dbb81a674b5eedab05b08c28dab3019674e",
+    "output:wholeloop/template-list@1": "52db5fba17e92defdc3a890034b874830f4e4741f6ebcafcadf881152927f9a0",
+    "output:wholeloop/template-scaffold@1": "c7b5741d9d5131881e2838644d7516738bdf08e1c597b92fbdea26af9e0c119e",
+    "output:wholeloop/template-test@1": "205e9ab511fe0e658ac6a5404df00819f9ba4d7a691fd639b0f1d0151ae68c11",
+    "output:wholeloop/uninstall@1": "19c7450c77c742c5b0b535a23334e0304dfe7a527463adbfaae75d78487dce01",
+    "output:wholeloop/verify-begin@1": "836b5f5f8fa68942b4600721f4db1372bb580bc0699d8a94fc73eecb1c7286b7",
+    "output:wholeloop/verify-complete@1": "3cd31e8124c82a3fb967a1142d64b0c738d55702cfd2e09926d3cb5e3f810f97",
+    "output:wholeloop/verify-suite@1": "5201949fa1df88f1d0b0298f69b309352b89bea390509a45b77a17ae1751309d",
+    "output:wholeloop/version@1": "e97402dec1f4da5249da367665b405904c3835efa247ee42243ae66d48e93a16",
+    "output:wholeloop/worktree-create@1": "d37822ca2102548dff28d971ab58e01351f4543e0fb7d47ef504dd896bff105c",
+    "output:wholeloop/worktree-list@1": "3593d7430a9ca20386c5a4e9f420d211d316aec6d7198987145a77fb7706f9fd",
+    "output:wholeloop/worktree-open@1": "2bf80d1bfbb0efcd8df91fb84a655f37f670cf4310663a225f4d6b155f7866a2",
+    "output:wholeloop/worktree-prune@1": "f5195edd5afe207a8484cf01bb7999ec92cb8bdb6982a93b1d2c778f7941c5ff",
+    "output:wholeloop/worktree-stop@1": "04de863fa9dab41210f113afa2587d833ba066d63321d1809d47fa114d6126ab",
+    "schema:wholeloop/adapter-artifacts@1": "5232bfc9880d361200b5257d023b9d293d53e373febeb9c1937a405056cfb978",
+    "schema:wholeloop/builder-plan@1": "fe3e2ea2b3c9f766e3e07c6093acd13aba23b97b28d4b69a7c4e443b313fbfae",
+    "schema:wholeloop/cli-output@1": "31acf9cc0347cf89adc7a50db797fe5168e74973b6c104b13bec8e33698cbe02",
+    "schema:wholeloop/config@1": "5db0805bb237ebed5f9bbb2a7eb06a0fcd4551d09cf244a19b0c7c4f4a8244bb",
+    "schema:wholeloop/criteria@1": "29c8ab205fd76296abd16e02a6da2fa05dfd5729be18e73fc906273241b5bbe1",
+    "schema:wholeloop/distribution-artifacts@1": "aa4bcc6ab8e82925d5fda20e2ce49502661060be8f1306766fe277fa7dad643a",
+    "schema:wholeloop/environment-declaration@1": "7669bdc03387a4e05a9c37758be4078ea0b4bcecb821331c0b22ad178f489d6b",
+    "schema:wholeloop/gate-events@1": "6d8f3586f0b8d9d71be5d741d5f09a499ade19177c63c625918db1d45966f237",
+    "schema:wholeloop/gate-result@1": "24036ad44f71ec86d12144d26ae9f48e09275df744430c765b4c2238821ee056",
+    "schema:wholeloop/gate-round@1": "400a601974ce38cf6a33ee75bf0f5842324375a29ee25474e8d5148bd3481f8e",
+    "schema:wholeloop/gate-vote@1": "a15219ef5915287cd6d1eb804136a07598a2a8194f8acbd3a688f441d37218c5",
+    "schema:wholeloop/impact-events@1": "f87bdff3d82f8fc9d8e238c6db05929a257de8395fee5d3cdeb1889c86bea993",
+    "schema:wholeloop/launch-dispatch@1": "4df1376379d11254632f0a15801aed8ca7b48532a77b51235ec22796d4e13605",
+    "schema:wholeloop/launch-kit@1": "dac865a32030aaa915cec90db79fab1eabf4f8d843f7f36b43a6e9df08009942",
+    "schema:wholeloop/launch-plan@1": "472ad65c4cd8cbbef82d0c5593b4983d93b73c64aed10771f37e1241a9728f00",
+    "schema:wholeloop/learning-events@1": "2a6f4283ab687496625636d59088e12e81c110987443e958b129318ca1138b7f",
+    "schema:wholeloop/lens-manifest@1": "3124fc9f5b9de5e76cda926d62fcdb021db237063fa33c5bcfbcc58a6d59ad4e",
+    "schema:wholeloop/measurement-plan@1": "8412407c6e5a96ac6c77c96beff3b4563e4d382e1b3abe349a95211a95074aa5",
+    "schema:wholeloop/profile-manifest@1": "eac5613c37e23553939603d8bd6139db96d6cb3b54d578a8b33f41852747f2d1",
+    "schema:wholeloop/provider@1": "a56cecdd4eb57c615d7c79b8f400299605107262bafa32e71b25d60c3ef11208",
+    "schema:wholeloop/pull-request-events@1": "6f38c9cb009b34105633c1f566697816ab86d97992f8a9ac29642a4130b81c00",
+    "schema:wholeloop/ramp-events@1": "4c0e2dbd33cb5f823e5e509199d29f3b345a45b7ab168667c25a781a1b006176",
+    "schema:wholeloop/ramp-plan@1": "d5a072c033c25ace9e7905b7a404f7fdc3426e000227451d037bf38225e818ee",
+    "schema:wholeloop/research-plan@1": "d20b8d6be6b764025b487e6e37b159797c642e4392a96a1fdbe2225f21a3abf4",
+    "schema:wholeloop/research-result@1": "c4efa2590dfea8f8e46bdcd960cd9475acdb03cb8c8bb2082333f7296a9bc651",
+    "schema:wholeloop/research-vote@1": "3fa5502aad2ab53fd72ed5a3127f23778a2da11f4bc5f02f4ca1255bab458b6b",
+    "schema:wholeloop/review-input@1": "f7dbf8faa1a6e4c767b7ec533b7d3213709ffa3b08898a30439bb9a9903020c4",
+    "schema:wholeloop/scope-definition@1": "a5603c510649dc926a70a62f367372a56438dc3484406684631de56fef04f216",
+    "schema:wholeloop/scope-plan@1": "fca24b93f58bdf78bdd3b26839425033c9e2d2142e1578aed79bf0037bd48bd6",
+    "schema:wholeloop/sharing-events@1": "2bbaf4fd257d31b75f68c58fc88526e0b6f0e071429a2db088aabff37e933d41",
+    "schema:wholeloop/slice-definition@1": "c956a11335d18a78e0900de83aaac7c94cf2d8aef7130fbc9ae1c6d27acb0ea6",
+    "schema:wholeloop/slice-plan@1": "145c56c4daed4163b53de3366cc3e0bc6ac7babf7531928ea97692082fe216b9",
+    "schema:wholeloop/spec@1": "a3b2d58febfa268cdb58dcfe38047149df992fe0a220b420f2eb1ecb78f228d0",
+    "schema:wholeloop/state-event@1": "f4705860537c950ad4a555e6f98914ae5887e439539a895498790beb0340b82c",
+    "schema:wholeloop/sync-events@1": "dc6c73473cfc32e598085682ecdf2b25738c7d887b5ec0e447284dfa4edfec69",
+    "schema:wholeloop/template-manifest@1": "c3326647b54456ef4d7beee9581837a68904723361d12a14b09042c047efd261",
+    "schema:wholeloop/verification-suite-events@1": "3c72d7a9a1c551f2af273fa013344b88cea09ad03172617febf72a5ff99a0a57",
+    "schema:wholeloop/worktree-allocation@1": "80bcc79f886d8fe0042187af9892f409b51e4364c3c4c0bf21ea00cb17f3bbad",
+    "step:build-slice": "82ed2341a650108fa173cac61bb90432cada6d6f3a7f0c572ccbb4d2f4660b9d",
+    "step:cut-scopes": "ea2165cb520d35ca4fede0869731290fb3d11ff512e4b41a1824b83dd8db3040",
+    "step:decide-next": "04ac7e3543e46944be09f9d83e23fb4387ee92190c4a9536684f50d36e2fe5bb",
+    "step:frame-problem": "de4a78e3a6057744ff60a10a3740886be456c5f909de16a23a79d65032d0947b",
+    "step:measure-impact": "5e639424250e639d2f354c2dd008449721866c4d6a8f755f9424a8f1a391627e",
+    "step:open-pr": "a83625a016c6e208a096e8dabcb58bf532e0468bb279e523318ed6605b1925ab",
+    "step:prepare-launch": "256a6198efdcf305e7617d6400334467cfdabdf20671d6ddfa6cf9ae7623a5b1",
+    "step:ramp-exposure": "6db7022b23a3596fe9c88d242feb34e9bc995caf8a722d4172979de6575bc815",
+    "step:research": "973fe39ca05a477bfb5cba7d91a19dfcf4e8d91860a6e1cfb2b3706416db060b",
+    "step:review-code": "9f56c96ef8a7a9a71b80b3983a1f6ea6a5abf5aa36c4f5d4e2873cca300f402f",
+    "step:slice-work": "a881310681eaa2dd81cd56031651ccc6bfa0266031b4bda1e0bcab46e874557b",
+    "step:verify-works": "23e69accdfdab2cd0a9f882db3d87ababaa07b48471f5b927c6fdbe5cadbab29",
+    "step:write-spec": "fb6e5a930950dbf4ff15734de867f6097a0f121e1ebfaf0115990ec5ae8ecbd5"
+  },
+  "commands": [
+    {
+      "path": "release notes",
+      "arguments": "",
+      "schema": "wholeloop/release-notes@1",
+      "options": ["--from <ref>", "--initial", "--to <ref>", "--version <version>", "--markdown"]
+    },
+    {
+      "path": "release artifacts",
+      "arguments": "",
+      "schema": "wholeloop/distribution-build@1",
+      "options": ["--out <directory>", "--dry-run"]
+    },
+    {
+      "path": "conformance prepare",
+      "arguments": "",
+      "schema": "wholeloop/conformance-prepared@1",
+      "options": ["--target <cli>", "--pin <version>", "--store <path>"]
+    },
+    {
+      "path": "conformance run",
+      "arguments": "<id>",
+      "schema": "wholeloop/conformance-report@1",
+      "options": ["--fixture", "--live", "--timeout <ms>", "--store <path>"]
+    },
+    {
+      "path": "conformance report",
+      "arguments": "<id>",
+      "schema": "wholeloop/conformance-report@1",
+      "options": ["--store <path>"]
+    },
+    {
+      "path": "conformance matrix",
+      "arguments": "<results.json>",
+      "schema": "wholeloop/conformance-matrix@1",
+      "options": ["--at <UTC timestamp>", "--markdown", "--docs <repository>", "--write"]
+    },
+    {
+      "path": "eval grounding",
+      "arguments": "<corpus.json>",
+      "schema": "wholeloop/grounding-eval@1",
+      "options": ["--predictions <file>", "--inputs"]
+    },
+    {
+      "path": "sync",
+      "arguments": "",
+      "schema": "wholeloop/sync@1",
+      "options": ["--for <id>", "--file <file>", "--prune <on|off>"]
+    },
+    {
+      "path": "learn begin",
+      "arguments": "[<description>]",
+      "schema": "wholeloop/learning-begin@1",
+      "options": ["--for <id>", "--owner <person>", "--leaning <outcome>", "--reported <file>"]
+    },
+    {
+      "path": "learn challenge",
+      "arguments": "",
+      "schema": "wholeloop/learning-report@1",
+      "options": ["--for <id>", "--file <file>"]
+    },
+    {
+      "path": "learn decide",
+      "arguments": "<keep|iterate|kill|unflag>",
+      "schema": "wholeloop/learning-decision@1",
+      "options": [
+        "--for <id>",
+        "--basis <challenge-event>",
+        "--by <person>",
+        "--reason <text>",
+        "--ack <json>",
+        "--iteration <file>"
+      ]
+    },
+    {
+      "path": "learn complete",
+      "arguments": "",
+      "schema": "wholeloop/learning-complete@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "learn report",
+      "arguments": "",
+      "schema": "wholeloop/learning-report@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "learn schema",
+      "arguments": "",
+      "schema": "wholeloop/learning-schema@1",
+      "options": []
+    },
+    {
+      "path": "measure begin",
+      "arguments": "[<description>]",
+      "schema": "wholeloop/impact-begin@1",
+      "options": [
+        "--for <id>",
+        "--owner <person>",
+        "--measurement <file>",
+        "--qualitative <file>",
+        "--checkpoint <name>",
+        "--launched-at <timestamp>",
+        "--after-days <days>",
+        "--at <timestamp>"
+      ]
+    },
+    {
+      "path": "measure requests",
+      "arguments": "",
+      "schema": "wholeloop/impact-read-requests@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "measure observe",
+      "arguments": "",
+      "schema": "wholeloop/impact-report@1",
+      "options": ["--for <id>", "--file <file>"]
+    },
+    {
+      "path": "measure format",
+      "arguments": "",
+      "schema": "wholeloop/impact-report@1",
+      "options": ["--for <id>", "--file <file>"]
+    },
+    {
+      "path": "measure complete",
+      "arguments": "",
+      "schema": "wholeloop/impact-complete@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "measure report",
+      "arguments": "",
+      "schema": "wholeloop/impact-report@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "measure schedule",
+      "arguments": "",
+      "schema": "wholeloop/impact-schedule@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "measure digest",
+      "arguments": "",
+      "schema": "wholeloop/impact-digest@1",
+      "options": ["--for <comma-separated-scope-ids>"]
+    },
+    {
+      "path": "measure schema",
+      "arguments": "",
+      "schema": "wholeloop/impact-schema@1",
+      "options": []
+    },
+    {
+      "path": "ramp begin",
+      "arguments": "[<description>]",
+      "schema": "wholeloop/ramp-begin@1",
+      "options": ["--for <id>", "--owner <person>", "--file <file>"]
+    },
+    {
+      "path": "ramp requests",
+      "arguments": "",
+      "schema": "wholeloop/ramp-read-requests@1",
+      "options": ["--for <id>", "--mode <observe|confirm>", "--at <timestamp>"]
+    },
+    {
+      "path": "ramp observe",
+      "arguments": "",
+      "schema": "wholeloop/ramp-report@1",
+      "options": ["--for <id>", "--file <file>"]
+    },
+    {
+      "path": "ramp decide",
+      "arguments": "<go|hold|rollback>",
+      "schema": "wholeloop/ramp-report@1",
+      "options": [
+        "--for <id>",
+        "--basis <event-id>",
+        "--by <person>",
+        "--reason <text>",
+        "--ack <json>"
+      ]
+    },
+    {
+      "path": "ramp proposal",
+      "arguments": "",
+      "schema": "wholeloop/ramp-proposal@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "ramp confirm",
+      "arguments": "",
+      "schema": "wholeloop/ramp-report@1",
+      "options": ["--for <id>", "--file <file>", "--by <person>", "--evidence <ref>"]
+    },
+    {
+      "path": "ramp report",
+      "arguments": "",
+      "schema": "wholeloop/ramp-report@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "ramp schema",
+      "arguments": "",
+      "schema": "wholeloop/ramp-schema@1",
+      "options": []
+    },
+    {
+      "path": "launch begin",
+      "arguments": "[<description>]",
+      "schema": "wholeloop/launch-begin@1",
+      "options": ["--for <id>", "--owner <person>", "--measurement <file>"]
+    },
+    {
+      "path": "launch complete",
+      "arguments": "",
+      "schema": "wholeloop/launch-complete@1",
+      "options": ["--for <id>", "--file <file>"]
+    },
+    {
+      "path": "launch report",
+      "arguments": "",
+      "schema": "wholeloop/launch-report@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "launch schema",
+      "arguments": "",
+      "schema": "wholeloop/launch-schema@1",
+      "options": []
+    },
+    {
+      "path": "env declare",
+      "arguments": "",
+      "schema": "wholeloop/env-declare@1",
+      "options": ["--for <id>", "--file <file>"]
+    },
+    {
+      "path": "env report",
+      "arguments": "",
+      "schema": "wholeloop/env-report@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "pr prepare",
+      "arguments": "[<branch>]",
+      "schema": "wholeloop/pr-prepare@1",
+      "options": [
+        "--for <id>",
+        "--base <branch>",
+        "--owner <person>",
+        "--title <text>",
+        "--body-file <file>",
+        "--provider <id>",
+        "--remote <name>"
+      ]
+    },
+    {
+      "path": "pr tested",
+      "arguments": "",
+      "schema": "wholeloop/pr-tested@1",
+      "options": ["--for <id>", "--by <person>", "--note <text>"]
+    },
+    {
+      "path": "pr open",
+      "arguments": "",
+      "schema": "wholeloop/pr-open@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "pr reconcile",
+      "arguments": "",
+      "schema": "wholeloop/pr-open@1",
+      "options": ["--for <id>", "--url <url>"]
+    },
+    {
+      "path": "review begin",
+      "arguments": "[<branch|pr>]",
+      "schema": "wholeloop/review-begin@1",
+      "options": [
+        "--for <id>",
+        "--branch <name>",
+        "--base <branch>",
+        "--owner <person>",
+        "--rounds <review=n>"
+      ]
+    },
+    {
+      "path": "review input",
+      "arguments": "",
+      "schema": "wholeloop/review-context@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "review comment-plan",
+      "arguments": "",
+      "schema": "wholeloop/review-comment-plan@1",
+      "options": ["--for <id>", "--pr <url>"]
+    },
+    {
+      "path": "review complete",
+      "arguments": "",
+      "schema": "wholeloop/review-complete@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "verify begin",
+      "arguments": "[<branch|pr>]",
+      "schema": "wholeloop/verify-begin@1",
+      "options": [
+        "--for <id>",
+        "--branch <name>",
+        "--base <branch>",
+        "--owner <person>",
+        "--by <person>",
+        "--criteria <file>",
+        "--rounds <verify=n>"
+      ]
+    },
+    {
+      "path": "verify suite",
+      "arguments": "",
+      "schema": "wholeloop/verify-suite@1",
+      "options": ["--for <id>", "--run <id>", "--round <n>", "--commands <json>", "--timeout <ms>"]
+    },
+    {
+      "path": "verify complete",
+      "arguments": "",
+      "schema": "wholeloop/verify-complete@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "build route",
+      "arguments": "[<input>]",
+      "schema": "wholeloop/build-route@1",
+      "options": []
+    },
+    {
+      "path": "build agree",
+      "arguments": "<input>",
+      "schema": "wholeloop/build-agree@1",
+      "options": [
+        "--owner <person>",
+        "--criteria <file>",
+        "--by <person>",
+        "--issue <url>",
+        "--revision <value>"
+      ]
+    },
+    {
+      "path": "build preflight",
+      "arguments": "<id>",
+      "schema": "wholeloop/build-preflight@1",
+      "options": []
+    },
+    {
+      "path": "build prepare",
+      "arguments": "<id>",
+      "schema": "wholeloop/build-prepare@1",
+      "options": ["--base <branch>", "--after <id>"]
+    },
+    {
+      "path": "build plan",
+      "arguments": "<id>",
+      "schema": "wholeloop/build-plan@1",
+      "options": ["--file <path>", "--basis <snapshot>"]
+    },
+    {
+      "path": "build complete",
+      "arguments": "<id>",
+      "schema": "wholeloop/build-complete@1",
+      "options": []
+    },
+    {
+      "path": "build schema",
+      "arguments": "",
+      "schema": "wholeloop/build-schema@1",
+      "options": []
+    },
+    {
+      "path": "gate plan",
+      "arguments": "<verify|review>",
+      "schema": "wholeloop/gate-plan@1",
+      "options": [
+        "--for <id>",
+        "--repo <path>",
+        "--base <branch>",
+        "--rounds <verify=n,review=n>",
+        "--extend <rounds>",
+        "--reason <why>",
+        "--new-run",
+        "--criteria <file>"
+      ]
+    },
+    {
+      "path": "gate submit",
+      "arguments": "",
+      "schema": "wholeloop/gate-submit@1",
+      "options": ["--for <id>", "--file <path>"]
+    },
+    {
+      "path": "gate verdict",
+      "arguments": "",
+      "schema": "wholeloop/gate-verdict@1",
+      "options": ["--for <id>", "--gate <verify|review>"]
+    },
+    {
+      "path": "gate schema",
+      "arguments": "",
+      "schema": "wholeloop/gate-schema@1",
+      "options": []
+    },
+    {
+      "path": "worktree create",
+      "arguments": "<id>",
+      "schema": "wholeloop/worktree-create@1",
+      "options": ["--repo <path>", "--base <branch>", "--after <id>"]
+    },
+    {
+      "path": "worktree open",
+      "arguments": "<id>",
+      "schema": "wholeloop/worktree-open@1",
+      "options": []
+    },
+    {
+      "path": "worktree stop",
+      "arguments": "<id>",
+      "schema": "wholeloop/worktree-stop@1",
+      "options": ["--abandon", "--reason <why>"]
+    },
+    {
+      "path": "worktree list",
+      "arguments": "",
+      "schema": "wholeloop/worktree-list@1",
+      "options": []
+    },
+    {
+      "path": "worktree prune",
+      "arguments": "[<id>]",
+      "schema": "wholeloop/worktree-prune@1",
+      "options": ["--dry-run"]
+    },
+    {
+      "path": "slices plan",
+      "arguments": "",
+      "schema": "wholeloop/slices-plan@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "slices check",
+      "arguments": "<file>",
+      "schema": "wholeloop/slices-check@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "slices schema",
+      "arguments": "",
+      "schema": "wholeloop/slices-schema@1",
+      "options": []
+    },
+    {
+      "path": "eval gates",
+      "arguments": "<corpus>",
+      "schema": "wholeloop/gate-eval@1",
+      "options": ["--predictions <file>", "--inputs"]
+    },
+    {
+      "path": "eval definitions",
+      "arguments": "<corpus>",
+      "schema": "wholeloop/definition-eval@1",
+      "options": ["--predictions <file>"]
+    },
+    {
+      "path": "challenge plan",
+      "arguments": "<problem|spec|criteria|scopes|slicing>",
+      "schema": "wholeloop/challenge-plan@1",
+      "options": ["--file <path>", "--for <id>", "--challenge <level>"]
+    },
+    {
+      "path": "challenge schema",
+      "arguments": "",
+      "schema": "wholeloop/challenge-schema@1",
+      "options": []
+    },
+    {
+      "path": "scopes plan",
+      "arguments": "",
+      "schema": "wholeloop/scopes-plan@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "scopes schema",
+      "arguments": "",
+      "schema": "wholeloop/scopes-schema@1",
+      "options": []
+    },
+    {
+      "path": "spec check",
+      "arguments": "<file>",
+      "schema": "wholeloop/spec-check@1",
+      "options": []
+    },
+    {
+      "path": "spec schema",
+      "arguments": "",
+      "schema": "wholeloop/spec-schema@1",
+      "options": []
+    },
+    {
+      "path": "research plan",
+      "arguments": "",
+      "schema": "wholeloop/research-plan@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "research submit",
+      "arguments": "",
+      "schema": "wholeloop/research-submit@1",
+      "options": ["--for <id>", "--file <path>"]
+    },
+    {
+      "path": "research examine",
+      "arguments": "",
+      "schema": "wholeloop/research-examine@1",
+      "options": ["--for <id>", "--file <path>"]
+    },
+    {
+      "path": "research complete",
+      "arguments": "",
+      "schema": "wholeloop/research-complete@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "adapter root",
+      "arguments": "",
+      "schema": "wholeloop/adapter-root@1",
+      "options": []
+    },
+    {
+      "path": "build",
+      "arguments": "",
+      "schema": "wholeloop/adapter-build@1",
+      "options": [
+        "--target <claude|codex|opencode|copilot|gemini|antigravity|cursor>",
+        "--out <directory>",
+        "--dry-run"
+      ]
+    },
+    {
+      "path": "fanout run",
+      "arguments": "<verify|review>",
+      "schema": "wholeloop/fanout@1",
+      "options": [
+        "--for <id>",
+        "--engine <headless>",
+        "--adapter <claude|codex>",
+        "--concurrency <1..16>",
+        "--timeout <seconds>"
+      ]
+    },
+    {
+      "path": "adopt",
+      "arguments": "<URL>",
+      "schema": "wholeloop/adopt@1",
+      "options": [
+        "--provider <id>",
+        "--kind <docs|tracker>",
+        "--file <path>",
+        "--owner <person>",
+        "--title <text>"
+      ]
+    },
+    {
+      "path": "share mode",
+      "arguments": "",
+      "schema": "wholeloop/share-report@1",
+      "options": ["--for <id>", "--mode <local|shared>", "--by <person>", "--file <targets.json>"]
+    },
+    {
+      "path": "share report",
+      "arguments": "",
+      "schema": "wholeloop/share-report@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "share requests",
+      "arguments": "",
+      "schema": "wholeloop/share-report@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "share request",
+      "arguments": "",
+      "schema": "wholeloop/share-request@1",
+      "options": ["--for <id>", "--key <sha256>"]
+    },
+    {
+      "path": "share reconcile",
+      "arguments": "",
+      "schema": "wholeloop/share-report@1",
+      "options": ["--for <id>", "--key <sha256>", "--ref <URL>", "--file <path>"]
+    },
+    {
+      "path": "next",
+      "arguments": "[<idea|id|URL>]",
+      "schema": "wholeloop/next@1",
+      "options": [
+        "--owner <person>",
+        "--provider <id>",
+        "--kind <docs|tracker>",
+        "--file <path>",
+        "--title <text>"
+      ]
+    },
+    {
+      "path": "status",
+      "arguments": "[<id>]",
+      "schema": "wholeloop/status@1",
+      "options": ["--for <role>", "--reader <id>"]
+    },
+    {
+      "path": "setup",
+      "arguments": "",
+      "schema": "wholeloop/setup@1",
+      "options": ["--profile <id>", "--docs <id>", "--tracker <id>", "--scope <scope>"]
+    },
+    {
+      "path": "template list",
+      "arguments": "",
+      "schema": "wholeloop/template-list@1",
+      "options": []
+    },
+    {
+      "path": "template test",
+      "arguments": "<id>",
+      "schema": "wholeloop/template-test@1",
+      "options": []
+    },
+    {
+      "path": "template scaffold",
+      "arguments": "<id>",
+      "schema": "wholeloop/template-scaffold@1",
+      "options": ["--output <directory>"]
+    },
+    {
+      "path": "profile list",
+      "arguments": "",
+      "schema": "wholeloop/profile-list@1",
+      "options": []
+    },
+    {
+      "path": "profile test",
+      "arguments": "<id>",
+      "schema": "wholeloop/profile-test@1",
+      "options": []
+    },
+    {
+      "path": "profile scaffold",
+      "arguments": "<id>",
+      "schema": "wholeloop/profile-scaffold@1",
+      "options": ["--output <directory>"]
+    },
+    {
+      "path": "lens list",
+      "arguments": "",
+      "schema": "wholeloop/lens-list@1",
+      "options": []
+    },
+    {
+      "path": "lens test",
+      "arguments": "<id>",
+      "schema": "wholeloop/lens-test@1",
+      "options": []
+    },
+    {
+      "path": "lens scaffold",
+      "arguments": "<id>",
+      "schema": "wholeloop/lens-scaffold@1",
+      "options": ["--output <directory>"]
+    },
+    {
+      "path": "provider list",
+      "arguments": "",
+      "schema": "wholeloop/provider-list@1",
+      "options": []
+    },
+    {
+      "path": "provider show",
+      "arguments": "<id>",
+      "schema": "wholeloop/provider-show@1",
+      "options": []
+    },
+    {
+      "path": "provider test",
+      "arguments": "<id>",
+      "schema": "wholeloop/provider-test@1",
+      "options": ["--fixtures <file>"]
+    },
+    {
+      "path": "provider resolve",
+      "arguments": "<operation>",
+      "schema": "wholeloop/provider-resolve@1",
+      "options": []
+    },
+    {
+      "path": "provider scaffold",
+      "arguments": "<id>",
+      "schema": "wholeloop/provider-scaffold@1",
+      "options": ["--output <file>"]
+    },
+    {
+      "path": "mcp add",
+      "arguments": "<id>",
+      "schema": "wholeloop/mcp-add@1",
+      "options": ["--target <cli>"]
+    },
+    {
+      "path": "discover",
+      "arguments": "",
+      "schema": "wholeloop/discover@1",
+      "options": []
+    },
+    {
+      "path": "resolve",
+      "arguments": "<slot>",
+      "schema": "wholeloop/resolve@1",
+      "options": []
+    },
+    {
+      "path": "profile show",
+      "arguments": "",
+      "schema": "wholeloop/profile-show@1",
+      "options": ["--explain"]
+    },
+    {
+      "path": "profile set",
+      "arguments": "<dial=value>",
+      "schema": "wholeloop/profile-set@1",
+      "options": ["--scope <scope>", "--explain"]
+    },
+    {
+      "path": "profile preset",
+      "arguments": "<name>",
+      "schema": "wholeloop/profile-preset@1",
+      "options": ["--scope <scope>", "--explain"]
+    },
+    {
+      "path": "step begin",
+      "arguments": "<step>",
+      "schema": "wholeloop/step-begin@1",
+      "options": [
+        "--for <id>",
+        "--parent <id>",
+        "--from <brief-id>",
+        "--input <text>",
+        "--impact <text>",
+        "--owner <name>",
+        "--mode <mode>",
+        "--profile <json>"
+      ]
+    },
+    {
+      "path": "step plan",
+      "arguments": "",
+      "schema": "wholeloop/step-plan@1",
+      "options": ["--for <id>"]
+    },
+    {
+      "path": "step complete",
+      "arguments": "<step>",
+      "schema": "wholeloop/step-complete@1",
+      "options": [
+        "--for <id>",
+        "--artifact <file>",
+        "--no-go <outcome>",
+        "--reason <text>",
+        "--reopen <condition>"
+      ]
+    },
+    {
+      "path": "step skip",
+      "arguments": "<step>",
+      "schema": "wholeloop/step-skip@1",
+      "options": ["--for <id>", "--reason <text>"]
+    },
+    {
+      "path": "answer",
+      "arguments": "<qid=value>",
+      "schema": "wholeloop/answer@1",
+      "options": ["--for <id>", "--run <id>", "--remember <scope>", "--by <person>"]
+    },
+    {
+      "path": "msg send",
+      "arguments": "",
+      "schema": "wholeloop/msg-send@1",
+      "options": [
+        "--thread <id>",
+        "--to <role>",
+        "--from <role>",
+        "--kind <kind>",
+        "--body <text>",
+        "--body-file <file>"
+      ]
+    },
+    {
+      "path": "msg read",
+      "arguments": "",
+      "schema": "wholeloop/msg-read@1",
+      "options": ["--for <role>", "--reader <id>", "--peek"]
+    },
+    {
+      "path": "handoff",
+      "arguments": "<id>",
+      "schema": "wholeloop/handoff@1",
+      "options": ["--to <role>", "--from <role>", "--body <text>", "--body-file <file>"]
+    },
+    {
+      "path": "resume",
+      "arguments": "[<id>]",
+      "schema": "wholeloop/resume@1",
+      "options": ["--for <role>", "--reader <id>"]
+    },
+    {
+      "path": "state create",
+      "arguments": "<kind>",
+      "schema": "wholeloop/state-create@1",
+      "options": ["--title <text>", "--owner <name>", "--body-file <file>", "--parent <id>"]
+    },
+    {
+      "path": "state update",
+      "arguments": "<id>",
+      "schema": "wholeloop/state-update@1",
+      "options": ["--title <text>", "--owner <name>", "--body-file <file>", "--status <status>"]
+    },
+    {
+      "path": "state show",
+      "arguments": "[<id>]",
+      "schema": "wholeloop/state-show@1",
+      "options": []
+    },
+    {
+      "path": "state list",
+      "arguments": "",
+      "schema": "wholeloop/state-list@1",
+      "options": []
+    },
+    {
+      "path": "state get",
+      "arguments": "<id>",
+      "schema": "wholeloop/state-get@1",
+      "options": []
+    },
+    {
+      "path": "state rebuild",
+      "arguments": "",
+      "schema": "wholeloop/state-rebuild@1",
+      "options": []
+    },
+    {
+      "path": "note",
+      "arguments": "<id> <text>",
+      "schema": "wholeloop/note@1",
+      "options": []
+    },
+    {
+      "path": "link",
+      "arguments": "<id> <url>",
+      "schema": "wholeloop/link@1",
+      "options": []
+    },
+    {
+      "path": "open",
+      "arguments": "<id>",
+      "schema": "wholeloop/open@1",
+      "options": []
+    },
+    {
+      "path": "config show",
+      "arguments": "",
+      "schema": "wholeloop/config-show@1",
+      "options": ["--explain", "--initiative-config <file>", "--run-config <file>"]
+    },
+    {
+      "path": "config schema",
+      "arguments": "",
+      "schema": "wholeloop/config-schema@1",
+      "options": []
+    },
+    {
+      "path": "docs nav",
+      "arguments": "",
+      "schema": "wholeloop/docs-nav@1",
+      "options": []
+    },
+    {
+      "path": "docs reference",
+      "arguments": "",
+      "schema": "wholeloop/docs-reference@1",
+      "options": ["--kind <commands|config|providers|platforms>", "--write"]
+    },
+    {
+      "path": "docs check",
+      "arguments": "",
+      "schema": "wholeloop/docs-check@1",
+      "options": []
+    },
+    {
+      "path": "harness check",
+      "arguments": "",
+      "schema": "wholeloop/harness-check@1",
+      "options": []
+    },
+    {
+      "path": "install",
+      "arguments": "",
+      "schema": "wholeloop/install@1",
+      "options": ["--target <cli,...|all>", "--scope <user|project>", "--store <path>", "--dry-run"]
+    },
+    {
+      "path": "uninstall",
+      "arguments": "",
+      "schema": "wholeloop/uninstall@1",
+      "options": ["--target <cli,...|all>", "--scope <user|project>", "--store <path>", "--dry-run"]
+    },
+    {
+      "path": "doctor",
+      "arguments": "",
+      "schema": "wholeloop/doctor@1",
+      "options": ["--target <cli,...>", "--store <path>", "--artifact <path>"]
+    },
+    {
+      "path": "guard hooks",
+      "arguments": "<install|uninstall|status>",
+      "schema": "wholeloop/git-guards@1",
+      "options": ["--store <path>", "--repo <path>"]
+    },
+    {
+      "path": "guard before-tool",
+      "arguments": "",
+      "schema": "wholeloop/guard@1",
+      "options": ["--stdin", "--store <path>", "--repo <path>", "--for <id>"]
+    },
+    {
+      "path": "guard git-commit",
+      "arguments": "",
+      "schema": "wholeloop/guard@1",
+      "options": ["--store <path>", "--repo <path>", "--for <id>"]
+    },
+    {
+      "path": "guard git-push",
+      "arguments": "",
+      "schema": "wholeloop/guard@1",
+      "options": ["--stdin", "--store <path>", "--repo <path>", "--for <id>"]
+    },
+    {
+      "path": "guard state-write",
+      "arguments": "",
+      "schema": "wholeloop/guard@1",
+      "options": ["--path <path>"]
+    },
+    {
+      "path": "guard commit-msg",
+      "arguments": "<file>",
+      "schema": "wholeloop/commit-check@1",
+      "options": []
+    }
+  ],
+  "exitCodes": {
+    "ok": 0,
+    "unexpected": 1,
+    "input": 2,
+    "precondition": 3,
+    "shape": 4
+  }
+}

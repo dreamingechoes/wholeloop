@@ -1,6 +1,8 @@
+import { validate } from '../config/schema.js'
 import { canonicalDigest } from './canonical.js'
 import type { RenderedFile } from './contracts.js'
 import { ADAPTERS, artifactDigest, generateAdapter } from './generate.js'
+import distributionSchema from './schemas/distribution-v1.json' with { type: 'json' }
 
 /** Export reviewable delivery trees; this neither publishes nor installs a client. */
 export function generateDistribution(
@@ -62,6 +64,8 @@ export function generateDistribution(
       sha256: artifactDigest(file.content),
     })),
   }
+  if (validate(manifest, distributionSchema).length)
+    throw new Error('Generated distribution manifest violates its versioned contract')
   files.set('wholeloop-artifacts.json', {
     mode: 0o644,
     content: `${JSON.stringify(manifest, null, 2)}\n`,
