@@ -33,6 +33,13 @@ export function allowed(file: OwnedFile, component: Component, context: InstallC
   if (file.component !== component.target || canonicalPath(file.path) !== file.path) return false
   if (context.scope === 'project' && !inside(context.root, file.path)) return false
   if (inside(component.artifact, file.path)) return true
+  if (
+    component.target === 'antigravity' &&
+    context.scope === 'user' &&
+    component.locations.plugin &&
+    file.path === join(component.locations.plugin, 'plugin.json')
+  )
+    return true
   const skill = file.path.slice(component.locations.skills.length + 1)
   if (
     inside(component.locations.skills, file.path) &&
@@ -50,7 +57,11 @@ export function allowed(file: OwnedFile, component: Component, context: InstallC
     file.path ===
       join(
         component.locations.hooks,
-        component.target === 'opencode' ? 'wholeloop.js' : 'wholeloop.json',
+        component.target === 'opencode'
+          ? 'wholeloop.js'
+          : component.target === 'antigravity'
+            ? 'hooks.json'
+            : 'wholeloop.json',
       )
   )
 }

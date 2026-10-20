@@ -2,7 +2,7 @@
 
 > Automated results and pending work are separate. A checked roadmap task means
 > its local acceptance checks passed, not that every target CLI or platform has
-> been exercised. Updated 2026-10-19.
+> been exercised. Updated 2026-10-20.
 
 ## Coinstalled entrypoints and slot guidance (P1-07/P1-13 regression)
 
@@ -20,8 +20,16 @@
 - [ ] Keep the explicit per-repository Git fallback. Native hook emission is withheld because 0.27.0 substitutes extensionPath into shell text; adding a safe native binding is implementation work, not a manual checkmark.
 - [ ] Repeat on Linux and supported Node/client versions. Current generator/launcher/static-loader execution is macOS arm64/Node 24/Gemini 0.27.0 only.
 
-Antigravity adapter/hook/MCP/scenario work remains implementation. It does not wait
-for Gemini model, permission or authenticated-service checks.
+## Antigravity native activation (P5-01 component)
+
+- [ ] Load the generated plugin or owned overlays in disposable agy configuration. Confirm seventeen wl-agy- skills/eight agents, Codex coexistence, inherited models, observer tools/off execution policy, writer sandbox and sequential role handoffs. agy 1.4.2 version/help ran; listing could not bind a local port in this sandbox, so no native loader pass is claimed.
+- [ ] Confirm native named hooks fire with toolCall/workspacePaths and that allow preserves subsequent/default policy. Exercise denied repository runtime writes, guarded commits/pushes, changed core, missing/multiple workspaces and relocated special paths. Authored transport tests call the actual core but do not prove native activation or policy semantics.
+- [ ] Repeat user/project install/uninstall and shared project hooks.json refusal. Preserve personal hook maps; inspect standalone plugin delivery when the shared slot is occupied. User core/resources and ownership stay in the external store.
+- [ ] Prepare a fresh --target antigravity run with exact --pin, inspect input.txt JSONL and the agy recipe, then explicitly run --live after native trust/auth/model/permissions setup. Inspect actual output protocol and external effects independently of the structural journal verdict.
+- [ ] Review serverUrl/stdio MCP recipes and native OAuth/tool execution. Header recipes are refused; no credential is copied or rendered. Repeat on Linux and supported Node/client versions.
+
+Safe Gemini native hook binding remains independent implementation work; actual
+Antigravity activation/model/MCP checks do not block other roadmap code.
 
 ## Generated references (P5-06 local controls)
 
@@ -43,7 +51,7 @@ local implementation while retaining native/host verification boundaries.
 - [ ] Inspect native logs, ambient plugins/compatible user skills, ignored files, Git metadata, external writes and any remote effects. This structural scenario does not validate native JSON protocol, read-only role isolation, hook activation or the broader P0-03 matrix.
 - [ ] Repeat on Linux and supported Node versions before claiming portability. Current simulation/compiled-runner execution is macOS arm64/Node 24.
 
-Automated tier-A/Gemini installed-launcher simulations report FIXTURE_PASS, never a
+Automated tier-A/Gemini/Antigravity installed-launcher simulations report FIXTURE_PASS, never a
 native conformance PASS. Preparation launches no model; --live is an explicit
 owner action that can use authenticated models and incur cost. Actual model runs
 remain unexecuted here and do not block further implementation.

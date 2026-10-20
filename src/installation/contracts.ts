@@ -24,7 +24,7 @@ export interface InstallationResult {
     command: string[]
   }
 }
-export const TARGETS = ['claude', 'codex', 'opencode', 'copilot', 'gemini'] as const
+export const TARGETS = ['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity'] as const
 export interface OwnedFile {
   path: string
   sha256: string

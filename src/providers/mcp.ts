@@ -1,7 +1,14 @@
 import { stringify as toml } from 'smol-toml'
 import type { Provider } from './manifest.js'
 
-export const MCP_TARGETS = ['claude', 'codex', 'opencode', 'copilot', 'gemini'] as const
+export const MCP_TARGETS = [
+  'claude',
+  'codex',
+  'opencode',
+  'copilot',
+  'gemini',
+  'antigravity',
+] as const
 export type McpTarget = (typeof MCP_TARGETS)[number]
 
 /** Print a mergeable snippet; never read credentials or overwrite a client's config. */
@@ -9,14 +16,24 @@ export function renderMcp(provider: Provider, target: McpTarget) {
   const mcp = provider.access.mcp
   if (!mcp) throw new Error(`Provider ${provider.id} has no MCP installation recipe`)
   const recipe = mcp.install
-  if (target === 'copilot' && recipe.auth === 'header')
+  if ((target === 'copilot' || target === 'antigravity') && recipe.auth === 'header')
     throw new Error(
-      'Copilot remote headers do not expand environment variables; use OAuth or configure authentication through its credential store',
+      'Remote headers do not expand verified environment references for this target; use OAuth or its native credential store',
     )
   const header = recipe.auth === 'header' ? recipe.token_env : undefined
   let config: Record<string, unknown>
   let destination: string
-  if (target === 'gemini') {
+  if (target === 'antigravity') {
+    destination = '$HOME/.gemini/config/mcp_config.json'
+    config = {
+      mcpServers: {
+        [mcp.server]:
+          recipe.transport === 'http'
+            ? { serverUrl: recipe.url }
+            : { command: recipe.command, args: recipe.args ?? [] },
+      },
+    }
+  } else if (target === 'gemini') {
     destination = '$HOME/.gemini/settings.json'
     config = {
       mcpServers: {

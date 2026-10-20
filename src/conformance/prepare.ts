@@ -7,7 +7,7 @@ import { artifactDigest } from '../adapters/generate.js'
 import { isObject } from '../config/schema.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { manageInstallation } from '../installation/manage.js'
-import { installLocations } from '../installation/plan.js'
+import { installedName, installLocations } from '../installation/plan.js'
 import { StoreFiles } from '../state/files.js'
 import {
   CONFORMANCE_ID,
@@ -15,7 +15,7 @@ import {
   type ConformanceContext,
   type PreparedConformance,
 } from './contracts.js'
-import { conformancePrompt, conformanceRecipe } from './recipes.js'
+import { conformanceInput, conformancePrompt, conformanceRecipe } from './recipes.js'
 import { conformanceScenario } from './scenario.js'
 
 const pinPattern = /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/
@@ -112,7 +112,10 @@ export function prepareConformance(context: ConformanceContext, target: string, 
     '-m',
     'Keep the synthetic baseline distinct from runtime state and client evidence.',
   ])
-  const skill = join(installLocations(target, installation).skills, 'wl-frame-problem/SKILL.md')
+  const skill = join(
+    installLocations(target, installation).skills,
+    `${installedName(target, 'skill', 'frame-problem')}/SKILL.md`,
+  )
   const run: PreparedConformance = {
     schema: 'wholeloop/conformance-run@1',
     id,
@@ -133,6 +136,7 @@ export function prepareConformance(context: ConformanceContext, target: string, 
   }
   files.atomic('run.json', `${JSON.stringify(run)}\n`)
   files.atomic('prompt.txt', `${conformancePrompt(run, scenario)}\n`)
+  files.atomic('input.txt', conformanceInput(run, scenario))
   return {
     schema: 'wholeloop/conformance-prepared@1',
     id,
@@ -141,6 +145,7 @@ export function prepareConformance(context: ConformanceContext, target: string, 
     root: run.root,
     state: run.state,
     prompt: files.path('prompt.txt'),
+    input: files.path('input.txt'),
     recipe: conformanceRecipe(run),
     evidence: 'unrun',
     limitations: ['Preparing files does not launch a client or prove native skill discovery.'],
@@ -191,7 +196,7 @@ export function readConformance(context: ConformanceContext, id: string): Prepar
   const skill = join(
     installLocations(value.target, { ...paths, scope: 'project', store: paths.state, env: {} })
       .skills,
-    'wl-frame-problem/SKILL.md',
+    `${installedName(value.target, 'skill', 'frame-problem')}/SKILL.md`,
   )
   if (
     value.skill !== skill ||

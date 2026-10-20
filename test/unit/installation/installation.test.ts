@@ -648,7 +648,7 @@ describe('owned native installation and retained external history', () => {
               cwd: context.root,
               env,
               encoding: 'utf8',
-              timeout: 20000,
+              timeout: 45000,
               maxBuffer: 2 * 1024 * 1024,
             },
           )
@@ -704,6 +704,7 @@ describe('owned native installation and retained external history', () => {
         expect(retired.status, retired.stderr).toBe(0)
         expect(JSON.parse(retired.stdout).status).toBe('already-absent')
       }),
-    30000,
+    // The complete six-client catalog performs durable per-file writes and removal.
+    90000,
   )
 })

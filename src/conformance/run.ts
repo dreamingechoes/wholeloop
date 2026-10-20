@@ -7,7 +7,7 @@ import type { ConformanceContext } from './contracts.js'
 import { fixtureWorker } from './fixture.js'
 import { judgeConformance } from './judge.js'
 import { readConformance, runFiles } from './prepare.js'
-import { conformanceEnvironment, conformancePrompt, conformanceRecipe } from './recipes.js'
+import { conformanceEnvironment, conformanceInput, conformanceRecipe } from './recipes.js'
 import { conformanceScenario } from './scenario.js'
 
 export async function runConformance(
@@ -41,14 +41,14 @@ export async function runConformance(
   try {
     if (workspaceSnapshot(run.root).digest !== run.baseline) run.problem = 'workspace-changed'
     else if (mode === 'live') {
-      const probe = versionProbe(run.target, env, run.root)
+      const probe = versionProbe(conformanceRecipe(run).command, env, run.root)
       if (probe.status !== 'observed' || !probe.version) run.problem = 'version-unobserved'
       else if (probe.version !== run.pin) run.problem = 'version-mismatch'
       else {
         const recipe = conformanceRecipe(run)
         const result = await workerProcess(recipe.command, recipe.args, {
           cwd: recipe.cwd,
-          input: conformancePrompt(run, scenario),
+          input: conformanceInput(run, scenario),
           env,
           timeoutMs,
           signal: options.signal ?? new AbortController().signal,

@@ -608,7 +608,11 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'build',
     arguments: '',
-    options: ['--target <claude|codex|opencode|copilot|gemini>', '--out <directory>', '--dry-run'],
+    options: [
+      '--target <claude|codex|opencode|copilot|gemini|antigravity>',
+      '--out <directory>',
+      '--dry-run',
+    ],
     schema: 'wholeloop/adapter-build@1',
     summary: 'Render a self-contained client artifact tree without installing it',
   },

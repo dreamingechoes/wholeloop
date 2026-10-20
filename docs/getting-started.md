@@ -191,5 +191,18 @@ without a local receipt, but another scope/store cannot automatically adopt owne
 
 ---
 
+## Antigravity setup
+
+Build first, then inspect `wl install --target antigravity --scope project --dry-run
+--json`. Explicit install writes wl-agy- skills/agents and the native named hook map;
+user scope uses .gemini/antigravity-cli/plugins/wholeloop. Project hooks.json must
+be absent or already owned unchanged: existing personal policy is refused.
+Use `wl doctor --target antigravity --json` for metadata diagnostics and
+`wl uninstall --target antigravity --scope project --json` for owned removal.
+Standalone plugin output is available through build --target antigravity.
+See [native boundaries](./platforms/README.md#antigravity-plugin-and-native-overlays)
+before enabling a disposable native client; local transport tests do not establish
+actual native activation or authentication.
+
 <!-- docnav -->
 [◀ Philosophy](philosophy.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)

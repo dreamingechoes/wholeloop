@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini and Antigravity and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
 
 ---
 
@@ -147,9 +147,10 @@ node dist/wl.mjs uninstall --target all --scope user --json
 | Codex | .agents/skills and CODEX_HOME/agents | .agents/skills and .codex/agents | explicit per-repository Git fallback |
 | OpenCode | XDG config/opencode or OPENCODE_CONFIG_DIR | .opencode/ | plugins/wholeloop.js |
 | Copilot | COPILOT_HOME or .copilot/ | .github/ | hooks/wholeloop.json |
+| Antigravity | .gemini/antigravity-cli/plugins/wholeloop | .agents/ | named hooks.json map |
 | Gemini | .gemini/ under HOME or GEMINI_CLI_HOME | .gemini/ | explicit per-repository Git fallback |
 
-All installed native names use wl-; generated Claude plugins retain their plugin
+Antigravity native names use wl-agy- to coexist with Codex; other installed names use wl-; generated Claude plugins retain their plugin
 namespace. Skills invoke their one packaged core through relative launchers; the
 conductor passes its checked artifact root to roles. User distributions and all
 ownership/control/backups stay in the external store. Project distribution is
@@ -162,6 +163,35 @@ empty parents. Source/plugin generation remains available independently. Native
 restart, project trust, compatibility precedence, permissions and Linux still need
 actual conformance. Git-hook activation/removal remains a separate per-repository
 handoff. See [getting started](../getting-started.md) and [ADR-0050](../decisions/0050-owned-native-overlays-and-explicit-activation.md).
+
+## Antigravity plugin and native overlays
+
+Build with `wl build --target antigravity --out /tmp/wholeloop-agy --json`.
+The closed plugin.json, seventeen wl-agy- skills, eight strict agents, named
+hooks.json map and bundled core/resources form independent native output. User
+installation uses the documented CLI plugin root; project installation uses
+.agents. Existing unowned project hooks.json is refused before any target writes;
+use standalone native plugin delivery or preserve/resolve the shared file manually.
+Install/uninstall all includes six targets. Doctor requires explicit
+--target antigravity and probes agy, while its default remains tier A.
+
+The hook accepts toolCall/workspacePaths, resolves an exact hash-pinned core and
+calls the deterministic guard. Native allow delegates to the next/default policy;
+no permissionOverrides are emitted. User overlays bind external artifacts, project
+hooks use workspace-local distribution and standalone user plugins use the native
+CLI root. Missing/ambiguous roots or modified core deny without logging payloads.
+Observers receive explicit reads/declared web tools, no shell/write/MCP/memory or
+delegation; models inherit and role handoffs remain sequential. Plain-text options
+wait for explicit human answers when structured questions are unavailable.
+
+MCP recipes use serverUrl and command/args; header recipes are refused because
+safe native environment references are unverified. Native OAuth/authentication and
+activation remain separate owner actions. The framing runner uses one fresh JSONL
+user event with stream-json input/output; FIXTURE_PASS remains simulation.
+Actual agy 1.4.2 version/help ran. Agent listing failed to bind a local port in the
+execution sandbox, so native loading, policy and model execution remain unverified.
+See [ADR-0055](../decisions/0055-antigravity-native-overlays-and-pinned-hook-transport.md)
+and the [manual checklist](../../roadmap/manual-verification.md).
 
 ## Gemini extension and native overlays
 

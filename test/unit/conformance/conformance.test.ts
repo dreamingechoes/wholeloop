@@ -54,11 +54,11 @@ async function fixture(
     rmSync(dir, { recursive: true, force: true })
   }
 }
-function fakeClient(dir: string, version: string, body: string) {
+function fakeClient(dir: string, version: string, body: string, binary = 'codex') {
   const bin = join(dir, 'bin')
   mkdirSync(bin, { recursive: true })
   writeFileSync(
-    join(bin, 'codex'),
+    join(bin, binary),
     `#!${process.execPath}\nif(process.argv.includes('--version')){console.log(${JSON.stringify(version)});process.exit(0)}\n${body}`,
     { mode: 0o755 },
   )
@@ -71,7 +71,7 @@ function fakeClient(dir: string, version: string, body: string) {
 }
 
 describe('standalone conformance runner', () => {
-  it.each(['claude', 'codex', 'opencode', 'copilot', 'gemini'])(
+  it.each(['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity'])(
     'executes installed %s launchers while retaining explicit simulation evidence',
     async (target) => {
       await fixture(async (ctx) => {
@@ -103,6 +103,31 @@ describe('standalone conformance runner', () => {
     },
     30000,
   )
+
+  it('preflights agy and sends one documented JSONL user event to the native recipe', async () => {
+    await fixture(async (ctx, dir) => {
+      const prepared = prepareConformance(ctx, 'antigravity', '99.0.0')
+      const received = join(dir, 'received.json')
+      const env = fakeClient(
+        dir,
+        '99.0.0',
+        `;(async()=>{let input='';for await(const chunk of process.stdin)input+=chunk;const event=JSON.parse(input);if(event.event!=='user'||!event.message.content.includes('wl-agy-frame-problem')||!process.argv.includes('stream-json'))process.exit(8);(await import('node:fs')).writeFileSync(${JSON.stringify(received)},JSON.stringify(event));})()`,
+        'agy',
+      )
+      expect(JSON.parse(readFileSync(prepared.input, 'utf8')).event).toBe('user')
+      const report = await runConformance(ctx, prepared.id, 'live', { env })
+      expect(report.process, JSON.stringify(report)).toMatchObject({
+        status: 'succeeded',
+        code: 0,
+        version: '99.0.0',
+      })
+      expect(report.status).toBe('FAIL')
+      expect(report.evidence).toBe('live-process-and-journal')
+      expect(JSON.parse(readFileSync(received, 'utf8')).message.content).toContain(
+        'wl-agy-frame-problem',
+      )
+    })
+  })
 
   it('reports exact missing events and rejects stale artifacts, owners and unintended continuation', async () => {
     await fixture(async (ctx) => {

@@ -1,8 +1,15 @@
+import { basename, dirname } from 'node:path'
 import type { PreparedConformance, Scenario } from './contracts.js'
 
 /** Native skill discovery needs project customizations; the observer gate recipes deliberately disable them. */
 export function conformanceRecipe(run: PreparedConformance) {
   const common = { command: run.target, cwd: run.root }
+  if (run.target === 'antigravity')
+    return {
+      ...common,
+      command: 'agy',
+      args: ['--input-format', 'stream-json', '--output-format', 'stream-json'],
+    }
   if (run.target === 'gemini')
     return {
       ...common,
@@ -77,7 +84,7 @@ export function conformanceRecipe(run: PreparedConformance) {
 
 export function conformancePrompt(run: PreparedConformance, scenario: Scenario): string {
   return [
-    'Run the project-local wl-frame-problem skill once, standalone. Load its actual installed SKILL.md and follow its instructions.',
+    `Run the project-local ${basename(dirname(run.skill))} skill once, standalone. Load its actual installed SKILL.md and follow its instructions.`,
     `The project skill is at ${JSON.stringify(run.skill)}. Use its checked launcher: node ${JSON.stringify(run.launcher)}.`,
     `Idea: ${scenario.input}. Owner: ${scenario.owner}.`,
     'Pass the exact idea sentence as --input and the exact owner as --owner.',
@@ -101,4 +108,12 @@ export function conformanceEnvironment(
   delete env.WL_WORKSPACE
   delete env.WL_SUBJECT
   return env
+}
+
+/** Antigravity accepts a documented JSONL user event rather than an assumed plain stdin prompt. */
+export function conformanceInput(run: PreparedConformance, scenario: Scenario): string {
+  const prompt = conformancePrompt(run, scenario)
+  return run.target === 'antigravity'
+    ? `${JSON.stringify({ event: 'user', message: { content: prompt } })}\n`
+    : prompt
 }

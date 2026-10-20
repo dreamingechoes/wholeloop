@@ -1,5 +1,6 @@
 import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { stringify } from 'yaml'
+import { antigravityHook } from '../adapters/antigravity-hook.js'
 import type { RenderedFile } from '../adapters/contracts.js'
 import { adapterFor, generateAdapter } from '../adapters/generate.js'
 import { renderPortableSkill } from '../adapters/portable.js'
@@ -23,7 +24,7 @@ export interface InstallPlan {
   artifact: string
   files: InstalledFile[]
   exclusive: string[]
-  locations: { skills: string; agents: string; hooks?: string }
+  locations: { skills: string; agents: string; hooks?: string; plugin?: string }
   source: string
   core: string
   version: string
@@ -40,11 +41,27 @@ const modulePath = (from: string, to: string) => {
 }
 const slash = (value: string) => value.split(sep).join('/')
 const shell = (value: string) => `'${value.replaceAll("'", "'\\''")}'`
-export function installLocations(target: string, context: InstallContext) {
+export const installedName = (target: string, kind: 'skill' | 'agent', name: string) =>
+  target === 'claude' ? `wl-${name}` : adapterFor(target).name(kind, name)
+export function installLocations(
+  target: string,
+  context: InstallContext,
+): InstallPlan['locations'] {
   const env = context.env ?? process.env
   const personal = context.scope === 'user'
   const root = canonicalPath(context.root)
   const home = canonicalPath(context.home)
+  if (target === 'antigravity') {
+    const base = personal
+      ? join(home, '.gemini/antigravity-cli/plugins/wholeloop')
+      : join(root, '.agents')
+    return {
+      skills: join(base, 'skills'),
+      agents: join(base, 'agents'),
+      hooks: base,
+      ...(personal ? { plugin: base } : {}),
+    }
+  }
   if (target === 'gemini') {
     const base = personal
       ? join(absolute(env.GEMINI_CLI_HOME, home), '.gemini')
@@ -88,7 +105,7 @@ export function installLocations(target: string, context: InstallContext) {
       hooks: join(base, 'hooks'),
     }
   }
-  throw new Error('Choose an installed target: claude,codex,opencode,copilot,gemini')
+  throw new Error('Choose an installed target: claude,codex,opencode,copilot,gemini,antigravity')
 }
 /** Pure native overlay rendering. It never rewrites shared client settings or copies credential stores. */
 export function installationPlan(
@@ -119,7 +136,7 @@ export function installationPlan(
     const skill = /^harness\/skills\/([^/]+)\/SKILL.md$/.exec(path)?.[1]
     const agent = /^harness\/agents\/([^/]+)\.md$/.exec(path)?.[1]
     if (skill) {
-      const directory = join(locations.skills, `wl-${skill}`)
+      const directory = join(locations.skills, installedName(target, 'skill', skill))
       exclusive.push(directory)
       const source = generated.files.get(adapterFor(target).paths('skill', skill))
       if (!source) throw new Error('Generated native skill is missing')
@@ -144,7 +161,7 @@ export function installationPlan(
       )
       if (target === 'claude')
         body = `---\n${stringify({ ...frontmatter(body), name: `wl-${agent}`, hooks })}---\n${body.replace(/^---\n[\s\S]*?\n---\n/, '')}`
-      add(join(locations.agents, `wl-${agent}${extension}`), body)
+      add(join(locations.agents, `${installedName(target, 'agent', agent)}${extension}`), body)
     }
   }
   if (target === 'opencode' && locations.hooks) {
@@ -165,6 +182,18 @@ export function installationPlan(
       join(locations.hooks, 'wholeloop.json'),
       `${JSON.stringify({ version: 1, hooks: { preToolUse: [{ type: 'command', exec: 'node', args: [executable, 'copilot'], ...(project ? { cwd: '.' } : {}), timeoutSec: 15 }] } }, null, 2)}\n`,
     )
+  }
+  if (target === 'antigravity' && locations.hooks) {
+    add(
+      join(locations.hooks, 'hooks.json'),
+      `${JSON.stringify(antigravityHook(generated.manifest.core, context.scope === 'user' ? artifact : undefined), null, 2)}\n`,
+    )
+    if (locations.plugin) {
+      exclusive.push(locations.plugin)
+      const marker = generated.files.get('plugin.json')
+      if (!marker) throw new Error('Generated Antigravity plugin marker is missing')
+      add(join(locations.plugin, 'plugin.json'), marker.content)
+    }
   }
   return {
     target,

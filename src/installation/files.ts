@@ -59,6 +59,7 @@ function walk(root: string): string[] {
 function privateDirectories(component: Component) {
   return [
     component.artifact,
+    ...(component.locations.plugin ? [component.locations.plugin] : []),
     ...component.files
       .filter(
         (file) => file.path.endsWith('/SKILL.md') && inside(component.locations.skills, file.path),

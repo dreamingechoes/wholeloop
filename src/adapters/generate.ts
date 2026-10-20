@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { posix } from 'node:path'
 import { markEntrypoint } from '../harness/entrypoints.js'
+import { antigravityAdapter } from './antigravity.js'
 import { canonicalDigest, validateCanonical } from './canonical.js'
 import { claudeAdapter } from './claude.js'
 import type { Adapter, RenderedFile } from './contracts.js'
@@ -11,11 +12,16 @@ import { codexAdapter, copilotAdapter, opencodeAdapter } from './portable.js'
 export const artifactDigest = (content: string) =>
   createHash('sha256').update(content).digest('hex')
 export function adapterFor(id: string): Adapter {
-  const found = [claudeAdapter, codexAdapter, opencodeAdapter, copilotAdapter, geminiAdapter].find(
-    (adapter) => adapter.id === id,
-  )
+  const found = [
+    claudeAdapter,
+    codexAdapter,
+    opencodeAdapter,
+    copilotAdapter,
+    geminiAdapter,
+    antigravityAdapter,
+  ].find((adapter) => adapter.id === id)
   if (found) return found
-  throw new Error('Choose --target claude|codex|opencode|copilot|gemini')
+  throw new Error('Choose --target claude|codex|opencode|copilot|gemini|antigravity')
 }
 /** A pure render tree lets generation, installation and golden tests share one contract. */
 export function generateAdapter(
@@ -64,7 +70,7 @@ export function generateAdapter(
     mode: 0o644,
     content: `${JSON.stringify(adapter.manifest(version, { skills, agents }), null, 2)}\n`,
   })
-  for (const [path, file] of hookArtifacts(id)) files.set(path, file)
+  for (const [path, file] of hookArtifacts(id, artifactDigest(core))) files.set(path, file)
   files.set('bin/wl.mjs', { mode: 0o755, content: core })
   const manifest = {
     schema: 'wholeloop/adapter-artifacts@1',

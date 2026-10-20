@@ -1,7 +1,7 @@
-import { resolve } from 'node:path'
+import { isAbsolute, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { ITEM_ID } from '../state/events.js'
-import { canonicalPath } from '../state/paths.js'
+import { canonicalPath, inside } from '../state/paths.js'
 
 export interface GuardTool {
   event: 'before-tool'
@@ -23,9 +23,17 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
       ))
   )
     throw new Error('Only before-tool payloads can request a tool guard decision')
-  const name = value.tool_name ?? value.toolName ?? value.tool
+  const native = value.toolCall
+  if (
+    native !== undefined &&
+    (!isObject(native) || typeof native.name !== 'string' || !isObject(native.args))
+  )
+    throw new Error('Invalid native tool call; contents omitted')
+  const call = isObject(native) ? native : undefined
+  const name = call?.name ?? value.tool_name ?? value.toolName ?? value.tool
   if (typeof name !== 'string' || !name.trim()) throw new Error('Hook payload needs a tool name')
   let args: unknown =
+    call?.args ??
     value.tool_input ??
     value.toolInput ??
     value.toolArgs ??
@@ -40,7 +48,45 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
       throw new Error('Invalid tool arguments; contents omitted')
     }
   if (!isObject(args)) throw new Error('Tool arguments must be an object; contents omitted')
-  const directory = args.workdir ?? args.cwd ?? value.cwd ?? root
+  const workspaces = value.workspacePaths
+  if (
+    call &&
+    (!Array.isArray(workspaces) ||
+      workspaces.length > 32 ||
+      workspaces.some((path) => typeof path !== 'string' || !isAbsolute(path)))
+  )
+    throw new Error('Native tool call needs explicit workspace context')
+  const target =
+    args.Cwd ??
+    args.TargetFile ??
+    args.AbsolutePath ??
+    args.DirectoryPath ??
+    args.SearchDirectory ??
+    args.SearchPath
+  if (call && target !== undefined && (typeof target !== 'string' || !isAbsolute(target)))
+    throw new Error('Native tool target must be absolute; contents omitted')
+  const roots = Array.isArray(workspaces)
+    ? workspaces
+        .filter((path): path is string => typeof path === 'string')
+        .map((path) => canonicalPath(resolve(root, path)))
+    : []
+  const candidates =
+    typeof target === 'string'
+      ? roots.filter((path) => inside(path, canonicalPath(resolve(root, target))))
+      : roots
+  // A single workspace still supplies cwd for legitimate external artifact writes.
+  const matches =
+    !candidates.length && args.Cwd === undefined && roots.length === 1 ? roots : candidates
+  const nativeDirectory = call
+    ? (args.Cwd ?? (matches.length === 1 ? matches[0] : undefined))
+    : undefined
+  if (
+    call &&
+    (typeof nativeDirectory !== 'string' ||
+      !matches.some((path) => inside(path, canonicalPath(resolve(root, nativeDirectory)))))
+  )
+    throw new Error('Native workspace context is missing or ambiguous')
+  const directory = nativeDirectory ?? args.workdir ?? args.cwd ?? value.cwd ?? root
   if (typeof directory !== 'string' || !directory.trim())
     throw new Error('Hook payload needs its working directory')
   const cwd = canonicalPath(resolve(root, directory))
@@ -52,22 +98,27 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
   const kind =
     name === 'wholeloop.state.write'
       ? 'state-write'
-      : /^(bash|shell|exec_command|run_shell_command|powershell)$/.test(tool)
+      : /^(bash|shell|exec_command|run_shell_command|run_command|powershell)$/.test(tool)
         ? 'shell'
-        : /^(write|edit|create|apply_patch|write_file|edit_file|replace|str_replace_editor)$/.test(
+        : /^(write|edit|create|apply_patch|write_file|edit_file|replace|str_replace_editor|write_to_file|replace_file_content|multi_replace_file_content)$/.test(
               tool,
             )
           ? 'write'
-          : /^(read|view|read_file|glob|grep)$/.test(tool)
+          : /^(read|view|read_file|glob|grep|view_file|list_dir|find_by_name|grep_search|search_web|read_url_content)$/.test(
+                tool,
+              )
             ? 'read'
             : 'other'
-  const command = args.command ?? args.cmd
+  const command = args.CommandLine ?? args.command ?? args.cmd
   if (kind === 'shell' && typeof command !== 'string')
     throw new Error('Shell guard needs its command string')
   const paths = [
     args.file_path,
     args.filePath,
     args.path,
+    ...(call && /^(write_to_file|replace_file_content|multi_replace_file_content)$/.test(tool)
+      ? [args.TargetFile]
+      : []),
     ...(Array.isArray(args.paths) ? args.paths : []),
   ].filter((path) => path !== undefined)
   if (paths.some((path) => typeof path !== 'string' || !path.trim()))

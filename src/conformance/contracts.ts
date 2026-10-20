@@ -1,6 +1,13 @@
 import type { ProcessResult } from '../fanout/process.js'
 
-export const CONFORMANCE_TARGETS = ['claude', 'codex', 'opencode', 'copilot', 'gemini'] as const
+export const CONFORMANCE_TARGETS = [
+  'claude',
+  'codex',
+  'opencode',
+  'copilot',
+  'gemini',
+  'antigravity',
+] as const
 export const CONFORMANCE_ID = /^cf-[a-f0-9]{24}$/
 export interface Scenario {
   schema: 'wholeloop/conformance-scenario@1'

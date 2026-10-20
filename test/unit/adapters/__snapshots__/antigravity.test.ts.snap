@@ -1,0 +1,141 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Antigravity native adapter and transport > renders a closed plugin manifest, strict observer tools and stable native golden 1`] = `
+{
+  "agents/wl-agy-reviewer.md": {
+    "content": "---
+name: wl-agy-reviewer
+description: Observe assigned evidence.
+tools: [ view_file, grep_search, search_web, read_url_content ]
+mainAgent: false
+subagent: true
+model: inherit
+commandExecutionPolicy: off
+---
+The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: deep; inherit the selected model.
+
+This observer has no shell, write, memory, MCP or delegation tool. Request observed command/provider evidence from the main session. Return additional role work for sequential main-session handoff. If structured questions are unavailable, return plain-text options and wait.
+
+# Review
+
+Report observed evidence.
+<!-- wholeloop:entrypoint@1 -->
+",
+    "mode": 420,
+  },
+  "bin/wl.mjs": {
+    "content": "#!/usr/bin/env node
+",
+    "mode": 493,
+  },
+  "hooks.json": {
+    "content": "{
+  "wholeloop-guard": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e '\\nconst {spawnSync}=require('\\\\''node:child_process'\\\\'')\\nconst {createHash}=require('\\\\''node:crypto'\\\\'')\\nconst {lstatSync,readFileSync,realpathSync}=require('\\\\''node:fs'\\\\'')\\nconst {homedir}=require('\\\\''node:os'\\\\'')\\nconst {isAbsolute,join,relative,sep}=require('\\\\''node:path'\\\\'')\\nconst expected=\\"a59c47872b71f12589942892464e764c0db350c20b72228645615cc36e0a0725\\",bound=null\\nconst unavailable='\\\\''wholeloop guard is unavailable; inspect the packaged core and workspace context.'\\\\''\\nconst emit=(decision,reason)=>process.stdout.write(JSON.stringify({decision,...(reason?{reason}:{})})+'\\\\''\\\\n'\\\\'')\\nconst deny=()=>emit('\\\\''deny'\\\\'',unavailable)\\nconst inside=(root,path)=>{const value=relative(root,path);return value==='\\\\'''\\\\'' || (!isAbsolute(value) && value!=='\\\\''..'\\\\'' && !value.startsWith('\\\\''..'\\\\''+sep))}\\nfunction matching(root){\\n try{\\n  root=realpathSync(root)\\n  const manifest=join(root,'\\\\''wholeloop-artifacts.json'\\\\''),bin=join(root,'\\\\''bin/wl.mjs'\\\\'')\\n  const meta=lstatSync(manifest),stat=lstatSync(bin)\\n  if(!meta.isFile() || meta.isSymbolicLink() || meta.size>1048576 || !stat.isFile() || stat.isSymbolicLink() || stat.size>4194304)return\\n  const value=JSON.parse(readFileSync(manifest,'\\\\''utf8'\\\\''))\\n  if(value.schema!=='\\\\''wholeloop/adapter-artifacts@1'\\\\'' || value.target!=='\\\\''antigravity'\\\\'' || value.core!==expected || !Array.isArray(value.files) || !value.files.some(file=>file.path==='\\\\''bin/wl.mjs'\\\\'' && file.sha256===expected) || createHash('\\\\''sha256'\\\\'').update(readFileSync(bin)).digest('\\\\''hex'\\\\'')!==expected)return\\n  return bin\\n }catch{}\\n}\\nconst timer=setTimeout(()=>{deny();process.exit(0)},5000)\\n;(async()=>{\\n try{\\n  let bytes=0;const chunks=[]\\n  for await(const chunk of process.stdin){bytes+=chunk.length;if(bytes>2097152)throw new Error('\\\\''limit'\\\\'');chunks.push(chunk)}\\n  clearTimeout(timer)\\n  const payload=JSON.parse(Buffer.concat(chunks).toString('\\\\''utf8'\\\\''))\\n  if(!payload || !payload.toolCall || !payload.toolCall.args || !Array.isArray(payload.workspacePaths) || payload.workspacePaths.length>32)throw new Error('\\\\''context'\\\\'')\\n  const workspaces=[...new Set(payload.workspacePaths.map(path=>{if(typeof path!=='\\\\''string'\\\\'' || !isAbsolute(path))throw new Error('\\\\''workspace'\\\\'');return realpathSync(path)}))]\\n  const args=payload.toolCall.args\\n  const target=args.Cwd ?? args.TargetFile ?? args.AbsolutePath ?? args.DirectoryPath ?? args.SearchDirectory ?? args.SearchPath\\n  if(target!==undefined && (typeof target!=='\\\\''string'\\\\'' || !isAbsolute(target)))throw new Error('\\\\''target'\\\\'')\\n  const candidates=typeof target==='\\\\''string'\\\\'' && isAbsolute(target)?workspaces.filter(root=>inside(root,target)):workspaces\\n  const roots=!candidates.length && args.Cwd===undefined && workspaces.length===1?workspaces:candidates\\n  const cwd=args.Cwd || (roots.length===1?roots[0]:undefined)\\n  if(typeof cwd!=='\\\\''string'\\\\'' || !isAbsolute(cwd) || !roots.some(root=>inside(root,cwd)))throw new Error('\\\\''cwd'\\\\'')\\n  let bin\\n  if(bound)bin=matching(bound)\\n  else{\\n   const local=roots.map(root=>matching(join(root,'\\\\''.wholeloop/distribution/antigravity'\\\\''))).filter(Boolean)\\n   if(local.length>1)throw new Error('\\\\''ambiguous'\\\\'')\\n   bin=local[0] || matching(join(homedir(),'\\\\''.gemini/antigravity-cli/plugins/wholeloop'\\\\''))\\n  }\\n  if(!bin)throw new Error('\\\\''core'\\\\'')\\n  const result=spawnSync(process.execPath,[bin,'\\\\''guard'\\\\'','\\\\''before-tool'\\\\'','\\\\''--stdin'\\\\'','\\\\''--json'\\\\''],{cwd,input:JSON.stringify(payload),encoding:'\\\\''utf8'\\\\'',timeout:5000,killSignal:'\\\\''SIGKILL'\\\\'',maxBuffer:65536,shell:false})\\n  if(result.error || ![0,2].includes(result.status))throw new Error('\\\\''process'\\\\'')\\n  const value=JSON.parse(result.stdout)\\n  if(value.schema!=='\\\\''wholeloop/guard@1'\\\\'' || !['\\\\''allow'\\\\'','\\\\''deny'\\\\''].includes(value.decision) || result.status!==(value.decision==='\\\\''allow'\\\\''?0:2) || !Array.isArray(value.reasons) || value.reasons.some(reason=>typeof reason!=='\\\\''string'\\\\''))throw new Error('\\\\''result'\\\\'')\\n  // Native allow delegates to the next hook/default policy; never emit permissionOverrides.\\n  emit(value.decision,value.decision==='\\\\''deny'\\\\''?value.reasons.join('\\\\'' '\\\\''):undefined)\\n }catch{deny()}finally{clearTimeout(timer);process.stdin.pause()}\\n})()\\n'",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
+",
+    "mode": 420,
+  },
+  "plugin.json": {
+    "content": "{
+  "name": "wholeloop",
+  "description": "Independent development steps with an external journal, owned artifacts and explicit human decisions."
+}
+",
+    "mode": 420,
+  },
+  "skills/wl-agy-next/SKILL.md": {
+    "content": "---
+name: wl-agy-next
+description: Continue fixture work.
+---
+Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+
+# Next
+
+Call wl next --json.
+
+Native wholeloop skills use the wl-agy- prefix. If structured questions are unavailable, return exact plain-text options and wait for explicit answers.
+<!-- wholeloop:entrypoint@1 -->
+",
+    "mode": 420,
+  },
+  "skills/wl-agy-next/scripts/wl.mjs": {
+    "content": "#!/usr/bin/env node
+await import(new URL("../../../bin/wl.mjs", import.meta.url))
+",
+    "mode": 493,
+  },
+  "wholeloop-artifacts.json": {
+    "content": "{
+  "schema": "wholeloop/adapter-artifacts@1",
+  "target": "antigravity",
+  "version": "0.0.0",
+  "source": "4d8028eeaa360a0252d4c8b94bd26842f9060767288d8b150a46a8b93a8b7264",
+  "core": "a59c47872b71f12589942892464e764c0db350c20b72228645615cc36e0a0725",
+  "capabilities": {
+    "conformance": "unverified",
+    "skills": "rendered",
+    "agents": "rendered",
+    "hooks": "native-and-git-fallback",
+    "readOnly": "read-tool-allowlist",
+    "engines": [
+      "sequential"
+    ]
+  },
+  "skills": [
+    "wl-agy-next"
+  ],
+  "agents": [
+    "wl-agy-reviewer"
+  ],
+  "files": [
+    {
+      "path": "agents/wl-agy-reviewer.md",
+      "mode": 420,
+      "sha256": "2049b65047082a845867f8f4751277f37afc1546273453e4fc8f151a08d7b06f"
+    },
+    {
+      "path": "skills/wl-agy-next/SKILL.md",
+      "mode": 420,
+      "sha256": "4cfed73600d53b3055c92612f6174b88d6e3930d942e8694321d67e300067ba8"
+    },
+    {
+      "path": "skills/wl-agy-next/scripts/wl.mjs",
+      "mode": 493,
+      "sha256": "add502f552054a727698aa8e17bc78a730de1f32dbe67619a8a0555128bf8dd1"
+    },
+    {
+      "path": "plugin.json",
+      "mode": 420,
+      "sha256": "ca278c321d56684470c463c131768e731ce5ed729a117ca5fdcb2ef93e41deaa"
+    },
+    {
+      "path": "hooks.json",
+      "mode": 420,
+      "sha256": "22172ececafb3ff04cd52846cf0edab86ae9b2d331645e981abdaaf5f9facf4e"
+    },
+    {
+      "path": "bin/wl.mjs",
+      "mode": 493,
+      "sha256": "a59c47872b71f12589942892464e764c0db350c20b72228645615cc36e0a0725"
+    }
+  ]
+}
+",
+    "mode": 420,
+  },
+}
+`;

@@ -174,6 +174,7 @@ describe('MCP rendering', () => {
     expect(renderMcp(provider, 'opencode').snippet).toContain('Bearer {env:SUPPORT_AUTH}')
     expect(renderMcp(provider, 'gemini').snippet).toContain(`Bearer \${SUPPORT_AUTH}`)
     expect(() => renderMcp(provider, 'copilot')).toThrow('do not expand')
+    expect(() => renderMcp(provider, 'antigravity')).toThrow('do not expand')
   })
 })
 
@@ -188,6 +189,10 @@ describe('provider detection', () => {
     fixture((root, _user, dir) => {
       const home = join(dir, 'home')
       const files = [
+        [
+          join(home, '.gemini/config/mcp_config.json'),
+          '{"mcpServers":{"support":{"serverUrl":"https://example.invalid/mcp"}}}',
+        ],
         [
           join(root, '.mcp.json'),
           '{"mcpServers":{"support":{"type":"http","url":"https://example.com"}}}',

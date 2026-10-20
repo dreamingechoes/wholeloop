@@ -12,5 +12,7 @@ export default defineConfig({
   },
   // Process/Git integration fixtures already exercise concurrency internally.
   // Bound file workers so CPU contention does not consume their timeout budget.
-  test: { include: ['test/**/*.test.ts'], maxWorkers: 2 },
+  // Most files also run Git/worktree/process integration. Allow setup and cleanup
+  // under contention; product deadline assertions retain their explicit budgets.
+  test: { include: ['test/**/*.test.ts'], maxWorkers: 2, testTimeout: 30000 },
 })

@@ -1,5 +1,46 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`MCP rendering > antigravity http matches its golden configuration 1`] = `
+{
+  "applied": false,
+  "destination": "$HOME/.gemini/config/mcp_config.json",
+  "format": "json",
+  "provider": "support",
+  "schema": "wholeloop/mcp-add@1",
+  "snippet": "{
+  "mcpServers": {
+    "support": {
+      "serverUrl": "https://mcp.example.com/mcp"
+    }
+  }
+}
+",
+  "target": "antigravity",
+}
+`;
+
+exports[`MCP rendering > antigravity stdio matches its golden configuration 1`] = `
+{
+  "applied": false,
+  "destination": "$HOME/.gemini/config/mcp_config.json",
+  "format": "json",
+  "provider": "support",
+  "schema": "wholeloop/mcp-add@1",
+  "snippet": "{
+  "mcpServers": {
+    "support": {
+      "command": "test-mcp",
+      "args": [
+        "--readonly"
+      ]
+    }
+  }
+}
+",
+  "target": "antigravity",
+}
+`;
+
 exports[`MCP rendering > claude http matches its golden configuration 1`] = `
 {
   "applied": false,
