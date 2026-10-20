@@ -103,11 +103,14 @@ pinned/latest observations, preserves unknown/simulation/live evidence and marks
 results older than 48 hours stale. Comparable fresh native passes/failures produce
 deterministic regression candidates naming actual versions and failing assertions.
 Duplicate/relabelled runs, invalid reports and future observations are refused.
-Scheduled collection, installers/version resolution, issue automation and generated
-page integration remain code work; actual CI/authenticated runs remain owner checks.
+Explicit page comparison/regeneration now shares strict marker ownership with
+code references, requires a fixed as-of time, preserves surrounding prose/dates
+and projects no raw reports. Initial published documentation rows remain UNRUN.
+Scheduled collection, installers/version resolution and issue automation remain
+code work; actual CI/authenticated runs remain owner checks.
 No native acceptance is inferred from the matrix's synthetic tests.
 
-**Docs** — platforms (generated matrix integration pending), ADR-0059.
+**Docs** — platforms, ADR-0059, ADR-0064.
 
 ## P5-05 · Distribution
 
@@ -160,10 +163,10 @@ claim that no local implementation exists. Native interaction claims retain expl
 limits. Local adapter declarations now share the build/install registry, including
 all seven targets, hook/read-only boundaries and current engines. Generated docs
 retain unverified native conformance; no simulation is promoted to support. The
-reported framing renderer is separate. Scheduled native collection/page integration
-(P5-04) and remaining per-CLI
+reported framing renderer has its own explicit external-input/time page comparison
+and optional regeneration. Scheduled native collection (P5-04) and remaining per-CLI
 getting-started refinements are still code/documentation work;
-those gaps do not block independent implementation. See ADR-0052 and ADR-0061.
+those gaps do not block independent implementation. See ADR-0052, ADR-0061 and ADR-0064.
 
 **Docs** — all.
 

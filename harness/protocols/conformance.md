@@ -19,6 +19,10 @@
   fresh native pinned PASS/latest FAIL on different exact observed versions,
   successful processes, identical core/source/scenario bindings and named failures.
   Launch/authentication failures and incomparable runs need separate diagnosis.
+- ⛔ `conformance-explicit-page-projection` — compare supplied matrix documentation
+  with an explicit destination/time and write only on request. Require one owned
+  section in a regular bounded page without linked parents. Preserve surrounding
+  prose, original observation dates and evidence limits; persist no raw reports.
 
 This scenario checks process/journal structure. It does not establish native
 protocol correctness, semantic evidence quality, hook activation, permission

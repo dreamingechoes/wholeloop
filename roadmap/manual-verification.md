@@ -56,7 +56,7 @@ These owner checks do not block remaining release tooling or other roadmap imple
 
 The generated provider and adapter tables record declarations only. Check that
 local engine changes retain unverified native status. Native capability-matrix
-collection/page integration and remaining per-CLI onboarding refinements are still
+collection and remaining per-CLI onboarding refinements are still
 implementation work, separate from these manual checks. Overview pages now reflect
 local implementation while retaining native/host verification boundaries.
 
@@ -127,7 +127,8 @@ hook capture and installed-client behavior remain owner checks.
 
 - [ ] After explicit native runs, wrap their exact reports with pinned/latest channel and actual observedAt timestamps. Compare the matrix with the original external reports, including actual client versions, core/source/scenario bindings and named assertions. Imported reports are not authenticated by the renderer.
 - [ ] Independently diagnose model/authentication/managed-policy failures. A successful framing process with missing journal assertions is a structural failure; it is not evidence that every native capability regressed.
-- [ ] Confirm scheduled collection, latest-version resolution, service credentials, issue permissions/deduplication and generated-page updates once their code is implemented. Current local matrix tests do not exercise CI or send issues.
+- [ ] Compare/write the observation page against the original external reports with explicit --docs/--at and optional --write. Verify original dates, stale/simulation distinctions, source privacy and unchanged prose. Repeat refusal/idempotency on Linux and supported Node releases; inspect interrupted writes before regenerating.
+- [ ] Confirm scheduled collection, latest-version resolution, service credentials and issue permissions/deduplication once their code is implemented. Current local matrix/page tests do not exercise CI or send issues.
 - [ ] Repeat CLI/read-boundary and timestamp fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64 only.
 
 These owner checks do not block remaining collection, automation or documentation code.

@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
 import { conformanceMatrix, conformanceMatrixMarkdown } from '../conformance/matrix.js'
+import { conformancePage } from '../conformance/page.js'
 import { prepareConformance } from '../conformance/prepare.js'
 import { reportConformance, runConformance } from '../conformance/run.js'
 import { storePath } from '../state/paths.js'
@@ -20,9 +21,17 @@ export async function conformanceCommand(
 ) {
   if (command === 'conformance matrix') {
     const file = positional[0]
-    if (!file || positional.length !== 1 || (json && options['--markdown'] === true))
+    const docs = options['--docs']
+    if (
+      !file ||
+      positional.length !== 1 ||
+      (json && options['--markdown'] === true) ||
+      (options['--write'] === true && typeof docs !== 'string') ||
+      (typeof docs === 'string' &&
+        (typeof options['--at'] !== 'string' || options['--markdown'] === true))
+    )
       throw new CliError(
-        'Use conformance matrix <results.json> [--at <UTC timestamp>] [--markdown | --json]',
+        'Use conformance matrix <results.json> [--at <UTC timestamp>] [--markdown | --json]; --docs <repository> requires explicit --at and supports optional --write',
       )
     let input: unknown
     try {
@@ -36,12 +45,20 @@ export async function conformanceCommand(
       throw new CliError('Provide one regular results JSON file of at most 1 MiB; contents omitted')
     }
     const matrix = conformanceMatrix(input, String(options['--at'] ?? new Date().toISOString()))
+    const documentation =
+      typeof docs === 'string'
+        ? conformancePage(resolve(root, docs), matrix, options['--write'] === true)
+        : undefined
     io.out(
       options['--markdown'] === true
         ? conformanceMatrixMarkdown(matrix)
-        : JSON.stringify(matrix, null, json ? undefined : 2),
+        : JSON.stringify(
+            { ...matrix, ...(documentation ? { documentation } : {}) },
+            null,
+            json ? undefined : 2,
+          ),
     )
-    return matrix.regressionCandidates.length ? 4 : 0
+    return matrix.regressionCandidates.length || documentation?.status === 'stale' ? 4 : 0
   }
   const context = {
     store: typeof options['--store'] === 'string' ? resolve(root, options['--store']) : storePath(),

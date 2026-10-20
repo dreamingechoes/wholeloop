@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-20 · P5-04 documentation — explicit observation snapshots
+
+- Add explicit documentation comparison and optional write to conformance matrix. Require an exact as-of time for reproducible checks and preserve original evidence dates. Include a versioned page receipt; checked drift and regression candidates retain exit 4, including candidates after a successful write. ADR-0064 records the boundary between external observations and source-derived references.
+- Share strict ordered/unique marker replacement with the existing reference writer. Change only the owned platform observation section, skip matching writes and refuse missing/malformed ownership, linked pages/parents and pages over 1 MiB. Persist validated row projections and limitations instead of raw reports, paths or runtime state. Initial rows remain UNRUN; collection/version resolution/issue automation remain code work.
+- Focused matrix/page/reference tests passed 56 cases across three files, including compiled compare/write, exact time, untouched sources/prose, stale simulation dates, omitted private fixture fields, idempotent modification time and unsafe-page refusal. Add an output-size guard so regeneration cannot create a page exceeding its own read budget. Generate the actual fourteen-row UNRUN documentation snapshot from an empty external observation batch without inferring native support. Full local check passed 931 tests in 62 files (238.94 seconds), build/smoke, lint/typecheck, generated references/catalogs, 236-file docs, 142-file harness, Markdown and all 35 Mermaid diagrams. No native models, authenticated service, personal configuration, CI/issue operation or project remote push ran. Linux/interrupted writes remain owner checks; scheduled collection/version resolution/issue automation and remaining release work stay independent code tasks.
+
 ## 2026-10-20 · P5-05 release prose — complete local Conventional Commit drafts
 
 - Share the existing subject grammar between commit hygiene and local release notes. Group subject-only prose, detect declared breaking intent from markers/trailers, escape Markdown and reject attributed/non-conventional subjects by identity without copying their text. Keep bodies, trailers and subprocess diagnostics out of output. ADR-0063 records why declared impact and a semantic draft label neither verify compatibility nor change a version.

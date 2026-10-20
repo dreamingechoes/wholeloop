@@ -49,8 +49,10 @@ and docs:config scripts delegate to the same renderer; docs:providers updates th
 manifest-derived mapping table; docs:platforms updates adapter declarations. The provider source JSON catalog has its separate
 providers:catalog check. Generated mapping rows describe declared operations/access,
 not authenticated availability or actual server behavior. Local adapter declarations are generated from the build/install registry and remain
-separate from native conformance. The native matrix still awaits P5-04 live
-collection/page integration; simulation passes cannot establish native support.
+separate from native conformance. Supplied observation snapshots have their own
+explicit conformance matrix --docs destination/time comparison and optional write;
+ordinary docs check cannot reconstruct external evidence. Live collection/issue
+automation remain P5-04 work; simulation passes cannot establish native support.
 
 ## Page templates
 

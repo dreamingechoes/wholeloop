@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. A bounded conformance matrix renderer is implemented; scheduled collection and evidence-backed page regeneration remain pending.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Bounded reported matrices support explicit page comparison/regeneration; scheduled collection and issue automation remain pending.
 
 ---
 
@@ -57,7 +57,7 @@ ownership markers fail instead of producing a successful empty comparison.
 ## Reported framing observations
 
 The local matrix renderer consumes bounded reports without running a model or
-changing documentation, configuration or runtime state:
+changing documentation, configuration or runtime state by default:
 
 ```text
 wl conformance matrix /tmp/wholeloop-results.json --json
@@ -87,9 +87,56 @@ Exit 4 identifies candidates (or invalid file/usage); inspect the versioned outp
 Exit 0 means rendering succeeded without candidates, including an entirely unrun
 matrix. It is not a conformance gate pass. Input is a regular non-symlink JSON
 file of at most 1 MiB, with at most one observation per target/channel and one
-entry per actual run. Scheduled collection, issue automation and evidence-backed
-page regeneration remain P5-04 work. See
+entry per actual run. Scheduled collection, version resolution and issue automation
+remain P5-04 work. See
 [ADR-0059](../decisions/0059-conformance-observations-and-regression-candidates.md).
+
+### Check or update this observation snapshot
+
+```text
+wl conformance matrix /tmp/wholeloop-results.json --at 2026-10-20T12:00:00.000Z --docs . --json
+wl conformance matrix /tmp/wholeloop-results.json --at 2026-10-20T12:00:00.000Z --docs . --write --json
+```
+
+Use the intended as-of time; documentation mode requires it explicitly so a
+comparison does not drift with the clock. The first command checks without
+writing and exits 4 on drift; the second updates only the owned section below.
+Missing/duplicate/reversed markers, symlinked pages/parents and pages over 1 MiB
+are refused. Unchanged output skips writing. Inspect and regenerate after an
+interrupted write; replacement is not claimed crash-atomic.
+
+The JSON documentation receipt distinguishes current/stale/updated; regression
+candidates still exit 4 after a successful write. Imported raw reports and external
+journal paths stay outside Git. The snapshot preserves actual observation dates
+and cannot attest to report provenance. Ordinary docs check verifies code-derived
+references; compare this evidence section with its explicit external input/time.
+Initial rows are UNRUN. See
+[ADR-0064](../decisions/0064-explicit-conformance-page-projections.md).
+
+<!-- conformance:start -->
+As of 2026-10-20T18:50:28.839Z; observations older than 48 hours are stale.
+
+| CLI | Channel | Requested pin | Observed version | Evidence | Status | Observed at |
+| --- | --- | --- | --- | --- | --- | --- |
+| claude | pinned | — | — | unrun | UNRUN | — |
+| claude | latest | — | — | unrun | UNRUN | — |
+| codex | pinned | — | — | unrun | UNRUN | — |
+| codex | latest | — | — | unrun | UNRUN | — |
+| opencode | pinned | — | — | unrun | UNRUN | — |
+| opencode | latest | — | — | unrun | UNRUN | — |
+| copilot | pinned | — | — | unrun | UNRUN | — |
+| copilot | latest | — | — | unrun | UNRUN | — |
+| gemini | pinned | — | — | unrun | UNRUN | — |
+| gemini | latest | — | — | unrun | UNRUN | — |
+| antigravity | pinned | — | — | unrun | UNRUN | — |
+| antigravity | latest | — | — | unrun | UNRUN | — |
+| cursor | pinned | — | — | unrun | UNRUN | — |
+| cursor | latest | — | — | unrun | UNRUN | — |
+
+Supplied observations are not independently authenticated or re-executed.
+This snapshot covers standalone framing only; native permissions, hooks, MCP
+and semantic quality remain separate verification.
+<!-- conformance:end -->
 
 ## How gaps are bridged
 

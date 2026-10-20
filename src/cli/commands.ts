@@ -45,7 +45,7 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'conformance matrix',
     arguments: '<results.json>',
-    options: ['--at <UTC timestamp>', '--markdown'],
+    options: ['--at <UTC timestamp>', '--markdown', '--docs <repository>', '--write'],
     schema: 'wholeloop/conformance-matrix@1',
     summary: 'Render bounded observations and identify comparable regression candidates',
   },

@@ -6,6 +6,7 @@ import { configKeys, type Schema } from '../config/schema.js'
 import { BUILTINS } from '../providers/builtins.js'
 import type { Provider } from '../providers/manifest.js'
 import type { Problem, Tree } from './check.js'
+import { replaceSection } from './sections.js'
 
 export const REFERENCE_KINDS = ['commands', 'config', 'providers', 'platforms'] as const
 export type ReferenceKind = (typeof REFERENCE_KINDS)[number]
@@ -92,18 +93,7 @@ export function referenceSections(): ReferenceSection[] {
 
 /** Missing/duplicate markers used to pass string.replace-based checks without comparing any table. */
 export function replaceReference(content: string, section: ReferenceSection): string {
-  const start = `<!-- ${section.kind}:start -->`
-  const end = `<!-- ${section.kind}:end -->`
-  const begin = content.indexOf(start)
-  const finish = content.indexOf(end)
-  if (
-    begin < 0 ||
-    finish < begin + start.length ||
-    content.indexOf(start, begin + start.length) !== -1 ||
-    content.indexOf(end, finish + end.length) !== -1
-  )
-    throw new Error(`Expected one ordered ${section.kind} marker pair`)
-  return `${content.slice(0, begin)}${start}\n${section.body}\n${end}${content.slice(finish + end.length)}`
+  return replaceSection(content, section.kind, section.body)
 }
 export function checkReferences(tree: Tree, sections = referenceSections()): Problem[] {
   return sections.flatMap((section) => {
