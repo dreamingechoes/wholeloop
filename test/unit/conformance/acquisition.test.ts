@@ -171,6 +171,39 @@ describe('exact native acquisition plans', () => {
       resolveDownloads('linux', 'x64', pins, async () => Buffer.from('{}')),
     ).rejects.toThrow()
   })
+  it.each(['claude', 'codex', 'opencode', 'copilot', 'gemini', 'cursor', 'antigravity'])(
+    'resolves only the selected %s channels without depending on unrelated vendors',
+    async (cli) => {
+      const calls: string[] = []
+      const input = await resolveDownloads(
+        'linux',
+        'x64',
+        pins,
+        async (url) => {
+          calls.push(url)
+          if (cli === 'cursor') return Buffer.from('/lab/2026.10.19-6bbf2c4/')
+          if (cli === 'antigravity')
+            return Buffer.from(JSON.stringify(pins.antigravity['linux-x64']))
+          const name = NATIVE_PACKAGES[cli]
+          const version = url.endsWith('/latest') ? '9.9.9' : url.split('/').at(-1)
+          return Buffer.from(
+            JSON.stringify({
+              name,
+              version,
+              dist: {
+                tarball: `https://registry.npmjs.org/${name}/-/${name?.split('/').at(-1)}-${version}.tgz`,
+                integrity: sri,
+              },
+            }),
+          )
+        },
+        cli,
+      )
+      const plan = conformanceAcquisition(input)
+      expect(plan.downloads.map((entry) => entry.cli)).toEqual([cli, cli])
+      expect(calls).toHaveLength(cli === 'cursor' || cli === 'antigravity' ? 1 : 2)
+    },
+  )
   it('rejects ambiguous moving Cursor releases and mismatched pinned registry versions', async () => {
     let ambiguous = false
     const fake = async (url: string) => {

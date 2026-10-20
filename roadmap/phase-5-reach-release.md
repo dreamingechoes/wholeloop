@@ -98,7 +98,7 @@ Neither gap blocks independent local generator/guard implementation.
 
 ## P5-04 · Nightly conformance and the generated matrix
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
 
 **Goal** — Know the moment a CLI release breaks something.
 
@@ -130,12 +130,17 @@ Public exact-version resolution and explicit private-prefix provisioning now cov
 all seven clients/channels. Closed vendor paths/checksums, whole-batch planning,
 credential-free installation, archive preflight and retained partial receipts are
 implemented. Cursor has no independently supplied expected digest; top-level pins
-do not freeze vendor postinstall/transitive downloads or auto-updates. Scheduled
-activation remains code work; actual native installs/CI/authenticated issue
-delivery remain owner verification.
+do not freeze vendor postinstall/transitive downloads or auto-updates. A disabled schedule/manual workflow now checks one exact core, provisions selected
+client pairs and observes fresh channel homes with only selected native keys.
+Separate credential-free aggregation produces the matrix, drafts and an external
+owned-page artifact; a separately activated serialized issue job verifies exact
+transferred results before service access. Missing credentials remain UNRUN; no
+source page/ref is automatically committed or pushed. Local code deliverables are
+implemented; park P5-04 pending actual native installs/settings/models/Actions and
+authenticated issue-delivery acceptance.
 No native acceptance is inferred from the matrix's synthetic tests.
 
-**Docs** — platforms, ADR-0059, ADR-0064, ADR-0070, ADR-0073, ADR-0074.
+**Docs** — platforms, ADR-0059, ADR-0064, ADR-0070, ADR-0073, ADR-0074, ADR-0075.
 
 ## P5-05 · Distribution
 
@@ -211,7 +216,7 @@ targets, source-built executable selection, scopes, native activation boundaries
 namespaces and first-step/removal checks. The quick start uses the selected absolute
 core instead of assuming file installation creates a global alias. All local docs
 deliverables/criteria are complete using P5-04's implemented renderer/projection;
-scheduled collection/version resolution/issue automation remain P5-04 code work,
+disabled scheduled collection/version resolution/issue automation are implemented,
 and native acceptance remains in the adapter/owner checklists. No unknown evidence
 is promoted to native support. See ADR-0052, ADR-0061 and ADR-0064.
 

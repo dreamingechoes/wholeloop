@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: conformance-nightly-authority
+    enforcers: [scripts/conformance-nightly.mjs, .github/workflows/conformance.yml, test/unit/conformance/nightly.test.ts]
   - id: conformance-exact-acquisition
     enforcers: [src/conformance/acquisition.ts#conformanceAcquisition, scripts/conformance-provision.mjs, test/unit/conformance/acquisition.test.ts]
   - id: conformance-issue-projection

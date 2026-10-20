@@ -67,11 +67,14 @@ export async function publicBytes(url, limit, timeout = 30000) {
   return Buffer.concat(chunks)
 }
 
-export async function resolveDownloads(platform, arch, pins, bytes = publicBytes) {
+export async function resolveDownloads(platform, arch, pins, bytes = publicBytes, target) {
   assert(['darwin', 'linux'].includes(platform) && ['arm64', 'x64'].includes(arch))
+  if (target !== undefined)
+    assert([...Object.keys(packages), 'cursor', 'antigravity'].includes(target))
   const json = async (url) => JSON.parse((await bytes(url, 2 * 1024 * 1024)).toString('utf8'))
   const entries = []
   for (const [cli, name] of Object.entries(packages)) {
+    if (target && target !== cli) continue
     assert(
       typeof pins[cli] === 'string' && /^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$/.test(pins[cli]),
     )
@@ -89,34 +92,38 @@ export async function resolveDownloads(platform, arch, pins, bytes = publicBytes
       })
     }
   }
-  const script = (await bytes('https://cursor.com/install', 128 * 1024)).toString('utf8')
-  // Parse one literal release assignment, never source or execute the installer.
-  const matches = [...script.matchAll(/\/lab\/(\d{4}\.\d{2}\.\d{2}-[a-f0-9]{7,40})\//g)]
-  const cursorVersions = new Set(matches.map((match) => match[1]))
-  assert.equal(cursorVersions.size, 1)
-  for (const channel of channels) {
-    const version = channel === 'pinned' ? pins.cursor : [...cursorVersions][0]
-    entries.push({
-      cli: 'cursor',
-      channel,
-      version,
-      url: `https://downloads.cursor.com/lab/${version}/${platform}/${arch}/agent-cli-package.tar.gz`,
-      integrity: '',
-    })
+  if (!target || target === 'cursor') {
+    const script = (await bytes('https://cursor.com/install', 128 * 1024)).toString('utf8')
+    // Parse one literal release assignment, never source or execute the installer.
+    const matches = [...script.matchAll(/\/lab\/(\d{4}\.\d{2}\.\d{2}-[a-f0-9]{7,40})\//g)]
+    const cursorVersions = new Set(matches.map((match) => match[1]))
+    assert.equal(cursorVersions.size, 1)
+    for (const channel of channels) {
+      const version = channel === 'pinned' ? pins.cursor : [...cursorVersions][0]
+      entries.push({
+        cli: 'cursor',
+        channel,
+        version,
+        url: `https://downloads.cursor.com/lab/${version}/${platform}/${arch}/agent-cli-package.tar.gz`,
+        integrity: '',
+      })
+    }
   }
-  const latest = await json(
-    `${updater}/manifests/${platform}_${arch === 'x64' ? 'amd64' : 'arm64'}.json`,
-  )
-  for (const channel of channels) {
-    const entry = channel === 'pinned' ? pins.antigravity?.[`${platform}-${arch}`] : latest
-    assert(entry)
-    entries.push({
-      cli: 'antigravity',
-      channel,
-      version: entry.version,
-      url: entry.url,
-      integrity: integrity(entry.sha512),
-    })
+  if (!target || target === 'antigravity') {
+    const latest = await json(
+      `${updater}/manifests/${platform}_${arch === 'x64' ? 'amd64' : 'arm64'}.json`,
+    )
+    for (const channel of channels) {
+      const entry = channel === 'pinned' ? pins.antigravity?.[`${platform}-${arch}`] : latest
+      assert(entry)
+      entries.push({
+        cli: 'antigravity',
+        channel,
+        version: entry.version,
+        url: entry.url,
+        integrity: integrity(entry.sha512),
+      })
+    }
   }
   return { schema: 'wholeloop/conformance-downloads@1', platform, arch, entries }
 }
@@ -330,11 +337,37 @@ export async function installDownloads(plan, destination, dependencies = {}) {
   }
 }
 
+export function provisionArguments(args) {
+  let destination, target
+  for (let index = 0; index < args.length; index += 2) {
+    const flag = args[index],
+      value = args[index + 1]
+    assert(value)
+    if (flag === '--install') {
+      assert(destination === undefined)
+      destination = value
+    } else if (flag === '--target') {
+      assert(target === undefined)
+      target = value
+    } else throw new Error('Unknown provision argument')
+  }
+  if (target !== undefined)
+    assert([...Object.keys(packages), 'cursor', 'antigravity'].includes(target))
+  return { destination, target }
+}
+
 async function main() {
   let workspace
   try {
-    const [flag, destination, ...extra] = process.argv.slice(2)
-    assert(!extra.length && (flag === undefined || (flag === '--install' && destination)))
+    const { destination, target } = provisionArguments(process.argv.slice(2))
+    const expectedCore = process.env.CONFORMANCE_CORE_SHA256
+    if (expectedCore !== undefined || process.env.GITHUB_ACTIONS === 'true') {
+      assert(/^[a-f0-9]{64}$/.test(expectedCore ?? ''))
+      const core = join(repository, 'dist/wl.mjs'),
+        stat = lstatSync(core)
+      assert(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 128 * 1024 * 1024)
+      assert.equal(hash('sha256', readFileSync(core)), expectedCore)
+    }
     assert(
       ['darwin', 'linux'].includes(process.platform) && ['x64', 'arm64'].includes(process.arch),
     )
@@ -342,7 +375,7 @@ async function main() {
       assert(process.report.getReport().header.glibcVersionRuntime, 'Only glibc Linux is supported')
     if (destination) assertExternalDestination(destination)
     const pins = JSON.parse(readFileSync(join(repository, 'test/conformance/pins.json'), 'utf8'))
-    const input = await resolveDownloads(process.platform, process.arch, pins)
+    const input = await resolveDownloads(process.platform, process.arch, pins, undefined, target)
     workspace = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-conformance-resolution-')))
     const metadata = join(workspace, 'downloads.json')
     writeFileSync(metadata, JSON.stringify(input), { flag: 'wx', mode: 0o600 })

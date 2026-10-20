@@ -40,6 +40,7 @@ pages:
   - { path: decisions/README.md, title: Decisions }
   - { path: contributing/authoring.md, title: Authoring }
   - { path: contributing/releasing.md, title: Release preparation }
+  - { path: contributing/conformance.md, title: Nightly conformance }
   - { path: contributing/docs-style.md, title: Docs style }
   - { path: glossary.md, title: Glossary }
   - { path: faq.md, title: FAQ }

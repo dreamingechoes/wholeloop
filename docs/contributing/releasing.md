@@ -196,4 +196,4 @@ Linux, environment protection, npm OIDC/provenance and native installation remai
 owner verification; no publication was run during implementation.
 
 <!-- docnav -->
-[◀ Authoring](authoring.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docs style ▶](docs-style.md)
+[◀ Authoring](authoring.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Nightly conformance ▶](conformance.md)

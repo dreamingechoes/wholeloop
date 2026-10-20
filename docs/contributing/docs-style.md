@@ -51,8 +51,8 @@ providers:catalog check. Generated mapping rows describe declared operations/acc
 not authenticated availability or actual server behavior. Local adapter declarations are generated from the build/install registry and remain
 separate from native conformance. Supplied observation snapshots have their own
 explicit conformance matrix --docs destination/time comparison and optional write;
-ordinary docs check cannot reconstruct external evidence. Live collection/issue
-automation remain P5-04 work; simulation passes cannot establish native support.
+ordinary docs check cannot reconstruct external evidence. Disabled nightly collection/issue automation has its own explicit owner activation
+and external artifacts; simulation passes cannot establish native support.
 
 ## Page templates
 
@@ -85,4 +85,4 @@ automation remain P5-04 work; simulation passes cannot establish native support.
 ## Before & after        (hand-offs: what feeds it, what it feeds)
 ## Gotchas & FAQ
 <!-- docnav -->
-[◀ Release preparation](releasing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Glossary ▶](../glossary.md)
+[◀ Nightly conformance](conformance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Glossary ▶](../glossary.md)

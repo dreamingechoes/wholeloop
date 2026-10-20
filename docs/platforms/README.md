@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/private acquisition are implemented; scheduled activation and actual native/service checks remain pending.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/private acquisition are implemented; disabled nightly automation is implemented, while owner activation and actual native/service checks remain pending.
 
 ---
 
@@ -176,7 +176,9 @@ A non-empty preview needs the intended GITHUB_REPOSITORY and native gh access to
 read its issue inventory. Empty/unrun batches require no GitHub service call.
 Delivery requires the actual selected default-branch GitHub.com schedule/manual CI
 context and existing issue-write permission. Setting environment fields alone is
-not authentication or authorization. Scheduled workflow activation remains separate P5-04 work; no actual issue has been sent.
+not authentication or authorization. The disabled [nightly workflow](../contributing/conformance.md) wires collection and
+separate issue authority; owner activation and actual service checks remain open.
+No actual issue has been sent.
 
 The host requires observations for the exact current built core and refuses input
 changes. It scans open/closed issues in creation order, projects only matching
@@ -520,6 +522,7 @@ acquisition plan. Build the core first, then run:
 
 ```bash
 node scripts/conformance-provision.mjs
+node scripts/conformance-provision.mjs --target codex
 ```
 
 Explicit installation uses a **new absolute external directory**:

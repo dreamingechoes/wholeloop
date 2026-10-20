@@ -1,5 +1,10 @@
 # Conformance evidence
 
+- ⛔ `conformance-nightly-authority` — keep native execution and issue delivery
+  separately activated. Reuse exact transferred core/result bytes, isolate each
+  selected key/channel home, upload only structural evidence and serialize issue
+  writers. Missing configuration stays UNRUN; mutate no source page or ref.
+
 - ⛔ `conformance-exact-acquisition` — bind the whole batch to exact official
   package/platform/version paths before installing. Keep installation explicit,
   external and credential-free with separate prefixes; verify available integrity,

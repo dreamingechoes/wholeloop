@@ -13,6 +13,7 @@ export function resolveDownloads(
   arch: string,
   pins: unknown,
   bytes?: Bytes,
+  target?: string,
 ): Promise<unknown>
 export function assertExternalDestination(destination: string): string
 export function archiveInventory(
@@ -38,3 +39,8 @@ export function installDownloads(
   }[]
   directory: string
 }>
+
+export function provisionArguments(args: string[]): {
+  destination: string | undefined
+  target: string | undefined
+}
