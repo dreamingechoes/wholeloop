@@ -86,15 +86,20 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
       !matches.some((path) => inside(path, canonicalPath(resolve(root, nativeDirectory)))))
   )
     throw new Error('Native workspace context is missing or ambiguous')
-  const directory = nativeDirectory ?? args.workdir ?? args.cwd ?? value.cwd ?? root
-  if (typeof directory !== 'string' || !directory.trim())
-    throw new Error('Hook payload needs its working directory')
-  const cwd = canonicalPath(resolve(root, directory))
   const tool =
     name
       .split(/\.|\/|__/)
       .at(-1)
       ?.toLowerCase() ?? ''
+  // Gemini ignores generic cwd/workdir arguments; classify the directory its native tool uses.
+  const directory =
+    nativeDirectory ??
+    (tool === 'run_shell_command'
+      ? (args.dir_path ?? value.cwd ?? root)
+      : (args.workdir ?? args.cwd ?? value.cwd ?? root))
+  if (typeof directory !== 'string' || !directory.trim())
+    throw new Error('Hook payload needs its working directory')
+  const cwd = canonicalPath(resolve(root, directory))
   const kind =
     name === 'wholeloop.state.write'
       ? 'state-write'

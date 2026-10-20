@@ -17,7 +17,7 @@
 - [ ] Exercise user/project install/uninstall, absolute GEMINI_CLI_HOME, external ownership/backups, relocation and special paths. --target all now includes Gemini; default doctor stays tier A, so select --target gemini explicitly.
 - [ ] Run the shared framing scenario with a new --target gemini run and exact --pin, then explicit --live after native trust/auth/permissions setup. Keep FIXTURE_PASS separate from actual process/journal evidence and inspect native external/ignored effects.
 - [ ] Review unapplied HTTP/stdio MCP snippets, exact live tools/arguments, OAuth discovery and header placeholders under the native credential store. Static detection observes declaration metadata only; no authenticated tool ran.
-- [ ] Keep the explicit per-repository Git fallback. Native hook emission is withheld because 0.27.0 substitutes extensionPath into shell text; adding a safe native binding is implementation work, not a manual checkmark.
+- [ ] Activate the generated extension explicitly and verify its BeforeTool hook environment binding, exact target/core checks, read allow and runtime-write/push denial. Actual 0.27.0 loader/runner APIs passed a disposable shell-special-path probe without models; full native activation and permission behavior remain unverified. Loose overlays retain the per-repository Git fallback and never rewrite shared settings.
 - [ ] Repeat on Linux and supported Node/client versions. Current generator/launcher/static-loader execution is macOS arm64/Node 24/Gemini 0.27.0 only.
 
 ## Antigravity native activation (P5-01 component)
@@ -28,8 +28,8 @@
 - [ ] Prepare a fresh --target antigravity run with exact --pin, inspect input.txt JSONL and the agy recipe, then explicitly run --live after native trust/auth/model/permissions setup. Inspect actual output protocol and external effects independently of the structural journal verdict.
 - [ ] Review serverUrl/stdio MCP recipes and native OAuth/tool execution. Header recipes are refused; no credential is copied or rendered. Repeat on Linux and supported Node/client versions.
 
-Safe Gemini native hook binding remains independent implementation work; actual
-Antigravity activation/model/MCP checks do not block other roadmap code.
+Both local hook transports are implemented. Actual Gemini/Antigravity activation,
+model, permission and MCP checks do not block other roadmap code.
 
 ## Generated references (P5-06 local controls)
 

@@ -13,7 +13,7 @@ export const geminiAdapter: Adapter = {
     conformance: 'unverified',
     skills: 'rendered',
     agents: 'rendered',
-    hooks: 'git-fallback',
+    hooks: 'native-and-git-fallback',
     readOnly: 'read-tool-allowlist',
     engines: ['sequential'],
   }),

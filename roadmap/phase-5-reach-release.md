@@ -21,16 +21,17 @@ inheritance, plain-text questions, owned user/project overlays, explicit doctor,
 unapplied MCP recipes/declaration detection and the shared fresh framing runner
 are implemented. Actual Gemini 0.27.0 static loaders accepted eight generated agents
 and seventeen skills; installed-launcher simulation remains simulation. Use the
-explicit Git fallback: native extension-root shell interpolation needs a verified
-safe binding before a hook can be emitted. Native enablement/permissions/model/MCP
+explicit Git fallback for loose overlays. Generated extensions now bind the root
+through native hook.env, with exact core integrity checks; actual 0.27.0
+loader/runner read/deny probes passed without model calls. Native enablement/permissions/model/MCP
 checks remain owner verification. Antigravity now has a closed plugin manifest, wl-agy- native namespace, strict
 inherited roles, owned user/project overlays, hash-pinned named hook transport,
 serverUrl MCP recipes/detection, explicit agy doctor and JSONL framing recipe.
 Installed-launcher simulation and authored native hook payloads exercise the real
 core; actual native loading/permissions/model/MCP checks remain owner verification.
-Local agy 1.4.2 listing could not bind a port under the execution sandbox. Safe
-Gemini native hook binding remains implementation work independent of both clients'
-manual checks. See ADR-0055.
+Local agy 1.4.2 listing could not bind a port under the execution sandbox. Both local adapters and hook transports are implemented; native model/permission/MCP
+conformance remains owner verification and does not block Cursor work. See
+ADR-0055 and ADR-0056.
 
 **Docs** — platforms, getting-started, configuration/providers, ADR-0053.
 

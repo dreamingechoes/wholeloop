@@ -3,7 +3,7 @@
 > **TL;DR** — Install the `wl` CLI (or the plugin for your CLI), let it generate the skills for the agentic CLIs you use, run `wl doctor`, then invoke any step. Nothing needs configuring up front: what is missing becomes a question the first time it matters.
 
 > [!WARNING]
-> **Status: 🚧 partial — local source installation available.** The core, four tier-A native render targets plus Gemini, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; npm/marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
+> **Status: 🚧 partial — local source installation available.** The core, four tier-A native render targets plus Gemini/Antigravity, owned user/project install and uninstall, common guards and observed diagnostics are implemented. Actual native discovery/trust/permissions and cross-platform conformance remain owner checks; npm/marketplace distribution remains planned in [P5-05](../roadmap/phase-5-reach-release.md#p5-05--distribution). No real client/model session is implied by the filesystem and transport fixtures.
 
 ---
 
@@ -28,7 +28,7 @@ node dist/wl.mjs install --target claude,codex,opencode,copilot --scope user --d
 node dist/wl.mjs install --target claude,codex,opencode,copilot --scope user --json
 ```
 
-Target/scope are explicit; all selects every implemented installation target: the four tier-A clients plus Gemini. Use a named target list when you want only those clients. Installation creates
+Target/scope are explicit; all selects every implemented installation target: the four tier-A clients plus Gemini and Antigravity. Use a named target list when you want only those clients. Installation creates
 wl-prefixed native skills/agents and scoped/dedicated guard bindings, backed by a
 self-contained artifact per target. Claude loose native components use wl-* names;
 `build --target claude` still produces its separate plugin format. No general client
@@ -86,8 +86,9 @@ folder itself. Preview agent enablement, trust and authentication are native set
 no personal settings or credentials are copied. Questions fall back to exact
 plain-text options when a structured ask tool is unavailable. The shared conformance
 runner accepts Gemini, while actual model/permission checks remain with the owner.
-Use the returned per-repository Git hook activation command: this target currently
-has no generated native hook binding. See [Gemini boundaries](./platforms/README.md#gemini-extension-and-native-overlays).
+Loose overlays use the returned per-repository Git hook activation command.
+Generated extensions use an environment-bound hook after explicit native extension
+activation; file installation does not activate it. See [Gemini boundaries](./platforms/README.md#gemini-extension-and-native-overlays).
 
 Published npm/marketplace installation remains planned. Once released, npm global
 installation and the client plugin marketplace will be alternative entry points;

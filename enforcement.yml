@@ -4,10 +4,12 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: gemini-safe-hook-root
+    enforcers: [src/adapters/gemini-hook.ts#geminiHook, src/adapters/pinned-guard.ts#pinnedGuardCommand, src/guards/normalize.ts#normalizeTool, test/unit/adapters/gemini-hook.test.ts]
   - id: antigravity-observer-tools
     enforcers: [src/adapters/antigravity.ts#antigravityAdapter, test/unit/adapters/antigravity.test.ts]
   - id: antigravity-pinned-hook
-    enforcers: [src/adapters/antigravity-hook.ts#antigravityHook, src/guards/normalize.ts#normalizeTool, test/unit/adapters/antigravity.test.ts]
+    enforcers: [src/adapters/antigravity-hook.ts#antigravityHook, src/adapters/pinned-guard.ts#pinnedGuardCommand, src/guards/normalize.ts#normalizeTool, test/unit/adapters/antigravity.test.ts]
   - id: harness-entrypoints-not-guidance
     enforcers: [src/harness/entrypoints.ts#markEntrypoint, src/harness/entrypoints.ts#isEntrypoint, src/adapters/generate.ts#generateAdapter, src/discovery/scan.ts#scan, src/discovery/resolve.ts#resolveSlot, test/unit/discovery/discovery.test.ts]
   - id: gemini-observer-tools

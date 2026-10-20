@@ -66,6 +66,7 @@
 | [0053](./0053-gemini-extension-overlays-and-safe-hook-boundary.md) | Gemini extension overlays and safe hook boundary | Accepted | 2026-10-19 |
 | [0054](./0054-entrypoints-are-not-heuristic-repository-guidance.md) | Entrypoints are not heuristic repository guidance | Accepted | 2026-10-19 |
 | [0055](./0055-antigravity-native-overlays-and-pinned-hook-transport.md) | Antigravity native overlays and pinned hook transport | Accepted | 2026-10-19 |
+| [0056](./0056-gemini-hook-roots-through-native-environment.md) | Gemini hook roots through the native environment | Accepted | 2026-10-20 |
 
 ## Lifecycle
 

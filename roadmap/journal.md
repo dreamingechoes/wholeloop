@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-20 · P5-01 Gemini hook binding — native environment, exact core integrity
+
+- Finish the generated Gemini BeforeTool hook without interpolating an extension path into shell text. Inspection of installed 0.27.0 reveals recursive hook.env hydration and literal HookRunner environment merging. Bind WL_GEMINI_EXTENSION_ROOT through that channel and verify the target/core before guard execution. ADR-0056 supersedes only ADR-0053's withheld hook, retaining its unsafe-shell prohibition and explicit Git fallback for loose overlays.
+- Share bounded pinning/process transport with Antigravity while preserving separate native schemas and context selection. Return a static native deny when Node cannot start; retain input/core deadlines, redacted failures and no raw payload persistence. Honor Gemini's actual shell dir_path while ignoring generic cwd/workdir arguments that the native tool does not execute in.
+- Exercise six focused transport cases and existing Gemini/Antigravity/guard regressions against real copied cores. Restore valid core bytes before the oversized-input assertion so that it independently checks the input bound. Native golden snapshots change deliberately; conformance remains unverified. The complete local check passed 792 tests in 55 files (205.39 seconds), build/smoke, lint/typecheck, generated references/catalogs, 226-file docs, 140-file harness, Markdown and all 35 Mermaid diagrams.
+- Invoke the actual installed Gemini 0.27.0 ExtensionManager hook loader and HookRunner in an isolated HOME with a relocated extension whose path contains quotes and shell substitution syntax. Native environment hydration accepted the literal path, read returned allow and repository-runtime writes/push returned deny; the shell sentinel remained absent. No model/authenticated tool or personal setup ran. This API probe is not full client activation or permission conformance.
+- Update boundaries, onboarding, phase state and owner checklist. Both P5-01 local adapters/transports now exist; native activation/model/permissions/MCP, Linux and other versions remain owner checks. Continue Cursor implementation after this concern is committed.
+
 ## 2026-10-20 · P5-01 Antigravity component — native contracts and pinned guard transport
 
 - Add a dedicated closed plugin manifest, seventeen wl-agy- skills and eight strict inherited agents. Namespace shared .agents skills to coexist with Codex. Keep observers on explicit reads/declared web tools with execution off, writable roles sandboxed and additional role work sequential. ADR-0055 records native contracts and rejected unsafe root interpolation.

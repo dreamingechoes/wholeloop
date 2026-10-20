@@ -49,7 +49,7 @@ flowchart LR
   gen --> c2[".agents/skills · .codex/agents/*.toml<br/>Git fallback · config.toml MCP"]
   gen --> c3[".opencode/agents · commands<br/>JS plugin → wl guard"]
   gen --> c4[".github/agents · .github/hooks<br/>Agent Plugins manifest"]
-  gen --> c5[".gemini/skills · .gemini/agents<br/>gemini-extension.json · Git fallback"]
+  gen --> c5[".gemini/skills · .gemini/agents<br/>gemini-extension.json · environment-bound hooks"]
   gen -.-> c6[".agents/ (Antigravity) · .cursor/"]:::opt
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
   classDef opt stroke-dasharray:5 3;
@@ -148,7 +148,7 @@ node dist/wl.mjs uninstall --target all --scope user --json
 | OpenCode | XDG config/opencode or OPENCODE_CONFIG_DIR | .opencode/ | plugins/wholeloop.js |
 | Copilot | COPILOT_HOME or .copilot/ | .github/ | hooks/wholeloop.json |
 | Antigravity | .gemini/antigravity-cli/plugins/wholeloop | .agents/ | named hooks.json map |
-| Gemini | .gemini/ under HOME or GEMINI_CLI_HOME | .gemini/ | explicit per-repository Git fallback |
+| Gemini | .gemini/ under HOME or GEMINI_CLI_HOME | .gemini/ | extension BeforeTool; loose overlays keep Git fallback |
 
 Antigravity native names use wl-agy- to coexist with Codex; other installed names use wl-; generated Claude plugins retain their plugin
 namespace. Skills invoke their one packaged core through relative launchers; the
@@ -216,11 +216,14 @@ do not prove a model session, runtime tool restrictions, native trust, hook acti
 or actual MCP access. No model/authenticated operation ran. The shared framing
 runner accepts --target gemini with explicit simulation/live evidence separation.
 
-Native hooks use the explicit Git fallback. Version 0.27.0 hydrates extensionPath
-into shell command text before execution; this renderer emits no command based on
-that unescaped root. A safe native transport remains future work. Generated MCP
-snippets use httpUrl, explicit requested OAuth and environment placeholders without
-credentials; declaration detection respects Gemini allowed/excluded server metadata.
+Generated extensions bind extensionPath only into WL_GEMINI_EXTENSION_ROOT in the
+native hook environment. The static command verifies the exact target/core before
+guard execution. Actual 0.27.0 loader/runner APIs passed read/deny probes at a
+shell-special relocated path without models. Loose overlays retain the explicit
+Git fallback; shared settings are never rewritten to infer activation. Native
+model permissions and full activation remain owner checks. See
+[ADR-0056](../decisions/0056-gemini-hook-roots-through-native-environment.md).
+MCP recipes never apply or expand credentials; declaration detection respects Gemini allowed/excluded server metadata.
 Doctor supports --target gemini; its default selection stays on tier A.
 
 Formats: [Gemini extension reference](https://geminicli.com/docs/extensions/reference/),
@@ -232,7 +235,7 @@ and the [manual checklist](../../roadmap/manual-verification.md).
 ## Standalone conformance
 
 The [standalone conformance runner](../architecture/determinism-and-testing.md#disposable-standalone-conformance)
-prepares project-local overlays for each tier-A target and Gemini at an exact version pin. Its
+prepares project-local overlays for each tier-A target plus Gemini/Antigravity at an exact version pin. Its
 fixture mode reports simulation only; actual pinned live process/journal checks
 require an explicit --live run. Native authentication/trust/permissions, stdout
 protocol, hook activation and broader matrix entries stay separate. No actual

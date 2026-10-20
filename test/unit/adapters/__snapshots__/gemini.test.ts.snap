@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Gemini extension and native overlays > matches the Gemini native golden tree with an explicit Git fallback 1`] = `
+exports[`Gemini extension and native overlays > matches the Gemini native golden tree with a pinned native hook and explicit overlay Git fallback 1`] = `
 {
   "agents/wl-reviewer.md": {
     "content": "---
@@ -31,6 +31,30 @@ console.log("fixture core")
   "name": "wholeloop",
   "version": "0.0.0",
   "description": "Independent evidence-backed development steps with an external journal and explicit human decisions."
+}
+",
+    "mode": 420,
+  },
+  "hooks/hooks.json": {
+    "content": "{
+  "hooks": {
+    "BeforeTool": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "name": "wholeloop-guard",
+            "type": "command",
+            "command": "node -e '\\nconst {spawnSync}=require('\\\\''node:child_process'\\\\'')\\nconst {createHash}=require('\\\\''node:crypto'\\\\'')\\nconst {lstatSync,readFileSync,realpathSync}=require('\\\\''node:fs'\\\\'')\\nconst {homedir}=require('\\\\''node:os'\\\\'')\\nconst {isAbsolute,join,relative,sep}=require('\\\\''node:path'\\\\'')\\nconst expected=\\"ba12001827a3b9b7a7c5f90a9028a46bd3fceab2c1beaee5cbbad2d0be6c3192\\",target=\\"gemini\\"\\nconst unavailable='\\\\''wholeloop guard is unavailable; inspect the packaged core and workspace context.'\\\\''\\nconst emit=(decision,reason)=>process.stdout.write(JSON.stringify({decision,...(reason?{reason}:{})})+'\\\\''\\\\n'\\\\'')\\nconst deny=()=>emit('\\\\''deny'\\\\'',unavailable)\\nconst inside=(root,path)=>{const value=relative(root,path);return value==='\\\\'''\\\\'' || (!isAbsolute(value) && value!=='\\\\''..'\\\\'' && !value.startsWith('\\\\''..'\\\\''+sep))}\\nfunction matching(root){\\n try{\\n  root=realpathSync(root)\\n  const manifest=join(root,'\\\\''wholeloop-artifacts.json'\\\\''),bin=join(root,'\\\\''bin/wl.mjs'\\\\'')\\n  const meta=lstatSync(manifest),stat=lstatSync(bin)\\n  if(!meta.isFile() || meta.isSymbolicLink() || meta.size>1048576 || !stat.isFile() || stat.isSymbolicLink() || stat.size>4194304)return\\n  const value=JSON.parse(readFileSync(manifest,'\\\\''utf8'\\\\''))\\n  if(value.schema!=='\\\\''wholeloop/adapter-artifacts@1'\\\\'' || value.target!==target || value.core!==expected || !Array.isArray(value.files) || !value.files.some(file=>file.path==='\\\\''bin/wl.mjs'\\\\'' && file.sha256===expected) || createHash('\\\\''sha256'\\\\'').update(readFileSync(bin)).digest('\\\\''hex'\\\\'')!==expected)return\\n  return bin\\n }catch{}\\n}\\nconst timer=setTimeout(()=>{deny();process.exit(0)},5000)\\n;(async()=>{\\n try{\\n  let bytes=0;const chunks=[]\\n  for await(const chunk of process.stdin){bytes+=chunk.length;if(bytes>2097152)throw new Error('\\\\''limit'\\\\'');chunks.push(chunk)}\\n  clearTimeout(timer)\\n  const payload=JSON.parse(Buffer.concat(chunks).toString('\\\\''utf8'\\\\''))\\n  \\n  if(!payload || typeof payload.cwd!=='\\\\''string'\\\\'' || !isAbsolute(payload.cwd))throw new Error('\\\\''cwd'\\\\'')\\n  const cwd=realpathSync(payload.cwd)\\n  const root=process.env.WL_GEMINI_EXTENSION_ROOT\\n  if(typeof root!=='\\\\''string'\\\\'' || !isAbsolute(root))throw new Error('\\\\''root'\\\\'')\\n  const bin=matching(root)\\n\\n  if(!bin)throw new Error('\\\\''core'\\\\'')\\n  const result=spawnSync(process.execPath,[bin,'\\\\''guard'\\\\'','\\\\''before-tool'\\\\'','\\\\''--stdin'\\\\'','\\\\''--json'\\\\''],{cwd,input:JSON.stringify(payload),encoding:'\\\\''utf8'\\\\'',timeout:5000,killSignal:'\\\\''SIGKILL'\\\\'',maxBuffer:65536,shell:false})\\n  if(result.error || ![0,2].includes(result.status))throw new Error('\\\\''process'\\\\'')\\n  const value=JSON.parse(result.stdout)\\n  if(value.schema!=='\\\\''wholeloop/guard@1'\\\\'' || !['\\\\''allow'\\\\'','\\\\''deny'\\\\''].includes(value.decision) || result.status!==(value.decision==='\\\\''allow'\\\\''?0:2) || !Array.isArray(value.reasons) || value.reasons.some(reason=>typeof reason!=='\\\\''string'\\\\''))throw new Error('\\\\''result'\\\\'')\\n  emit(value.decision,value.decision==='\\\\''deny'\\\\''?value.reasons.join('\\\\'' '\\\\''):undefined)\\n }catch{deny()}finally{clearTimeout(timer);process.stdin.pause()}\\n})()\\n' || printf '%s\\\\n' '{\\"decision\\":\\"deny\\",\\"reason\\":\\"wholeloop guard could not start.\\"}'",
+            "timeout": 15000,
+            "env": {
+              "WL_GEMINI_EXTENSION_ROOT": "\${extensionPath}"
+            }
+          }
+        ]
+      }
+    ]
+  }
 }
 ",
     "mode": 420,
@@ -75,7 +99,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     "conformance": "unverified",
     "skills": "rendered",
     "agents": "rendered",
-    "hooks": "git-fallback",
+    "hooks": "native-and-git-fallback",
     "readOnly": "read-tool-allowlist",
     "engines": [
       "sequential"
@@ -112,6 +136,11 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
       "path": "gemini-extension.json",
       "mode": 420,
       "sha256": "b38f46fbd72c28b8b5c449e264fc866ca2ac586e197bc467bc6db0c89a71e55b"
+    },
+    {
+      "path": "hooks/hooks.json",
+      "mode": 420,
+      "sha256": "97f567cf68de3b367d3ef35a3e806abd1d36d314911a84c031bbb2bf575d5442"
     },
     {
       "path": "bin/wl.mjs",

@@ -1,5 +1,6 @@
 import { antigravityHook } from './antigravity-hook.js'
 import type { RenderedFile } from './contracts.js'
+import { geminiHook } from './gemini-hook.js'
 
 /** Native bindings contain transport only. Policy and all state interpretation stay in the core. */
 export function hookArtifacts(target: string, core?: string): Map<string, RenderedFile> {
@@ -10,8 +11,14 @@ export function hookArtifacts(target: string, core?: string): Map<string, Render
         { mode: 0o644, content: `${JSON.stringify(antigravityHook(core ?? ''), null, 2)}\n` },
       ],
     ])
-  // Gemini's extensionPath is literal shell text in 0.27.0. Keep the explicit Git fallback until a safe root binding exists.
-  if (target === 'codex' || target === 'gemini') return new Map()
+  if (target === 'gemini')
+    return new Map([
+      [
+        'hooks/hooks.json',
+        { mode: 0o644, content: `${JSON.stringify(geminiHook(core ?? ''), null, 2)}\n` },
+      ],
+    ])
+  if (target === 'codex') return new Map()
   const files = new Map<string, RenderedFile>()
   const add = (path: string, content: string) => files.set(path, { mode: 0o644, content })
   add(

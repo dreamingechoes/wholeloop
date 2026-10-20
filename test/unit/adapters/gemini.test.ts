@@ -105,16 +105,16 @@ describe('Gemini extension and native overlays', () => {
       expect(server.url).toBeUndefined()
     })
   })
-  it('matches the Gemini native golden tree with an explicit Git fallback', () => {
+  it('matches the Gemini native golden tree with a pinned native hook and explicit overlay Git fallback', () => {
     const rendered = generateAdapter('gemini', minimal, core, '0.0.0')
     expect(Object.fromEntries(rendered.files)).toMatchSnapshot()
     expect(rendered.manifest.capabilities).toMatchObject({
       conformance: 'unverified',
-      hooks: 'git-fallback',
+      hooks: 'native-and-git-fallback',
       readOnly: 'read-tool-allowlist',
       engines: ['sequential'],
     })
-    expect([...rendered.files.keys()]).not.toContain('hooks/hooks.json')
+    expect([...rendered.files.keys()]).toContain('hooks/hooks.json')
     expect(JSON.parse(rendered.files.get('gemini-extension.json')?.content ?? '{}')).toEqual({
       name: 'wholeloop',
       version: '0.0.0',
