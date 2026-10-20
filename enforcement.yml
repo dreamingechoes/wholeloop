@@ -59,7 +59,7 @@ rules:
   - id: headless-exact-assignment
     enforcers: [src/fanout/host.ts#HeadlessHost, src/gates/workflow.ts#submit, test/unit/fanout/fanout.test.ts]
   - id: headless-bounded-workers
-    enforcers: [src/fanout/host.ts#HeadlessHost, src/fanout/process.ts#workerProcess, src/fanout/posix.ts#terminateWorker, src/fanout/adapters.ts#headlessAdapter, test/unit/fanout/fanout.test.ts]
+    enforcers: [src/fanout/host.ts#HeadlessHost, src/fanout/process.ts#workerProcess, src/fanout/posix.ts#terminateWorker, src/fanout/adapters.ts#headlessAdapter, src/fanout/opencode.ts#openCodeWorker, src/fanout/copilot.ts#copilotWorker, test/unit/fanout/fanout.test.ts, test/unit/fanout/recipes.test.ts]
   - id: headless-failure-unknown
     enforcers: [src/fanout/host.ts#HeadlessHost, src/gates/execution.ts#inspectGateRound, src/gates/report.ts#gateReport, test/unit/fanout/fanout.test.ts]
   - id: shared-publication-recovery

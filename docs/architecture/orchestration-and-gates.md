@@ -3,7 +3,7 @@
 > **TL;DR** — Eight short agent roles do the work. They run on whichever **engine** the CLI supports best — native subagents, headless worker processes, or one after another — and the result is the same, because everything that decides (lens sets, thresholds, round caps, aggregation) lives in the core, not in the engine.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with Claude/Codex recipes are implemented locally; actual client engines and read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
+> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with Claude/Codex/OpenCode/Copilot recipes are implemented locally; actual client engines and read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
 
 ---
 
@@ -76,10 +76,10 @@ wl gate plan review --for review-01234567 --repo . --base main --json
 wl fanout run review --for review-01234567 --engine headless --adapter codex --concurrency 4 --timeout 120 --json
 ```
 
-Current recipes support claude and codex. They were checked against installed
-help and primary documentation, then executed with synthetic PATH clients; no
-real model conformance is claimed. OpenCode/Copilot headless recipes remain
-unimplemented. Native/sequential SDK hosts remain available independently.
+Current recipes support claude, codex, opencode and copilot. They were checked
+against installed help and primary documentation, then executed with synthetic
+PATH clients; no real model conformance is claimed. Gemini/Antigravity/Cursor
+recipes remain unimplemented. Native/sequential SDK hosts are available independently.
 
 Each assignment gets a separate process, session and external-store directory.
 Prompts travel through stdin, with the exact pinned patch/rubric and suite metadata
@@ -106,6 +106,23 @@ Claude uses read-only built-in tools, non-interactive denials and disabled ordin
 customizations/MCP. Codex uses an ephemeral read-only sandbox, no approval prompts,
 ignored user config and a working directory outside the project; its prompt names
 the repository to inspect. Neither recipe uses a permission bypass or resume flag.
+OpenCode starts outside the repository with a uniquely named primary inspector,
+inline deny-default global/agent permissions, read/glob/grep, explicit repository
+external-directory access, no external plugins, sharing, snapshots or LSP. Reject
+repository paths containing native wildcard characters instead of broadening access.
+Require a completed stop step and collect text only from that final message/session;
+errors, truncated turns and mixed sessions fail. Native config merging, custom MCP
+startup and managed policy are not isolated by this recipe.
+
+Copilot starts outside the repository with view/glob/grep only, explicit read
+permission, shell/write/url/memory denial, built-in MCP disabled and no automatic
+update, custom instructions or remote export. Override inherited allow-all and
+prompt-extension opt-in variables; retain native authentication in place. Silent
+text must be exactly one valid response envelope; do not mine JSON out of progress
+or tool events. Custom MCP startup, trusted-folder hooks and native client logs
+remain owner checks. [ADR-0058](../decisions/0058-additional-read-only-headless-recipes.md)
+records the native contracts and rejected broad grants.
+
 These settings and snapshot checks do not prove the absence of ignored/transient
 writes, managed-hook effects or external side effects. See
 [ADR-0046](../decisions/0046-bounded-headless-workers-and-shared-gate-aggregation.md)

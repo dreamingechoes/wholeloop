@@ -36,7 +36,7 @@ Read headless-gates, ask-never-guess, output-contract, gate-rounds and verificat
    isolation gaps and other unavailable observations instead of implying coverage.
 
 When the conductor explicitly selects headless, use `wl fanout run verify --for
-<id> --engine headless --adapter claude|codex --json` after the same planned inputs
+<id> --engine headless --adapter claude|codex|opencode|copilot --json` after the same planned inputs
 and actual suite receipt.
 The process host submits results/refutations and seals the same core verdict;
 continue with this skill's completion/handoff instead of dispatching workers twice.

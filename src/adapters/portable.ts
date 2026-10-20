@@ -35,15 +35,15 @@ export function renderPortableSkill(content: string) {
 }
 function capabilities(
   readOnly: AdapterCapabilities['readOnly'],
-  headless = false,
+  gitFallback = false,
 ): AdapterCapabilities {
   return {
     conformance: 'unverified',
     skills: 'rendered',
     agents: 'rendered',
-    hooks: headless ? 'git-fallback' : 'native-and-git-fallback',
+    hooks: gitFallback ? 'git-fallback' : 'native-and-git-fallback',
     readOnly,
-    engines: headless ? ['headless', 'sequential'] : ['sequential'],
+    engines: ['headless', 'sequential'],
   }
 }
 export const codexAdapter: Adapter = {

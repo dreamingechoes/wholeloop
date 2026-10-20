@@ -278,6 +278,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     "hooks": "native-and-git-fallback",
     "readOnly": "read-tool-allowlist",
     "engines": [
+      "headless",
       "sequential"
     ]
   },
@@ -452,6 +453,7 @@ Retain evidence.
     "hooks": "native-and-git-fallback",
     "readOnly": "deny-shell-and-edit",
     "engines": [
+      "headless",
       "sequential"
     ]
   },

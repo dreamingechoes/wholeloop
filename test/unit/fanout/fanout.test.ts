@@ -33,7 +33,7 @@ let raw=''
 process.stdin.on('data',chunk=>raw+=chunk)
 process.stdin.on('end',()=>{
  const a=JSON.parse(raw),mode=process.env.WL_FIXTURE_MODE
- const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2)})+'\\n')}
+ const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:process.env.WL_FIXTURE_FORMAT==='opencode'?JSON.parse(process.env.OPENCODE_PERMISSION):undefined})+'\\n')}
  log('start')
  if(mode==='crash' || (mode==='crash-vote' && a.role==='refute'))process.exit(7)
  if(mode==='timeout'){process.on('SIGTERM',()=>{});setInterval(()=>{},1000);return}
@@ -47,6 +47,7 @@ process.stdin.on('end',()=>{
   const format=process.env.WL_FIXTURE_FORMAT
   if(format==='claude')process.stdout.write(JSON.stringify({is_error:false,result:text}))
   else if(format==='codex'){console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text}}));console.log(JSON.stringify({type:'turn.completed'}))}
+  else if(format==='opencode'){console.log(JSON.stringify({type:'text',sessionID:'fixture-session',part:{messageID:'final',text,time:{end:1}}}));console.log(JSON.stringify({type:'step_finish',sessionID:'fixture-session',part:{messageID:'final',reason:'stop'}}))}
   else process.stdout.write(text)
  },Number(process.env.WL_FIXTURE_DELAY||0))
 })
@@ -342,7 +343,7 @@ describe('bounded headless gate processes', () => {
         expect(() => new HeadlessHost(engine, { adapter, ...options })).toThrow(/concurrency/)
       expect(() => headlessAdapter('unimplemented')).toThrow(/unimplemented/)
     }))
-  it.each(['claude', 'codex'])(
+  it.each(['claude', 'codex', 'opencode', 'copilot'])(
     'executes compiled %s dispatch through a synthetic client on PATH',
     (id) =>
       fixture(async ({ dir, engine, plan }) => {
@@ -377,6 +378,10 @@ describe('bounded headless gate processes', () => {
               XDG_CONFIG_HOME: join(dir, 'user'),
               WL_WORKSPACE: '',
               WL_FIXTURE_FORMAT: id,
+              WL_FIXTURE_LOG: join(dir, 'compiled-workers.ndjson'),
+              COPILOT_ALLOW_ALL: 'true',
+              GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS: 'true',
+              OPENCODE_PERMISSION: '{"*":"allow"}',
             },
           },
         )
@@ -385,6 +390,21 @@ describe('bounded headless gate processes', () => {
         const payload = JSON.parse(result.stdout)
         expect(payload.status).toBe('PASS')
         expect(payload.workers).toHaveLength(plan.units.length)
+        const starts = readFileSync(join(dir, 'compiled-workers.ndjson'), 'utf8')
+          .trim()
+          .split('\n')
+          .map((line) => JSON.parse(line))
+          .filter((row) => row.action === 'start')
+        expect(starts).toHaveLength(plan.units.length)
+        for (const row of starts) {
+          expect(row.cwd).not.toBe(engine.root)
+          expect(row.args.some((arg: string) => arg.includes('headless-assignment'))).toBe(false)
+          if (id === 'copilot') {
+            expect(row.copilotAllowAll).toBe('false')
+            expect(row.extensions).toBe('false')
+          }
+          if (id === 'opencode') expect(row.opencodePermissions['*']).toBe('deny')
+        }
       }),
     15000,
   )

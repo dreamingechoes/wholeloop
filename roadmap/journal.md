@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-20 · P5-03 additional recipes — read-only OpenCode and Copilot workers
+
+- Extend the shared bounded process host with OpenCode/Copilot recipes instead of duplicating scheduling, assignment identity, gate submission or verdicts. Probe installed OpenCode 1.17.9 and Copilot 1.0.83 help/environment and primary native contracts without model execution. ADR-0058 records tool boundaries and startup limitations.
+- Give OpenCode a per-worker primary agent with deny-default global/agent permissions, explicit read/glob/grep and bounded repository external-directory grants. Retain dotenv read denials, refuse ambiguous native wildcard paths, override ambient permission/config selectors and disable external plugins, sharing, snapshots, LSP and updates. Accept completed final-message/session JSONL only; errors, mixed sessions and truncation fail.
+- Limit Copilot to view/glob/grep with read permission and explicit shell/write/url/memory denials. Disable built-in MCP, custom instructions, automatic updates and remote export; override ambient allow-all/extension opt-ins. Use silent text plus the existing exact JSON-envelope validation rather than guessing a JSONL completion event. Keep credentials native; custom MCP startup, trusted hooks and managed policies remain separate owner checks.
+- Focused headless tests passed 38 cases in two files; adapter golden/regression tests passed 61 cases in six files. Extend compiled synthetic PATH execution to all four recipes and check that hostile ambient permission settings are overridden in actual child processes. Advertise both transports in the generated capability manifests without changing native hook modes; update both golden trees. Full local check passed 825 tests in 57 files (220.73 seconds), build/smoke, lint/typecheck, generated references/catalogs, 229-file docs, 141-file harness, Markdown and all 35 Mermaid diagrams. No actual model/authenticated service, personal configuration or project remote push ran. Tier-B headless recipes and actual engine conformance remain open independently of the next roadmap work.
+
 ## 2026-10-20 · P5-02 Cursor component — native formats, readonly roles and non-granting hooks
 
 - Add the full native manifest, portable root manifest with required Agent Plugins schema, seventeen skills, eight inherited foreground roles and an opt-in invocation rule. Native observers use readonly; preserve canonical tier hints, sequential handoffs, routing markers and plain-text question fallback. Optional adapter artifacts keep additional native files in the existing integrity tree. ADR-0057 records root/format and permission boundaries.

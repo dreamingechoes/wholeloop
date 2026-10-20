@@ -46,6 +46,7 @@ describe('additional tier-A render targets', () => {
     expect(generated.manifest.capabilities).toMatchObject({
       conformance: 'unverified',
       hooks: id === 'codex' ? 'git-fallback' : 'native-and-git-fallback',
+      engines: ['headless', 'sequential'],
     })
   })
   it.each(['codex', 'opencode', 'copilot'])(

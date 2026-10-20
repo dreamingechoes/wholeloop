@@ -12,7 +12,7 @@
 
 Plan a gate first. Verification requires its actual once-per-round suite before
 read-only fan-out. Select headless explicitly and use an available recipe; current
-local recipes cover claude and codex only. Run `wl fanout run review|verify --for
+local recipes cover claude, codex, opencode and copilot. Run `wl fanout run review|verify --for
 <id> --engine headless --adapter <client> --json`. Apply no automatic repair or
 budget reset. A failed round needs the existing explicit gate planning path.
 

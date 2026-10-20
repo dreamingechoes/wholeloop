@@ -121,8 +121,15 @@ hook capture and installed-client behavior remain owner checks.
 - [ ] Inspect ignored/transient-restored files and external side effects; repository snapshots cannot prove their absence. Confirm authentication uses the client's credential store without plaintext copies.
 - [ ] Repeat process-group, timing, permission and worker fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64 only.
 
-OpenCode/Copilot recipes are still unimplemented code, separately tracked in P5-03;
-these owner checks do not block other local roadmap work.
+OpenCode/Copilot recipes have local fixture coverage. Verify OpenCode native
+deny-default agent permissions, external-directory containment, completed-message
+JSONL and inherited managed configuration. Verify Copilot stdin/silent output,
+read-only available-tool filtering and non-interactive refusal without broad
+grants. Inspect custom MCP startup and trusted-folder hooks independently: tool
+restrictions do not prove that these startup effects are disabled. Keep credential
+stores in place; no copied tokens or permission bypasses are needed.
+Gemini/Antigravity/Cursor recipes remain code work. None of these owner checks
+blocks independent local roadmap work.
 
 ## URL adoption and shared publication (P2-08)
 

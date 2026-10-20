@@ -1,4 +1,6 @@
 import { isObject } from '../config/schema.js'
+import { copilotWorker } from './copilot.js'
+import { openCodeWorker } from './opencode.js'
 
 export interface HeadlessAdapter {
   id: string
@@ -11,6 +13,8 @@ export interface HeadlessAdapter {
 }
 /** These recipes are help-probed boundaries, not a claimed authenticated conformance pass. */
 export function headlessAdapter(id: string): HeadlessAdapter {
+  if (id === 'opencode') return openCodeWorker
+  if (id === 'copilot') return copilotWorker
   if (id === 'claude')
     return {
       id,
@@ -97,6 +101,6 @@ export function headlessAdapter(id: string): HeadlessAdapter {
       },
     }
   throw new Error(
-    'Headless recipes currently support claude|codex; other adapters remain unimplemented',
+    'Headless recipes currently support claude|codex|opencode|copilot; other adapters remain unimplemented',
   )
 }
