@@ -14,3 +14,8 @@
   empty result is zero. Figma returns referenced design context, never edits.
 - Dashboard specs retain the exact metric and source pointer. Handoff means a
   person creates the chart in the named service; never report remote creation.
+
+The explicit remoteFlagHost REST bridge supports only complete unrestricted
+boolean LaunchDarkly user/key configuration. Use a host credential resolver and
+an exact project/environment; default CLI preview reads no credential. Complex
+or incomplete targeting remains unknown. No proposal is remotely applied.

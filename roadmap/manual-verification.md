@@ -4,6 +4,11 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-20.
 
+## Remote rollout bridge (P4-05 component)
+
+- [ ] Configure the explicit LaunchDarkly reader with a restricted REST token from the credential store and exact project/environment. Review the default plan, then authorize a live read only in a disposable test project. Confirm complete simple boolean/direct/weighted/reversed/off configurations match actual native state, no credential/raw targeting prose appears in output and no flag changes. Current HTTP tests are synthetic, not authenticated captures.
+- [ ] Verify rules, prerequisites, targets, experiments, custom buckets, incomplete responses, missing permissions and deadline failures stay unknown. Feed only the exact normalized result into its matching ramp request fingerprint and retain actual completion time. Repeat actual API/native/Linux behavior; other flag/dashboard bridges remain code work.
+
 ## Explicit conformance collection (P5-04 component)
 
 - [ ] Review the disabled nightly workflow and its [activation guide](../docs/contributing/conformance.md). Configure intended conformance/conformance-issues environment protection and native secrets, then explicitly enable collection only after checking access/model costs. Confirm source/core/artifact IDs/digests, separate selected key steps and no native upload of homes/journals/raw logs. Current tests parse YAML and simulate transports; they do not execute Actions.

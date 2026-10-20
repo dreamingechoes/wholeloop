@@ -73,7 +73,7 @@ criterion does not block dependent local rollout implementation.
 
 ## P4-05 · Rollout providers
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P1-08
+**Status:** 🔄 · **Size:** L · **Depends on:** P1-08
 
 **Goal** — The launch and ramp steps work with the tools teams actually use.
 
@@ -87,10 +87,14 @@ criterion does not block dependent local rollout implementation.
 **Local implementation:** offline fixtures cover every declared operation of all
 fourteen targets; native unsent drafts, unapplied proposals, config-file reads and
 metric-linked dashboard handoffs are implemented. Known sending/toggle routes are
-rejected. Fixtures do not establish opaque server semantics. Authenticated remote
-flag bridges and actual dashboard creation/normalization remain unimplemented;
+rejected. Fixtures do not establish opaque server semantics. The first explicit LaunchDarkly REST host now reads only complete unrestricted
+boolean user/key configuration through bounded credential-store transport and
+the existing ramp normalizer. A default-preview CLI performs no I/O until --live;
+complex targeting remains unknown. Actual native/service acceptance is unverified.
+Unleash/GrowthBook/PostHog bridges and actual dashboard creation/normalization
+remain code work;
 local dashboard output is explicitly pending. Keep P4-05 partial and continue
-independent local sync/grounding work. See the manual checklist and ADR-0042.
+independent local sync/grounding work. See the manual checklist, ADR-0042 and ADR-0076.
 
 **Docs** — configuration/providers.
 

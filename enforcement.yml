@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: remote-flag-read-boundary
+    enforcers: [src/providers/flag-bridge.ts#remoteFlagHost, src/providers/flag-bridge.ts#launchDarklyFlag, src/cli/flag-read.ts#flagReadCommand, test/unit/providers/flag-bridge.test.ts]
   - id: conformance-nightly-authority
     enforcers: [scripts/conformance-nightly.mjs, .github/workflows/conformance.yml, test/unit/conformance/nightly.test.ts]
   - id: conformance-exact-acquisition

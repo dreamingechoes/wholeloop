@@ -6,6 +6,40 @@
   "oneOf": [
     {
       "type": "object",
+      "required": ["schema", "status", "provider", "flag", "environment", "request", "effects"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/flag-read@1"
+        },
+        "status": {
+          "enum": ["planned", "observed"]
+        },
+        "provider": {
+          "type": "string"
+        },
+        "flag": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "request": {
+          "type": "object",
+          "required": ["method", "url", "credentialEnv"]
+        },
+        "effects": {
+          "enum": ["not-performed", "remote-read"]
+        },
+        "observedAt": {
+          "type": "string"
+        },
+        "result": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "object",
       "required": [
         "schema",
         "platform",

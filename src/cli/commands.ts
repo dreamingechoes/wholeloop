@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'provider read-flags',
+    arguments: '',
+    options: ['--bridge <file>', '--flag <key>', '--environment <key>', '--live'],
+    schema: 'wholeloop/flag-read@1',
+    summary: 'Plan or explicitly read a supported remote boolean flag without toggling it',
+  },
+  {
     path: 'conformance acquisition',
     arguments: '<downloads.json>',
     options: [],

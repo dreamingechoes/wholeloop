@@ -36,6 +36,7 @@ identities and optional command flags remain additive; read the
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl provider read-flags` | `wholeloop/flag-read@1` | Plan or explicitly read a supported remote boolean flag without toggling it |
 | `wl conformance acquisition <downloads.json>` | `wholeloop/conformance-acquisition@1` | Validate exact native vendor downloads without installing or running clients |
 | `wl release verify <directory>` | `wholeloop/release-verified@1` | Verify prepared release bytes and source context without publishing |
 | `wl release preflight` | `wholeloop/release-preflight@1` | Check exact local release source and supplied CI metadata without publishing |

@@ -1,5 +1,10 @@
 # Conformance evidence
 
+- ⛔ `remote-flag-read-boundary` — keep service execution explicit and credentials
+  in the host store. Bind exact read identity, bound/redact transport, refuse
+  mutation routes and normalize only supported complete targeting. Unsupported
+  or failed reads stay unknown, never an inferred disabled flag or percentage.
+
 - ⛔ `conformance-nightly-authority` — keep native execution and issue delivery
   separately activated. Reuse exact transferred core/result bytes, isolate each
   selected key/channel home, upload only structural evidence and serialize issue

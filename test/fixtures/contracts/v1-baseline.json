@@ -196,7 +196,9 @@
     "schema:wholeloop/conformance-collection@1": "899975c3bd4fdb92547b689b87ba4e0287140d02246200a75b3f57a817e61b6f",
     "output:wholeloop/conformance-issues@1": "ca322dafae803d8374f6462fb22a103e01613e67c86d7d4a3384647d4d524844",
     "output:wholeloop/conformance-acquisition@1": "9f5be6ae500bf6c88846cf546a137a9493b3ad7d1fb21ef7fdbf1673ec92cd09",
-    "schema:wholeloop/conformance-downloads@1": "dcfaf9025faac5c71541a6d4b6bb9e4cd5af316b1aae2b10ca115b6dbecf712f"
+    "schema:wholeloop/conformance-downloads@1": "dcfaf9025faac5c71541a6d4b6bb9e4cd5af316b1aae2b10ca115b6dbecf712f",
+    "output:wholeloop/flag-read@1": "f9117916f7ab116ba35c5eb93378f26fc151d679cf40ecc74be0b5d88b596a5b",
+    "schema:wholeloop/flag-bridge@1": "364b24446cda7df2a8a052b3e398c53907744e3081b1880ac3f97a820aeba59f"
   },
   "commands": [
     {
@@ -1202,6 +1204,12 @@
       "arguments": "<downloads.json>",
       "schema": "wholeloop/conformance-acquisition@1",
       "options": []
+    },
+    {
+      "path": "provider read-flags",
+      "arguments": "",
+      "schema": "wholeloop/flag-read@1",
+      "options": ["--bridge <file>", "--flag <key>", "--environment <key>", "--live"]
     }
   ],
   "exitCodes": {

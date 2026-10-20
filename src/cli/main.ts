@@ -15,6 +15,7 @@ import { CliError } from './errors.js'
 import { evalCommand, gateEvalCommand } from './eval.js'
 import { extensionCommand } from './extensions.js'
 import { fanoutCommand } from './fanout.js'
+import { flagReadCommand } from './flag-read.js'
 import { flowCommand } from './flow.js'
 import { gateCommand } from './gate.js'
 import { generateCommand } from './generate.js'
@@ -119,6 +120,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       command.path === 'eval grounding' ||
       command.path === 'sync' ||
       command.path === 'provider test' ||
+      command.path === 'provider read-flags' ||
       command.path === 'verify suite' ||
       command.path.startsWith('pr ') ||
       command.path.startsWith('ramp ') ||
@@ -205,6 +207,7 @@ export async function runAsync(
         command.path === 'eval grounding' ||
         command.path === 'sync' ||
         command.path === 'provider test' ||
+        command.path === 'provider read-flags' ||
         command.path === 'verify suite' ||
         command.path.startsWith('pr ') ||
         command.path.startsWith('ramp ') ||
@@ -228,6 +231,7 @@ export async function runAsync(
     )
     if (command.path.startsWith('guard '))
       return await guardCommand(command.path, parsed, root, json, io)
+    if (command.path === 'provider read-flags') return await flagReadCommand(parsed, root, json, io)
     if (command.path === 'fanout run') return await fanoutCommand(parsed, root, json, io)
     if (command.path.startsWith('conformance '))
       return await conformanceCommand(command.path, parsed, root, json, io)

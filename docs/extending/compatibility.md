@@ -3,7 +3,7 @@
 > **TL;DR** — The v1 candidate freezes existing schema declarations, step contracts, command signatures and exit codes. New commands and optional flags are additive; changing an existing format needs a new identity and a migration path. Commit classifications alone do not establish compatibility.
 
 > [!NOTE]
-> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers forty-two source JSON Schemas, 140 command-output variants, thirteen steps, 149 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
+> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers forty-three source JSON Schemas, 141 command-output variants, thirteen steps, 150 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
 
 ## What is versioned
 
@@ -71,4 +71,4 @@ not a version bump, published package, tag or announcement. See
 [ADR-0066](../decisions/0066-v1-compatibility-baseline-and-deprecation.md).
 
 <!-- docnav -->
-[◀ Writing a provider](providers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Lenses, templates, profiles ▶](lenses-templates-profiles.md)
+[◀ Remote rollout bridges](remote-bridges.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Lenses, templates, profiles ▶](lenses-templates-profiles.md)

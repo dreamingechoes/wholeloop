@@ -375,5 +375,10 @@ marker before posting. Local tests use synthetic API-shaped responses and a
 separate real push to a temporary local bare repository; live authentication,
 self-managed versions and network interruption remain owner verification.
 
+Explicit service execution: the [remote rollout bridge guide](../extending/remote-bridges.md)
+covers non-secret configuration, default-preview/live selection and the first
+conservative LaunchDarkly boolean reader. It does not make metadata-only provider
+tests authenticated health checks or convert dashboard handoffs into remote charts.
+
 <!-- docnav -->
 [◀ Interaction profile](profile.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Repo skills ▶](repo-skills.md)

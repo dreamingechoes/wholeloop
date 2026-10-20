@@ -108,4 +108,4 @@ Built-in providers also ship a **fixture test**: a recorded tool response and th
 ---
 
 <!-- docnav -->
-[◀ Extending](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Compatibility ▶](compatibility.md)
+[◀ Extending](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Remote rollout bridges ▶](remote-bridges.md)
