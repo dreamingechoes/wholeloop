@@ -36,6 +36,14 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Export owned seven-client delivery previews and a local Claude marketplace',
   },
   {
+    path: 'conformance collect',
+    arguments: '<plan.json>',
+    options: ['--fixture', '--live', '--bin-root <directory>', '--timeout <ms>', '--store <path>'],
+    schema: 'wholeloop/conformance-results@1',
+    summary:
+      'Collect fresh pinned/latest observations with explicit execution mode and native paths',
+  },
+  {
     path: 'conformance prepare',
     arguments: '',
     options: ['--target <cli>', '--pin <version>', '--store <path>'],

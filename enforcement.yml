@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: conformance-explicit-collection
+    enforcers: [src/conformance/collection.ts#conformanceCollection, src/conformance/collection.ts#collectConformance, src/cli/conformance.ts#conformanceCommand, test/unit/conformance/collection.test.ts]
   - id: release-reviewed-bytes
     enforcers: [src/release/bundle.ts#verifyReleaseBundle, src/cli/release-bundle.ts#releaseVerifyCommand, scripts/release.mjs, .github/workflows/release.yml, test/unit/release/bundle.test.ts]
   - id: release-bound-source

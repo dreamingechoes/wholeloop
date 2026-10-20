@@ -4,6 +4,11 @@
 
 ---
 
+## 2026-10-20 · P5-04 collection — explicit fresh pinned/latest batches
+
+- Add strict whole-batch validation, explicit fixture/live modes and separate per-client/channel binary paths before any preparation. Use fresh external runs with the existing bounded process/version/journal judge, retain failed observations and continue after crashes, forward deadlines/cancellation and stop new preparation after cancellation. Keep actual observation timestamps and structural initiative IDs while omitting journal paths/contents. ADR-0070 records why version resolution/acquisition stay with the host.
+- The first fourteen-case integration exposed my projection dropping the initiative ID required for successful matrix reports. Restore that opaque ID rather than weaken the validator; preserve path/content omission. Repeat simulation across all fourteen target/channel cases, compiled empty-HOME input checks and synthetic native crash/version/continuation checks. Focused collection checks passed 14 cases, including the actual fourteen-run matrix projection. Full local check passed 1240 tests in 67 files (226.15 seconds), the actual isolated npm package PASS receipt, build/smoke, lint/typecheck, generated references/catalogs, 245-file docs, 142-file harness, 244-file Markdown and all 35 Mermaid diagrams. Preserve all 190 prior compatibility declarations/signatures and append the new plan/results/command; candidate coverage becomes 192 declarations/147 commands/five exit codes. Host installers/version resolution, scheduled activation and issue automation remain independent code work; no actual native model/authenticated service, CI/issue operation, publication, version/privacy/ref/tag change or project push ran.
+
 ## 2026-10-20 · P5-05 automation — reviewed bundles before explicit activation
 
 - Bind four bounded payload hashes/sizes and exact source/context/range in a strict versioned manifest. Add read-only compiled verification using an independently retained manifest digest and the exact selected core. Prepare actual offline npm/native archives and complete-history notes into a new external directory; tar preserves every native hidden path/mode. ADR-0069 records the boundary.

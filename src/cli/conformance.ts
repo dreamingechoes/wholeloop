@@ -2,6 +2,7 @@ import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
+import { collectConformance } from '../conformance/collection.js'
 import { conformanceMatrix, conformanceMatrixMarkdown } from '../conformance/matrix.js'
 import { conformancePage } from '../conformance/page.js'
 import { prepareConformance } from '../conformance/prepare.js'
@@ -65,6 +66,59 @@ export async function conformanceCommand(
     canonical: bundledCanonical(),
     core: readFileSync(fileURLToPath(import.meta.url), 'utf8'),
     version: VERSION,
+  }
+  if (command === 'conformance collect') {
+    const file = positional[0]
+    if (
+      !file ||
+      positional.length !== 1 ||
+      (options['--fixture'] === true) === (options['--live'] === true)
+    )
+      throw new CliError(
+        'Use conformance collect <plan.json> (--fixture | --live) [--bin-root <directory>]',
+      )
+    let plan: unknown
+    try {
+      const path = resolve(root, file),
+        stat = lstatSync(path)
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 65536) throw new Error()
+      const raw = readFileSync(path, 'utf8')
+      if (Buffer.byteLength(raw) > 65536) throw new Error()
+      plan = JSON.parse(raw)
+    } catch {
+      throw new CliError(
+        'Use one regular collection plan JSON file of at most 64 KiB; contents omitted',
+      )
+    }
+    const controller = new AbortController()
+    const cancel = () => controller.abort()
+    process.once('SIGINT', cancel)
+    process.once('SIGTERM', cancel)
+    try {
+      const result = await collectConformance(
+        context,
+        plan,
+        options['--fixture'] === true ? 'fixture' : 'live',
+        {
+          signal: controller.signal,
+          ...(typeof options['--bin-root'] === 'string'
+            ? { binRoot: resolve(root, options['--bin-root']) }
+            : {}),
+          ...(typeof options['--timeout'] === 'string'
+            ? { timeoutMs: Number(options['--timeout']) }
+            : {}),
+        },
+      )
+      io.out(JSON.stringify(result, null, json ? undefined : 2))
+      return result.status === 'cancelled'
+        ? 3
+        : result.runs.some((run) => run.report.status === 'FAIL')
+          ? 4
+          : 0
+    } finally {
+      process.off('SIGINT', cancel)
+      process.off('SIGTERM', cancel)
+    }
   }
   if (command === 'conformance prepare') {
     if (

@@ -88,7 +88,7 @@ Neither gap blocks independent local generator/guard implementation.
 
 ## P5-04 · Nightly conformance and the generated matrix
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
+**Status:** 🔄 · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
 
 **Goal** — Know the moment a CLI release breaks something.
 
@@ -106,11 +106,16 @@ Duplicate/relabelled runs, invalid reports and future observations are refused.
 Explicit page comparison/regeneration now shares strict marker ownership with
 code references, requires a fixed as-of time, preserves surrounding prose/dates
 and projects no raw reports. Initial published documentation rows remain UNRUN.
-Scheduled collection, installers/version resolution and issue automation remain
-code work; actual CI/authenticated runs remain owner checks.
+An explicit collector now validates a whole exact-version batch before setup,
+preflights separate native binary paths, creates fresh external fixtures and
+continues after client crashes. It forwards deadlines/cancellation and emits
+matrix-ready timestamps/structural reports without journal paths. Fixture mode
+remains simulation; actual versions, native provisioning and trust/authentication
+are host inputs. Scheduled activation, installers/version resolution and issue
+automation remain code work; actual CI/authenticated runs remain owner checks.
 No native acceptance is inferred from the matrix's synthetic tests.
 
-**Docs** — platforms, ADR-0059, ADR-0064.
+**Docs** — platforms, ADR-0059, ADR-0064, ADR-0070.
 
 ## P5-05 · Distribution
 
@@ -206,8 +211,8 @@ is promoted to native support. See ADR-0052, ADR-0061 and ADR-0064.
 - [ ] The 1.0 release is tagged and announced.
 
 **Local implementation:** source/compiled command registration checks every declared
-output. The v1 candidate records forty source schemas, 137 output variants,
-thirteen step definitions, 146 command signatures and five exit codes. Individual
+output. The v1 candidate records forty-one source schemas, 138 output variants,
+thirteen step definitions, 147 command signatures and five exit codes. Individual
 compatibility cases retain declaration identities, command options/signatures and
 exit meanings; public adapter/distribution manifests validate before emission.
 The compatibility/deprecation policy preserves existing 1.x contracts and requires

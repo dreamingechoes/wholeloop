@@ -80,6 +80,7 @@
 | [0067](./0067-isolated-offline-npm-package-verification.md) | Isolated offline npm package verification | Accepted | 2026-10-20 |
 | [0068](./0068-read-only-release-consistency-preflight.md) | Read-only release consistency preflight | Accepted | 2026-10-20 |
 | [0069](./0069-reviewed-release-bundles-and-explicit-activation.md) | Reviewed release bundles and explicit activation | Accepted | 2026-10-20 |
+| [0070](./0070-explicit-fresh-conformance-collection.md) | Explicit fresh conformance collection | Accepted | 2026-10-20 |
 
 ## Lifecycle
 

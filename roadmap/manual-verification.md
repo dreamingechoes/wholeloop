@@ -4,6 +4,12 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-20.
 
+## Explicit conformance collection (P5-04 component)
+
+- [ ] Provision isolated pinned/latest native binaries and exact resolved versions for the intended host. Run only after native trust/auth/permissions setup; confirm selected paths and version probes cannot silently reuse a global channel. Current local tests use synthetic clients/simulation only.
+- [ ] Repeat a live batch on macOS/Linux/supported Node versions; inspect journal verdicts, crashes, timeout/cancellation, native updater behavior and external effects. Feed actual timestamped results to the matrix without relabelling simulations or refreshing observation dates.
+- [ ] Verify result artifacts expose structural IDs/versions/assertions but no journal paths, draft contents, raw stdout or credentials. Inspect interrupted external state before preparing a fresh run. Host version resolution/acquisition, scheduled activation and actual service issue operations remain separate.
+
 ## Coinstalled entrypoints and slot guidance (P1-07/P1-13 regression)
 
 - [ ] Upgrade unchanged owned older native output, then restart the intended clients. Confirm wholeloop skills/roles remain discoverable but do not compete as heuristic frame.template or review.rubric guidance. Routing markers are not native-loader or permission evidence.

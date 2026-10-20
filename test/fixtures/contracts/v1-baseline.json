@@ -191,7 +191,9 @@
     "step:verify-works": "23e69accdfdab2cd0a9f882db3d87ababaa07b48471f5b927c6fdbe5cadbab29",
     "step:write-spec": "fb6e5a930950dbf4ff15734de867f6097a0f121e1ebfaf0115990ec5ae8ecbd5",
     "output:wholeloop/release-verified@1": "1fc56a1df522d4d3dd8af2856931053777c43bfa1ea2a330a0f4e7b0a429d713",
-    "schema:wholeloop/release-bundle@1": "5b1cf4206e92520900b67751661a86e4e61ad0e3e340bc38ef2528fa22144c5a"
+    "schema:wholeloop/release-bundle@1": "5b1cf4206e92520900b67751661a86e4e61ad0e3e340bc38ef2528fa22144c5a",
+    "output:wholeloop/conformance-results@1": "53f7371ec13ce8c5b575c5791708acf669196c868d60dfc933ff5f1b5686f802",
+    "schema:wholeloop/conformance-collection@1": "899975c3bd4fdb92547b689b87ba4e0287140d02246200a75b3f57a817e61b6f"
   },
   "commands": [
     {
@@ -1173,6 +1175,18 @@
       "options": ["--context <file>", "--sha256 <digest>"],
       "schema": "wholeloop/release-verified@1",
       "summary": "Verify prepared release bytes and source context without publishing"
+    },
+    {
+      "path": "conformance collect",
+      "arguments": "<plan.json>",
+      "schema": "wholeloop/conformance-results@1",
+      "options": [
+        "--fixture",
+        "--live",
+        "--bin-root <directory>",
+        "--timeout <ms>",
+        "--store <path>"
+      ]
     }
   ],
   "exitCodes": {

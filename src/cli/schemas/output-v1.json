@@ -8,6 +8,39 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/conformance-results@1"
+        },
+        "status": {
+          "enum": ["completed", "cancelled"]
+        },
+        "mode": {
+          "enum": ["fixture", "live"]
+        },
+        "planned": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 14
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["channel", "observedAt", "report"]
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["schema", "status", "mode", "planned", "runs", "limitations"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/release-verified@1"
         },
         "status": {

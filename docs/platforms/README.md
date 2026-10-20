@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Bounded reported matrices support explicit page comparison/regeneration; scheduled collection and issue automation remain pending.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; host version resolution, scheduling and issue automation remain pending.
 
 ---
 
@@ -90,6 +90,66 @@ file of at most 1 MiB, with at most one observation per target/channel and one
 entry per actual run. Scheduled collection, version resolution and issue automation
 remain P5-04 work. See
 [ADR-0059](../decisions/0059-conformance-observations-and-regression-candidates.md).
+
+### Collect fresh observations
+
+Use a wholeloop/conformance-collection@1 plan stored outside Git. This illustrative
+fixture plan uses synthetic versions, not released client versions:
+
+```json
+{
+  "schema": "wholeloop/conformance-collection@1",
+  "entries": [
+    { "cli": "codex", "channel": "pinned", "pin": "99.0.0" },
+    { "cli": "codex", "channel": "latest", "pin": "99.0.1" }
+  ]
+}
+```
+
+```text
+wl conformance collect /tmp/collection.json --fixture --store /tmp/collection-store --json
+```
+
+Plans contain one to fourteen unique target/channel entries. Both channels and all
+seven clients are supported; omitted pairs remain UNRUN when rendered. Fixture
+mode creates fresh external installed-core runs, executes no native client/model
+and returns simulation evidence. Save the versioned result outside source for
+matrix rendering; do not overwrite observations with a new time to hide age.
+
+For explicit native collection, the host first resolves actual latest and pinned
+versions and provisions a separate binary directory for every selected entry:
+
+```text
+<bin-root>/<cli>/<channel>/bin/<native-command>
+```
+
+Native commands are claude, codex, opencode, copilot, gemini, agy for antigravity
+and agent for cursor. Package-manager executable symlinks are supported. Replace
+the synthetic versions with exact real observations, preserve native credentials
+in their existing store, and establish trust/permissions yourself before running:
+
+```text
+wl conformance collect /tmp/collection.json --live --bin-root /tmp/clients --timeout 180000 --store /tmp/collection-store --json
+```
+
+All selected binaries are checked before any fixture is created. Missing channels
+fail rather than falling back to a global installation. Each entry has a fresh
+fixture and actual version probe immediately before launch. Collection continues
+after a crash or failed journal verdict. Entries run sequentially; cancellation
+stops new preparation and leaves external evidence available for inspection.
+
+The result contains actual observation times, run IDs and structural reports,
+including the opaque initiative ID required for successful observations. It omits
+journal paths, draft contents and native stdout. Completed means the batch finished,
+not that it passed. Exit 4 identifies failed reports, 3 cancellation/preconditions,
+and zero completed collection without failures, including simulation. File/usage
+errors exit 4. Fixture mode refuses a native binary root; live requires one.
+
+The collector neither resolves moving versions nor installs/updates clients. Host
+version resolution, acquisition, scheduling and regression issues remain separate
+P5-04 work. Native updaters and external effects still require owner inspection;
+a version probe does not attest every later internal executable. See
+[ADR-0070](../decisions/0070-explicit-fresh-conformance-collection.md).
 
 ### Check or update this observation snapshot
 

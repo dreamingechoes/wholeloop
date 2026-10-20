@@ -1,5 +1,10 @@
 # Conformance evidence
 
+- ⛔ `conformance-explicit-collection` — validate the complete exact-version batch
+  before preparation, require explicit fixture/live mode and every selected native
+  channel binary, and create fresh external runs. Keep crash reports and continue;
+  stop new preparation on cancellation. Omit journal paths from matrix artifacts.
+
 - ⛔ `conformance-evidence-boundary` — preparation starts no model. Installed-core
   simulations remain FIXTURE_PASS with simulation evidence; they never close the
   actual native-client matrix. A live structural PASS requires an explicitly live

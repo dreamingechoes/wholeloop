@@ -1,9 +1,15 @@
 import { basename, dirname } from 'node:path'
 import type { PreparedConformance, Scenario } from './contracts.js'
 
+export function conformanceBinary(target: string) {
+  if (target === 'cursor') return 'agent'
+  if (target === 'antigravity') return 'agy'
+  return target
+}
+
 /** Native skill discovery needs project customizations; the observer gate recipes deliberately disable them. */
 export function conformanceRecipe(run: PreparedConformance) {
-  const common = { command: run.target, cwd: run.root }
+  const common = { command: conformanceBinary(run.target), cwd: run.root }
   if (run.target === 'cursor')
     return {
       ...common,
