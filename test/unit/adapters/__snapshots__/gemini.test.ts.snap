@@ -102,7 +102,8 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     "hooks": "native-and-git-fallback",
     "readOnly": "read-tool-allowlist",
     "engines": [
-      "sequential"
+      "sequential",
+      "headless"
     ]
   },
   "skills": [

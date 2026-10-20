@@ -16,10 +16,14 @@
 - ⛔ `headless-cursor-read-tools` — Cursor workers use Ask, sandbox and explicit
   shell/write/web/MCP denials plus a fail-closed read/search-only preToolUse hook.
   Read responses grant nothing; unknown tools, bad context or unavailable hooks deny.
+- ⛔ `headless-gemini-core-tools` — restrict Gemini's actual core registry and
+  disable alternate tool/agent/MCP/hook surfaces through private worker policy.
+  Refuse existing managed settings, preserve system defaults and native trust/auth,
+  and never substitute confirmation grants for a positive registry restriction.
 
 Plan a gate first. Verification requires its actual once-per-round suite before
 read-only fan-out. Select headless explicitly and use an available recipe; current
-local recipes cover claude, codex, opencode, copilot and cursor. Run `wl fanout run review|verify --for
+local recipes cover claude, codex, opencode, copilot, cursor and gemini. Run `wl fanout run review|verify --for
 <id> --engine headless --adapter <client> --json`. Apply no automatic repair or
 budget reset. A failed round needs the existing explicit gate planning path.
 

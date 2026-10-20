@@ -1,7 +1,7 @@
 import { lstatSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 
-const names = ['.cursor/cli.json', '.cursor/hooks.json'] as const
+const names = ['.cursor/cli.json', '.cursor/hooks.json', '.gemini/worker-settings.json'] as const
 export type WorkerPolicyFile = (typeof names)[number]
 function entry(path: string) {
   try {
@@ -23,13 +23,7 @@ export function stageWorkerPolicy(
   if (!directoryStat.isDirectory() || directoryStat.isSymbolicLink())
     throw new Error('Unsafe native worker root')
   const root = realpathSync(directory)
-  const parent = join(root, '.cursor')
   // Preflight the complete batch before writing the first file, preserving existing policy.
-  const stat = entry(parent)
-  if (stat) {
-    if (!stat.isDirectory() || stat.isSymbolicLink())
-      throw new Error('Unsafe native worker policy directory')
-  }
   const planned = [...files].map(([name, content]) => {
     if (!names.includes(name) || typeof content !== 'string' || Buffer.byteLength(content) > 65536)
       throw new Error('Unsupported or oversized native worker policy file')
@@ -37,6 +31,12 @@ export function stageWorkerPolicy(
     if (entry(path)) throw new Error('Native worker policy already exists; preserve it')
     return { path, content }
   })
-  if (!stat) mkdirSync(parent, { mode: 0o700 })
+  const parents = [...new Set(planned.map((file) => dirname(file.path)))].map((parent) => {
+    const stat = entry(parent)
+    if (stat && (!stat.isDirectory() || stat.isSymbolicLink()))
+      throw new Error('Unsafe native worker policy directory')
+    return { parent, exists: !!stat }
+  })
+  for (const { parent, exists } of parents) if (!exists) mkdirSync(parent, { mode: 0o700 })
   for (const file of planned) writeFileSync(file.path, file.content, { flag: 'wx', mode: 0o600 })
 }

@@ -45,7 +45,7 @@ are a separate bounded report input below, never inferred from these rows.
 | `codex` | rendered | rendered | `git-fallback` | `inherited-parent-and-checked-headless` | `headless` · `sequential` | unverified |
 | `opencode` | rendered | rendered | `native-and-git-fallback` | `deny-shell-and-edit` | `headless` · `sequential` | unverified |
 | `copilot` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `headless` · `sequential` | unverified |
-| `gemini` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `sequential` | unverified |
+| `gemini` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `sequential` · `headless` | unverified |
 | `antigravity` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `sequential` | unverified |
 | `cursor` | rendered | rendered | `native-and-git-fallback` | `native-readonly` | `headless` · `sequential` | unverified |
 <!-- platforms:end -->
@@ -399,6 +399,15 @@ model permissions and full activation remain owner checks. See
 [ADR-0056](../decisions/0056-gemini-hook-roots-through-native-environment.md).
 MCP recipes never apply or expand credentials; declaration detection respects Gemini allowed/excluded server metadata.
 Doctor supports --target gemini; its default selection stays on tier A.
+
+Read-only gate fanout also supports --adapter gemini through a private positive
+core registry, with alternate tool surfaces disabled. Existing managed system
+settings block launch; original defaults and native trust/auth/model remain in
+place. This observer is separate from the framing recipe that needs native skill
+loading and explicit state writes. Actual 0.27.0 registry/argument metadata checks
+are model-free; native model acceptance remains open. See
+[the headless boundary](../architecture/orchestration-and-gates.md#local-headless-process-transport)
+and [ADR-0071](../decisions/0071-gemini-observer-registry-and-private-policy.md).
 
 Formats: [Gemini extension reference](https://geminicli.com/docs/extensions/reference/),
 [local subagents](https://geminicli.com/docs/core/subagents/),

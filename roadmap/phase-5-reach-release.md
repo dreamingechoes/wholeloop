@@ -60,7 +60,7 @@ scenario remain owner checks. See ADR-0057; these checks do not block P5-03.
 
 ## P5-03 · Headless fan-out engine
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P3-03
+**Status:** 🔄 · **Size:** L · **Depends on:** P3-03
 
 **Goal** — Parallel, isolated gate lenses on any CLI with a headless mode.
 
@@ -80,15 +80,20 @@ OpenCode uses a per-worker deny-default read-only agent and completed-message JS
 Copilot exposes only view/glob/grep with explicit read grants and silent text.
 Cursor uses Ask/sandbox, private worker-local policy, an explicit read/search-only
 hook and successful native final JSON; no personal/project settings are rewritten.
-Real client conformance remains open. Gemini/Antigravity headless recipes
-remain separate adapter work; sequential execution is available in the meantime.
+Gemini now uses a private positive core-tool registry with MCP/extensions/hooks,
+experimental and built-in delegation disabled. Refuse existing managed settings,
+retain original system defaults and native trust/auth/model choices, and decode
+only successful native JSON. Actual 0.27.0 metadata/registry checks expose only four
+read/search tools in an explicitly untrusted credential-free fixture. Synthetic
+compiled transport passes; actual model conformance remains open. Antigravity's
+recipe remains separate work; sequential execution is available in the meantime.
 Neither gap blocks independent local generator/guard implementation.
 
-**Docs** — architecture/orchestration-and-gates, ADR-0006, ADR-0046, ADR-0058, ADR-0060.
+**Docs** — architecture/orchestration-and-gates, ADR-0006, ADR-0046, ADR-0058, ADR-0060, ADR-0071.
 
 ## P5-04 · Nightly conformance and the generated matrix
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
 
 **Goal** — Know the moment a CLI release breaks something.
 

@@ -33,7 +33,7 @@ let raw=''
 process.stdin.on('data',chunk=>raw+=chunk)
 process.stdin.on('end',()=>{
  const a=JSON.parse(raw),mode=process.env.WL_FIXTURE_MODE
- const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:process.env.WL_FIXTURE_FORMAT==='opencode'?JSON.parse(process.env.OPENCODE_PERMISSION):undefined,cursorPolicy:process.env.WL_FIXTURE_FORMAT==='cursor'?JSON.parse(fs.readFileSync('.cursor/cli.json','utf8')):undefined,cursorHooks:process.env.WL_FIXTURE_FORMAT==='cursor'?fs.existsSync('.cursor/hooks.json'):undefined})+'\\n')}
+ const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:process.env.WL_FIXTURE_FORMAT==='opencode'?JSON.parse(process.env.OPENCODE_PERMISSION):undefined,cursorPolicy:process.env.WL_FIXTURE_FORMAT==='cursor'?JSON.parse(fs.readFileSync('.cursor/cli.json','utf8')):undefined,cursorHooks:process.env.WL_FIXTURE_FORMAT==='cursor'?fs.existsSync('.cursor/hooks.json'):undefined,geminiPolicy:process.env.WL_FIXTURE_FORMAT==='gemini'?JSON.parse(fs.readFileSync(process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH,'utf8')):undefined})+'\\n')}
  log('start')
  if(mode==='crash' || (mode==='crash-vote' && a.role==='refute'))process.exit(7)
  if(mode==='timeout'){process.on('SIGTERM',()=>{});setInterval(()=>{},1000);return}
@@ -47,6 +47,7 @@ process.stdin.on('end',()=>{
   const format=process.env.WL_FIXTURE_FORMAT
   if(format==='claude')process.stdout.write(JSON.stringify({is_error:false,result:text}))
   else if(format==='codex'){console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text}}));console.log(JSON.stringify({type:'turn.completed'}))}
+  else if(format==='gemini')process.stdout.write(JSON.stringify({response:text,session_id:'fixture-session'}))
   else if(format==='cursor')process.stdout.write(JSON.stringify({type:'result',subtype:'success',is_error:false,result:text}))
   else if(format==='opencode'){console.log(JSON.stringify({type:'text',sessionID:'fixture-session',part:{messageID:'final',text,time:{end:1}}}));console.log(JSON.stringify({type:'step_finish',sessionID:'fixture-session',part:{messageID:'final',reason:'stop'}}))}
   else process.stdout.write(text)
@@ -126,6 +127,27 @@ async function fixture(
 }
 
 describe('bounded headless gate processes', () => {
+  it('starts no Gemini client when the effective host environment selects managed settings', () =>
+    fixture(async ({ dir, engine, plan, env }) => {
+      const bin = join(dir, 'gemini-bin'),
+        sentinel = join(dir, 'gemini-must-not-launch')
+      mkdirSync(bin)
+      writeFileSync(
+        join(bin, 'gemini'),
+        `#!${process.execPath}\nrequire('node:fs').writeFileSync(${JSON.stringify(sentinel)},'unexpected')\n`,
+        { mode: 0o700 },
+      )
+      const result = await runHeadless(engine, plan.subject, 'review', {
+        adapter: headlessAdapter('gemini'),
+        env: {
+          ...env,
+          PATH: `${bin}:${process.env.PATH}`,
+          GEMINI_CLI_SYSTEM_SETTINGS_PATH: join(dir, 'existing-native-settings.json'),
+        },
+      })
+      expect(result.status).toBe('FAIL')
+      expect(existsSync(sentinel)).toBe(false)
+    }))
   it('starts no client when private native policy setup is refused', () =>
     fixture(async ({ dir, engine, plan, adapter, env }) => {
       const sentinel = join(dir, 'must-not-launch')
@@ -359,7 +381,7 @@ describe('bounded headless gate processes', () => {
         expect(() => new HeadlessHost(engine, { adapter, ...options })).toThrow(/concurrency/)
       expect(() => headlessAdapter('unimplemented')).toThrow(/unimplemented/)
     }))
-  it.each(['claude', 'codex', 'opencode', 'copilot', 'cursor'])(
+  it.each(['claude', 'codex', 'opencode', 'copilot', 'cursor', 'gemini'])(
     'executes compiled %s dispatch through a synthetic client on PATH',
     (id) =>
       fixture(async ({ dir, engine, plan }) => {
@@ -416,6 +438,11 @@ describe('bounded headless gate processes', () => {
         for (const row of starts) {
           expect(row.cwd).not.toBe(engine.root)
           expect(row.args.some((arg: string) => arg.includes('headless-assignment'))).toBe(false)
+          if (id === 'gemini') {
+            expect(row.geminiPolicy.tools.core).toContain('read_file')
+            expect(row.geminiPolicy.admin.mcp.enabled).toBe(false)
+            expect(row.geminiPolicy.tools.enableHooks).toBe(false)
+          }
           if (id === 'copilot') {
             expect(row.copilotAllowAll).toBe('false')
             expect(row.extensions).toBe('false')

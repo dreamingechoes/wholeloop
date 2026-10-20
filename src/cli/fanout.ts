@@ -21,9 +21,7 @@ export async function fanoutCommand(
     typeof adapter !== 'string' ||
     options['--engine'] !== 'headless'
   )
-    throw new Error(
-      'Use fanout run verify|review --for <id> --engine headless --adapter claude|codex',
-    )
+    throw new Error('Use fanout run verify|review --for <id> --engine headless --adapter <client>')
   const controller = new AbortController()
   const stop = () => controller.abort()
   process.once('SIGINT', stop)

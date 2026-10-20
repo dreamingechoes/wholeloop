@@ -136,8 +136,9 @@ node "$WHOLELOOP_CLI" build --target gemini --out /tmp/wholeloop-gemini --json
 Explicit native linking/installation activates that extension; merely writing it
 does not. Generated extensions bind their BeforeTool root through native
 environment data. Loose overlays use the returned Git fallback command.
-Actual model, permission and MCP checks remain open; the generic Gemini headless
-observer recipe is still unimplemented. See
+Actual model, permission and MCP checks remain open. The headless observer uses a
+private positive core-tool registry and refuses existing managed system settings;
+it preserves native trust/authentication. See
 [Gemini boundaries](./README.md#gemini-extension-and-native-overlays).
 
 ## Antigravity

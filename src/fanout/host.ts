@@ -134,14 +134,19 @@ export class HeadlessHost implements GateHost {
       const input = JSON.stringify(payload)
       if (Buffer.byteLength(input) > 2 * 1024 * 1024)
         throw new Error('Headless assignment exceeds 2 MiB; narrow the review')
-      const invocation = this.options.adapter.invocation({ repository: plan.repository, directory })
+      const environment = { ...process.env, ...this.options.env }
+      const invocation = this.options.adapter.invocation({
+        repository: plan.repository,
+        directory,
+        env: environment,
+      })
       stageWorkerPolicy(directory, invocation.files)
       const observed = await workerProcess(invocation.command, invocation.args, {
         cwd: directory,
         input,
         timeoutMs: this.timeoutMs,
         signal: this.controller.signal,
-        env: { ...process.env, ...this.options.env, ...invocation.env },
+        env: { ...environment, ...invocation.env },
       })
       let status: string = observed.status
       let value: GateResult | GateVote | undefined

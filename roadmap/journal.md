@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-20 · P5-03 Gemini workers — positive core registry and preserved managed policy
+
+- Add private worker-only system policy with positive read/list/glob/search core tools and disabled MCP/extensions/skills/hooks/discovered commands, experimental plan/agents and both built-in delegators. Keep model/auth/HOME/trust in place. Refuse existing/default managed settings, retain original/custom absolute system defaults and reject native comma/newline path ambiguity. Decode only successful native JSON. ADR-0071 records the boundary.
+- Pass effective host options into invocation planning so a managed override cannot evade refusal. Extend named private policy staging with full mixed-parent preflight; preserve existing Cursor behavior. Add compiled synthetic Gemini transport, no-launch managed-override sentinel and pure policy/path/decoder tests. Update the golden tree's single additive capability and its corresponding explicit assertion.
+- Focused checks passed 90 tests in five files. Actual Gemini 0.27.0 metadata/config/registry APIs accept the production policy with hostile user settings and an explicitly untrusted external fixture: only four read/search tools remain, MCP/extensions/hooks/delegation disabled, no auth/model initialization. Correct the probe's assumption that an unmarked native trust entry meant untrusted by adding an explicit DO_NOT_TRUST fixture rule. Full local check passed 1253 tests in 68 files (223.34 seconds), the actual isolated npm package PASS receipt, build/smoke, lint/typecheck, generated references/catalogs, 246-file docs, 142-file harness, 245-file Markdown and all 35 Mermaid diagrams. Existing v1 declarations/signatures remain unchanged. P5-04 is parked between collector and remaining host components while P5-03 continues. No actual native model/authenticated service, CI/issue operation, personal configuration, publication, version/privacy/ref/tag change or project push ran.
+
 ## 2026-10-20 · P5-04 collection — explicit fresh pinned/latest batches
 
 - Add strict whole-batch validation, explicit fixture/live modes and separate per-client/channel binary paths before any preparation. Use fresh external runs with the existing bounded process/version/journal judge, retain failed observations and continue after crashes, forward deadlines/cancellation and stop new preparation after cancellation. Keep actual observation timestamps and structural initiative IDs while omitting journal paths/contents. ADR-0070 records why version resolution/acquisition stay with the host.

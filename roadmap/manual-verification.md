@@ -18,6 +18,8 @@
 
 ## Gemini adapter, overlays and conformance (P5-01 component)
 
+- [ ] Exercise the new Gemini headless observer in a disposable native setup. Confirm the generated private core read-tool registry, disabled alternate surfaces and both built-in delegators, successful final JSON and exact assignment envelope. Actual 0.27.0 metadata/config/registry probes are model-free; no real headless model pass is claimed.
+- [ ] Confirm an existing default or explicit managed system policy blocks launch; preserve its bytes and native authentication/trust/model. Verify original/custom absolute system-defaults paths remain selected and the worker never auto-trusts its directory. Repeat configuration merging, inherited include roots and external/log/update effects on Linux/current client versions.
 - [ ] Review generated gemini-extension.json and native overlays, then load/link/install only in disposable native configurations. Enable preview subagents through explicit native setup, verify all seventeen skills/eight agents and actual invocation, and confirm inheritance/precedence. Actual 0.27.0 static loaders passed; that is not a model/runtime permission check.
 - [ ] Verify observer tool isolation, no shell/write/memory/MCP/delegation route, sequential main-session handoffs, inherited models and exact plain-text questions when ask is unavailable. Repeat against the intended current version; 0.27.0 uses search_file_content while newer documentation also names grep_search.
 - [ ] Exercise user/project install/uninstall, absolute GEMINI_CLI_HOME, external ownership/backups, relocation and special paths. --target all now includes Gemini; default doctor stays tier A, so select --target gemini explicitly.

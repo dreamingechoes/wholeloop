@@ -112,7 +112,7 @@ describe('Gemini extension and native overlays', () => {
       conformance: 'unverified',
       hooks: 'native-and-git-fallback',
       readOnly: 'read-tool-allowlist',
-      engines: ['sequential'],
+      engines: ['sequential', 'headless'],
     })
     expect([...rendered.files.keys()]).toContain('hooks/hooks.json')
     expect(JSON.parse(rendered.files.get('gemini-extension.json')?.content ?? '{}')).toEqual({

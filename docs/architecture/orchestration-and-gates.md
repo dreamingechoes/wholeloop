@@ -3,7 +3,7 @@
 > **TL;DR** — Eight short agent roles do the work. They run on whichever **engine** the CLI supports best — native subagents, headless worker processes, or one after another — and the result is the same, because everything that decides (lens sets, thresholds, round caps, aggregation) lives in the core, not in the engine.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with Claude/Codex/OpenCode/Copilot/Cursor recipes are implemented locally; actual client engines and read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
+> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with Claude/Codex/OpenCode/Copilot/Cursor/Gemini recipes are implemented locally; actual client engines and read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
 
 ---
 
@@ -76,10 +76,10 @@ wl gate plan review --for review-01234567 --repo . --base main --json
 wl fanout run review --for review-01234567 --engine headless --adapter codex --concurrency 4 --timeout 120 --json
 ```
 
-Current recipes support claude, codex, opencode, copilot and cursor. They were checked
+Current recipes support claude, codex, opencode, copilot, cursor and gemini. They were checked
 against installed help and primary documentation, then executed with synthetic
-PATH clients; no real model conformance is claimed. Gemini/Antigravity
-recipes remain unimplemented. Native/sequential SDK hosts are available independently.
+PATH clients; no real model conformance is claimed. The Antigravity
+recipe remains unimplemented. Native/sequential SDK hosts are available independently.
 
 Each assignment gets a separate process, session and external-store directory.
 Prompts travel through stdin, with the exact pinned patch/rubric and suite metadata
@@ -129,13 +129,32 @@ read allowances, shell/write/web/MCP denials and a fail-closed positive read/sea
 hook. Bad context, unknown tools, malformed/oversized payloads and missing Node
 are denied; a read response is empty and preserves other native permissions.
 Require the exact successful native final JSON object. No force, trust, resume,
-auto-review or MCP auto-approval flag is emitted. Only these two non-secret policy
+auto-review or MCP auto-approval flag is emitted. Only these two non-secret Cursor policy
 files may be staged, at most 64 KiB each, with private modes and whole-batch
 preflight; existing output and symlinks are refused. Setup failure launches no
 client. This is not crash-atomic multi-file writing or hermetic native startup.
 Actual hook activation, policy merging, ignored/external effects and model behavior
 remain owner checks. See
 [ADR-0060](../decisions/0060-cursor-observer-workers-and-private-native-policy.md).
+
+Gemini uses explicit default approval and JSON output, with a positive native core
+read/list/glob/search registry. Its allowed-tools option alone is confirmation
+handling, not isolation. Stage only .gemini/worker-settings.json and apply it through
+a worker-local system override that remains effective when project settings are
+untrusted. Disable MCP, extensions, skills, ordinary hooks/discovery commands,
+experimental plan/agents and both built-in delegators. Preserve model/authentication
+and native trust; do not auto-trust the external worker or replace HOME.
+
+Existing managed settings or an explicit system-settings override block setup.
+Keep the original system-defaults path rather than let native path derivation
+redirect it. The host's effective environment participates in this refusal. No
+personal/shared policy is read and re-emitted. Commas/newlines in include paths are
+refused. Actual Gemini 0.27.0 settings/argument/config/registry APIs accepted the
+production policy in a credential-free explicitly untrusted fixture, exposing
+only four read/search tools; no model or authentication initialized. Actual native
+activation, inherited include roots, logs/updaters and external effects remain
+owner checks. See
+[ADR-0071](../decisions/0071-gemini-observer-registry-and-private-policy.md).
 
 These settings and snapshot checks do not prove the absence of ignored/transient
 writes, managed-hook effects or external side effects. See
