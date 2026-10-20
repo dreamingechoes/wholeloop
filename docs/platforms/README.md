@@ -241,6 +241,10 @@ and the [manual checklist](../../roadmap/manual-verification.md).
 
 ## Installing
 
+For a focused source-built walkthrough, choose your client in
+[local client setup](./local-onboarding.md). Native activation and first-step checks
+stay separate from file installation.
+
 Use the built core for an explicit native overlay installation:
 
 ```text
@@ -390,4 +394,4 @@ An adapter is a TypeScript module implementing one interface: where files go, ho
 ---
 
 <!-- docnav -->
-[◀ Lenses, templates, profiles](../extending/lenses-templates-profiles.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Architecture ▶](../architecture/README.md)
+[◀ Lenses, templates, profiles](../extending/lenses-templates-profiles.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Local client setup ▶](local-onboarding.md)

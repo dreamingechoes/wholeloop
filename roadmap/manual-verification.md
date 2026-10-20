@@ -51,15 +51,16 @@ These owner checks do not block remaining release tooling or other roadmap imple
 
 ## Generated references (P5-06 local controls)
 
-- [ ] After changing source contracts, rebuild before running docs check. Confirm command/config/provider/adapter sections describe that build, not an older executable on PATH.
+- [ ] After changing source contracts, rebuild before running docs check. Follow the chosen client onboarding section and keep the selected absolute core path when changing projects; native file installation does not create a global alias. Confirm command/config/provider/adapter sections describe that build, not an older executable on PATH.
 - [ ] On Linux and supported Node releases, repeat read-only drift detection, explicit selective/full regeneration, malformed-marker refusal and preservation of surrounding prose. Current compiled execution is macOS arm64/Node 24 only.
 - [ ] If regeneration is interrupted during writes, inspect the affected pages/markers before rerunning. All selected markers are preflighted, but filesystem failures do not provide multi-file crash atomicity.
 
 The generated provider and adapter tables record declarations only. Check that
 local engine changes retain unverified native status. Native capability-matrix
-collection and remaining per-CLI onboarding refinements are still
-implementation work, separate from these manual checks. Overview pages now reflect
-local implementation while retaining native/host verification boundaries.
+collection/version resolution/issue automation remain P5-04 implementation work.
+The local P5-06 references/banner/onboarding deliverables are complete; real native
+discovery, activation, permissions and first-step checks remain in the client
+sections above. Overview pages retain native/host verification boundaries.
 
 ## Public contracts and v1 candidate (P5-07 component)
 

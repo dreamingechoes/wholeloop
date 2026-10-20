@@ -117,4 +117,4 @@ The skill never computes a verdict, a precedence or a next step. It asks the cor
 ---
 
 <!-- docnav -->
-[◀ Platforms](../platforms/README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Core CLI ▶](core-cli.md)
+[◀ Local client setup](../platforms/local-onboarding.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Core CLI ▶](core-cli.md)

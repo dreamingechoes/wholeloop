@@ -114,7 +114,7 @@ No native acceptance is inferred from the matrix's synthetic tests.
 
 ## P5-05 · Distribution
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P1-13
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-13
 
 **Goal** — One command to install, wherever you work.
 
@@ -148,7 +148,7 @@ automation/provenance and hosting remain independent code work.
 
 ## P5-06 · Generated references and docs pass
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P5-04
+**Status:** ✅ · **Size:** M · **Depends on:** P5-04
 
 **Goal** — Documentation that cannot drift from the code.
 
@@ -170,9 +170,14 @@ limits. Local adapter declarations now share the build/install registry, includi
 all seven targets, hook/read-only boundaries and current engines. Generated docs
 retain unverified native conformance; no simulation is promoted to support. The
 reported framing renderer has its own explicit external-input/time page comparison
-and optional regeneration. Scheduled native collection (P5-04) and remaining per-CLI
-getting-started refinements are still code/documentation work;
-those gaps do not block independent implementation. See ADR-0052, ADR-0061 and ADR-0064.
+and optional regeneration. A focused seven-client onboarding page now covers named
+targets, source-built executable selection, scopes, native activation boundaries,
+namespaces and first-step/removal checks. The quick start uses the selected absolute
+core instead of assuming file installation creates a global alias. All local docs
+deliverables/criteria are complete using P5-04's implemented renderer/projection;
+scheduled collection/version resolution/issue automation remain P5-04 code work,
+and native acceptance remains in the adapter/owner checklists. No unknown evidence
+is promoted to native support. See ADR-0052, ADR-0061 and ADR-0064.
 
 **Docs** — all.
 

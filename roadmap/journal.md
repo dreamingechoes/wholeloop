@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-20 · P5-06 done — focused seven-client onboarding and source entrypoints
+
+- Split local setup into a seven-client guide linked from the quick start/platform/docs indexes. Preserve Gemini/Antigravity/Cursor boundaries and add focused tier-A paths, explicit targets/scopes, native namespaces, overrides, activation, first-step and owned-removal checks. Keep all actual native/model/permission/MCP evidence unverified.
+- Fix a real source quick-start gap: native component installation does not install a global wl alias. Select an absolute WHOLELOOP_CLI path and retain it across project directory changes. Distinguish managed skill names from standalone Claude plugin names, use a matching named uninstall target and clarify that MCP snippets still require native application. Regenerate navigation for the new page.
+- Execute all seven source-built install dry runs in an isolated project/HOME/store: every target returned planned and HOME stayed empty. Execute both documented profile commands in that fixture; both returned versioned JSON and exit zero. Checks passed: 241-file docs, 142-file harness, 240-file Markdown and read-only comparison of the exact external-input/as-of observation snapshot; no design-only status banners remain. No source/runtime behavior changed, so do not repeat the already-passing 1182-test suite solely for this docs change. Complete the local P5-06 criteria using P5-04's implemented matrix renderer/page projection; scheduled native collection/version resolution/issue automation remain P5-04 code, and actual native activation stays with its owner/adapter criteria. No model/authenticated service, personal configuration, CI/issue operation, version/ref/tag/publication or project remote push ran.
+
 ## 2026-10-20 · P5-05 npm delivery — actual offline archive and isolated installation
 
 - Add package:check and include the installed-package path in normal check after build/tests/smoke. Resolve actual npm/Node, preflight the dist-only source and dry-run file list before packing, verify the actual four-file archive and SHA-1/SHA-512 metadata, and report the local archive SHA-256. ADR-0067 records why copied-core smoke alone is insufficient.

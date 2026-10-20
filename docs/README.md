@@ -39,6 +39,7 @@
 | Page | For |
 | --- | --- |
 | [Platforms](./platforms/README.md) | Supported CLIs, capability matrix, adapters |
+| [Local client setup](./platforms/local-onboarding.md) | Source-built setup, activation boundaries and first checks per CLI |
 | [Architecture](./architecture/README.md) | Layers, layout, how a step runs |
 | [Core CLI](./architecture/core-cli.md) | The `wl` command surface and the step contract |
 | [State and messaging](./architecture/state-and-messaging.md) | Journal, projections, mailbox, resume |

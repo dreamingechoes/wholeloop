@@ -31,6 +31,7 @@ pages:
   - { path: extending/compatibility.md, title: Compatibility }
   - { path: extending/lenses-templates-profiles.md, title: "Lenses, templates, profiles" }
   - { path: platforms/README.md, title: Platforms }
+  - { path: platforms/local-onboarding.md, title: Local client setup }
   - { path: architecture/README.md, title: Architecture }
   - { path: architecture/core-cli.md, title: Core CLI }
   - { path: architecture/state-and-messaging.md, title: State and messaging }
