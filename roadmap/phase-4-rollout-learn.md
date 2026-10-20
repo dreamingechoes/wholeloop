@@ -91,10 +91,12 @@ rejected. Fixtures do not establish opaque server semantics. The first explicit 
 boolean user/key configuration through bounded credential-store transport and
 the existing ramp normalizer. A default-preview CLI performs no I/O until --live;
 complex targeting remains unknown. Actual native/service acceptance is unverified.
-Unleash/GrowthBook/PostHog bridges and actual dashboard creation/normalization
-remain code work;
+The Unleash Admin reader now binds full feature/project/environment state and
+explicit variants, rejecting dependencies/unions/targeting while supporting one
+unrestricted default or ordinary default-stickiness rollout. GrowthBook/PostHog
+bridges and actual dashboard creation/normalization remain code work;
 local dashboard output is explicitly pending. Keep P4-05 partial and continue
-independent local sync/grounding work. See the manual checklist, ADR-0042 and ADR-0076.
+independent local sync/grounding work. See the manual checklist, ADR-0042, ADR-0076 and ADR-0077.
 
 **Docs** — configuration/providers.
 

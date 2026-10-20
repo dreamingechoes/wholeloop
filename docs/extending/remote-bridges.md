@@ -1,9 +1,9 @@
 # Remote rollout bridges — explicit reads and conservative normalization
 
-> **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly's simple unrestricted boolean configuration is implemented first; complex targeting remains unknown.
+> **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly and Unleash have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local LaunchDarkly REST reader, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other flag services and remote dashboard creation remain open.
+> **Status: 🚧 partial.** The local LaunchDarkly/Unleash REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other flag services and remote dashboard creation remain open.
 
 ---
 
@@ -52,6 +52,27 @@ missing fields and unsupported/archived configurations remain unknown. The scala
 result does not measure actual traffic or prove a particular context's evaluation.
 Do not rename audience=all into a restricted cohort or treat failure as zero.
 
+## Unleash environments and strategies
+
+Use provider=unleash with the same v1 bridge configuration fields. Select the
+actual canonical HTTPS deployment base (including its subpath and trailing slash),
+project and credential environment reference. The shared preview/live command reads
+one exact Admin feature with variantEnvironments=true and selects one exact named
+environment. It does not infer the environment from a Client API token.
+
+Only explicit non-archived, dependency-free configuration with no variants and one
+unrestricted strategy is normalized. The default strategy means 100%; an ordinary
+flexibleRollout needs integer rollout 0–100, default stickiness and a nonempty
+bounded groupId. Constraints, segments and strategy variants must be empty. Other
+strategies/stickiness, unions, dependencies, active release plans/safeguards and
+incomplete fields remain unknown. The documented absent disabled field defaults to
+false; an explicitly disabled strategy is refused.
+
+The audience label all describes the unrestricted eligible context population,
+not measured traffic or every SDK context's evaluation. Disabled environments
+retain their explicit state with zero configured exposure. No proposal/toggle is
+performed. See [ADR-0077](../decisions/0077-explicit-unleash-environments-and-unrestricted-strategies.md).
+
 ## Host composition and ramp
 
 Source hosts can supply a credential-store resolver and optional transport/signal
@@ -70,7 +91,7 @@ and no bridge result authorizes a manual exposure change or approval.
 
 ## Remaining work
 
-Unleash/GrowthBook/PostHog readers and actual dashboard creation/normalization need
+GrowthBook/PostHog readers and actual dashboard creation/normalization need
 their own service-specific contracts. Existing dashboard files remain handoffs with
 createdRemotely=false. Current tests use local synthetic HTTP responses, not captured
 live service evidence. Owner checks are in [manual verification](../../roadmap/manual-verification.md).

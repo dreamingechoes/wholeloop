@@ -2,6 +2,7 @@ import { isObject, validate } from '../config/schema.js'
 import { measurementDigest } from '../launch/measurement.js'
 import type { ProviderHost } from './operations.js'
 import schema from './schemas/flag-bridge-v1.json' with { type: 'json' }
+import { unleashFlag } from './unleash.js'
 
 export interface FlagBridge {
   schema: 'wholeloop/flag-bridge@1'
@@ -53,11 +54,15 @@ export function flagReadPlan(configuration: unknown, flag: string, environment: 
   const config = flagBridgeConfig(configuration)
   if (!identifier.test(flag) || !identifier.test(environment))
     throw new Error('Use bounded exact flag/environment identifiers')
-  if (config.provider !== 'launchdarkly')
-    throw new Error('This flag service bridge is not implemented')
-  const path = `api/v2/flags/${encodeURIComponent(config.project)}/${encodeURIComponent(flag)}`
+  let path: string
+  if (config.provider === 'launchdarkly')
+    path = `api/v2/flags/${encodeURIComponent(config.project)}/${encodeURIComponent(flag)}`
+  else if (config.provider === 'unleash')
+    path = `api/admin/projects/${encodeURIComponent(config.project)}/features/${encodeURIComponent(flag)}`
+  else throw new Error('This flag service bridge is not implemented')
   const url = new URL(path, config.baseUrl)
-  url.searchParams.set('env', environment)
+  if (config.provider === 'launchdarkly') url.searchParams.set('env', environment)
+  else url.searchParams.set('variantEnvironments', 'true')
   return {
     schema: 'wholeloop/flag-read@1',
     status: 'planned',
@@ -163,6 +168,7 @@ export function remoteFlagHost(
   const config = flagBridgeConfig(configuration)
   return {
     invoke: async (call) => {
+      let cleanup = () => {}
       try {
         if (
           call.provider !== config.provider ||
@@ -184,9 +190,19 @@ export function remoteFlagHost(
           /[\r\n]/.test(credential)
         )
           throw new Error()
-        const signal = options.signal
-          ? AbortSignal.any([options.signal, AbortSignal.timeout(10000)])
-          : AbortSignal.timeout(10000)
+        options.signal?.throwIfAborted()
+        // AbortSignal.any requires Node 20.3; the published core also supports 20.0.
+        // Release both subscriptions on every outcome instead of retaining host signals.
+        const controller = new AbortController(),
+          timeout = AbortSignal.timeout(10000)
+        const abort = () => controller.abort()
+        options.signal?.addEventListener('abort', abort, { once: true })
+        timeout.addEventListener('abort', abort, { once: true })
+        cleanup = () => {
+          options.signal?.removeEventListener('abort', abort)
+          timeout.removeEventListener('abort', abort)
+        }
+        const signal = controller.signal
         const response = await (options.fetch ?? globalThis.fetch)(plan.request.url, {
           method: 'GET',
           headers: { Authorization: credential, Accept: 'application/json' },
@@ -211,7 +227,10 @@ export function remoteFlagHost(
           chunks.push(chunk)
         }
         const raw: unknown = JSON.parse(Buffer.concat(chunks).toString('utf8'))
-        const result = launchDarklyFlag(raw, call.args.flag, call.args.environment)
+        const result =
+          config.provider === 'unleash'
+            ? unleashFlag(raw, call.args.flag, call.args.environment, config.project)
+            : launchDarklyFlag(raw, call.args.flag, call.args.environment)
         const ref = new URL(plan.request.url)
         ref.search = ''
         return {
@@ -225,6 +244,8 @@ export function remoteFlagHost(
         throw new Error(
           'Flag service read failed or configuration is unsupported; state remains unknown; diagnostics omitted',
         )
+      } finally {
+        cleanup()
       }
     },
   }

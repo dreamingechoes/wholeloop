@@ -6,6 +6,10 @@
 
 ## Remote rollout bridge (P4-05 component)
 
+- [ ] Run development checks on supported development Node versions and repeat built-CLI/provider runtime scenarios across supported Node/platform versions. Actual Node 20.0.0 macOS arm64 passes only the compiled flag preview and synthetic signal-bearing host subset; Node 24 unit tests cover success/cancellation listener cleanup. Linux, complete Node 20 behavior and actual native/server acceptance remain unverified.
+
+- [ ] In a disposable Unleash project, configure the explicit Admin reader and authorize a read with the exact deployment/subpath/project/environment. Compare default and default-stickiness percentage/disabled state with the native console, verify environment variants are fetched, and inspect dependency/targeted/union/release-plan/safeguard refusal. Current tests use synthetic responses and source API contracts; actual authentication/version/native/Linux behavior remains unverified.
+
 - [ ] Configure the explicit LaunchDarkly reader with a restricted REST token from the credential store and exact project/environment. Review the default plan, then authorize a live read only in a disposable test project. Confirm complete simple boolean/direct/weighted/reversed/off configurations match actual native state, no credential/raw targeting prose appears in output and no flag changes. Current HTTP tests are synthetic, not authenticated captures.
 - [ ] Verify rules, prerequisites, targets, experiments, custom buckets, incomplete responses, missing permissions and deadline failures stay unknown. Feed only the exact normalized result into its matching ramp request fingerprint and retain actual completion time. Repeat actual API/native/Linux behavior; other flag/dashboard bridges remain code work.
 
