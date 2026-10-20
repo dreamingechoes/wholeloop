@@ -4,6 +4,10 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: release-complete-local-history
+    enforcers: [src/release/history.ts#releaseHistory, test/unit/release/notes.test.ts]
+  - id: release-subject-only-draft
+    enforcers: [src/release/notes.ts#releaseNotes, src/git/commit.ts#parseConventionalSubject, src/git/commit.ts#hasToolAttribution, src/cli/release.ts#releaseNotesCommand, test/unit/release/notes.test.ts]
   - id: cursor-native-readonly
     enforcers: [src/adapters/cursor.ts#cursorAdapter, test/unit/adapters/cursor.test.ts]
   - id: cursor-non-granting-hook

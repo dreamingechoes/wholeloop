@@ -1,0 +1,13 @@
+# Release preparation
+
+- ⛔ `release-complete-local-history` — require an explicit initial or ancestor
+  range pinned to exact local commits. Refuse shallow/promisor history and bound
+  shell-free Git reads; do not fetch missing objects or return truncated notes.
+- ⛔ `release-subject-only-draft` — share Conventional Commit subject parsing,
+  omit bodies/trailers, escape prose and reject attribution. Report rejected
+  identities without copying their subjects. Return a draft, never an implicit
+  version change, tag or publication.
+
+Commit types declare impact; they do not prove runtime compatibility. Review the
+chosen range, breaking intent and final prose before explicit release activation.
+Successful draft generation establishes neither native conformance nor readiness.

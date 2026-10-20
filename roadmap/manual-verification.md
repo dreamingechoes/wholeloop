@@ -44,7 +44,7 @@ model, permission and MCP checks do not block other roadmap code.
 - [ ] Register the exported relative marketplace in an isolated real Claude configuration, install wholeloop@wholeloop and confirm all seventeen skills/eight agents, copied core and hook activation after moving the delivery tree. Native strict validation passed locally; it is not installation/discovery.
 - [ ] Test each exported native target with its real client and credential store. Repeat owned output/backup/unknown-file/dry-run/relocation checks on Linux and supported Node/client versions; current automated execution is macOS arm64 only.
 - [ ] Choose public repository visibility and hosting explicitly, verify npm ownership and configure trusted publishing/provenance once release automation is implemented. The local exporter changes neither repository visibility nor package privacy and performs no publication.
-- [ ] Record actual fresh-machine installation time and release notes without attribution after delivery activation. npm archives, conventional changelog automation and optional compiled binaries remain code work.
+- [ ] Record actual fresh-machine installation time and review release notes without attribution after delivery activation. Run the local release notes draft against the intended exact range, check actual breaking intent/migration guidance and inspect identity-only rejections. Repeat complete-clone/range/refusal behavior on Linux and supported Node releases; draft impact alone does not verify compatibility. npm archives, publication automation and optional compiled binaries remain code work.
 
 These owner checks do not block remaining release tooling or other roadmap implementation.
 

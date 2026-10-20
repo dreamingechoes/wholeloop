@@ -128,10 +128,14 @@ native delivery trees and a relative local Claude marketplace from one exact
 source/core/version. Root/child integrity manifests, read-only dry-run preflight,
 complete ownership validation, idempotency and backup-preserving upgrades are tested.
 Native Claude static marketplace validation passes without registration or models.
-Public hosting, npm ownership/automation/provenance, conventional release notes,
+Local Conventional Commit release-note drafts now share commit subject parsing,
+pin an explicit complete local range and omit bodies/trailers/attribution. Review
+entries identify rejected commits without copying unsafe subjects; a semantic
+version remains a label and changes no version/ref/tag/publication. Declared impact
+does not establish compatibility. Public hosting, npm ownership/automation/provenance,
 optional binaries and actual publication remain separate work/owner decisions.
 
-**Docs** — getting-started, ADR-0015, ADR-0062.
+**Docs** — getting-started, ADR-0015, ADR-0062, ADR-0063.
 
 ## P5-06 · Generated references and docs pass
 

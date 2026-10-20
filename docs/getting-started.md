@@ -119,9 +119,31 @@ claude plugin marketplace add /tmp/wholeloop-delivery and then
 claude plugin install wholeloop@wholeloop. These commands change that client's
 settings; export and validation do not register it. Remote installation requires
 a hosted copy of the complete delivery tree and an explicit owner publication
-choice. npm automation/provenance, release notes, compiled binaries and actual
+choice. npm automation/provenance, compiled binaries and actual
 public distribution remain P5-05 work. See
 [ADR-0062](./decisions/0062-owned-seven-client-distribution-previews.md).
+
+### Review release-note drafts
+
+From a complete local clone, choose the range explicitly:
+
+```text
+wl release notes --initial --version 1.0.0 --json
+wl release notes --from <previous-release-ref> --to HEAD --version 1.0.0 --markdown
+```
+
+The starting revision is excluded, the ending revision is included, and both are
+resolved to exact commits in JSON. Initial mode includes all reachable history.
+The semantic version is a draft label; omitting it uses the built core's version.
+No version, file, ref, tag or publication changes. Shallow/promisor clones and
+ranges over 1000 commits are refused instead of producing incomplete prose.
+
+Notes group Conventional Commit subjects and detect declared breaking intent
+without copying bodies or trailers. Attribution or malformed subjects produce
+identity-only review entries and exit 4; a clean draft exits zero. Review the
+exact range, actual compatibility and migration guidance before publishing.
+Declared impact does not verify compatibility. See
+[ADR-0063](./decisions/0063-local-conventional-release-drafts.md).
 
 ## 2. Check
 

@@ -73,6 +73,7 @@
 | [0060](./0060-cursor-observer-workers-and-private-native-policy.md) | Cursor observer workers and private native policy | Accepted | 2026-10-20 |
 | [0061](./0061-generated-local-adapter-declarations.md) | Generated local adapter declarations | Accepted | 2026-10-20 |
 | [0062](./0062-owned-seven-client-distribution-previews.md) | Owned seven-client distribution previews | Accepted | 2026-10-20 |
+| [0063](./0063-local-conventional-release-drafts.md) | Local Conventional Commit release drafts | Accepted | 2026-10-20 |
 
 ## Lifecycle
 

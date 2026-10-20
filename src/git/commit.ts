@@ -3,18 +3,31 @@ const SUBJECT =
 const TOOL =
   /\b(ai|claude|anthropic|codex|openai|copilot|cursor|gemini|gpt|opencode|antigravity|assistant|chatgpt|aider|devin|augment|windsurf|bot)\b/i
 
+/** Commit hygiene and release classification share the existing subject grammar. */
+export function parseConventionalSubject(subject: string) {
+  const match = SUBJECT.exec(subject)
+  if (
+    !match?.[1] ||
+    !match[3] ||
+    subject.length > 72 ||
+    subject.endsWith('.') ||
+    match[3] !== match[3].toLowerCase()
+  )
+    return undefined
+  return {
+    type: match[1],
+    scope: match[2]?.slice(1, -1),
+    description: match[3],
+    breaking: subject.slice(0, subject.indexOf(': ')).endsWith('!'),
+  }
+}
+
 /** Validate the message without rewriting authorship or silently fixing history. */
 export function checkCommit(message: string): string[] {
   const lines = message.replace(/\r\n/g, '\n').split('\n')
   const subject = lines[0] ?? ''
   const problems: string[] = []
-  const match = SUBJECT.exec(subject)
-  if (
-    !match ||
-    subject.length > 72 ||
-    subject.endsWith('.') ||
-    match[3] !== match[3]?.toLowerCase()
-  ) {
+  if (!parseConventionalSubject(subject)) {
     problems.push(
       'Use a lowercase Conventional Commit subject of at most 72 characters, e.g. feat(core): add state replay (no trailing period).',
     )

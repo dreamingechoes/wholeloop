@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'release notes',
+    arguments: '',
+    options: ['--from <ref>', '--initial', '--to <ref>', '--version <version>', '--markdown'],
+    schema: 'wholeloop/release-notes@1',
+    summary: 'Draft bounded Conventional Commit release notes from explicit local history',
+  },
+  {
     path: 'release artifacts',
     arguments: '',
     options: ['--out <directory>', '--dry-run'],

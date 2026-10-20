@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-20 · P5-05 release prose — complete local Conventional Commit drafts
+
+- Share the existing subject grammar between commit hygiene and local release notes. Group subject-only prose, detect declared breaking intent from markers/trailers, escape Markdown and reject attributed/non-conventional subjects by identity without copying their text. Keep bodies, trailers and subprocess diagnostics out of output. ADR-0063 records why declared impact and a semantic draft label neither verify compatibility nor change a version.
+- Require an explicit initial or ancestor range and pin exact revisions. Use bounded shell-free Git reads, refuse shallow/promisor clones and ranges over 1000 commits, and disable lazy fetching/prompts/optional locks. Return versioned JSON or explicit Markdown with publication not performed; rejected subjects require review. Files, refs, package privacy and versions remain untouched.
+- Focused release/Git tests passed 33 cases across three files, including actual temporary Git history, compiled JSON/Markdown, unchanged files/refs, ancestry/ref refusal and incomplete-clone rejection. The actual 79-commit project history through 842c956 produced a draft with zero rejections and declared minor impact under the requested 1.0.0 label; no release or compatibility claim follows. Regenerate command references and update onboarding, enforcement and manual boundaries. Full local check passed 918 tests in 61 files (215.44 seconds), build/smoke, lint/typecheck, generated references/catalogs, 235-file docs, 142-file harness, Markdown and all 35 Mermaid diagrams. No actual model/authenticated service, personal configuration, CI/issue operation, visibility change, version bump, tag, publication or project remote push ran. npm archives/provenance/publication automation and owner/native/fresh-machine checks remain open independently of further code work.
+
 ## 2026-10-20 · P5-05 delivery previews — seven native trees and an owned local marketplace
 
 - Add release artifacts over the existing seven adapter generators, preserving each independent native root, copied core, resources, launchers, guards and integrity manifest. Bind one exact source/core/version and export a relative Claude marketplace with a root hashed file catalog and local target summaries. Record publication not performed and unverified conformance; keep version/package privacy untouched. ADR-0062 records why delivery previews remain separate from publication/installation.
