@@ -1,6 +1,8 @@
 import { isObject } from '../config/schema.js'
 import { copilotWorker } from './copilot.js'
+import { cursorWorker } from './cursor.js'
 import { openCodeWorker } from './opencode.js'
+import type { WorkerPolicyFile } from './policy-files.js'
 
 export interface HeadlessAdapter {
   id: string
@@ -8,6 +10,7 @@ export interface HeadlessAdapter {
     command: string
     args: string[]
     env?: NodeJS.ProcessEnv
+    files?: ReadonlyMap<WorkerPolicyFile, string>
   }
   response(stdout: string, directory: string): string
 }
@@ -15,6 +18,7 @@ export interface HeadlessAdapter {
 export function headlessAdapter(id: string): HeadlessAdapter {
   if (id === 'opencode') return openCodeWorker
   if (id === 'copilot') return copilotWorker
+  if (id === 'cursor') return cursorWorker
   if (id === 'claude')
     return {
       id,
@@ -101,6 +105,6 @@ export function headlessAdapter(id: string): HeadlessAdapter {
       },
     }
   throw new Error(
-    'Headless recipes currently support claude|codex|opencode|copilot; other adapters remain unimplemented',
+    'Headless recipes currently support claude|codex|opencode|copilot|cursor; other adapters remain unimplemented',
   )
 }

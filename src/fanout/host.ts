@@ -16,6 +16,7 @@ import { gateRuns } from '../gates/state.js'
 import { measurementDigest } from '../launch/measurement.js'
 import type { ReviewContext } from '../review/contracts.js'
 import type { HeadlessAdapter } from './adapters.js'
+import { stageWorkerPolicy } from './policy-files.js'
 import { workerProcess } from './process.js'
 
 export interface HeadlessOptions {
@@ -134,6 +135,7 @@ export class HeadlessHost implements GateHost {
       if (Buffer.byteLength(input) > 2 * 1024 * 1024)
         throw new Error('Headless assignment exceeds 2 MiB; narrow the review')
       const invocation = this.options.adapter.invocation({ repository: plan.repository, directory })
+      stageWorkerPolicy(directory, invocation.files)
       const observed = await workerProcess(invocation.command, invocation.args, {
         cwd: directory,
         input,

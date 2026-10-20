@@ -137,7 +137,11 @@ read-only available-tool filtering and non-interactive refusal without broad
 grants. Inspect custom MCP startup and trusted-folder hooks independently: tool
 restrictions do not prove that these startup effects are disabled. Keep credential
 stores in place; no copied tokens or permission bypasses are needed.
-Gemini/Antigravity/Cursor recipes remain code work. None of these owner checks
+Verify Cursor Ask/sandbox plus actual worker-local cli.json/hooks.json discovery,
+read/search-only hook activation, native denial precedence, no reused session and
+successful final JSON. Exercise shell, write/delete, web, MCP, unknown tools and
+missing Node against disposable sentinels; inspect native startup effects and logs.
+Gemini/Antigravity recipes remain code work. None of these owner checks
 blocks independent local roadmap work.
 
 ## URL adoption and shared publication (P2-08)

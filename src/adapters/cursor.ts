@@ -14,7 +14,7 @@ export const cursorAdapter: Adapter = {
     agents: 'rendered',
     hooks: 'native-and-git-fallback',
     readOnly: 'native-readonly',
-    engines: ['sequential'],
+    engines: ['headless', 'sequential'],
   }),
   name: (_kind, name) => `wl-${name}`,
   paths: (kind, name) => (kind === 'skill' ? `skills/wl-${name}/SKILL.md` : `agents/wl-${name}.md`),

@@ -74,15 +74,17 @@ scenario remain owner checks. See ADR-0057; these checks do not block P5-03.
 **Local implementation:** bounded process transport, shell-free stdin prompts,
 per-assignment sessions, timeout/output/concurrency limits, owned-group cancellation,
 exact response validation, round locks and the existing gate aggregator are tested.
-Native/headless/sequential synthetic verdict parity passes. Claude, Codex, OpenCode
-and Copilot recipes are help-probed and tested through synthetic PATH clients.
+Native/headless/sequential synthetic verdict parity passes. Claude, Codex, OpenCode,
+Copilot and Cursor recipes are help-probed and tested through synthetic PATH clients.
 OpenCode uses a per-worker deny-default read-only agent and completed-message JSONL;
 Copilot exposes only view/glob/grep with explicit read grants and silent text.
-Real client conformance remains open. Gemini/Antigravity/Cursor headless recipes
+Cursor uses Ask/sandbox, private worker-local policy, an explicit read/search-only
+hook and successful native final JSON; no personal/project settings are rewritten.
+Real client conformance remains open. Gemini/Antigravity headless recipes
 remain separate adapter work; sequential execution is available in the meantime.
 Neither gap blocks independent local generator/guard implementation.
 
-**Docs** — architecture/orchestration-and-gates, ADR-0006, ADR-0046, ADR-0058.
+**Docs** — architecture/orchestration-and-gates, ADR-0006, ADR-0046, ADR-0058, ADR-0060.
 
 ## P5-04 · Nightly conformance and the generated matrix
 

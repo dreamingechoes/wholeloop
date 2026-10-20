@@ -66,6 +66,10 @@ rules:
     enforcers: [src/fanout/host.ts#HeadlessHost, src/fanout/process.ts#workerProcess, src/fanout/posix.ts#terminateWorker, src/fanout/adapters.ts#headlessAdapter, src/fanout/opencode.ts#openCodeWorker, src/fanout/copilot.ts#copilotWorker, test/unit/fanout/fanout.test.ts, test/unit/fanout/recipes.test.ts]
   - id: headless-failure-unknown
     enforcers: [src/fanout/host.ts#HeadlessHost, src/gates/execution.ts#inspectGateRound, src/gates/report.ts#gateReport, test/unit/fanout/fanout.test.ts]
+  - id: headless-native-policy-files
+    enforcers: [src/fanout/policy-files.ts#stageWorkerPolicy, src/fanout/host.ts#HeadlessHost, test/unit/fanout/cursor.test.ts, test/unit/fanout/fanout.test.ts]
+  - id: headless-cursor-read-tools
+    enforcers: [src/fanout/cursor.ts#cursorWorkerHook, src/fanout/cursor.ts#cursorWorker, test/unit/fanout/cursor.test.ts, test/unit/fanout/fanout.test.ts]
   - id: shared-publication-recovery
     enforcers: [src/sharing/contracts.ts#sharingState, src/sharing/contracts.ts#queueSharedArtifacts, src/sharing/workflow.ts#SharingWorkflow, test/unit/sharing/sharing.test.ts]
   - id: grounding-exact-provenance

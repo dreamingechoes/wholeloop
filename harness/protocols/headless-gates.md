@@ -10,9 +10,16 @@
   cannot produce active refutations. Preserve observed repository edits and stop;
   only the deterministic gate aggregator may decide coverage, quorum or verdict.
 
+- ⛔ `headless-native-policy-files` — stage only named bounded non-secret policy
+  in the unique external worker directory. Preflight every output, preserve existing
+  files and reject symlink roots/parents/files. Launch no client after setup failure.
+- ⛔ `headless-cursor-read-tools` — Cursor workers use Ask, sandbox and explicit
+  shell/write/web/MCP denials plus a fail-closed read/search-only preToolUse hook.
+  Read responses grant nothing; unknown tools, bad context or unavailable hooks deny.
+
 Plan a gate first. Verification requires its actual once-per-round suite before
 read-only fan-out. Select headless explicitly and use an available recipe; current
-local recipes cover claude, codex, opencode and copilot. Run `wl fanout run review|verify --for
+local recipes cover claude, codex, opencode, copilot and cursor. Run `wl fanout run review|verify --for
 <id> --engine headless --adapter <client> --json`. Apply no automatic repair or
 budget reset. A failed round needs the existing explicit gate planning path.
 

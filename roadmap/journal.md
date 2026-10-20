@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-20 · P5-03 Cursor workers — private native policy and read-only tool transport
+
+- Add Cursor agent print/JSON/Ask/sandbox execution with a fresh external workspace and the repository as an additional root. Decode only its successful native final result before shared assignment/gate validation. Advertise local headless capability and update the golden manifest without claiming native model conformance. ADR-0060 records the boundary.
+- Stage only two named non-secret Cursor policy files under the unique worker directory, with private modes, 64 KiB limits, whole-batch preflight and exclusive writes. Refuse existing files, unsafe roots/parents/files and unsupported paths; setup failure launches no client. Keep personal/project settings and native credentials in place. Partial filesystem interruption remains a failed external worker, not a crash-atomic transaction.
+- Deny native shell/write/web/MCP and add a fail-closed positive read/list/glob/grep hook. Bind actual Node/context as quoted data, validate cwd/workspace roots, bound input/waiting and preserve native permission policy with empty read responses. Deny write/delete, shell, web/search, MCP, delegation, memory, questions, unknown tools, bad context and missing Node. Ordinary workflow guards are deliberately not used to authorize observer writes.
+- Focused tests passed 77 cases across fanout and Cursor rendering, then an additional real-process sentinel proved that refused setup starts no client. Correct a test cleanup assumption by unlinking its directory symlink explicitly. Installed Cursor 2026.07.16-899851b's pure hook validator accepts the exact generated policy and empty/deny responses without application dependencies. Full local check passed 890 tests in 59 files (208.52 seconds), build/smoke, lint/typecheck, generated references/catalogs, 231-file docs, 141-file harness, Markdown and all 35 Mermaid diagrams. No actual native model/authenticated service, personal configuration, CI/issue operation or project remote push ran. Actual native hook activation/policy merging, ignored/external effects, Linux and Gemini/Antigravity recipes remain open independently of other roadmap code.
+
 ## 2026-10-20 · P5-04 matrix — bounded observations and comparable regression candidates
 
 - Add a pure versioned matrix over explicit pinned/latest report observations and an as-of UTC time. Render all fourteen target/channel rows, retain requested versus actual versions and simulation/live evidence, and mark observations older than 48 hours stale. Validate the consumed report projection, bounded assertion codes, hashes, process/success consistency, timestamps and unique channel/run identities. ADR-0059 records why imports are observations rather than attestations.

@@ -33,7 +33,7 @@ let raw=''
 process.stdin.on('data',chunk=>raw+=chunk)
 process.stdin.on('end',()=>{
  const a=JSON.parse(raw),mode=process.env.WL_FIXTURE_MODE
- const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:process.env.WL_FIXTURE_FORMAT==='opencode'?JSON.parse(process.env.OPENCODE_PERMISSION):undefined})+'\\n')}
+ const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:process.env.WL_FIXTURE_FORMAT==='opencode'?JSON.parse(process.env.OPENCODE_PERMISSION):undefined,cursorPolicy:process.env.WL_FIXTURE_FORMAT==='cursor'?JSON.parse(fs.readFileSync('.cursor/cli.json','utf8')):undefined,cursorHooks:process.env.WL_FIXTURE_FORMAT==='cursor'?fs.existsSync('.cursor/hooks.json'):undefined})+'\\n')}
  log('start')
  if(mode==='crash' || (mode==='crash-vote' && a.role==='refute'))process.exit(7)
  if(mode==='timeout'){process.on('SIGTERM',()=>{});setInterval(()=>{},1000);return}
@@ -47,6 +47,7 @@ process.stdin.on('end',()=>{
   const format=process.env.WL_FIXTURE_FORMAT
   if(format==='claude')process.stdout.write(JSON.stringify({is_error:false,result:text}))
   else if(format==='codex'){console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text}}));console.log(JSON.stringify({type:'turn.completed'}))}
+  else if(format==='cursor')process.stdout.write(JSON.stringify({type:'result',subtype:'success',is_error:false,result:text}))
   else if(format==='opencode'){console.log(JSON.stringify({type:'text',sessionID:'fixture-session',part:{messageID:'final',text,time:{end:1}}}));console.log(JSON.stringify({type:'step_finish',sessionID:'fixture-session',part:{messageID:'final',reason:'stop'}}))}
   else process.stdout.write(text)
  },Number(process.env.WL_FIXTURE_DELAY||0))
@@ -125,6 +126,21 @@ async function fixture(
 }
 
 describe('bounded headless gate processes', () => {
+  it('starts no client when private native policy setup is refused', () =>
+    fixture(async ({ dir, engine, plan, adapter, env }) => {
+      const sentinel = join(dir, 'must-not-launch')
+      const refused: HeadlessAdapter = {
+        ...adapter,
+        invocation: () => ({
+          command: process.execPath,
+          args: ['-e', `require('node:fs').writeFileSync(${JSON.stringify(sentinel)},'launched')`],
+          files: new Map([['.cursor/cli.json', ' '.repeat(65537)]]),
+        }),
+      }
+      const result = await runHeadless(engine, plan.subject, 'review', { adapter: refused, env })
+      expect(result.status).toBe('FAIL')
+      expect(existsSync(sentinel)).toBe(false)
+    }))
   it(
     'collects real isolated processes and caches a decided round without respawning',
     () =>
@@ -343,14 +359,15 @@ describe('bounded headless gate processes', () => {
         expect(() => new HeadlessHost(engine, { adapter, ...options })).toThrow(/concurrency/)
       expect(() => headlessAdapter('unimplemented')).toThrow(/unimplemented/)
     }))
-  it.each(['claude', 'codex', 'opencode', 'copilot'])(
+  it.each(['claude', 'codex', 'opencode', 'copilot', 'cursor'])(
     'executes compiled %s dispatch through a synthetic client on PATH',
     (id) =>
       fixture(async ({ dir, engine, plan }) => {
         const bin = join(dir, 'bin')
         mkdirSync(bin)
-        writeFileSync(join(bin, id), worker)
-        chmodSync(join(bin, id), 0o700)
+        const executable = id === 'cursor' ? 'agent' : id
+        writeFileSync(join(bin, executable), worker)
+        chmodSync(join(bin, executable), 0o700)
         const result = spawnSync(
           process.execPath,
           [
@@ -404,6 +421,15 @@ describe('bounded headless gate processes', () => {
             expect(row.extensions).toBe('false')
           }
           if (id === 'opencode') expect(row.opencodePermissions['*']).toBe('deny')
+          if (id === 'cursor') {
+            expect(row.cursorPolicy.permissions.deny).toEqual([
+              'Shell(*)',
+              'Write(**)',
+              'WebFetch(*)',
+              'Mcp(*:*)',
+            ])
+            expect(row.cursorHooks).toBe(true)
+          }
         }
       }),
     15000,

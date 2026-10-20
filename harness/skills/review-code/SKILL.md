@@ -36,7 +36,7 @@ For labelled regression evaluation read gate-evaluation; export blind inputs and
 collect actual independent observations before interpreting quality rates.
 
 When the conductor explicitly selects headless, use `wl fanout run review --for
-<id> --engine headless --adapter claude|codex|opencode|copilot --json` after the same planned inputs
+<id> --engine headless --adapter claude|codex|opencode|copilot|cursor --json` after the same planned inputs
 are pinned.
 The process host submits results/refutations and seals the same core verdict;
 continue with this skill's completion/handoff instead of dispatching workers twice.
