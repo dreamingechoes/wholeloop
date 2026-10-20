@@ -6,12 +6,206 @@
   "oneOf": [
     {
       "type": "object",
-      "properties": { "schema": { "const": "wholeloop/docs-reference@1" } },
+      "properties": {
+        "schema": {
+          "const": "wholeloop/release-notes@1"
+        },
+        "version": {
+          "type": "string"
+        },
+        "status": {
+          "enum": ["draft", "needs-review"]
+        },
+        "publication": {
+          "const": "not-performed"
+        },
+        "impact": {
+          "enum": ["major", "minor", "patch", "none"]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "commits"]
+          }
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sha", "reason"]
+          }
+        },
+        "markdown": {
+          "type": "string"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "from": {
+          "type": ["string", "null"]
+        },
+        "to": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "version",
+        "status",
+        "publication",
+        "impact",
+        "count",
+        "groups",
+        "rejected",
+        "markdown",
+        "limitations",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/distribution-build@1"
+        },
+        "output": {
+          "type": "string"
+        },
+        "status": {
+          "enum": ["planned", "written", "already-correct"]
+        },
+        "backup": {
+          "type": ["string", "null"]
+        },
+        "manifest": {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "const": "wholeloop/distribution-artifacts@1"
+            },
+            "publication": {
+              "const": "not-performed"
+            },
+            "conformance": {
+              "const": "unverified"
+            }
+          },
+          "required": [
+            "schema",
+            "target",
+            "version",
+            "source",
+            "core",
+            "publication",
+            "conformance",
+            "targets",
+            "files",
+            "limitations"
+          ]
+        }
+      },
+      "required": ["schema", "output", "status", "backup", "manifest"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/conformance-matrix@1"
+        },
+        "asOf": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "maxAgeHours": {
+          "const": 48
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 14,
+          "maxItems": 14,
+          "items": {
+            "type": "object",
+            "required": [
+              "cli",
+              "channel",
+              "status",
+              "evidence",
+              "pin",
+              "version",
+              "observedAt",
+              "freshness",
+              "assertions"
+            ]
+          }
+        },
+        "regressionCandidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "key",
+              "cli",
+              "baseline",
+              "latest",
+              "assertions",
+              "baselineRun",
+              "latestRun"
+            ]
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "documentation": {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "const": "wholeloop/conformance-page@1"
+            },
+            "file": {
+              "const": "docs/platforms/README.md"
+            },
+            "status": {
+              "enum": ["current", "stale", "updated"]
+            },
+            "written": {
+              "type": "boolean"
+            }
+          },
+          "required": ["schema", "file", "status", "written"]
+        }
+      },
+      "required": ["schema", "asOf", "maxAgeHours", "rows", "regressionCandidates", "limitations"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/docs-reference@1"
+        }
+      },
       "required": ["schema", "status", "written", "stale", "updated", "checked"]
     },
     {
       "type": "object",
-      "properties": { "schema": { "const": "wholeloop/conformance-prepared@1" } },
+      "properties": {
+        "schema": {
+          "const": "wholeloop/conformance-prepared@1"
+        }
+      },
       "required": [
         "schema",
         "id",
@@ -27,7 +221,11 @@
     },
     {
       "type": "object",
-      "properties": { "schema": { "const": "wholeloop/conformance-report@1" } },
+      "properties": {
+        "schema": {
+          "const": "wholeloop/conformance-report@1"
+        }
+      },
       "required": [
         "schema",
         "id",

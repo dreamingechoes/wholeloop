@@ -30,7 +30,7 @@ export function validVerificationData(type: string, data: Record<string, unknown
       parseCriteria({ schema: 'wholeloop/criteria@1', criteria: data.criteria })
       return true
     }
-    const rule = Object.entries(schema).find(([key]) => key === type)?.[1]
+    const rule = Object.entries(schema.properties).find(([key]) => key === type)?.[1]
     return !!rule && !validate(data, rule).length
   } catch {
     return false

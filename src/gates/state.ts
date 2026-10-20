@@ -20,7 +20,7 @@ export interface GateRun {
 }
 
 export function validGateData(type: string, data: Record<string, unknown>): boolean {
-  const schema = Object.entries(schemas).find(([key]) => key === type)?.[1]
+  const schema = Object.entries(schemas.properties).find(([key]) => key === type)?.[1]
   if (!schema || validate(data, schema).length) return false
   try {
     if (type === 'gate.planned') validateGatePlan(data.plan)

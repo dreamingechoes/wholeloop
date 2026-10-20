@@ -1,500 +1,506 @@
 {
-  "gate.planned": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "plan": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "wholeloop/gate-round@1",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "schema": {
-            "type": "string",
-            "const": "wholeloop/gate-round@1"
-          },
-          "subject": {
-            "type": "string",
-            "pattern": "^(slice|part|review)-[a-f0-9]{8}$"
-          },
-          "run": {
-            "type": "string",
-            "pattern": "^gate-[a-f0-9]{16}$"
-          },
-          "gate": {
-            "type": "string",
-            "enum": ["verify", "review"]
-          },
-          "round": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10
-          },
-          "budget": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10
-          },
-          "repository": {
-            "type": "string",
-            "pattern": "^/"
-          },
-          "base": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "ref": {
-                "type": "string",
-                "minLength": 1
-              },
-              "sha": {
-                "type": "string",
-                "pattern": "^[a-f0-9]{40,64}$"
-              }
-            },
-            "required": ["ref", "sha"]
-          },
-          "snapshot": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "digest": {
-                "type": "string",
-                "pattern": "^[a-f0-9]{64}$"
-              },
-              "head": {
-                "type": "string",
-                "pattern": "^[a-f0-9]{40,64}$"
-              },
-              "branch": {
-                "type": "string"
-              }
-            },
-            "required": ["digest", "head", "branch"]
-          },
-          "inputs": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "paths": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "minItems": 0
-              },
-              "languages": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "minItems": 0
-              },
-              "slots": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "minItems": 0
-              }
-            },
-            "required": ["paths", "languages", "slots"]
-          },
-          "units": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
-                },
-                "lens": {
-                  "type": "string",
-                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
-                },
-                "asks": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "prompt": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "origin": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "failSafe": {
-                  "type": "boolean"
-                }
-              },
-              "required": ["id", "lens", "asks", "prompt", "origin", "failSafe"]
-            },
-            "minItems": 1
-          },
-          "excluded": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "reason": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "required": ["id", "reason"]
-            },
-            "minItems": 0
-          },
-          "verifiers": {
-            "type": "integer",
-            "enum": [3, 5, 7, 9]
-          },
-          "refutations": {
-            "type": "integer",
-            "minimum": 2,
-            "maximum": 5
-          },
-          "policy": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          }
-        },
-        "required": [
-          "schema",
-          "subject",
-          "run",
-          "gate",
-          "round",
-          "budget",
-          "repository",
-          "base",
-          "snapshot",
-          "inputs",
-          "units",
-          "excluded",
-          "verifiers",
-          "refutations",
-          "policy"
-        ]
-      }
-    },
-    "required": ["plan"]
-  },
-  "gate.submitted": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "run": {
-        "type": "string",
-        "pattern": "^gate-[a-f0-9]{16}$"
-      },
-      "round": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 10
-      },
-      "result": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "wholeloop/gate-result@1",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "unit": {
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
-          },
-          "status": {
-            "type": "string",
-            "enum": ["ok", "unavailable"]
-          },
-          "evidence": {
-            "type": "array",
-            "items": {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/gate-events@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "gate.planned": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plan": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "$id": "wholeloop/gate-round@1",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
               "type": "string",
-              "minLength": 1
+              "const": "wholeloop/gate-round@1"
             },
-            "minItems": 0
-          },
-          "findings": {
-            "type": "array",
-            "items": {
+            "subject": {
+              "type": "string",
+              "pattern": "^(slice|part|review)-[a-f0-9]{8}$"
+            },
+            "run": {
+              "type": "string",
+              "pattern": "^gate-[a-f0-9]{16}$"
+            },
+            "gate": {
+              "type": "string",
+              "enum": ["verify", "review"]
+            },
+            "round": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "budget": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "repository": {
+              "type": "string",
+              "pattern": "^/"
+            },
+            "base": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "id": {
-                  "type": "string",
-                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
-                },
-                "location": {
+                "ref": {
                   "type": "string",
                   "minLength": 1
                 },
-                "text": {
+                "sha": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^[a-f0-9]{40,64}$"
+                }
+              },
+              "required": ["ref", "sha"]
+            },
+            "snapshot": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
                 },
-                "evidence": {
+                "head": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{40,64}$"
+                },
+                "branch": {
+                  "type": "string"
+                }
+              },
+              "required": ["digest", "head", "branch"]
+            },
+            "inputs": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "paths": {
                   "type": "array",
                   "items": {
                     "type": "string",
                     "minLength": 1
                   },
-                  "minItems": 1
+                  "minItems": 0
+                },
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0
+                },
+                "slots": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0
                 }
               },
-              "required": ["id", "location", "text", "evidence"]
+              "required": ["paths", "languages", "slots"]
             },
-            "minItems": 0
+            "units": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+                  },
+                  "lens": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+                  },
+                  "asks": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "origin": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "failSafe": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["id", "lens", "asks", "prompt", "origin", "failSafe"]
+              },
+              "minItems": 1
+            },
+            "excluded": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["id", "reason"]
+              },
+              "minItems": 0
+            },
+            "verifiers": {
+              "type": "integer",
+              "enum": [3, 5, 7, 9]
+            },
+            "refutations": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 5
+            },
+            "policy": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
           },
-          "reason": {
-            "type": "string",
-            "minLength": 1
-          },
-          "execution": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "status": {
+          "required": [
+            "schema",
+            "subject",
+            "run",
+            "gate",
+            "round",
+            "budget",
+            "repository",
+            "base",
+            "snapshot",
+            "inputs",
+            "units",
+            "excluded",
+            "verifiers",
+            "refutations",
+            "policy"
+          ]
+        }
+      },
+      "required": ["plan"]
+    },
+    "gate.submitted": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^gate-[a-f0-9]{16}$"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "result": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "$id": "wholeloop/gate-result@1",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "unit": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["ok", "unavailable"]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
                 "type": "string",
-                "enum": ["passed", "failed"]
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+                  },
+                  "location": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  }
+                },
+                "required": ["id", "location", "text", "evidence"]
+              },
+              "minItems": 0
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "execution": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": ["passed", "failed"]
+                }
+              },
+              "required": ["status"]
+            }
+          },
+          "required": ["unit", "status", "evidence", "findings"]
+        }
+      },
+      "required": ["run", "round", "result"]
+    },
+    "gate.examined": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^gate-[a-f0-9]{16}$"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "vote": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "$id": "wholeloop/gate-vote@1",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "finding": {
+              "type": "string",
+              "pattern": "^[^:]+:[^:]+$"
+            },
+            "verifier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9
+            },
+            "outcome": {
+              "type": "string",
+              "enum": ["refute", "confirm", "uncertain"]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": ["finding", "verifier", "outcome", "reason", "evidence"]
+        }
+      },
+      "required": ["run", "round", "vote"]
+    },
+    "gate.extended": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^gate-[a-f0-9]{16}$"
+        },
+        "budget": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["run", "budget", "reason"]
+    },
+    "gate.decided": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^gate-[a-f0-9]{16}$"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "observed": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "report": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "verdict": {
+              "type": "string",
+              "enum": ["PASS", "FAIL", "EXHAUSTED"]
+            },
+            "unchanged": {
+              "type": "boolean"
+            },
+            "missing": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
               }
             },
-            "required": ["status"]
-          }
-        },
-        "required": ["unit", "status", "evidence", "findings"]
-      }
-    },
-    "required": ["run", "round", "result"]
-  },
-  "gate.examined": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "run": {
-        "type": "string",
-        "pattern": "^gate-[a-f0-9]{16}$"
-      },
-      "round": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 10
-      },
-      "vote": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "wholeloop/gate-vote@1",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "finding": {
-            "type": "string",
-            "pattern": "^[^:]+:[^:]+$"
-          },
-          "verifier": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 9
-          },
-          "outcome": {
-            "type": "string",
-            "enum": ["refute", "confirm", "uncertain"]
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 1
-          },
-          "evidence": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
+            "kept": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "finding": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+                      },
+                      "location": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "evidence": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      }
+                    },
+                    "required": ["id", "location", "text", "evidence"]
+                  },
+                  "refutations": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["id", "unit", "finding", "refutations", "reason"]
+              }
             },
-            "minItems": 0
-          }
-        },
-        "required": ["finding", "verifier", "outcome", "reason", "evidence"]
-      }
-    },
-    "required": ["run", "round", "vote"]
-  },
-  "gate.extended": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "run": {
-        "type": "string",
-        "pattern": "^gate-[a-f0-9]{16}$"
-      },
-      "budget": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 10
-      },
-      "reason": {
-        "type": "string",
-        "minLength": 1
-      }
-    },
-    "required": ["run", "budget", "reason"]
-  },
-  "gate.decided": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "run": {
-        "type": "string",
-        "pattern": "^gate-[a-f0-9]{16}$"
-      },
-      "round": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 10
-      },
-      "observed": {
-        "type": "string",
-        "pattern": "^[a-f0-9]{64}$"
-      },
-      "report": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "verdict": {
-            "type": "string",
-            "enum": ["PASS", "FAIL", "EXHAUSTED"]
-          },
-          "unchanged": {
-            "type": "boolean"
-          },
-          "missing": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "kept": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "unit": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "finding": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
-                    },
-                    "location": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "text": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "evidence": {
-                      "type": "array",
-                      "items": {
+            "dropped": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "finding": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
+                      },
+                      "location": {
                         "type": "string",
                         "minLength": 1
                       },
-                      "minItems": 1
-                    }
-                  },
-                  "required": ["id", "location", "text", "evidence"]
-                },
-                "refutations": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9
-                },
-                "reason": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "required": ["id", "unit", "finding", "refutations", "reason"]
-            }
-          },
-          "dropped": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "unit": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "finding": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/-]*$"
-                    },
-                    "location": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "text": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "evidence": {
-                      "type": "array",
-                      "items": {
+                      "text": {
                         "type": "string",
                         "minLength": 1
                       },
-                      "minItems": 1
-                    }
+                      "evidence": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minItems": 1
+                      }
+                    },
+                    "required": ["id", "location", "text", "evidence"]
                   },
-                  "required": ["id", "location", "text", "evidence"]
+                  "refutations": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 },
-                "refutations": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9
-                },
-                "reason": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "required": ["id", "unit", "finding", "refutations", "reason"]
+                "required": ["id", "unit", "finding", "refutations", "reason"]
+              }
             }
-          }
-        },
-        "required": ["verdict", "unchanged", "missing", "kept", "dropped"]
-      }
-    },
-    "required": ["run", "round", "observed", "report"]
+          },
+          "required": ["verdict", "unchanged", "missing", "kept", "dropped"]
+        }
+      },
+      "required": ["run", "round", "observed", "report"]
+    }
   }
 }

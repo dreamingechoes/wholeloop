@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/gates/schemas/events-v1.json",
+    "sha256": "9f91ce7faf4800fa505bf1bc49c9700a1140de50883f218560ca3643cc84763c"
+  },
+  {
+    "file": "src/verification/schemas/suite-v1.json",
+    "sha256": "f0fc70231678e544d87683309804fb001f17a1988a2be8ba0e92f8b518687e02"
+  }
+]

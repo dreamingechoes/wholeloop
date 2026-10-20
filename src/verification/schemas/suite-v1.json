@@ -1,121 +1,127 @@
 {
-  "verify.suite-planned": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "run": {
-        "type": "string",
-        "pattern": "^gate-[a-f0-9]{16}$"
-      },
-      "round": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 10
-      },
-      "plan": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "commands": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "ref": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "cwd": {
-                  "type": "string"
-                },
-                "argv": {
-                  "type": "array",
-                  "minItems": 1,
-                  "items": {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/verification-suite-events@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "verify.suite-planned": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^gate-[a-f0-9]{16}$"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commands": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "cwd": {
+                    "type": "string"
+                  },
+                  "argv": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "priority": {
+                    "type": "number"
+                  },
+                  "reason": {
                     "type": "string",
                     "minLength": 1
                   }
                 },
-                "priority": {
-                  "type": "number"
-                },
-                "reason": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "required": ["ref", "cwd", "argv", "priority", "reason"]
+                "required": ["ref", "cwd", "argv", "priority", "reason"]
+              }
+            },
+            "timeoutMs": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 600000
             }
           },
-          "timeoutMs": {
-            "type": "integer",
-            "minimum": 100,
-            "maximum": 600000
-          }
-        },
-        "required": ["commands", "timeoutMs"]
-      }
+          "required": ["commands", "timeoutMs"]
+        }
+      },
+      "required": ["run", "round", "plan"]
     },
-    "required": ["run", "round", "plan"]
-  },
-  "verify.suite-finished": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "run": {
-        "type": "string",
-        "pattern": "^gate-[a-f0-9]{16}$"
-      },
-      "round": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 10
-      },
-      "result": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": ["passed", "failed", "interrupted"]
-          },
-          "commands": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "ref": {
-                  "type": "string",
-                  "minLength": 1
+    "verify.suite-finished": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^gate-[a-f0-9]{16}$"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["passed", "failed", "interrupted"]
+            },
+            "commands": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "exitCode": {
+                    "type": "integer"
+                  },
+                  "signal": {
+                    "type": "string"
+                  },
+                  "stdout": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "stderr": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
                 },
-                "exitCode": {
-                  "type": "integer"
-                },
-                "signal": {
-                  "type": "string"
-                },
-                "stdout": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                },
-                "stderr": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                }
-              },
-              "required": ["ref", "exitCode", "signal", "stdout", "stderr"]
+                "required": ["ref", "exitCode", "signal", "stdout", "stderr"]
+              }
+            },
+            "unchanged": {
+              "type": "boolean"
             }
           },
-          "unchanged": {
-            "type": "boolean"
-          }
-        },
-        "required": ["status", "commands", "unchanged"]
-      }
-    },
-    "required": ["run", "round", "result"]
+          "required": ["status", "commands", "unchanged"]
+        }
+      },
+      "required": ["run", "round", "result"]
+    }
   }
 }

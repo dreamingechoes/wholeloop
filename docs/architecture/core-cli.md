@@ -19,6 +19,14 @@
 
 Every command accepts `--json`. Machine-readable output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape). Unknown options fail rather than silently changing behavior.
 
+The normal test suite compares source and compiled-help commands with the general
+output schema, rejecting missing/duplicate/unversioned branches. It also inventories
+all source schema locations, including event maps, for unique version-one
+identities. Gate/suite event-map wrappers retain the prior payload rules and
+journal format; no event migration follows. Registration does not establish the
+complete v1 compatibility freeze or native execution. See
+[ADR-0065](../decisions/0065-public-output-schema-registration.md).
+
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |

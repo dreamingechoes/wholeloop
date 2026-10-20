@@ -60,6 +60,10 @@ collection and remaining per-CLI onboarding refinements are still
 implementation work, separate from these manual checks. Overview pages now reflect
 local implementation while retaining native/host verification boundaries.
 
+## Public output and event-map identities (P5-07 component)
+
+- [ ] On a disposable external copy of an older store, repeat gate/suite reads and projection rebuild after upgrade. Root schema metadata/wrappers must not rewrite journal envelopes or change payload acceptance. Exact prior rule hashes and local replay tests passed; physical upgrade/Linux/other supported Node execution remain owner checks. Registration is not the full v1 schema freeze or deprecation acceptance.
+
 ## Disposable standalone framing conformance (P1-14)
 
 - [ ] Build, then prepare one fresh run per actual tier-A client with --target and its exact --pin version. Inspect returned fixture/prompt/native recipe and executable resolution; a version token alone is not binary provenance. Retain source/scenario/core hashes.

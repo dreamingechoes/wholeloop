@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-20 · P5-07 registration — complete command coverage and versioned event maps
+
+- Find and reproduce an omission in recent work: release notes, delivery previews and conformance matrices were missing from the general output schema despite their command declarations. Register the three receipt shapes, including optional page metadata, and compare every source/compiled-help command with unique versioned branches. Exercise removed/duplicate/unversioned variants and actual draft/matrix/compiled delivery fields. ADR-0065 records the correction.
+- Inventory schema locations instead of filtering on existing metadata. The first metadata-only count of thirty-four missed the raw gate/suite event maps; all thirty-six files now have draft declarations and unique version-one identities. Normalize those two maps with properties wrappers and adjust only their runtime lookup. Compare prior committed maps exactly and retain their payload-rule hashes as compatibility fixtures; journal data/envelopes do not change.
+- Focused registration, CLI, gate and verification checks passed 127 tests in five files before adding two prior-rule compatibility cases; the final registration file passed all 43 cases. Full local check passed 974 tests in 63 files (209.96 seconds), build/smoke, lint/typecheck, generated references/catalogs, 237-file docs, 142-file harness, Markdown and all 35 Mermaid diagrams. This audit starts independent P5-07 contract work while P5-04/P5-05 are parked between components; neither remaining collector/release code nor the full freeze/deprecation policy is treated as blocked by owner checks. No native models, authenticated service, personal configuration, CI/issue operation, version/ref/tag/publication or project remote push ran.
+
 ## 2026-10-20 · P5-04 documentation — explicit observation snapshots
 
 - Add explicit documentation comparison and optional write to conformance matrix. Require an exact as-of time for reproducible checks and preserve original evidence dates. Include a versioned page receipt; checked drift and regression candidates retain exit 4, including candidates after a successful write. ADR-0064 records the boundary between external observations and source-derived references.

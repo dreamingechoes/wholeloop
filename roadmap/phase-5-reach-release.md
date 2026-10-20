@@ -88,7 +88,7 @@ Neither gap blocks independent local generator/guard implementation.
 
 ## P5-04 · Nightly conformance and the generated matrix
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
 
 **Goal** — Know the moment a CLI release breaks something.
 
@@ -114,7 +114,7 @@ No native acceptance is inferred from the matrix's synthetic tests.
 
 ## P5-05 · Distribution
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P1-13
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-13
 
 **Goal** — One command to install, wherever you work.
 
@@ -172,7 +172,7 @@ those gaps do not block independent implementation. See ADR-0052, ADR-0061 and A
 
 ## P5-07 · 1.0
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P5-05, P5-06
+**Status:** 🔄 · **Size:** S · **Depends on:** P5-05, P5-06
 
 **Goal** — A stable contract others can build extensions against.
 
@@ -183,7 +183,16 @@ those gaps do not block independent implementation. See ADR-0052, ADR-0061 and A
 - [ ] Every schema has a version and a compatibility test.
 - [ ] The 1.0 release is tagged and announced.
 
-**Docs** — decisions (versioning ADR), README status note removed.
+**Local implementation:** source/compiled command output registration now checks
+all declared commands against unique versioned JSON Schema branches. All thirty-six
+source schema files have draft declarations and unique version-one identities;
+gate/suite maps keep exact prior payload-rule compatibility fixtures. This is the
+registration audit, not the complete schema freeze/deprecation policy or semantic
+validator compatibility suite. Those remain code/documentation work; actual
+release/tag/announcement remains owner activation. P5-04/P5-05 are parked between
+components while this audit runs, not blocked from further code by manual checks.
+
+**Docs** — ADR-0065; versioning/deprecation ADR and released README status remain pending.
 
 ---
 

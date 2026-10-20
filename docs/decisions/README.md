@@ -75,6 +75,7 @@
 | [0062](./0062-owned-seven-client-distribution-previews.md) | Owned seven-client distribution previews | Accepted | 2026-10-20 |
 | [0063](./0063-local-conventional-release-drafts.md) | Local Conventional Commit release drafts | Accepted | 2026-10-20 |
 | [0064](./0064-explicit-conformance-page-projections.md) | Explicit conformance page projections | Accepted | 2026-10-20 |
+| [0065](./0065-public-output-schema-registration.md) | Public output registration and event-map identities | Accepted | 2026-10-20 |
 
 ## Lifecycle
 

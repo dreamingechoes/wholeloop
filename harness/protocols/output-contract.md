@@ -1,5 +1,9 @@
 # Preflight and receipt
 
+- ⛔ `public-versioned-json-contract` — register every command output in the general
+  JSON Schema with one exact versioned discriminator. Keep source schema identities
+  unique/versioned and preserve existing event payload rules when adding metadata.
+
 Use the profile style block from the CLI to set language, detail and tone.
 Coverage, questions, decisions and artifact checks remain the same.
 
