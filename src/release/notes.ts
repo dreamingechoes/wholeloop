@@ -6,7 +6,7 @@ export interface ReleaseCommit {
 }
 const commitId = /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/
 type NoteCommit = { sha: string } & NonNullable<ReturnType<typeof parseConventionalSubject>>
-function releaseVersion(version: string) {
+export function isReleaseVersion(version: string) {
   const match =
     /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.exec(
       version,
@@ -24,7 +24,7 @@ const markdownText = (text: string) =>
 
 /** Bodies determine breaking intent but never enter release prose or stored drafts. */
 export function releaseNotes(commits: readonly ReleaseCommit[], version: string) {
-  if (commits.length > 1000 || !releaseVersion(version))
+  if (commits.length > 1000 || !isReleaseVersion(version))
     throw new Error('Use a bounded committed range and a semantic release version')
   const seen = new Set<string>()
   const accepted: NoteCommit[] = []

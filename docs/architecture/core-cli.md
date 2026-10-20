@@ -36,6 +36,7 @@ identities and optional command flags remain additive; read the
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl release preflight` | `wholeloop/release-preflight@1` | Check exact local release source and supplied CI metadata without publishing |
 | `wl release notes` | `wholeloop/release-notes@1` | Draft bounded Conventional Commit release notes from explicit local history |
 | `wl release artifacts` | `wholeloop/distribution-build@1` | Export owned seven-client delivery previews and a local Claude marketplace |
 | `wl conformance prepare` | `wholeloop/conformance-prepared@1` | Prepare a disposable native framing fixture without launching a client |

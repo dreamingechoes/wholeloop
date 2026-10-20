@@ -81,77 +81,9 @@ Published npm/marketplace installation remains planned. Once released, npm globa
 installation and the client plugin marketplace will be alternative entry points;
 the source path above is available now.
 
-### Check the npm package locally
-
-```text
-npm run package:check
-```
-
-This builds, checks npm's file list, packs offline and installs the actual archive
-under a disposable prefix/HOME/cache with empty npm configs and lifecycle scripts
-disabled. It verifies both bin links, versions, installed metadata/core bytes and
-a managed Codex install/repeat/uninstall using embedded resources. The normal
-check includes the same verification after its build/tests/smoke.
-
-Successful fixtures are removed; a failure retains its path for inspection. Only
-the four intended package files are allowed. Source bytes, package privacy/version
-and personal setup stay unchanged. This is not native discovery, authentication,
-model evidence, fresh-machine timing or publication. Current execution is macOS
-arm64/Node 24/npm 11.8; repeat supported environments before claiming portability.
-To keep an archive for your own local trial, create an external output directory
-and run npm pack --ignore-scripts --pack-destination with that directory. See
-[ADR-0067](./decisions/0067-isolated-offline-npm-package-verification.md).
-
-### Review a local delivery preview
-
-```text
-node "$WHOLELOOP_CLI" release artifacts --out /tmp/wholeloop-delivery --dry-run --json
-node "$WHOLELOOP_CLI" release artifacts --out /tmp/wholeloop-delivery --json
-claude plugin validate /tmp/wholeloop-delivery --strict
-```
-
-The export contains all seven independent native trees plus a relative Claude
-marketplace entry, each with the same built version/source/core. Root metadata
-records file hashes/modes, local target summaries and publication not performed.
-Version 0.0.0 remains a development preview. Static validation checks metadata;
-actual installation/discovery and model conformance remain separate.
-
-Dry runs render and preflight ownership without writing. Existing unowned,
-changed, missing or extra entries are refused before idempotency/replacement.
-Unchanged owned output reports already-correct; an owned upgrade retains its prior
-tree in the returned backup. Interrupted filesystem replacement is not claimed
-crash-atomic. Preserve unexpected output and choose a fresh directory.
-
-To test registration yourself in an isolated real client configuration, use
-claude plugin marketplace add /tmp/wholeloop-delivery and then
-claude plugin install wholeloop@wholeloop. These commands change that client's
-settings; export and validation do not register it. Remote installation requires
-a hosted copy of the complete delivery tree and an explicit owner publication
-choice. npm automation/provenance, compiled binaries and actual
-public distribution remain P5-05 work. See
-[ADR-0062](./decisions/0062-owned-seven-client-distribution-previews.md).
-
-### Review release-note drafts
-
-From a complete local clone, choose the range explicitly:
-
-```text
-node "$WHOLELOOP_CLI" release notes --initial --version 1.0.0 --json
-node "$WHOLELOOP_CLI" release notes --from <previous-release-ref> --to HEAD --version 1.0.0 --markdown
-```
-
-The starting revision is excluded, the ending revision is included, and both are
-resolved to exact commits in JSON. Initial mode includes all reachable history.
-The semantic version is a draft label; omitting it uses the built core's version.
-No version, file, ref, tag or publication changes. Shallow/promisor clones and
-ranges over 1000 commits are refused instead of producing incomplete prose.
-
-Notes group Conventional Commit subjects and detect declared breaking intent
-without copying bodies or trailers. Attribution or malformed subjects produce
-identity-only review entries and exit 4; a clean draft exits zero. Review the
-exact range, actual compatibility and migration guidance before publishing.
-Declared impact does not verify compatibility. See
-[ADR-0063](./decisions/0063-local-conventional-release-drafts.md).
+For offline package checks, delivery previews, release-note drafts and source
+preflight, see [release preparation](./contributing/releasing.md). These maintainer
+controls are separate from your first native setup.
 
 ## 2. Check
 

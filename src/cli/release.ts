@@ -1,15 +1,70 @@
-import { readFileSync } from 'node:fs'
+import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
 import { generateDistribution } from '../adapters/distribution.js'
 import { writeOwnedArtifacts } from '../adapters/owned-output.js'
-import { releaseHistory } from '../release/history.js'
+import { releaseHistory, releaseSource } from '../release/history.js'
 import { releaseNotes } from '../release/notes.js'
+import { releasePreflight } from '../release/preflight.js'
 import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+
+export function releasePreflightCommand(
+  { positional, options }: ReturnType<typeof parseArguments>,
+  root: string,
+  json: boolean,
+  io: Io,
+) {
+  if (
+    positional.length ||
+    typeof options['--version'] !== 'string' ||
+    typeof options['--context'] !== 'string'
+  )
+    throw new CliError('Use release preflight --version <version> --context <CI metadata JSON>')
+  const read = (file: string, limit: number) => {
+    try {
+      const path = resolve(root, file),
+        stat = lstatSync(path)
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit) throw new Error()
+      const text = readFileSync(path, 'utf8')
+      if (Buffer.byteLength(text) > limit) throw new Error()
+      return JSON.parse(text) as unknown
+    } catch {
+      throw new CliError(
+        'Provide regular bounded release metadata JSON files; contents omitted',
+        EXIT.precondition,
+      )
+    }
+  }
+  let source: ReturnType<typeof releaseSource>
+  try {
+    source = releaseSource(root)
+  } catch {
+    throw new CliError(
+      'Cannot read bounded local release source; diagnostics omitted',
+      EXIT.precondition,
+    )
+  }
+  let result: ReturnType<typeof releasePreflight>
+  try {
+    result = releasePreflight({
+      version: options['--version'],
+      builtVersion: VERSION,
+      package: read('package.json', 65536),
+      lock: read('package-lock.json', 8 * 1024 * 1024),
+      context: read(options['--context'], 65536),
+      source,
+    })
+  } catch (error) {
+    if (error instanceof CliError) throw error
+    throw new CliError(error instanceof Error ? error.message : 'Invalid release metadata')
+  }
+  io.out(JSON.stringify(result, null, json ? undefined : 2))
+  return result.status === 'ready' ? EXIT.ok : EXIT.precondition
+}
 
 export function releaseNotesCommand(
   { positional, options }: ReturnType<typeof parseArguments>,

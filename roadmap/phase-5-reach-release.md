@@ -114,7 +114,7 @@ No native acceptance is inferred from the matrix's synthetic tests.
 
 ## P5-05 · Distribution
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-13
+**Status:** 🔄 · **Size:** M · **Depends on:** P1-13
 
 **Goal** — One command to install, wherever you work.
 
@@ -143,8 +143,12 @@ Both linked aliases and embedded managed-file install/idempotency/removal execut
 from the actual package. Source bytes, privacy/version and publication stay
 unchanged. Native discovery/fresh-machine timing remain owner checks; publication
 automation/provenance and hosting remain independent code work.
+Read-only release preflight now checks exact build/package/lock/source and supplied
+CI metadata, refusing private/mismatched/dirty/masked input. Ready is consistency
+only, not authenticated context or authorization. No source/ref/publication changes
+or service call occurs. The actual current development package remains blocked.
 
-**Docs** — getting-started, ADR-0015, ADR-0062, ADR-0063, ADR-0067.
+**Docs** — getting-started, ADR-0015, ADR-0062, ADR-0063, ADR-0067, ADR-0068.
 
 ## P5-06 · Generated references and docs pass
 
@@ -195,8 +199,8 @@ is promoted to native support. See ADR-0052, ADR-0061 and ADR-0064.
 - [ ] The 1.0 release is tagged and announced.
 
 **Local implementation:** source/compiled command registration checks every declared
-output. The v1 candidate records thirty-eight source schemas, 135 output variants,
-thirteen step definitions, 144 command signatures and five exit codes. Individual
+output. The v1 candidate records thirty-nine source schemas, 136 output variants,
+thirteen step definitions, 145 command signatures and five exit codes. Individual
 compatibility cases retain declaration identities, command options/signatures and
 exit meanings; public adapter/distribution manifests validate before emission.
 The compatibility/deprecation policy preserves existing 1.x contracts and requires

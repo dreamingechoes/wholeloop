@@ -49,7 +49,7 @@
 
 ## Contributing
 
-[Authoring](./contributing/authoring.md) · [Documentation style](./contributing/docs-style.md) · [Glossary](./glossary.md) · [FAQ](./faq.md)
+[Authoring](./contributing/authoring.md) · [Release preparation](./contributing/releasing.md) · [Documentation style](./contributing/docs-style.md) · [Glossary](./glossary.md) · [FAQ](./faq.md)
 
 ## Reading paths
 

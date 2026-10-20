@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'release preflight',
+    arguments: '',
+    options: ['--version <version>', '--context <file>'],
+    schema: 'wholeloop/release-preflight@1',
+    summary: 'Check exact local release source and supplied CI metadata without publishing',
+  },
+  {
     path: 'release notes',
     arguments: '',
     options: ['--from <ref>', '--initial', '--to <ref>', '--version <version>', '--markdown'],

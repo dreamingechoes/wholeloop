@@ -1,5 +1,10 @@
 # Release preparation
 
+- ⛔ `release-bound-source` — compare exact package/build/lock/source/context before
+  publication preparation. Refuse private/mismatched/dirty/masked source and keep
+  Git selectors, monitors and replacements from relabelling it. A ready local
+  consistency plan authenticates no CI observation and permits no publication.
+
 - ⛔ `offline-package-delivery` — check the actual npm archive and installed bin
   links offline without lifecycle scripts or runtime dependencies. Preflight its
   file allowlist; isolate HOME/config/cache/prefix and managed-file checks. Preserve

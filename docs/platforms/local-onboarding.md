@@ -55,7 +55,7 @@ in the intended project. Inspect role discovery and the scoped guard transport;
 read-only/native permission behavior remains an actual-client check.
 
 Standalone generated plugins use the wholeloop namespace instead. For that
-delivery route, follow the [local marketplace preview](../getting-started.md#review-a-local-delivery-preview)
+delivery route, follow the [local marketplace preview](../contributing/releasing.md#review-a-local-delivery-preview)
 and explicitly register/install it in a disposable client configuration. The
 plugin invocation is /wholeloop:frame-problem; it is distinct from the loose
 wl-frame-problem entrypoint. Static plugin validation does not activate it.

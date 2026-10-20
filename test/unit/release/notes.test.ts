@@ -164,6 +164,20 @@ describe('complete local Git release history', () => {
       expect(initial.stdout).toContain('seed release fixture')
       expect(initial.stdout).not.toContain('Verified fixture behavior')
       expect(releaseHistory(root, first, first).commits).toEqual([])
+      const replacement = git(
+        'commit-tree',
+        git('rev-parse', 'HEAD^{tree}'),
+        '-m',
+        'fix: replace fixture prose',
+        '-m',
+        'Prove replacement refs cannot relabel the requested release history.',
+      )
+      git('replace', second, replacement)
+      const actual = releaseHistory(root, undefined)
+      expect(actual.commits).toHaveLength(2)
+      expect(actual.commits.at(-1)?.message).toContain('fix(api): correct the response')
+      expect(actual.commits.at(-1)?.message).not.toContain('replace fixture prose')
+      git('replace', '-d', second)
       expect(() => releaseHistory(root, second, first)).toThrow(/ancestor/)
       expect(() => releaseHistory(root, 'missing-fixture-ref')).toThrow(/diagnostics omitted/)
       expect(cli('--json').status).toBe(4)

@@ -8,6 +8,63 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/release-preflight@1"
+        },
+        "status": {
+          "enum": ["ready", "blocked"]
+        },
+        "version": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "npmTag": {
+          "enum": ["latest", "next"]
+        },
+        "repository": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "workflow": {
+          "type": "string"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "publication": {
+          "const": "not-performed"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "status",
+        "version",
+        "tag",
+        "npmTag",
+        "repository",
+        "commit",
+        "workflow",
+        "reasons",
+        "publication",
+        "limitations"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/release-notes@1"
         },
         "version": {

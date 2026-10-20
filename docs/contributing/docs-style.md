@@ -85,4 +85,4 @@ automation remain P5-04 work; simulation passes cannot establish native support.
 ## Before & after        (hand-offs: what feeds it, what it feeds)
 ## Gotchas & FAQ
 <!-- docnav -->
-[◀ Authoring](authoring.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Glossary ▶](../glossary.md)
+[◀ Release preparation](releasing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Glossary ▶](../glossary.md)
