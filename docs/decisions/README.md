@@ -84,6 +84,7 @@
 | [0071](./0071-gemini-observer-registry-and-private-policy.md) | Gemini observer registry and private policy | Accepted | 2026-10-20 |
 | [0072](./0072-antigravity-startup-gated-observer-workers.md) | Antigravity startup-gated observer workers | Accepted | 2026-10-20 |
 | [0073](./0073-structural-regression-drafts-and-explicit-issue-delivery.md) | Structural regression drafts and explicit issue delivery | Accepted | 2026-10-20 |
+| [0074](./0074-exact-native-acquisition-and-private-prefixes.md) | Exact native acquisition and private prefixes | Accepted | 2026-10-20 |
 
 ## Lifecycle
 

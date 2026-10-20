@@ -2,6 +2,7 @@ import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
+import { conformanceAcquisition } from '../conformance/acquisition.js'
 import { collectConformance } from '../conformance/collection.js'
 import { conformanceIssues } from '../conformance/issues.js'
 import { conformanceMatrix, conformanceMatrixMarkdown } from '../conformance/matrix.js'
@@ -21,6 +22,24 @@ export async function conformanceCommand(
   json: boolean,
   io: Io,
 ) {
+  if (command === 'conformance acquisition') {
+    if (positional.length !== 1) throw new CliError('Provide one downloads JSON file')
+    let input: unknown
+    try {
+      const path = resolve(root, positional[0] ?? ''),
+        stat = lstatSync(path)
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 65536) throw new Error()
+      const bytes = readFileSync(path)
+      if (bytes.length > 65536) throw new Error()
+      input = JSON.parse(bytes.toString('utf8'))
+    } catch {
+      throw new CliError(
+        'Provide a regular downloads JSON file of at most 64 KiB; contents omitted',
+      )
+    }
+    io.out(JSON.stringify(conformanceAcquisition(input), null, json ? undefined : 2))
+    return 0
+  }
   if (command === 'conformance matrix' || command === 'conformance issues') {
     const file = positional[0]
     const docs = options['--docs']

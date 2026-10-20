@@ -126,11 +126,16 @@ versions/assertions, stable markers and original dates without private payloads.
 A default-preview host inventories intact open/closed markers, refuses incomplete
 scans, changed/old-core input or invalid CI context, rechecks freshness and sends
 only on explicit activation. Partial outcomes remain visible without retries.
-Scheduled activation and installers/version resolution remain code work; actual
-CI/authenticated issue delivery remains owner verification.
+Public exact-version resolution and explicit private-prefix provisioning now cover
+all seven clients/channels. Closed vendor paths/checksums, whole-batch planning,
+credential-free installation, archive preflight and retained partial receipts are
+implemented. Cursor has no independently supplied expected digest; top-level pins
+do not freeze vendor postinstall/transitive downloads or auto-updates. Scheduled
+activation remains code work; actual native installs/CI/authenticated issue
+delivery remain owner verification.
 No native acceptance is inferred from the matrix's synthetic tests.
 
-**Docs** — platforms, ADR-0059, ADR-0064, ADR-0070, ADR-0073.
+**Docs** — platforms, ADR-0059, ADR-0064, ADR-0070, ADR-0073, ADR-0074.
 
 ## P5-05 · Distribution
 
@@ -226,8 +231,8 @@ is promoted to native support. See ADR-0052, ADR-0061 and ADR-0064.
 - [ ] The 1.0 release is tagged and announced.
 
 **Local implementation:** source/compiled command registration checks every declared
-output. The v1 candidate records forty-one source schemas, 139 output variants,
-thirteen step definitions, 148 command signatures and five exit codes. Individual
+output. The v1 candidate records forty-two source schemas, 140 output variants,
+thirteen step definitions, 149 command signatures and five exit codes. Individual
 compatibility cases retain declaration identities, command options/signatures and
 exit meanings; public adapter/distribution manifests validate before emission.
 The compatibility/deprecation policy preserves existing 1.x contracts and requires

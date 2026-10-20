@@ -6,6 +6,44 @@
   "oneOf": [
     {
       "type": "object",
+      "required": [
+        "schema",
+        "platform",
+        "arch",
+        "downloads",
+        "collection",
+        "effects",
+        "limitations"
+      ],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/conformance-acquisition@1"
+        },
+        "platform": {
+          "enum": ["darwin", "linux"]
+        },
+        "arch": {
+          "enum": ["arm64", "x64"]
+        },
+        "downloads": {
+          "type": "array"
+        },
+        "collection": {
+          "type": "object"
+        },
+        "effects": {
+          "const": "not-performed"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
       "properties": {
         "schema": {
           "const": "wholeloop/conformance-issues@1"

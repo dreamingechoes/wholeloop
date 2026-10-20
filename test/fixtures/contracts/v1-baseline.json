@@ -194,7 +194,9 @@
     "schema:wholeloop/release-bundle@1": "5b1cf4206e92520900b67751661a86e4e61ad0e3e340bc38ef2528fa22144c5a",
     "output:wholeloop/conformance-results@1": "53f7371ec13ce8c5b575c5791708acf669196c868d60dfc933ff5f1b5686f802",
     "schema:wholeloop/conformance-collection@1": "899975c3bd4fdb92547b689b87ba4e0287140d02246200a75b3f57a817e61b6f",
-    "output:wholeloop/conformance-issues@1": "ca322dafae803d8374f6462fb22a103e01613e67c86d7d4a3384647d4d524844"
+    "output:wholeloop/conformance-issues@1": "ca322dafae803d8374f6462fb22a103e01613e67c86d7d4a3384647d4d524844",
+    "output:wholeloop/conformance-acquisition@1": "9f5be6ae500bf6c88846cf546a137a9493b3ad7d1fb21ef7fdbf1673ec92cd09",
+    "schema:wholeloop/conformance-downloads@1": "dcfaf9025faac5c71541a6d4b6bb9e4cd5af316b1aae2b10ca115b6dbecf712f"
   },
   "commands": [
     {
@@ -1194,6 +1196,12 @@
       "arguments": "<results.json>",
       "schema": "wholeloop/conformance-issues@1",
       "options": ["--at <UTC timestamp>"]
+    },
+    {
+      "path": "conformance acquisition",
+      "arguments": "<downloads.json>",
+      "schema": "wholeloop/conformance-acquisition@1",
+      "options": []
     }
   ],
   "exitCodes": {

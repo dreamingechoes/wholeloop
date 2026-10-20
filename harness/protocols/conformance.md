@@ -1,5 +1,11 @@
 # Conformance evidence
 
+- ⛔ `conformance-exact-acquisition` — bind the whole batch to exact official
+  package/platform/version paths before installing. Keep installation explicit,
+  external and credential-free with separate prefixes; verify available integrity,
+  archive safety and installed identity. Preserve missing checksum evidence and
+  partial outcomes without pretending top-level pins freeze vendor dependencies.
+
 - ⛔ `conformance-issue-projection` — draft only fresh comparable structural
   regressions with stable markers and consumed metadata. Keep delivery explicit,
   refuse partial issue inventories or changed/old-core artifacts, check open/closed

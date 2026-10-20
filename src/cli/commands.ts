@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'conformance acquisition',
+    arguments: '<downloads.json>',
+    options: [],
+    schema: 'wholeloop/conformance-acquisition@1',
+    summary: 'Validate exact native vendor downloads without installing or running clients',
+  },
+  {
     path: 'release verify',
     arguments: '<directory>',
     options: ['--context <file>', '--sha256 <digest>'],

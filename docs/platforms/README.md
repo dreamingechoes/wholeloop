@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/acquisition and scheduled activation remain pending.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/private acquisition are implemented; scheduled activation and actual native/service checks remain pending.
 
 ---
 
@@ -146,7 +146,7 @@ and zero completed collection without failures, including simulation. File/usage
 errors exit 4. Fixture mode refuses a native binary root; live requires one.
 
 The collector neither resolves moving versions nor installs/updates clients. Host
-version resolution, acquisition, scheduling and regression issues remain separate
+scheduled activation and actual native/service checks remain separate
 P5-04 work. Native updaters and external effects still require owner inspection;
 a version probe does not attest every later internal executable. See
 [ADR-0070](../decisions/0070-explicit-fresh-conformance-collection.md).
@@ -176,8 +176,7 @@ A non-empty preview needs the intended GITHUB_REPOSITORY and native gh access to
 read its issue inventory. Empty/unrun batches require no GitHub service call.
 Delivery requires the actual selected default-branch GitHub.com schedule/manual CI
 context and existing issue-write permission. Setting environment fields alone is
-not authentication or authorization. Scheduled collection/version acquisition and
-workflow activation remain separate P5-04 work; no actual issue has been sent.
+not authentication or authorization. Scheduled workflow activation remains separate P5-04 work; no actual issue has been sent.
 
 The host requires observations for the exact current built core and refuses input
 changes. It scans open/closed issues in creation order, projects only matching
@@ -513,6 +512,39 @@ model results have been recorded by the local fixture tests.
 An adapter is a TypeScript module implementing one interface: where files go, how front matter maps, how tools and permissions are named, how hooks are registered, how MCP is configured, how headless mode is invoked, and which capabilities the CLI has. It ships with golden files and a conformance scenario. Guide: [contributing/authoring](../contributing/authoring.md#adapters).
 
 ---
+
+### Resolve and provision native clients
+
+The maintainer host defaults to public metadata resolution and a read-only
+acquisition plan. Build the core first, then run:
+
+```bash
+node scripts/conformance-provision.mjs
+```
+
+Explicit installation uses a **new absolute external directory**:
+
+```bash
+node scripts/conformance-provision.mjs --install "$NATIVE_ROOT"
+node dist/wl.mjs conformance collect "$NATIVE_ROOT/collection.json" --live \
+  --bin-root "$NATIVE_ROOT" --store "$EXTERNAL_STORE" --json
+```
+
+The second command can use authenticated native models and requires owner setup.
+The host resolves both channels before installation, validates exact official
+paths/integrity, and uses separate private prefixes/HOME/cache/empty npm configs.
+Vendor npm lifecycle scripts execute during installation with no forwarded model
+or GitHub credentials. Cursor has no expected archive checksum in its installer;
+its observed digest is recorded with that limitation. Failed/partial receipts stay
+in the chosen directory; inspect them and choose a new destination rather than
+retrying over them. Provisioning checks files/package identity, not native support.
+
+Reviewed pins live in test/conformance/pins.json. Antigravity's initial acquisition
+pin is 1.4.3 with four official updater checksums; previous local 1.4.2 availability
+evidence does not cover it. Only macOS/glibc Linux arm64/x64 are planned; actual
+Linux and native installation/model runs remain unverified. The pure
+conformance acquisition command accepts explicit bounded metadata without any
+network/install operation. See [ADR-0074](../decisions/0074-exact-native-acquisition-and-private-prefixes.md).
 
 <!-- docnav -->
 [◀ Lenses, templates, profiles](../extending/lenses-templates-profiles.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Local client setup ▶](local-onboarding.md)

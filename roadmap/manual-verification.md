@@ -6,11 +6,14 @@
 
 ## Explicit conformance collection (P5-04 component)
 
+- [ ] On actual macOS and glibc Linux hosts, review test/conformance/pins.json and the printed native acquisition plan; install into a new absolute external prefix. Confirm exact package/native versions, private npm/config/cache paths, archive checksums/modes and no personal configuration changes. Cursor's digest is observed only. No actual native installation/model support follows from fake npm transports or logical platform mappings.
+- [ ] Interrupt native acquisition after one completed client/channel and inspect the retained failed receipt/prefix without automatic retries. Confirm the collector probes exact versions again before scenarios; vendor self-updates and transitive/postinstall downloads are not frozen by the top-level acquisition pin.
+
 - [ ] Review structural issue drafts from actual fresh comparable observations. Confirm exact versions/assertions, original timestamps and stable markers, with no raw native output, draft contents or journal paths. Simulation/stale/authentication/launch failures must produce no regression issue.
 - [ ] In an owner-controlled disposable GitHub repository, preview the complete open/closed marker inventory, then explicitly authorize CI delivery. Verify intact closed markers suppress repeats, incomplete pagination/current-core/input checks prevent writes, stdin preserves body newlines, and partial failures retain actual outcomes. Serialize writers and inspect remote effects before retrying; all current service tests use local fake executables.
 - [ ] Provision isolated pinned/latest native binaries and exact resolved versions for the intended host. Run only after native trust/auth/permissions setup; confirm selected paths and version probes cannot silently reuse a global channel. Current local tests use synthetic clients/simulation only.
 - [ ] Repeat a live batch on macOS/Linux/supported Node versions; inspect journal verdicts, crashes, timeout/cancellation, native updater behavior and external effects. Feed actual timestamped results to the matrix without relabelling simulations or refreshing observation dates.
-- [ ] Verify result artifacts expose structural IDs/versions/assertions but no journal paths, draft contents, raw stdout or credentials. Inspect interrupted external state before preparing a fresh run. Host version resolution/acquisition, scheduled activation and actual service issue operations remain separate.
+- [ ] Verify result artifacts expose structural IDs/versions/assertions but no journal paths, draft contents, raw stdout or credentials. Inspect interrupted external state before preparing a fresh run. Host resolution/acquisition is implemented locally; scheduled activation and actual native/service issue checks remain separate.
 
 ## Coinstalled entrypoints and slot guidance (P1-07/P1-13 regression)
 
