@@ -29,6 +29,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Rejudge process and journal evidence with named missing events',
   },
   {
+    path: 'conformance matrix',
+    arguments: '<results.json>',
+    options: ['--at <UTC timestamp>', '--markdown'],
+    schema: 'wholeloop/conformance-matrix@1',
+    summary: 'Render bounded observations and identify comparable regression candidates',
+  },
+  {
     path: 'eval grounding',
     arguments: '<corpus.json>',
     options: ['--predictions <file>', '--inputs'],

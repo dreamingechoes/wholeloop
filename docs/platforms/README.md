@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Once conformance runs exist, this page is generated from their results.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). A bounded conformance matrix renderer is implemented; scheduled collection and evidence-backed page regeneration remain pending.
 
 ---
 
@@ -29,6 +29,43 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 | MCP | ✅ | ✅ TOML | ✅ | ✅ | ✅ | ✅ `serverUrl` | ✅ |
 | Headless mode | `claude -p` | `codex exec` | `opencode run` | `copilot -p` | `gemini -p` | `agy -p` | `agent -p` |
 | Plugin packaging | Claude plugins | Agent Plugins | npm/JS | Agent Plugins | extensions | plugins | Agent Plugins |
+
+## Reported framing observations
+
+The local matrix renderer consumes bounded reports without running a model or
+changing documentation, configuration or runtime state:
+
+```text
+wl conformance matrix /tmp/wholeloop-results.json --json
+wl conformance matrix /tmp/wholeloop-results.json --at 2026-10-20T12:00:00.000Z --markdown
+```
+
+The input is a wholeloop/conformance-results@1 object with a runs array. Each
+entry has channel (pinned or latest), observedAt (UTC ISO timestamp with
+milliseconds) and report (the complete conformance report). An empty runs array
+renders all fourteen target/channel pairs UNRUN; it does not establish support.
+Keep results in the external store or a temporary artifact directory. Record the
+actual observation time instead of refreshing old evidence by changing its date.
+
+Rows distinguish requested pins, actually observed versions, simulation/live
+process evidence and timestamps. Results older than 48 hours are visibly stale.
+A supplied report is not independently authenticated or re-executed. The framing
+scenario does not establish hook, permission, MCP or semantic quality support.
+
+Regression candidates need a fresh native PASS on the pinned version and a fresh
+native FAIL on a different latest version. Both processes must have succeeded at
+their exact observed versions, with identical core/source/scenario hashes and
+named missing/assertion codes. Launch/authentication failures and incomparable
+runs stay visible without becoming version-regression claims. Candidate keys are
+deterministic for later issue deduplication; this command sends no issue.
+
+Exit 4 identifies candidates (or invalid file/usage); inspect the versioned output.
+Exit 0 means rendering succeeded without candidates, including an entirely unrun
+matrix. It is not a conformance gate pass. Input is a regular non-symlink JSON
+file of at most 1 MiB, with at most one observation per target/channel and one
+entry per actual run. Scheduled collection, issue automation and evidence-backed
+page regeneration remain P5-04 work. See
+[ADR-0059](../decisions/0059-conformance-observations-and-regression-candidates.md).
 
 ## How gaps are bridged
 

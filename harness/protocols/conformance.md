@@ -11,6 +11,14 @@
 - ⛔ `generated-distribution-not-guidance` — discovery excludes native-looking
   copies under .wholeloop/distribution, including internal aliases into that tree.
   Installed overlays and actual repository guidance remain eligible.
+- ⛔ `conformance-matrix-observations` — keep unrun, simulation and native reports
+  distinct. Retain actual observation time and requested/observed versions; reject
+  reused runs and inconsistent successful reports. Stale evidence proves no
+  current native support. Imported reports are not authenticated attestations.
+- ⛔ `conformance-regression-comparability` — a version regression candidate needs
+  fresh native pinned PASS/latest FAIL on different exact observed versions,
+  successful processes, identical core/source/scenario bindings and named failures.
+  Launch/authentication failures and incomparable runs need separate diagnosis.
 
 This scenario checks process/journal structure. It does not establish native
 protocol correctness, semantic evidence quality, hook activation, permission

@@ -30,6 +30,10 @@ rules:
     enforcers: [src/conformance/run.ts#runConformance, src/conformance/judge.ts#judgeConformance, test/unit/conformance/conformance.test.ts]
   - id: conformance-fresh-fixture
     enforcers: [src/conformance/prepare.ts#prepareConformance, src/conformance/prepare.ts#readConformance, src/conformance/run.ts#runConformance, test/unit/conformance/conformance.test.ts]
+  - id: conformance-matrix-observations
+    enforcers: [src/conformance/matrix-input.ts#matrixObservation, src/conformance/matrix.ts#conformanceMatrix, src/cli/conformance.ts#conformanceCommand, test/unit/conformance/matrix.test.ts]
+  - id: conformance-regression-comparability
+    enforcers: [src/conformance/matrix.ts#conformanceMatrix, test/unit/conformance/matrix.test.ts]
   - id: generated-distribution-not-guidance
     enforcers: [src/discovery/scan.ts#fileKind, src/discovery/tree.ts#readInventory, test/unit/discovery/discovery.test.ts, test/unit/conformance/conformance.test.ts]
   - id: owned-native-output

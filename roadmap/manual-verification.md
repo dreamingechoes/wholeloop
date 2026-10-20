@@ -113,6 +113,15 @@ model conformance remains pending and does not block independent installation wo
 Native hook registration and the other tier-A renderers are implemented; actual
 hook capture and installed-client behavior remain owner checks.
 
+## Conformance matrix and nightly activation (P5-04)
+
+- [ ] After explicit native runs, wrap their exact reports with pinned/latest channel and actual observedAt timestamps. Compare the matrix with the original external reports, including actual client versions, core/source/scenario bindings and named assertions. Imported reports are not authenticated by the renderer.
+- [ ] Independently diagnose model/authentication/managed-policy failures. A successful framing process with missing journal assertions is a structural failure; it is not evidence that every native capability regressed.
+- [ ] Confirm scheduled collection, latest-version resolution, service credentials, issue permissions/deduplication and generated-page updates once their code is implemented. Current local matrix tests do not exercise CI or send issues.
+- [ ] Repeat CLI/read-boundary and timestamp fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64 only.
+
+These owner checks do not block remaining collection, automation or documentation code.
+
 ## Headless gate processes (P5-03)
 
 - [ ] Execute one pinned review and verification round with actual native, headless and sequential workers. Compare coverage/quorum/verdict, independently inspect evidence quality and record exact client versions. Synthetic parity tests do not establish real model equivalence.

@@ -1,7 +1,8 @@
-import { readFileSync } from 'node:fs'
+import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
+import { conformanceMatrix, conformanceMatrixMarkdown } from '../conformance/matrix.js'
 import { prepareConformance } from '../conformance/prepare.js'
 import { reportConformance, runConformance } from '../conformance/run.js'
 import { storePath } from '../state/paths.js'
@@ -17,6 +18,31 @@ export async function conformanceCommand(
   json: boolean,
   io: Io,
 ) {
+  if (command === 'conformance matrix') {
+    const file = positional[0]
+    if (!file || positional.length !== 1 || (json && options['--markdown'] === true))
+      throw new CliError(
+        'Use conformance matrix <results.json> [--at <UTC timestamp>] [--markdown | --json]',
+      )
+    let input: unknown
+    try {
+      const path = resolve(root, file)
+      const stat = lstatSync(path)
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1024 * 1024) throw new Error()
+      const raw = readFileSync(path, 'utf8')
+      if (Buffer.byteLength(raw) > 1024 * 1024) throw new Error()
+      input = JSON.parse(raw)
+    } catch {
+      throw new CliError('Provide one regular results JSON file of at most 1 MiB; contents omitted')
+    }
+    const matrix = conformanceMatrix(input, String(options['--at'] ?? new Date().toISOString()))
+    io.out(
+      options['--markdown'] === true
+        ? conformanceMatrixMarkdown(matrix)
+        : JSON.stringify(matrix, null, json ? undefined : 2),
+    )
+    return matrix.regressionCandidates.length ? 4 : 0
+  }
   const context = {
     store: typeof options['--store'] === 'string' ? resolve(root, options['--store']) : storePath(),
     canonical: bundledCanonical(),

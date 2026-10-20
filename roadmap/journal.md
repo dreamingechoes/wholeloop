@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-20 · P5-04 matrix — bounded observations and comparable regression candidates
+
+- Add a pure versioned matrix over explicit pinned/latest report observations and an as-of UTC time. Render all fourteen target/channel rows, retain requested versus actual versions and simulation/live evidence, and mark observations older than 48 hours stale. Validate the consumed report projection, bounded assertion codes, hashes, process/success consistency, timestamps and unique channel/run identities. ADR-0059 records why imports are observations rather than attestations.
+- Identify deterministic regression candidates only from fresh native pinned PASS/latest FAIL on different exact observed versions with successful processes and identical core/source/scenario bindings. Preserve assertion names and original run IDs. Missing, simulated, stale, launch/authentication and incomparable evidence cannot silently become current support or a version regression.
+- Add read-only conformance matrix JSON/Markdown output over a regular non-symlink input of at most 1 MiB. Do not re-execute clients, refresh timestamps, write repository runtime state, publish issues or change documentation implicitly. Exit zero means successful rendering without candidates, including an unrun matrix; it is not a native gate pass. Regenerate the command reference and document remaining scheduled collection, version resolution, issue automation and page integration work.
+- Focused matrix tests passed 33 cases, including compiled CLI rendering/refusal and preserved inputs. Correct the initial test assumption that CliError defaults to input exit 2: this project's shape-error convention is exit 4. Full local check passed 858 tests in 58 files (195.22 seconds), build/smoke, lint/typecheck, generated references/catalogs, 230-file docs, 141-file harness, Markdown and all 35 Mermaid diagrams. No actual model/authenticated service, CI job, issue, personal configuration or project remote push ran. Owner checks remain separate and do not block the rest of P5-04 code.
+
 ## 2026-10-20 · P5-03 additional recipes — read-only OpenCode and Copilot workers
 
 - Extend the shared bounded process host with OpenCode/Copilot recipes instead of duplicating scheduling, assignment identity, gate submission or verdicts. Probe installed OpenCode 1.17.9 and Copilot 1.0.83 help/environment and primary native contracts without model execution. ADR-0058 records tool boundaries and startup limitations.

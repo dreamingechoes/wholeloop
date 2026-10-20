@@ -25,6 +25,7 @@ Every command accepts `--json`. Machine-readable output contracts live in `src/c
 | `wl conformance prepare` | `wholeloop/conformance-prepared@1` | Prepare a disposable native framing fixture without launching a client |
 | `wl conformance run <id>` | `wholeloop/conformance-report@1` | Run one explicitly simulated or live pinned-client framing scenario |
 | `wl conformance report <id>` | `wholeloop/conformance-report@1` | Rejudge process and journal evidence with named missing events |
+| `wl conformance matrix <results.json>` | `wholeloop/conformance-matrix@1` | Render bounded observations and identify comparable regression candidates |
 | `wl eval grounding <corpus.json>` | `wholeloop/grounding-eval@1` | Score traceable numeric assertions and deliberately absent sandbox metrics |
 | `wl sync` | `wholeloop/sync@1` | Reconcile exact PR merges, delivery readiness and conservative cleanup |
 | `wl learn begin [<description>]` | `wholeloop/learning-begin@1` | Pin outcome evidence and the leaning to challenge |

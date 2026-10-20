@@ -86,7 +86,7 @@ Neither gap blocks independent local generator/guard implementation.
 
 ## P5-04 · Nightly conformance and the generated matrix
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
+**Status:** 🔄 · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
 
 **Goal** — Know the moment a CLI release breaks something.
 
@@ -96,7 +96,16 @@ Neither gap blocks independent local generator/guard implementation.
 
 - [ ] A regression on *latest* opens an issue naming the CLI version and the failing assertion.
 
-**Docs** — platforms (generated).
+**Local implementation:** a bounded read-only matrix renderer accepts versioned
+pinned/latest observations, preserves unknown/simulation/live evidence and marks
+results older than 48 hours stale. Comparable fresh native passes/failures produce
+deterministic regression candidates naming actual versions and failing assertions.
+Duplicate/relabelled runs, invalid reports and future observations are refused.
+Scheduled collection, installers/version resolution, issue automation and generated
+page integration remain code work; actual CI/authenticated runs remain owner checks.
+No native acceptance is inferred from the matrix's synthetic tests.
+
+**Docs** — platforms (generated matrix integration pending), ADR-0059.
 
 ## P5-05 · Distribution
 
