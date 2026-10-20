@@ -1,5 +1,10 @@
 # Release preparation
 
+- ⛔ `offline-package-delivery` — check the actual npm archive and installed bin
+  links offline without lifecycle scripts or runtime dependencies. Preflight its
+  file allowlist; isolate HOME/config/cache/prefix and managed-file checks. Preserve
+  package privacy/version and report no publication or native acceptance.
+
 - ⛔ `release-complete-local-history` — require an explicit initial or ancestor
   range pinned to exact local commits. Refuse shallow/promisor history and bound
   shell-free Git reads; do not fetch missing objects or return truncated notes.

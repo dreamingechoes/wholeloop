@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: offline-package-delivery
+    enforcers: [scripts/check-package.mjs, package.json]
   - id: v1-declaration-compatibility
     enforcers: [src/contracts/compatibility.ts#checkCompatibility, src/contracts/compatibility.ts#schemaContracts, src/adapters/generate.ts#generateAdapter, src/adapters/distribution.ts#generateDistribution, test/unit/contracts/compatibility.test.ts]
   - id: public-versioned-json-contract

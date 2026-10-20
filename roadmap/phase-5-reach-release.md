@@ -114,7 +114,7 @@ No native acceptance is inferred from the matrix's synthetic tests.
 
 ## P5-05 · Distribution
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-13
+**Status:** 🔄 · **Size:** M · **Depends on:** P1-13
 
 **Goal** — One command to install, wherever you work.
 
@@ -137,8 +137,14 @@ entries identify rejected commits without copying unsafe subjects; a semantic
 version remains a label and changes no version/ref/tag/publication. Declared impact
 does not establish compatibility. Public hosting, npm ownership/automation/provenance,
 optional binaries and actual publication remain separate work/owner decisions.
+Offline npm archive verification now preflights the four-file allowlist, checks
+actual tarball integrity and installs into an isolated prefix/HOME/config/cache.
+Both linked aliases and embedded managed-file install/idempotency/removal execute
+from the actual package. Source bytes, privacy/version and publication stay
+unchanged. Native discovery/fresh-machine timing remain owner checks; publication
+automation/provenance and hosting remain independent code work.
 
-**Docs** — getting-started, ADR-0015, ADR-0062, ADR-0063.
+**Docs** — getting-started, ADR-0015, ADR-0062, ADR-0063, ADR-0067.
 
 ## P5-06 · Generated references and docs pass
 
@@ -172,7 +178,7 @@ those gaps do not block independent implementation. See ADR-0052, ADR-0061 and A
 
 ## P5-07 · 1.0
 
-**Status:** 🔄 · **Size:** S · **Depends on:** P5-05, P5-06
+**Status:** ⏸️ · **Size:** S · **Depends on:** P5-05, P5-06
 
 **Goal** — A stable contract others can build extensions against.
 

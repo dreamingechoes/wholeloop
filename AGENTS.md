@@ -44,10 +44,11 @@ Node ≥ 22 and npm for development; the published CLI runs on Node ≥ 20 ([ADR
 
 ```bash
 npm ci
-npm run check      # lint (Biome) · typecheck · unit tests (Vitest) · markdownlint — must be green
+npm run check      # lint · types · tests · offline npm package · docs · harness — must be green
 npm run lint:fix   # apply Biome's safe fixes and formatting
 npm run build      # dist/wl.mjs, one bundled ESM file
 npm run smoke      # the built CLI prints the package version
+npm run package:check  # verify actual offline npm archive/install in a disposable prefix
 npm run docs:nav   # regenerate every docnav footer after editing docs/nav.yml
 npm run harness:check  # budgets, front matter and enforcement.yml (also part of check)
 ```

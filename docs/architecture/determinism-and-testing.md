@@ -3,7 +3,7 @@
 > **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model in seconds, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Unit, snapshot, contract and stubbed-workflow checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. A disposable tier-A/Gemini framing runner separates explicit simulation from owner-run pinned live processes and names missing journal events. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
+> **Status: 🚧 partial.** Unit, snapshot, contract, stubbed-workflow and isolated offline npm delivery checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. A disposable seven-target framing runner separates explicit simulation from owner-run pinned live processes and names missing journal events. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
 
 ---
 
@@ -19,6 +19,7 @@
 | Artifact shape (spec, slices, brief…) | `src/flow/shapes` | corpus of good and bad artifacts |
 | Lens sets, refutation threshold, caps, verdict | `src/gates` | pure functions |
 | Adapter output per CLI | `src/adapters` | golden files |
+| npm archive, bin links and embedded resources | `scripts/check-package.mjs` | actual offline npm installation in a disposable prefix |
 | Projections from the journal | `src/state` | replay must be byte-identical |
 | Docnav, links, diagrams | `src/docs` | CI check on every change |
 
@@ -53,6 +54,19 @@ flowchart TB
 ## Workflow tests with stubbed agents
 
 Gate and fan-out workflows are tested by running the **real workflow code** with a fake `agent()` that returns scripted results. This catches the failure an extracted unit test cannot: a guard that exists but is never called.
+
+## Offline package integration
+
+Normal check also executes the actual npm pack/install path after build/tests/smoke.
+The script preflights the four-file allowlist, verifies archive integrity, installs
+offline without lifecycle scripts into an isolated HOME/config/cache/prefix and
+executes both bin aliases. Managed Codex install/idempotency/removal proves that
+the installed core retains its canonical resources; source bytes stay unchanged.
+
+Run npm run package:check separately for this check. Success removes only its own
+fixture; failure retains an inspection path. This is package/file evidence, not
+native discovery, permissions, models, provenance or fresh-machine timing. See
+[ADR-0067](../decisions/0067-isolated-offline-npm-package-verification.md).
 
 ## Conformance across CLIs
 

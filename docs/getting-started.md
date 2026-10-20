@@ -94,6 +94,27 @@ Published npm/marketplace installation remains planned. Once released, npm globa
 installation and the client plugin marketplace will be alternative entry points;
 the source path above is available now.
 
+### Check the npm package locally
+
+```text
+npm run package:check
+```
+
+This builds, checks npm's file list, packs offline and installs the actual archive
+under a disposable prefix/HOME/cache with empty npm configs and lifecycle scripts
+disabled. It verifies both bin links, versions, installed metadata/core bytes and
+a managed Codex install/repeat/uninstall using embedded resources. The normal
+check includes the same verification after its build/tests/smoke.
+
+Successful fixtures are removed; a failure retains its path for inspection. Only
+the four intended package files are allowed. Source bytes, package privacy/version
+and personal setup stay unchanged. This is not native discovery, authentication,
+model evidence, fresh-machine timing or publication. Current execution is macOS
+arm64/Node 24/npm 11.8; repeat supported environments before claiming portability.
+To keep an archive for your own local trial, create an external output directory
+and run npm pack --ignore-scripts --pack-destination with that directory. See
+[ADR-0067](./decisions/0067-isolated-offline-npm-package-verification.md).
+
 ### Review a local delivery preview
 
 ```text

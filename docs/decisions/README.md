@@ -77,6 +77,7 @@
 | [0064](./0064-explicit-conformance-page-projections.md) | Explicit conformance page projections | Accepted | 2026-10-20 |
 | [0065](./0065-public-output-schema-registration.md) | Public output registration and event-map identities | Accepted | 2026-10-20 |
 | [0066](./0066-v1-compatibility-baseline-and-deprecation.md) | V1 compatibility baseline and deprecation | Accepted | 2026-10-20 |
+| [0067](./0067-isolated-offline-npm-package-verification.md) | Isolated offline npm package verification | Accepted | 2026-10-20 |
 
 ## Lifecycle
 

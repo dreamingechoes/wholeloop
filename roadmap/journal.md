@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-20 · P5-05 npm delivery — actual offline archive and isolated installation
+
+- Add package:check and include the installed-package path in normal check after build/tests/smoke. Resolve actual npm/Node, preflight the dist-only source and dry-run file list before packing, verify the actual four-file archive and SHA-1/SHA-512 metadata, and report the local archive SHA-256. ADR-0067 records why copied-core smoke alone is insufficient.
+- Use offline npm without lifecycle scripts, audit/funding/update notices or runtime dependencies. Keep empty configs, HOME, cache and global prefix in a disposable external fixture with a minimal environment. Verify installed package metadata/privacy, document/core bytes and both executable aliases, then run managed Codex install/idempotency/removal through the actual package's embedded resources. Compare source bytes; remove only successful fixtures and preserve a failed fixture's explicit path.
+- Focused package verification passed on macOS arm64/Node 24.1.0/npm 11.8.0, preserving version 0.0.0/private true and publication not performed. Full local check passed 1182 tests in 64 files (202.85 seconds), the actual isolated npm package PASS receipt, build/smoke, lint/typecheck, generated references/catalogs, 240-file docs, 142-file harness, Markdown and all 35 Mermaid diagrams. Update distribution/onboarding/enforcement/manual boundaries and the development command/testing guides; P5-07 is parked after its completed local candidate while P5-05 continues. No native models, authenticated service, personal configuration, actual global-prefix modification, CI/issue operation, version/ref/tag/publication or project remote push ran. Publication automation/provenance and hosting remain independent code work.
+
 ## 2026-10-20 · P5-07 candidate — frozen declarations and compatibility policy
 
 - Record 186 individual declarations covering thirty-eight source schemas, 135 output variants and thirteen steps, plus 144 command signatures and five exit codes. Canonicalize object keys, retain conservative constraint fingerprints and separate output variants so additive new identities do not invalidate unrelated contracts. Check baseline coverage, changed/removed declarations, command signatures/options and exit meanings. ADR-0066 defines the boundary and deprecation/migration policy without equating intent or snapshots with runtime compatibility.
