@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: conformance-issue-projection
+    enforcers: [src/conformance/issues.ts#conformanceIssues, src/cli/conformance.ts#conformanceCommand, scripts/conformance-issues.mjs, test/unit/conformance/issues.test.ts]
   - id: headless-antigravity-ready
     enforcers: [src/fanout/antigravity.ts#antigravityInit, src/fanout/antigravity.ts#antigravityWorkerHook, src/fanout/antigravity.ts#antigravityWorker, src/fanout/process.ts#workerProcess, src/fanout/host.ts#HeadlessHost, test/unit/fanout/antigravity.test.ts, test/unit/fanout/readiness.test.ts, test/unit/fanout/fanout.test.ts]
   - id: headless-gemini-core-tools

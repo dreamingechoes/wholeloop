@@ -98,7 +98,7 @@ Neither gap blocks independent local generator/guard implementation.
 
 ## P5-04 · Nightly conformance and the generated matrix
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
+**Status:** 🔄 · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
 
 **Goal** — Know the moment a CLI release breaks something.
 
@@ -121,11 +121,16 @@ preflights separate native binary paths, creates fresh external fixtures and
 continues after client crashes. It forwards deadlines/cancellation and emits
 matrix-ready timestamps/structural reports without journal paths. Fixture mode
 remains simulation; actual versions, native provisioning and trust/authentication
-are host inputs. Scheduled activation, installers/version resolution and issue
-automation remain code work; actual CI/authenticated runs remain owner checks.
+are host inputs. Structural issue drafts now share the same comparability filter and expose exact
+versions/assertions, stable markers and original dates without private payloads.
+A default-preview host inventories intact open/closed markers, refuses incomplete
+scans, changed/old-core input or invalid CI context, rechecks freshness and sends
+only on explicit activation. Partial outcomes remain visible without retries.
+Scheduled activation and installers/version resolution remain code work; actual
+CI/authenticated issue delivery remains owner verification.
 No native acceptance is inferred from the matrix's synthetic tests.
 
-**Docs** — platforms, ADR-0059, ADR-0064, ADR-0070.
+**Docs** — platforms, ADR-0059, ADR-0064, ADR-0070, ADR-0073.
 
 ## P5-05 · Distribution
 
@@ -221,8 +226,8 @@ is promoted to native support. See ADR-0052, ADR-0061 and ADR-0064.
 - [ ] The 1.0 release is tagged and announced.
 
 **Local implementation:** source/compiled command registration checks every declared
-output. The v1 candidate records forty-one source schemas, 138 output variants,
-thirteen step definitions, 147 command signatures and five exit codes. Individual
+output. The v1 candidate records forty-one source schemas, 139 output variants,
+thirteen step definitions, 148 command signatures and five exit codes. Individual
 compatibility cases retain declaration identities, command options/signatures and
 exit meanings; public adapter/distribution manifests validate before emission.
 The compatibility/deprecation policy preserves existing 1.x contracts and requires

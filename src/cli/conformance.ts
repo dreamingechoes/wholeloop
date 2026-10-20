@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
 import { collectConformance } from '../conformance/collection.js'
+import { conformanceIssues } from '../conformance/issues.js'
 import { conformanceMatrix, conformanceMatrixMarkdown } from '../conformance/matrix.js'
 import { conformancePage } from '../conformance/page.js'
 import { prepareConformance } from '../conformance/prepare.js'
@@ -20,9 +21,11 @@ export async function conformanceCommand(
   json: boolean,
   io: Io,
 ) {
-  if (command === 'conformance matrix') {
+  if (command === 'conformance matrix' || command === 'conformance issues') {
     const file = positional[0]
     const docs = options['--docs']
+    if (command === 'conformance issues' && typeof options['--at'] !== 'string')
+      throw new CliError('Use conformance issues <results.json> --at <UTC timestamp> [--json]')
     if (
       !file ||
       positional.length !== 1 ||
@@ -45,7 +48,13 @@ export async function conformanceCommand(
     } catch {
       throw new CliError('Provide one regular results JSON file of at most 1 MiB; contents omitted')
     }
-    const matrix = conformanceMatrix(input, String(options['--at'] ?? new Date().toISOString()))
+    const asOf = String(options['--at'] ?? new Date().toISOString())
+    if (command === 'conformance issues') {
+      const result = conformanceIssues(input, asOf)
+      io.out(JSON.stringify(result, null, json ? undefined : 2))
+      return result.issues.length ? 4 : 0
+    }
+    const matrix = conformanceMatrix(input, asOf)
     const documentation =
       typeof docs === 'string'
         ? conformancePage(resolve(root, docs), matrix, options['--write'] === true)

@@ -8,6 +8,37 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/conformance-issues@1"
+        },
+        "asOf": {
+          "type": "string"
+        },
+        "status": {
+          "const": "draft"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "cli", "title", "body", "core"]
+          }
+        },
+        "effects": {
+          "const": "not-performed"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["schema", "asOf", "status", "issues", "effects", "limitations"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/conformance-results@1"
         },
         "status": {

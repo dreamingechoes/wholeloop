@@ -1,5 +1,10 @@
 # Conformance evidence
 
+- ⛔ `conformance-issue-projection` — draft only fresh comparable structural
+  regressions with stable markers and consumed metadata. Keep delivery explicit,
+  refuse partial issue inventories or changed/old-core artifacts, check open/closed
+  markers and current freshness, and preserve partial outcomes without retries.
+
 - ⛔ `conformance-explicit-collection` — validate the complete exact-version batch
   before preparation, require explicit fixture/live mode and every selected native
   channel binary, and create fresh external runs. Keep crash reports and continue;

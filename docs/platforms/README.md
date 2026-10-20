@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; host version resolution, scheduling and issue automation remain pending.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/acquisition and scheduled activation remain pending.
 
 ---
 
@@ -150,6 +150,50 @@ version resolution, acquisition, scheduling and regression issues remain separat
 P5-04 work. Native updaters and external effects still require owner inspection;
 a version probe does not attest every later internal executable. See
 [ADR-0070](../decisions/0070-explicit-fresh-conformance-collection.md).
+
+### Draft and deliver structural regression issues
+
+```text
+wl conformance issues /tmp/wholeloop-results.json --at 2026-10-20T12:00:00.000Z --json
+```
+
+This read-only projection shares the matrix's freshness/comparability rules.
+Explicit time is required. Exit 4 identifies draft candidates; zero means none,
+including unrun/simulated evidence. The versioned output contains stable keys,
+exact versions/assertions/hashes and original observation dates, with no journal
+paths, draft contents or raw native output. It sends no message and authenticates
+no imported report. The body marker identifies the same regression across repeated
+observations without changing its date or claiming wider native support.
+
+The maintainer delivery host is preview-only unless explicitly activated:
+
+```text
+node scripts/conformance-issues.mjs /tmp/wholeloop-results.json
+node scripts/conformance-issues.mjs /tmp/wholeloop-results.json --write
+```
+
+A non-empty preview needs the intended GITHUB_REPOSITORY and native gh access to
+read its issue inventory. Empty/unrun batches require no GitHub service call.
+Delivery requires the actual selected default-branch GitHub.com schedule/manual CI
+context and existing issue-write permission. Setting environment fields alone is
+not authentication or authorization. Scheduled collection/version acquisition and
+workflow activation remain separate P5-04 work; no actual issue has been sent.
+
+The host requires observations for the exact current built core and refuses input
+changes. It scans open/closed issues in creation order, projects only matching
+marker keys/numbers, and excludes pull requests. A complete scan must finish within
+one hundred pages of one hundred entries; incomplete/failed/unsafe inventory causes
+no writes. It does not add labels or change configuration. Before each delivery it
+rechecks freshness against actual time, preserving the original observed dates.
+Bodies travel through stdin, with no credentials in files or argv.
+
+An intact matching marker suppresses repeat delivery even when the existing issue
+is closed. Serialize writers; marker-based creation is not atomic across independent
+callers or unrelated concurrent issue edits/deletions. Failed runs retain completed
+outcomes and require inspection before retrying; they never automatically delete,
+close or retry an external effect. Local tests use synthetic GitHub executables,
+not actual authenticated requests. See
+[ADR-0073](../decisions/0073-structural-regression-drafts-and-explicit-issue-delivery.md).
 
 ### Check or update this observation snapshot
 

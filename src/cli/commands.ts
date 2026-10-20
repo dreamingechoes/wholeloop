@@ -36,6 +36,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Export owned seven-client delivery previews and a local Claude marketplace',
   },
   {
+    path: 'conformance issues',
+    arguments: '<results.json>',
+    options: ['--at <UTC timestamp>'],
+    schema: 'wholeloop/conformance-issues@1',
+    summary: 'Draft structural regression issues from explicit fresh comparable observations',
+  },
+  {
     path: 'conformance collect',
     arguments: '<plan.json>',
     options: ['--fixture', '--live', '--bin-root <directory>', '--timeout <ms>', '--store <path>'],
