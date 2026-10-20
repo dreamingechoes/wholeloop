@@ -37,6 +37,7 @@
     "harness:check": "node dist/wl.mjs harness check",
     "docs:references": "npm run build && node dist/wl.mjs docs reference --write",
     "docs:providers": "npm run build && node dist/wl.mjs docs reference --kind providers --write",
+    "docs:platforms": "npm run build && node dist/wl.mjs docs reference --kind platforms --write",
     "docs:commands": "npm run build && node scripts/generate-commands.mjs",
     "hooks:install": "npm run build && node scripts/install-hooks.mjs",
     "commits:check": "node scripts/check-commits.mjs",

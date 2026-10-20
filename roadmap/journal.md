@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-20 · P5-06 adapter declarations — shared registry and generated currentness
+
+- Expose the existing adapter registry to both target lookup and the platform reference renderer. Generate seven rows from actual local skills/agents/hooks/read-only/engine declarations, preserving unverified native status. Keep researched native formats and supplied framing observations separate; neither simulation nor rendered metadata becomes actual native support. ADR-0061 records this evidence boundary.
+- Add platforms as the fourth owned generated reference kind and docs:platforms for explicit selective regeneration. Reuse docs check, strict marker ownership, whole-batch preflight, prose preservation and unchanged-output behavior. Update docs/style/protocols and the manual checklist without claiming scheduled live collection or per-CLI onboarding work complete.
+- Focused reference tests passed ten cases, including compiled four-page read-only/selective/full regeneration, declaration drift, missing/malformed marker refusal, preserved prose and idempotency. Cheap docs/harness/Markdown checks passed. Full local check passed 891 tests in 59 files (203.59 seconds), build/smoke, lint/typecheck, generated references/catalogs, 232-file docs, 141-file harness, Markdown and all 35 Mermaid diagrams. No model/authenticated service, personal configuration, CI/issue operation, publication or project remote push ran. Linux and interrupted filesystem writes remain owner checks and do not block independent roadmap implementation.
+
 ## 2026-10-20 · P5-03 Cursor workers — private native policy and read-only tool transport
 
 - Add Cursor agent print/JSON/Ask/sandbox execution with a fresh external workspace and the repository as an additional root. Decode only its successful native final result before shared assignment/gate validation. Advertise local headless capability and update the golden manifest without claiming native model conformance. ADR-0060 records the boundary.

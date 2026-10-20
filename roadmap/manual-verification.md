@@ -41,12 +41,13 @@ model, permission and MCP checks do not block other roadmap code.
 
 ## Generated references (P5-06 local controls)
 
-- [ ] After changing source contracts, rebuild before running docs check. Confirm command/config/provider sections describe that build, not an older executable on PATH.
+- [ ] After changing source contracts, rebuild before running docs check. Confirm command/config/provider/adapter sections describe that build, not an older executable on PATH.
 - [ ] On Linux and supported Node releases, repeat read-only drift detection, explicit selective/full regeneration, malformed-marker refusal and preservation of surrounding prose. Current compiled execution is macOS arm64/Node 24 only.
 - [ ] If regeneration is interrupted during writes, inspect the affected pages/markers before rerunning. All selected markers are preflighted, but filesystem failures do not provide multi-file crash atomicity.
 
-The generated provider table records declarations only. Native capability-matrix
-collection/generation and remaining per-CLI onboarding refinements are still
+The generated provider and adapter tables record declarations only. Check that
+local engine changes retain unverified native status. Native capability-matrix
+collection/page integration and remaining per-CLI onboarding refinements are still
 implementation work, separate from these manual checks. Overview pages now reflect
 local implementation while retaining native/host verification boundaries.
 

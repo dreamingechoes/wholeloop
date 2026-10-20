@@ -138,16 +138,20 @@ No native acceptance is inferred from the matrix's synthetic tests.
 - [x] `wl docs check` verifies generated pages are current.
 - [x] No page says `📐 design` for behaviour that is released.
 
-**Local implementation:** command/config/provider reference tables now use the same
+**Local implementation:** command/config/provider/adapter reference tables use the same
 built-core renderers for generation and docs check. Strict marker ownership catches
 missing/duplicate/reversed pairs, default mode is read-only, explicit writes preflight
 the selected batch and preserve surrounding prose. Existing generator scripts delegate
 to the core. The declared provider table does not claim authentication or actual
 operation support. The overview/banner audit corrects the six remaining design-only pages and the FAQ
 claim that no local implementation exists. Native interaction claims retain explicit
-limits. The live capability-matrix generator (P5-04) and remaining per-CLI
+limits. Local adapter declarations now share the build/install registry, including
+all seven targets, hook/read-only boundaries and current engines. Generated docs
+retain unverified native conformance; no simulation is promoted to support. The
+reported framing renderer is separate. Scheduled native collection/page integration
+(P5-04) and remaining per-CLI
 getting-started refinements are still code/documentation work;
-those gaps do not block independent implementation. See ADR-0052.
+those gaps do not block independent implementation. See ADR-0052 and ADR-0061.
 
 **Docs** — all.
 

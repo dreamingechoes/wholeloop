@@ -1,3 +1,5 @@
+import type { Adapter } from '../adapters/contracts.js'
+import { ADAPTERS } from '../adapters/generate.js'
 import type { Command } from '../cli/commands.js'
 import { COMMANDS } from '../cli/commands.js'
 import { configKeys, type Schema } from '../config/schema.js'
@@ -5,7 +7,7 @@ import { BUILTINS } from '../providers/builtins.js'
 import type { Provider } from '../providers/manifest.js'
 import type { Problem, Tree } from './check.js'
 
-export const REFERENCE_KINDS = ['commands', 'config', 'providers'] as const
+export const REFERENCE_KINDS = ['commands', 'config', 'providers', 'platforms'] as const
 export type ReferenceKind = (typeof REFERENCE_KINDS)[number]
 export interface ReferenceSection {
   kind: ReferenceKind
@@ -64,6 +66,17 @@ export function providerReference(providers: readonly Provider[]) {
       }),
   ].join('\n')
 }
+/** Local declarations cannot attest to actual native loading, permissions or model execution. */
+export function platformReference(adapters: readonly Adapter[] = ADAPTERS) {
+  return [
+    '| Adapter | Skills | Agents | Hooks | Read-only boundary | Local engines | Native conformance |',
+    '| --- | --- | --- | --- | --- | --- | --- |',
+    ...adapters.map((adapter) => {
+      const capabilities = adapter.capabilities()
+      return `| ${code(adapter.id)} | ${capabilities.skills} | ${capabilities.agents} | ${code(capabilities.hooks)} | ${code(capabilities.readOnly)} | ${capabilities.engines.map(code).join(' · ')} | ${capabilities.conformance} |`
+    }),
+  ].join('\n')
+}
 export function referenceSections(): ReferenceSection[] {
   return [
     { kind: 'commands', file: 'docs/architecture/core-cli.md', body: commandReference(COMMANDS) },
@@ -73,6 +86,7 @@ export function referenceSections(): ReferenceSection[] {
       file: 'docs/configuration/providers.md',
       body: providerReference(BUILTINS),
     },
+    { kind: 'platforms', file: 'docs/platforms/README.md', body: platformReference() },
   ]
 }
 

@@ -3,12 +3,14 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { adapterFor } from '../../../src/adapters/generate.js'
 import { COMMANDS } from '../../../src/cli/commands.js'
 import { parseNav, renderFooter } from '../../../src/docs/nav.js'
 import {
   checkReferences,
   commandReference,
   configReference,
+  platformReference,
   providerReference,
   referenceSections,
   replaceReference,
@@ -16,6 +18,37 @@ import {
 import { BUILTINS } from '../../../src/providers/builtins.js'
 
 describe('generated reference ownership', () => {
+  it('separates local format/engine declarations from native execution evidence', () => {
+    const table = platformReference()
+    expect(table.split('\n')).toHaveLength(9)
+    expect(table).toContain(
+      '| `cursor` | rendered | rendered | `native-and-git-fallback` | `native-readonly` | `headless` · `sequential` | unverified |',
+    )
+    expect(table).toContain('| `codex` | rendered | rendered | `git-fallback` |')
+    expect(table).not.toContain('PASS')
+    expect(table).not.toContain('✅')
+    const adapter = adapterFor('gemini')
+    const oldTable = platformReference([adapter])
+    const changedTable = platformReference([
+      {
+        ...adapter,
+        capabilities: () => ({ ...adapter.capabilities(), engines: ['headless', 'sequential'] }),
+      },
+    ])
+    expect(changedTable).not.toBe(oldTable)
+    expect(changedTable).toContain('| unverified |')
+    const section = {
+      kind: 'platforms' as const,
+      file: 'docs/platforms/README.md',
+      body: changedTable,
+    }
+    const files = new Map([
+      [section.file, `<!-- platforms:start -->\n${oldTable}\n<!-- platforms:end -->`],
+    ])
+    expect(checkReferences({ files, exists: (path) => files.has(path) }, [section])).toMatchObject([
+      { rule: 'generated', message: expect.stringContaining('stale') },
+    ])
+  })
   it.each([
     '',
     '<!-- commands:end -->\n<!-- commands:start -->',
@@ -126,7 +159,7 @@ describe('generated reference ownership', () => {
     const root = mkdtempSync(join(tmpdir(), 'wl-reference-'))
     try {
       const yaml =
-        'home: architecture/core-cli.md\nconcepts: configuration/README.md\npages:\n  - {path: architecture/core-cli.md, title: Commands}\n  - {path: configuration/README.md, title: Configuration}\n  - {path: configuration/providers.md, title: Providers}\n'
+        'home: architecture/core-cli.md\nconcepts: configuration/README.md\npages:\n  - {path: architecture/core-cli.md, title: Commands}\n  - {path: configuration/README.md, title: Configuration}\n  - {path: configuration/providers.md, title: Providers}\n  - {path: platforms/README.md, title: Platforms}\n'
       const nav = parseNav(yaml)
       const sections = referenceSections()
       sections.forEach((section, index) => {
@@ -161,7 +194,7 @@ describe('generated reference ownership', () => {
       expect(selected.status, selected.stderr).toBe(0)
       expect(JSON.parse(selected.stdout).written).toBe(1)
       const written = cli(['reference', '--write'])
-      expect(JSON.parse(written.stdout)).toMatchObject({ status: 'updated', written: 2 })
+      expect(JSON.parse(written.stdout)).toMatchObject({ status: 'updated', written: 3 })
       const checked = cli(['check'])
       expect(checked.status, checked.stdout + checked.stderr).toBe(0)
       expect(JSON.parse(checked.stdout).problems).toEqual([])

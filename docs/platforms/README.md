@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). A bounded conformance matrix renderer is implemented; scheduled collection and evidence-backed page regeneration remain pending.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain owner verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. A bounded conformance matrix renderer is implemented; scheduled collection and evidence-backed page regeneration remain pending.
 
 ---
 
@@ -29,6 +29,30 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 | MCP | ✅ | ✅ TOML | ✅ | ✅ | ✅ | ✅ `serverUrl` | ✅ |
 | Headless mode | `claude -p` | `codex exec` | `opencode run` | `copilot -p` | `gemini -p` | `agy -p` | `agent -p` |
 | Plugin packaging | Claude plugins | Agent Plugins | npm/JS | Agent Plugins | extensions | plugins | Agent Plugins |
+
+## Local adapter declarations
+
+This table is generated from the same adapter registry used by build/install.
+It describes local output and declared enforcement boundaries. A rendered format,
+read-only flag or available engine does not prove native discovery or execution;
+all native conformance declarations remain unverified. Actual framing observations
+are a separate bounded report input below, never inferred from these rows.
+
+<!-- platforms:start -->
+| Adapter | Skills | Agents | Hooks | Read-only boundary | Local engines | Native conformance |
+| --- | --- | --- | --- | --- | --- | --- |
+| `claude` | rendered | rendered | `native-and-git-fallback` | `tool-allowlist-and-plan-mode` | `headless` · `sequential` | unverified |
+| `codex` | rendered | rendered | `git-fallback` | `inherited-parent-and-checked-headless` | `headless` · `sequential` | unverified |
+| `opencode` | rendered | rendered | `native-and-git-fallback` | `deny-shell-and-edit` | `headless` · `sequential` | unverified |
+| `copilot` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `headless` · `sequential` | unverified |
+| `gemini` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `sequential` | unverified |
+| `antigravity` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `sequential` | unverified |
+| `cursor` | rendered | rendered | `native-and-git-fallback` | `native-readonly` | `headless` · `sequential` | unverified |
+<!-- platforms:end -->
+
+Run npm run docs:platforms after changing an adapter declaration. The normal
+wl docs check compares this section with the built core; missing or malformed
+ownership markers fail instead of producing a successful empty comparison.
 
 ## Reported framing observations
 

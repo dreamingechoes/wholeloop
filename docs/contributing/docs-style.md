@@ -37,8 +37,8 @@ reversed or duplicate marker pairs fail; an absent marker must never turn a chec
 into an empty successful comparison.
 
 `wl docs reference` checks tables without changing files and exits 4 on drift.
-`wl docs reference --write` explicitly regenerates all three sections; --kind
-commands/config/providers selects one. It preflights every selected page/marker
+`wl docs reference --write` explicitly regenerates all four sections; --kind
+commands/config/providers/platforms selects one. It preflights every selected page/marker
 before writing, preserves surrounding prose and skips unchanged pages. The write
 batch is not a crash-atomic multi-file transaction; inspect an interrupted write
 and regenerate after restoring any incomplete markers. Valid semantic stale tables
@@ -46,10 +46,11 @@ are replaced from source, while malformed ownership markers require inspection.
 
 Use `npm run docs:references` to build and regenerate together. Existing docs:commands
 and docs:config scripts delegate to the same renderer; docs:providers updates the
-manifest-derived mapping table. The provider source JSON catalog has its separate
+manifest-derived mapping table; docs:platforms updates adapter declarations. The provider source JSON catalog has its separate
 providers:catalog check. Generated mapping rows describe declared operations/access,
-not authenticated availability or actual server behavior. The platform matrix is
-still awaiting P5-04 live evidence and is not generated from simulation passes.
+not authenticated availability or actual server behavior. Local adapter declarations are generated from the build/install registry and remain
+separate from native conformance. The native matrix still awaits P5-04 live
+collection/page integration; simulation passes cannot establish native support.
 
 ## Page templates
 

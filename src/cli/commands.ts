@@ -1024,7 +1024,7 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'docs reference',
     arguments: '',
-    options: ['--kind <commands|config|providers>', '--write'],
+    options: ['--kind <commands|config|providers|platforms>', '--write'],
     schema: 'wholeloop/docs-reference@1',
     summary: 'Check generated reference sections or explicitly regenerate their tables',
   },

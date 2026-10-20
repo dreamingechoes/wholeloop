@@ -12,16 +12,17 @@ import { codexAdapter, copilotAdapter, opencodeAdapter } from './portable.js'
 
 export const artifactDigest = (content: string) =>
   createHash('sha256').update(content).digest('hex')
+export const ADAPTERS: readonly Adapter[] = [
+  claudeAdapter,
+  codexAdapter,
+  opencodeAdapter,
+  copilotAdapter,
+  geminiAdapter,
+  antigravityAdapter,
+  cursorAdapter,
+]
 export function adapterFor(id: string): Adapter {
-  const found = [
-    claudeAdapter,
-    codexAdapter,
-    opencodeAdapter,
-    copilotAdapter,
-    geminiAdapter,
-    antigravityAdapter,
-    cursorAdapter,
-  ].find((adapter) => adapter.id === id)
+  const found = ADAPTERS.find((adapter) => adapter.id === id)
   if (found) return found
   throw new Error('Choose --target claude|codex|opencode|copilot|gemini|antigravity|cursor')
 }

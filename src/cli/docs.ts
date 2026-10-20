@@ -78,7 +78,7 @@ export function docsReference(
       (typeof kind !== 'string' ||
         !REFERENCE_KINDS.includes(kind as (typeof REFERENCE_KINDS)[number])))
   )
-    throw new CliError('Use docs reference [--kind commands|config|providers] [--write]')
+    throw new CliError('Use docs reference [--kind commands|config|providers|platforms] [--write]')
   const sections = referenceSections().filter(
     (section) => kind === undefined || section.kind === kind,
   )
