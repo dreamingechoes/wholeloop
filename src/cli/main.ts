@@ -33,6 +33,7 @@ import { providerFixtureCommand } from './provider-test.js'
 import { pullRequestCommand } from './pull-requests.js'
 import { rampCommand } from './ramp.js'
 import { releaseArtifacts, releaseNotesCommand, releasePreflightCommand } from './release.js'
+import { releaseVerifyCommand } from './release-bundle.js'
 import { researchCommand } from './research.js'
 import { reviewCommand } from './review.js'
 import { scopesCommand } from './scopes.js'
@@ -95,6 +96,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path === 'release verify') return releaseVerifyCommand(parsed, root, json, io)
     if (command.path === 'release artifacts') return releaseArtifacts(parsed, root, json, io)
     if (command.path === 'release notes') return releaseNotesCommand(parsed, root, json, io)
     if (command.path === 'release preflight') return releasePreflightCommand(parsed, root, json, io)

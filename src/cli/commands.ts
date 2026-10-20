@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'release verify',
+    arguments: '<directory>',
+    options: ['--context <file>', '--sha256 <digest>'],
+    schema: 'wholeloop/release-verified@1',
+    summary: 'Verify prepared release bytes and source context without publishing',
+  },
+  {
     path: 'release preflight',
     arguments: '',
     options: ['--version <version>', '--context <file>'],

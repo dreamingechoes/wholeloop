@@ -189,7 +189,9 @@
     "step:review-code": "9f56c96ef8a7a9a71b80b3983a1f6ea6a5abf5aa36c4f5d4e2873cca300f402f",
     "step:slice-work": "a881310681eaa2dd81cd56031651ccc6bfa0266031b4bda1e0bcab46e874557b",
     "step:verify-works": "23e69accdfdab2cd0a9f882db3d87ababaa07b48471f5b927c6fdbe5cadbab29",
-    "step:write-spec": "fb6e5a930950dbf4ff15734de867f6097a0f121e1ebfaf0115990ec5ae8ecbd5"
+    "step:write-spec": "fb6e5a930950dbf4ff15734de867f6097a0f121e1ebfaf0115990ec5ae8ecbd5",
+    "output:wholeloop/release-verified@1": "1fc56a1df522d4d3dd8af2856931053777c43bfa1ea2a330a0f4e7b0a429d713",
+    "schema:wholeloop/release-bundle@1": "5b1cf4206e92520900b67751661a86e4e61ad0e3e340bc38ef2528fa22144c5a"
   },
   "commands": [
     {
@@ -1164,6 +1166,13 @@
       "arguments": "",
       "schema": "wholeloop/release-preflight@1",
       "options": ["--version <version>", "--context <file>"]
+    },
+    {
+      "path": "release verify",
+      "arguments": "<directory>",
+      "options": ["--context <file>", "--sha256 <digest>"],
+      "schema": "wholeloop/release-verified@1",
+      "summary": "Verify prepared release bytes and source context without publishing"
     }
   ],
   "exitCodes": {

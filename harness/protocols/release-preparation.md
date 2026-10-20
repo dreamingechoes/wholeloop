@@ -1,5 +1,10 @@
 # Release preparation
 
+- ⛔ `release-reviewed-bytes` — bind preparation to exact payload hashes and source
+  metadata, keep activation explicit and verify the independently retained bundle
+  digest before execution/publication. Refuse existing tags and preserve partial
+  outcomes; never rebuild after approval or silently retry external publication.
+
 - ⛔ `release-bound-source` — compare exact package/build/lock/source/context before
   publication preparation. Refuse private/mismatched/dirty/masked source and keep
   Git selectors, monitors and replacements from relabelling it. A ready local

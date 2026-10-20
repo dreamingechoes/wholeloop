@@ -8,6 +8,64 @@
       "type": "object",
       "properties": {
         "schema": {
+          "const": "wholeloop/release-verified@1"
+        },
+        "status": {
+          "const": "verified"
+        },
+        "repository": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "workflow": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "npmTag": {
+          "enum": ["latest", "next"]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "bytes", "sha256"]
+          }
+        },
+        "publication": {
+          "const": "not-performed"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "status",
+        "repository",
+        "commit",
+        "workflow",
+        "version",
+        "tag",
+        "npmTag",
+        "files",
+        "publication",
+        "limitations"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
           "const": "wholeloop/release-preflight@1"
         },
         "status": {

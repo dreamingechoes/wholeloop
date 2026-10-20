@@ -3,7 +3,7 @@
 > **TL;DR** — Prepare offline package checks, native delivery previews, release-note drafts and a source consistency plan locally. Publication, provenance, visibility and actual native acceptance have their own activation boundary.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local packaging/delivery/notes/preflight are implemented. Package version 0.0.0 remains private; public hosting, publication workflow/provenance and actual release/tag/announcement remain open. These maintainer checks do not block local client setup.
+> **Status: 🚧 partial.** Local packaging/delivery/notes/preflight and reviewed-bundle publication automation are implemented. Package version 0.0.0 remains private; actual public hosting, ownership/OIDC/provenance and release/tag/announcement remain unverified. These maintainer checks do not block local client setup.
 
 ## Select the source-built core
 
@@ -66,8 +66,8 @@ claude plugin marketplace add /tmp/wholeloop-delivery and then
 claude plugin install wholeloop@wholeloop. These commands change that client's
 settings; export and validation do not register it. Remote installation requires
 a hosted copy of the complete delivery tree and an explicit owner publication
-choice. npm automation/provenance, compiled binaries and actual
-public distribution remain P5-05 work. See
+choice. The explicit workflow below prepares npm/native assets for public delivery; actual
+activation/provenance and optional compiled binaries remain separate. See
 [ADR-0062](../decisions/0062-owned-seven-client-distribution-previews.md).
 
 ## Review release-note drafts
@@ -110,7 +110,7 @@ The [context schema](../../src/release/schemas/context-v1.json) accepts only the
 | ref, commit | Exact CI branch ref and checked-out commit |
 | event, workflow | Actual event name and workflow filename, including .yml/.yaml |
 
-Keep context outside Git; a future CI host obtains these fields from its actual
+Keep context outside Git; the explicit release CI host obtains these fields from its actual
 event/repository metadata. Preflight does not authenticate a supplied JSON file.
 It compares versions with the selected built core/package/lock, explicit package
 privacy, repository identity and visible source status. Masked index flags block;
@@ -121,8 +121,79 @@ Ready/exit zero means local metadata is consistent. Blocked/exit 3 names missing
 conditions; malformed input exits 4, unsafe/missing files exit 3. Ready proves no
 native acceptance, npm ownership, OIDC configuration, authorization or provenance.
 No file, version, visibility, ref, tag or publication changes. The current private
-development package remains blocked. Publication automation remains separate work;
+development package remains blocked. Publication activation remains separate from this local check;
 see [ADR-0068](../decisions/0068-read-only-release-consistency-preflight.md).
+
+## Prepare a reviewed bundle
+
+The maintainer host script is local preparation, using a complete clean source
+checkout whose package/build/lock and supplied context pass preflight:
+
+```text
+node scripts/release.mjs prepare 1.0.0 /tmp/release-context.json /tmp/new-wholeloop-release <previous-ref>
+```
+
+Omit the final ref only for an explicit initial release. The destination must be
+new and outside source. Offline preparation writes the actual npm archive, a tar
+of all seven native trees including hidden files/modes, subject-only notes, the
+selected core and bundle.json with exact hashes/sizes/source/range. Preserve the
+reported temporary evidence on failure. Preparation changes no source/version/ref.
+
+Retain the returned manifest SHA-256 separately from the bundle. Read-only
+verification uses the exact same core and current source/context:
+
+```text
+node "$WHOLELOOP_CLI" release verify /tmp/new-wholeloop-release --context /tmp/release-context.json --sha256 <retained-manifest-sha256> --json
+```
+
+This verifies bytes/source, not authorization or archive extraction safety for
+arbitrary third-party input. Unknown files, linked payloads, changed hashes/sizes,
+mismatched cores and blocked source/context fail with exit 3. Each regular payload
+is bounded to 128 MiB and the manifest to 64 KiB; failure output omits contents.
+The reviewed workflow generates both archives itself and never extracts imported
+untrusted trees. See [ADR-0069](../decisions/0069-reviewed-release-bundles-and-explicit-activation.md).
+
+## Activate publication explicitly
+
+The [Release workflow](../../.github/workflows/release.yml) supports manual dispatch
+on the actual default branch only. Version is an exact already-committed package
+version; from is the previous release ref, empty only for the initial release.
+The publish input defaults to false. Preparation runs all checks, reads actual
+repository metadata and uploads a seven-day artifact. Its summary links the exact
+artifact and an independently retained manifest digest. Inspect bundle.json, the
+notes and both archives before approval; simulated metadata is not a CI run.
+
+Before requesting publication, the owner completes these release setup steps:
+
+1. Approve public repository visibility explicitly, reserve/control the npm name,
+   commit the reviewed version and explicit private false with its matching lock.
+2. Configure the release GitHub environment with required owner approval and
+   default-branch deployment restrictions. Verify the protection exists before
+   selecting publish; an unprotected environment does not provide a review gate.
+3. Configure npm trusted publishing for the exact GitHub repository, release.yml
+   workflow and release environment. The GitHub-hosted publisher uses Node 24,
+   npm 11.8.0, OIDC and explicit provenance. No npm token is written or required by
+   this workflow. Initial npm ownership/reservation is a separate owner action.
+4. Dispatch with publish true, inspect the prepared artifact/summary and approve
+   that concrete bundle at the environment gate. Activation checks the immutable
+   artifact ID/digest, selected core, all hashes and refreshed source/context.
+   It installs no source dependencies and does not rebuild after approval.
+
+Activation creates a non-overwriting tag for the reviewed SHA, creates a draft
+GitHub release with the exact notes/assets, publishes the reviewed npm archive and
+then finalizes the GitHub release. Stable versions use latest; prereleases use
+next and a prerelease GitHub entry. An existing tag stops the run even if its SHA
+matches. Publication across npm and GitHub is not atomic: failure may leave a tag,
+draft release or published npm version. Inspect those actual outcomes and reconcile
+manually before any retry; do not delete evidence or blindly rerun the workflow.
+
+The native tar is a hosted release asset after successful activation. Download and
+extract that trusted release into a new local directory before registering its
+relative Claude marketplace or loading another native tree. The source repository
+root itself is not the generated marketplace. Remote Git marketplace registration
+and optional compiled binaries are not supplied by this workflow. Actual Actions,
+Linux, environment protection, npm OIDC/provenance and native installation remain
+owner verification; no publication was run during implementation.
 
 <!-- docnav -->
 [◀ Authoring](authoring.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docs style ▶](docs-style.md)

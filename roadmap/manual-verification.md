@@ -41,6 +41,9 @@ model, permission and MCP checks do not block other roadmap code.
 
 ## Local distribution preview and publication (P5-05)
 
+- [ ] After explicit visibility/package ownership/version decisions, configure and verify the protected release environment and exact npm trusted publisher. Dispatch preparation only first; inspect the immutable artifact, exact range/notes, npm archive and native tar hidden files/modes. Current actual package stays private 0.0.0.
+- [ ] Repeat bundle verification on Linux/supported Node versions and inspect an actual GitHub-hosted preparation run. Verify artifact ID/digest mismatch refusal and review the exact concrete bytes before explicit publish activation; no rebuild may follow approval.
+- [ ] Run owner-authorized OIDC publication and verify actual npm provenance, source/tag SHA, stable/prerelease labels, GitHub assets and native download/install. Test partial failure/reconciliation in an owner-controlled disposable publication project; never blindly retry or overwrite an existing release/tag/version. Local logging transports are simulation only.
 - [ ] Register the exported relative marketplace in an isolated real Claude configuration, install wholeloop@wholeloop and confirm all seventeen skills/eight agents, copied core and hook activation after moving the delivery tree. Native strict validation passed locally; it is not installation/discovery.
 - [ ] Test each exported native target with its real client and credential store. Repeat owned output/backup/unknown-file/dry-run/relocation checks on Linux and supported Node/client versions; current automated execution is macOS arm64 only.
 - [ ] Choose public repository visibility and hosting explicitly, verify npm ownership and configure trusted publishing/provenance once release automation is implemented. The local exporter changes neither repository visibility nor package privacy and performs no publication.

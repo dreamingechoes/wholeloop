@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/release-bundle@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "repository",
+    "commit",
+    "workflow",
+    "version",
+    "tag",
+    "npmTag",
+    "from",
+    "files"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/release-bundle@1"
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^([a-f0-9]{40}|[a-f0-9]{64})$"
+    },
+    "workflow": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\\.ya?ml$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9A-Za-z.-]{5,128}$"
+    },
+    "tag": {
+      "type": "string",
+      "pattern": "^v[0-9A-Za-z.-]{5,128}$"
+    },
+    "npmTag": {
+      "type": "string",
+      "enum": ["latest", "next"]
+    },
+    "from": {
+      "type": "string",
+      "pattern": "^(initial|[a-f0-9]{40}|[a-f0-9]{64})$"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "bytes", "sha256"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "enum": ["release-notes.md", "wholeloop-native.tar.gz", "wholeloop-npm.tgz", "wl.mjs"]
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 134217728
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    }
+  }
+}
