@@ -20,10 +20,15 @@
   disable alternate tool/agent/MCP/hook surfaces through private worker policy.
   Refuse existing managed settings, preserve system defaults and native trust/auth,
   and never substitute confirmation grants for a positive registry restriction.
+- ⛔ `headless-antigravity-ready` — hold AGY assignments until bounded reported
+  initialization names only the selected read tools/workspace and strict native
+  permissions. Use a private observer/hook and one fresh matching successful turn;
+  missing/refused readiness never receives a bootstrap prompt or counts as evidence.
 
 Plan a gate first. Verification requires its actual once-per-round suite before
 read-only fan-out. Select headless explicitly and use an available recipe; current
-local recipes cover claude, codex, opencode, copilot, cursor and gemini. Run `wl fanout run review|verify --for
+local recipes cover all seven clients; AGY requires read-only init before input.
+Run `wl fanout run review|verify --for
 <id> --engine headless --adapter <client> --json`. Apply no automatic repair or
 budget reset. A failed round needs the existing explicit gate planning path.
 

@@ -46,7 +46,7 @@ are a separate bounded report input below, never inferred from these rows.
 | `opencode` | rendered | rendered | `native-and-git-fallback` | `deny-shell-and-edit` | `headless` · `sequential` | unverified |
 | `copilot` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `headless` · `sequential` | unverified |
 | `gemini` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `sequential` · `headless` | unverified |
-| `antigravity` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `sequential` | unverified |
+| `antigravity` | rendered | rendered | `native-and-git-fallback` | `read-tool-allowlist` | `sequential` · `headless` | unverified |
 | `cursor` | rendered | rendered | `native-and-git-fallback` | `native-readonly` | `headless` · `sequential` | unverified |
 <!-- platforms:end -->
 
@@ -364,6 +364,14 @@ activation remain separate owner actions. The framing runner uses one fresh JSON
 user event with stream-json input/output; FIXTURE_PASS remains simulation.
 Actual agy 1.4.2 version/help ran. Agent listing failed to bind a local port in the
 execution sandbox, so native loading, policy and model execution remain unverified.
+Gate fanout has a separate conditional AGY observer: private read-only primary
+agent/hook policy, native sandbox and JSONL input/output. It sends no assignment
+until a bounded init reports the exact worker and only read tools under strict
+permissions. Actual pre-input init ordering and native activation remain unverified;
+clients waiting for a prompt first time out without receiving one. This recipe
+does not establish a native model pass or replace the writable framing scenario.
+See [ADR-0072](../decisions/0072-antigravity-startup-gated-observer-workers.md).
+
 See [ADR-0055](../decisions/0055-antigravity-native-overlays-and-pinned-hook-transport.md)
 and the [manual checklist](../../roadmap/manual-verification.md).
 

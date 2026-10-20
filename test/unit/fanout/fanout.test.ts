@@ -29,11 +29,13 @@ const defect: GateFinding = {
 }
 const worker = `#!/usr/bin/env node
 const fs=require('node:fs')
+const format=process.env.WL_FIXTURE_FORMAT
+if(format==='antigravity')console.log(JSON.stringify({event:'init',conversation_id:'fixture-session',init:{cwd:process.cwd(),tools:['view_file','grep_search'],permission_mode:'request-review'}}))
 let raw=''
 process.stdin.on('data',chunk=>raw+=chunk)
 process.stdin.on('end',()=>{
- const a=JSON.parse(raw),mode=process.env.WL_FIXTURE_MODE
- const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:process.env.WL_FIXTURE_FORMAT==='opencode'?JSON.parse(process.env.OPENCODE_PERMISSION):undefined,cursorPolicy:process.env.WL_FIXTURE_FORMAT==='cursor'?JSON.parse(fs.readFileSync('.cursor/cli.json','utf8')):undefined,cursorHooks:process.env.WL_FIXTURE_FORMAT==='cursor'?fs.existsSync('.cursor/hooks.json'):undefined,geminiPolicy:process.env.WL_FIXTURE_FORMAT==='gemini'?JSON.parse(fs.readFileSync(process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH,'utf8')):undefined})+'\\n')}
+ const received=JSON.parse(raw),a=format==='antigravity'?JSON.parse(received.message.content):received,mode=process.env.WL_FIXTURE_MODE
+ const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:process.env.WL_FIXTURE_FORMAT==='opencode'?JSON.parse(process.env.OPENCODE_PERMISSION):undefined,cursorPolicy:process.env.WL_FIXTURE_FORMAT==='cursor'?JSON.parse(fs.readFileSync('.cursor/cli.json','utf8')):undefined,cursorHooks:process.env.WL_FIXTURE_FORMAT==='cursor'?fs.existsSync('.cursor/hooks.json'):undefined,geminiPolicy:process.env.WL_FIXTURE_FORMAT==='gemini'?JSON.parse(fs.readFileSync(process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH,'utf8')):undefined,agyAgent:format==='antigravity'?fs.readFileSync('.agents/agents/'+process.argv[process.argv.indexOf('--agent')+1]+'.md','utf8'):undefined})+'\\n')}
  log('start')
  if(mode==='crash' || (mode==='crash-vote' && a.role==='refute'))process.exit(7)
  if(mode==='timeout'){process.on('SIGTERM',()=>{});setInterval(()=>{},1000);return}
@@ -44,8 +46,8 @@ process.stdin.on('end',()=>{
   const envelope={schema:'wholeloop/headless-result@1',assignment:mode==='wrong'?'different':a.assignment,run:a.run,round:a.round,[a.role==='inspect'?'result':'vote']:result}
   const text=mode==='malformed'?'not JSON':JSON.stringify(envelope)
   log('end')
-  const format=process.env.WL_FIXTURE_FORMAT
-  if(format==='claude')process.stdout.write(JSON.stringify({is_error:false,result:text}))
+  if(format==='antigravity')console.log(JSON.stringify({event:'result',result:{conversation_id:'fixture-session',status:'SUCCESS',num_turns:1,response:text}}))
+  else if(format==='claude')process.stdout.write(JSON.stringify({is_error:false,result:text}))
   else if(format==='codex'){console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text}}));console.log(JSON.stringify({type:'turn.completed'}))}
   else if(format==='gemini')process.stdout.write(JSON.stringify({response:text,session_id:'fixture-session'}))
   else if(format==='cursor')process.stdout.write(JSON.stringify({type:'result',subtype:'success',is_error:false,result:text}))
@@ -127,6 +129,45 @@ async function fixture(
 }
 
 describe('bounded headless gate processes', () => {
+  it('starts no client when native encoding exceeds the assignment wire budget', () =>
+    fixture(async ({ dir, engine, plan, adapter, env }) => {
+      const sentinel = join(dir, 'encoded-input-must-not-launch')
+      const oversized: HeadlessAdapter = {
+        ...adapter,
+        input: () => 'x'.repeat(2 * 1024 * 1024 + 1),
+        invocation: () => ({
+          command: process.execPath,
+          args: [
+            '-e',
+            `require('node:fs').writeFileSync(${JSON.stringify(sentinel)},'unexpected')`,
+          ],
+        }),
+      }
+      expect(
+        (await runHeadless(engine, plan.subject, 'review', { adapter: oversized, env })).status,
+      ).toBe('FAIL')
+      expect(existsSync(sentinel)).toBe(false)
+    }))
+  it('delivers no Antigravity assignment when its reported initialization contains a writer', () =>
+    fixture(async ({ dir, engine, plan, env }) => {
+      const bin = join(dir, 'agy-bin'),
+        sentinel = join(dir, 'agy-must-not-receive')
+      mkdirSync(bin)
+      writeFileSync(
+        join(bin, 'agy'),
+        `#!${process.execPath}\nprocess.stdin.on('data',()=>require('node:fs').writeFileSync(${JSON.stringify(sentinel)},'unexpected'));console.log(JSON.stringify({event:'init',conversation_id:'fixture-session',init:{cwd:process.cwd(),tools:['view_file','write_to_file'],permission_mode:'request-review'}}));setInterval(()=>{},1000)\n`,
+        { mode: 0o700 },
+      )
+      const result = await runHeadless(engine, plan.subject, 'review', {
+        adapter: headlessAdapter('antigravity'),
+        env: { ...env, PATH: `${bin}:${process.env.PATH}` },
+        timeoutMs: 3000,
+      })
+      expect(result.status).toBe('FAIL')
+      expect(result.workers.length).toBeGreaterThan(0)
+      expect(result.workers.every((worker) => worker.status === 'crashed')).toBe(true)
+      expect(existsSync(sentinel)).toBe(false)
+    }))
   it('starts no Gemini client when the effective host environment selects managed settings', () =>
     fixture(async ({ dir, engine, plan, env }) => {
       const bin = join(dir, 'gemini-bin'),
@@ -381,13 +422,13 @@ describe('bounded headless gate processes', () => {
         expect(() => new HeadlessHost(engine, { adapter, ...options })).toThrow(/concurrency/)
       expect(() => headlessAdapter('unimplemented')).toThrow(/unimplemented/)
     }))
-  it.each(['claude', 'codex', 'opencode', 'copilot', 'cursor', 'gemini'])(
+  it.each(['claude', 'codex', 'opencode', 'copilot', 'cursor', 'gemini', 'antigravity'])(
     'executes compiled %s dispatch through a synthetic client on PATH',
     (id) =>
       fixture(async ({ dir, engine, plan }) => {
         const bin = join(dir, 'bin')
         mkdirSync(bin)
-        const executable = id === 'cursor' ? 'agent' : id
+        const executable = id === 'cursor' ? 'agent' : id === 'antigravity' ? 'agy' : id
         writeFileSync(join(bin, executable), worker)
         chmodSync(join(bin, executable), 0o700)
         const result = spawnSync(
@@ -438,6 +479,11 @@ describe('bounded headless gate processes', () => {
         for (const row of starts) {
           expect(row.cwd).not.toBe(engine.root)
           expect(row.args.some((arg: string) => arg.includes('headless-assignment'))).toBe(false)
+          if (id === 'antigravity') {
+            expect(row.agyAgent).toContain('tools: [view_file, grep_search]')
+            expect(row.agyAgent).toContain('commandExecutionPolicy: "off"')
+            expect(row.agyAgent).toContain('model: inherit')
+          }
           if (id === 'gemini') {
             expect(row.geminiPolicy.tools.core).toContain('read_file')
             expect(row.geminiPolicy.admin.mcp.enabled).toBe(false)

@@ -131,7 +131,10 @@ export class HeadlessHost implements GateHost {
         instructions:
           'Inspect only the assigned repository evidence. Read repository instructions and use read-only inspection only. Do not edit, run suites, use network/MCP, submit state or ask questions. Return one JSON object matching response; use actual evidence, and unavailable/uncertain when observation is missing. The schema object under result/vote describes that field, not its value.',
       }
-      const input = JSON.stringify(payload)
+      const assignmentInput = JSON.stringify(payload)
+      if (Buffer.byteLength(assignmentInput) > 2 * 1024 * 1024)
+        throw new Error('Headless assignment exceeds 2 MiB; narrow the review')
+      const input = this.options.adapter.input?.(assignmentInput) ?? assignmentInput
       if (Buffer.byteLength(input) > 2 * 1024 * 1024)
         throw new Error('Headless assignment exceeds 2 MiB; narrow the review')
       const environment = { ...process.env, ...this.options.env }
@@ -147,6 +150,7 @@ export class HeadlessHost implements GateHost {
         timeoutMs: this.timeoutMs,
         signal: this.controller.signal,
         env: { ...environment, ...invocation.env },
+        ...(invocation.readyLine ? { readyLine: invocation.readyLine } : {}),
       })
       let status: string = observed.status
       let value: GateResult | GateVote | undefined

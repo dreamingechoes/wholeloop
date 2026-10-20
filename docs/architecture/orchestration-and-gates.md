@@ -3,7 +3,7 @@
 > **TL;DR** — Eight short agent roles do the work. They run on whichever **engine** the CLI supports best — native subagents, headless worker processes, or one after another — and the result is the same, because everything that decides (lens sets, thresholds, round caps, aggregation) lives in the core, not in the engine.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with Claude/Codex/OpenCode/Copilot/Cursor/Gemini recipes are implemented locally; actual client engines and read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
+> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with seven client recipes (AGY conditional on pre-input read-only initialization) are implemented locally; actual client engines and read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
 
 ---
 
@@ -76,10 +76,10 @@ wl gate plan review --for review-01234567 --repo . --base main --json
 wl fanout run review --for review-01234567 --engine headless --adapter codex --concurrency 4 --timeout 120 --json
 ```
 
-Current recipes support claude, codex, opencode, copilot, cursor and gemini. They were checked
+Current local recipes cover all seven clients, with an explicit AGY readiness condition. They were checked
 against installed help and primary documentation, then executed with synthetic
-PATH clients; no real model conformance is claimed. The Antigravity
-recipe remains unimplemented. Native/sequential SDK hosts are available independently.
+PATH clients; no real model conformance is claimed. AGY additionally requires a
+reported read-only init before any assignment is sent. Native/sequential SDK hosts are available independently.
 
 Each assignment gets a separate process, session and external-store directory.
 Prompts travel through stdin, with the exact pinned patch/rubric and suite metadata
@@ -96,7 +96,7 @@ the run and preserve edits. A failed round retains its ordinary budget and needs
 explicit gate planning rather than an automatic repair or reset.
 
 The transport stores worker status/exit metadata under `fanout/<run>/<round>/`;
-it retains no prompt bodies or raw stdout/stderr. Client-owned internal logs and
+it retains no assignment bodies or raw stdout/stderr. Client-owned internal logs and
 managed policy still need live review. Decided rounds return cached verdicts;
 undecided rounds skip recorded units/votes. A round ownership lock prevents two
 conductors from spawning the same round concurrently. Inspect its owner.json and
@@ -155,6 +155,30 @@ only four read/search tools; no model or authentication initialized. Actual nati
 activation, inherited include roots, logs/updaters and external effects remain
 owner checks. See
 [ADR-0071](../decisions/0071-gemini-observer-registry-and-private-policy.md).
+
+Antigravity uses a uniquely named private primary observer with only view_file
+and grep_search, shell execution off, no subagent/MCP/skill/plugin attachment,
+inherited model and native sandbox. A private non-granting read/search hook denies
+mutations, unknown tools, invalid workspace context and external linked reads.
+Existing native settings, HOME, trust and authentication are not replaced.
+
+Its native workspace writes are allowed by default, so the process transport holds
+the assignment until a bounded first-line init reports the exact worker cwd,
+unique read-only tool names and request-review/strict permission mode. No prompt
+is sent before that check. Missing/refused/malformed initialization, cancellation
+or timeout produces an unavailable worker. If a client waits for a prompt before
+emitting init, this recipe deliberately remains unavailable; do not send a probe
+prompt or permission bypass. Actual AGY 1.4.2 pre-input init remains unverified.
+Native startup hooks and service-side effects are not fully isolated by this check.
+
+After readiness, send one documented JSONL user event and require one fresh matching
+SUCCESS result with one turn and consistent conversation IDs. Reject mixed/failed
+streams rather than use an earlier response. Bound both logical and encoded input
+and keep existing process/output/cancellation limits. Named private agent/hook files
+share whole-batch ancestor preflight and private modes with the other recipes.
+Actual agent/hook loading, reported tools, inherited policy, native logs/updaters
+and models remain owner checks. See
+[ADR-0072](../decisions/0072-antigravity-startup-gated-observer-workers.md).
 
 These settings and snapshot checks do not prove the absence of ignored/transient
 writes, managed-hook effects or external side effects. See

@@ -60,7 +60,7 @@ scenario remain owner checks. See ADR-0057; these checks do not block P5-03.
 
 ## P5-03 · Headless fan-out engine
 
-**Status:** 🔄 · **Size:** L · **Depends on:** P3-03
+**Status:** ⏸️ · **Size:** L · **Depends on:** P3-03
 
 **Goal** — Parallel, isolated gate lenses on any CLI with a headless mode.
 
@@ -85,11 +85,16 @@ experimental and built-in delegation disabled. Refuse existing managed settings,
 retain original system defaults and native trust/auth/model choices, and decode
 only successful native JSON. Actual 0.27.0 metadata/registry checks expose only four
 read/search tools in an explicitly untrusted credential-free fixture. Synthetic
-compiled transport passes; actual model conformance remains open. Antigravity's
-recipe remains separate work; sequential execution is available in the meantime.
+compiled transport passes; actual model conformance remains open. Antigravity now has a conditional private primary observer/read-only hook and
+bounded JSONL startup readiness before assignment delivery. Only exact worker cwd,
+read tools and strict permission modes proceed to one fresh matching successful
+turn. Clients that need input before init remain unavailable; actual AGY 1.4.2
+startup ordering/agent/hook/model conformance remain owner checks. All seven local
+recipes are implemented with their stated conditions; sequential fallback remains
+available without granting a readiness bypass.
 Neither gap blocks independent local generator/guard implementation.
 
-**Docs** — architecture/orchestration-and-gates, ADR-0006, ADR-0046, ADR-0058, ADR-0060, ADR-0071.
+**Docs** — architecture/orchestration-and-gates, ADR-0006, ADR-0046, ADR-0058, ADR-0060, ADR-0071, ADR-0072.
 
 ## P5-04 · Nightly conformance and the generated matrix
 

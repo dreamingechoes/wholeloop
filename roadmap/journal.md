@@ -4,6 +4,11 @@
 
 ---
 
+## 2026-10-20 · P5-03 Antigravity workers — read-only initialization before assignment
+
+- Add a private uniquely named primary observer/read-only hook and native sandbox with inherited model/auth and no personal settings changes. Because native workspace writes are auto-allowed, require bounded reported init with exact worker/read tools/strict permission mode before delivering any assignment. Add optional process readiness while preserving immediate input for other recipes, total bounds and cancellation; bound encoded input too. ADR-0072 records the deliberately fail-closed pre-input condition.
+- Share the existing JSONL user-event shape with framing conformance and require one matching fresh SUCCESS result, consistent conversation IDs and one turn. Extend only named nested private policy paths with complete ancestor preflight. The native golden change is the additive headless capability. First focused checks passed 121 cases in seven files; the extended process suites passed 116 cases in six files with refusal/encoded-budget sentinels. Full local check passed 1286 tests in 70 files (221.86 seconds), the actual isolated npm package PASS receipt, build/smoke, lint/typecheck, generated references/catalogs, 247-file docs, 142-file harness, 246-file Markdown and all 35 Mermaid diagrams. Existing v1 declarations/signatures remain unchanged; park P5-03 after its local recipes while actual native parity/acceptance awaits owner evidence. Actual AGY 1.4.2 pre-input init, agent/hook activation and models remain unverified; clients that wait for a prompt first must remain unavailable. No actual AGY process/model/authenticated service, CI/issue operation, personal configuration, publication, version/privacy/ref/tag change or project push ran.
+
 ## 2026-10-20 · P5-03 Gemini workers — positive core registry and preserved managed policy
 
 - Add private worker-only system policy with positive read/list/glob/search core tools and disabled MCP/extensions/skills/hooks/discovered commands, experimental plan/agents and both built-in delegators. Keep model/auth/HOME/trust in place. Refuse existing/default managed settings, retain original/custom absolute system defaults and reject native comma/newline path ambiguity. Decode only successful native JSON. ADR-0071 records the boundary.

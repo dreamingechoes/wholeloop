@@ -1,4 +1,5 @@
 import { basename, dirname } from 'node:path'
+import { antigravityInput } from '../adapters/antigravity-input.js'
 import type { PreparedConformance, Scenario } from './contracts.js'
 
 export function conformanceBinary(target: string) {
@@ -135,7 +136,5 @@ export function conformanceEnvironment(
 /** Antigravity accepts a documented JSONL user event rather than an assumed plain stdin prompt. */
 export function conformanceInput(run: PreparedConformance, scenario: Scenario): string {
   const prompt = conformancePrompt(run, scenario)
-  return run.target === 'antigravity'
-    ? `${JSON.stringify({ event: 'user', message: { content: prompt } })}\n`
-    : prompt
+  return run.target === 'antigravity' ? antigravityInput(prompt) : prompt
 }

@@ -14,7 +14,7 @@ export const antigravityAdapter: Adapter = {
     agents: 'rendered',
     hooks: 'native-and-git-fallback',
     readOnly: 'read-tool-allowlist',
-    engines: ['sequential'],
+    engines: ['sequential', 'headless'],
   }),
   name: (_kind, name) => `wl-agy-${name}`,
   paths: (kind, name) =>

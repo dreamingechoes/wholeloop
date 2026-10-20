@@ -1,4 +1,5 @@
 import { isObject } from '../config/schema.js'
+import { antigravityWorker } from './antigravity.js'
 import { copilotWorker } from './copilot.js'
 import { cursorWorker } from './cursor.js'
 import { geminiWorker } from './gemini.js'
@@ -12,7 +13,9 @@ export interface HeadlessAdapter {
     args: string[]
     env?: NodeJS.ProcessEnv
     files?: ReadonlyMap<WorkerPolicyFile, string>
+    readyLine?: (line: string) => boolean
   }
+  input?(assignment: string): string
   response(stdout: string, directory: string): string
 }
 /** These recipes are help-probed boundaries, not a claimed authenticated conformance pass. */
@@ -21,6 +24,7 @@ export function headlessAdapter(id: string): HeadlessAdapter {
   if (id === 'copilot') return copilotWorker
   if (id === 'cursor') return cursorWorker
   if (id === 'gemini') return geminiWorker
+  if (id === 'antigravity') return antigravityWorker
   if (id === 'claude')
     return {
       id,
@@ -107,6 +111,6 @@ export function headlessAdapter(id: string): HeadlessAdapter {
       },
     }
   throw new Error(
-    'Headless recipes currently support claude|codex|opencode|copilot|cursor|gemini; other adapters remain unimplemented',
+    'Headless recipes currently support claude|codex|opencode|copilot|cursor|gemini|antigravity; other adapters remain unimplemented',
   )
 }
