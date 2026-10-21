@@ -3,7 +3,7 @@
 > **TL;DR** — Everything about `wholeloop`, from why it exists to how each step works and how to extend it. Read [concepts](./concepts.md) first; everything else assumes its vocabulary.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local core, all thirteen step contracts, artifacts for all seven clients, managed installation, conformance tooling and reviewed-bundle release automation are implemented. Native-client/model checks, scheduled activation, headless acceptance and release activation remain open. Remote integrations are **experimental · fixture-tested · service-unverified**; real-service certification is deferred under [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md). Missing Amplitude dashboard bridge code remains separate. Progress and owner checks: [roadmap](../roadmap/README.md) · [manual verification](../roadmap/manual-verification.md).
+> **Status: 🚧 partial.** The local core, all thirteen step contracts, artifacts for all seven clients, managed installation, conformance tooling and reviewed-bundle release automation are implemented. Native-client/model checks, scheduled activation, headless acceptance and release activation remain open. Remote integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md). [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md) prioritizes client MCP and retains existing HTTP bridges as explicit options, without requiring further API implementations. Progress: [roadmap](../roadmap/README.md) · [manual verification](../roadmap/manual-verification.md).
 
 ---
 

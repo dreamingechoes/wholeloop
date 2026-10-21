@@ -58,4 +58,11 @@ acceptance remain owner verification. No authenticated service call is performed
 - [PostHog serializer and exact-key filter](https://github.com/PostHog/posthog/blob/master/products/feature_flags/backend/api/feature_flag.py)
 - [PostHog flag model](https://github.com/PostHog/posthog/blob/master/products/feature_flags/backend/models/feature_flag.py)
 
+## Current transport scope
+
+[ADR-0085](./0085-client-owned-mcp-first-provider-transport.md) gives client-owned
+MCP priority and retains this implementation or policy within that scope. Existing
+safety constraints remain in force; a dedicated HTTP bridge per catalogue service
+is not a 1.0 requirement. Missing MCP contracts remain explicit pending work.
+
 [◀ Decisions index](./README.md)

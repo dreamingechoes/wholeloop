@@ -16,7 +16,8 @@ Their authenticated account/API/rendering checks below are deferred certificatio
 not prerequisites for 1.0, and remain unchecked until actually executed. You do not
 need accounts with every listed vendor. This does not waive missing implementation,
 native-client/permission/hook tests, release CI or publication decisions. The
-Amplitude dashboard bridge remains code work rather than a completed integration.
+Amplitude dashboard write remains a pending handoff until its MCP contract is
+known; ADR-0085 removes the requirement for another HTTP implementation.
 
 ## Owner-observed Claude framing and session recovery (2026-10-22)
 
@@ -66,7 +67,7 @@ observed by the structural judge.
 
 ## Remote rollout bridge (P4-05 component)
 
-- [ ] For the remaining Amplitude bridge, use the actual authenticated MCP context/progressive discovery to capture the current create-only dashboard/chart action schema, native project/query/window binding and matching exact-ID readback schema. Public documentation identifies a broad dashboard tool but not its concrete argument/response contract; public REST documentation covers data reads. Preserve non-secret structural captures and permissions only, without tokens/private chart prose. This is still unimplemented bridge code awaiting that contract, not a completed feature or a passed owner check.
+- [ ] When Amplitude is actually needed, use client MCP discovery to capture its exact dashboard/chart write and readback contracts. Preserve only non-secret schemas/permissions. Until then, its dashboard operation stays a pending handoff. Under ADR-0085 this is deferred service certification, not a requirement to implement another HTTP host or a 1.0 blocker.
 
 - [ ] In a disposable Mixpanel workspace, verify official regional App API/Bearer access and exact project/workspace inventory before creation. Review actual native Insights query/cohort/time parameters and expected window/timezone, create one private dashboard/owned report deliberately, then check v2 report identity/params, dedicated relationship, privacy/public-link fields and actual rendering. Confirm complete scope/envelope behavior, permission failures and retained partial references without retry. Current responses are synthetic; no actual API/native query/time scope/rendering/traffic/Linux acceptance is established.
 

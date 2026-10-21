@@ -3,7 +3,7 @@
 > **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash, GrowthBook and PostHog have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Remote integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). LaunchDarkly/Unleash/GrowthBook/PostHog readers and Grafana/PostHog/Metabase/Mixpanel create-only hosts are implemented and fixture-tested. Authenticated service certification is optional after 1.0; the Amplitude dashboard host still lacks its concrete contract and implementation. Native-client and platform acceptance remain separate.
+> **Status: 🚧 partial.** Remote integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). The existing four HTTP flag readers and four HTTP dashboard hosts are retained opt-in implementations. [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md) prioritizes client MCP and freezes further API expansion without a concrete justified gap. Missing Amplitude MCP contracts retain pending handoffs; no dedicated HTTP bridge is required for 1.0. Native-client and platform acceptance remain separate.
 
 ---
 

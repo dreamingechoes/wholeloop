@@ -65,4 +65,11 @@ deprecated-field support, query/rendering/traffic and Linux remain owner checks.
 - [PostHog insight serializer](https://github.com/PostHog/posthog/blob/master/products/product_analytics/backend/presentation/insight.py)
 - [PostHog query contract](https://github.com/PostHog/posthog/blob/master/frontend/src/queries/schema/schema-general.ts)
 
+## Current transport scope
+
+[ADR-0085](./0085-client-owned-mcp-first-provider-transport.md) gives client-owned
+MCP priority and retains this implementation or policy within that scope. Existing
+safety constraints remain in force; a dedicated HTTP bridge per catalogue service
+is not a 1.0 requirement. Missing MCP contracts remain explicit pending work.
+
 [◀ Decisions index](./README.md)

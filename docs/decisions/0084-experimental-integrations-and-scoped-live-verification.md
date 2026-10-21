@@ -49,4 +49,11 @@ policy and the unchecked live backlog without changing runtime schemas, credenti
 or service access. Existing safe previews, explicit live selection and write
 authority remain unchanged.
 
+## Current transport scope
+
+[ADR-0085](./0085-client-owned-mcp-first-provider-transport.md) gives client-owned
+MCP priority and retains this implementation or policy within that scope. Existing
+safety constraints remain in force; a dedicated HTTP bridge per catalogue service
+is not a 1.0 requirement. Missing MCP contracts remain explicit pending work.
+
 [◀ Decisions index](./README.md)

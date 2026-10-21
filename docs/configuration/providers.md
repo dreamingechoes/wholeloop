@@ -3,7 +3,7 @@
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). Registry, manifests, native/local defaults, eight destination contracts, eleven source mappings and fourteen rollout fixture bindings are implemented. Four remote flag readers and four create-only dashboard hosts are tested with synthetic responses. The Amplitude dashboard bridge remains unimplemented; a manifest or local handoff is not a remote object. Actual service certification is deferred and does not block 1.0. Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1).
+> **Status: 🚧 partial.** Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). Registry, manifests, local/native defaults and destination/source/rollout fixture contracts are implemented. [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md) prioritizes client-owned MCP; that routing migration is in progress. Four HTTP flag readers and four HTTP dashboard hosts remain explicit experimental options. Amplitude retains a pending dashboard handoff, not a 1.0 requirement for another HTTP implementation. Real-service certification is deferred.
 
 ---
 
@@ -62,7 +62,7 @@ A step never names a vendor, so swapping Confluence for Notion, or adding Zendes
 | LaunchDarkly · Unleash · GrowthBook · PostHog | Explicit REST readers/normalizers and stored unapplied proposals, tested with synthetic responses | Optional authenticated service and real cohort certification |
 | Config-file flags | Contained explicit JSON reads and unapplied proposals | A person changes configuration through normal review |
 | PostHog · Mixpanel · Metabase · Grafana | Explicit create-only dashboard hosts with exact readback and metric-linked handoffs, tested with synthetic responses | Optional real service, query/window and rendering certification |
-| Amplitude dashboards | Manifest and exact-metric pending handoff with source pointers | Native create/readback bridge code; optional live certification comes afterwards |
+| Amplitude dashboards | Manifest and exact-metric pending handoff with source pointers | Known client MCP write contract and optional live certification; no HTTP host required |
 | Datadog · Grafana stack | Declared read-only query tool mappings and offline fixtures | Actual roster, site/datasource, auth and complete scalar normalization |
 | Figma | Official remote context-read mapping and offline fixture | Actual client access and referenced design observations |
 
@@ -104,8 +104,9 @@ our normalized fixtures. The Grafana recipe is a pinned read-only Prometheus/Lok
 container invocation; it was not pulled or run. Keep credentials in the host's
 credential store and pass environment names rather than secret values in recipes.
 
-P4-05 stays partial for the missing Amplitude dashboard bridge. Per-vendor live
-certification remains optional under ADR-0084 and is not a 1.0 prerequisite.
+P4-05 is implementing MCP-first selection under ADR-0085. A dedicated Amplitude
+HTTP bridge is no longer a prerequisite. Per-vendor live certification remains
+optional under ADR-0084 and is not a 1.0 prerequisite.
 [ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md)
 explains why local handoffs remain explicit instead of fabricated integrations.
 

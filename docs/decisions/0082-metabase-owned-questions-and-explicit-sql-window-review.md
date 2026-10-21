@@ -65,4 +65,11 @@ scope, normalization/rendering and Linux remain owner verification.
 - [Metabase API setup examples](https://www.metabase.com/articles/set-up-metabase-from-code-with-the-api)
 - [Metabase v0.64.1 card API contract](https://github.com/metabase/metabase/blob/v0.64.1/src/metabase/queries_rest/api/card.clj)
 
+## Current transport scope
+
+[ADR-0085](./0085-client-owned-mcp-first-provider-transport.md) gives client-owned
+MCP priority and retains this implementation or policy within that scope. Existing
+safety constraints remain in force; a dedicated HTTP bridge per catalogue service
+is not a 1.0 requirement. Missing MCP contracts remain explicit pending work.
+
 [◀ Decisions index](./README.md)

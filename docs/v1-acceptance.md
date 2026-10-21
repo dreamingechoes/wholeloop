@@ -18,8 +18,9 @@ The owner accepted the integration policy in [ADR-0084](./decisions/0084-experim
 Do not turn unexecuted service checks into passed checks. Later promotion names
 the actual service/version, operations, permissions, date and limitations; it is
 not a claim that every vendor feature has been tested. Missing implementation is
-still missing implementation: Amplitude currently has a dashboard manifest/local
-handoff, not the concrete create/readback bridge.
+still missing implementation. Under [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md),
+Amplitude's dashboard operation remains a pending handoff until a known MCP
+contract is supplied; a dedicated HTTP bridge is not a 1.0 requirement.
 
 The full roadmap includes all seven native clients. Accepting Claude alone would
 be a separate scope change, not a consequence of experimental service integrations.
@@ -63,7 +64,7 @@ Keep these separate from owner approval:
 - Preserve owner-approved conditions without turning challenger suggestions into decisions.
 - Review the exact final semantic draft, or explicitly record that it remains unreviewed.
 - Diagnose automatic client failures rather than interpreting exit zero as a scenario pass.
-- Implement the missing Amplitude bridge, or obtain an explicit decision to defer that operation. Experimental labelling alone does not complete its code.
+- Finish and test MCP-first transport routing. Preserve unknown tool contracts as pending; do not build another HTTP bridge merely to complete the vendor catalogue.
 
 The existing stored fictitious framing is evidence of the defect; do not overwrite
 its history to make the old trial appear to have passed.
@@ -210,7 +211,7 @@ These rows describe closure evidence, not sixteen tests the owner must run alone
 | P1-14 | Real standalone scenario passes all four tier-A clients | Native access when blocked |
 | P3-08 | Actual tier-A hook payloads and guard behavior verified | Trust/permission decisions |
 | P4-01 | Launcher lacks a sending tool in each adapter | Review actual capability inventory |
-| P4-05 | Remaining Amplitude dashboard bridge implemented | Concrete contract access if available; otherwise an explicit deferral decision |
+| P4-05 | MCP-first routing and explicit degradation pass; HTTP stays opt-in | Review real MCP contracts when service access becomes available |
 | P5-01 | Real scenario passes Gemini and Antigravity | Native access when blocked |
 | P5-02 | Cursor real scenario and readonly behavior pass | Native access when blocked |
 | P5-03 | One actual conformance run establishes engine verdict parity | Model access and allowance |
@@ -218,9 +219,9 @@ These rows describe closure evidence, not sixteen tests the owner must run alone
 | P5-05 | Reviewed distribution, approved visibility, fresh-machine timing and clean notes | Publication/ownership decision |
 | P5-07 | Actual 1.0 tag and announcement after remaining acceptance | Final release approval |
 
-P4-05's original fixture checkboxes are already checked while bridge code is
-explicitly incomplete. Counting unchecked boxes alone therefore understates the
-remaining work. Service-account certification is a deferred backlog, not one more
+P4-05's original fixture checkboxes were already checked; its current migration
+adds explicit MCP-first routing acceptance instead of requiring more HTTP hosts.
+Service-account certification is a deferred backlog, not one more
 release gate for every vendor. Other robustness cases in the manual backlog
 document limitations and follow-up scope rather than silently expanding the task
 table into hundreds of owner-only release prerequisites.

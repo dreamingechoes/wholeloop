@@ -73,7 +73,7 @@ criterion does not block dependent local rollout implementation.
 
 ## P4-05 · Rollout providers
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P1-08
+**Status:** 🔄 · **Size:** L · **Depends on:** P1-08
 
 **Goal** — The launch and ramp steps work with the tools teams actually use.
 
@@ -83,6 +83,7 @@ criterion does not block dependent local rollout implementation.
 
 - [x] No manifest can map a send or toggle verb (validated).
 - [x] Each provider passes `wl provider test` with fixtures.
+- [ ] Client-owned MCP takes priority for known observed tools; missing contracts retain explicit degradation, and HTTP requires explicit selection without exception-triggered fallback (ADR-0085).
 
 **Local implementation:** offline fixtures cover every declared operation of all
 fourteen targets; native unsent drafts, unapplied proposals, config-file reads and
@@ -107,11 +108,13 @@ one dashboard-owned native SQL question with exact classic-query/attachment
 readback and explicit unverified owner-reviewed time scope; PostHog now has
 explicit project/timezone preconditions, dashboard/insight creation, exact attachment
 readback and retained pending references for known partial outcomes;
-local dashboard output is explicitly pending. Park P4-05 partial while the final
-Amplitude host awaits its concrete create/readback schema. Authenticated per-vendor
-certification is deferred under ADR-0084 and does not block 1.0, but the missing
-bridge implementation remains code work. Public generic tool names are not that contract. Local launch/ramp/sync/grounding
-workflows remain available while that dependency is open. See the manual checklist, ADR-0042, ADR-0076, ADR-0077, ADR-0078, ADR-0079, ADR-0080, ADR-0081, ADR-0082 and ADR-0083.
+local dashboard output is explicitly pending. ADR-0085 removes the obligation to
+implement more HTTP hosts: Amplitude remains a pending dashboard handoff until a
+known MCP contract is supplied, without claiming remote creation. Existing HTTP
+hosts remain explicit experimental options. The current change implements and
+tests MCP-first selection and no automatic HTTP fallback. Authenticated per-vendor
+certification remains deferred under ADR-0084. See the manual checklist, ADR-0042
+and the retained optional transport contracts ADR-0076 through ADR-0083.
 
 **Docs** — configuration/providers.
 

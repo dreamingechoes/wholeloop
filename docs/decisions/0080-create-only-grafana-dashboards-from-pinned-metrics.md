@@ -62,4 +62,11 @@ normalization, datasource/PromQL/rendering and Linux acceptance remain owner che
 
 - [Grafana dashboard v1 HTTP API](https://grafana.com/docs/grafana/latest/developer-resources/api-reference/http-api/dashboard/)
 
+## Current transport scope
+
+[ADR-0085](./0085-client-owned-mcp-first-provider-transport.md) gives client-owned
+MCP priority and retains this implementation or policy within that scope. Existing
+safety constraints remain in force; a dedicated HTTP bridge per catalogue service
+is not a 1.0 requirement. Missing MCP contracts remain explicit pending work.
+
 [◀ Decisions index](./README.md)

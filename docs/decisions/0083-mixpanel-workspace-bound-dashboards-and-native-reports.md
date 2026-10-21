@@ -67,4 +67,11 @@ owner verification.
 - [Official App API contracts at the inspected revision](https://github.com/mixpanel/mixpanel-headless/blob/fbed0c596f6856a705e54ef528c03e943527410d/src/mixpanel_headless/_internal/api_client.py)
 - [Official request/response models at that revision](https://github.com/mixpanel/mixpanel-headless/blob/fbed0c596f6856a705e54ef528c03e943527410d/src/mixpanel_headless/types.py)
 
+## Current transport scope
+
+[ADR-0085](./0085-client-owned-mcp-first-provider-transport.md) gives client-owned
+MCP priority and retains this implementation or policy within that scope. Existing
+safety constraints remain in force; a dedicated HTTP bridge per catalogue service
+is not a 1.0 requirement. Missing MCP contracts remain explicit pending work.
+
 [◀ Decisions index](./README.md)

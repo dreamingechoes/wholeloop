@@ -4,6 +4,11 @@
 
 ---
 
+## 2026-10-22 · Provider direction — client-owned MCP first
+
+- The owner explicitly authorized MCP-first routing, optional existing HTTP transports, no automatic fallback and a halt to per-vendor API expansion. Record ADR-0085 without rewriting Git history or invalidating the retained bridges' safety contracts. Preserve their accepted technical records as optional implementations; the new decision replaces only the obligation to add more HTTP hosts.
+- Start the P4-05 transport migration with an explicit unchecked acceptance criterion. Amplitude's missing direct HTTP dashboard host no longer blocks 1.0; its current handoff is still pending rather than a claimed MCP write. Keep service-unverified labels, native-client checks and all experimental HTTP tests. The implementation will expose deterministic transport planning and a client-owned host boundary, then test routing and update current guidance before closing the item.
+
 ## 2026-10-22 · Native trials — exact inputs and compatible invocation
 
 - Run owner-authorized real standalone framing trials on installed Codex 0.163.0, OpenCode 2.1.1, Copilot 1.0.83, Gemini 0.27.0, Antigravity 1.4.4 and Cursor 2026.07.16-899851b. Preserve all six initial failures externally. Codex completed the workflow but its input gained a period appended by the scenario prompt; replace ambiguous prose with exact JSON-string input/owner values instead of weakening the judge. A fresh actual Codex trial passed with no missing events/problems on core digest prefix 04fe3f55; retain that exact core and receipt externally.
