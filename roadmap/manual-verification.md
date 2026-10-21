@@ -6,6 +6,10 @@
 
 ## How to use this backlog
 
+Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
+commands, passing results and who does each part. This page retains detailed
+regressions and limitations rather than assigning every item to the owner.
+
 Remote service integrations are **experimental · fixture-tested ·
 service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md).
 Their authenticated account/API/rendering checks below are deferred certification,

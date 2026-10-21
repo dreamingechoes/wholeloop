@@ -15,6 +15,26 @@ local harness. Actual service certification is deferred; unavailable bridge code
 is identified separately in the [provider catalogue](./docs/configuration/providers.md).
 Native-client compatibility has its own checks and is not implied by provider tests.
 
+## Try the local build and finish acceptance
+
+From this checkout with a compatible development Node version (verified here on
+Node 24.22.0):
+
+```bash
+npm ci
+npm run build
+node ./dist/wl.mjs --version
+```
+
+Follow [local client setup](./docs/platforms/local-onboarding.md) to install the
+named target. Restart that client and request wl-setup, wl-frame-problem and
+wl-status. The source build needs no global wl command or published npm package.
+
+**What remains before 1.0?** Read the [acceptance runbook](./docs/v1-acceptance.md):
+owner decisions, concrete trial commands, expected results, automatic-client
+checks and the remaining roadmap tasks. The [manual backlog](./roadmap/manual-verification.md)
+holds detailed cases; optional service certification does not block 1.0.
+
 ## Why
 
 Follow two engineers through the life of one feature. One looks at the data first, the other opens the editor. One argues with the model's first answer, the other accepts it. Every review asks different questions, every rollout re-decides the same things from scratch, and a month after launch nobody checks whether the numbers moved. **The model is identical in every one of those moments. The process around it is not** — and a faster tool amplifies whatever process you already have, including the absence of one.

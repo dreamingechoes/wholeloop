@@ -180,4 +180,4 @@ Always legible, in any profile:
 ---
 
 <!-- docnav -->
-[◀ Getting started](getting-started.md)  ·  [📖 Docs index](README.md)  ·  [The flow ▶](flow/README.md)
+[◀ V1 acceptance](v1-acceptance.md)  ·  [📖 Docs index](README.md)  ·  [The flow ▶](flow/README.md)

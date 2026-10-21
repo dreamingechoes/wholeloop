@@ -130,6 +130,13 @@ Use a compatible runtime/package manager and inspect these commands before runni
 them; the current Claude/Copilot npm recipes require Node 22 or newer, while the
 bundled wholeloop core supports Node 20. Native client requirements remain separate.
 
+## Acceptance and remaining owner checks
+
+For concrete trial commands, passing results and responsibility boundaries, use
+[V1 acceptance](./v1-acceptance.md). It separates native clients from experimental
+remote integrations and maps the remaining tasks. The long manual backlog is a
+reference, not a requirement to open accounts with every service.
+
 ## 3. Your first step
 
 Any step works on its own. Three good first runs:
@@ -186,4 +193,4 @@ without a local receipt, but another scope/store cannot automatically adopt owne
 | Questions are plain text, not a picker | your CLI has no structured question tool | expected — answer with the option number |
 
 <!-- docnav -->
-[◀ Philosophy](philosophy.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)
+[◀ Philosophy](philosophy.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)

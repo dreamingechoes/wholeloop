@@ -13,6 +13,7 @@
 2. **[Getting started](./getting-started.md)** — install, check, first run.
 3. **[Concepts](./concepts.md)** — the ten ideas everything else builds on.
 4. **[The flow](./flow/README.md)** — the four blocks and all thirteen steps.
+5. **[V1 acceptance](./v1-acceptance.md)** — what remains, what the owner must confirm, automatic trials and passing results.
 
 ## The steps
 

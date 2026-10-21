@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Acceptance runbook — concrete trials and ownership
+
+- Add one ordered V1 acceptance guide linked from the main README, docs index, getting-started and roadmap/manual entrypoints. Explain core versus native-client versus service versus publication evidence, exact source-built commands, human workflow stops, live runner verdicts, permission/engine probes and the remaining sixteen tasks. Preserve already observed Claude work and identify implementation defects before asking the owner to repeat it.
+- Separate implementation-side fixture execution, failure diagnosis and fixes from owner-only account/trust/model choices, human approvals and publication decisions. Keep deferred remote certification out of the release-critical owner list under ADR-0084, without waiving missing Amplitude code or the full seven-client roadmap. Use direct CLI paths so separate shell executions do not silently lose an exported executable variable.
+- Regenerate docnav from its source list. Documentation/link checks passed 262 files and Markdown lint passed 261 files. The guide does not itself establish any unexecuted native, service, CI or publication result; actual automatic-client findings remain separate evidence.
+
 ## 2026-10-22 · Release scope — experimental service integrations
 
 - The owner explicitly accepted shipping remote integrations as experimental, fixture-tested and service-unverified, then validating actual operations when accounts and needs arise. ADR-0084 records this scope change. Keep native-client conformance, missing code, CI and publication acceptance separate; do not check off unexecuted service tests or promote one successful operation to vendor-wide support.

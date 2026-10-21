@@ -6,6 +6,7 @@ pages:
   - { path: README.md, title: Docs index }
   - { path: philosophy.md, title: Philosophy }
   - { path: getting-started.md, title: Getting started }
+  - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }
   - { path: flow/README.md, title: The flow }
   - { path: flow/define/research.md, title: research }

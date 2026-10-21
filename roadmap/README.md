@@ -5,6 +5,9 @@
 ---
 
 Current manual checks and owner-only actions: [manual verification](./manual-verification.md).
+Start with the [V1 acceptance runbook](../docs/v1-acceptance.md) for executable
+trials, expected results and the distinction between owner decisions,
+implementation work and deferred service certification.
 
 ## Phases
 
