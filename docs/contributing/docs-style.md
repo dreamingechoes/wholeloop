@@ -3,7 +3,7 @@
 > **TL;DR** — Documentation is part of the product, not a by-product. Every page has a status banner, a TL;DR, a predictable structure, Mermaid diagrams in the shared palette, and a generated navigation footer. CI checks all of it.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Enforced on every change by `npm run check`: `wl docs check` (docnav, nav listing, status banners, links, anchors), markdownlint and the Mermaid parse check.
+> **Status: ✅ implemented.** Enforced on every change by `npm run check`: `wl docs check` (docnav, nav listing, status banners, links, anchors, referenced ADR status/supersession), markdownlint and the Mermaid parse check.
 
 ---
 
@@ -26,6 +26,18 @@ Every page starts, after the title and TL;DR, with exactly one of:
 | `✅ implemented` | Matches the released behaviour, verified by tests or conformance runs |
 
 Banners are updated **in the same change** that moves the behaviour.
+
+## Referenced decisions
+
+Every linked numbered ADR and plain ADR-NNNN mention needs exactly one metadata status in the first fifteen
+lines: Accepted, Superseded, Superseded by NNNN, or Superseded by a relative
+Markdown ADR link whose label matches the filename's number. Plain successors must
+resolve uniquely. Successor declarations are checked too; cycles are rejected.
+Missing/proposed/rejected/deprecated, duplicate, late or fenced-example statuses
+fail docs check. Unreferenced draft records may remain Proposed until accepted;
+add the published index/reference when the decision is settled. This enforces
+[P0-07](../../roadmap/phase-0-foundations.md#p0-07--review-and-accept-the-foundational-adrs)
+without claiming that metadata proves agreement with actual native conformance.
 
 ## Generated references
 

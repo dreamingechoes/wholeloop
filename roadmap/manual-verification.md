@@ -87,9 +87,9 @@ model, permission and MCP checks do not block other roadmap code.
 - [ ] Run owner-authorized OIDC publication and verify actual npm provenance, source/tag SHA, stable/prerelease labels, GitHub assets and native download/install. Test partial failure/reconciliation in an owner-controlled disposable publication project; never blindly retry or overwrite an existing release/tag/version. Local logging transports are simulation only.
 - [ ] Register the exported relative marketplace in an isolated real Claude configuration, install wholeloop@wholeloop and confirm all seventeen skills/eight agents, copied core and hook activation after moving the delivery tree. Native strict validation passed locally; it is not installation/discovery.
 - [ ] Test each exported native target with its real client and credential store. Repeat owned output/backup/unknown-file/dry-run/relocation checks on Linux and supported Node/client versions; current automated execution is macOS arm64 only.
-- [ ] Choose public repository visibility and hosting explicitly, verify npm ownership and configure trusted publishing/provenance once release automation is implemented. The local exporter changes neither repository visibility nor package privacy and performs no publication.
+- [ ] Choose public repository visibility and hosting explicitly, verify npm ownership and activate and verify the implemented trusted publication/provenance workflow. The local exporter changes neither repository visibility nor package privacy and performs no publication.
 - [ ] Run release preflight from the actual source checkout with the intended built/package/lock version and genuine CI repository/event context. Inspect blocked reasons and masked index flags without silently clearing personal setup. A ready local consistency plan is neither authenticated context nor permission to publish; actual ownership/OIDC/provenance and release activation remain separate.
-- [ ] Record actual fresh-machine installation time and review release notes without attribution after delivery activation. Run the local release notes draft against the intended exact range, check actual breaking intent/migration guidance and inspect identity-only rejections. Repeat complete-clone/range/refusal behavior on Linux and supported Node releases; draft impact alone does not verify compatibility. Publication automation/provenance and optional compiled binaries remain code work.
+- [ ] Record actual fresh-machine installation time and review release notes without attribution after delivery activation. Run the local release notes draft against the intended exact range, check actual breaking intent/migration guidance and inspect identity-only rejections. Repeat complete-clone/range/refusal behavior on Linux and supported Node releases; draft impact alone does not verify compatibility. Publication automation is implemented locally; actual hosted/OIDC provenance remains owner verification. Optional compiled binaries remain optional future code work.
 - [ ] Repeat package:check on Linux and supported development Node/npm releases, plus installed-core runtime checks on Node 20. Inspect a retained interrupted/failed fixture before removal. Local offline npm 11.8.0 packaging/install/bin-links/managed-file checks passed on macOS arm64/Node 24.1.0 with private true; native activation and fresh-machine timing remain separate.
 
 These owner checks do not block remaining release tooling or other roadmap implementation.
@@ -204,7 +204,10 @@ Verify Cursor Ask/sandbox plus actual worker-local cli.json/hooks.json discovery
 read/search-only hook activation, native denial precedence, no reused session and
 successful final JSON. Exercise shell, write/delete, web, MCP, unknown tools and
 missing Node against disposable sentinels; inspect native startup effects and logs.
-Gemini/Antigravity recipes remain code work. None of these owner checks
+Gemini/Antigravity private observer recipes now have local fixture coverage. Verify
+actual positive read-only registry/private settings and init-before-assignment
+behavior; a client that waits for input before initialization remains unavailable.
+None of these owner checks
 blocks independent local roadmap work.
 
 ## URL adoption and shared publication (P2-08)
@@ -487,8 +490,9 @@ Use an isolated configuration home when selecting a custom profile. Run
 `profile scaffold onboarding --output .wholeloop/profiles/onboarding`, inspect
 the kit, then `profile test onboarding` and `profile preset onboarding --scope run`.
 For templates, `template test spec` reports mandatory-section dependents. Lens
-validation checks manifests and prompt resources only; actual gate execution and
-other workflow-specific template selection remain pending.
+validation checks manifests/resources. Typed gate execution and workflow template
+loading have local fixtures; verify actual model/gate behavior and repository
+guidance effects separately.
 
 ## Current smoke scenario
 
@@ -506,7 +510,9 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
    and verify that `next` stops at `approve-spec`; cut-scopes is now available. Approve the spec, complete a scope plan, and verify
    that both initiative and child continuation stop at approve-scopes. After
    approval, slice-work is available; complete a vertical slice plan and inspect
-   contract-first routing. build-slice remains unavailable.
+   contract-first routing. Continue build-slice only after its returned agreement,
+   contract/worktree and repository preconditions are satisfied; actual client
+   workers still need separate native verification.
 4. Send a local `msg send --thread <id> --to builder --kind note --body "Ready"`.
    Read it with `msg read --for builder --reader a`, then repeat: the second
    read is empty. A different reader still sees it.
@@ -516,8 +522,10 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
    config home. `profile set depth=technical --scope run --json` must leave
    configuration unchanged.
 
-These core paths also have automated tests. Generated client adapters, live canonical skill sessions,
-live provider integrations and later step workflows remain unimplemented; do not
-interpret this smoke scenario as their conformance validation.
+These core paths also have automated tests. Generated client adapters and later step workflows are implemented locally with
+separate fixtures; actual canonical skill sessions and authenticated provider/native
+acceptance remain unverified. The Amplitude dashboard host still needs its concrete
+authenticated contract. Do not interpret this smoke scenario as those acceptance
+checks or as permission to publish.
 
 [Roadmap](./README.md) · [Journal](./journal.md)

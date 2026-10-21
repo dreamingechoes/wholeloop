@@ -73,7 +73,7 @@ criterion does not block dependent local rollout implementation.
 
 ## P4-05 · Rollout providers
 
-**Status:** 🔄 · **Size:** L · **Depends on:** P1-08
+**Status:** ⏸️ · **Size:** L · **Depends on:** P1-08
 
 **Goal** — The launch and ramp steps work with the tools teams actually use.
 
@@ -107,8 +107,10 @@ one dashboard-owned native SQL question with exact classic-query/attachment
 readback and explicit unverified owner-reviewed time scope; PostHog now has
 explicit project/timezone preconditions, dashboard/insight creation, exact attachment
 readback and retained pending references for known partial outcomes;
-local dashboard output is explicitly pending. Keep P4-05 partial and continue
-independent local sync/grounding work. See the manual checklist, ADR-0042, ADR-0076, ADR-0077, ADR-0078 ADR-0079, ADR-0080, ADR-0081, ADR-0082 and ADR-0083.
+local dashboard output is explicitly pending. Park P4-05 partial while the final
+Amplitude host awaits its actual authenticated create/readback schema and owner
+service acceptance. Public generic tool names are not that contract. Local launch/ramp/sync/grounding
+workflows remain available while that dependency is open. See the manual checklist, ADR-0042, ADR-0076, ADR-0077, ADR-0078, ADR-0079, ADR-0080, ADR-0081, ADR-0082 and ADR-0083.
 
 **Docs** — configuration/providers.
 

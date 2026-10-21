@@ -316,8 +316,7 @@ query/time scope and rendering remain owner acceptance. See
 Amplitude dashboard creation/normalization still needs a concrete authenticated
 tool contract. Its official MCP documentation requires current tool description/
 progressive discovery, while the public Dashboard REST API describes data reads.
-The published plugin manifests do not provide the dashboard argument/response
-schema. Capture the actual create-only action, project identity, native chart
+The [examined plugin manifest](https://github.com/amplitude/mcp-marketplace/blob/5b688be467553f38edb79b89f24d0ac8109c9f27/plugins/amplitude/.codex-plugin/plugin.json) does not provide the dashboard argument/response schema. Capture the actual create-only action, project identity, native chart
 binding and matching readback schema before implementing that host; a broad tool
 name is insufficient. See [Amplitude MCP discovery](https://amplitude.com/docs/amplitude-ai/amplitude-mcp#progressive-tool-discovery). Existing dashboard files remain handoffs with
 createdRemotely=false. Current tests use local synthetic HTTP responses, not captured

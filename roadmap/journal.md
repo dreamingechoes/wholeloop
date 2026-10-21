@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-21 · P0-07 component — settled ADR references and readiness audit
+
+- Enforce the existing linked/plain referenced-decision criterion in docs check: one explicit Accepted/Superseded metadata declaration outside code fences in the first fifteen lines, unique plain-number or matching Markdown successor, recursively settled referenced successors and no cycles. Keep unreferenced Proposed drafts possible and check repeated references once. Preserve existing public schema/command declarations; lifecycle metadata proves no native platform behavior.
+- Tick only the executable P0-07 metadata criterion and park its remaining native-matrix review. Keep accepted historical decisions intact pending verified superseding findings. Park partial P4-05 after four remote flag readers/four remote dashboard hosts while Amplitude still awaits the actual authenticated create/readback schema; public broad tool names do not complete that code. The roadmap still has seventeen open tasks, including that code dependency plus owner/native/service/release acceptance, not seventeen missing feature implementations.
+- Correct stale current manual/platform/onboarding claims about general installation, Gemini/Antigravity private observers, release automation, later workflows, shared incremental review, code-host comments and build routing. Preserve actual permissions/init/model/service/Linux/release checks as open; optional compiled binaries remain future optional code. Focused docs/CLI checks passed 75 cases. Full local check passed 1760 tests in 81 files (229.29 seconds), actual isolated npm packaging PASS, build/smoke, lint/typecheck, references/catalogs, 260-file docs, 142-file harness, 259-file Markdown and all 35 Mermaid diagrams. Preserve all 203 compatibility declarations, 151 commands and five exit codes unchanged. No authenticated services/models, personal configuration, publication, version/privacy/ref/tag change or project push ran.
+
 ## 2026-10-21 · P4-05 Mixpanel — explicit workspace and owned native reports
 
 - Implement the official Headless App API contract directly without an SDK dependency. Bind one exact project/workspace inventory entry before writes, preserve explicit native Insights JSON parameters and owner-reviewed unverified time scope, create a new private/restricted dashboard and its owned v2 report, then verify report identity/params, dedicated relationship and dashboard privacy/provenance/no overrides. ADR-0083 explains why explicit report IDs beat interpreting opaque inline contents.

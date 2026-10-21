@@ -156,8 +156,9 @@ establish discovery, tool isolation or authentication.
 
 Project scope uses .agents and requires hooks.json to be absent or already owned
 unchanged; personal policy is preserved and refused. Standalone output is available
-through build --target antigravity. The headless observer recipe remains separate
-code work; sequential role handoff is available. See
+through build --target antigravity. The private headless observer recipe is implemented with initialization before
+assignment; actual client initialization/settings/permissions remain unverified.
+Sequential role handoff is also available. See
 [native boundaries](./README.md#antigravity-plugin-and-native-overlays).
 
 ## Cursor

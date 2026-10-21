@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: docs-settled-decisions
+    enforcers: [src/docs/check.ts#checkLinks, test/unit/docs/check.test.ts]
   - id: remote-dashboard-create-boundary
     enforcers: [src/providers/mixpanel-dashboard.ts#mixpanelDashboardPlan, src/providers/mixpanel-dashboard.ts#mixpanelDashboardHost, src/providers/metabase-dashboard.ts#metabaseDashboardPlan, src/providers/metabase-dashboard.ts#metabaseDashboardHost, src/providers/dashboard-artifact.ts#dashboardArtifact, src/providers/posthog-dashboard.ts#postHogDashboardPlan, src/providers/posthog-dashboard.ts#postHogDashboardHost, src/providers/grafana-dashboard.ts#grafanaDashboardPlan, src/providers/grafana-dashboard.ts#grafanaDashboardHost, src/providers/dashboard-http.ts#withDashboardHttp, src/launch/publish.ts#dispatchLaunchArtifact, src/cli/launch-dispatch.ts#launchDispatchCommand, test/unit/providers/grafana-dashboard.test.ts, test/unit/providers/posthog-dashboard.test.ts, test/unit/providers/metabase-dashboard.test.ts, test/unit/providers/mixpanel-dashboard.test.ts]
   - id: remote-flag-read-boundary

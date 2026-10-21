@@ -13,3 +13,7 @@ The deterministic CLI owns these rules; skills consume the returned contracts.
   concurrency, while retaining checks, lenses, questions and the output contract.
 - ⛔ `history-without-tool-attribution` — validate commit messages before they
   enter history; attribution to tools is rejected without rewriting authorship.
+
+- ⛔ `docs-settled-decisions` — published ADR references need one explicit
+  Accepted/Superseded metadata declaration, resolvable settled successors and no
+  supersession cycle. Metadata validation is not native-platform evidence.

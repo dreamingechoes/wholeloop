@@ -250,7 +250,7 @@ and semantic quality remain separate verification.
 | No parallel subagents | `headless` engine — `wl fanout` runs workers through the CLI's headless mode — or `sequential` ([engines](../architecture/orchestration-and-gates.md#three-engines-one-result)) |
 | Read-only not enforced | The core checks the worktree is unchanged after every gate round; a change fails the round |
 | No structured question tool | Plain-text questions with numbered options; the skill stops and waits |
-| No usable hooks | Explicit `wl guard hooks install` carries the critical guards; general install is pending |
+| No usable hooks | Explicit `wl guard hooks install` carries Git guards; owned native installation is implemented, with actual hook acceptance still pending |
 | Different MCP dialects | `wl mcp add` renders each provider's neutral recipe into the target's format |
 
 ## What gets generated
