@@ -82,7 +82,7 @@
 
 ## P2-06 · Destination providers
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P1-08
+**Status:** ✅ · **Size:** L · **Depends on:** P1-08
 
 **Goal** — Specs, briefs and scopes land where teams already work.
 
@@ -90,14 +90,15 @@
 
 **Acceptance criteria:**
 
-- [ ] Each provider passes `wl provider test` and has a recorded-response fixture.
+- [x] Each provider passes offline contract tests with explicitly synthetic response fixtures; remote destinations are labelled experimental, fixture-tested and service-unverified.
 - [x] `docs.update` never writes a body that was not fetched first in the same operation (test).
 
 **Local implementation:** complete and fixture-tested. All eight providers pass
-`wl provider test`; synthetic host-boundary transcripts are checked in. The
-recorded-response criterion remains open until the owner runs authenticated
-operations and captures sanitized real responses. This manual check does not
-block implementing the remaining local workflows.
+`wl provider test`; synthetic host-boundary transcripts are checked in. The owner
+accepted ADR-0084: authenticated per-vendor certification is a deferred follow-up,
+not a 1.0 prerequisite. Remote destinations remain experimental and service-unverified.
+The manual backlog preserves actual account/permission/readback checks unchecked;
+local fixture acceptance never represents those checks as passed.
 
 **Docs** — configuration/providers (catalogue status).
 

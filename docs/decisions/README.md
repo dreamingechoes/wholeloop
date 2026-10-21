@@ -94,6 +94,7 @@
 | [0081](./0081-posthog-dashboard-creation-and-partial-receipts.md) | PostHog dashboard creation and partial receipts | Accepted | 2026-10-21 |
 | [0082](./0082-metabase-owned-questions-and-explicit-sql-window-review.md) | Metabase-owned questions and explicit SQL window review | Accepted | 2026-10-21 |
 | [0083](./0083-mixpanel-workspace-bound-dashboards-and-native-reports.md) | Mixpanel workspace-bound dashboards and native reports | Accepted | 2026-10-21 |
+| [0084](./0084-experimental-integrations-and-scoped-live-verification.md) | Experimental integrations and scoped live verification | Accepted | 2026-10-22 |
 
 ## Lifecycle
 

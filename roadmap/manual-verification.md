@@ -4,6 +4,16 @@
 > its local acceptance checks passed, not that every target CLI or platform has
 > been exercised. Updated 2026-10-22.
 
+## How to use this backlog
+
+Remote service integrations are **experimental · fixture-tested ·
+service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md).
+Their authenticated account/API/rendering checks below are deferred certification,
+not prerequisites for 1.0, and remain unchecked until actually executed. You do not
+need accounts with every listed vendor. This does not waive missing implementation,
+native-client/permission/hook tests, release CI or publication decisions. The
+Amplitude dashboard bridge remains code work rather than a completed integration.
+
 ## Owner-observed Claude framing and session recovery (2026-10-22)
 
 The owner exercised source-installed user-scope loose skills in Claude Code,

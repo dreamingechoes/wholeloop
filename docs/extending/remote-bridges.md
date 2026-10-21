@@ -3,7 +3,7 @@
 > **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash, GrowthBook and PostHog have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other remote dashboard bridges remain open. Grafana, PostHog, Metabase and Mixpanel have explicit fixture-tested create-only hosts with readback; actual server/rendering acceptance remains unverified.
+> **Status: 🚧 partial.** Remote integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). LaunchDarkly/Unleash/GrowthBook/PostHog readers and Grafana/PostHog/Metabase/Mixpanel create-only hosts are implemented and fixture-tested. Authenticated service certification is optional after 1.0; the Amplitude dashboard host still lacks its concrete contract and implementation. Native-client and platform acceptance remain separate.
 
 ---
 

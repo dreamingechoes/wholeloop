@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Release scope — experimental service integrations
+
+- The owner explicitly accepted shipping remote integrations as experimental, fixture-tested and service-unverified, then validating actual operations when accounts and needs arise. ADR-0084 records this scope change. Keep native-client conformance, missing code, CI and publication acceptance separate; do not check off unexecuted service tests or promote one successful operation to vendor-wide support.
+- Replace P2-06's real-response prerequisite with explicit synthetic contract evidence and close that task under the accepted scope. Preserve real-service checks unchecked as a deferred certification backlog. P4-05 stays partial because the Amplitude dashboard bridge still lacks concrete create/readback contracts and implementation; this decision does not implement it. Label the main README, provider catalogue and remote-bridge guide, and correct stale catalogue descriptions of implemented REST/dashboard hosts.
+- Provider/destination/source/rollout checks passed 96 tests across four files; explicit metadata validation of all eight destinations passed without problems. Actual remote calls, credentials, native acceptance, publication and pushes are not established by this policy change. Owner-authorized automatic native-client trials are being investigated separately and must retain their actual failures.
+
 ## 2026-10-22 · Owner verification — Claude framing and session recovery
 
 - Record the owner's actual user-scope Claude loose-skill framing, explicit on-hold completion and status lookup after closing Claude and opening a fresh session. Read the core independently to confirm the closed initiative, completed framing, no next step and retained owner reason/reopen condition. Inspect the English external-store artifact without copying runtime records into the repository. The locally observed client is Claude Code 2.1.306 on macOS arm64/Node 24.22.0, using installed source revision f714820; this is not a collected live-runner verdict.

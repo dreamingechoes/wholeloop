@@ -3,7 +3,7 @@
 > **TL;DR** — Everything about `wholeloop`, from why it exists to how each step works and how to extend it. Read [concepts](./concepts.md) first; everything else assumes its vocabulary.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local core, all thirteen step contracts, artifacts for all seven clients, managed installation, explicit conformance tooling and reviewed-bundle release automation are implemented. Exact native provisioning and disabled nightly collection/matrix/issue automation are implemented. Actual native-client/model checks, authenticated integrations, scheduled/service activation, native headless acceptance and release activation remain open. Progress and owner checks: [roadmap](../roadmap/README.md) · [manual verification](../roadmap/manual-verification.md).
+> **Status: 🚧 partial.** The local core, all thirteen step contracts, artifacts for all seven clients, managed installation, conformance tooling and reviewed-bundle release automation are implemented. Native-client/model checks, scheduled activation, headless acceptance and release activation remain open. Remote integrations are **experimental · fixture-tested · service-unverified**; real-service certification is deferred under [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md). Missing Amplitude dashboard bridge code remains separate. Progress and owner checks: [roadmap](../roadmap/README.md) · [manual verification](../roadmap/manual-verification.md).
 
 ---
 

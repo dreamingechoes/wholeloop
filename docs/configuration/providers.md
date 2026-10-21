@@ -3,9 +3,28 @@
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Registry v1, validated manifests, local/native defaults, declaration/PATH detection and tier-A MCP snippet renderers are implemented. Eight destination manifests, bundled guidance, a typed host invocation boundary and same-operation document updates are implemented with synthetic fixture transcripts. Eleven source mappings pin evidence queries and explicit unknowns, with a guarded PostgreSQL process host. GitHub/GitLab CLI code-host mappings and explicit draft-only publication hosts are tested locally. Fourteen rollout provider targets have explicit offline binding fixtures plus native unsent drafts, unapplied flag proposals, metric-linked dashboard handoffs and config-file flag reads. Authenticated remote flag bridges and actual dashboard creation remain open P4-05 work; local artifacts are not remote objects. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); built-in providers land with the steps that need them (Phases 2–4).
+> **Status: 🚧 partial.** Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). Registry, manifests, native/local defaults, eight destination contracts, eleven source mappings and fourteen rollout fixture bindings are implemented. Four remote flag readers and four create-only dashboard hosts are tested with synthetic responses. The Amplitude dashboard bridge remains unimplemented; a manifest or local handoff is not a remote object. Actual service certification is deferred and does not block 1.0. Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1).
 
 ---
+
+## Integration verification status
+
+All remote vendors in this catalogue currently carry the same release label:
+**experimental · fixture-tested · service-unverified**. This includes Metabase,
+PostHog, Mixpanel, Amplitude, Grafana, trackers, document services, code hosts and
+the other source/rollout integrations. Fixture success checks authored contracts;
+it does not establish account access, actual API compatibility or rendered results.
+
+You do not need accounts with every vendor to use the local harness or release
+1.0. Real-service checks remain an optional, unchecked certification backlog.
+When you use a service, record the tested date/version, operations and permissions
+before promoting that specific scope to live-verified. No remote integration has
+that promotion yet. Missing operations remain explicitly unavailable even when
+the provider's other operations are fixture-tested.
+
+Claude Code, Codex and the other native clients have a separate conformance matrix;
+this integration policy does not waive their acceptance checks. Local-docs,
+local-tracker and contained repository-file behavior retain their local evidence.
 
 ## Capabilities, not vendors
 
@@ -40,9 +59,10 @@ A step never names a vendor, so swapping Confluence for Notion, or adding Zendes
 | Target | Implemented locally | Still pending |
 | --- | --- | --- |
 | Slack · Microsoft Teams · email | Destination-labelled unsent JSON drafts in the external store | A person reviews and posts; no sending operation exists |
-| LaunchDarkly · Unleash · GrowthBook · PostHog | Explicit host-read contracts and stored unapplied proposals | Authenticated service read/normalization bridges and real cohort semantics |
+| LaunchDarkly · Unleash · GrowthBook · PostHog | Explicit REST readers/normalizers and stored unapplied proposals, tested with synthetic responses | Optional authenticated service and real cohort certification |
 | Config-file flags | Contained explicit JSON reads and unapplied proposals | A person changes configuration through normal review |
-| PostHog · Mixpanel · Amplitude · Metabase · Grafana | Exact-metric JSON handoffs with source pointers | Actual remote chart creation and service-specific normalization |
+| PostHog · Mixpanel · Metabase · Grafana | Explicit create-only dashboard hosts with exact readback and metric-linked handoffs, tested with synthetic responses | Optional real service, query/window and rendering certification |
+| Amplitude dashboards | Manifest and exact-metric pending handoff with source pointers | Native create/readback bridge code; optional live certification comes afterwards |
 | Datadog · Grafana stack | Declared read-only query tool mappings and offline fixtures | Actual roster, site/datasource, auth and complete scalar normalization |
 | Figma | Official remote context-read mapping and offline fixture | Actual client access and referenced design observations |
 
@@ -84,7 +104,8 @@ our normalized fixtures. The Grafana recipe is a pinned read-only Prometheus/Lok
 container invocation; it was not pulled or run. Keep credentials in the host's
 credential store and pass environment names rather than secret values in recipes.
 
-P4-05 stays partial for real flag bridges and dashboard creation.
+P4-05 stays partial for the missing Amplitude dashboard bridge. Per-vendor live
+certification remains optional under ADR-0084 and is not a 1.0 prerequisite.
 [ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md)
 explains why local handoffs remain explicit instead of fabricated integrations.
 

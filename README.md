@@ -9,6 +9,12 @@
 
 ---
 
+Remote service integrations are **experimental · fixture-tested ·
+service-unverified**. You do not need accounts with every listed vendor to try the
+local harness. Actual service certification is deferred; unavailable bridge code
+is identified separately in the [provider catalogue](./docs/configuration/providers.md).
+Native-client compatibility has its own checks and is not implied by provider tests.
+
 ## Why
 
 Follow two engineers through the life of one feature. One looks at the data first, the other opens the editor. One argues with the model's first answer, the other accepts it. Every review asks different questions, every rollout re-decides the same things from scratch, and a month after launch nobody checks whether the numbers moved. **The model is identical in every one of those moments. The process around it is not** — and a faster tool amplifies whatever process you already have, including the absence of one.

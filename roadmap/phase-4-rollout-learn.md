@@ -108,8 +108,9 @@ readback and explicit unverified owner-reviewed time scope; PostHog now has
 explicit project/timezone preconditions, dashboard/insight creation, exact attachment
 readback and retained pending references for known partial outcomes;
 local dashboard output is explicitly pending. Park P4-05 partial while the final
-Amplitude host awaits its actual authenticated create/readback schema and owner
-service acceptance. Public generic tool names are not that contract. Local launch/ramp/sync/grounding
+Amplitude host awaits its concrete create/readback schema. Authenticated per-vendor
+certification is deferred under ADR-0084 and does not block 1.0, but the missing
+bridge implementation remains code work. Public generic tool names are not that contract. Local launch/ramp/sync/grounding
 workflows remain available while that dependency is open. See the manual checklist, ADR-0042, ADR-0076, ADR-0077, ADR-0078, ADR-0079, ADR-0080, ADR-0081, ADR-0082 and ADR-0083.
 
 **Docs** — configuration/providers.
