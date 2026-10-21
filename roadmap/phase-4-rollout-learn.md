@@ -100,9 +100,11 @@ Decimal percentages preserve exact forward/reverse configured values. The PostHo
 explicit owner-configured project/environment scope and conservative person-cohort
 normalization. Grafana now has an explicit create-only PromQL host with exact artifact/datasource/
 folder binding, default-preview CLI and once-intent POST/readback. Remaining
-PostHog/Mixpanel/Amplitude/Metabase dashboard bridges remain code work;
+Mixpanel/Amplitude/Metabase dashboard bridges remain code work; PostHog now has
+explicit project/timezone preconditions, dashboard/insight creation, exact attachment
+readback and retained pending references for known partial outcomes;
 local dashboard output is explicitly pending. Keep P4-05 partial and continue
-independent local sync/grounding work. See the manual checklist, ADR-0042, ADR-0076, ADR-0077, ADR-0078 ADR-0079 and ADR-0080.
+independent local sync/grounding work. See the manual checklist, ADR-0042, ADR-0076, ADR-0077, ADR-0078 ADR-0079, ADR-0080 and ADR-0081.
 
 **Docs** — configuration/providers.
 

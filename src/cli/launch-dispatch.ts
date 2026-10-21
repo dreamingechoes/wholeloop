@@ -4,7 +4,7 @@ import { loadExtensionOptions } from '../config/load.js'
 import { FlowEngine } from '../flow/engine.js'
 import { dispatchLaunchArtifact } from '../launch/publish.js'
 import { LaunchWorkflow } from '../launch/workflow.js'
-import { grafanaDashboardHost, grafanaDashboardPlan } from '../providers/grafana-dashboard.js'
+import { dashboardBridge } from '../providers/dashboard-bridge.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
 import { performOperation } from '../providers/operations.js'
 import { StateStore } from '../state/store.js'
@@ -61,7 +61,8 @@ export async function launchDispatchCommand(
     throw new CliError('Select a dashboard from one completed launch kit')
   const registry = loadProviders(loadExtensionOptions({ root, userFile: workflow.engine.userFile }))
   const provider = resolveProvider(registry, target.operation, target.provider)
-  let plan: ReturnType<typeof grafanaDashboardPlan> | undefined
+  const bridge = dashboardBridge(config)
+  let plan: ReturnType<typeof bridge.plan> | undefined
   await performOperation(
     provider,
     target.operation,
@@ -74,7 +75,7 @@ export async function launchDispatchCommand(
     },
     {
       invoke: async (call) => {
-        plan = grafanaDashboardPlan(config, call)
+        plan = bridge.plan(call)
         return { status: 'pending', ref: target.path }
       },
     },
@@ -86,7 +87,7 @@ export async function launchDispatchCommand(
           workflow,
           subject,
           key,
-          grafanaDashboardHost(config, { secret: (name) => process.env[name] }),
+          bridge.host({ secret: (name) => process.env[name] }),
         )
       : undefined
   io.out(

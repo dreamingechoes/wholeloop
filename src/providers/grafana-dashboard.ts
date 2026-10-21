@@ -1,8 +1,7 @@
 import { isObject, validate } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { measurementDigest } from '../launch/measurement.js'
-import measurementSchema from '../launch/schemas/measurement-v1.json' with { type: 'json' }
-import type { Metric } from '../spec/contract.js'
+import { dashboardArtifact, dashboardBaseUrl } from './dashboard-artifact.js'
 import { withDashboardHttp } from './dashboard-http.js'
 import type { OperationCall, ProviderHost } from './operations.js'
 import schema from './schemas/grafana-dashboard-bridge-v1.json' with { type: 'json' }
@@ -26,72 +25,15 @@ const fail = (): never => {
 export function grafanaBridgeConfig(value: unknown): GrafanaBridge {
   if (validate(value, schema).length) return fail()
   const config = value as GrafanaBridge
-  let url: URL
-  try {
-    url = new URL(config.baseUrl)
-  } catch {
-    return fail()
-  }
-  if (
-    url.protocol !== 'https:' ||
-    url.username ||
-    url.password ||
-    url.search ||
-    url.hash ||
-    url.href !== config.baseUrl ||
-    !config.baseUrl.endsWith('/') ||
-    config.baseUrl.length > 2048
-  )
-    return fail()
+  dashboardBaseUrl(config.baseUrl)
   return { ...config }
 }
 
 /** Build a create-only v1 request from the exact journal artifact; no query translation. */
 export function grafanaDashboardPlan(configuration: unknown, call: OperationCall) {
   const config = grafanaBridgeConfig(configuration)
-  if (
-    call.provider !== config.provider ||
-    call.operation !== 'dashboards.create' ||
-    call.tool !== 'wholeloop.dashboard.handoff' ||
-    Object.keys(call.args).some(
-      (key) => !['title', 'body', 'artifact', 'measurementEntry', 'dashboard'].includes(key),
-    ) ||
-    typeof call.args.body !== 'string' ||
-    measurementDigest(call.args.body) !== config.artifactDigest ||
-    Buffer.byteLength(call.args.body) > 1024 * 1024
-  )
-    return fail()
-  let spec: unknown
-  try {
-    spec = JSON.parse(call.args.body)
-  } catch {
-    return fail()
-  }
-  if (
-    !isObject(spec) ||
-    spec.schema !== 'wholeloop/launch-dashboard@1' ||
-    Object.keys(spec).some(
-      (key) =>
-        !['schema', 'title', 'metricRef', 'sourceRevision', 'sourceDigest', 'metric'].includes(key),
-    ) ||
-    typeof spec.title !== 'string' ||
-    !spec.title.trim() ||
-    spec.title !== call.args.title ||
-    typeof spec.metricRef !== 'string' ||
-    spec.metricRef !== call.args.measurementEntry ||
-    !/^items\/[A-Za-z0-9_-]+\/launches\/[A-Za-z0-9_-]+\/measurement\.json#\/metrics\/(0|[1-9][0-9]*)$/.test(
-      spec.metricRef,
-    ) ||
-    typeof spec.sourceDigest !== 'string' ||
-    !/^[a-f0-9]{64}$/.test(spec.sourceDigest) ||
-    typeof spec.sourceRevision !== 'string' ||
-    !spec.sourceRevision.trim() ||
-    validate(spec.metric, measurementSchema.properties.metrics.items).length ||
-    (call.args.dashboard !== undefined &&
-      contractDigest(call.args.dashboard) !== contractDigest(spec))
-  )
-    return fail()
-  const metric = spec.metric as Metric
+  const spec = dashboardArtifact(call, config.provider, config.artifactDigest)
+  const metric = spec.metric
   if (
     metric.source.provider !== 'grafana' ||
     metric.source.operation !== 'source.observability.query' ||

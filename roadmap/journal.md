@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-21 · P4-05 PostHog — dashboard/insight creation and partial references
+
+- Extract shared exact artifact/HTTPS binding and add a separate non-secret PostHog dashboard configuration. Preserve original HogQL/filter placeholder and pinned day range, require exact organization/project/timezone before writes, create a new dashboard and attached table insight, then verify both resource/attachment views with bounded credential-store transport. ADR-0081 records deprecated-but-current write-field support and why cached timezone is insufficient.
+- Extend the existing default-preview dispatch via explicit service selection, preserving Grafana/local handoffs and frozen contracts. Verify actual serializer differences: dashboard tiles omit deleted and empty variables may be null; insight dashboard_tiles must still establish one active attachment. Require no effective/persisted overrides. Retain known partial dashboard references as incomplete pending receipts, cache pending/completed deliveries and never delete/overwrite/retry or claim query/rendering/traffic evidence.
+- Focused provider/launch checks passed 94 cases and contract/CLI checks passed 274 cases. Actual Node 20.0.0 macOS arm64 passes the synthetic signal-bearing five-request host subset. Full local check passed 1642 tests in 79 files (222.66 seconds), actual isolated npm packaging PASS, build/smoke, lint/typecheck, references/catalogs, 258-file docs, 142-file harness, 257-file Markdown and all 35 Mermaid diagrams. Preserve all 200 prior declarations/signatures; append one source schema (201 declarations, 151 commands, five exit codes). Actual API/version/permissions/deprecated-field support, queries/rendering/traffic and Linux remain owner checks; Metabase/Mixpanel/Amplitude bridges remain code work. No actual remote creation/authentication, native model, personal configuration, CI/issue operation, publication, version/privacy/ref/tag change or project push ran.
+
 ## 2026-10-21 · P4-05 Grafana — create-only metric-pinned dashboards
 
 - Add a strict non-secret Grafana v1 configuration and explicit host for one completed metric-pinned PromQL artifact. Bind body digest/source pointer/query, reviewed deployment/namespace/folder/datasource/new UID, window/timezone and descriptive unit/target provenance. Preserve the built-in read-only MCP roster and default local handoffs. ADR-0080 records the scope and rejected translation/overwrite alternatives.

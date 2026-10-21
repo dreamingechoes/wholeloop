@@ -3,7 +3,7 @@
 > **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash, GrowthBook and PostHog have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other remote dashboard bridges remain open. Grafana has an explicit fixture-tested create-only host with readback; actual server/rendering acceptance remains unverified.
+> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other remote dashboard bridges remain open. Grafana and PostHog have explicit fixture-tested create-only hosts with readback; actual server/rendering acceptance remains unverified.
 
 ---
 
@@ -192,9 +192,46 @@ intent and may require inspecting a partially created remote dashboard. Complete
 receipts are cached by run/key even if bridge configuration later changes. See
 [ADR-0080](../decisions/0080-create-only-grafana-dashboards-from-pinned-metrics.md).
 
+## PostHog dashboard creation
+
+Use the same launch dispatch preview/live boundary with a separate non-secret
+configuration. The completed metric must already use PostHog's product-analytics
+query operation and a reviewed HogQL query containing the literal {filters}
+placeholder. Its semantics remain an owner responsibility; no SQL is translated.
+
+```json
+{
+  "schema": "wholeloop/posthog-dashboard-bridge@1",
+  "provider": "posthog",
+  "baseUrl": "https://eu.posthog.com/",
+  "tokenEnv": "WHOLELOOP_POSTHOG_CREATE_KEY",
+  "organization": "11111111-2222-3333-4444-555555555555",
+  "project": "42",
+  "queryLanguage": "hogql",
+  "artifactDigest": "replace-with-the-exact-artifact-body-digest"
+}
+```
+
+Replace example scope and digest with reviewed actual values. The host first reads
+project identity/organization/timezone and refuses a mismatch before creating
+anything. It creates a new dashboard and table insight, binding only that returned
+dashboard ID, then reads both back to verify query/provenance and one active
+attachment. It requires no effective/persisted filter or variable overrides.
+Credentials require the corresponding project read, dashboard create/read and
+insight create/read permissions; keep values in your credential store.
+
+The documented dashboards write field on insight creation is currently supported
+but deprecated upstream; actual version acceptance remains required. Readback uses
+dashboard_tiles. This bridge stores configuration, without proving query validity,
+rendered values or traffic. A known dashboard followed by failure becomes an
+incomplete pending receipt with a safe inspection link; an unknown create outcome
+retains ambiguous intent. Neither can trigger automatic cleanup or retry. The five
+requests share one deadline. See
+[ADR-0081](../decisions/0081-posthog-dashboard-creation-and-partial-receipts.md).
+
 ## Remaining work
 
-PostHog/Mixpanel/Amplitude/Metabase dashboard creation/normalization still needs
+Mixpanel/Amplitude/Metabase dashboard creation/normalization still needs
 service-specific contracts. Existing dashboard files remain handoffs with
 createdRemotely=false. Current tests use local synthetic HTTP responses, not captured
 live service evidence. Owner checks are in [manual verification](../../roadmap/manual-verification.md).

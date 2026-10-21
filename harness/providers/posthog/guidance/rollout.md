@@ -17,4 +17,8 @@
 
 An explicitly configured REST host can read simple person rollouts using exact
 list/detail identity and owner-reviewed project/environment mapping. Unsupported
-targeting remains unknown; dashboard handoffs still do not create remote objects.
+targeting remains unknown; default dashboard handoffs create no remote objects.
+
+The explicit dashboard REST host binds the completed artifact/HogQL window, checks
+project/timezone, creates new dashboard/insight and verifies one active attachment.
+Known partial references stay pending and cached; never retry or claim traffic.
