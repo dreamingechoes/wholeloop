@@ -19,6 +19,7 @@ export async function workerProcess(
     signal: AbortSignal
     env: NodeJS.ProcessEnv
     readyLine?: (line: string) => boolean
+    observe?: (stream: 'stdout' | 'stderr', chunk: Buffer) => void
   },
 ): Promise<ProcessResult> {
   if (options.signal.aborted) return { status: 'cancelled', stdout: '', code: null, signal: null }
@@ -64,7 +65,14 @@ export async function workerProcess(
     const capture = (chunk: Buffer, stdout: boolean) => {
       bytes += chunk.length
       if (bytes > 1024 * 1024) stop('overflow')
-      else if (stdout && !failure) output.push(chunk)
+      else {
+        try {
+          options.observe?.(stdout ? 'stdout' : 'stderr', chunk)
+        } catch {
+          stop('crashed')
+        }
+        if (stdout && !failure) output.push(chunk)
+      }
       if (stdout && options.readyLine && !inputSent && !failure && !done) {
         readiness = Buffer.concat([readiness, chunk])
         const newline = readiness.indexOf(10)

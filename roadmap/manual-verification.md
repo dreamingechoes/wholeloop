@@ -10,6 +10,15 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 commands, passing results and who does each part. This page retains detailed
 regressions and limitations rather than assigning every item to the owner.
 
+Current local remediation is implemented and tested: exact owner-decision framing,
+final revision review and bounded redacted native diagnostics. Fresh complete native
+trials remain pending explicit disclosure approval after automatic review refused
+sending the private harness to configured model providers. That pending execution
+is not a native failure or evidence that the earlier client failures are resolved.
+Any further implementation defect discovered by those trials remains technical
+work, not an owner acceptance checkbox. Track it in [V1 acceptance](../docs/v1-acceptance.md#1-finish-implementation-defects-first)
+and the journal before claiming technical closure.
+
 Remote service integrations are **experimental · fixture-tested ·
 service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md).
 Their authenticated account/API/rendering checks below are deferred certification,
@@ -57,6 +66,16 @@ them after a code change. All observations below are on macOS arm64/Node 24.22.0
 - [x] Correct the prompt's appended punctuation and obtain an actual Codex standalone framing PASS on bundled core 04fe3f55 (digest prefix); do not loosen the judge's exact-input comparison.
 - [ ] Obtain a passing fresh scenario for OpenCode, Copilot, Gemini, Antigravity and Cursor after diagnosing each actual failure.
 - [ ] Verify the isolated permission/hook/client-specific spike in addition to structural framing. One passing client cannot close the four-client P1-14 or seven-client platform acceptance.
+
+Technical remediation under ADR-0087 adds conformance diagnose with bounded,
+redacted event/error categories, a private OpenCode 2 server and documented AGY
+stream-only invocation. Actual no-tool probes on OpenCode 2.1.1, Copilot 1.0.83 and
+Antigravity 1.4.4 returned model responses, including piped Copilot and both AGY
+input variants. This is transport/model-access evidence only. A later full-trial
+host invocation was rejected by automatic approval review over possible private
+harness disclosure before native execution; it is not a new native failure.
+Explicit disclosure approval is pending. Keep the earlier failed reports intact;
+repeat fresh complete scenarios rather than promoting the no-tool probes.
 
 The Codex receipt and exact passing core are retained externally. Later OpenCode
 and Antigravity recipe changes have their own receipts/core identities; do not
@@ -131,7 +150,7 @@ observed by the structural judge.
 - [ ] Review serverUrl/stdio MCP recipes and native OAuth/tool execution. Header recipes are refused; no credential is copied or rendered. Repeat on Linux and supported Node/client versions.
 
 Both local hook transports are implemented. Actual Gemini/Antigravity activation,
-model, permission and MCP checks do not block other roadmap code.
+model, permission and MCP acceptance remains unverified.
 
 ## Cursor native activation (P5-02)
 
@@ -152,8 +171,6 @@ model, permission and MCP checks do not block other roadmap code.
 - [ ] Run release preflight from the actual source checkout with the intended built/package/lock version and genuine CI repository/event context. Inspect blocked reasons and masked index flags without silently clearing personal setup. A ready local consistency plan is neither authenticated context nor permission to publish; actual ownership/OIDC/provenance and release activation remain separate.
 - [ ] Record actual fresh-machine installation time and review release notes without attribution after delivery activation. Run the local release notes draft against the intended exact range, check actual breaking intent/migration guidance and inspect identity-only rejections. Repeat complete-clone/range/refusal behavior on Linux and supported Node releases; draft impact alone does not verify compatibility. Publication automation is implemented locally; actual hosted/OIDC provenance remains owner verification. Optional compiled binaries remain optional future code work.
 - [ ] Repeat package:check on Linux and supported development Node/npm releases, plus installed-core runtime checks on Node 20. Inspect a retained interrupted/failed fixture before removal. Local offline npm 11.8.0 packaging/install/bin-links/managed-file checks passed on macOS arm64/Node 24.1.0 with private true; native activation and fresh-machine timing remain separate.
-
-These owner checks do not block remaining release tooling or other roadmap implementation.
 
 ## Generated references (P5-06 local controls)
 
@@ -186,7 +203,7 @@ Automated tier-A/Gemini/Antigravity/Cursor installed-launcher simulations report
 native conformance PASS. Preparation launches no model; --live is an explicit
 owner action that can use authenticated models and incur cost. The interactive
 Claude observation above is separate from this unexecuted live runner scenario;
-these checks do not block further implementation.
+actual observations remain separate from local fixture coverage.
 
 ## Native installation and observed diagnostics (P1-13)
 
@@ -201,7 +218,7 @@ these checks do not block further implementation.
 
 Native install/uninstall and managed doctor inspection are implemented. Actual
 activation and corrective commands requiring the owner's platform/configuration
-choices remain verification. Those checks do not block independent conformance code.
+choices remain verification. Native conformance is tracked separately below.
 
 ## Common guards and Git fallback (P3-08)
 
@@ -245,8 +262,6 @@ hook capture and installed-client behavior remain owner checks.
 - [ ] Confirm scheduled collection, latest-version resolution, service credentials and issue permissions/deduplication once their code is implemented. Current local matrix/page tests do not exercise CI or send issues.
 - [ ] Repeat CLI/read-boundary and timestamp fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64 only.
 
-These owner checks do not block remaining collection, automation or documentation code.
-
 ## Headless gate processes (P5-03)
 
 - [ ] Execute one pinned review and verification round with actual native, headless and sequential workers. Compare coverage/quorum/verdict, independently inspect evidence quality and record exact client versions. Synthetic parity tests do not establish real model equivalence.
@@ -280,8 +295,6 @@ blocks independent local roadmap work.
 - [ ] Interrupt after a remote create/update and before its response/receipt. Locate and read the resource, reconcile once, and confirm no client blindly retries the write. Local mode pauses new requests but cannot revoke already handed-off work.
 - [ ] Resume/rebuild from another real CLI, inspect pinned destinations and sharing/outbox projections outside the repository, and repeat local fixtures on Linux and supported Node versions.
 
-These owner checks do not block independent local implementation.
-
 ## Grounding corpus and real workers (P4-07)
 
 - [ ] Review every original dataset label and trap reason independently; verify source/unit/query/window semantics before treating the seed as representative.
@@ -289,8 +302,6 @@ These owner checks do not block independent local implementation.
 - [ ] Score the exact seed and inspect every failed or missing assertion, including real zero, wrong sources/units and absent metrics. Compare real worker results with prior real worker results, not the synthetic core baseline as model-quality evidence.
 - [ ] Evaluate research/framing prose, launch/decision narrative and qualitative statistics separately. This seed covers structured ramp/impact numeric collectors only and explicitly lists the other steps as unevaluated.
 - [ ] Add real escaped failures with reviewed original fixtures and calibrate meaningful workload thresholds. The twenty-case seed establishes no population rate or causal production effect.
-
-These checks do not block subsequent independent local implementation.
 
 ## sync and actual service agreement (P4-06)
 
@@ -300,8 +311,6 @@ These checks do not block subsequent independent local implementation.
 - [ ] Schedule sync with explicit repository/store context. Inspect unbound tracker handoffs and unknown reads rather than treating exit success as proof of every service's health.
 - [ ] Stop worktree leases deliberately, inspect processes/ignored files and confirm local integration before cleanup. Remote squash/rebase merges may be retained by the ancestry guard; sync never fetches, stops processes, forces removal or deletes branches.
 - [ ] Repeat real Git/CLI cleanup and recovery checks on Linux/supported Node versions. Local tests use synthetic providers plus temporary real Git worktrees on macOS/Node 24; no actual wholeloop worktree or remote service was changed.
-
-These checks do not block subsequent local grounding work.
 
 ## Rollout providers — deferred service certification (P4-05)
 
@@ -327,8 +336,6 @@ blockers or executed live tests.
 - [ ] Interrupt around decision persistence and canonical closure, then recover with learn complete. Verify one iteration/decision, no premature parent closure, and reopened-scope eligibility. Automated recovery rebuilds a real journal prefix; it does not simulate physical power loss.
 - [ ] Repeat CLI/process and canonical path checks on Linux/supported Node versions. Local verification uses macOS/Node 24 and synthetic challenger responses; no model, authenticated publication or production change ran.
 
-These checks do not block subsequent local implementation.
-
 ## measure-impact and real grounding (P4-03)
 
 - [ ] Execute pinned queries against disposable real sources; inspect event/cohort definitions, units, source references, timezones and complete rolling windows. Normalized fixtures establish arithmetic, not provider truth or causality.
@@ -339,8 +346,6 @@ These checks do not block subsequent local implementation.
 - [ ] Interrupt publication, inspect the retained intent and actual remote outcome before any new write. Do not clear ambiguity or retry blindly.
 - [ ] Repeat CLI/process checks on Linux and supported Node versions. Local workers/providers were synthetic on macOS/Node 24; no live query, draft or document write ran.
 
-These checks do not block further local implementation.
-
 ## ramp-exposure and actual exposure changes (P4-02)
 
 - [ ] Authenticate source/flag providers in a disposable environment. Verify exact query semantics, units, timezones, complete windows and cohort ownership; normalized fixture numbers do not establish source correctness.
@@ -349,8 +354,6 @@ These checks do not block further local implementation.
 - [ ] Inspect retained intent after an interrupted proposal before further writes. Never clear ambiguity or retry blindly; reconcile the actual remote request manually.
 - [ ] Verify manual-control attestations against actual external evidence and keep normalized response files sanitized, with no credentials or private logs. The core trusts explicit host observations.
 - [ ] Repeat CLI/process checks on Linux and supported Node versions. Local tests use macOS/Node 24 and synthetic hosts; no actual flag or remote proposal was changed/created.
-
-These checks do not block subsequent local implementation.
 
 ## prepare-launch and real no-send isolation (P4-01)
 
@@ -370,8 +373,6 @@ The adapter criterion stays unchecked; it does not block dependent local rollout
 - [ ] Score the exact corpus digest with before/after matrices, coverage and unknowns. Compare against a recorded model/host baseline, never against the synthetic arithmetic fixture as evidence of model quality.
 - [ ] Add real escaped defects/look-alikes and calibrated custom-lens cases with explicit labels. Set justified regression thresholds for the intended workload; the small seed is not a population estimate.
 
-These checks do not block further local workflows.
-
 ## Environment ledger and actual undo (P3-09)
 
 - [ ] Declare actual process/container/data/service effects before hand-back. Verify each appears with complete non-secret undo argv/cwd in the Build/PR receipt and current env report, including shared ancestor and child-part effects.
@@ -379,8 +380,6 @@ These checks do not block further local workflows.
 - [ ] Inspect dependencies and current ownership before following reverse declaration order. Verify repeated cleanup is safe in the actual tool and preserve resources still in use.
 - [ ] Keep credentials in encrypted, OS or tool stores. Common shape/flag exclusions are not a complete secret detector; inspect recipe files and resource identifiers before declaration.
 - [ ] Confirm effects added during human testing appear in the current report while historical step receipts retain the ledger at their completion time.
-
-These checks do not block subsequent local implementation.
 
 ## open-pr and code-host execution (P3-07)
 
@@ -392,8 +391,6 @@ These checks do not block subsequent local implementation.
 - [ ] Exercise explicit PR comments and their stable round marker on a disposable remote. Sequential retries reconcile; simultaneous hosts still need coordination.
 - [ ] Repeat process-group cleanup and Git/CLI fixtures on Linux/Node 20/22. Local execution used macOS/Node 24; the only real push was to a temporary local bare repository.
 
-These checks do not block remaining local implementation.
-
 ## review-code and incremental inputs (P3-06)
 
 - [ ] Exercise the canonical skill in each real client. Confirm loaded repo rubric content and the incremental patch reach every reviewer/refuter; recheck prior kept findings even when unchanged in the new patch.
@@ -401,8 +398,6 @@ These checks do not block remaining local implementation.
 - [ ] Repeat exact-index, mode, symlink and interruption/recovery fixtures on Linux and supported Node/Git versions. Local execution used macOS/Node 24/Git 2.49.
 - [ ] Inspect sensitive project paths before snapshotting. Filename/content exclusions are conservative, not encryption or a complete secret detector. Preserve private objects alongside the journal when moving state.
 - [ ] After configuring a codehost.comment-pr provider, explicitly request a test comment, confirm no approval/request-changes is emitted and reconcile an ambiguous network outcome before retrying. Synthetic host tests did not publish anything.
-
-These checks do not block other local implementation.
 
 ## verify-works and process execution (P3-05)
 
@@ -412,16 +407,12 @@ These checks do not block other local implementation.
 - [ ] Inspect suite effects outside tracked/non-ignored worktree files and supply undo steps. After a physical interruption, inspect the retained intent before starting another round; no automatic retry is allowed.
 - [ ] Verify shared raw output remains transient in client context, durable receipts contain only hashes/exit metadata, and actual failed processes cannot be argued into a passing verdict.
 
-These checks do not block the remaining local implementation.
-
 ## Builder host and build-slice (P3-04)
 
 - [ ] Run the canonical skill in each actual client. Confirm the preflight appears before provisioning, resolved repository build instructions are loaded, and all writes stay in the allocated workspace. Typed-host fixtures are local conformance scenarios, not live client captures.
 - [ ] Confirm native/sequential workers are independent and genuinely read-only in gates. Exercise guided/staged/parallel pacing, an interrupted partial gate and cancellation of already-running workers.
 - [ ] Exercise an authenticated issue read through the chosen tracker, validate complete body/reference/revision normalization, and agree criteria explicitly. The CLI itself does not fetch issues.
 - [ ] Test real project behavior and external environment effects; current worker fixtures are synthetic; suite execution and incremental review have local fixtures but require actual host observations. Green machine gates must still hand back for human testing without a push or PR.
-
-These checks remain for the owner and do not block other local implementation.
 
 ## Gate engine (P3-03)
 
@@ -430,8 +421,6 @@ These checks remain for the owner and do not block other local implementation.
 - [ ] Exercise project/run budgets and a person-requested mid-run extension on real work. Confirm EXHAUSTED hands back findings and no host silently resets a failed run.
 - [ ] Inspect ignored files, external symlink targets, submodules, external services and test side effects explicitly. The current gate snapshot covers tracked/untracked non-ignored files, index, HEAD and branch, and blocks on submodules.
 - [ ] Repeat Git/permissions/symlink fixtures on Linux and supported Node versions. Local macOS execution is not cross-platform evidence.
-
-These owner checks do not block implementation of the remaining local workflows.
 
 ## Owner actions still pending
 

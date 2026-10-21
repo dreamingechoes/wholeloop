@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
 import { conformanceAcquisition } from '../conformance/acquisition.js'
 import { collectConformance } from '../conformance/collection.js'
+import { conformanceDiagnostics } from '../conformance/diagnostics.js'
 import { conformanceIssues } from '../conformance/issues.js'
 import { conformanceMatrix, conformanceMatrixMarkdown } from '../conformance/matrix.js'
 import { conformancePage } from '../conformance/page.js'
@@ -167,6 +168,10 @@ export async function conformanceCommand(
   const id = positional[0]
   if (!id || positional.length !== 1)
     throw new CliError('Provide exactly one prepared conformance run ID')
+  if (command === 'conformance diagnose') {
+    io.out(JSON.stringify(conformanceDiagnostics(context, id), null, json ? undefined : 2))
+    return 0
+  }
   if (command === 'conformance report') {
     const report = reportConformance(context, id)
     io.out(JSON.stringify(report, null, json ? undefined : 2))

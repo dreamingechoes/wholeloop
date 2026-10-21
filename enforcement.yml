@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: conformance-redacted-diagnostics
+    enforcers: [src/conformance/diagnostics.ts#nativeDiagnostics, src/conformance/diagnostics.ts#conformanceDiagnostics, src/conformance/run.ts#runConformance, test/unit/conformance/diagnostics.test.ts, test/unit/conformance/conformance.test.ts]
   - id: framing-reviewed-decision
     enforcers: [src/framing/finalize.ts#validateFrameReview, src/framing/finalize.ts#prepareFrame, src/flow/engine.ts#complete, test/unit/framing/finalize.test.ts]
   - id: provider-mcp-first

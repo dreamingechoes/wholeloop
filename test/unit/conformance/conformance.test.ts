@@ -14,6 +14,7 @@ import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import type { ConformanceContext } from '../../../src/conformance/contracts.js'
+import { conformanceDiagnostics } from '../../../src/conformance/diagnostics.js'
 import { judgeConformance } from '../../../src/conformance/judge.js'
 import { prepareConformance, readConformance, runFiles } from '../../../src/conformance/prepare.js'
 import {
@@ -104,6 +105,31 @@ describe('standalone conformance runner', () => {
     30000,
   )
 
+  it('retains a redacted structured diagnosis from a failed native process without changing the verdict', async () => {
+    await fixture(async (ctx, dir) => {
+      const prepared = prepareConformance(ctx, 'copilot', '99.0.0')
+      const env = fakeClient(
+        dir,
+        '99.0.0',
+        `process.stderr.write('Authentication required: synthetic private diagnostic detail');process.exitCode=7`,
+        'copilot',
+      )
+      const report = await runConformance(ctx, prepared.id, 'live', { env })
+      expect(report.status).toBe('FAIL')
+      expect(report.process).toMatchObject({ code: 7, status: 'crashed' })
+      const diagnosis = conformanceDiagnostics(ctx, prepared.id)
+      expect(diagnosis).toMatchObject({
+        status: 'observed',
+        mode: 'live',
+        observations: { signals: ['authentication-required'] },
+      })
+      expect(JSON.stringify(diagnosis)).not.toContain('synthetic private diagnostic detail')
+      expect(runFiles(ctx, prepared.id).read('diagnostics.json')).not.toContain(
+        'Authentication required',
+      )
+    })
+  })
+
   it('preflights agy and sends one documented JSONL user event to the native recipe', async () => {
     await fixture(async (ctx, dir) => {
       const prepared = prepareConformance(ctx, 'antigravity', '99.0.0')
@@ -111,7 +137,7 @@ describe('standalone conformance runner', () => {
       const env = fakeClient(
         dir,
         '99.0.0',
-        `;(async()=>{let input='';for await(const chunk of process.stdin)input+=chunk;const event=JSON.parse(input);if(event.event!=='user'||!event.message.content.includes('wl-agy-frame-problem')||!process.argv.includes('--print=')||!process.argv.includes('stream-json'))process.exit(8);(await import('node:fs')).writeFileSync(${JSON.stringify(received)},JSON.stringify(event));})()`,
+        `;(async()=>{let input='';for await(const chunk of process.stdin)input+=chunk;const event=JSON.parse(input);if(event.event!=='user'||!event.message.content.includes('wl-agy-frame-problem')||process.argv.some(arg=>arg.startsWith('--print'))||!process.argv.includes('stream-json'))process.exit(8);(await import('node:fs')).writeFileSync(${JSON.stringify(received)},JSON.stringify(event));})()`,
         'agy',
       )
       expect(JSON.parse(readFileSync(prepared.input, 'utf8')).event).toBe('user')

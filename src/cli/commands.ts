@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'conformance diagnose',
+    arguments: '<run>',
+    options: ['--store <path>'],
+    schema: 'wholeloop/conformance-diagnostics@1',
+    summary: 'Inspect redacted native error categories without exposing private output',
+  },
+  {
     path: 'frame schema',
     arguments: '',
     options: [],

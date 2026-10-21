@@ -36,6 +36,7 @@ identities and optional command flags remain additive; read the
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl conformance diagnose <run>` | `wholeloop/conformance-diagnostics@1` | Inspect redacted native error categories without exposing private output |
 | `wl frame schema` | `wholeloop/frame-schema@1` | Show final framing decision and semantic review contracts |
 | `wl frame draft` | `wholeloop/frame-draft@1` | Render exact owner-approved stop conditions before final review |
 | `wl frame finalize` | `wholeloop/frame-finalized@1` | Complete framing with matching final approval and semantic review |

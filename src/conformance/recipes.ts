@@ -31,8 +31,8 @@ export function conformanceRecipe(run: PreparedConformance) {
     return {
       ...common,
       command: 'agy',
-      // An attached empty prompt selects print mode without consuming the next flag or adding a turn.
-      args: ['--print=', '--input-format', 'stream-json', '--output-format', 'stream-json'],
+      // Streaming input selects the session; a separate print prompt is not part of this protocol.
+      args: ['--input-format', 'stream-json', '--output-format', 'stream-json'],
     }
   if (run.target === 'gemini')
     return {
@@ -86,7 +86,10 @@ export function conformanceRecipe(run: PreparedConformance) {
     }
   if (run.target === 'opencode')
     // OpenCode 2.x removed run's --dir option; spawn already sets the exact fixture cwd.
-    return { ...common, args: ['run', '--format', 'json'] }
+    return {
+      ...common,
+      args: ['run', ...(run.pin.startsWith('2.') ? ['--standalone'] : []), '--format', 'json'],
+    }
   if (run.target === 'copilot')
     return {
       ...common,

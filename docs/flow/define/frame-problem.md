@@ -42,6 +42,26 @@ Canonical framing uses the new commands after step begin. Run `wl frame schema
    A stale digest, mismatched owner/run, extra stop rule or incomplete review
    refuses completion. No-go retains its exact reopening condition and stops.
 
+To save the draft and review template without changing the digest, redirect frame
+draft's JSON into an external plan file, then extract its strings exactly. For
+example, after setting FRAME_PLAN_FILE, FRAME_DRAFT_FILE and FRAME_REVIEW_FILE to
+external paths (not repository paths):
+
+```bash
+node --input-type=module - "$FRAME_PLAN_FILE" "$FRAME_DRAFT_FILE" "$FRAME_REVIEW_FILE" <<'JS'
+import { readFileSync, writeFileSync } from 'node:fs'
+const [planFile, draftFile, reviewFile] = process.argv.slice(2)
+const plan = JSON.parse(readFileSync(planFile, 'utf8'))
+writeFileSync(draftFile, plan.artifact.content, { flag: 'wx' })
+writeFileSync(reviewFile, JSON.stringify(plan.reviewTemplate, null, 2) + '\n', { flag: 'wx' })
+JS
+```
+
+Use new output paths: the example refuses overwriting existing files. The review
+file starts incomplete and is not an approval. Complete it only from the actual
+owner/challenger observations. Line-oriented extraction can append a newline to
+artifact.content; the digest covers every byte, including that newline.
+
 Legacy step complete is retained for existing callers and historical data; it
 makes no final semantic-review claim. Do not replace the old observed artifact to
 make its historical test appear successful. Repeat acceptance with a new run.

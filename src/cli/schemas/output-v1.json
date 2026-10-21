@@ -2020,6 +2020,133 @@
           "type": "object"
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "id",
+        "target",
+        "core",
+        "phase",
+        "mode",
+        "status",
+        "observations",
+        "interpretation",
+        "next"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/conformance-diagnostics@1"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^cf-[a-f0-9]{24}$"
+        },
+        "target": {
+          "type": "string",
+          "enum": ["claude", "codex", "opencode", "copilot", "gemini", "antigravity", "cursor"]
+        },
+        "core": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "phase": {
+          "type": "string",
+          "enum": ["prepared", "running", "finished"]
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["unrun", "fixture", "live"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["observed", "unavailable"]
+        },
+        "observations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "stdoutBytes",
+            "stderrBytes",
+            "oversizedLine",
+            "errorEvents",
+            "events",
+            "signals"
+          ],
+          "properties": {
+            "stdoutBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stderrBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "oversizedLine": {
+              "type": "boolean"
+            },
+            "errorEvents": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "events": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "init",
+                  "step_update",
+                  "result",
+                  "step_start",
+                  "step_finish",
+                  "text",
+                  "tool_use",
+                  "tool_result",
+                  "error",
+                  "user.message",
+                  "assistant.turn_start",
+                  "assistant.message",
+                  "assistant.turn_end",
+                  "assistant.idle",
+                  "session.error",
+                  "tool.execution_start",
+                  "tool.execution_complete"
+                ]
+              }
+            },
+            "signals": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "authentication-required",
+                  "account-ineligible",
+                  "permission-denied",
+                  "invalid-invocation",
+                  "connection-failed",
+                  "model-unavailable"
+                ]
+              }
+            }
+          }
+        },
+        "interpretation": {
+          "type": "string"
+        },
+        "next": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
     }
   ],
   "$defs": {

@@ -60,3 +60,13 @@ protocol correctness, semantic evidence quality, hook activation, permission
 isolation, executable provenance or complete absence of external side effects.
 Keep authentication in the client's existing store and preserve native permission
 and trust checks. Never promote unobserved behavior to a conformance checkmark.
+
+Use `conformance diagnose <run>` after a new live attempt. Categories omit native
+text and do not prove root cause. Keep the scenario verdict separate: a zero exit
+with missing journal events still fails. Missing legacy diagnostics stay unknown.
+Resolve access/trust through the native client; do not add blanket grants or
+replace accounts/models automatically to turn a failure into a pass.
+
+- ⛔ `conformance-redacted-diagnostics` — persist only closed error/event categories
+  and counts. Do not retain raw native prose, private tool payloads or credentials.
+  Classification never changes the journal-based scenario verdict.

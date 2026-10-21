@@ -4,6 +4,7 @@ import { workerProcess } from '../fanout/process.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { StateStore } from '../state/store.js'
 import type { ConformanceContext } from './contracts.js'
+import { nativeDiagnostics, saveNativeDiagnostics } from './diagnostics.js'
 import { fixtureWorker } from './fixture.js'
 import { judgeConformance } from './judge.js'
 import { readConformance, runFiles } from './prepare.js'
@@ -37,6 +38,8 @@ export async function runConformance(
     return run
   })
   const { scenario } = conformanceScenario(context.canonical)
+  const diagnostics = nativeDiagnostics()
+  let observed = false
   const env = conformanceEnvironment(run, options.env)
   try {
     if (workspaceSnapshot(run.root).digest !== run.baseline) run.problem = 'workspace-changed'
@@ -46,8 +49,10 @@ export async function runConformance(
       else if (probe.version !== run.pin) run.problem = 'version-mismatch'
       else {
         const recipe = conformanceRecipe(run)
+        observed = true
         const result = await workerProcess(recipe.command, recipe.args, {
           cwd: recipe.cwd,
+          observe: diagnostics.observe,
           input: conformanceInput(run, scenario),
           env,
           timeoutMs,
@@ -76,6 +81,7 @@ export async function runConformance(
   }
   run.phase = 'finished'
   files.locked(() => files.atomic('run.json', `${JSON.stringify(run)}\n`))
+  if (observed) saveNativeDiagnostics(context, run, diagnostics.finish())
   return reportConformance(context, id)
 }
 

@@ -110,5 +110,27 @@ See [ADR-0074](../decisions/0074-exact-native-acquisition-and-private-prefixes.m
 [ADR-0075](../decisions/0075-disabled-nightly-pipeline-and-separated-issue-authority.md)
 and [the platform guide](../platforms/README.md).
 
+## Diagnose native failures without retaining private output
+
+Use `wl conformance diagnose <run> --store <external-store> --json` after a
+fresh live run. The runner stores only closed error categories, recognized event
+names and byte/error counts, bound to the exact core/run/client. Fixed next-step
+text distinguishes account, permission, invocation, connection and model signals.
+Raw native errors, transcript prose, tool arguments and paths are discarded.
+Oversized logical lines are dropped; partial UTF-8 is decoded before classification.
+
+Successful metadata mentioning permissions and ordinary stdout prose do not count
+as errors. Signals suggest investigation; they do not authenticate a root cause
+or authorize changes. No matching signal means unknown, rather than a fabricated
+explanation. The scenario report remains authoritative for journal acceptance;
+exit zero and a ready response do not establish a framing pass. Old/simulation runs
+have unavailable native diagnostics and must not be relabelled as observed.
+
+OpenCode 2 conformance uses a private standalone server; pinned V1 keeps its
+existing invocation. Antigravity receives a JSONL user event in stream-only mode.
+Copilot keeps its prompt on stdin: its documented explicit prompt flag would ignore
+piped data. Native configuration, trust and credentials stay owned by the client.
+See [ADR-0087](../decisions/0087-redacted-native-diagnostics-and-explicit-invocations.md).
+
 <!-- docnav -->
 [◀ Release preparation](releasing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docs style ▶](docs-style.md)

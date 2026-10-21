@@ -289,7 +289,7 @@ describe('Antigravity native adapter and transport', () => {
       expect(conformanceRecipe(run)).toEqual({
         command: 'agy',
         cwd: dir,
-        args: ['--print=', '--input-format', 'stream-json', '--output-format', 'stream-json'],
+        args: ['--input-format', 'stream-json', '--output-format', 'stream-json'],
       })
       expect(JSON.parse(conformanceInput(run, scenario))).toMatchObject({
         event: 'user',
