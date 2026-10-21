@@ -16,6 +16,10 @@ Read the shared ask-never-guess, output-contract and installation protocols.
 4. Inspect integrations through `wl provider list --json` and `wl provider test
    <id> --json`. Detection is not authentication. For a requested MCP client,
    `wl mcp add <id> --target <cli> --json` prints a snippet to review and merge.
+   Prefer that client's observed MCP tools/schemas; read source-evidence and
+   destination-publication before calls. Use provider plan for the selected
+   operation and external metadata. HTTP bridges require explicit selection;
+   absent or failed MCP access never activates them automatically.
 
 For local setup failures, call `wl doctor --json`; with a known generated artifact,
 pass its single --target and --artifact. Inspect its repair/diagnostic commands

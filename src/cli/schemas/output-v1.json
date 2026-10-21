@@ -6,6 +6,34 @@
   "oneOf": [
     {
       "type": "object",
+      "required": [
+        "schema",
+        "provider",
+        "operation",
+        "transport",
+        "status",
+        "tool",
+        "degrade",
+        "reason",
+        "effects",
+        "authentication"
+      ],
+      "properties": {
+        "schema": { "const": "wholeloop/provider-transport@1" },
+        "provider": { "type": "string" },
+        "operation": { "type": "string" },
+        "transport": { "enum": ["mcp", "native", "http", "unavailable"] },
+        "status": { "enum": ["planned", "unavailable"] },
+        "tool": { "type": "string" },
+        "server": { "type": "string" },
+        "degrade": { "enum": ["open-question", "handoff-artifact", "skip-with-reason"] },
+        "reason": { "type": "string" },
+        "effects": { "const": "not-performed" },
+        "authentication": { "const": "client-owned-unverified" }
+      }
+    },
+    {
+      "type": "object",
       "required": ["schema", "subject", "key", "status", "plan", "effects"],
       "properties": {
         "schema": {

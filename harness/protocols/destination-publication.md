@@ -12,6 +12,17 @@ and normalizes actual results. A queued operation is pending, not published.
 Record external references only after successful completion. Preserve unrelated
 content and stop on unreadable sections or unsupported formats.
 
+- ⛔ `provider-mcp-first` — Prefer the native client's MCP connection using an
+  observed tool/schema and reviewed operation binding. HTTP requires explicit
+  selection; missing access or a failed MCP call never selects HTTP automatically.
+
+For dispatch, supply non-secret client metadata to `wl provider plan <id>
+<operation> --mcp <external-inventory.json> --json`. A planned route proves neither
+authentication nor service behavior. The client host translates arguments and
+normalizes results using its live schema; never guess virtual operation tools.
+Keep native drafts/proposals local. Retain missing destination handoffs as pending;
+after an uncertain write, reconcile reads before any further dispatch.
+
 - ⛔ `shared-publication-recovery` — completed Define artifacts queue only under
   explicit initiative shared targets. Journal a unique intent before publication;
   record links only after a complete same-reference read contains the exact chunk.

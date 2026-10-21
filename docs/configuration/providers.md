@@ -3,7 +3,7 @@
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). Registry, manifests, local/native defaults and destination/source/rollout fixture contracts are implemented. [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md) prioritizes client-owned MCP; that routing migration is in progress. Four HTTP flag readers and four HTTP dashboard hosts remain explicit experimental options. Amplitude retains a pending dashboard handoff, not a 1.0 requirement for another HTTP implementation. Real-service certification is deferred.
+> **Status: 🚧 partial.** Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). Registry, manifests, local/native defaults and destination/source/rollout fixture contracts are implemented. [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md) prioritizes client-owned MCP; deterministic routing, reviewed client bindings and no automatic HTTP fallback are implemented. See [transport setup](../extending/providers.md#client-owned-mcp-transport). Four HTTP flag readers and four HTTP dashboard hosts remain explicit experimental options. Amplitude retains a pending dashboard handoff, not a 1.0 requirement for another HTTP implementation. Real-service certification is deferred.
 
 ---
 
@@ -104,7 +104,7 @@ our normalized fixtures. The Grafana recipe is a pinned read-only Prometheus/Lok
 container invocation; it was not pulled or run. Keep credentials in the host's
 credential store and pass environment names rather than secret values in recipes.
 
-P4-05 is implementing MCP-first selection under ADR-0085. A dedicated Amplitude
+P4-05 implements tested MCP-first selection under ADR-0085. A dedicated Amplitude
 HTTP bridge is no longer a prerequisite. Per-vendor live certification remains
 optional under ADR-0084 and is not a 1.0 prerequisite.
 [ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md)

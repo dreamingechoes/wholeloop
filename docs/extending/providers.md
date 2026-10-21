@@ -3,7 +3,7 @@
 > **TL;DR** — A provider is a folder with a `provider.yml` and, optionally, a few short guidance files. The manifest says which capabilities it serves, how to detect it, how to connect it in each CLI, which tool fulfils each verb, and what to hand over when it is not available. Most providers are under fifty lines.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Schema, inheritance, package loading, inspection/scaffolding and tier-A MCP rendering are implemented. Live operation mapping/probes and additional built-ins remain planned. Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); it is versioned (`schema: 1`) from day one.
+> **Status: 🚧 partial.** Schema, inheritance, package loading, inspection/scaffolding and tier-A MCP rendering are implemented. Client-owned MCP transport planning and reviewed bindings are implemented. Authenticated probes remain manual. Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); it is versioned (`schema: 1`) from day one.
 
 ---
 
@@ -31,7 +31,7 @@ access:
   mcp:
     server: acme-support                  # name used in the CLI's MCP config
     detect:
-      tools: ["acme_search_tickets"]      # tool names that prove it is connected
+      tools: ["acme_search_tickets"]      # declaration hints; not proof of authentication
     install:
       transport: http
       url: https://mcp.acme.example/mcp
@@ -66,7 +66,7 @@ An HTTP recipe may use `auth: header` with `token_env: ACME_AUTH`; only the vari
 | `schema` | yes | Manifest schema version. `wl` refuses unknown major versions. |
 | `id` | yes | Kebab-case, unique. Same `id` as a built-in **replaces** it; use `extends: <id>` to override only some fields. |
 | `capabilities` | yes | From the [taxonomy](../configuration/providers.md#the-capability-taxonomy). One provider may list several. |
-| `access` | yes | At least one of `mcp`, `cli`, `native`. The first one that detects wins. |
+| `access` | yes | At least one of `mcp`, `cli`, `native`. Prefer an observed client MCP tool/schema; native handoffs remain available. |
 | `access.mcp.install` | for MCP | Neutral description; `wl mcp add` turns it into each CLI's dialect. |
 | `operations` | yes | One entry per `capability.verb` you support. Unlisted verbs are reported as unsupported, not guessed. |
 | `operations.*.args` | no | Mustache-style mapping from contract inputs (`query`, `window`, `title`, `body`, `item`…) to tool arguments. |
@@ -82,6 +82,82 @@ An HTTP recipe may use `auth: header` with `token_env: ACME_AUTH`; only the vari
 ## Current inspection behavior
 
 `wl provider scaffold acme-support` prints a valid starter manifest. Add `--output .wholeloop/providers/acme-support/provider.yml` to create it explicitly; existing files are never overwritten. `provider list|show|test` report validation and declaration/PATH detection only. Authentication and tool availability remain manual; `--probe` is not implemented.
+
+## Client-owned MCP transport
+
+Use the native client's existing MCP connection; wholeloop does not run another
+MCP client or copy credentials. Read [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md)
+for the decision and the rejected automatic HTTP fallback.
+
+1. Configure/authenticate the selected provider in the native client, using its
+   credential store. `wl mcp add` renders configuration; it does not prove login.
+2. Inspect that client's actual tools and input schemas. Supply only non-secret
+   metadata using `wholeloop/client-mcp@1`. Declaration detection alone is insufficient.
+3. Run `wl provider plan <id> <operation> --mcp <external-inventory.json> --json`.
+   This command reads metadata only: it performs no authentication, service call
+   or state write. Exit 0 means a route is planned; exit 3 means unavailable;
+   malformed metadata exits 4. `authentication: client-owned-unverified` is explicit.
+4. For a planned MCP route, the conductor's host invokes the tool through the
+   existing client connection, translates contract arguments against the live
+   schema and normalizes the result. A plan alone is never a publication receipt.
+5. Retain the declared open question or pending handoff if access/schema is
+   missing. If an invocation fails, inspect remote state and retained intent;
+   do not try HTTP automatically or repeat an uncertain write.
+
+The following **synthetic metadata example** demonstrates planning against a
+built-in mapping. Its schema is illustrative, not a current PostHog server
+contract or evidence of real access. Run from the repository root after building:
+
+```bash
+MCP_INVENTORY_FILE="$(mktemp)"
+cat > "$MCP_INVENTORY_FILE" <<'JSON'
+{
+  "schema": "wholeloop/client-mcp@1",
+  "server": "posthog",
+  "tools": [{
+    "name": "execute-sql",
+    "inputSchema": { "type": "object", "properties": { "query": { "type": "string" } } }
+  }]
+}
+JSON
+node ./dist/wl.mjs provider plan posthog source.product-analytics.query \
+  --mcp "$MCP_INVENTORY_FILE" --json
+node ./dist/wl.mjs provider plan amplitude dashboards.create --json
+```
+
+The first plan selects MCP with `effects: not-performed`. The second selects the
+native pending dashboard handoff. `--transport http` alone cannot create a host:
+use an existing explicitly selected bridge command or an injected HTTP host.
+The inventory must be a regular file under 64 KiB, with at most 256 unique tools.
+It contains no token, headers or credential fields; never write runtime metadata
+inside a repository. Wholeloop checks bounded metadata and operation identity;
+the client validates the actual arguments against the observed tool schema.
+
+For virtual operations such as `wholeloop.dashboard.handoff`, discovery of an
+arbitrary create-like tool is insufficient. Supply an explicit `bindings` object
+mapping `dashboards.create` to the exact reviewed tool name, and include that
+tool's actual input schema in `tools`. Do not guess a vendor write contract.
+`comms.draft` and `flags.propose-change` cannot receive remote MCP bindings:
+they retain their native unsent/unapplied boundary.
+
+In an embedded TypeScript conductor, load a provider and build
+`clientProviderHost(provider, { mcp: { inventory, invoke } })` from
+src/providers/transport.ts. The `invoke` callback receives an OperationCall with
+the selected tool and original operation identity; its client-owned adapter must
+translate arguments and return the existing normalized OperationResult. Wrap it
+with `rolloutHost(files, root, host)` for native handoffs. Its eligibility hook
+lets reviewed MCP dashboard bindings run before the handoff. Keep dispatch inside
+`dispatchLaunchArtifact` so once-only receipts and ambiguous intents are preserved.
+There is no standalone CLI MCP invocation command.
+
+Passing an HTTP host to the factory does not activate it. Only
+`clientProviderHost(provider, { transport: 'http', http: explicitHost })` selects
+that experimental host; failure never selects MCP or another transport instead.
+Existing [HTTP bridge commands](./remote-bridges.md) retain their explicit opt-in
+behavior and fixtures. New HTTP coverage requires a concrete required MCP gap
+and a new reviewed decision, rather than an API implementation for every vendor.
+All remote integrations remain **experimental · fixture-tested · service-unverified**
+until the owner records actual service/operation/version evidence.
 
 ## Target live inspection
 

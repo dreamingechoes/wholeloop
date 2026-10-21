@@ -14,7 +14,10 @@ import {
 } from '../../../src/launch/measurement.js'
 import { dispatchLaunchArtifact, launchDeliveries } from '../../../src/launch/publish.js'
 import { LaunchWorkflow } from '../../../src/launch/workflow.js'
+import { loadProviders } from '../../../src/providers/load.js'
 import { validateProvider } from '../../../src/providers/manifest.js'
+import { rolloutHost } from '../../../src/providers/rollout.js'
+import { clientProviderHost } from '../../../src/providers/transport.js'
 import { SCOPE_SECTIONS } from '../../../src/scopes/contract.js'
 import { parseSpec } from '../../../src/spec/contract.js'
 import { StateStore } from '../../../src/state/store.js'
@@ -317,6 +320,72 @@ describe('pinned launch kits and local handoffs', () => {
 })
 
 describe('explicit bounded launcher publication boundary', () => {
+  it.each(['succeeded', 'uncertain'])(
+    'retains once-only dispatch across an MCP %s outcome without HTTP fallback',
+    async (outcome) =>
+      fixture(async ({ root, engine, workflow }) => {
+        mkdirSync(join(root, '.wholeloop'))
+        writeFileSync(
+          join(root, '.wholeloop/config.yml'),
+          'version: 1\nproviders:\n  dashboards: posthog\n',
+        )
+        const selected = loadProviders({
+          root,
+          user: join(root, 'unused-user-providers'),
+        }).providers.find((entry) => entry.manifest.id === 'posthog')
+        if (!selected) throw new Error('Missing fixture provider')
+        const start = begun(workflow)
+        workflow.complete(start.subject, draft(start.plan.source.digest))
+        let mcp = 0
+        let http = 0
+        const host = rolloutHost(
+          engine.store.files,
+          root,
+          clientProviderHost(selected, {
+            mcp: {
+              inventory: {
+                schema: 'wholeloop/client-mcp@1',
+                server: 'posthog',
+                tools: [{ name: 'fixture_create', inputSchema: { type: 'object' } }],
+                bindings: { 'dashboards.create': 'fixture_create' },
+              },
+              invoke: async (call) => {
+                mcp++
+                expect(call.tool).toBe('fixture_create')
+                expect(call.args.measurementEntry).toContain('/measurement.json#/metrics/0')
+                expect(call.args.dashboard).toMatchObject({ metric: { id: 'retrieval-time' } })
+                if (outcome === 'uncertain') throw new Error('Synthetic lost response')
+                return { status: 'succeeded', ref: 'https://example.invalid/fixture-chart' }
+              },
+            },
+            http: {
+              invoke: async () => {
+                http++
+                throw new Error('Unexpected HTTP invocation')
+              },
+            },
+          }),
+        )
+        const dispatch = () =>
+          dispatchLaunchArtifact(workflow, start.subject, 'dashboards/retrieval-chart', host)
+        if (outcome === 'uncertain') {
+          await expect(dispatch()).rejects.toThrow('retained intent')
+          await expect(dispatch()).rejects.toThrow('ambiguous')
+          expect(launchDeliveries(engine.store.events())[0]?.result).toBeUndefined()
+          expect(engine.store.get(start.subject).links).not.toContain(
+            'https://example.invalid/fixture-chart',
+          )
+        } else {
+          expect(await dispatch()).toMatchObject({ cached: false, result: { status: 'succeeded' } })
+          expect(await dispatch()).toMatchObject({ cached: true })
+          expect(engine.store.get(start.subject).links).toContain(
+            'https://example.invalid/fixture-chart',
+          )
+        }
+        expect({ mcp, http }).toEqual({ mcp: 1, http: 0 })
+      }),
+  )
+
   it('dispatches only draft/create requests once and preserves exact dashboard provenance', async () =>
     fixture(async ({ root, engine, workflow }) => {
       provider(root)

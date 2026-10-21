@@ -20,6 +20,8 @@ export interface OperationResult {
 /** A host owns tool invocation, authentication and normalization of tool-specific responses. */
 export interface ProviderHost {
   invoke(call: OperationCall): Promise<OperationResult>
+  /** Explicit eligible remote binding; native-only fallbacks must not hide an available client tool. */
+  supports?(call: OperationCall): boolean
 }
 
 function result(value: unknown): OperationResult {

@@ -64,7 +64,7 @@ Keep these separate from owner approval:
 - Preserve owner-approved conditions without turning challenger suggestions into decisions.
 - Review the exact final semantic draft, or explicitly record that it remains unreviewed.
 - Diagnose automatic client failures rather than interpreting exit zero as a scenario pass.
-- Finish and test MCP-first transport routing. Preserve unknown tool contracts as pending; do not build another HTTP bridge merely to complete the vendor catalogue.
+- MCP-first routing is implemented and fixture-tested under ADR-0085. Keep unknown tool contracts pending; real-service certification stays deferred.
 
 The existing stored fictitious framing is evidence of the defect; do not overwrite
 its history to make the old trial appear to have passed.
@@ -197,8 +197,9 @@ defined roadmap still includes its explicit publication and client criteria.
 
 ## Map of remaining roadmap tasks
 
-After the accepted P2-06 scope change: 38 of 54 tasks are complete; 16 remain open.
-These rows describe closure evidence, not sixteen tests the owner must run alone.
+After the accepted P2-06 scope change and P4-05 MCP-first implementation:
+39 of 54 tasks are complete; 15 remain open. These rows describe closure evidence,
+not fifteen tests the owner must run alone.
 
 | Task | What closes it | Owner involvement |
 | --- | --- | --- |
@@ -211,7 +212,6 @@ These rows describe closure evidence, not sixteen tests the owner must run alone
 | P1-14 | Real standalone scenario passes all four tier-A clients | Native access when blocked |
 | P3-08 | Actual tier-A hook payloads and guard behavior verified | Trust/permission decisions |
 | P4-01 | Launcher lacks a sending tool in each adapter | Review actual capability inventory |
-| P4-05 | MCP-first routing and explicit degradation pass; HTTP stays opt-in | Review real MCP contracts when service access becomes available |
 | P5-01 | Real scenario passes Gemini and Antigravity | Native access when blocked |
 | P5-02 | Cursor real scenario and readonly behavior pass | Native access when blocked |
 | P5-03 | One actual conformance run establishes engine verdict parity | Model access and allowance |
@@ -219,8 +219,8 @@ These rows describe closure evidence, not sixteen tests the owner must run alone
 | P5-05 | Reviewed distribution, approved visibility, fresh-machine timing and clean notes | Publication/ownership decision |
 | P5-07 | Actual 1.0 tag and announcement after remaining acceptance | Final release approval |
 
-P4-05's original fixture checkboxes were already checked; its current migration
-adds explicit MCP-first routing acceptance instead of requiring more HTTP hosts.
+P4-05 is complete with fixture-tested MCP priority, explicit HTTP selection and
+no automatic fallback. Its unavailable service contracts retain pending handoffs.
 Service-account certification is a deferred backlog, not one more
 release gate for every vendor. Other robustness cases in the manual backlog
 document limitations and follow-up scope rather than silently expanding the task

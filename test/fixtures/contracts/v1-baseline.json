@@ -204,7 +204,9 @@
     "output:wholeloop/dashboard-dispatch@1": "4d3a451de7edef3a9d109609b36832346c5021df4cb7698724df8d9534f8656b",
     "schema:wholeloop/posthog-dashboard-bridge@1": "977cc32f637c6bcd86983d92bf611e4599bd29aa20324312f9932b8dcc7c55ce",
     "schema:wholeloop/metabase-dashboard-bridge@1": "8ffd7bb88830b5288d4c7dd7ace315a63066b9d7c468b2fd50e6f8364e5ade09",
-    "schema:wholeloop/mixpanel-dashboard-bridge@1": "b73c185575e57e5e7ff323b331a1fbc43d783dd4938e2d72c5040e28fde56479"
+    "schema:wholeloop/mixpanel-dashboard-bridge@1": "b73c185575e57e5e7ff323b331a1fbc43d783dd4938e2d72c5040e28fde56479",
+    "schema:wholeloop/client-mcp@1": "ed1c71ccd86e62dcf624b17b63f4c6a70c54b87b8829295570f7a0096f703ea9",
+    "output:wholeloop/provider-transport@1": "125a305dfae540a8fd48fc61bebcf6337393ced73a2bcea8a334247ffb1694ef"
   },
   "commands": [
     {
@@ -1222,6 +1224,12 @@
       "arguments": "",
       "options": ["--for <id>", "--key <artifact-key>", "--bridge <file>", "--live"],
       "schema": "wholeloop/dashboard-dispatch@1"
+    },
+    {
+      "path": "provider plan",
+      "arguments": "<id> <operation>",
+      "schema": "wholeloop/provider-transport@1",
+      "options": ["--mcp <file>", "--transport <mcp|native|http>"]
     }
   ],
   "exitCodes": {

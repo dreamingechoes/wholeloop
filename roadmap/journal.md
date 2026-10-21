@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · P4-05 — tested client-owned MCP routing
+
+- Add a bounded non-secret client tool/schema inventory, deterministic provider plan command and injected client transport host. Prefer matching observed tools and explicit reviewed virtual-operation bindings. Preserve native drafts/proposals and pending handoffs when access/contracts are missing. Reuse the client's connection, authentication, argument translation and result normalization; do not add an MCP network client or per-vendor API implementation.
+- HTTP requires explicit selection, including when a host is already available. Missing MCP access and invocation errors never switch transport. Let eligible delegated dashboard calls precede native handoffs. Launch workflow regressions preserve exact pinned metric provenance, completed-result caching and uncertain once-only intent; ramp checks preserve observed zero and unknown on failed/pending/mismatched reads. Keep existing experimental HTTP hosts and fixtures intact.
+- Update source/publication/launch/ramp/setup guidance, document concrete metadata planning and host integration, and close P4-05 under ADR-0085 without calling an Amplitude handoff a remote write. The roadmap now has 39 of 54 tasks complete and fifteen open. Preserve all 203 prior declarations and 151 signatures; append two versioned contracts and one command (205 declarations, 152 commands, five exit codes). Focused transport/rollout/launch/compatibility checks passed 284 cases in four files; full local check passed 1791 tests in 82 files (238.65 seconds), build/smoke, isolated npm package PASS, lint/types, references/catalogues, 263-file docs, 142-file harness, 262-file Markdown and all 35 Mermaid diagrams. Final documentation clarifications passed the docs/link, Markdown and whitespace checks again. Actual native authentication/tool semantics, real-service certification, Linux and release activation remain unverified; no project push or publication is requested.
+
 ## 2026-10-22 · Provider direction — client-owned MCP first
 
 - The owner explicitly authorized MCP-first routing, optional existing HTTP transports, no automatic fallback and a halt to per-vendor API expansion. Record ADR-0085 without rewriting Git history or invalidating the retained bridges' safety contracts. Preserve their accepted technical records as optional implementations; the new decision replaces only the obligation to add more HTTP hosts.

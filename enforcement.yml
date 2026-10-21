@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: provider-mcp-first
+    enforcers: [src/providers/transport.ts#planProviderTransport, src/providers/transport.ts#clientProviderHost, src/providers/rollout.ts#rolloutHost, test/unit/providers/transport.test.ts]
   - id: docs-settled-decisions
     enforcers: [src/docs/check.ts#checkLinks, test/unit/docs/check.test.ts]
   - id: remote-dashboard-create-boundary

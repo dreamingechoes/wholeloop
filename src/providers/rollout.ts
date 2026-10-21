@@ -15,6 +15,11 @@ export function rolloutHost(
 ): ProviderHost {
   return {
     invoke: async (call) => {
+      if (
+        !['comms.draft', 'flags.propose-change'].includes(call.operation) &&
+        delegate?.supports?.(call)
+      )
+        return delegate.invoke(call)
       const { args } = call
       const store = (
         body: Record<string, unknown>,

@@ -12,6 +12,8 @@
   their binding/content digests through the launch run.
 
 Local artifacts are real outputs; missing providers remain explicit handoffs.
+Read destination-publication before conductor dispatch: client MCP has priority,
+HTTP is opt-in and uncertain writes must not be retried through another transport.
 Drafting does not observe merge readiness, flag state or production metric values.
 Actual client adapter permission denial and provider semantics need conformance;
 canonical metadata and typed interfaces alone do not prove live tool isolation.

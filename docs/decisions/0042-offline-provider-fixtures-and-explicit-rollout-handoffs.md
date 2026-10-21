@@ -56,4 +56,14 @@ No Docker image, MCP server, credential, real source or remote destination was
 executed during implementation. This partial provider task does not block sync or
 grounding work that can use explicit typed hosts and local fixtures.
 
+## Current acceptance and transport scope
+
+[ADR-0084](./0084-experimental-integrations-and-scoped-live-verification.md) defers
+actual service certification and keeps integrations experimental, fixture-tested
+and service-unverified. [ADR-0085](./0085-client-owned-mcp-first-provider-transport.md)
+closes P4-05 through tested MCP priority, explicit HTTP selection and honest
+degradation; it does not require a direct HTTP host for every vendor. The earlier
+live-service closure requirement above is historical. Native handoffs and unknowns
+remain in force whenever the client lacks a reviewed actual tool contract.
+
 [◀ Decisions index](./README.md)

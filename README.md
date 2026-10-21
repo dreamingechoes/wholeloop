@@ -11,8 +11,11 @@
 
 Remote service integrations are **experimental · fixture-tested ·
 service-unverified**. You do not need accounts with every listed vendor to try the
-local harness. Actual service certification is deferred; unavailable bridge code
-is identified separately in the [provider catalogue](./docs/configuration/providers.md).
+local harness. Remote operations prefer the native client’s existing MCP connection;
+HTTP bridges are explicit experimental options, with no automatic fallback.
+See [transport setup and planning](./docs/extending/providers.md#client-owned-mcp-transport).
+Actual service certification is deferred; missing tool contracts retain pending
+handoffs in the [provider catalogue](./docs/configuration/providers.md).
 Native-client compatibility has its own checks and is not implied by provider tests.
 
 ## Try the local build and finish acceptance

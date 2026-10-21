@@ -86,7 +86,7 @@ observed by the structural judge.
 - [ ] In a disposable Unleash project, configure the explicit Admin reader and authorize a read with the exact deployment/subpath/project/environment. Compare default and default-stickiness percentage/disabled state with the native console, verify environment variants are fetched, and inspect dependency/targeted/union/release-plan/safeguard refusal. Current tests use synthetic responses and source API contracts; actual authentication/version/native/Linux behavior remains unverified.
 
 - [ ] Configure the explicit LaunchDarkly reader with a restricted REST token from the credential store and exact project/environment. Review the default plan, then authorize a live read only in a disposable test project. Confirm complete simple boolean/direct/weighted/reversed/off configurations match actual native state, no credential/raw targeting prose appears in output and no flag changes. Current HTTP tests are synthetic, not authenticated captures.
-- [ ] Verify rules, prerequisites, targets, experiments, custom buckets, incomplete responses, missing permissions and deadline failures stay unknown. Feed only the exact normalized result into its matching ramp request fingerprint and retain actual completion time. Repeat actual API/native/Linux behavior; remote dashboard bridges remain code work.
+- [ ] Verify rules, prerequisites, targets, experiments, custom buckets, incomplete responses, missing permissions and deadline failures stay unknown. Feed only the exact normalized result into its matching ramp request fingerprint and retain actual completion time. Repeat actual API/native/Linux behavior; remote certification remains deferred and no additional HTTP bridge is required under ADR-0085.
 
 ## Explicit conformance collection (P5-04 component)
 
@@ -303,16 +303,20 @@ These checks do not block subsequent independent local implementation.
 
 These checks do not block subsequent local grounding work.
 
-## Rollout providers and remaining bridges (P4-05)
+## Rollout providers — deferred service certification (P4-05)
 
+- [ ] In a real native client, inspect tools/schemas, review operation bindings and run provider plan against non-secret external metadata. Verify actual authentication, argument translation and normalized results for the chosen operation. Confirm a permission failure remains pending/unknown with no HTTP fallback. Routing, once-only dispatch and unknown handling are covered by synthetic tests; this checkbox is actual client/service certification.
 - [ ] Compare the implemented LaunchDarkly/Unleash/GrowthBook/PostHog REST readers against authenticated disposable-service captures and exact supported versions. Current HTTP fixtures are synthetic, not owner acceptance. Verify scope/cohort semantics and preserve unknown for complex targeting or missing access; PostHog environment scope is explicitly owner-configured, not API-observed.
-- [ ] Capture actual dashboard-write tool schemas/permissions and target data-source requirements for PostHog/Mixpanel/Amplitude/Metabase/Grafana. Grafana now has an explicit create-only/readback bridge. The Amplitude bridge remains code work. Mixpanel has explicit workspace-bound private creation and dedicated report/relationship readback. Metabase has a create-only owned-question bridge with unverified owner-reviewed native SQL time scope. PostHog has explicit project-check/create/readback and inspectable partial receipts. Default local output remains a pending exact-metric handoff with createdRemotely=false, not a remote chart.
+- [ ] Capture actual dashboard-write tool schemas/permissions and target data-source requirements for PostHog/Mixpanel/Amplitude/Metabase/Grafana. Grafana now has an explicit create-only/readback bridge. Amplitude retains a pending handoff until a reviewed client MCP contract is supplied; a dedicated HTTP host is not required. Mixpanel has explicit workspace-bound private creation and dedicated report/relationship readback. Metabase has a create-only owned-question bridge with unverified owner-reviewed native SQL time scope. PostHog has explicit project-check/create/readback and inspectable partial receipts. Default local output remains a pending exact-metric handoff with createdRemotely=false, not a remote chart.
 - [ ] Capture real MCP rosters/arguments, project/site/datasource IDs and permissions for Datadog/Grafana/Figma. Offline binding fixtures use synthetic normalized results and establish no remote compatibility.
 - [ ] Pull/verify the pinned Grafana container and read-only categories on supported platforms; pass credentials from the host store, never literal secret arguments or plaintext config. No container was pulled or run locally.
 - [ ] Review and manually post destination-labelled Slack/Teams/email drafts. Confirm no sending capability is present. Review/apply flag proposals externally; native proposal results are explicitly unapplied.
 - [ ] Exercise config-file reads/proposals and external-store conflict/idempotency on Linux and supported Node versions. The native reader requires explicit flag/environment/enabled/exposure/audience and never changes repository bytes.
 
-P4-05 remains partial. These bridge tasks do not block independent sync/grounding implementation.
+P4-05 implementation is complete under ADR-0085: client MCP takes priority, HTTP
+is explicitly selected and failed calls do not switch transport. The unchecked
+service/account cases above are deferred certification under ADR-0084, not release
+blockers or executed live tests.
 
 ## decide-next and actual follow-up (P4-04)
 
@@ -586,8 +590,8 @@ Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
 
 These core paths also have automated tests. Generated client adapters and later step workflows are implemented locally with
 separate fixtures; actual canonical skill sessions and authenticated provider/native
-acceptance remain unverified. The Amplitude dashboard host still needs its concrete
-authenticated contract. Do not interpret this smoke scenario as those acceptance
+acceptance remain unverified. Amplitude retains a pending dashboard handoff until
+a reviewed live MCP contract is supplied; no additional HTTP host is required. Do not interpret this smoke scenario as those acceptance
 checks or as permission to publish.
 
 [Roadmap](./README.md) · [Journal](./journal.md)

@@ -60,7 +60,10 @@ Give it a flag name and the criteria you care about ("`orders_csv_export`, watch
 
 The CLI accepts explicit plans and host-normalized reads; it does not authenticate
 or query remote services itself. Use sanitized scalar/flag observations, never
-credentials or raw private logs in response files.
+credentials or raw private logs in response files. Prefer the native client’s
+observed MCP tools through [client-owned transport planning](../../extending/providers.md#client-owned-mcp-transport).
+Missing or failed MCP reads remain unknown and never activate an HTTP bridge
+automatically. Proposals stay native and unapplied.
 
 ```bash
 wl ramp schema --json

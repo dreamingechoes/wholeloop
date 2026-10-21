@@ -7,6 +7,11 @@
 
 ---
 
+These are optional direct HTTP transports. For the default client MCP path, follow
+[client-owned transport setup](./providers.md#client-owned-mcp-transport). Missing
+MCP access and failures never activate these bridges automatically. Do not expand
+their API coverage without a concrete required MCP gap and a reviewed decision.
+
 ## Configure a read
 
 Use a non-secret user-maintained configuration containing references only; keep the actual credential in your encrypted store or native credential store
@@ -311,15 +316,16 @@ cached; unknown creation keeps intent. Actual API/permissions/workspace, native
 query/time scope and rendering remain owner acceptance. See
 [ADR-0083](../decisions/0083-mixpanel-workspace-bound-dashboards-and-native-reports.md).
 
-## Remaining work
+## Deferred MCP contracts and service certification
 
 Amplitude dashboard creation/normalization still needs a concrete authenticated
 tool contract. Its official MCP documentation requires current tool description/
 progressive discovery, while the public Dashboard REST API describes data reads.
 The [examined plugin manifest](https://github.com/amplitude/mcp-marketplace/blob/5b688be467553f38edb79b89f24d0ac8109c9f27/plugins/amplitude/.codex-plugin/plugin.json) does not provide the dashboard argument/response schema. Capture the actual create-only action, project identity, native chart
-binding and matching readback schema before implementing that host; a broad tool
+binding and matching readback schema before supplying a reviewed client binding; a broad tool
 name is insufficient. See [Amplitude MCP discovery](https://amplitude.com/docs/amplitude-ai/amplitude-mcp#progressive-tool-discovery). Existing dashboard files remain handoffs with
-createdRemotely=false. Current tests use local synthetic HTTP responses, not captured
+createdRemotely=false. No direct HTTP host is required under ADR-0085. Current tests
+use local synthetic HTTP responses, not captured
 live service evidence. Owner checks are in [manual verification](../../roadmap/manual-verification.md).
 See [ADR-0076](../decisions/0076-explicit-read-only-flag-bridges-and-conservative-cohorts.md).
 

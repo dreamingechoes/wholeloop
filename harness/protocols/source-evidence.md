@@ -12,3 +12,10 @@ Read each provider's guidance and live schema. Verify project/tenant/region,
 dates, timezone, permissions, query cost and completeness. Preserve references
 and distinguish observations from inference. A read-only database role is still
 required; fixture execution does not prove live permissions or source truth.
+
+Use the native client's MCP connection first. Report observed tools/schemas to
+`wl provider plan <id> <operation> --mcp <external-inventory.json> --json`; a planned
+route does not prove authentication. The client translates arguments and normalizes
+results from the live schema. HTTP requires explicit selection and never follows
+missing or failed MCP access automatically. Preserve the declared open question
+when access or the actual tool contract is missing.

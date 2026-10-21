@@ -15,3 +15,7 @@
 
 Read-only snapshots do not prove continuous cohort stability between observations.
 Real authentication, server proposal semantics and actual changes need owner checks.
+Use client MCP for remote reads after inspecting its actual tool/schema and
+wl provider plan. Follow source-evidence for unavailable reads: no automatic HTTP
+fallback. Proposals stay native and unapplied; inspect an ambiguous outcome rather
+than selecting another transport or repeating a write.

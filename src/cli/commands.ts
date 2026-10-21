@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'provider plan',
+    arguments: '<id> <operation>',
+    options: ['--mcp <file>', '--transport <mcp|native|http>'],
+    schema: 'wholeloop/provider-transport@1',
+    summary: 'Plan client-owned MCP or explicit native/HTTP transport without service access',
+  },
+  {
     path: 'provider read-flags',
     arguments: '',
     options: ['--bridge <file>', '--flag <key>', '--environment <key>', '--live'],

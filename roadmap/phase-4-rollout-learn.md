@@ -73,7 +73,7 @@ criterion does not block dependent local rollout implementation.
 
 ## P4-05 · Rollout providers
 
-**Status:** 🔄 · **Size:** L · **Depends on:** P1-08
+**Status:** ✅ · **Size:** L · **Depends on:** P1-08
 
 **Goal** — The launch and ramp steps work with the tools teams actually use.
 
@@ -83,7 +83,7 @@ criterion does not block dependent local rollout implementation.
 
 - [x] No manifest can map a send or toggle verb (validated).
 - [x] Each provider passes `wl provider test` with fixtures.
-- [ ] Client-owned MCP takes priority for known observed tools; missing contracts retain explicit degradation, and HTTP requires explicit selection without exception-triggered fallback (ADR-0085).
+- [x] Client-owned MCP takes priority for known observed tools; missing contracts retain explicit degradation, and HTTP requires explicit selection without exception-triggered fallback (ADR-0085).
 
 **Local implementation:** offline fixtures cover every declared operation of all
 fourteen targets; native unsent drafts, unapplied proposals, config-file reads and
@@ -100,8 +100,8 @@ checks supplied compiled definitions and labels hash-dependent cohorts explicitl
 Decimal percentages preserve exact forward/reverse configured values. The PostHog reader now performs complete exact-key lookup then detail GET with
 explicit owner-configured project/environment scope and conservative person-cohort
 normalization. Grafana now has an explicit create-only PromQL host with exact artifact/datasource/
-folder binding, default-preview CLI and once-intent POST/readback. Remaining
-The Amplitude dashboard bridge remains code work; Mixpanel now binds explicit
+folder binding, default-preview CLI and once-intent POST/readback.
+Mixpanel binds explicit
 project/workspace, creates a private dashboard and native owned report, and verifies
 exact report/relationship/privacy without interpreting opaque content; Metabase now creates
 one dashboard-owned native SQL question with exact classic-query/attachment
@@ -111,8 +111,10 @@ readback and retained pending references for known partial outcomes;
 local dashboard output is explicitly pending. ADR-0085 removes the obligation to
 implement more HTTP hosts: Amplitude remains a pending dashboard handoff until a
 known MCP contract is supplied, without claiming remote creation. Existing HTTP
-hosts remain explicit experimental options. The current change implements and
-tests MCP-first selection and no automatic HTTP fallback. Authenticated per-vendor
+hosts remain explicit experimental options. Transport planning and the injected client host test MCP-first selection,
+reviewed tool/schema membership, explicit HTTP opt-in and no failure fallback.
+Launch dispatch tests retain exact metric provenance, cached results and ambiguous
+intent across the routed host. Canonical protocols describe this boundary. Authenticated per-vendor
 certification remains deferred under ADR-0084. See the manual checklist, ADR-0042
 and the retained optional transport contracts ADR-0076 through ADR-0083.
 

@@ -74,7 +74,12 @@ send=true/draft=false mappings are rejected; real client permissions and opaque
 server semantics still require conformance. Missing providers return the complete
 local artifact for manual use. See [ADR-0038](../../decisions/0038-pinned-launch-kits-and-separate-publication-capabilities.md).
 
-The explicit launch dispatch CLI previews a selected Grafana, PostHog, Metabase or Mixpanel dashboard and only
+Remote dispatch prefers the native client’s observed MCP tool/schema and reviewed
+operation binding. Follow [client-owned transport setup](../../extending/providers.md#client-owned-mcp-transport);
+missing contracts retain pending handoffs and failed calls never activate HTTP.
+Native drafts remain unsent local artifacts.
+
+The optional HTTP launch dispatch CLI previews a selected Grafana, PostHog, Metabase or Mixpanel dashboard and only
 creates it with --live through that same once-intent boundary. The bridge binds the
 artifact digest, exact PromQL/source pointer, folder and datasource, then verifies
 stored configuration by readback. It does not establish valid queries/rendered
@@ -83,7 +88,8 @@ views, retaining known partial references as pending. Metabase creates an owned
 native SQL question and explicitly leaves its SQL time scope unverified for owner
 review. Mixpanel binds explicit workspace/native report parameters and verifies its
 dedicated report relationship, with unverified owner-reviewed time scope. The
-Amplitude bridge remains open; see
+Amplitude operation remains a pending handoff until a reviewed MCP contract is supplied;
+a dedicated HTTP host is not a release requirement. See
 [remote bridges](../../extending/remote-bridges.md#grafana-dashboard-creation).
 
 ## Run it

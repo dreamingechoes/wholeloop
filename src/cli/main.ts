@@ -31,6 +31,7 @@ import { learningCommand } from './learning.js'
 import { mailboxCommand } from './mailbox.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
+import { providerPlanCommand } from './provider-plan.js'
 import { providerFixtureCommand } from './provider-test.js'
 import { pullRequestCommand } from './pull-requests.js'
 import { rampCommand } from './ramp.js'
@@ -154,6 +155,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       return utilityCommand(command.path, parsed, root, json, io)
     if (/^(template|lens) |^profile (list|test|scaffold)$/.test(command.path))
       return extensionCommand(command.path, parsed, root, json, io)
+    if (command.path === 'provider plan') return providerPlanCommand(parsed, root, json, io)
     if (command.path.startsWith('provider ') || command.path === 'mcp add')
       return providerCommand(command.path, parsed, root, json, io)
     if (['discover', 'resolve'].includes(command.path))
