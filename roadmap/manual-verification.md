@@ -2,7 +2,26 @@
 
 > Automated results and pending work are separate. A checked roadmap task means
 > its local acceptance checks passed, not that every target CLI or platform has
-> been exercised. Updated 2026-10-21.
+> been exercised. Updated 2026-10-22.
+
+## Owner-observed Claude framing and session recovery (2026-10-22)
+
+The owner exercised source-installed user-scope loose skills in Claude Code,
+then closed the session, opened a new one and invoked status again. The local
+CLI reports Claude Code 2.1.306 on macOS arm64 with Node 24.22.0; the installed
+source revision was f714820. These are interactive observations and independent
+read-only core checks, not a collected conformance-runner verdict.
+
+- [x] Invoke wl-frame-problem from a sentence in the actual client. Observe the eight framing questions, explicit unknowns and a pause for the owner's decision.
+- [x] Complete an explicitly fictitious scenario with the owner's on-hold outcome. Independently inspect the English external-store artifact and core state: framing completed, initiative closed, no next step, and the approved reason/reopen condition retained.
+- [x] Close Claude, open a new session and invoke wl-status with the same initiative ID. The owner reports the same closed initiative, completed framing, no next step and retained on-hold note.
+- [ ] Correct narrative decision fidelity: the stored artifact preserves the owner's reopen condition but also introduces stricter reopening requirements and drop rules without approval. Treat these as proposals until explicitly accepted; structural validation did not catch the contradiction.
+- [ ] Review the final semantic revision. The transcript reports two challenger rounds, followed by a third draft that received structural validation only; this does not establish final-content review or independent reviewer isolation.
+
+This observation does not close plugin installation/all-entrypoint discovery,
+actual hook denial, role isolation, authenticated providers, the go/spec path,
+the random-marker runner scenario or other clients/platforms. The unchecked
+aggregate checks below remain open for those broader requirements.
 
 ## Remote rollout bridge (P4-05 component)
 
@@ -123,8 +142,9 @@ sections above. Overview pages retain native/host verification boundaries.
 
 Automated tier-A/Gemini/Antigravity/Cursor installed-launcher simulations report FIXTURE_PASS, never a
 native conformance PASS. Preparation launches no model; --live is an explicit
-owner action that can use authenticated models and incur cost. Actual model runs
-remain unexecuted here and do not block further implementation.
+owner action that can use authenticated models and incur cost. The interactive
+Claude observation above is separate from this unexecuted live runner scenario;
+these checks do not block further implementation.
 
 ## Native installation and observed diagnostics (P1-13)
 
@@ -372,9 +392,9 @@ These owner checks do not block implementation of the remaining local workflows.
 | Task | Action | Current evidence |
 | --- | --- | --- |
 | P0-01 | Authenticate to npm and reserve the package when ready to make the name public | No package was published in this session |
-| P0-03 | Follow the isolated-session [conformance checklist](../test/conformance/notes/README.md) for all four tier-A CLIs | Version/help only; permissions, discovery, hooks, questions, MCP and plugin loading remain unverified |
+| P0-03 | Follow the isolated-session [conformance checklist](../test/conformance/notes/README.md) for all four tier-A CLIs | Owner-observed Claude loose-skill framing/status and session recovery; broad discovery, permissions, hooks, MCP, plugin loading and other clients remain unverified |
 | P0-06 | Optionally enable the local hook with `npm run hooks:install`; preserve any existing hook chain | A real hook was exercised in a temporary git repository; this checkout's Git configuration was not changed |
-| CI | Run the updated workflow on Linux/macOS, including Node 20 runtime and a PR containing a rejected message | Local checks ran on macOS arm64 / Node 24.1.0; no remote CI run or push was performed |
+| CI | Run the updated workflow on Linux/macOS, including Node 20 runtime and a PR containing a rejected message | Local checks also passed on macOS arm64 / Node 24.22.0; no remote CI run or push was performed |
 | P1-03 | Optionally exercise forced interruption during a store write, preserve the journal, inspect the lock owner and rebuild after recovery | Concurrent processes, failed batches, malformed journals, symlinks and byte-identical rebuild are tested; physical power loss is not |
 
 ## Provider validation still pending

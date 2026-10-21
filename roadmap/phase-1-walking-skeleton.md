@@ -163,8 +163,12 @@
 embedded canonical resources, bundled core, owned output/backup writer and golden
 fixtures are implemented. The actual Claude 2.1.299 static plugin validator passed
 in an isolated directory. Native guard registration is now implemented through the
-shared core; real hook capture, local install/discovery/model execution remain
-owner checks. These gaps do not block independent installation implementation.
+shared core. The owner exercised user-scope loose-skill framing through an on-hold
+closure and recovered status in a fresh Claude session; independent core reads
+confirmed persistence. See the [observation and content defects](./manual-verification.md#owner-observed-claude-framing-and-session-recovery-2026-10-22).
+Real hook capture, role isolation, plugin installation/all-skill discovery and
+the live runner remain owner checks. These gaps do not block independent
+installation implementation.
 
 **Docs** — platforms, ADR-0047.
 

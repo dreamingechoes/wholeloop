@@ -3,7 +3,7 @@
 > **TL;DR** — Build once, choose a named target, inspect its dry run and install its owned components. Run doctor for that target, then restart the native client and verify discovery and permissions. File installation and native activation are separate observations.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The seven source-built installation paths, packaged resources and diagnostics are implemented and tested locally. Native trust, skill/agent discovery, permissions, authentication and model sessions remain owner verification. Published npm/remote-marketplace delivery remains pending.
+> **Status: 🚧 partial.** The seven source-built installation paths, packaged resources and diagnostics are implemented and tested locally. The owner observed Claude loose-skill framing and status recovery across sessions; broader discovery, trust, permissions, authentication and model scenarios remain owner verification. Published npm/remote-marketplace delivery remains pending.
 
 ## Before choosing a target
 
@@ -53,6 +53,11 @@ Managed loose components use wl-prefixed names under .claude, or the absolute
 CLAUDE_CONFIG_DIR override. Restart Claude and request the wl-frame-problem skill
 in the intended project. Inspect role discovery and the scoped guard transport;
 read-only/native permission behavior remains an actual-client check.
+
+The [2026-10-22 owner observation](../../roadmap/manual-verification.md#owner-observed-claude-framing-and-session-recovery-2026-10-22)
+confirms interactive loose-skill framing, an on-hold closure and status recovery
+after restarting Claude. It also records unapproved narrative conditions and
+an unreviewed final revision; this is narrower than full native conformance.
 
 Standalone generated plugins use the wholeloop namespace instead. For that
 delivery route, follow the [local marketplace preview](../contributing/releasing.md#review-a-local-delivery-preview)

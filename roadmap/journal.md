@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Owner verification — Claude framing and session recovery
+
+- Record the owner's actual user-scope Claude loose-skill framing, explicit on-hold completion and status lookup after closing Claude and opening a fresh session. Read the core independently to confirm the closed initiative, completed framing, no next step and retained owner reason/reopen condition. Inspect the English external-store artifact without copying runtime records into the repository. The locally observed client is Claude Code 2.1.306 on macOS arm64/Node 24.22.0, using installed source revision f714820; this is not a collected live-runner verdict.
+- Preserve two content defects as pending: the final narrative adds stricter reopening/drop rules without owner approval, and the last semantic revision received structural validation without another challenger review. Do not equate persisted decisions with faithful narrative or two reported review rounds with final-content review/role isolation. Keep plugin/all-skill discovery, hook enforcement, remote providers, go/spec, random-marker conformance and Linux/other clients open; no aggregate roadmap task is closed.
+- After selecting compatible Node 24.22.0 through the existing asdf installation, npm ci completed without engine warnings and the unchanged source passed the full local check: 1760 tests in 81 files (258.68 seconds), build/smoke, isolated npm package, lint/types, docs/references/catalogs, harness, Markdown and Mermaid. This documentation-only update passed 260-file docs/link checks, 259-file Markdown lint and diff whitespace checks. No source behavior, existing runtime artifact, remote service, publication or project push is changed by this entry.
+
 ## 2026-10-21 · P0-07 component — settled ADR references and readiness audit
 
 - Enforce the existing linked/plain referenced-decision criterion in docs check: one explicit Accepted/Superseded metadata declaration outside code fences in the first fifteen lines, unique plain-number or matching Markdown successor, recursively settled referenced successors and no cycles. Keep unreferenced Proposed drafts possible and check repeated references once. Preserve existing public schema/command declarations; lifecycle metadata proves no native platform behavior.
