@@ -37,6 +37,33 @@ actual hook denial, role isolation, authenticated providers, the go/spec path,
 the random-marker runner scenario or other clients/platforms. The unchecked
 aggregate checks below remain open for those broader requirements.
 
+## Automatic native-client trials (2026-10-22)
+
+The owner authorized actual model-backed execution of the other installed clients.
+Run fresh disposable fixtures; retain earlier failures rather than relabelling
+them after a code change. All observations below are on macOS arm64/Node 24.22.0.
+
+| Client | Observed version | Actual result | Remaining issue |
+| --- | --- | --- | --- |
+| Codex | 0.163.0 | PASS with live-process-and-journal evidence, no missing events/problems | Standalone framing only; hooks, permissions and broader workflow remain separate |
+| OpenCode | 2.1.1 | FAIL; native process exited 1 and required events were absent | Removed an unsupported run --dir flag; the corrected invocation still failed, requiring further diagnosis |
+| Copilot | 1.0.83 | FAIL; process exited 0 without required journal events, including after the prompt correction | A short model-access probe succeeds; that does not establish framing/tool execution |
+| Gemini | 0.27.0 | FAIL; process exited 1 without required events | A separate short probe reports IneligibleTierError; native account/project eligibility needs resolution |
+| Antigravity | 1.4.4 | FAIL; process exited 0 without required events | An attached empty print prompt parses and emits init; actual assignment execution remains unverified |
+| Cursor | 2026.07.16-899851b | FAIL; process exited 1 without required events | A separate short probe reports missing native authentication |
+
+- [x] Execute and retain the six initial real reports outside Git, with exact observed versions.
+- [x] Correct the prompt's appended punctuation and obtain an actual Codex standalone framing PASS on bundled core 04fe3f55 (digest prefix); do not loosen the judge's exact-input comparison.
+- [ ] Obtain a passing fresh scenario for OpenCode, Copilot, Gemini, Antigravity and Cursor after diagnosing each actual failure.
+- [ ] Verify the isolated permission/hook/client-specific spike in addition to structural framing. One passing client cannot close the four-client P1-14 or seven-client platform acceptance.
+
+The Codex receipt and exact passing core are retained externally. Later OpenCode
+and Antigravity recipe changes have their own receipts/core identities; do not
+present different-build observations as a comparable pinned/latest regression.
+No native permission bypass, credential copying, service write or project push
+was requested by these scenarios. Native ambient side effects are not fully
+observed by the structural judge.
+
 ## Remote rollout bridge (P4-05 component)
 
 - [ ] For the remaining Amplitude bridge, use the actual authenticated MCP context/progressive discovery to capture the current create-only dashboard/chart action schema, native project/query/window binding and matching exact-ID readback schema. Public documentation identifies a broad dashboard tool but not its concrete argument/response contract; public REST documentation covers data reads. Preserve non-secret structural captures and permissions only, without tokens/private chart prose. This is still unimplemented bridge code awaiting that contract, not a completed feature or a passed owner check.

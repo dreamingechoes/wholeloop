@@ -111,7 +111,7 @@ describe('standalone conformance runner', () => {
       const env = fakeClient(
         dir,
         '99.0.0',
-        `;(async()=>{let input='';for await(const chunk of process.stdin)input+=chunk;const event=JSON.parse(input);if(event.event!=='user'||!event.message.content.includes('wl-agy-frame-problem')||!process.argv.includes('stream-json'))process.exit(8);(await import('node:fs')).writeFileSync(${JSON.stringify(received)},JSON.stringify(event));})()`,
+        `;(async()=>{let input='';for await(const chunk of process.stdin)input+=chunk;const event=JSON.parse(input);if(event.event!=='user'||!event.message.content.includes('wl-agy-frame-problem')||!process.argv.includes('--print=')||!process.argv.includes('stream-json'))process.exit(8);(await import('node:fs')).writeFileSync(${JSON.stringify(received)},JSON.stringify(event));})()`,
         'agy',
       )
       expect(JSON.parse(readFileSync(prepared.input, 'utf8')).event).toBe('user')
@@ -325,6 +325,37 @@ describe('standalone conformance runner', () => {
       expect(() => readConformance(ctx, prepared.id)).toThrow('Unsafe conformance fixture')
     })
   }, 30000)
+
+  it('preserves exact input and owner values without adding prose punctuation', async () => {
+    await fixture(async (ctx) => {
+      const prepared = prepareConformance(ctx, 'codex', '99.0.0')
+      const run = readConformance(ctx, prepared.id)
+      const scenario = conformanceScenario(ctx.canonical).scenario
+      for (const input of [scenario.input, 'Find "quoted" orders?\nKeep the next line.']) {
+        const prompt = conformancePrompt(run, { ...scenario, input })
+        const line = prompt.split('\n').find((line) => line.startsWith('Exact --input value'))
+        const owner = prompt.split('\n').find((line) => line.startsWith('Exact --owner value'))
+        expect(JSON.parse(line?.slice(line.indexOf(': ') + 2) ?? '')).toBe(input)
+        expect(JSON.parse(owner?.slice(owner.indexOf(': ') + 2) ?? '')).toBe(scenario.owner)
+      }
+    })
+  })
+
+  it('runs OpenCode from the prepared cwd without the unsupported run directory flag', async () => {
+    await fixture(async (ctx, dir) => {
+      const prepared = prepareConformance(ctx, 'opencode', '99.0.0')
+      const env = fakeClient(
+        dir,
+        '99.0.0',
+        `;(async()=>{let input='';for await(const chunk of process.stdin)input+=chunk;if(process.argv.includes('--dir')||process.cwd()!==${JSON.stringify(prepared.root)}||!input.includes('Exact --input value'))process.exit(8);})()`,
+        'opencode',
+      )
+      const report = await runConformance(ctx, prepared.id, 'live', { env })
+      expect(report.process).toMatchObject({ status: 'succeeded', code: 0 })
+      expect(report.status).toBe('FAIL')
+      expect(report.missing).toContain('step.completed:frame-problem:same-run')
+    })
+  })
 
   it('keeps native recipes shell-free, fresh and free of permission bypasses', async () => {
     await fixture(async (ctx) => {

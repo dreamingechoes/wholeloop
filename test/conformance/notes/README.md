@@ -1,6 +1,11 @@
 # Conformance spike — evidence still required
 
-Version and help probes succeeded for all four tier-A CLIs on macOS arm64. No model sessions have been run; P0-03 and its dependent adapter tasks remain open. The platform matrix is a design target, not verified support.
+Version/help probes and owner-authorized actual model trials ran on macOS arm64.
+Codex 0.163.0 passed the structural standalone framing scenario; the owner observed
+Claude loose-skill framing and recovery across sessions. Other automatic trials
+failed; see [actual results and blockers](../../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22).
+P0-03's full permissions/hooks/questions/MCP spike and dependent aggregate adapter
+acceptance remain open. These observations do not establish the complete platform matrix.
 
 ## Manual checklist (repeat for each CLI)
 

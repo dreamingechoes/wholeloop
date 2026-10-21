@@ -67,6 +67,10 @@ wl-frame-problem entrypoint. Static plugin validation does not activate it.
 
 ## Codex
 
+The [automatic native trial](../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22)
+passed standalone framing on Codex 0.163.0. That structural result does not replace
+the permission/hook spike, other steps or a different client's acceptance.
+
 ```bash
 node "$WHOLELOOP_CLI" install --target codex --scope user --dry-run --json
 node "$WHOLELOOP_CLI" install --target codex --scope user --json

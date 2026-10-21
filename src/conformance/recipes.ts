@@ -31,7 +31,8 @@ export function conformanceRecipe(run: PreparedConformance) {
     return {
       ...common,
       command: 'agy',
-      args: ['--input-format', 'stream-json', '--output-format', 'stream-json'],
+      // An attached empty prompt selects print mode without consuming the next flag or adding a turn.
+      args: ['--print=', '--input-format', 'stream-json', '--output-format', 'stream-json'],
     }
   if (run.target === 'gemini')
     return {
@@ -84,7 +85,8 @@ export function conformanceRecipe(run: PreparedConformance) {
       ],
     }
   if (run.target === 'opencode')
-    return { ...common, args: ['run', '--format', 'json', '--dir', run.root] }
+    // OpenCode 2.x removed run's --dir option; spawn already sets the exact fixture cwd.
+    return { ...common, args: ['run', '--format', 'json'] }
   if (run.target === 'copilot')
     return {
       ...common,
@@ -109,8 +111,10 @@ export function conformancePrompt(run: PreparedConformance, scenario: Scenario):
   return [
     `Run the project-local ${basename(dirname(run.skill))} skill once, standalone. Load its actual installed SKILL.md and follow its instructions.`,
     `The project skill is at ${JSON.stringify(run.skill)}. Use its checked launcher: node ${JSON.stringify(run.launcher)}.`,
-    `Idea: ${scenario.input}. Owner: ${scenario.owner}.`,
-    'Pass the exact idea sentence as --input and the exact owner as --owner.',
+    // Appending prose punctuation changed the recorded input in an actual Codex trial.
+    `Exact --input value (JSON string): ${JSON.stringify(scenario.input)}`,
+    `Exact --owner value (JSON string): ${JSON.stringify(scenario.owner)}`,
+    'Decode those JSON strings as argument values without adding punctuation or including the surrounding quotes.',
     ...scenario.facts,
     `Write the framing draft only at ${JSON.stringify(run.artifact)}; runtime state is ${JSON.stringify(run.state)}.`,
     'Do not edit the repository, change configuration, commit, push, call remote services or start another step. Do not invent evidence, metrics, validation or approvals.',

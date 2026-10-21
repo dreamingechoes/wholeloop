@@ -30,6 +30,7 @@ be a separate scope change, not a consequence of experimental service integratio
 - [x] The owner installed user-scope Claude loose skills and invoked framing with the eight questions and an explicit human stop.
 - [x] An on-hold outcome retained the owner's reason and reopening condition in external core state.
 - [x] After closing Claude and opening a new session, status recovered that same closed initiative with framing completed and no next step.
+- [x] The automatic standalone framing scenario passed on actual Codex 0.163.0 after correcting the exact-input prompt. The other five attempted clients have failures recorded in [the native trial table](../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22).
 
 That does not establish a successful go/spec path, all skill/agent discovery,
 native permission denial, plugin installation or the live random-marker scenario.

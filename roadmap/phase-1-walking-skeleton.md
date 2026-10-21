@@ -255,9 +255,12 @@ checks do not block the local P1-14 conformance runner.
 real project installer/launchers, four native headless recipes, exact version
 preflight, bounded execution/cancellation and a replay/projection/marker judge are
 implemented. Preparation, simulation and explicit live process evidence are distinct.
-Fixtures cannot close the real-client criterion. Missing native trust/permissions,
-actual model runs and Linux/other Node checks remain with the owner. These checks
-do not block other implementation.
+Fixtures cannot close the real-client criterion. An owner-authorized actual Codex
+0.163.0 standalone run passed after correcting the exact-input prompt. Claude has
+separate owner-observed on-hold/session-recovery evidence; actual automatic trials
+of the other five clients failed. See the [native trial table](./manual-verification.md#automatic-native-client-trials-2026-10-22).
+Full four-client scenario acceptance, native permissions/hooks and Linux/other
+Node checks remain open. These checks do not block other implementation.
 
 **Docs** — architecture/determinism-and-testing, platforms, ADR-0051.
 
