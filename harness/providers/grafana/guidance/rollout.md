@@ -14,3 +14,7 @@
   empty result is zero. Figma returns referenced design context, never edits.
 - Dashboard specs retain the exact metric and source pointer. Handoff means a
   person creates the chart in the named service; never report remote creation.
+
+The explicitly selected Grafana v1 REST host creates one metric-pinned PromQL
+dashboard through launch dispatch intent and strict readback. Default native
+handoffs remain pending; stored configuration proves no query/rendering/traffic.

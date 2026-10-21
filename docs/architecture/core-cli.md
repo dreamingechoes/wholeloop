@@ -73,6 +73,7 @@ identities and optional command flags remain additive; read the
 | `wl ramp confirm` | `wholeloop/ramp-report@1` | Confirm an externally performed change before advancing one stage |
 | `wl ramp report` | `wholeloop/ramp-report@1` | Resume the current stage, evidence and explicit decision |
 | `wl ramp schema` | `wholeloop/ramp-schema@1` | Print the versioned ramp plan input contract |
+| `wl launch dispatch` | `wholeloop/dashboard-dispatch@1` | Preview or explicitly dispatch one metric-pinned dashboard creation |
 | `wl launch begin [<description>]` | `wholeloop/launch-begin@1` | Pin launch measurements and repository voice before drafting |
 | `wl launch complete` | `wholeloop/launch-complete@1` | Store a validated launch kit with metric-linked dashboard specs |
 | `wl launch report` | `wholeloop/launch-report@1` | Show local artifacts and explicit provider draft/create handoffs |

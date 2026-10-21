@@ -290,6 +290,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Print the versioned ramp plan input contract',
   },
   {
+    path: 'launch dispatch',
+    arguments: '',
+    options: ['--for <id>', '--key <artifact-key>', '--bridge <file>', '--live'],
+    schema: 'wholeloop/dashboard-dispatch@1',
+    summary: 'Preview or explicitly dispatch one metric-pinned dashboard creation',
+  },
+  {
     path: 'launch begin',
     arguments: '[<description>]',
     options: ['--for <id>', '--owner <person>', '--measurement <file>'],

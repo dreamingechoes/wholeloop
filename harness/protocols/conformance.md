@@ -1,5 +1,10 @@
 # Conformance evidence
 
+- ⛔ `remote-dashboard-create-boundary` — bind explicit create authority to the
+  exact completed artifact/query and reviewed deployment/datasource/folder.
+  Journal intent before writes, verify stored identity/content, keep credentials
+  in the host store and retain ambiguous outcomes without retries or overwrites.
+
 - ⛔ `remote-flag-read-boundary` — keep service execution explicit and credentials
   in the host store. Bind exact read identity, bound/redact transport, refuse
   mutation routes and normalize only supported complete targeting. Unsupported

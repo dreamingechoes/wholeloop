@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-21 · P4-05 Grafana — create-only metric-pinned dashboards
+
+- Add a strict non-secret Grafana v1 configuration and explicit host for one completed metric-pinned PromQL artifact. Bind body digest/source pointer/query, reviewed deployment/namespace/folder/datasource/new UID, window/timezone and descriptive unit/target provenance. Preserve the built-in read-only MCP roster and default local handoffs. ADR-0080 records the scope and rejected translation/overwrite alternatives.
+- Add default-preview launch dispatch using the actual resolved manifest arguments with no credential/network/intent. Explicit live dispatch uses the existing journal-before-write boundary, one create POST and exact constructed-UID readback, shared bounded/redacted credential-store transport and no overwrite/update/delete/retry. Failures retain possible partial creation; completed results cache by run/key. Stored configuration does not prove query validity, rendering or traffic.
+- Focused provider/launch checks passed 53 cases and contract/CLI checks passed 272 cases. Actual Node 20.0.0 macOS arm64 passes the synthetic signal-bearing POST/GET host subset. Full local check passed 1599 tests in 78 files (220.64 seconds), actual isolated npm packaging PASS, build/smoke, lint/typecheck, references/catalogs, 257-file docs, 142-file harness, 256-file Markdown and all 35 Mermaid diagrams. Preserve all 198 prior declarations/signatures; append one source schema, one output and one command (200 declarations, 151 commands, five exit codes). Actual Grafana version/permissions/normalization, datasource/PromQL/rendering and Linux remain owner checks; other dashboard bridges remain code work. No actual remote creation, authenticated service call, native model, personal configuration, CI/issue operation, publication, version/privacy/ref/tag change or project push ran.
+
 ## 2026-10-21 · P4-05 PostHog — exact identity and explicit environment mapping
 
 - Add a separate non-secret PostHog configuration with numeric project and owner-maintained environment mapping, preserving existing frozen declarations. Refuse mismatched scope before credential/network access. Plan a complete exact-case unique key lookup followed by numeric detail GET; never follow pagination URLs and share one bounded deadline. ADR-0079 records why project scope cannot be reported as an API-observed environment.

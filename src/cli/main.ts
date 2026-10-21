@@ -26,6 +26,7 @@ import { impactCommand } from './impact.js'
 import { installationCommand } from './install.js'
 import { EXIT, type Io } from './io.js'
 import { launchCommand } from './launch.js'
+import { launchDispatchCommand } from './launch-dispatch.js'
 import { learningCommand } from './learning.js'
 import { mailboxCommand } from './mailbox.js'
 import { profileCommand } from './profile.js'
@@ -103,6 +104,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (command.path === 'release preflight') return releasePreflightCommand(parsed, root, json, io)
     if (command.path.startsWith('learn '))
       return learningCommand(command.path, parsed, root, json, io)
+    if (command.path === 'launch dispatch')
+      throw new CliError('This command requires the asynchronous dispatcher')
     if (command.path.startsWith('launch '))
       return launchCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('env '))
@@ -208,6 +211,7 @@ export async function runAsync(
         command.path === 'sync' ||
         command.path === 'provider test' ||
         command.path === 'provider read-flags' ||
+        command.path === 'launch dispatch' ||
         command.path === 'verify suite' ||
         command.path.startsWith('pr ') ||
         command.path.startsWith('ramp ') ||
@@ -232,6 +236,8 @@ export async function runAsync(
     if (command.path.startsWith('guard '))
       return await guardCommand(command.path, parsed, root, json, io)
     if (command.path === 'provider read-flags') return await flagReadCommand(parsed, root, json, io)
+    if (command.path === 'launch dispatch')
+      return await launchDispatchCommand(parsed, root, json, io)
     if (command.path === 'fanout run') return await fanoutCommand(parsed, root, json, io)
     if (command.path.startsWith('conformance '))
       return await conformanceCommand(command.path, parsed, root, json, io)

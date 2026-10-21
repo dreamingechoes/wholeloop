@@ -199,7 +199,9 @@
     "schema:wholeloop/conformance-downloads@1": "dcfaf9025faac5c71541a6d4b6bb9e4cd5af316b1aae2b10ca115b6dbecf712f",
     "output:wholeloop/flag-read@1": "f9117916f7ab116ba35c5eb93378f26fc151d679cf40ecc74be0b5d88b596a5b",
     "schema:wholeloop/flag-bridge@1": "364b24446cda7df2a8a052b3e398c53907744e3081b1880ac3f97a820aeba59f",
-    "schema:wholeloop/posthog-flag-bridge@1": "154e11ae2fdb1f08c0c0b7349f1879527089c4656f2e2250a1f46b3171f706fb"
+    "schema:wholeloop/posthog-flag-bridge@1": "154e11ae2fdb1f08c0c0b7349f1879527089c4656f2e2250a1f46b3171f706fb",
+    "schema:wholeloop/grafana-dashboard-bridge@1": "718d7af44a4093b85a6b467e5103d7eaca2f7f3ee11d2c50f18990c0667104c1",
+    "output:wholeloop/dashboard-dispatch@1": "4d3a451de7edef3a9d109609b36832346c5021df4cb7698724df8d9534f8656b"
   },
   "commands": [
     {
@@ -1211,6 +1213,12 @@
       "arguments": "",
       "schema": "wholeloop/flag-read@1",
       "options": ["--bridge <file>", "--flag <key>", "--environment <key>", "--live"]
+    },
+    {
+      "path": "launch dispatch",
+      "arguments": "",
+      "options": ["--for <id>", "--key <artifact-key>", "--bridge <file>", "--live"],
+      "schema": "wholeloop/dashboard-dispatch@1"
     }
   ],
   "exitCodes": {

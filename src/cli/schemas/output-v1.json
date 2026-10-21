@@ -6,6 +6,33 @@
   "oneOf": [
     {
       "type": "object",
+      "required": ["schema", "subject", "key", "status", "plan", "effects"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/dashboard-dispatch@1"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "status": {
+          "enum": ["planned", "dispatched"]
+        },
+        "plan": {
+          "type": "object"
+        },
+        "effects": {
+          "enum": ["not-performed", "explicit-dispatch"]
+        },
+        "result": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "object",
       "required": ["schema", "status", "provider", "flag", "environment", "request", "effects"],
       "properties": {
         "schema": {

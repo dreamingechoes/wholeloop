@@ -1,9 +1,9 @@
-# Remote rollout bridges — explicit reads and conservative normalization
+# Remote rollout bridges — explicit reads and metric-pinned creation
 
 > **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash, GrowthBook and PostHog have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, remote dashboard creation remain open.
+> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other remote dashboard bridges remain open. Grafana has an explicit fixture-tested create-only host with readback; actual server/rendering acceptance remains unverified.
 
 ---
 
@@ -141,9 +141,61 @@ still need their own actual hosts or explicit unavailable entries. Then use the
 existing ramp observe/confirm import. Imported files do not authenticate themselves,
 and no bridge result authorizes a manual exposure change or approval.
 
+## Grafana dashboard creation
+
+The explicit Grafana bridge targets the v1 API available in Grafana 12 and later.
+Configure dashboards=grafana for the launch and complete its kit first. Its metric
+must already use provider=grafana, operation=source.observability.query and an
+actual reviewed PromQL query. The bridge preserves that query; it does not convert
+prose, SQL or Loki into PromQL, resolve templates or infer a datasource.
+
+Use a separate non-secret configuration with your actual deployment and IDs:
+
+```json
+{
+  "schema": "wholeloop/grafana-dashboard-bridge@1",
+  "provider": "grafana",
+  "baseUrl": "https://grafana.example.com/",
+  "tokenEnv": "WHOLELOOP_GRAFANA_CREATE_KEY",
+  "namespace": "default",
+  "dashboardUid": "wl-order-errors",
+  "folderUid": "launches",
+  "datasourceUid": "prometheus-main",
+  "queryLanguage": "promql",
+  "artifactDigest": "replace-with-the-exact-artifact-body-digest"
+}
+```
+
+The digest is measurementDigest(target.body), the same SHA-256 of JSON-encoded
+artifact body used by launch dispatch intent. Obtain the exact body from launch
+report; the placeholder above is deliberately invalid. Do not put a token in the
+configuration. Use an existing folder/datasource and a new dashboard UID, with
+restricted create/read access resolved from your credential store.
+
+```bash
+node "$WHOLELOOP_CLI" launch dispatch --for "$SCOPE_ID" \
+  --key dashboards/order-errors --bridge "$DASHBOARD_BRIDGE" --json
+```
+
+The default preview shows the exact create payload and readback URL without
+credentials, HTTP or a dispatch event. Review its source pointer/query, folder,
+namespace, datasource and configured window/timezone. Explicit --live journals
+intent before one create POST, then reads back that same UID. Existing UIDs conflict;
+there is no overwrite/update/delete or automatic retry. Default rolloutHost still
+produces pending local handoffs unless the remote host is selected explicitly.
+
+A successful readback proves matching stored configuration only. It does not
+validate PromQL, permissions to query the datasource, rendered values or traffic.
+Strict panel comparison may reject server-injected defaults; inspect rather than
+retry. A failure, missing key after live dispatch, timeout or lost response retains
+intent and may require inspecting a partially created remote dashboard. Completed
+receipts are cached by run/key even if bridge configuration later changes. See
+[ADR-0080](../decisions/0080-create-only-grafana-dashboards-from-pinned-metrics.md).
+
 ## Remaining work
 
-Actual dashboard creation/normalization needs its own service-specific contracts. Existing dashboard files remain handoffs with
+PostHog/Mixpanel/Amplitude/Metabase dashboard creation/normalization still needs
+service-specific contracts. Existing dashboard files remain handoffs with
 createdRemotely=false. Current tests use local synthetic HTTP responses, not captured
 live service evidence. Owner checks are in [manual verification](../../roadmap/manual-verification.md).
 See [ADR-0076](../decisions/0076-explicit-read-only-flag-bridges-and-conservative-cohorts.md).

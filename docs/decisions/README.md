@@ -90,6 +90,7 @@
 | [0077](./0077-explicit-unleash-environments-and-unrestricted-strategies.md) | Explicit Unleash environments and unrestricted strategies | Accepted | 2026-10-20 |
 | [0078](./0078-published-growthbook-rules-and-explicit-hash-cohorts.md) | Published GrowthBook rules and explicit hash cohorts | Accepted | 2026-10-20 |
 | [0079](./0079-exact-posthog-reads-and-configured-environment-scope.md) | Exact PostHog reads and configured environment scope | Accepted | 2026-10-21 |
+| [0080](./0080-create-only-grafana-dashboards-from-pinned-metrics.md) | Create-only Grafana dashboards from pinned metrics | Accepted | 2026-10-21 |
 
 ## Lifecycle
 
