@@ -92,6 +92,7 @@
 | [0079](./0079-exact-posthog-reads-and-configured-environment-scope.md) | Exact PostHog reads and configured environment scope | Accepted | 2026-10-21 |
 | [0080](./0080-create-only-grafana-dashboards-from-pinned-metrics.md) | Create-only Grafana dashboards from pinned metrics | Accepted | 2026-10-21 |
 | [0081](./0081-posthog-dashboard-creation-and-partial-receipts.md) | PostHog dashboard creation and partial receipts | Accepted | 2026-10-21 |
+| [0082](./0082-metabase-owned-questions-and-explicit-sql-window-review.md) | Metabase-owned questions and explicit SQL window review | Accepted | 2026-10-21 |
 
 ## Lifecycle
 

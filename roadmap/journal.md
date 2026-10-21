@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-21 · P4-05 Metabase — dashboard-owned native SQL questions
+
+- Add a separate strict non-secret Metabase configuration and explicit dispatch host, binding completed artifact/source SQL, database/collection and owner-reviewed window acknowledgement. Create a new dashboard-owned table question without updating existing dashcards; use X-API-Key and documented legacy-mbql=true readback to compare exact classic SQL after opaque MBQL 5 conversion. ADR-0082 records why native SQL time scope cannot be inferred or translated.
+- Verify query/database/ownership/provenance, one attachment and no parameter/series/visualization overrides/public embedding. Preview expected days/timezone as explicitly unverified; query syntax is conservative, not a SQL safety/semantic proof. Saving may validate metadata, so actual datasource read permissions remain owner acceptance. Preserve shared bounds, Bearer behavior for other hosts, retained partial references and cached complete/pending delivery without overwrite/delete/retry.
+- Focused provider/launch checks passed 142 cases across four files and contract/CLI checks passed 276 cases. Actual Node 20.0.0 macOS arm64 passes the synthetic signal-bearing four-request API-key/classic-readback host subset. Full local check passed 1692 tests in 80 files (234.31 seconds), actual isolated npm packaging PASS, build/smoke, lint/typecheck, references/catalogs, 259-file docs, 142-file harness, 258-file Markdown and all 35 Mermaid diagrams. Preserve all 201 prior declarations/signatures; append one source schema (202 declarations, 151 commands, five exit codes). Actual Metabase/API versions, permissions, SQL/time scope/normalization/rendering/traffic and Linux remain owner checks; Mixpanel/Amplitude bridge contracts remain open. No actual remote creation/authentication, native model, personal configuration, CI/issue operation, publication, version/privacy/ref/tag change or project push ran.
+
 ## 2026-10-21 · P4-05 PostHog — dashboard/insight creation and partial references
 
 - Extract shared exact artifact/HTTPS binding and add a separate non-secret PostHog dashboard configuration. Preserve original HogQL/filter placeholder and pinned day range, require exact organization/project/timezone before writes, create a new dashboard and attached table insight, then verify both resource/attachment views with bounded credential-store transport. ADR-0081 records deprecated-but-current write-field support and why cached timezone is insufficient.

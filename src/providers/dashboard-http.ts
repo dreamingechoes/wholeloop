@@ -5,6 +5,7 @@ export async function withDashboardHttp<T>(
     secret: (name: string) => string | undefined | Promise<string | undefined>
     fetch?: typeof globalThis.fetch
     signal?: AbortSignal
+    authentication?: 'api-key'
   },
   action: (request: (path: string, body?: unknown) => Promise<unknown>) => Promise<T>,
 ): Promise<T> {
@@ -26,14 +27,22 @@ export async function withDashboardHttp<T>(
   try {
     return await action(async (path, body) => {
       const url = new URL(path, config.baseUrl)
-      if (!url.href.startsWith(config.baseUrl) || url.search || url.hash) throw new Error()
+      if (
+        !url.href.startsWith(config.baseUrl) ||
+        url.hash ||
+        (url.search &&
+          !(options.authentication === 'api-key' && url.search === '?legacy-mbql=true'))
+      )
+        throw new Error()
       const content = body === undefined ? undefined : JSON.stringify(body)
       if (content !== undefined && Buffer.byteLength(content) > 1024 * 1024) throw new Error()
       controller.signal.throwIfAborted()
       const response = await (options.fetch ?? globalThis.fetch)(url.href, {
         method: content === undefined ? 'GET' : 'POST',
         headers: {
-          Authorization: `Bearer ${credential}`,
+          ...(options.authentication === 'api-key'
+            ? { 'X-API-Key': credential }
+            : { Authorization: `Bearer ${credential}` }),
           Accept: 'application/json',
           ...(content === undefined ? {} : { 'Content-Type': 'application/json' }),
         },

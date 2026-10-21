@@ -3,7 +3,7 @@
 > **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash, GrowthBook and PostHog have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other remote dashboard bridges remain open. Grafana and PostHog have explicit fixture-tested create-only hosts with readback; actual server/rendering acceptance remains unverified.
+> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other remote dashboard bridges remain open. Grafana, PostHog and Metabase have explicit fixture-tested create-only hosts with readback; actual server/rendering acceptance remains unverified.
 
 ---
 
@@ -229,9 +229,48 @@ retains ambiguous intent. Neither can trigger automatic cleanup or retry. The fi
 requests share one deadline. See
 [ADR-0081](../decisions/0081-posthog-dashboard-creation-and-partial-receipts.md).
 
+## Metabase dashboard creation
+
+The same dispatch boundary supports a new dashboard with one dashboard-owned table
+question. The completed metric must already use provider=metabase,
+operation=source.bi.query and reviewed native SQL. A separate configuration binds
+the real deployment/database/collection and acknowledges time scope explicitly:
+
+```json
+{
+  "schema": "wholeloop/metabase-dashboard-bridge@1",
+  "provider": "metabase",
+  "baseUrl": "https://metabase.example.com/",
+  "tokenEnv": "WHOLELOOP_METABASE_CREATE_KEY",
+  "database": 2,
+  "collection": 3,
+  "queryLanguage": "native-sql",
+  "windowBinding": "reviewed-in-native-sql",
+  "artifactDigest": "replace-with-the-exact-artifact-body-digest"
+}
+```
+
+Replace example IDs/digest with reviewed values. Keep the key in your credential
+store and restrict the underlying database role to reads: saving a question may
+validate/run query metadata inside Metabase. The bridge preserves SQL text and
+uses no query execution endpoint. Its simple SELECT/no separators/comments/templates
+subset is conservative syntax, not a SQL safety or semantic proof.
+
+The preview exposes expected days/timezone as owner-reviewed-in-native-sql with
+verified=false. Confirm those predicates in the actual dialect yourself; the host
+does not inject dates, translate queries or claim time scope from SQL text.
+Live dispatch creates a dashboard, creates its owned question, and reads both back.
+The explicit legacy-mbql=true card read permits exact native-query comparison after
+Metabase's ordinary MBQL 5 conversion. No existing dashboard is updated/replaced.
+Sharing, attachment, parameter/series overrides and unsupported normalization prevent
+success. Known partial resources retain a pending inspection link; no retry or
+cleanup occurs. The API is unversioned; actual deployment/version, query/time scope
+and rendering remain owner acceptance. See
+[ADR-0082](../decisions/0082-metabase-owned-questions-and-explicit-sql-window-review.md).
+
 ## Remaining work
 
-Mixpanel/Amplitude/Metabase dashboard creation/normalization still needs
+Mixpanel/Amplitude dashboard creation/normalization still needs
 service-specific contracts. Existing dashboard files remain handoffs with
 createdRemotely=false. Current tests use local synthetic HTTP responses, not captured
 live service evidence. Owner checks are in [manual verification](../../roadmap/manual-verification.md).

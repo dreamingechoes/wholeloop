@@ -14,3 +14,7 @@
   empty result is zero. Figma returns referenced design context, never edits.
 - Dashboard specs retain the exact metric and source pointer. Handoff means a
   person creates the chart in the named service; never report remote creation.
+
+The explicit Metabase REST host creates a new dashboard-owned native SQL question
+with exact query/attachment readback. Native SQL window/permissions stay owner-
+reviewed and unverified; known partial references remain pending without retry.

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/metabase-dashboard-bridge@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "provider",
+    "baseUrl",
+    "tokenEnv",
+    "database",
+    "collection",
+    "queryLanguage",
+    "windowBinding",
+    "artifactDigest"
+  ],
+  "properties": {
+    "schema": { "type": "string", "const": "wholeloop/metabase-dashboard-bridge@1" },
+    "provider": { "type": "string", "const": "metabase" },
+    "baseUrl": { "type": "string" },
+    "tokenEnv": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,127}$" },
+    "database": { "type": "integer", "minimum": 1 },
+    "collection": { "type": "integer", "minimum": 1 },
+    "queryLanguage": { "type": "string", "const": "native-sql" },
+    "windowBinding": { "type": "string", "const": "reviewed-in-native-sql" },
+    "artifactDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

@@ -1,6 +1,7 @@
 import { isObject } from '../config/schema.js'
 import type { withDashboardHttp } from './dashboard-http.js'
 import { grafanaDashboardHost, grafanaDashboardPlan } from './grafana-dashboard.js'
+import { metabaseDashboardHost, metabaseDashboardPlan } from './metabase-dashboard.js'
 import type { OperationCall } from './operations.js'
 import { postHogDashboardHost, postHogDashboardPlan } from './posthog-dashboard.js'
 
@@ -11,6 +12,12 @@ export function dashboardBridge(configuration: unknown) {
       plan: (call: OperationCall) => postHogDashboardPlan(configuration, call),
       host: (options: Parameters<typeof withDashboardHttp>[1]) =>
         postHogDashboardHost(configuration, options),
+    }
+  if (isObject(configuration) && configuration.schema === 'wholeloop/metabase-dashboard-bridge@1')
+    return {
+      plan: (call: OperationCall) => metabaseDashboardPlan(configuration, call),
+      host: (options: Parameters<typeof withDashboardHttp>[1]) =>
+        metabaseDashboardHost(configuration, options),
     }
   return {
     plan: (call: OperationCall) => grafanaDashboardPlan(configuration, call),
