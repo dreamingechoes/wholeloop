@@ -74,14 +74,16 @@ send=true/draft=false mappings are rejected; real client permissions and opaque
 server semantics still require conformance. Missing providers return the complete
 local artifact for manual use. See [ADR-0038](../../decisions/0038-pinned-launch-kits-and-separate-publication-capabilities.md).
 
-The explicit launch dispatch CLI previews a selected Grafana, PostHog or Metabase dashboard and only
+The explicit launch dispatch CLI previews a selected Grafana, PostHog, Metabase or Mixpanel dashboard and only
 creates it with --live through that same once-intent boundary. The bridge binds the
 artifact digest, exact PromQL/source pointer, folder and datasource, then verifies
 stored configuration by readback. It does not establish valid queries/rendered
 values or traffic. PostHog additionally checks project/timezone and both dashboard/insight attachment
 views, retaining known partial references as pending. Metabase creates an owned
 native SQL question and explicitly leaves its SQL time scope unverified for owner
-review. Other remote dashboard bridges remain open; see
+review. Mixpanel binds explicit workspace/native report parameters and verifies its
+dedicated report relationship, with unverified owner-reviewed time scope. The
+Amplitude bridge remains open; see
 [remote bridges](../../extending/remote-bridges.md#grafana-dashboard-creation).
 
 ## Run it

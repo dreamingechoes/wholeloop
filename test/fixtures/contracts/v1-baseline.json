@@ -203,7 +203,8 @@
     "schema:wholeloop/grafana-dashboard-bridge@1": "718d7af44a4093b85a6b467e5103d7eaca2f7f3ee11d2c50f18990c0667104c1",
     "output:wholeloop/dashboard-dispatch@1": "4d3a451de7edef3a9d109609b36832346c5021df4cb7698724df8d9534f8656b",
     "schema:wholeloop/posthog-dashboard-bridge@1": "977cc32f637c6bcd86983d92bf611e4599bd29aa20324312f9932b8dcc7c55ce",
-    "schema:wholeloop/metabase-dashboard-bridge@1": "8ffd7bb88830b5288d4c7dd7ace315a63066b9d7c468b2fd50e6f8364e5ade09"
+    "schema:wholeloop/metabase-dashboard-bridge@1": "8ffd7bb88830b5288d4c7dd7ace315a63066b9d7c468b2fd50e6f8364e5ade09",
+    "schema:wholeloop/mixpanel-dashboard-bridge@1": "b73c185575e57e5e7ff323b331a1fbc43d783dd4938e2d72c5040e28fde56479"
   },
   "commands": [
     {

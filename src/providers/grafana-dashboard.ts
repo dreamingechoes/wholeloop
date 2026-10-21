@@ -105,56 +105,60 @@ export function grafanaDashboardHost(
     invoke: async (call) => {
       try {
         const plan = grafanaDashboardPlan(config, call)
-        return await withDashboardHttp(config, options, async (request) => {
-          const path = `apis/dashboard.grafana.app/v1/namespaces/${config.namespace}/dashboards`
-          const created = await request(path, plan.request.body)
-          const identity = (raw: unknown) => {
+        return await withDashboardHttp(
+          config,
+          { ...options, authentication: 'bearer' },
+          async (request) => {
+            const path = `apis/dashboard.grafana.app/v1/namespaces/${config.namespace}/dashboards`
+            const created = await request(path, plan.request.body)
+            const identity = (raw: unknown) => {
+              if (
+                !isObject(raw) ||
+                raw.kind !== 'Dashboard' ||
+                raw.apiVersion !== 'dashboard.grafana.app/v1' ||
+                !isObject(raw.metadata) ||
+                raw.metadata.name !== config.dashboardUid ||
+                raw.metadata.namespace !== config.namespace ||
+                typeof raw.metadata.resourceVersion !== 'string' ||
+                !raw.metadata.resourceVersion.trim()
+              )
+                return fail()
+              return raw
+            }
+            identity(created)
+            const observed = identity(await request(`${path}/${config.dashboardUid}`))
             if (
-              !isObject(raw) ||
-              raw.kind !== 'Dashboard' ||
-              raw.apiVersion !== 'dashboard.grafana.app/v1' ||
-              !isObject(raw.metadata) ||
-              raw.metadata.name !== config.dashboardUid ||
-              raw.metadata.namespace !== config.namespace ||
-              typeof raw.metadata.resourceVersion !== 'string' ||
-              !raw.metadata.resourceVersion.trim()
+              !isObject(observed.spec) ||
+              !isObject(observed.metadata) ||
+              !isObject(observed.metadata.annotations) ||
+              observed.metadata.annotations['grafana.app/folder'] !== config.folderUid ||
+              observed.spec.title !== plan.request.body.spec.title ||
+              observed.spec.description !== plan.request.body.spec.description ||
+              contractDigest(observed.spec.panels) !==
+                contractDigest(plan.request.body.spec.panels) ||
+              contractDigest(observed.spec.time) !== contractDigest(plan.request.body.spec.time) ||
+              observed.spec.timezone !== plan.request.body.spec.timezone ||
+              contractDigest(observed.spec.templating) !== contractDigest({ list: [] })
             )
               return fail()
-            return raw
-          }
-          identity(created)
-          const observed = identity(await request(`${path}/${config.dashboardUid}`))
-          if (
-            !isObject(observed.spec) ||
-            !isObject(observed.metadata) ||
-            !isObject(observed.metadata.annotations) ||
-            observed.metadata.annotations['grafana.app/folder'] !== config.folderUid ||
-            observed.spec.title !== plan.request.body.spec.title ||
-            observed.spec.description !== plan.request.body.spec.description ||
-            contractDigest(observed.spec.panels) !==
-              contractDigest(plan.request.body.spec.panels) ||
-            contractDigest(observed.spec.time) !== contractDigest(plan.request.body.spec.time) ||
-            observed.spec.timezone !== plan.request.body.spec.timezone ||
-            contractDigest(observed.spec.templating) !== contractDigest({ list: [] })
-          )
-            return fail()
-          return {
-            status: 'succeeded' as const,
-            ref: plan.resource,
-            complete: true,
-            revision: measurementDigest({
-              artifact: config.artifactDigest,
-              version: observed.metadata.resourceVersion,
-            }),
-            body: JSON.stringify({
-              createdRemotely: true,
-              artifactDigest: config.artifactDigest,
-              dashboardUid: config.dashboardUid,
-              queryVerified: false,
-              trafficObserved: false,
-            }),
-          }
-        })
+            return {
+              status: 'succeeded' as const,
+              ref: plan.resource,
+              complete: true,
+              revision: measurementDigest({
+                artifact: config.artifactDigest,
+                version: observed.metadata.resourceVersion,
+              }),
+              body: JSON.stringify({
+                createdRemotely: true,
+                artifactDigest: config.artifactDigest,
+                dashboardUid: config.dashboardUid,
+                queryVerified: false,
+                trafficObserved: false,
+              }),
+            }
+          },
+        )
       } catch {
         throw new Error(
           'Grafana creation or verification failed; inspect the retained launch intent and remote state; diagnostics omitted',

@@ -5,7 +5,8 @@ export async function withDashboardHttp<T>(
     secret: (name: string) => string | undefined | Promise<string | undefined>
     fetch?: typeof globalThis.fetch
     signal?: AbortSignal
-    authentication?: 'api-key'
+    authentication?: 'api-key' | 'bearer'
+    readQuery?: 'mixpanel-v2'
   },
   action: (request: (path: string, body?: unknown) => Promise<unknown>) => Promise<T>,
 ): Promise<T> {
@@ -31,7 +32,10 @@ export async function withDashboardHttp<T>(
         !url.href.startsWith(config.baseUrl) ||
         url.hash ||
         (url.search &&
-          !(options.authentication === 'api-key' && url.search === '?legacy-mbql=true'))
+          !(
+            (options.authentication === 'api-key' && url.search === '?legacy-mbql=true') ||
+            (options.readQuery === 'mixpanel-v2' && body === undefined && url.search === '?v=2')
+          ))
       )
         throw new Error()
       const content = body === undefined ? undefined : JSON.stringify(body)

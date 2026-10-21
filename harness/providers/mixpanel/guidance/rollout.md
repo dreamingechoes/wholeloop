@@ -14,3 +14,7 @@
   empty result is zero. Figma returns referenced design context, never edits.
 - Dashboard specs retain the exact metric and source pointer. Handoff means a
   person creates the chart in the named service; never report remote creation.
+
+The explicit Mixpanel App API host binds project/workspace and native Insights
+parameters, creates a private dashboard/owned report and verifies their relationship.
+Time scope remains owner-reviewed and unverified; retain partial links without retry.

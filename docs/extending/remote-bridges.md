@@ -3,7 +3,7 @@
 > **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash, GrowthBook and PostHog have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other remote dashboard bridges remain open. Grafana, PostHog and Metabase have explicit fixture-tested create-only hosts with readback; actual server/rendering acceptance remains unverified.
+> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other remote dashboard bridges remain open. Grafana, PostHog, Metabase and Mixpanel have explicit fixture-tested create-only hosts with readback; actual server/rendering acceptance remains unverified.
 
 ---
 
@@ -268,10 +268,58 @@ cleanup occurs. The API is unversioned; actual deployment/version, query/time sc
 and rendering remain owner acceptance. See
 [ADR-0082](../decisions/0082-metabase-owned-questions-and-explicit-sql-window-review.md).
 
+## Mixpanel workspace-bound dashboards
+
+The explicit Mixpanel host uses the official App API contract; it requires no
+Python runtime or SDK installation. Its completed metric must use
+provider=mixpanel, operation=source.product-analytics.query and native source query
+JSON of the form below, with your actual reviewed report parameters:
+
+```json
+{"type":"insights","params":{"event":["order_error"]}}
+```
+
+This shape illustrates the handoff, not a verified query/time window for your
+project. The bridge preserves parameters and requires explicit owner review:
+
+```json
+{
+  "schema": "wholeloop/mixpanel-dashboard-bridge@1",
+  "provider": "mixpanel",
+  "baseUrl": "https://eu.mixpanel.com/",
+  "tokenEnv": "WHOLELOOP_MIXPANEL_OAUTH_TOKEN",
+  "project": 42,
+  "workspace": 7,
+  "queryLanguage": "native-report-json",
+  "windowBinding": "reviewed-in-native-params",
+  "artifactDigest": "replace-with-the-exact-artifact-body-digest"
+}
+```
+
+Use your actual scope/digest and official US/EU/IN deployment. Keep the OAuth token
+in your credential store; this host supports the Bearer subset. Preview with the
+same launch dispatch command. The plan exposes expected days/timezone with
+verified=false. Query/cohort/date semantics remain your review responsibility.
+
+The host requires one matching project/workspace from the inventory before any
+write, creates a private/restricted dashboard, then creates its owned v2 Insights
+report. It reads the original report and dedicated dashboard relationship before
+verifying dashboard privacy/provenance and absence of overrides/public links.
+Opaque layout/contents are not interpreted. All six requests share one deadline.
+No existing dashboard/report is updated. Known partial references stay pending and
+cached; unknown creation keeps intent. Actual API/permissions/workspace, native
+query/time scope and rendering remain owner acceptance. See
+[ADR-0083](../decisions/0083-mixpanel-workspace-bound-dashboards-and-native-reports.md).
+
 ## Remaining work
 
-Mixpanel/Amplitude dashboard creation/normalization still needs
-service-specific contracts. Existing dashboard files remain handoffs with
+Amplitude dashboard creation/normalization still needs a concrete authenticated
+tool contract. Its official MCP documentation requires current tool description/
+progressive discovery, while the public Dashboard REST API describes data reads.
+The published plugin manifests do not provide the dashboard argument/response
+schema. Capture the actual create-only action, project identity, native chart
+binding and matching readback schema before implementing that host; a broad tool
+name is insufficient. See [Amplitude MCP discovery](https://amplitude.com/docs/amplitude-ai/amplitude-mcp#progressive-tool-discovery). Existing dashboard files remain handoffs with
 createdRemotely=false. Current tests use local synthetic HTTP responses, not captured
 live service evidence. Owner checks are in [manual verification](../../roadmap/manual-verification.md).
 See [ADR-0076](../decisions/0076-explicit-read-only-flag-bridges-and-conservative-cohorts.md).
