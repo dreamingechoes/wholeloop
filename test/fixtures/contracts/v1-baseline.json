@@ -206,7 +206,12 @@
     "schema:wholeloop/metabase-dashboard-bridge@1": "8ffd7bb88830b5288d4c7dd7ace315a63066b9d7c468b2fd50e6f8364e5ade09",
     "schema:wholeloop/mixpanel-dashboard-bridge@1": "b73c185575e57e5e7ff323b331a1fbc43d783dd4938e2d72c5040e28fde56479",
     "schema:wholeloop/client-mcp@1": "ed1c71ccd86e62dcf624b17b63f4c6a70c54b87b8829295570f7a0096f703ea9",
-    "output:wholeloop/provider-transport@1": "125a305dfae540a8fd48fc61bebcf6337393ced73a2bcea8a334247ffb1694ef"
+    "output:wholeloop/provider-transport@1": "125a305dfae540a8fd48fc61bebcf6337393ced73a2bcea8a334247ffb1694ef",
+    "output:wholeloop/frame-schema@1": "2f31d3056c5385c0e4ef0c9dbbbeb785faf831668fc86d6dda83f2b1ad406056",
+    "output:wholeloop/frame-draft@1": "00c35964f531e26621d1c5bee46a8df9e96f5b65f72fe8367859f54cd496676b",
+    "output:wholeloop/frame-finalized@1": "16071ea97fa845b83a8e71ff4c31bab0066c56c4ab9a4c5416d61a8dfe042127",
+    "schema:wholeloop/frame-decision@1": "10471a2ce4f579811725624d340b06f6260eed32975e8ed8e83cd78a5cce04ef",
+    "schema:wholeloop/frame-review@1": "e96a508d794d90b4fac96e8185f215952e8f520c1d29c1732b1bcdf3f255a114"
   },
   "commands": [
     {
@@ -1230,6 +1235,24 @@
       "arguments": "<id> <operation>",
       "schema": "wholeloop/provider-transport@1",
       "options": ["--mcp <file>", "--transport <mcp|native|http>"]
+    },
+    {
+      "path": "frame schema",
+      "arguments": "",
+      "options": [],
+      "schema": "wholeloop/frame-schema@1"
+    },
+    {
+      "path": "frame draft",
+      "arguments": "",
+      "options": ["--for <id>", "--artifact <file>", "--file <decision.json>"],
+      "schema": "wholeloop/frame-draft@1"
+    },
+    {
+      "path": "frame finalize",
+      "arguments": "",
+      "options": ["--for <id>", "--artifact <file>", "--file <review.json>"],
+      "schema": "wholeloop/frame-finalized@1"
     }
   ],
   "exitCodes": {

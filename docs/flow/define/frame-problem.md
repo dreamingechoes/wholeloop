@@ -3,9 +3,48 @@
 > **TL;DR** — Give it a rough idea — one sentence, a copied thread, a research brief — and it works through a short, fixed list of questions: what hurts and for whom, what supports that, what would change if we got it right, and what would make us walk away. It opens the **initiative**, names the person who owns it, and finishes with a clear call: write the spec next, or record why not.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The core enforces all eight framing questions plus ownership, explicit TBD markers, completed-brief adoption, normalized-title reuse and argued dropped/on-hold outcomes. Local docs/tracker publication references the existing store records; remote destinations return pending handoffs. Canonical skill escalation to research follows the challenge style. Canonical URL adoption, per-initiative shared outboxes and explicit host publication/reconciliation are implemented locally. An [owner-observed Claude run](../../../roadmap/manual-verification.md#owner-observed-claude-framing-and-session-recovery-2026-10-22) completed an on-hold outcome and recovered status across sessions, but exposed narrative decision-fidelity and final-review gaps. Authenticated remote publication and broader client conformance remain unverified. [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
+> **Status: 🚧 partial.** The core enforces all eight framing questions plus ownership, explicit TBD markers, completed-brief adoption, normalized-title reuse and argued dropped/on-hold outcomes. Local docs/tracker publication references the existing store records; remote destinations return pending handoffs. Canonical skill escalation to research follows the challenge style. Canonical URL adoption, per-initiative shared outboxes and explicit host publication/reconciliation are implemented locally. An [owner-observed Claude run](../../../roadmap/manual-verification.md#owner-observed-claude-framing-and-session-recovery-2026-10-22) completed an on-hold outcome and recovered status across sessions, and exposed narrative decision-fidelity and final-review gaps now addressed by exact owner-decision rendering and digest-bound finalization under [ADR-0086](../../decisions/0086-exact-final-framing-review-and-owner-decisions.md). New native acceptance remains pending. Authenticated remote publication and broader client conformance remain unverified. [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
 
 ---
+
+## Final decision and review
+
+Canonical framing uses the new commands after step begin. Run `wl frame schema
+--json` for both input contracts. Save metadata and drafts outside the repository.
+
+1. Capture the owner's explicit outcome/reason, exact reopening condition for
+   on-hold, and only approved stop rules in wholeloop/frame-decision@1:
+
+   ```json
+   {
+     "schema": "wholeloop/frame-decision@1",
+     "by": "Alex",
+     "outcome": "on-hold",
+     "reason": "No observed problem yet",
+     "reopen": "User evidence confirms difficulty finding tasks",
+     "stopConditions": []
+   }
+   ```
+
+2. Call `wl frame draft --for <id> --artifact <draft.md> --file <decision.json>
+   --json`. Save its exact artifact.content bytes to the external draft file.
+   The core replaces Stop conditions with the approved data and returns its hash
+   and a reviewTemplate. This command does not complete or change the journal.
+3. Use challenge plan problem on those bytes and give the exact draft to the
+   challenger. Resolve findings or keep evidence gaps explicitly documented.
+   Repeat review after every content edit. A structural pass is insufficient.
+4. Complete reviewTemplate with the actual reviewer, matching final digest,
+   coverage problem/evidence/impact/decision-fidelity and no unresolved findings.
+   Obtain the owner's approval of that same final revision. Names/approval are
+   client-reported; the core cannot authenticate a person or prove semantic truth.
+5. Call `wl frame finalize --for <id> --artifact <draft.md> --file <review.json>
+   --json`. It atomically records the review note, artifact and exact decision.
+   A stale digest, mismatched owner/run, extra stop rule or incomplete review
+   refuses completion. No-go retains its exact reopening condition and stops.
+
+Legacy step complete is retained for existing callers and historical data; it
+makes no final semantic-review claim. Do not replace the old observed artifact to
+make its historical test appear successful. Repeat acceptance with a new run.
 
 ## Available core commands
 

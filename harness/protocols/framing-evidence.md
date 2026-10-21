@@ -12,3 +12,12 @@
 
 Local docs and tracker publication refers to existing store records. A pending
 remote handoff is not a completed write or evidence of authenticated access.
+
+- ⛔ `framing-reviewed-decision` — canonical framing finalizes only with exact
+  owner-approved Stop conditions and matching final owner/reviewer digests. Edits
+  invalidate review; all four semantic areas are required and findings resolved.
+  Record reviewer identity as client-reported, never independently authenticated.
+
+Use frame draft/finalize. Challenger suggestions are proposals, not owner policy.
+Legacy step completion remains unreviewed compatibility behavior. Existing stored
+artifacts are historical evidence; do not rewrite them to manufacture a pass.

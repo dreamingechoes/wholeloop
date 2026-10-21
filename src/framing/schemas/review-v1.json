@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/frame-review@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "subject", "run", "sha256", "decision", "reviewer"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/frame-review@1"
+    },
+    "subject": {
+      "type": "string",
+      "pattern": "^init-[a-f0-9]{8}$"
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^run-[a-f0-9]{16}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "by", "outcome", "reason", "stopConditions"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/frame-decision@1"
+        },
+        "by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcome": {
+          "type": "string",
+          "enum": ["go", "on-hold", "dropped"]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reopen": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stopConditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["by", "sha256", "coverage", "unresolvedFindings"],
+      "properties": {
+        "by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "coverage": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["problem", "evidence", "impact", "decision-fidelity"]
+          }
+        },
+        "unresolvedFindings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

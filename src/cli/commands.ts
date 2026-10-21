@@ -8,6 +8,27 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'frame schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/frame-schema@1',
+    summary: 'Show final framing decision and semantic review contracts',
+  },
+  {
+    path: 'frame draft',
+    arguments: '',
+    options: ['--for <id>', '--artifact <file>', '--file <decision.json>'],
+    schema: 'wholeloop/frame-draft@1',
+    summary: 'Render exact owner-approved stop conditions before final review',
+  },
+  {
+    path: 'frame finalize',
+    arguments: '',
+    options: ['--for <id>', '--artifact <file>', '--file <review.json>'],
+    schema: 'wholeloop/frame-finalized@1',
+    summary: 'Complete framing with matching final approval and semantic review',
+  },
+  {
     path: 'provider plan',
     arguments: '<id> <operation>',
     options: ['--mcp <file>', '--transport <mcp|native|http>'],

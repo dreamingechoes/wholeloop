@@ -30,12 +30,23 @@ Read destination-publication, ask-never-guess, output-contract and framing-evide
    Run `wl challenge plan problem --file <path> --json` and give its fixed
    coverage and exact draft to the challenger. Resolve findings or preserve
    explicit evidence gaps before the go/no-go call.
-6. Complete with `wl step complete frame-problem --for <id> --artifact <path>
-   --json`. Fix structural findings first. When the explicit call is no-go,
-   add `--no-go dropped --reason "<why>"` or `--no-go on-hold --reason "<why>"
-   --reopen "<condition>"`. No-go closes the initiative with durable reasoning;
-   reopening is an explicit state action, never automatic duplicate creation.
-7. Show the receipt and publication status. Local docs/tracker destinations
+6. Obtain the owner's explicit call/reason, reopening condition for on-hold and
+   exact approved stop conditions. Challenger suggestions remain proposals until
+   accepted. Read `wl frame schema --json`; save wholeloop/frame-decision@1 outside
+   the repository. Use `wl frame draft --for <id> --artifact <path> --file
+   <decision.json> --json`, then save its exact artifact.content to that path.
+   It replaces the Stop conditions section with only approved decision data.
+7. Challenge those final bytes using `wl challenge plan problem --file <path>
+   --json` and the challenger. Resolve every finding, preserving unknowns honestly.
+   Any content edit requires a fresh final review and owner approval of the new
+   digest. Complete reviewTemplate with the actual reviewer and all four coverage
+   areas. A structural problems: [] is not a semantic review. Do not invent one.
+8. After the owner approves that exact final revision, call `wl frame finalize
+   --for <id> --artifact <path> --file <review.json> --json`. Stale or incomplete
+   reviews cannot complete. The decision, owner and run must match. No-go closes
+   with the exact reason/reopen condition; reopening is a separate explicit action.
+   Legacy step complete cannot establish this final-review guarantee.
+9. Show the receipt and publication status. Local docs/tracker destinations
    reference the stored artifact and initiative. Remote destinations remain
    pending handoffs until a host performs the operation and records its link.
    A go hands off to the spec; an unavailable next step is a limitation to state.

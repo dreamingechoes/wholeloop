@@ -36,6 +36,9 @@ identities and optional command flags remain additive; read the
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl frame schema` | `wholeloop/frame-schema@1` | Show final framing decision and semantic review contracts |
+| `wl frame draft` | `wholeloop/frame-draft@1` | Render exact owner-approved stop conditions before final review |
+| `wl frame finalize` | `wholeloop/frame-finalized@1` | Complete framing with matching final approval and semantic review |
 | `wl provider plan <id> <operation>` | `wholeloop/provider-transport@1` | Plan client-owned MCP or explicit native/HTTP transport without service access |
 | `wl provider read-flags` | `wholeloop/flag-read@1` | Plan or explicitly read a supported remote boolean flag without toggling it |
 | `wl conformance acquisition <downloads.json>` | `wholeloop/conformance-acquisition@1` | Validate exact native vendor downloads without installing or running clients |

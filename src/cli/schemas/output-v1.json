@@ -19,17 +19,39 @@
         "authentication"
       ],
       "properties": {
-        "schema": { "const": "wholeloop/provider-transport@1" },
-        "provider": { "type": "string" },
-        "operation": { "type": "string" },
-        "transport": { "enum": ["mcp", "native", "http", "unavailable"] },
-        "status": { "enum": ["planned", "unavailable"] },
-        "tool": { "type": "string" },
-        "server": { "type": "string" },
-        "degrade": { "enum": ["open-question", "handoff-artifact", "skip-with-reason"] },
-        "reason": { "type": "string" },
-        "effects": { "const": "not-performed" },
-        "authentication": { "const": "client-owned-unverified" }
+        "schema": {
+          "const": "wholeloop/provider-transport@1"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "transport": {
+          "enum": ["mcp", "native", "http", "unavailable"]
+        },
+        "status": {
+          "enum": ["planned", "unavailable"]
+        },
+        "tool": {
+          "type": "string"
+        },
+        "server": {
+          "type": "string"
+        },
+        "degrade": {
+          "enum": ["open-question", "handoff-artifact", "skip-with-reason"]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "effects": {
+          "const": "not-performed"
+        },
+        "authentication": {
+          "const": "client-owned-unverified"
+        }
       }
     },
     {
@@ -1938,6 +1960,66 @@
         }
       },
       "required": ["schema", "root", "target", "version", "source"]
+    },
+    {
+      "type": "object",
+      "required": ["schema", "decisionSchema", "reviewSchema"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/frame-schema@1"
+        },
+        "decisionSchema": {
+          "type": "object"
+        },
+        "reviewSchema": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": ["schema", "subject", "run", "artifact", "reviewTemplate", "instructions"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/frame-draft@1"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "run": {
+          "type": "string"
+        },
+        "artifact": {
+          "type": "object"
+        },
+        "reviewTemplate": {
+          "type": "object"
+        },
+        "instructions": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": ["schema", "subject", "sha256", "review", "completion"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/frame-finalized@1"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "review": {
+          "type": "object"
+        },
+        "completion": {
+          "type": "object"
+        }
+      }
     }
   ],
   "$defs": {

@@ -17,6 +17,7 @@ import { extensionCommand } from './extensions.js'
 import { fanoutCommand } from './fanout.js'
 import { flagReadCommand } from './flag-read.js'
 import { flowCommand } from './flow.js'
+import { frameCommand } from './frame.js'
 import { gateCommand } from './gate.js'
 import { generateCommand } from './generate.js'
 import { groundingCommand } from './grounding.js'
@@ -155,6 +156,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       return utilityCommand(command.path, parsed, root, json, io)
     if (/^(template|lens) |^profile (list|test|scaffold)$/.test(command.path))
       return extensionCommand(command.path, parsed, root, json, io)
+    if (command.path.startsWith('frame ')) return frameCommand(command.path, parsed, root, json, io)
     if (command.path === 'provider plan') return providerPlanCommand(parsed, root, json, io)
     if (command.path.startsWith('provider ') || command.path === 'mcp add')
       return providerCommand(command.path, parsed, root, json, io)

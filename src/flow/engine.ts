@@ -18,6 +18,7 @@ import {
   framingMatches,
   validateFrameOutcome,
 } from '../framing/contract.js'
+import { type FrameReview, validateFrameReview } from '../framing/finalize.js'
 import { impactReceipt } from '../impact/report.js'
 import { launchReceipt } from '../launch/artifacts.js'
 import { LaunchWorkflow } from '../launch/workflow.js'
@@ -408,7 +409,15 @@ export class FlowEngine {
     }
   }
 
-  complete(name: string, subject: string, content: string, outcome?: FrameOutcome) {
+  complete(
+    name: string,
+    subject: string,
+    content: string,
+    outcome?: FrameOutcome,
+    framingReview?: FrameReview,
+  ) {
+    if (framingReview && name !== 'frame-problem')
+      throw new CliError('Framing review applies only to frame-problem')
     const step = stepDefinition(name)
     if (!step.available)
       throw new CliError(`Step ${name} is registered but not implemented`, EXIT.precondition)
@@ -450,6 +459,24 @@ export class FlowEngine {
       if (latest?.type !== 'step.started')
         throw new CliError(`Begin ${name} for ${subject} before completing it`, EXIT.precondition)
       const run = latest.data.run
+      if (framingReview) {
+        const review = validateFrameReview(content, framingReview, {
+          subject,
+          run,
+          owner: this.store.get(subject).owner,
+        })
+        if (
+          !outcome ||
+          outcome.outcome !== review.decision.outcome ||
+          outcome.reason !== review.decision.reason ||
+          outcome.reopen !== review.decision.reopen
+        )
+          throw new CliError('The framing outcome must match its reviewed owner decision')
+        append(subject, {
+          type: 'note.added',
+          data: { text: `Framing final review: ${JSON.stringify(review)}` },
+        })
+      }
       if (name === 'build-slice' && blockingDependencies(events, subject).length)
         throw new CliError(
           `Blocked by: ${blockingDependencies(events, subject).join(', ')}`,

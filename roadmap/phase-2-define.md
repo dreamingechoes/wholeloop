@@ -33,6 +33,11 @@
 - [x] Unknowns appear as `TBD` with what is missing and who could answer — never as invented values (shape check).
 - [x] Running it twice on the same idea adopts the existing initiative instead of duplicating it.
 
+**Technical remediation:** final decision rendering and digest-bound owner/challenger
+review are implemented under ADR-0086; eighteen focused regressions and the full
+local check pass.
+Native decision-fidelity acceptance remains separate.
+
 **Docs** — flow/define/frame-problem.
 
 ## P2-03 · `write-spec`

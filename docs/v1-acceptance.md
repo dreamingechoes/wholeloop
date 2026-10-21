@@ -61,10 +61,10 @@ Accounts with every remote service are absent from this list deliberately.
 
 Keep these separate from owner approval:
 
-- Preserve owner-approved conditions without turning challenger suggestions into decisions.
-- Review the exact final semantic draft, or explicitly record that it remains unreviewed.
-- Diagnose automatic client failures rather than interpreting exit zero as a scenario pass.
-- MCP-first routing is implemented and fixture-tested under ADR-0085. Keep unknown tool contracts pending; real-service certification stays deferred.
+- [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
+- [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
+- [ ] Diagnose and fix automatic client transports; exit zero without the required journal events is still a failure.
+- [x] MCP-first routing is implemented and fixture-tested under ADR-0085. Keep unknown tool contracts pending; real-service certification stays deferred.
 
 The existing stored fictitious framing is evidence of the defect; do not overwrite
 its history to make the old trial appear to have passed.

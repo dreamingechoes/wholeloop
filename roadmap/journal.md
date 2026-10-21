@@ -4,6 +4,11 @@
 
 ---
 
+## 2026-10-22 · Framing remediation — exact owner decision and final review
+
+- Add explicit owner decision rendering and digest-bound finalization to address the observed unapproved reopening/drop rules and post-review semantic edits. Canonical framing now uses frame draft/finalize; legacy completion remains compatible and unreviewed. ADR-0086 explains this boundary, self-reported identity limits and why string blacklists cannot establish semantic truth.
+- Require the exact current owner/initiative/run, final owner and reviewer digests, complete semantic coverage and no unresolved findings. Revalidate within completion and persist the review note, decision and unchanged artifact in one journal batch. Do not overwrite the historical owner trial. The first CLI regression exposed unclassified shape errors; return the documented shape code instead of an unexpected error. Focused framing/compatibility checks passed 256 cases. Full local check passed 1816 tests in 83 files (252.98 seconds), build/smoke, isolated package PASS, lint/types, references/catalogues, 264-file docs, 142-file harness, 263-file Markdown and all 35 Mermaid diagrams. Preserve 205 old declarations and append five contracts/three commands (210 declarations, 155 commands). Final docs/whitespace checks pass. Native client failures are the next independent technical work; fresh native final-review acceptance remains pending.
+
 ## 2026-10-22 · P4-05 — tested client-owned MCP routing
 
 - Add a bounded non-secret client tool/schema inventory, deterministic provider plan command and injected client transport host. Prefer matching observed tools and explicit reviewed virtual-operation bindings. Preserve native drafts/proposals and pending handoffs when access/contracts are missing. Reuse the client's connection, authentication, argument translation and result normalization; do not add an MCP network client or per-vendor API implementation.
