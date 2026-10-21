@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-21 · P4-05 PostHog — exact identity and explicit environment mapping
+
+- Add a separate non-secret PostHog configuration with numeric project and owner-maintained environment mapping, preserving existing frozen declarations. Refuse mismatched scope before credential/network access. Plan a complete exact-case unique key lookup followed by numeric detail GET; never follow pagination URLs and share one bounded deadline. ADR-0079 records why project scope cannot be reported as an API-observed environment.
+- Normalize only one unrestricted person condition group with explicit percentage/runtime/distinct_id controls and no experiments, evaluation contexts, continuity, group aggregation or unknown filters. Preserve configured decimal/zero/full/inactive state, label persons with distinct_id and configured project scope, and bind revisions without raw service prose. Reuse Bearer credential-store GET transport, cancellation/redaction and actual built-in ramp normalization.
+- Focused shared-reader tests passed 181 cases across four files, including the compiled default preview, complete lookup/detail identity, refusal and cancellation between requests. Actual Node 20.0.0 macOS arm64 passes the synthetic two-read signal-bearing host subset. The first full attempt stopped on generated JSON formatting; format those files and repeat. Final full local check passed 1555 tests in 77 files (222.99 seconds), actual isolated npm packaging PASS, build/smoke, lint/typecheck, references/catalogs, 256-file docs, 142-file harness, 255-file Markdown and all 35 Mermaid diagrams. Preserve all 197 prior declarations/signatures and append one source schema (198 declarations, 150 commands, five exit codes). Actual authenticated PostHog/API/SDK/project mapping/Linux acceptance remains owner verification; remote dashboard bridges remain code work. No actual service read/write, native model, personal configuration, CI/issue operation, publication, version/privacy/ref/tag change or project push ran.
+
 ## 2026-10-20 · P4-05 GrowthBook — published rules and explicit hash cohorts
 
 - Extend the explicit bounded read-only host with GrowthBook feature GET/Bearer authentication and exact API prefix/project/environment. Read only published revisions/live JSON boolean controls, ignore drafts, and reject unsupported identity/scope/targeting/dependency/holdout/indirection/schedule/experiment state. Cross-check any supplied SDK definition rather than accepting contradictory force/hash/coverage. ADR-0078 records the semantics.

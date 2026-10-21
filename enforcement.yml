@@ -5,7 +5,7 @@
 version: 1
 rules:
   - id: remote-flag-read-boundary
-    enforcers: [src/providers/flag-bridge.ts#remoteFlagHost, src/providers/flag-bridge.ts#launchDarklyFlag, src/providers/unleash.ts#unleashFlag, src/providers/growthbook.ts#growthBookFlag, src/cli/flag-read.ts#flagReadCommand, test/unit/providers/flag-bridge.test.ts, test/unit/providers/unleash.test.ts, test/unit/providers/growthbook.test.ts]
+    enforcers: [src/providers/flag-bridge.ts#remoteFlagHost, src/providers/flag-bridge.ts#launchDarklyFlag, src/providers/unleash.ts#unleashFlag, src/providers/growthbook.ts#growthBookFlag, src/providers/posthog.ts#postHogFlag, src/providers/posthog.ts#postHogFlagId, src/cli/flag-read.ts#flagReadCommand, test/unit/providers/flag-bridge.test.ts, test/unit/providers/unleash.test.ts, test/unit/providers/growthbook.test.ts, test/unit/providers/posthog.test.ts]
   - id: conformance-nightly-authority
     enforcers: [scripts/conformance-nightly.mjs, .github/workflows/conformance.yml, test/unit/conformance/nightly.test.ts]
   - id: conformance-exact-acquisition

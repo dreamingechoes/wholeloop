@@ -2,15 +2,18 @@ import { isObject, validate } from '../config/schema.js'
 import { measurementDigest } from '../launch/measurement.js'
 import { growthBookFlag } from './growthbook.js'
 import type { ProviderHost } from './operations.js'
+import { postHogFlag, postHogFlagId } from './posthog.js'
 import schema from './schemas/flag-bridge-v1.json' with { type: 'json' }
+import postHogSchema from './schemas/posthog-flag-bridge-v1.json' with { type: 'json' }
 import { unleashFlag } from './unleash.js'
 
 export interface FlagBridge {
-  schema: 'wholeloop/flag-bridge@1'
+  schema: 'wholeloop/flag-bridge@1' | 'wholeloop/posthog-flag-bridge@1'
   provider: string
   baseUrl: string
   project: string
   tokenEnv: string
+  environment?: string
 }
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/
 const fail = (): never => {
@@ -18,7 +21,14 @@ const fail = (): never => {
 }
 
 export function flagBridgeConfig(value: unknown): FlagBridge {
-  if (validate(value, schema).length)
+  if (
+    validate(
+      value,
+      isObject(value) && value.schema === 'wholeloop/posthog-flag-bridge@1'
+        ? postHogSchema
+        : schema,
+    ).length
+  )
     throw new Error('Invalid non-secret flag bridge configuration; contents omitted')
   const input = value as FlagBridge
   let url: URL
@@ -47,6 +57,16 @@ export function flagBridgeConfig(value: unknown): FlagBridge {
     !['https://app.launchdarkly.com/', 'https://app.eu.launchdarkly.com/'].includes(input.baseUrl)
   )
     throw new Error('Select the official US or EU LaunchDarkly REST origin')
+  if (
+    input.provider === 'posthog' &&
+    (input.schema !== 'wholeloop/posthog-flag-bridge@1' ||
+      !/^[1-9][0-9]{0,14}$/.test(input.project) ||
+      !input.environment ||
+      !identifier.test(input.environment))
+  )
+    throw new Error(
+      'PostHog requires an explicit numeric project and configured environment mapping',
+    )
   return { ...input }
 }
 
@@ -55,23 +75,39 @@ export function flagReadPlan(configuration: unknown, flag: string, environment: 
   const config = flagBridgeConfig(configuration)
   if (!identifier.test(flag) || !identifier.test(environment))
     throw new Error('Use bounded exact flag/environment identifiers')
+  if (config.provider === 'posthog' && config.environment !== environment)
+    throw new Error('Requested environment differs from the configured PostHog project mapping')
   let path: string
   if (config.provider === 'launchdarkly')
     path = `api/v2/flags/${encodeURIComponent(config.project)}/${encodeURIComponent(flag)}`
   else if (config.provider === 'unleash')
     path = `api/admin/projects/${encodeURIComponent(config.project)}/features/${encodeURIComponent(flag)}`
   else if (config.provider === 'growthbook') path = `v1/features/${encodeURIComponent(flag)}`
+  else if (config.provider === 'posthog') path = `api/projects/${config.project}/feature_flags/`
   else throw new Error('This flag service bridge is not implemented')
   const url = new URL(path, config.baseUrl)
   if (config.provider === 'launchdarkly') url.searchParams.set('env', environment)
   else if (config.provider === 'unleash') url.searchParams.set('variantEnvironments', 'true')
+  else if (config.provider === 'posthog') {
+    url.searchParams.set('key', flag)
+    url.searchParams.set('archived', 'false')
+    url.searchParams.set('limit', '2')
+    url.searchParams.set('offset', '0')
+  }
   return {
     schema: 'wholeloop/flag-read@1',
     status: 'planned',
     provider: config.provider,
     flag,
     environment,
-    request: { method: 'GET', url: url.href, credentialEnv: config.tokenEnv },
+    request: {
+      method: 'GET',
+      url: url.href,
+      credentialEnv: config.tokenEnv,
+      ...(config.provider === 'posthog'
+        ? { environmentBasis: 'configured-project-mapping', detailRead: 'unique-exact-id' }
+        : {}),
+    },
     effects: 'not-performed',
   }
 }
@@ -205,40 +241,57 @@ export function remoteFlagHost(
           timeout.removeEventListener('abort', abort)
         }
         const signal = controller.signal
-        const response = await (options.fetch ?? globalThis.fetch)(plan.request.url, {
-          method: 'GET',
-          headers: {
-            Authorization: config.provider === 'growthbook' ? `Bearer ${credential}` : credential,
-            Accept: 'application/json',
-          },
-          redirect: 'error',
-          credentials: 'omit',
-          signal,
-        })
-        if (
-          response.status !== 200 ||
-          response.redirected ||
-          !response.body ||
-          !/^application\/json(?:;|$)/i.test(response.headers.get('content-type') ?? '')
-        ) {
-          await response.body?.cancel()
-          throw new Error()
+        const read = async (url: string): Promise<unknown> => {
+          signal.throwIfAborted()
+          const response = await (options.fetch ?? globalThis.fetch)(url, {
+            method: 'GET',
+            headers: {
+              Authorization: ['growthbook', 'posthog'].includes(config.provider)
+                ? `Bearer ${credential}`
+                : credential,
+              Accept: 'application/json',
+            },
+            redirect: 'error',
+            credentials: 'omit',
+            signal,
+          })
+          if (
+            response.status !== 200 ||
+            response.redirected ||
+            !response.body ||
+            !/^application\/json(?:;|$)/i.test(response.headers.get('content-type') ?? '')
+          ) {
+            await response.body?.cancel()
+            throw new Error()
+          }
+          const chunks: Uint8Array[] = []
+          let bytes = 0
+          for await (const chunk of response.body) {
+            bytes += chunk.length
+            if (bytes > 1024 * 1024) throw new Error()
+            chunks.push(chunk)
+          }
+          signal.throwIfAborted()
+          return JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown
         }
-        const chunks: Uint8Array[] = []
-        let bytes = 0
-        for await (const chunk of response.body) {
-          bytes += chunk.length
-          if (bytes > 1024 * 1024) throw new Error()
-          chunks.push(chunk)
+        let resource = plan.request.url
+        let raw = await read(resource)
+        if (config.provider === 'posthog') {
+          const id = postHogFlagId(raw, call.args.flag)
+          resource = new URL(`api/projects/${config.project}/feature_flags/${id}/`, config.baseUrl)
+            .href
+          raw = await read(resource)
+          if (!isObject(raw) || raw.id !== id) throw new Error()
         }
-        const raw: unknown = JSON.parse(Buffer.concat(chunks).toString('utf8'))
         const result =
-          config.provider === 'growthbook'
-            ? growthBookFlag(raw, call.args.flag, call.args.environment, config.project)
-            : config.provider === 'unleash'
-              ? unleashFlag(raw, call.args.flag, call.args.environment, config.project)
-              : launchDarklyFlag(raw, call.args.flag, call.args.environment)
-        const ref = new URL(plan.request.url)
+          config.provider === 'posthog'
+            ? postHogFlag(raw, call.args.flag, call.args.environment, config.project)
+            : config.provider === 'growthbook'
+              ? growthBookFlag(raw, call.args.flag, call.args.environment, config.project)
+              : config.provider === 'unleash'
+                ? unleashFlag(raw, call.args.flag, call.args.environment, config.project)
+                : launchDarklyFlag(raw, call.args.flag, call.args.environment)
+        const ref = new URL(resource)
         ref.search = ''
         return {
           status: 'succeeded',

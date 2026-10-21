@@ -89,6 +89,7 @@
 | [0076](./0076-explicit-read-only-flag-bridges-and-conservative-cohorts.md) | Explicit read-only flag bridges and conservative cohorts | Accepted | 2026-10-20 |
 | [0077](./0077-explicit-unleash-environments-and-unrestricted-strategies.md) | Explicit Unleash environments and unrestricted strategies | Accepted | 2026-10-20 |
 | [0078](./0078-published-growthbook-rules-and-explicit-hash-cohorts.md) | Published GrowthBook rules and explicit hash cohorts | Accepted | 2026-10-20 |
+| [0079](./0079-exact-posthog-reads-and-configured-environment-scope.md) | Exact PostHog reads and configured environment scope | Accepted | 2026-10-21 |
 
 ## Lifecycle
 

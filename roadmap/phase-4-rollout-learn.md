@@ -96,10 +96,11 @@ explicit variants, rejecting dependencies/unions/targeting while supporting one
 unrestricted default or ordinary default-stickiness rollout. GrowthBook now reads
 published per-environment boolean/default/force/id-rollout state, ignores drafts,
 checks supplied compiled definitions and labels hash-dependent cohorts explicitly.
-Decimal percentages preserve exact forward/reverse configured values. The PostHog
-bridge and actual dashboard creation/normalization remain code work;
+Decimal percentages preserve exact forward/reverse configured values. The PostHog reader now performs complete exact-key lookup then detail GET with
+explicit owner-configured project/environment scope and conservative person-cohort
+normalization. Actual dashboard creation/normalization remains code work;
 local dashboard output is explicitly pending. Keep P4-05 partial and continue
-independent local sync/grounding work. See the manual checklist, ADR-0042, ADR-0076, ADR-0077 and ADR-0078.
+independent local sync/grounding work. See the manual checklist, ADR-0042, ADR-0076, ADR-0077, ADR-0078 and ADR-0079.
 
 **Docs** — configuration/providers.
 

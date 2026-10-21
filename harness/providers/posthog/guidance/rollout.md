@@ -14,3 +14,7 @@
   empty result is zero. Figma returns referenced design context, never edits.
 - Dashboard specs retain the exact metric and source pointer. Handoff means a
   person creates the chart in the named service; never report remote creation.
+
+An explicitly configured REST host can read simple person rollouts using exact
+list/detail identity and owner-reviewed project/environment mapping. Unsupported
+targeting remains unknown; dashboard handoffs still do not create remote objects.

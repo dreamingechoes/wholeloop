@@ -1,9 +1,9 @@
 # Remote rollout bridges — explicit reads and conservative normalization
 
-> **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash and GrowthBook have separate conservative normalizers; complex targeting remains unknown.
+> **TL;DR** — A provider manifest does not execute a service. The flag bridge plans a fixed read without credentials and runs it only on explicit live selection. LaunchDarkly, Unleash, GrowthBook and PostHog have separate conservative normalizers; complex targeting remains unknown.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, other flag services and remote dashboard creation remain open.
+> **Status: 🚧 partial.** The local LaunchDarkly/Unleash/GrowthBook/PostHog REST readers, typed host integration and CLI preview/live boundary are fixture-tested. Actual authenticated server/native/Linux acceptance, remote dashboard creation remain open.
 
 ---
 
@@ -34,7 +34,7 @@ node "$WHOLELOOP_CLI" provider read-flags --bridge "$BRIDGE_CONFIG" \
 
 The default is a read-only plan with effects=not-performed. It neither looks up a
 credential nor calls the service. After explicit authorization and credential-store
-setup, add --live to execute one GET. The resulting observed receipt includes actual
+setup, add --live to execute the planned read (PostHog uses list then detail GETs). The resulting observed receipt includes actual
 completion time and a normalized result; no repository/store write is performed.
 Failed/unsupported reads exit with an explicit unknown-state error, never a disabled
 flag. There is no send, toggle, update or automatic retry path.
@@ -94,6 +94,37 @@ unrepresentable partial boundary percentages are refused. This describes configu
 exposure; actual SDK context behavior and application fallback still need verification.
 See [ADR-0078](../decisions/0078-published-growthbook-rules-and-explicit-hash-cohorts.md).
 
+## PostHog project scope and exact lookup
+
+PostHog uses numeric projects rather than deployment environment resources. Use
+an explicit owner-maintained mapping and the separate configuration declaration:
+
+```json
+{
+  "schema": "wholeloop/posthog-flag-bridge@1",
+  "provider": "posthog",
+  "baseUrl": "https://eu.posthog.com/",
+  "project": "42",
+  "environment": "production",
+  "tokenEnv": "WHOLELOOP_POSTHOG_READ_KEY"
+}
+```
+
+Select the actual canonical HTTPS API host/subpath and a restricted read credential
+from your store. The requested environment must match this configuration before
+credential lookup. The receipt labels environmentBasis=configured-project-mapping;
+this mapping needs owner review and does not prove application deployment routing.
+
+The reader requires one complete exact-case key match before fetching the numeric
+ID. Incomplete pagination, duplicates and changed identities remain unknown; server
+pagination URLs are never followed. Both GETs share one deadline. Only one empty-
+property person condition group with an explicit numeric percentage, runtime=all,
+distinct_id bucketing and no experiments/evaluation contexts is represented.
+Targeting, variants, holdouts, enrollment, continuity, group flags, remote config,
+frozen exposure and unknown controls are refused. The configured audience label
+persons with distinct_id is not all-context or measured traffic evidence. See
+[ADR-0079](../decisions/0079-exact-posthog-reads-and-configured-environment-scope.md).
+
 ## Host composition and ramp
 
 Source hosts can supply a credential-store resolver and optional transport/signal
@@ -112,8 +143,7 @@ and no bridge result authorizes a manual exposure change or approval.
 
 ## Remaining work
 
-The PostHog reader and actual dashboard creation/normalization need
-their own service-specific contracts. Existing dashboard files remain handoffs with
+Actual dashboard creation/normalization needs its own service-specific contracts. Existing dashboard files remain handoffs with
 createdRemotely=false. Current tests use local synthetic HTTP responses, not captured
 live service evidence. Owner checks are in [manual verification](../../roadmap/manual-verification.md).
 See [ADR-0076](../decisions/0076-explicit-read-only-flag-bridges-and-conservative-cohorts.md).

@@ -2,9 +2,11 @@
 
 > Automated results and pending work are separate. A checked roadmap task means
 > its local acceptance checks passed, not that every target CLI or platform has
-> been exercised. Updated 2026-10-20.
+> been exercised. Updated 2026-10-21.
 
 ## Remote rollout bridge (P4-05 component)
+
+- [ ] In a disposable PostHog project, review the explicit project/environment mapping, preview both read stages and authorize read-only credentials. Compare simple decimal/zero/full/inactive person rollout with the real console/SDK; confirm exact-case unique lookup and unchanged detail identity. Verify pagination, targeting, experiments, runtime restrictions, evaluation contexts, variants, continuity, holdouts and unsupported controls remain unknown. Check the configured mapping is labelled explicitly and never accepted as API-observed deployment scope. Current HTTP evidence is synthetic; actual service/native/Linux acceptance remains open.
 
 - [ ] In a disposable GrowthBook project, verify the explicit reader uses the published revision and live environment controls despite contradictory drafts. Compare default/force/forward/reverse/zero/full state, JSON boolean handling, project scope, compiled definitions and decimal percentages against the actual management API/SDK. Confirm hashed cohorts are labelled contexts with id and cannot satisfy all-context ramp claims; check missing-ID fallback behavior separately. Current responses are synthetic; actual credentials/API/native/Linux acceptance remains open.
 
@@ -13,7 +15,7 @@
 - [ ] In a disposable Unleash project, configure the explicit Admin reader and authorize a read with the exact deployment/subpath/project/environment. Compare default and default-stickiness percentage/disabled state with the native console, verify environment variants are fetched, and inspect dependency/targeted/union/release-plan/safeguard refusal. Current tests use synthetic responses and source API contracts; actual authentication/version/native/Linux behavior remains unverified.
 
 - [ ] Configure the explicit LaunchDarkly reader with a restricted REST token from the credential store and exact project/environment. Review the default plan, then authorize a live read only in a disposable test project. Confirm complete simple boolean/direct/weighted/reversed/off configurations match actual native state, no credential/raw targeting prose appears in output and no flag changes. Current HTTP tests are synthetic, not authenticated captures.
-- [ ] Verify rules, prerequisites, targets, experiments, custom buckets, incomplete responses, missing permissions and deadline failures stay unknown. Feed only the exact normalized result into its matching ramp request fingerprint and retain actual completion time. Repeat actual API/native/Linux behavior; other flag/dashboard bridges remain code work.
+- [ ] Verify rules, prerequisites, targets, experiments, custom buckets, incomplete responses, missing permissions and deadline failures stay unknown. Feed only the exact normalized result into its matching ramp request fingerprint and retain actual completion time. Repeat actual API/native/Linux behavior; remote dashboard bridges remain code work.
 
 ## Explicit conformance collection (P5-04 component)
 
@@ -228,7 +230,7 @@ These checks do not block subsequent local grounding work.
 
 ## Rollout providers and remaining bridges (P4-05)
 
-- [ ] Capture authenticated read-only client/API contracts for LaunchDarkly/Unleash/GrowthBook/PostHog so their service-specific bridges can be implemented and tested. This is open roadmap code work, not an owner test already passed. Virtual host contracts are not real readers; capture complete matching flag/environment observations and preserve unknown for complex targeting or missing access.
+- [ ] Compare the implemented LaunchDarkly/Unleash/GrowthBook/PostHog REST readers against authenticated disposable-service captures and exact supported versions. Current HTTP fixtures are synthetic, not owner acceptance. Verify scope/cohort semantics and preserve unknown for complex targeting or missing access; PostHog environment scope is explicitly owner-configured, not API-observed.
 - [ ] Capture actual dashboard-write tool schemas/permissions and target data-source requirements for PostHog/Mixpanel/Amplitude/Metabase/Grafana. Remote creation/normalization remains open roadmap code work. Current output is a pending exact-metric handoff with createdRemotely=false, not a remote chart.
 - [ ] Capture real MCP rosters/arguments, project/site/datasource IDs and permissions for Datadog/Grafana/Figma. Offline binding fixtures use synthetic normalized results and establish no remote compatibility.
 - [ ] Pull/verify the pinned Grafana container and read-only categories on supported platforms; pass credentials from the host store, never literal secret arguments or plaintext config. No container was pulled or run locally.
