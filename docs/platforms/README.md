@@ -310,6 +310,15 @@ actual discovery/install/Linux checks remain in the
 
 ### Additional tier-A targets
 
+Headless Codex receives a per-assignment --output-schema file binding the complete
+response envelope and exact unit/finding/verifier. The core still validates the
+returned identity and public gate semantics. The native schema contains only
+non-secret constraints, not prompt bodies or credentials. Earlier actual rounds
+with unbound JSON replies remain failed. A new compiled-CLI six-lens review passes
+on Codex 0.163.0/core 9ea3a298 with all workers accepted and the repository unchanged;
+this is one concrete review, not every-client or adversarial-isolation certification.
+See [ADR-0091](../decisions/0091-native-exact-headless-response-schemas.md).
+
 OpenCode's default build retains the V1 dialect and its existing pin. For V2,
 render explicitly; managed install selects the installed observed version:
 

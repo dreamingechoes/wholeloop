@@ -18,6 +18,7 @@ import type { ReviewContext } from '../review/contracts.js'
 import type { HeadlessAdapter } from './adapters.js'
 import { stageWorkerPolicy } from './policy-files.js'
 import { workerProcess } from './process.js'
+import { headlessResponseSchema } from './response-schema.js'
 
 export interface HeadlessOptions {
   adapter: HeadlessAdapter
@@ -129,7 +130,7 @@ export class HeadlessHost implements GateHost {
             role === 'inspect' ? GATE_SCHEMAS.result : GATE_SCHEMAS.vote,
         },
         instructions:
-          'Inspect only the assigned repository evidence. Read repository instructions and use read-only inspection only. Do not edit, run suites, use network/MCP, submit state or ask questions. Return one JSON object matching response; use actual evidence, and unavailable/uncertain when observation is missing. The schema object under result/vote describes that field, not its value.',
+          'Inspect only the assigned repository evidence. Read repository instructions and use read-only inspection only. Do not edit, run suites, use network/MCP, submit state or ask questions. Return the complete response envelope: schema, assignment, run, round and result/vote. A bare inner result/vote is invalid. Use actual evidence, and unavailable/uncertain when observation is missing. The schema object under result/vote describes that field, not its value.',
       }
       const assignmentInput = JSON.stringify(payload)
       if (Buffer.byteLength(assignmentInput) > 2 * 1024 * 1024)
@@ -142,6 +143,11 @@ export class HeadlessHost implements GateHost {
         repository: plan.repository,
         directory,
         env: environment,
+        responseSchema: headlessResponseSchema(
+          { assignment: identity, run: plan.run, round: plan.round },
+          role,
+          assignment,
+        ),
       })
       stageWorkerPolicy(directory, invocation.files)
       const observed = await workerProcess(invocation.command, invocation.args, {

@@ -2,6 +2,7 @@ import { lstatSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
 const names = [
+  'response.schema.json',
   '.native-config/opencode/opencode.json',
   '.cursor/cli.json',
   '.cursor/hooks.json',
@@ -23,7 +24,7 @@ function entry(path: string) {
   }
 }
 
-/** Only non-secret native policy belongs here; assignments and credentials remain off disk. */
+/** Only non-secret policy/output constraints belong here; private assignment contents and credentials stay off disk. */
 export function stageWorkerPolicy(
   directory: string,
   files?: ReadonlyMap<WorkerPolicyFile, string>,

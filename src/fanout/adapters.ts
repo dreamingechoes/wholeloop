@@ -1,4 +1,6 @@
+import { join } from 'node:path'
 import { openCodeMajor } from '../adapters/opencode-version.js'
+import type { Schema } from '../config/schema.js'
 import { isObject } from '../config/schema.js'
 import { antigravityWorker } from './antigravity.js'
 import { copilotWorker } from './copilot.js'
@@ -10,7 +12,12 @@ import type { WorkerPolicyFile } from './policy-files.js'
 
 export interface HeadlessAdapter {
   id: string
-  invocation(context: { repository: string; directory: string; env?: NodeJS.ProcessEnv }): {
+  invocation(context: {
+    repository: string
+    directory: string
+    env?: NodeJS.ProcessEnv
+    responseSchema?: Schema
+  }): {
     command: string
     args: string[]
     env?: NodeJS.ProcessEnv
@@ -68,7 +75,7 @@ export function headlessAdapter(id: string, nativeVersion?: string): HeadlessAda
   if (id === 'codex')
     return {
       id,
-      invocation: ({ directory }) => ({
+      invocation: ({ directory, responseSchema }) => ({
         command: 'codex',
         args: [
           '--ask-for-approval',
@@ -84,8 +91,16 @@ export function headlessAdapter(id: string, nativeVersion?: string): HeadlessAda
           directory,
           '--skip-git-repo-check',
           '--json',
+          ...(responseSchema ? ['--output-schema', join(directory, 'response.schema.json')] : []),
           '-',
         ],
+        ...(responseSchema
+          ? {
+              files: new Map([
+                ['response.schema.json' as const, `${JSON.stringify(responseSchema)}\n`],
+              ]),
+            }
+          : {}),
       }),
       response: (stdout) => {
         const events: unknown[] = stdout

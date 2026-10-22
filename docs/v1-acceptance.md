@@ -27,13 +27,13 @@ be a separate scope change, not a consequence of experimental service integratio
 
 ## What is already confirmed
 
-- [x] The current 1907-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
-- [x] Local check passed 1760 tests in 81 files on macOS arm64/Node 24.22.0, plus build, smoke, offline npm packaging and documentation/harness checks, before subsequent acceptance work.
+- [x] The current 1925-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
 - [x] The owner installed user-scope Claude loose skills and invoked framing with the eight questions and an explicit human stop.
 - [x] An on-hold outcome retained the owner's reason and reopening condition in external core state.
 - [x] After closing Claude and opening a new session, status recovered that same closed initiative with framing completed and no next step.
 - [x] The automatic standalone framing scenario passed on actual Codex 0.163.0 after correcting the exact-input prompt. The other five attempted clients have failures recorded in [the native trial table](../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22).
 - [x] The revised exact-final-approval scenario also passes on Codex 0.163.0, core 10cca6bc, run cf-ade63be4ab7e78074a428393. This source-API runner uses a temporary category-only observer; the installed core and matching final-review journal are real. An earlier revised run stopped before finalization and remains FAIL.
+- [x] The compiled CLI completes a real six-lens headless review in Codex 0.163.0 on core 9ea3a298: gate-35be1f516f42cb8c passes with every worker accepted and the repository unchanged. Alongside stubbed engine verdict/quorum parity, this closes P5-03's one-real-run criterion. Other native workflows and isolation checks remain separate.
 
 That does not establish a complete go/spec path, all skill/agent discovery,
 native permission denial, plugin installation or the final-review scenario on every client.
@@ -211,9 +211,9 @@ defined roadmap still includes its explicit publication and client criteria.
 
 ## Map of remaining roadmap tasks
 
-After the accepted P2-06 scope change and P4-05 MCP-first implementation:
-39 of 54 tasks are complete; 15 remain open. These rows describe closure evidence,
-not fifteen tests the owner must run alone.
+After the accepted P2-06 scope change, P4-05 MCP-first implementation and P5-03
+native headless acceptance: 40 of 54 tasks are complete; 14 remain open.
+These rows describe closure evidence, not fourteen tests the owner must run alone.
 
 | Task | What closes it | Owner involvement |
 | --- | --- | --- |
@@ -228,7 +228,6 @@ not fifteen tests the owner must run alone.
 | P4-01 | Launcher lacks a sending tool in each adapter | Review actual capability inventory |
 | P5-01 | Real scenario passes Gemini and Antigravity | Native access when blocked |
 | P5-02 | Cursor real scenario and readonly behavior pass | Native access when blocked |
-| P5-03 | One actual conformance run establishes engine verdict parity | Model access and allowance |
 | P5-04 | Actual latest regression creates the expected issue | CI credentials/protection/activation |
 | P5-05 | Reviewed distribution, approved visibility, fresh-machine timing and clean notes | Publication/ownership decision |
 | P5-07 | Actual 1.0 tag and announcement after remaining acceptance | Final release approval |

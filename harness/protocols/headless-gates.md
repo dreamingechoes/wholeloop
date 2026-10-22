@@ -13,6 +13,10 @@
 - ⛔ `headless-native-policy-files` — stage only named bounded non-secret policy
   in the unique external worker directory. Preflight every output, preserve existing
   files and reject symlink roots/parents/files. Launch no client after setup failure.
+- ⛔ `headless-native-response-schema` — constrain Codex final generation with
+  the exact current envelope identity and unit/finding/verifier. Keep the complete
+  core validation afterwards; never reconstruct missing identity from bare output.
+  Stage only its non-secret response constraints, not private assignment bodies.
 - ⛔ `headless-cursor-read-tools` — Cursor workers use Ask, sandbox and explicit
   shell/write/web/MCP denials plus a fail-closed read/search-only preToolUse hook.
   Read responses grant nothing; unknown tools, bad context or unavailable hooks deny.

@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: headless-native-response-schema
+    enforcers: [src/fanout/response-schema.ts#headlessResponseSchema, src/fanout/host.ts#HeadlessHost, src/fanout/adapters.ts#headlessAdapter, src/fanout/policy-files.ts#stageWorkerPolicy, test/unit/fanout/response-schema.test.ts, test/unit/fanout/fanout.test.ts]
   - id: conformance-scripted-final-approval
     enforcers: [src/conformance/scenario.ts#conformanceScenario, src/conformance/judge.ts#judgeConformance, src/conformance/fixture.ts, test/unit/conformance/scenario.test.ts, test/unit/conformance/conformance.test.ts]
   - id: opencode-native-dialect

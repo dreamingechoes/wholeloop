@@ -36,6 +36,14 @@ let raw=''
 process.stdin.on('data',chunk=>raw+=chunk)
 process.stdin.on('end',()=>{
  const received=JSON.parse(raw),a=format==='antigravity'?JSON.parse(received.message.content):received,mode=process.env.WL_FIXTURE_MODE
+ if(format==='codex'){
+  const index=process.argv.indexOf('--output-schema')
+  if(index<0)process.exit(9)
+  const schema=JSON.parse(fs.readFileSync(process.argv[index+1],'utf8')),field=a.role==='inspect'?'result':'vote',props=schema.properties
+  if(props.assignment.enum[0]!==a.assignment||props.run.enum[0]!==a.run||props.round.enum[0]!==a.round||schema.additionalProperties!==false||!schema.required.includes(field))process.exit(9)
+  if(a.role==='inspect'&&props.result.properties.unit.enum[0]!==a.unit.id)process.exit(9)
+  if(a.role==='refute'&&(props.vote.properties.finding.enum[0]!==a.unit.finding||props.vote.properties.verifier.enum[0]!==a.unit.verifier))process.exit(9)
+ }
  const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:format==='opencode'&&process.env.OPENCODE_PERMISSION?JSON.parse(process.env.OPENCODE_PERMISSION):undefined,opencodePolicy:format==='opencode'&&!process.env.OPENCODE_PERMISSION?JSON.parse(fs.readFileSync('.native-config/opencode/opencode.json','utf8')):undefined,cursorPolicy:process.env.WL_FIXTURE_FORMAT==='cursor'?JSON.parse(fs.readFileSync('.cursor/cli.json','utf8')):undefined,cursorHooks:process.env.WL_FIXTURE_FORMAT==='cursor'?fs.existsSync('.cursor/hooks.json'):undefined,geminiPolicy:process.env.WL_FIXTURE_FORMAT==='gemini'?JSON.parse(fs.readFileSync(process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH,'utf8')):undefined,agyAgent:format==='antigravity'?fs.readFileSync('.agents/agents/'+process.argv[process.argv.indexOf('--agent')+1]+'.md','utf8'):undefined})+'\\n')}
  log('start')
  if(mode==='crash' || (mode==='crash-vote' && a.role==='refute'))process.exit(7)
@@ -44,6 +52,7 @@ process.stdin.on('end',()=>{
  if(mode==='mutate')fs.appendFileSync(a.repository+'/app.ts','// changed by fixture\\n')
  setTimeout(()=>{
   const result=a.role==='inspect'?{unit:mode==='wrong-unit'?'another':a.unit.id,status:'ok',evidence:['Observed fixture'],findings:process.env.WL_FIXTURE_FINDING==='yes' && a.unit.id===process.env.WL_FIXTURE_UNIT?[${JSON.stringify(defect)}]:[]}:{finding:a.unit.finding,verifier:a.unit.verifier,outcome:'refute',reason:'Fixture falsifying observation',evidence:['Observed counterexample']}
+  if(format==='codex'&&a.role==='inspect')result.reason='Fixture inspection completed'
   const envelope={schema:'wholeloop/headless-result@1',assignment:mode==='wrong'?'different':a.assignment,run:a.run,round:a.round,[a.role==='inspect'?'result':'vote']:result}
   const text=mode==='malformed'?'not JSON':JSON.stringify(envelope)
   log('end')
@@ -502,6 +511,13 @@ describe('bounded headless gate processes', () => {
             expect(row.agyAgent).toContain('tools: [view_file, grep_search]')
             expect(row.agyAgent).toContain('commandExecutionPolicy: "off"')
             expect(row.agyAgent).toContain('model: inherit')
+          }
+          if (id === 'codex') {
+            expect(row.args).toContain('--output-schema')
+            const schemaFile = row.args[row.args.indexOf('--output-schema') + 1]
+            const schema = JSON.parse(readFileSync(schemaFile, 'utf8'))
+            expect(schema.properties.schema.enum).toEqual(['wholeloop/headless-result@1'])
+            expect(schema.properties.run.enum).toEqual([plan.run])
           }
           if (id === 'gemini') {
             expect(row.geminiPolicy.tools.core).toContain('read_file')

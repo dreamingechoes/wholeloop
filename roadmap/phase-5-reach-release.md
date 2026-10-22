@@ -60,7 +60,7 @@ scenario remain owner checks. See ADR-0057; these checks do not block P5-03.
 
 ## P5-03 · Headless fan-out engine
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P3-03
+**Status:** ✅ · **Size:** L · **Depends on:** P3-03
 
 **Goal** — Parallel, isolated gate lenses on any CLI with a headless mode.
 
@@ -68,7 +68,7 @@ scenario remain owner checks. See ADR-0057; these checks do not block P5-03.
 
 **Acceptance criteria:**
 
-- [ ] The same gate run gives the same verdict under native, headless and sequential engines (stubbed workflow test + one real conformance run).
+- [x] The same gate run gives the same verdict under native, headless and sequential engines (stubbed workflow test + one real conformance run).
 - [x] A crashed worker is reported, never counted as a refutation.
 
 **Local implementation:** bounded process transport, shell-free stdin prompts,
@@ -76,10 +76,19 @@ per-assignment sessions, timeout/output/concurrency limits, owned-group cancella
 exact response validation, round locks and the existing gate aggregator are tested.
 Native/headless/sequential synthetic verdict parity passes. Claude, Codex, OpenCode,
 Copilot and Cursor recipes are help-probed and tested through synthetic PATH clients.
+Codex now receives a native per-assignment output schema through --output-schema;
+exact envelope identity stays mandatory in the core. Actual Codex 0.163.0 on core
+9ea3a298 passes the compiled CLI six-lens review gate-35be1f516f42cb8c with all
+workers successful, no missing coverage and an unchanged repository. Together
+with the native/sequential/headless stubbed verdict/quorum comparison, this meets
+the task's one-real-run criterion. Preserve two earlier rounds with five unbound
+JSON replies and one accepted reply each (ADR-0091). This does not certify every
+client, real refutation quality or adversarial isolation; those checks remain in
+the platform/manual backlog.
 OpenCode selects V1/V2 from the observed native version. V2 uses an isolated global
 native config, path-checked reader only and final ended text after clean exit;
 V1 retains its per-worker permissions and completed-step JSONL. Actual V2 loads
-the inspector and returns a no-tool response; full gate parity remains unverified.
+the inspector and returns a no-tool response; its own full gate remains unverified.
 Copilot exposes only view/glob/grep with explicit read grants and silent text.
 Cursor uses Ask/sandbox, private worker-local policy, an explicit read/search-only
 hook and successful native final JSON; no personal/project settings are rewritten.
@@ -95,7 +104,8 @@ turn. Clients that need input before init remain unavailable; actual AGY 1.4.2
 startup ordering/agent/hook/model conformance remain owner checks. All seven local
 recipes are implemented with their stated conditions; sequential fallback remains
 available without granting a readiness bypass.
-Neither gap blocks independent local generator/guard implementation.
+The local engine task is complete at its stated acceptance scope; wider native
+platform and workflow checks do not become passed checks from this one run.
 
 **Docs** — architecture/orchestration-and-gates, ADR-0006, ADR-0046, ADR-0058, ADR-0060, ADR-0071, ADR-0072.
 

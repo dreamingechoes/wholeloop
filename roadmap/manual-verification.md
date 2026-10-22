@@ -28,6 +28,16 @@ a six-lens synthetic review attempt failed with five 60-second timeouts and one
 invalid response; a separate 120-second lens attempt also timed out. Do not mark
 native gate parity or the whole platform task complete from the smaller probes.
 
+Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544
+each fail with five invalid responses and one accepted response; the repository
+is unchanged. Bounded diagnostics establish missing envelope identities in those
+five JSON objects. ADR-0091 adds an exact native generation schema, preserving
+strict host validation. Preserve both failed rounds.
+The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six
+workers in actual Codex 0.163.0, with no missing coverage or repository edits.
+That fulfills P5-03's one-real-run criterion together with stubbed three-engine
+verdict/quorum parity; earlier failures and wider native checks remain unchanged.
+
 Remote service integrations are **experimental · fixture-tested ·
 service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md).
 Their authenticated account/API/rendering checks below are deferred certification,
@@ -39,12 +49,13 @@ known; ADR-0085 removes the requirement for another HTTP implementation.
 
 ## Automated platform checks (2026-10-22)
 
-The exact source archive from a9c2964 passes the full check on both environments:
+The exact a9c2964 archive passes 1907 tests on both environments. The subsequent
+native-output-schema candidate also passes the complete check on both:
 
 | Environment | Node / npm | Executed result |
 | --- | --- | --- |
-| macOS arm64 | 24.22.0 / 11.8.0 | 1907 tests in 86 files; complete check passes |
-| Debian bookworm Linux arm64, Docker | 24.22.0 / 11.19.1 | 1907 tests in 86 files; complete check passes |
+| macOS arm64 | 24.22.0 / 11.8.0 | 1925 tests in 87 files; complete check passes |
+| Debian bookworm Linux arm64, Docker | 24.22.0 / 11.19.1 | 1925 tests in 87 files; complete check passes |
 
 Linux uses Git 2.39.5 and the official Node image pinned to
 sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5.
@@ -52,7 +63,11 @@ Dependencies are prepared separately with only the package manifests. The source
 check then runs without network or native credentials, as a non-root user with
 no capabilities, from an immutable source archive and a fresh synthetic Git
 baseline. It does not mount the real checkout/history or personal directories.
-The offline package SHA-256 matches macOS: 863db993992286af9b2ad6767b50c6d2c622c16ffbf3a85df72b13826f873c60.
+The candidate archive SHA-256 is ffdbde1a83e8f30f67ed149d4fc1910e78a5ee7c75f246959ae33f3d8309715a,
+based on a417fc0 with the new source/tests. A Docker EOF interrupts the first
+candidate attempt; retain its partial log and repeat in a fresh container. The
+successful run takes 52.62 seconds with no skipped tests. Its offline package
+SHA-256 matches macOS: 6956be93c238a526a84b7b72a289bc88cf4c7c1b6570ff9b1f4fc324cdc55d5f.
 
 - [x] Execute lint/types, all unit/process/Git/worktree/compiled CLI fixtures, build/smoke, offline npm packaging, schema compatibility, references, docs, harness, Markdown and all 35 Mermaid diagrams on Linux arm64/Node 24. No test is skipped.
 - [ ] Repeat other supported Node/platform combinations, including the complete Node 20 installed-runtime surface and Linux x64. A Node 24 development check does not establish those results.
@@ -262,7 +277,7 @@ sections above. Overview pages retain native/host verification boundaries.
 - [ ] Confirm the real installed skill supplies the random note marker, creates one owned standalone initiative, completes framing with a go receipt and stops before write-spec. A marker proves instruction consumption, not an adversarial loader attestation; review narrative evidence/challenge quality separately.
 - [ ] Exercise actual timeouts, cancellation and native failures; the report must name CLI, step and missing events without retaining stdout/stderr. Interrupted/failed fixtures cannot be retried or relabelled. Inspect retained evidence and prepare a new run.
 - [ ] Inspect native logs, ambient plugins/compatible user skills, ignored files, Git metadata, external writes and any remote effects. This structural scenario does not validate native JSON protocol, read-only role isolation, hook activation or the broader P0-03 matrix.
-- [x] Repeat all seven installed-launcher simulations and compiled conformance-runner fixtures on Linux arm64/Node 24 in the complete 1907-test check. Results remain simulation, not native Linux passes.
+- [x] Repeat all seven installed-launcher simulations and compiled conformance-runner fixtures on Linux arm64/Node 24 in the complete 1925-test check. Results remain simulation, not native Linux passes.
 - [ ] Repeat real clients and other supported Node/platform combinations before making broader portability claims.
 
 Automated tier-A/Gemini/Antigravity/Cursor installed-launcher simulations report FIXTURE_PASS, never a
@@ -330,11 +345,12 @@ hook capture and installed-client behavior remain owner checks.
 
 ## Headless gate processes (P5-03)
 
+- [x] Pass the roadmap's stubbed native/sequential/headless verdict/quorum comparison and one actual compiled-CLI six-lens review: Codex 0.163.0, core 9ea3a298, gate-35be1f516f42cb8c. Six workers succeed, no coverage is missing and the repository is unchanged. Preserve previous failed rounds; no real refutation or adversarial isolation is inferred.
 - [ ] Execute one pinned review and verification round with actual native, headless and sequential workers. Compare coverage/quorum/verdict, independently inspect evidence quality and record exact client versions. Synthetic parity tests do not establish real model equivalence.
 - [ ] On actual Claude/Codex clients, verify stdin/final-result normalization, no reused conversation, read-only tool/sandbox enforcement, disabled MCP/customization and non-interactive denial. Inspect managed policies/hooks and client-owned logs; current help probes are not a live pass.
 - [ ] Interrupt real clients and confirm owned descendants stop, incomplete workers remain unknown and no failed refuter adds a vote. Recover a physical-crash lock only after inspecting owner.json and confirming its process stopped.
 - [ ] Inspect ignored/transient-restored files and external side effects; repository snapshots cannot prove their absence. Confirm authentication uses the client's credential store without plaintext copies.
-- [ ] Repeat process-group, timing, permission and worker fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64 only.
+- [x] Repeat process-group, timing, permission and worker fixtures on Linux arm64/Node 24 in the complete check. Real native Linux clients and other Node/platform combinations remain open.
 
 OpenCode/Copilot recipes have local fixture coverage. Verify OpenCode native
 deny-default agent permissions, external-directory containment, completed-message

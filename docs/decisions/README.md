@@ -101,6 +101,7 @@
 | [0088](./0088-version-specific-opencode-native-transports.md) | Version-specific OpenCode native transports | Accepted | 2026-10-22 |
 | [0089](./0089-scripted-final-approval-in-framing-conformance.md) | Scripted final approval in framing conformance | Accepted | 2026-10-22 |
 | [0090](./0090-explicit-nightly-native-model-selection.md) | Explicit nightly native model selection | Accepted | 2026-10-22 |
+| [0091](./0091-native-exact-headless-response-schemas.md) | Native exact headless response schemas | Accepted | 2026-10-22 |
 
 ## Lifecycle
 

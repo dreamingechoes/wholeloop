@@ -3,7 +3,7 @@
 > **TL;DR** — Eight short agent roles do the work. They run on whichever **engine** the CLI supports best — native subagents, headless worker processes, or one after another — and the result is the same, because everything that decides (lens sets, thresholds, round caps, aggregation) lives in the core, not in the engine.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with seven client recipes (AGY conditional on pre-input read-only initialization) are implemented locally; actual client engines and read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
+> **Status: 🚧 partial.** The conductor and research roles, shared research scheduling, pinned source plans and active-refutation aggregation and fixed definition challenger modes are implemented with fixture/snapshot tests. Journaled gate plans, manifests, budgets, refutations and snapshot-bound verdicts are implemented with stubbed-worker/Git fixtures. Once-per-round suite execution and the verifier host workflow are implemented. Incremental review and a bounded headless process host with seven client recipes (AGY conditional on pre-input read-only initialization) are implemented. A real compiled-CLI six-lens review passes on Codex 0.163.0; wider client/workflow and adversarial read-only enforcement still require live conformance. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md). Implementation: [P3-03](../../roadmap/phase-3-build.md#p3-03--gate-engine), [P5-03](../../roadmap/phase-5-reach-release.md#p5-03--headless-fan-out-engine).
 
 ---
 
@@ -78,7 +78,9 @@ wl fanout run review --for review-01234567 --engine headless --adapter codex --c
 
 Current local recipes cover all seven clients, with an explicit AGY readiness condition. They were checked
 against installed help and primary documentation, then executed with synthetic
-PATH clients; no real model conformance is claimed. AGY additionally requires a
+PATH clients. Actual Codex 0.163.0/core 9ea3a298 passes the compiled-CLI six-lens
+review gate-35be1f516f42cb8c, with all workers accepted and no repository edits.
+This does not certify every client, semantic truth or adversarial isolation. AGY additionally requires a
 reported read-only init before any assignment is sent. Native/sequential SDK hosts are available independently.
 
 Each assignment gets a separate process, session and external-store directory.
@@ -105,14 +107,22 @@ confirm the process stopped before recovering a lock left by a physical crash.
 Claude uses read-only built-in tools, non-interactive denials and disabled ordinary
 customizations/MCP. Codex uses an ephemeral read-only sandbox, no approval prompts,
 ignored user config and a working directory outside the project; its prompt names
-the repository to inspect. Neither recipe uses a permission bypass or resume flag.
-OpenCode starts outside the repository with a uniquely named primary inspector,
-inline deny-default global/agent permissions, read/glob/grep, explicit repository
-external-directory access, no external plugins, sharing, snapshots or LSP. Reject
-repository paths containing native wildcard characters instead of broadening access.
-Require a completed stop step and collect text only from that final message/session;
-errors, truncated turns and mixed sessions fail. Native config merging, custom MCP
-startup and managed policy are not isolated by this recipe.
+the repository to inspect. Its per-assignment --output-schema binds the complete
+envelope and exact unit or finding/verifier, using a staged non-secret schema.
+The core still enforces all public gate and evidence rules; it never reconstructs
+missing identity from bare output. See [ADR-0091](../decisions/0091-native-exact-headless-response-schemas.md).
+Neither recipe uses a permission bypass or resume flag.
+
+OpenCode selects V1/V2 from the observed native version, with a unique inspector
+outside the repository. V1 retains its deny-default global/agent permissions,
+read/glob/grep and completed final stop event. V2 stages an isolated global config
+with only the path-checked reader, explicit assigned external-directory access
+and native integration denials. Search, shell, editing and delegation stay denied.
+V2 accepts ended final-step text after clean process exit, unwrapping at most one
+exact JSON fence before unchanged assignment validation. Reject repository paths
+with wildcard characters, mixed sessions, failures and truncated turns. Native
+managed configuration/startup effects and full OpenCode gate acceptance remain
+separate checks; see [ADR-0088](../decisions/0088-version-specific-opencode-native-transports.md).
 
 Copilot starts outside the repository with view/glob/grep only, explicit read
 permission, shell/write/url/memory denial, built-in MCP disabled and no automatic
