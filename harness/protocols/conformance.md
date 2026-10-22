@@ -70,3 +70,8 @@ replace accounts/models automatically to turn a failure into a pass.
 - ⛔ `conformance-redacted-diagnostics` — persist only closed error/event categories
   and counts. Do not retain raw native prose, private tool payloads or credentials.
   Classification never changes the journal-based scenario verdict.
+
+- ⛔ `conformance-scripted-final-approval` — bind the fictional fixture owner's
+  declaration to exact final bytes and decision. Require same-run final review;
+  changed bytes need a new declaration. Keep simulated review visibly simulated.
+  This test declaration never substitutes for a real person's approval.

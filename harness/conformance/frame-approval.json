@@ -1,0 +1,13 @@
+{
+  "schema": "wholeloop/conformance-frame-approval@1",
+  "scenario": "standalone-frame-v1",
+  "scripted": true,
+  "sha256": "cec23ee48fd0e4c97b1691342ea4a479cb5c86254491167ce225892106820ec3",
+  "decision": {
+    "schema": "wholeloop/frame-decision@1",
+    "by": "Fixture Owner",
+    "outcome": "go",
+    "reason": "Exercise the synthetic standalone framing transport only; this is not product validation.",
+    "stopConditions": ["Stop before write-spec and do not use this fixture as customer evidence."]
+  }
+}

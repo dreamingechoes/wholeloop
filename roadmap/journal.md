@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Conformance framing — explicit fictional final approval
+
+- Add a bounded scripted declaration for the fictional Fixture Owner's exact final document digest and decision. Bind both source inputs into the scenario hash, share pure decision rendering and retain unchanged real-human framing behavior. The native prompt supplies approved test bytes but no reviewer; semantic challenge remains required. ADR-0089 explains why neither an initial go nor automatic approval of arbitrary model output is sufficient.
+- Strengthen the judge to require exact final bytes/decision and a valid same-run final review before completion. Exercise frame draft/finalize through all seven installed-launcher simulations, with a visibly SIMULATED reviewer and FIXTURE_PASS evidence. The first focused run exposes an invalid event ID in the duplicate-review regression; correct that fixture ID, then pass 302 focused cases. Preserve all 212 declarations and append the scripted input schema (213 total, 157 commands).
+- Full local check passes 1904 tests in 86 files (259.95 seconds), lint/types, build/smoke, isolated package PASS, references, 267-file docs, 143-file harness, 266-file Markdown and all 35 Mermaid diagrams. A fresh actual OpenCode 2.1.1 run cf-c8f17565452bed83624a65b7 on core da2b4506 fails before journal creation with exit 1 and one unclassified native error. Retain that external receipt; this test-input fix is not a native pass or a diagnosis of the upstream cause. A fresh Codex trial remains ongoing. Nightly V2 model configuration remains independent technical work; native permissions/access, broader workflow/Linux and release acceptance remain open. No push or publication occurs.
+
 ## 2026-10-22 · OpenCode compatibility — retain V1 and select native V2
 
 - Preserve the default and pinned V1 tree, adding explicit exact-version rendering and observed-version selection for managed install, conformance and headless execution. V2 binds guards to the current session location, recognizes patch destinations and uses documented policy actions. Isolate native version side effects so dry-run leaves the real home untouched; validate known artifact dialects without following escaping hints. ADR-0088 records the boundary.

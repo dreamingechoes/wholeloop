@@ -239,7 +239,7 @@ is promoted to native support. See ADR-0052, ADR-0061 and ADR-0064.
 - [ ] The 1.0 release is tagged and announced.
 
 **Local implementation:** source/compiled command registration checks every declared
-output. The v1 candidate records fifty-two source schemas, 147 output variants,
+output. The v1 candidate records fifty-three source schemas, 147 output variants,
 thirteen step definitions, 157 command signatures and five exit codes. Individual
 compatibility cases retain declaration identities, command options/signatures and
 exit meanings; public adapter/distribution manifests validate before emission.

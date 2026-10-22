@@ -164,6 +164,15 @@ FIXTURE_PASS is simulation. Process exit zero with missing events is a failure.
 This scenario deliberately uses go and a random installed-skill marker; the
 owner's earlier on-hold exercise is useful separate evidence, not its substitute.
 
+The bundled Fixture Owner is a scripted fictional actor. Its declaration approves
+one exact final document hash and decision, supplied in the prepared prompt.
+The client must preserve those bytes, perform the final challenger review and
+use frame finalize. Changed bytes require a new declaration; an initial go does
+not approve later edits. No real human approval or customer validation is claimed.
+The judge checks review structure and byte identity; review quality and isolation
+still need observation. --fixture uses a visibly simulated reviewer and remains
+FIXTURE_PASS. See [ADR-0089](./decisions/0089-scripted-final-approval-in-framing-conformance.md).
+
 ### 5. Verify permissions, hooks and engine behavior separately
 
 The implementation side prepares these probes in disposable repositories and

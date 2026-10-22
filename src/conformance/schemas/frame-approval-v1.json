@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/conformance-frame-approval@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "scenario", "scripted", "sha256", "decision"],
+  "properties": {
+    "schema": { "type": "string", "const": "wholeloop/conformance-frame-approval@1" },
+    "scenario": { "type": "string", "const": "standalone-frame-v1" },
+    "scripted": { "type": "boolean", "const": true },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "decision": { "type": "object", "additionalProperties": true }
+  }
+}

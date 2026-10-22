@@ -1,7 +1,9 @@
 import { existsSync, lstatSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
+import { contractDigest } from '../contracts/compatibility.js'
 import { checkShape } from '../flow/registry.js'
 import { checkFrame, FRAME_SECTIONS } from '../framing/contract.js'
+import { validateFrameReview } from '../framing/finalize.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { replay, type StateEvent } from '../state/events.js'
 import { StateStore } from '../state/store.js'
@@ -35,6 +37,7 @@ export function judgeConformance(run: PreparedConformance, scenario: Scenario): 
       'The skill marker checks instruction consumption, not an adversarial attestation of the native loader.',
       'Fresh processes may inherit native authentication/customizations. Native logs, ignored files, external writes and service-side effects are not fully observed.',
       'Exit status and the journal are judged; native stdout is bounded and discarded, not validated as a client protocol.',
+      'The bundled fictional owner approves only scripted fixture bytes; final review is client-reported, not proof of human approval, semantic truth or reviewer isolation.',
     ],
   }
   if (run.phase === 'prepared') return report
@@ -137,6 +140,14 @@ export function judgeConformance(run: PreparedConformance, scenario: Scenario): 
       events.indexOf(entry) > events.indexOf(complete),
   )
   if (!outcome) missing.push('frame.decided:go:same-run')
+  const decisions = events.filter((entry) => entry.type === 'frame.decided')
+  if (
+    decisions.length !== 1 ||
+    (outcome?.type === 'frame.decided' &&
+      (outcome.data.reason !== scenario.approval.decision.reason ||
+        outcome.data.reopen !== undefined))
+  )
+    problems.push('scripted-decision-mismatch')
   if (
     events.some(
       (entry) =>
@@ -147,6 +158,39 @@ export function judgeConformance(run: PreparedConformance, scenario: Scenario): 
   )
     problems.push('unexpected-skip-approval-or-closure')
   if (complete?.type === 'step.completed') {
+    if (complete.data.artifact.content !== scenario.artifact)
+      problems.push('scripted-final-artifact-mismatch')
+    const reviews = events.filter(
+      (entry) => entry.type === 'note.added' && entry.data.text.startsWith('Framing final review:'),
+    )
+    const finalReview = reviews[0]
+    if (
+      reviews.length !== 1 ||
+      finalReview?.type !== 'note.added' ||
+      finalReview.subject !== complete.subject ||
+      !start ||
+      events.indexOf(finalReview) <= events.indexOf(start) ||
+      events.indexOf(finalReview) >= events.indexOf(complete)
+    )
+      missing.push('note.added:final-framing-review')
+    else {
+      try {
+        const review = validateFrameReview(
+          complete.data.artifact.content,
+          JSON.parse(finalReview.data.text.slice('Framing final review: '.length)),
+          { subject: complete.subject, run: complete.data.run, owner: scenario.owner },
+        )
+        if (
+          review.sha256 !== scenario.approval.sha256 ||
+          contractDigest(review.decision) !== contractDigest(scenario.approval.decision)
+        )
+          throw new Error()
+        if (run.mode === 'live' && review.reviewer.by === 'SIMULATED fixture reviewer')
+          throw new Error()
+      } catch {
+        problems.push('invalid-final-framing-review')
+      }
+    }
     const expected = `items/${complete.subject}/artifacts/frame-problem/${complete.data.run}.md`
     if (
       complete.data.artifact.path !== expected ||

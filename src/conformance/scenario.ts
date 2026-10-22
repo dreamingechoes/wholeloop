@@ -1,8 +1,33 @@
 import { artifactDigest } from '../adapters/generate.js'
-import { isObject } from '../config/schema.js'
+import { isObject, validate } from '../config/schema.js'
 import { checkShape } from '../flow/registry.js'
 import { checkFrame, FRAME_SECTIONS } from '../framing/contract.js'
+import { frameDecision, renderFrameDecision } from '../framing/finalize.js'
 import type { Scenario } from './contracts.js'
+import approvalSchema from './schemas/frame-approval-v1.json' with { type: 'json' }
+
+/** This declaration belongs only to the bundled fictional scenario, not a runtime approval API. */
+function scriptedApproval(canonical: ReadonlyMap<string, string>, scenario: Scenario) {
+  const content = canonical.get('harness/conformance/frame-approval.json')
+  if (!content || Buffer.byteLength(content) > 65536)
+    throw new Error('A bounded scripted framing approval declaration is required')
+  try {
+    const value: unknown = JSON.parse(content)
+    if (validate(value, approvalSchema).length) throw new Error()
+    const approval = value as Scenario['approval']
+    const decision = frameDecision(approval.decision)
+    const artifact = renderFrameDecision(scenario.artifact, decision)
+    if (
+      decision.by !== scenario.owner ||
+      decision.outcome !== 'go' ||
+      approval.sha256 !== artifactDigest(artifact)
+    )
+      throw new Error()
+    return { approval: { ...approval, decision }, artifact, content }
+  } catch {
+    throw new Error('Invalid scripted framing approval or exact artifact digest; contents omitted')
+  }
+}
 
 export function conformanceScenario(canonical: ReadonlyMap<string, string>) {
   const content = canonical.get('harness/conformance/standalone-frame.json')
@@ -32,5 +57,9 @@ export function conformanceScenario(canonical: ReadonlyMap<string, string>) {
   const scenario = value as unknown as Scenario
   if ([...checkShape(scenario.artifact, FRAME_SECTIONS), ...checkFrame(scenario.artifact)].length)
     throw new Error('The synthetic framing artifact must satisfy the real step shape')
-  return { scenario, digest: artifactDigest(content) }
+  const scripted = scriptedApproval(canonical, scenario)
+  return {
+    scenario: { ...scenario, artifact: scripted.artifact, approval: scripted.approval },
+    digest: artifactDigest(JSON.stringify([content, scripted.content])),
+  }
 }

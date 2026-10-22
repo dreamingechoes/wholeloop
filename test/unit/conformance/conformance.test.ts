@@ -31,6 +31,7 @@ import { StateStore } from '../../../src/state/store.js'
 function context(store: string, full = false): ConformanceContext {
   const keep = [
     'harness/conformance/standalone-frame.json',
+    'harness/conformance/frame-approval.json',
     'harness/skills/next/SKILL.md',
     'harness/skills/frame-problem/SKILL.md',
     'harness/agents/conductor.md',
@@ -101,6 +102,14 @@ describe('standalone conformance runner', () => {
         expect(reportConformance(ctx, prepared.id)).toEqual(report)
         await expect(runConformance(ctx, prepared.id, 'live')).rejects.toThrow('already claimed')
         expect(new StateStore(run.state).list()).toHaveLength(1)
+        const events = new StateStore(run.state).events()
+        const review = events.find(
+          (entry) =>
+            entry.type === 'note.added' && entry.data.text.startsWith('Framing final review:'),
+        )
+        expect(review?.type === 'note.added' && review.data.text).toContain(
+          'SIMULATED fixture reviewer',
+        )
       })
     },
     30000,
@@ -268,6 +277,76 @@ describe('standalone conformance runner', () => {
         'already contains journal',
       )
       expect(readConformance(ctx, second.id).phase).toBe('prepared')
+    })
+  }, 30000)
+
+  it('requires the final review and exact scripted decision instead of accepting legacy completion', async () => {
+    await fixture(async (ctx) => {
+      const prepared = prepareConformance(ctx, 'codex', '99.0.0')
+      await runConformance(ctx, prepared.id, 'fixture')
+      const run = readConformance(ctx, prepared.id)
+      const scenario = conformanceScenario(ctx.canonical).scenario
+      const store = new StateStore(run.state)
+      const original = store.events()
+      const journal = `journal/${original[0]?.ts.slice(0, 7)}.ndjson`
+      for (const kind of [
+        'absent',
+        'stale-digest',
+        'other-owner',
+        'open-finding',
+        'duplicate',
+        'after-completion',
+        'changed-artifact',
+        'changed-decision',
+      ]) {
+        let events = structuredClone(original)
+        const note = events.find(
+          (entry) =>
+            entry.type === 'note.added' && entry.data.text.startsWith('Framing final review:'),
+        )
+        if (note?.type !== 'note.added') throw new Error('Missing fixture review')
+        if (kind === 'absent') events = events.filter((entry) => entry !== note)
+        if (kind === 'duplicate')
+          events.push({ ...note, id: 'ev-00000000-0000-4000-8000-000000000000' })
+        if (kind === 'after-completion')
+          events = [...events.filter((entry) => entry !== note), note]
+        if (['stale-digest', 'other-owner', 'open-finding'].includes(kind)) {
+          const value = JSON.parse(note.data.text.slice('Framing final review: '.length))
+          if (kind === 'stale-digest') value.sha256 = 'f'.repeat(64)
+          if (kind === 'other-owner') value.decision.by = 'Other Owner'
+          if (kind === 'open-finding') value.reviewer.unresolvedFindings.push('Missing evidence')
+          note.data.text = `Framing final review: ${JSON.stringify(value)}`
+        }
+        if (kind === 'changed-artifact') {
+          const complete = events.find((entry) => entry.type === 'step.completed')
+          if (complete?.type === 'step.completed') complete.data.artifact.content += '\nEdited.\n'
+        }
+        if (kind === 'changed-decision') {
+          const decision = events.find((entry) => entry.type === 'frame.decided')
+          if (decision?.type === 'frame.decided') decision.data.reason = 'Not the scripted decision'
+        }
+        store.files.atomic(journal, `${events.map((event) => JSON.stringify(event)).join('\n')}\n`)
+        const report = judgeConformance(run, scenario)
+        expect(report.status, kind).toBe('FAIL')
+        if (kind === 'absent' || kind === 'duplicate' || kind === 'after-completion')
+          expect(report.missing, kind).toContain('note.added:final-framing-review')
+        if (kind === 'changed-artifact')
+          expect(report.problems).toContain('scripted-final-artifact-mismatch')
+        if (kind === 'changed-decision')
+          expect(report.problems).toContain('scripted-decision-mismatch')
+      }
+      store.files.atomic(journal, `${original.map((event) => JSON.stringify(event)).join('\n')}\n`)
+      expect(judgeConformance(run, scenario).status).toBe('FIXTURE_PASS')
+      expect(
+        judgeConformance(
+          {
+            ...run,
+            mode: 'live',
+            process: { status: 'succeeded', code: 0, signal: null, version: run.pin },
+          },
+          scenario,
+        ).problems,
+      ).toContain('invalid-final-framing-review')
     })
   }, 30000)
 

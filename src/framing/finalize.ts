@@ -82,14 +82,9 @@ export function frameRun(events: readonly StateEvent[], subject: string) {
   return latest.data.run
 }
 
-export function prepareFrame(engine: FlowEngine, subject: string, content: string, input: unknown) {
-  const item = engine.store.get(subject)
-  if (item.kind !== 'initiative' || item.status !== 'open')
-    throw new Error('Frame an open initiative')
-  const run = frameRun(engine.store.events(), subject)
+/** Share exact rendering with scripted test declarations without granting runtime approval. */
+export function renderFrameDecision(content: string, input: unknown) {
   const decision = frameDecision(input)
-  if (decision.by !== item.owner)
-    throw new Error('The explicit decision must name the initiative owner')
   const section = stopSection(content)
   const draft = [
     ...section.raw.slice(0, section.start),
@@ -100,6 +95,18 @@ export function prepareFrame(engine: FlowEngine, subject: string, content: strin
   ].join('\n')
   const problems = [...checkShape(draft, FRAME_SECTIONS), ...checkFrame(draft)]
   if (problems.length) throw new Error(problems.join('\n'))
+  return draft
+}
+
+export function prepareFrame(engine: FlowEngine, subject: string, content: string, input: unknown) {
+  const item = engine.store.get(subject)
+  if (item.kind !== 'initiative' || item.status !== 'open')
+    throw new Error('Frame an open initiative')
+  const run = frameRun(engine.store.events(), subject)
+  const decision = frameDecision(input)
+  if (decision.by !== item.owner)
+    throw new Error('The explicit decision must name the initiative owner')
+  const draft = renderFrameDecision(content, decision)
   const sha256 = frameDigest(draft)
   return {
     schema: 'wholeloop/frame-draft@1',

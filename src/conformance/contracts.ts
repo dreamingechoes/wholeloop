@@ -1,4 +1,5 @@
 import type { ProcessResult } from '../fanout/process.js'
+import type { FrameDecision } from '../framing/finalize.js'
 
 export const CONFORMANCE_TARGETS = [
   'claude',
@@ -19,6 +20,14 @@ export interface Scenario {
   facts: string[]
   readme: string
   artifact: string
+  /** A fictional fixture actor's declaration, never a real person's product approval. */
+  approval: {
+    schema: 'wholeloop/conformance-frame-approval@1'
+    scenario: 'standalone-frame-v1'
+    scripted: true
+    sha256: string
+    decision: FrameDecision
+  }
 }
 export interface PreparedConformance {
   schema: 'wholeloop/conformance-run@1'

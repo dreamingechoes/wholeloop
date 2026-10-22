@@ -213,7 +213,8 @@
     "schema:wholeloop/frame-decision@1": "10471a2ce4f579811725624d340b06f6260eed32975e8ed8e83cd78a5cce04ef",
     "schema:wholeloop/frame-review@1": "e96a508d794d90b4fac96e8185f215952e8f520c1d29c1732b1bcdf3f255a114",
     "output:wholeloop/conformance-diagnostics@1": "c5f29473fa81bbc523fe97c9e2ac1ded57165cd9eb2808cfcc52dcd2eb2b99a4",
-    "schema:wholeloop/conformance-diagnostics@1": "5c8e4462bbf587b3fb10514015f8d1a7d6c3244e62d81de53dec839e4506c746"
+    "schema:wholeloop/conformance-diagnostics@1": "5c8e4462bbf587b3fb10514015f8d1a7d6c3244e62d81de53dec839e4506c746",
+    "schema:wholeloop/conformance-frame-approval@1": "0dd71e2e051b1617308dbb17ffa0ee834950ff0d3b28d8888dbfd3033d39076e"
   },
   "commands": [
     {
