@@ -57,16 +57,9 @@ Gate and fan-out workflows are tested by running the **real workflow code** with
 
 ## Offline package integration
 
-Normal check also executes the actual npm pack/install path after build/tests/smoke.
-The script preflights the four-file allowlist, verifies archive integrity, installs
-offline without lifecycle scripts into an isolated HOME/config/cache/prefix and
-executes both bin aliases. Managed Codex install/idempotency/removal proves that
-the installed core retains its canonical resources; source bytes stay unchanged.
+Normal check also executes the actual npm pack/install path after build/tests/smoke. The script preflights the four-file allowlist, verifies archive integrity, installs offline without lifecycle scripts into an isolated HOME/config/cache/prefix and executes both bin aliases. Managed Codex install/idempotency/removal proves that the installed core retains its canonical resources; source bytes stay unchanged.
 
-Run npm run package:check separately for this check. Success removes only its own
-fixture; failure retains an inspection path. This is package/file evidence, not
-native discovery, permissions, models, provenance or fresh-machine timing. See
-[ADR-0067](../decisions/0067-isolated-offline-npm-package-verification.md).
+Run npm run package:check separately for this check. Success removes only its own fixture; failure retains an inspection path. This is package/file evidence, not native discovery, permissions, models, provenance or fresh-machine timing. See [ADR-0067](../decisions/0067-isolated-offline-npm-package-verification.md).
 
 ## Conformance across CLIs
 
@@ -82,46 +75,17 @@ wl conformance report cf-<returned-id> --json
 wl conformance run cf-<returned-id> --fixture --json
 ```
 
-Preparation returns an external disposable repository, prompt and shell-free native
-recipe; it starts no client/model. Use the returned complete ID. Simulation calls
-that target's installed launcher/core and reports FIXTURE_PASS with simulation
-evidence. It cannot populate the actual client conformance matrix. The synthetic
-facts and framing artifact live in harness/conformance/standalone-frame.json.
+Preparation returns an external disposable repository, prompt and shell-free native recipe; it starts no client/model. Use the returned complete ID. Simulation calls that target's installed launcher/core and reports FIXTURE_PASS with simulation evidence. It cannot populate the actual client conformance matrix. The synthetic facts and framing artifact live in harness/conformance/standalone-frame.json.
 
-Gemini is supported as an additional explicit target; tier-A acceptance remains
-a separate four-client requirement.
+Gemini is supported as an additional explicit target; tier-A acceptance remains a separate four-client requirement.
 
-For an actual model run, prepare a **new** fixture, review its project customization
-and arrange native trust, auth and permissions first. Then use conformance run with
---live instead of --fixture. Live execution can use authenticated models and incur
-cost. The runner probes the selected binary version before sending the scenario;
-missing/mismatched versions fail. A process has a 180-second default deadline,
-overridable with --timeout in milliseconds (100–600000), and a 1 MiB combined output
-limit. Cancellation terminates the worker group. No resume or permission bypass is
-emitted. A failed/interrupted fixture is consumed; inspect it and prepare another.
+For an actual model run, prepare a **new** fixture, review its project customization and arrange native trust, auth and permissions first. Then use conformance run with --live instead of --fixture. Live execution can use authenticated models and incur cost. The runner probes the selected binary version before sending the scenario; missing/mismatched versions fail. A process has a 180-second default deadline, overridable with --timeout in milliseconds (100–600000), and a 1 MiB combined output limit. Cancellation terminates the worker group. No resume or permission bypass is emitted. A failed/interrupted fixture is consumed; inspect it and prepare another.
 
-Control, ownership and state stay outside Git. Per-run XDG roots isolate wholeloop
-user configuration/state, while native authentication remains in its existing
-store. These are fresh processes, not hermetic client environments: ambient client
-settings, compatible skills/plugins and native logs may remain. No credentials are
-copied and native stdout/stderr is discarded rather than saved in reports.
+Control, ownership and state stay outside Git. Per-run XDG roots isolate wholeloop user configuration/state, while native authentication remains in its existing store. These are fresh processes, not hermetic client environments: ambient client settings, compatible skills/plugins and native logs may remain. No credentials are copied and native stdout/stderr is discarded rather than saved in reports.
 
-The structural judge requires one initiative with the fixture owner/repository,
-one standalone frame-problem start and same-run completion, the full artifact shape
-and projection, a go outcome and no continuation/skip/approval. A random note marker
-is present only in the installed skill and must appear between start and completion.
-The observed repository snapshot must stay unchanged. Missing fields name their
-journal event, alongside the CLI and step. Reports include source/scenario/core
-hashes and process status; report rechecks retained evidence without launching work.
-UNRUN exits 3, failed reports exit 4, and fixture/live structural passes exit 0.
+The structural judge requires one initiative with the fixture owner/repository, one standalone frame-problem start and same-run completion, the full artifact shape and projection, a go outcome and no continuation/skip/approval. A random note marker is present only in the installed skill and must appear between start and completion. The observed repository snapshot must stay unchanged. Missing fields name their journal event, alongside the CLI and step. Reports include source/scenario/core hashes and process status; report rechecks retained evidence without launching work. UNRUN exits 3, failed reports exit 4, and fixture/live structural passes exit 0.
 
-A live PASS covers only this scenario's process/journal contract. It does not prove
-native JSON protocol, the actual loader, hook activation, permission isolation,
-semantic challenge quality or truthful narrative evidence. Ignored files, Git
-configuration, external writes and remote effects need separate inspection. Native
-startup files can trigger workspace-change failures; investigate them rather than
-silently weakening the baseline. See [ADR-0051](../decisions/0051-disposable-conformance-and-explicit-evidence.md)
-and the [manual checklist](../../roadmap/manual-verification.md).
+A live PASS covers only this scenario's process/journal contract. It does not prove native JSON protocol, the actual loader, hook activation, permission isolation, semantic challenge quality or truthful narrative evidence. Ignored files, Git configuration, external writes and remote effects need separate inspection. Native startup files can trigger workspace-change failures; investigate them rather than silently weakening the baseline. See [ADR-0051](../decisions/0051-disposable-conformance-and-explicit-evidence.md) and the [manual checklist](../../roadmap/manual-verification.md).
 
 ## Evals — measuring the checks themselves
 
@@ -135,81 +99,30 @@ Every real failure that reaches a person becomes a new fixture. A change to a ch
 
 ### Reproducible definition report
 
-Run `npm run eval:definitions -- --json` against the fixed thirty-case seed, or
-`wl eval definitions <corpus.json> --json` after building. It covers all four Define
-challenger modes, defective definitions and look-alike negatives. The report
-includes per-class TP/FP/TN/FN, recall, precision and false-alarm rate; no
-denominator produces null rather than a misleading perfect score.
+Run `npm run eval:definitions -- --json` against the fixed thirty-case seed, or `wl eval definitions <corpus.json> --json` after building. It covers all four Define challenger modes, defective definitions and look-alike negatives. The report includes per-class TP/FP/TN/FN, recall, precision and false-alarm rate; no denominator produces null rather than a misleading perfect score.
 
-The initial **core-definition-lint@1** baseline has 18 true positives, 0 false
-positives and 2 false negatives: 90% micro recall and 0% false-alarm rate across
-this seed's case/class pairs. Supported structural classes have full recall in
-this small fixture set; prose semantic-conflict and independent-delivery each
-have zero recall. These are local deterministic measurements, not model quality
-or population estimates. The committed baseline retains both misses.
+The initial **core-definition-lint@1** baseline has 18 true positives, 0 false positives and 2 false negatives: 90% micro recall and 0% false-alarm rate across this seed's case/class pairs. Supported structural classes have full recall in this small fixture set; prose semantic-conflict and independent-delivery each have zero recall. These are local deterministic measurements, not model quality or population estimates. The committed baseline retains both misses.
 
-For actual challenger evaluation, collect predictions in
-wholeloop/definition-predictions@1 JSON with evaluator, corpusSha256 and one
-case/defects result per case, then pass `--predictions <file>`. The digest binds
-labels and exact artifact bytes. Missing/duplicate responses, unknown labels and
-changed seeds fail. An evaluator name does not prove the host ran; preserve raw
-findings and actual execution evidence separately, with expected labels hidden
-from the challenger. The runner makes no model/network calls or state writes.
+For actual challenger evaluation, collect predictions in wholeloop/definition-predictions@1 JSON with evaluator, corpusSha256 and one case/defects result per case, then pass `--predictions <file>`. The digest binds labels and exact artifact bytes. Missing/duplicate responses, unknown labels and changed seeds fail. An evaluator name does not prove the host ran; preserve raw findings and actual execution evidence separately, with expected labels hidden from the challenger. The runner makes no model/network calls or state writes.
 
-See the [corpus instructions](../../test/evals/definition/README.md),
-[baseline](../../test/evals/definition/baseline.json) and
-[ADR-0028](../decisions/0028-definition-eval-seeds-and-external-predictions.md).
-Scoring exits zero even when it reports misses; callers choose regression
-thresholds independently. Baseline reproduction and confusion arithmetic run in
-the unit suite.
+See the [corpus instructions](../../test/evals/definition/README.md), [baseline](../../test/evals/definition/baseline.json) and [ADR-0028](../decisions/0028-definition-eval-seeds-and-external-predictions.md). Scoring exits zero even when it reports misses; callers choose regression thresholds independently. Baseline reproduction and confusion arithmetic run in the unit suite.
 
 ### Per-lens gate report
 
 Run `npm run eval:gates -- --json`, or `wl eval gates <corpus> --predictions <file>
---json`. Twenty-four original snippets cover labelled defects and look-alikes for
-all six built-in lenses. The committed baseline is explicitly synthetic: before
-TP 6 / FP 6 / TN 6 / FN 6; after TP 6 / FP 2 / TN 10 / FN 6. Recall stays 0.5 and
-the false-alarm rate changes from 0.5 to 1/6. Correctness/security preserve their
-cautious false positives when one verifier disagrees. This is arithmetic evidence,
-not a model-quality measurement or a claim about production defect rates.
+--json`. Twenty-four original snippets cover labelled defects and look-alikes for all six built-in lenses. The committed baseline is explicitly synthetic: before TP 6 / FP 6 / TN 6 / FN 6; after TP 6 / FP 2 / TN 10 / FN 6. Recall stays 0.5 and the false-alarm rate changes from 0.5 to 1/6. Correctness/security preserve their cautious false positives when one verifier disagrees. This is arithmetic evidence, not a model-quality measurement or a claim about production defect rates.
 
-The runner uses the real gateReport aggregation, including fail-safe unanimity.
-It reports unavailable responses as unknown with coverage, never invented negatives,
-and leaves undefined ratios null. Incorrect refutations can also lose true defects.
-Predictions bind the exact corpus digest, provenance and every assigned case/slot.
-No snippets, models or network operations execute during scoring.
+The runner uses the real gateReport aggregation, including fail-safe unanimity. It reports unavailable responses as unknown with coverage, never invented negatives, and leaves undefined ratios null. Incorrect refutations can also lose true defects. Predictions bind the exact corpus digest, provenance and every assigned case/slot. No snippets, models or network operations execute during scoring.
 
-For real collection export `--inputs` (opaque IDs, questions and source only), hide
-the gold labels/reasons and collect independent reviewer/refuter observations.
-Case-level finding presence does not establish the semantic correctness of every
-finding; validate reasoning, locations and labels separately. See the
-[gate seed guide](../../test/evals/gates/README.md),
-[baseline](../../test/evals/gates/baseline.json) and
-[ADR-0037](../decisions/0037-gate-evaluation-observations-and-refutation-matrices.md).
+For real collection export `--inputs` (opaque IDs, questions and source only), hide the gold labels/reasons and collect independent reviewer/refuter observations. Case-level finding presence does not establish the semantic correctness of every finding; validate reasoning, locations and labels separately. See the [gate seed guide](../../test/evals/gates/README.md), [baseline](../../test/evals/gates/baseline.json) and [ADR-0037](../decisions/0037-gate-evaluation-observations-and-refutation-matrices.md).
 
 ### Seeded structured grounding
 
-Run `npm run eval:grounding -- --json`, or `wl eval grounding <corpus> --json`.
-Twenty original sandbox cases exercise actual ramp/impact collectors: six present
-finite values (including actual zero and signed deltas) and fourteen absent,
-incomplete, wrong-unit, nonnumeric, empty, non-finite or unsupported-operation traps.
-The fixed synthetic baseline grounds all six values and keeps every trap unknown.
-It is a deterministic normalization regression, not a live model measurement.
+Run `npm run eval:grounding -- --json`, or `wl eval grounding <corpus> --json`. Twenty original sandbox cases exercise actual ramp/impact collectors: six present finite values (including actual zero and signed deltas) and fourteen absent, incomplete, wrong-unit, nonnumeric, empty, non-finite or unsupported-operation traps. The fixed synthetic baseline grounds all six values and keeps every trap unknown. It is a deterministic normalization regression, not a live model measurement.
 
-The judge requires exact metric/unit/query/source/body provenance, complete case
-coverage, explicit unknown reasons and an exact corpus digest. Right-looking values
-from unrelated sources and omitted genuine observations fail. Failed grounding
-returns exit 4. External predictions carry evaluator/provenance, but metadata alone
-proves no real execution. Export --inputs for opaque shuffled source observations
-without labels/reasons, hide the corpus/guide/baseline and preserve actual host
-records separately. --inputs and --predictions cannot be combined.
+The judge requires exact metric/unit/query/source/body provenance, complete case coverage, explicit unknown reasons and an exact corpus digest. Right-looking values from unrelated sources and omitted genuine observations fail. Failed grounding returns exit 4. External predictions carry evaluator/provenance, but metadata alone proves no real execution. Export --inputs for opaque shuffled source observations without labels/reasons, hide the corpus/guide/baseline and preserve actual host records separately. --inputs and --predictions cannot be combined.
 
-The report explicitly lists frame-problem, research, prepare-launch and decide-next
-as unevaluated: narrative numbers, qualitative statistics, production query truth
-and causal interpretations remain separate semantic checks. See the
-[grounding seed guide](../../test/evals/grounding/README.md),
-[baseline](../../test/evals/grounding/baseline.json) and
-[ADR-0044](../decisions/0044-grounding-fixtures-and-exact-numeric-provenance.md).
+The report explicitly lists frame-problem, research, prepare-launch and decide-next as unevaluated: narrative numbers, qualitative statistics, production query truth and causal interpretations remain separate semantic checks. See the [grounding seed guide](../../test/evals/grounding/README.md), [baseline](../../test/evals/grounding/baseline.json) and [ADR-0044](../decisions/0044-grounding-fixtures-and-exact-numeric-provenance.md).
 
 ## Enforcement — every hard rule executes somewhere
 

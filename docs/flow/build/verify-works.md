@@ -65,36 +65,15 @@ wl gate verdict --for slice-0123abcd --gate verify --json
 wl verify complete --for slice-0123abcd --json
 ```
 
-Criteria files use `wholeloop/criteria@1`. Missing criteria/ownership/base become
-questions (exit 2) before item creation. Recorded agreements cannot be overridden
-through flags. PR URLs also need a host-resolved local named `--branch`; no fetch
-or authentication occurs here. Raw step entry without agreement is rejected.
+Criteria files use `wholeloop/criteria@1`. Missing criteria/ownership/base become questions (exit 2) before item creation. Recorded agreements cannot be overridden through flags. PR URLs also need a host-resolved local named `--branch`; no fetch or authentication occurs here. Raw step entry without agreement is rejected.
 
-Suite selection uses the resolved declared check/verify command, or the selected
-test plus that package's declared typecheck/lint. Instruction-file bindings need
-the host to read guidance and pass explicit declared refs, for example
-`--commands '["package.json#test","package.json#lint"]'`. No prose is executed.
-The runner uses argv/cwd, stops at the first failure, and defaults to 120000 ms per
-command (`--timeout` accepts 100–600000). More than 1 MiB of captured output or a
-timeout kills its POSIX process group. Linux execution remains unverified locally.
+Suite selection uses the resolved declared check/verify command, or the selected test plus that package's declared typecheck/lint. Instruction-file bindings need the host to read guidance and pass explicit declared refs, for example `--commands '["package.json#test","package.json#lint"]'`. No prose is executed. The runner uses argv/cwd, stops at the first failure, and defaults to 120000 ms per command (`--timeout` accepts 100–600000). More than 1 MiB of captured output or a timeout kills its POSIX process group. Linux execution remains unverified locally.
 
-The durable intent precedes execution. Concurrent/repeated callers share one
-receipt; an unfinished intent is ambiguous and cannot be retried in the same round.
-Seal the failed round and explicitly proceed within its budget after inspection.
-Raw stdout/stderr appear only in the current response; durable state keeps exit
-codes/signals and captured-byte digests. Cached calls return no old raw logs and
-expose `current: false` if code changed after the original execution.
+The durable intent precedes execution. Concurrent/repeated callers share one receipt; an unfinished intent is ambiguous and cannot be retried in the same round. Seal the failed round and explicitly proceed within its budget after inspection. Raw stdout/stderr appear only in the current response; durable state keeps exit codes/signals and captured-byte digests. Cached calls return no old raw logs and expose `current: false` if code changed after the original execution.
 
-Changed test files add deterministic testability findings and a separate semantic
-changed-tests assignment. Lint recognizes constant passing expect(...).toBe/toEqual/
-toStrictEqual and assert.ok(true), skipping quoted examples/comments. It does not
-prove a whole test can fail, perform mutation testing or cover all languages.
-Actual failed suite execution remains a blocker even if findings meet a refutation
-quorum. Completion requires a successful recorded suite and current verify PASS.
+Changed test files add deterministic testability findings and a separate semantic changed-tests assignment. Lint recognizes constant passing expect(...).toBe/toEqual/ toStrictEqual and assert.ok(true), skipping quoted examples/comments. It does not prove a whole test can fail, perform mutation testing or cover all languages. Actual failed suite execution remains a blocker even if findings meet a refutation quorum. Completion requires a successful recorded suite and current verify PASS.
 
-`harness/workflows/verification.ts` shares the suite output with a typed read-only
-host and uses the same gate scheduler as builds. Stubbed workers do not prove model
-quality or real client isolation. See [ADR-0033](../../decisions/0033-once-per-round-suites-and-explicit-verification-inputs.md).
+`harness/workflows/verification.ts` shares the suite output with a typed read-only host and uses the same gate scheduler as builds. Stubbed workers do not prove model quality or real client isolation. See [ADR-0033](../../decisions/0033-once-per-round-suites-and-explicit-verification-inputs.md).
 
 ## Standalone use
 

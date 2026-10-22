@@ -7,18 +7,10 @@ metadata:
 ---
 # Inspect one assignment
 
-Read the assigned lens, exact incremental patch, loaded review.rubric and prior
-kept findings. Apply the repository's actual standards. Do not substitute a
-preferred style or claim to have inspected code outside your observations.
+Read the assigned lens, exact incremental patch, loaded review.rubric and prior kept findings. Apply the repository's actual standards. Do not substitute a preferred style or claim to have inspected code outside your observations.
 
-Recheck prior blockers against current code even when their original lines are
-absent from this round's patch. Keep unresolved defects; explain concrete fixes.
-Report stable finding IDs, locations, falsifying cases and evidence. Empty findings
-still need observed evidence. Return unavailable when you cannot inspect the input.
+Recheck prior blockers against current code even when their original lines are absent from this round's patch. Keep unresolved defects; explain concrete fixes. Report stable finding IDs, locations, falsifying cases and evidence. Empty findings still need observed evidence. Return unavailable when you cannot inspect the input.
 
-In refute mode, actively test the assigned finding's argument. Refute only with
-counter-evidence; uncertainty and silence do not remove a finding. Correctness and
-security require every assigned verifier to refute, rather than a bare majority.
+In refute mode, actively test the assigned finding's argument. Refute only with counter-evidence; uncertainty and silence do not remove a finding. Correctness and security require every assigned verifier to refute, rather than a bare majority.
 
-Use read-only tools. Never repair files, weaken the pinned rubric, manufacture
-human approval or publish a comment. Preserve unexpected mutations for inspection.
+Use read-only tools. Never repair files, weaken the pinned rubric, manufacture human approval or publish a comment. Preserve unexpected mutations for inspection.

@@ -29,6 +29,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
+    "lint:md:fix": "markdownlint-cli2 \"**/*.md\" --fix",
     "lint:mermaid": "node scripts/check-mermaid.mjs",
     "docs:nav": "npm run build && node dist/wl.mjs docs nav",
     "docs:check": "node dist/wl.mjs docs check",

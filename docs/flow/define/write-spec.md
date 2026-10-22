@@ -5,11 +5,7 @@
 > [!NOTE]
 > **Status: 🚧 partial.** The core supports standalone/initiative entry, repository-first template routing, versioned spec metadata, deterministic shape/wording checks, local publication and revision-bound approval. Canonical drafting and challenger resources are available; live model critique, source queries and remote publication still need client/provider conformance. Tracked in [P2-03](../../../roadmap/phase-2-define.md#p2-03--write-spec).
 
-Completed artifacts can join the initiative's explicit shared outbox, including a
-research brief adopted into that initiative. The conductor publishes through the
-selected host and records links only after verifying the complete exact chunk.
-The CLI persists requests and labelled read imports; authenticated tool execution
-remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
+Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
 
 ---
 
@@ -24,36 +20,15 @@ wl step complete write-spec --for init-0123abcd --artifact /path/to/spec.md --js
 wl answer decision.approve-spec=approved --for init-0123abcd --by Alex --json
 ```
 
-The artifact uses YAML front matter with `schema: wholeloop/spec@1`. The public
-schema is `src/spec/schemas/spec-v1.json`; a complete, fictional fixture is
-`test/fixtures/spec/spec.md`. Each story has an ID, actor, desired behavior,
-benefit and uniquely identified criteria with falsifiable tests. The English
-wording lint currently rejects fast, quickly, intuitive, better, user-friendly,
-seamless, robust, scalable, easy and ASAP. It is a structural aid, not proof that
-the criteria are correct or complete.
+The artifact uses YAML front matter with `schema: wholeloop/spec@1`. The public schema is `src/spec/schemas/spec-v1.json`; a complete, fictional fixture is `test/fixtures/spec/spec.md`. Each story has an ID, actor, desired behavior, benefit and uniquely identified criteria with falsifiable tests. The English wording lint currently rejects fast, quickly, intuitive, better, user-friendly, seamless, robust, scalable, easy and ASAP. It is a structural aid, not proof that the criteria are correct or complete.
 
-Each metric pins a source provider, query operation and stored query, unit,
-baseline, target comparator/value and days/timezone. A known baseline needs its
-value and evidence. An unknown baseline needs missing evidence, an answerer and
-an existing `trackingStory`. Without metrics, `measurementException` requires a
-reason and accountable person. Rollout stages record audience, increasing exposure,
-exit conditions and rollback; flagged rollout also needs its proposed flag name.
-No query or flag change is executed by validating this plan.
+Each metric pins a source provider, query operation and stored query, unit, baseline, target comparator/value and days/timezone. A known baseline needs its value and evidence. An unknown baseline needs missing evidence, an answerer and an existing `trackingStory`. Without metrics, `measurementException` requires a reason and accountable person. Rollout stages record audience, increasing exposure, exit conditions and rollback; flagged rollout also needs its proposed flag name. No query or flag change is executed by validating this plan.
 
-The begin payload exposes `templateSource`: selected repository guidance takes
-priority; otherwise `templates.spec` selects a manifest (default `spec`). Custom
-required sections add to the core sections. The shared host workflow reads repo
-guidance before drafting, while completion validates both metadata and shape.
+The begin payload exposes `templateSource`: selected repository guidance takes priority; otherwise `templates.spec` selects a manifest (default `spec`). Custom required sections add to the core sections. The shared host workflow reads repo guidance before drafting, while completion validates both metadata and shape.
 
-Standalone entry asks for problem, owner and expected impact before creating work.
-An initiative can reuse its framing impact or an explicit remembered answer.
-After completion, approval is pending for that revision. Rejection permits another
-write-spec run; approval during an unfinished draft is refused. An earlier
-approval never applies to a later completion. See
-[ADR-0023](../../decisions/0023-structured-spec-plans-and-revision-approval.md).
+Standalone entry asks for problem, owner and expected impact before creating work. An initiative can reuse its framing impact or an explicit remembered answer. After completion, approval is pending for that revision. Rejection permits another write-spec run; approval during an unfinished draft is refused. An earlier approval never applies to a later completion. See [ADR-0023](../../decisions/0023-structured-spec-plans-and-revision-approval.md).
 
-Local publication references the stored spec and initiative; external destinations
-remain pending handoffs. The broader examples below describe the target host UX.
+Local publication references the stored spec and initiative; external destinations remain pending handoffs. The broader examples below describe the target host UX.
 
 ## At a glance
 
@@ -134,11 +109,7 @@ Next                 /wholeloop:cut-scopes init-41c2
 | Codex CLI | `$wl-write-spec …` |
 | OpenCode · Copilot CLI · tier B | `/wl-write-spec …` |
 
-Optional numeric criterion assertions allow deterministic contradictory-pair
-checks: name the exact subject, context, unit, operator and value. The shared
-lint rejects conflicting bounds before completion. Free-text consistency still
-needs a challenger; `wl challenge plan spec --file <file> --json` supplies fixed
-coverage and tone without calling a model.
+Optional numeric criterion assertions allow deterministic contradictory-pair checks: name the exact subject, context, unit, operator and value. The shared lint rejects conflicting bounds before completion. Free-text consistency still needs a challenger; `wl challenge plan spec --file <file> --json` supplies fixed coverage and tone without calling a model.
 
 ## Before & after
 

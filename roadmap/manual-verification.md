@@ -1,56 +1,22 @@
 # Manual verification — current implementation
 
-> Automated results and pending work are separate. A checked roadmap task means
-> its local acceptance checks passed, not that every target CLI or platform has
-> been exercised. Updated 2026-10-22.
+> Automated results and pending work are separate. A checked roadmap task means its local acceptance checks passed, not that every target CLI or platform has been exercised. Updated 2026-10-22.
 
 ## How to use this backlog
 
-Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
-commands, passing results and who does each part. This page retains detailed
-regressions and limitations rather than assigning every item to the owner.
+Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan, commands, passing results and who does each part. This page retains detailed regressions and limitations rather than assigning every item to the owner.
 
-Current local remediation is implemented and tested: exact owner-decision framing,
-final revision review and bounded redacted native diagnostics. After explicit
-private-harness disclosure approval, fresh native trials executed on OpenCode,
-Copilot and Antigravity. None passed: OpenCode began framing before its deadline
-and a longer diagnostic attempt ended with a provider error mentioning HTTP 503;
-Copilot and Antigravity reported native tool permission denials. The latter's
-soft-denial format exposed and now has a diagnostic regression fix.
-Any further implementation defect discovered by those trials remains technical
-work, not an owner acceptance checkbox. Track it in [V1 acceptance](../docs/v1-acceptance.md#1-finish-implementation-defects-first)
-and the journal before claiming technical closure.
+Current local remediation is implemented and tested: exact owner-decision framing, final revision review and bounded redacted native diagnostics. After explicit private-harness disclosure approval, fresh native trials executed on OpenCode, Copilot and Antigravity. None passed: OpenCode began framing before its deadline and a longer diagnostic attempt ended with a provider error mentioning HTTP 503; Copilot and Antigravity reported native tool permission denials. The latter's soft-denial format exposed and now has a diagnostic regression fix. Any further implementation defect discovered by those trials remains technical work, not an owner acceptance checkbox. Track it in [V1 acceptance](../docs/v1-acceptance.md#1-finish-implementation-defects-first) and the journal before claiming technical closure.
 
-OpenCode V1/V2 compatibility now has separate deterministic renderers and native
-execution recipes (ADR-0088). Actual V2 inspector discovery/read and an isolated
-user-scope hook read/deny are observed. Complete native review remains unaccepted:
-a six-lens synthetic review attempt failed with five 60-second timeouts and one
-invalid response; a separate 120-second lens attempt also timed out. Do not mark
-native gate parity or the whole platform task complete from the smaller probes.
+OpenCode V1/V2 compatibility now has separate deterministic renderers and native execution recipes (ADR-0088). Actual V2 inspector discovery/read and an isolated user-scope hook read/deny are observed. Complete native review remains unaccepted: a six-lens synthetic review attempt failed with five 60-second timeouts and one invalid response; a separate 120-second lens attempt also timed out. Do not mark native gate parity or the whole platform task complete from the smaller probes.
 
-Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544
-each fail with five invalid responses and one accepted response; the repository
-is unchanged. Bounded diagnostics establish missing envelope identities in those
-five JSON objects. ADR-0091 adds an exact native generation schema, preserving
-strict host validation. Preserve both failed rounds.
-The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six
-workers in actual Codex 0.163.0, with no missing coverage or repository edits.
-That fulfills P5-03's one-real-run criterion together with stubbed three-engine
-verdict/quorum parity; earlier failures and wider native checks remain unchanged.
+Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 each fail with five invalid responses and one accepted response; the repository is unchanged. Bounded diagnostics establish missing envelope identities in those five JSON objects. ADR-0091 adds an exact native generation schema, preserving strict host validation. Preserve both failed rounds. The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six workers in actual Codex 0.163.0, with no missing coverage or repository edits. That fulfills P5-03's one-real-run criterion together with stubbed three-engine verdict/quorum parity; earlier failures and wider native checks remain unchanged.
 
-Remote service integrations are **experimental · fixture-tested ·
-service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md).
-Their authenticated account/API/rendering checks below are deferred certification,
-not prerequisites for 1.0, and remain unchecked until actually executed. You do not
-need accounts with every listed vendor. This does not waive missing implementation,
-native-client/permission/hook tests, release CI or publication decisions. The
-Amplitude dashboard write remains a pending handoff until its MCP contract is
-known; ADR-0085 removes the requirement for another HTTP implementation.
+Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
 ## Automated platform checks (2026-10-22)
 
-The exact a9c2964 archive passes 1907 tests on both environments. The subsequent
-native-output-schema candidate also passes the complete check on both:
+The exact a9c2964 archive passes 1907 tests on both environments. The subsequent native-output-schema candidate also passes the complete check on both:
 
 | Environment | Node / npm | Executed result |
 | --- | --- | --- |
@@ -59,40 +25,13 @@ native-output-schema candidate also passes the complete check on both:
 | macOS arm64 | 22.23.1 / 11.8.0 | 1925 tests in 87 files (272.82 seconds); complete check passes |
 | Debian bullseye Linux arm64, Docker | 20.0.0 / 9.6.4 | Built runtime only: offline package, smoke, docs, harness, three corpora and eight explicit conformance simulations pass |
 
-The Node 24 Linux check uses Git 2.39.5 and the official Node image pinned to
-sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5.
-Dependencies are prepared separately with only the package manifests. The source
-check then runs without network or native credentials, as a non-root user with
-no capabilities, from an immutable source archive and a fresh synthetic Git
-baseline. It does not mount the real checkout/history or personal directories.
-The candidate archive SHA-256 is ffdbde1a83e8f30f67ed149d4fc1910e78a5ee7c75f246959ae33f3d8309715a,
-based on a417fc0 with the new source/tests. A Docker EOF interrupts the first
-candidate attempt; retain its partial log and repeat in a fresh container. The
-successful run takes 52.62 seconds with no skipped tests. Its offline package
-SHA-256 matches macOS: 6956be93c238a526a84b7b72a289bc88cf4c7c1b6570ff9b1f4fc324cdc55d5f.
+The Node 24 Linux check uses Git 2.39.5 and the official Node image pinned to sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5. Dependencies are prepared separately with only the package manifests. The source check then runs without network or native credentials, as a non-root user with no capabilities, from an immutable source archive and a fresh synthetic Git baseline. It does not mount the real checkout/history or personal directories. The candidate archive SHA-256 is ffdbde1a83e8f30f67ed149d4fc1910e78a5ee7c75f246959ae33f3d8309715a, based on a417fc0 with the new source/tests. A Docker EOF interrupts the first candidate attempt; retain its partial log and repeat in a fresh container. The successful run takes 52.62 seconds with no skipped tests. Its offline package SHA-256 matches macOS: 6956be93c238a526a84b7b72a289bc88cf4c7c1b6570ff9b1f4fc324cdc55d5f.
 
-The additional Node checks use source revision 455433c and core SHA-256
-9ea3a2985503d57aef4f38ef60d06dfd9173db858e629713e165008db5315b58.
-The Node 20 image is pinned to
-sha256:942fa0013e9adfbde06ad07433bdb0a67cc2ac0d5a3db38f12a9c8f710b41f1c;
-it has Git 2.30.2. Its credential-free, network-disabled container receives an
-immutable source archive (63096aff51dc27127e044e82741add452563305c995980d1c606c2b0f760004a)
-and a separate already-built bundle, with no development dependencies or real
-checkout/history. Offline package installation verifies both aliases and Codex
-managed install/idempotency/removal. The npm 9 archive has its own valid SHA-256,
-94611448defd9e8aa53a0389095ae7717f1dda1ea955fae336be77c340aba7d5;
-do not require different npm versions to produce byte-identical archives.
+The subsequent Markdown normalization candidate passes the complete check on macOS and Linux arm64/Node 24.22.0: 1955 tests in 88 files, including 30 layout regressions, with no skips. The package SHA-256 is 728823fdb029b0412395f2b7d3d412b998fa2bf047619085cb227c3757be28be on both hosts; the core is 3d143f492873aa027f41d0f13af9d8fabd3f7b6c8ed60603807b01884de8f178. The network-disabled Linux candidate archive is 274754578ae6c84c11aacf20f67ebff663ff30d15f0d0ae4a0d7b49d147e217c, based on 50d4191. Restore literal fixtures after the first failed evaluation and synchronize embedded guidance after the next generated-catalog failure; preserve both earlier attempts. Final checks pass after those corrections. This is source/core automation, not new native or service certification.
 
-All seven pinned adapter scenarios plus OpenCode 2.1.1 return FIXTURE_PASS with
-simulation evidence; missing/conflicting execution modes refuse and report replay
-matches exactly. No native client runs. Definitions (30 cases), gates (24 supplied
-prediction cases) and grounding (20 cases) return exactly the same JSON as macOS
-Node 24. Definitions retain two semantic misses; supplied gate predictions retain
-six misses and two false positives after refutation. Those are existing evaluator
-limitations, not perfect model-quality scores. Grounding passes all 20 cases.
-CI now repeats offline package execution, harness and the three built-CLI corpora
-under Node 20 after building on Node 22. The exact YAML run block also passes
-locally in a fresh Node 20 container; actual hosted execution is still pending.
+The additional Node checks use source revision 455433c and core SHA-256 9ea3a2985503d57aef4f38ef60d06dfd9173db858e629713e165008db5315b58. The Node 20 image is pinned to sha256:942fa0013e9adfbde06ad07433bdb0a67cc2ac0d5a3db38f12a9c8f710b41f1c; it has Git 2.30.2. Its credential-free, network-disabled container receives an immutable source archive (63096aff51dc27127e044e82741add452563305c995980d1c606c2b0f760004a) and a separate already-built bundle, with no development dependencies or real checkout/history. Offline package installation verifies both aliases and Codex managed install/idempotency/removal. The npm 9 archive has its own valid SHA-256, 94611448defd9e8aa53a0389095ae7717f1dda1ea955fae336be77c340aba7d5; do not require different npm versions to produce byte-identical archives.
+
+All seven pinned adapter scenarios plus OpenCode 2.1.1 return FIXTURE_PASS with simulation evidence; missing/conflicting execution modes refuse and report replay matches exactly. No native client runs. Definitions (30 cases), gates (24 supplied prediction cases) and grounding (20 cases) return exactly the same JSON as macOS Node 24. Definitions retain two semantic misses; supplied gate predictions retain six misses and two false positives after refutation. Those are existing evaluator limitations, not perfect model-quality scores. Grounding passes all 20 cases. CI now repeats offline package execution, harness and the three built-CLI corpora under Node 20 after building on Node 22. The exact YAML run block also passes locally in a fresh Node 20 container; actual hosted execution is still pending.
 
 - [x] Execute lint/types, all unit/process/Git/worktree/compiled CLI fixtures, build/smoke, offline npm packaging, schema compatibility, references, docs, harness, Markdown and all 35 Mermaid diagrams on Linux arm64/Node 24. No test is skipped.
 - [x] Run the complete check on macOS arm64/Node 22.23.1, including all 1925 tests and the offline package. No test is skipped.
@@ -100,18 +39,11 @@ locally in a fresh Node 20 container; actual hosted execution is still pending.
 - [ ] Repeat other supported Node/platform combinations, including Linux x64 and the remaining Node 20 workflow/provider/native surfaces. The scoped runtime probes do not establish every installed command or actual client/service behavior.
 - [ ] Execute real native-client discovery/permissions/hooks/models, authenticated services and hosted release/Actions workflows on Linux. PATH fixtures and local publication simulations do not establish those results.
 
-Earlier per-component observations below remain historical. Their automated
-fixtures now also have the Linux arm64/Node 24 result above; references to other
-versions or real clients/services stay open. New technical defects found by native
-trials still require implementation rather than an owner acceptance waiver.
+Earlier per-component observations below remain historical. Their automated fixtures now also have the Linux arm64/Node 24 result above; references to other versions or real clients/services stay open. New technical defects found by native trials still require implementation rather than an owner acceptance waiver.
 
 ## Owner-observed Claude framing and session recovery (2026-10-22)
 
-The owner exercised source-installed user-scope loose skills in Claude Code,
-then closed the session, opened a new one and invoked status again. The local
-CLI reports Claude Code 2.1.306 on macOS arm64 with Node 24.22.0; the installed
-source revision was f714820. These are interactive observations and independent
-read-only core checks, not a collected conformance-runner verdict.
+The owner exercised source-installed user-scope loose skills in Claude Code, then closed the session, opened a new one and invoked status again. The local CLI reports Claude Code 2.1.306 on macOS arm64 with Node 24.22.0; the installed source revision was f714820. These are interactive observations and independent read-only core checks, not a collected conformance-runner verdict.
 
 - [x] Invoke wl-frame-problem from a sentence in the actual client. Observe the eight framing questions, explicit unknowns and a pause for the owner's decision.
 - [x] Complete an explicitly fictitious scenario with the owner's on-hold outcome. Independently inspect the English external-store artifact and core state: framing completed, initiative closed, no next step, and the approved reason/reopen condition retained.
@@ -119,16 +51,11 @@ read-only core checks, not a collected conformance-runner verdict.
 - [ ] Repeat narrative decision fidelity on a new run using frame draft/finalize (ADR-0086): the stored artifact preserves the owner's reopen condition but also introduces stricter reopening requirements and drop rules without approval. The core now renders only explicitly approved decision data and rejects extra stop rules at finalization. Verify actual client behavior; retain the original artifact as historical defect evidence.
 - [ ] Verify final semantic revision review in a new native run with frame finalize. The transcript reports two challenger rounds, followed by a third draft that received structural validation only; this does not establish final-content review or independent reviewer isolation. The core now rejects mismatched final digests and incomplete coverage; actual semantic truth and role isolation remain acceptance.
 
-This observation does not close plugin installation/all-entrypoint discovery,
-actual hook denial, role isolation, authenticated providers, the go/spec path,
-the random-marker runner scenario or other clients/platforms. The unchecked
-aggregate checks below remain open for those broader requirements.
+This observation does not close plugin installation/all-entrypoint discovery, actual hook denial, role isolation, authenticated providers, the go/spec path, the random-marker runner scenario or other clients/platforms. The unchecked aggregate checks below remain open for those broader requirements.
 
 ## Automatic native-client trials (2026-10-22)
 
-The owner authorized actual model-backed execution of the other installed clients.
-Run fresh disposable fixtures; retain earlier failures rather than relabelling
-them after a code change. All observations below are on macOS arm64/Node 24.22.0.
+The owner authorized actual model-backed execution of the other installed clients. Run fresh disposable fixtures; retain earlier failures rather than relabelling them after a code change. All observations below are on macOS arm64/Node 24.22.0.
 
 | Client | Observed version | Actual result | Remaining issue |
 | --- | --- | --- | --- |
@@ -144,35 +71,11 @@ them after a code change. All observations below are on macOS arm64/Node 24.22.0
 - [ ] Obtain a passing fresh scenario for OpenCode, Copilot, Gemini, Antigravity and Cursor after diagnosing each actual failure.
 - [ ] Verify the isolated permission/hook/client-specific spike in addition to structural framing. One passing client cannot close the four-client P1-14 or seven-client platform acceptance.
 
-Technical remediation under ADR-0087 adds conformance diagnose with bounded,
-redacted event/error categories, a private OpenCode 2 server and documented AGY
-stream-only invocation. Actual no-tool probes on OpenCode 2.1.1, Copilot 1.0.83 and
-Antigravity 1.4.4 returned model responses, including piped Copilot and both AGY
-input variants. This is transport/model-access evidence only. A later full-trial
-host invocation was rejected by automatic approval review over possible private
-harness disclosure before native execution; it is not a new native failure.
-The owner subsequently explicitly approved that disclosure. Fresh execution on
-core 1237b1be created OpenCode's initiative but timed out; Copilot reported a
-permission denial. Antigravity's ERROR tool step and nonempty denied_actions
-inside a SUCCESS result initially escaped classification. Recognize both bounded
-structured fields without retaining parameters, actions or responses; an actual
-fresh run on core 40482b4d now reports permission-denied and remains FAIL. Earlier
-receipts are preserved. Do not promote these failures or no-tool probes to passes.
+Technical remediation under ADR-0087 adds conformance diagnose with bounded, redacted event/error categories, a private OpenCode 2 server and documented AGY stream-only invocation. Actual no-tool probes on OpenCode 2.1.1, Copilot 1.0.83 and Antigravity 1.4.4 returned model responses, including piped Copilot and both AGY input variants. This is transport/model-access evidence only. A later full-trial host invocation was rejected by automatic approval review over possible private harness disclosure before native execution; it is not a new native failure. The owner subsequently explicitly approved that disclosure. Fresh execution on core 1237b1be created OpenCode's initiative but timed out; Copilot reported a permission denial. Antigravity's ERROR tool step and nonempty denied_actions inside a SUCCESS result initially escaped classification. Recognize both bounded structured fields without retaining parameters, actions or responses; an actual fresh run on core 40482b4d now reports permission-denied and remains FAIL. Earlier receipts are preserved. Do not promote these failures or no-tool probes to passes.
 
-A longer OpenCode diagnostic attempt observed tool execution and repeated native
-retries, then an error envelope with type/message/status/response fields and
-provider/request/503 markers. Only bounded metadata was emitted, not native text.
-This is an upstream availability signal, not proof that all OpenCode behavior is
-correct. Map structured numeric HTTP 502/503/504 errors to connection-failed;
-fixture tests cover that mapping and unrelated/malformed statuses. No repeated
-native 503 response is forced, and no model/account is substituted to get a pass.
+A longer OpenCode diagnostic attempt observed tool execution and repeated native retries, then an error envelope with type/message/status/response fields and provider/request/503 markers. Only bounded metadata was emitted, not native text. This is an upstream availability signal, not proof that all OpenCode behavior is correct. Map structured numeric HTTP 502/503/504 errors to connection-failed; fixture tests cover that mapping and unrelated/malformed statuses. No repeated native 503 response is forced, and no model/account is substituted to get a pass.
 
-The Codex receipt and exact passing core are retained externally. Later OpenCode
-and Antigravity recipe changes have their own receipts/core identities; do not
-present different-build observations as a comparable pinned/latest regression.
-No native permission bypass, credential copying, service write or project push
-was requested by these scenarios. Native ambient side effects are not fully
-observed by the structural judge.
+The Codex receipt and exact passing core are retained externally. Later OpenCode and Antigravity recipe changes have their own receipts/core identities; do not present different-build observations as a comparable pinned/latest regression. No native permission bypass, credential copying, service write or project push was requested by these scenarios. Native ambient side effects are not fully observed by the structural judge.
 
 ### OpenCode V2 transport and guard observations
 
@@ -251,8 +154,7 @@ observed by the structural judge.
 - [ ] Prepare a fresh --target antigravity run with exact --pin, inspect input.txt JSONL and the agy recipe, then explicitly run --live after native trust/auth/model/permissions setup. Inspect actual output protocol and external effects independently of the structural journal verdict.
 - [ ] Review serverUrl/stdio MCP recipes and native OAuth/tool execution. Header recipes are refused; no credential is copied or rendered. Repeat on Linux and supported Node/client versions.
 
-Both local hook transports are implemented. Actual Gemini/Antigravity activation,
-model, permission and MCP acceptance remains unverified.
+Both local hook transports are implemented. Actual Gemini/Antigravity activation, model, permission and MCP acceptance remains unverified.
 
 ## Cursor native activation (P5-02)
 
@@ -282,12 +184,7 @@ model, permission and MCP acceptance remains unverified.
 - [ ] Repeat the generated-reference fixtures on other supported Node/platform combinations.
 - [ ] If regeneration is interrupted during writes, inspect the affected pages/markers before rerunning. All selected markers are preflighted, but filesystem failures do not provide multi-file crash atomicity.
 
-The generated provider and adapter tables record declarations only. Check that
-local engine changes retain unverified native status. Native capability-matrix
-collection/version resolution/issue automation remain P5-04 implementation work.
-The local P5-06 references/banner/onboarding deliverables are complete; real native
-discovery, activation, permissions and first-step checks remain in the client
-sections above. Overview pages retain native/host verification boundaries.
+The generated provider and adapter tables record declarations only. Check that local engine changes retain unverified native status. Native capability-matrix collection/version resolution/issue automation remain P5-04 implementation work. The local P5-06 references/banner/onboarding deliverables are complete; real native discovery, activation, permissions and first-step checks remain in the client sections above. Overview pages retain native/host verification boundaries.
 
 ## Public contracts and v1 candidate (P5-07 component)
 
@@ -307,11 +204,7 @@ sections above. Overview pages retain native/host verification boundaries.
 - [x] Repeat all seven installed-launcher simulations and compiled conformance-runner fixtures on Linux arm64/Node 24 in the complete 1925-test check. Results remain simulation, not native Linux passes.
 - [ ] Repeat real clients and other supported Node/platform combinations before making broader portability claims.
 
-Automated tier-A/Gemini/Antigravity/Cursor installed-launcher simulations report FIXTURE_PASS, never a
-native conformance PASS. Preparation launches no model; --live is an explicit
-owner action that can use authenticated models and incur cost. The interactive
-Claude observation above is separate from this unexecuted live runner scenario;
-actual observations remain separate from local fixture coverage.
+Automated tier-A/Gemini/Antigravity/Cursor installed-launcher simulations report FIXTURE_PASS, never a native conformance PASS. Preparation launches no model; --live is an explicit owner action that can use authenticated models and incur cost. The interactive Claude observation above is separate from this unexecuted live runner scenario; actual observations remain separate from local fixture coverage.
 
 ## Native installation and observed diagnostics (P1-13)
 
@@ -324,9 +217,7 @@ actual observations remain separate from local fixture coverage.
 - [ ] Verify the atomic external-store probe and cleanup under real permissions/filesystems, including inaccessible and symlinked Git destinations. Inspect any failed cleanup; retain other state and do not repair permissions automatically.
 - [ ] Repeat on Linux and supported Node releases. Current automated execution is macOS arm64/Node 24; npm recipes for current Claude/Copilot require Node 22 or newer even though the bundled core supports Node 20.
 
-Native install/uninstall and managed doctor inspection are implemented. Actual
-activation and corrective commands requiring the owner's platform/configuration
-choices remain verification. Native conformance is tracked separately below.
+Native install/uninstall and managed doctor inspection are implemented. Actual activation and corrective commands requiring the owner's platform/configuration choices remain verification. Native conformance is tracked separately below.
 
 ## Common guards and Git fallback (P3-08)
 
@@ -337,9 +228,7 @@ choices remain verification. Native conformance is tracked separately below.
 - [ ] Recover a physical interruption by inspecting the external ownership receipt/lock and current Git configuration. Do not delete prepared/changed files or steal locks. Reinstall after reviewing new original hook names or upgrading the pinned core.
 - [ ] Repeat actual Git-hook chaining, local bare SSH-shaped pushes, native root expansion, symlinks and timing fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64/Node 24 only.
 
-Native installation returns explicit per-repository Git activation/removal commands.
-No hooks were installed in this repository, no actual project push ran and no model
-session was executed by these synthetic/temporary tests.
+Native installation returns explicit per-repository Git activation/removal commands. No hooks were installed in this repository, no actual project push ran and no model session was executed by these synthetic/temporary tests.
 
 ## Additional tier-A artifacts (P1-11)
 
@@ -349,8 +238,7 @@ session was executed by these synthetic/temporary tests.
 - [ ] Inspect OpenCode/Copilot native permission behavior, inherited repository instructions and native external-directory asks. Static mappings and partial/native listings do not prove runtime enforcement, complete isolation or independent workers.
 - [ ] Repeat native discovery, launcher/symlink, permission and copied-runtime fixtures on Linux and supported Node versions.
 
-Native guard bindings and the Codex Git fallback are implemented. Native/headless
-model conformance remains pending and does not block independent installation work.
+Native guard bindings and the Codex Git fallback are implemented. Native/headless model conformance remains pending and does not block independent installation work.
 
 ## Generated Claude artifacts (P1-10)
 
@@ -359,8 +247,7 @@ model conformance remains pending and does not block independent installation wo
 - [ ] Exercise read-only roles against a disposable sentinel, including roles with shell access and managed policy. Confirm model tier aliases and batched missing-context questions; no independent model session has been run.
 - [ ] Repeat owned output, backup/mode/symlink and bundled runtime fixtures on Linux and supported Node versions. Current execution evidence is macOS arm64 only.
 
-Native hook registration and the other tier-A renderers are implemented; actual
-hook capture and installed-client behavior remain owner checks.
+Native hook registration and the other tier-A renderers are implemented; actual hook capture and installed-client behavior remain owner checks.
 
 ## Conformance matrix and nightly activation (P5-04)
 
@@ -379,22 +266,7 @@ hook capture and installed-client behavior remain owner checks.
 - [ ] Inspect ignored/transient-restored files and external side effects; repository snapshots cannot prove their absence. Confirm authentication uses the client's credential store without plaintext copies.
 - [x] Repeat process-group, timing, permission and worker fixtures on Linux arm64/Node 24 in the complete check. Real native Linux clients and other Node/platform combinations remain open.
 
-OpenCode/Copilot recipes have local fixture coverage. Verify OpenCode native
-deny-default agent permissions, external-directory containment, completed-message
-JSONL and inherited managed configuration. Verify Copilot stdin/silent output,
-read-only available-tool filtering and non-interactive refusal without broad
-grants. Inspect custom MCP startup and trusted-folder hooks independently: tool
-restrictions do not prove that these startup effects are disabled. Keep credential
-stores in place; no copied tokens or permission bypasses are needed.
-Verify Cursor Ask/sandbox plus actual worker-local cli.json/hooks.json discovery,
-read/search-only hook activation, native denial precedence, no reused session and
-successful final JSON. Exercise shell, write/delete, web, MCP, unknown tools and
-missing Node against disposable sentinels; inspect native startup effects and logs.
-Gemini/Antigravity private observer recipes now have local fixture coverage. Verify
-actual positive read-only registry/private settings and init-before-assignment
-behavior; a client that waits for input before initialization remains unavailable.
-None of these owner checks
-blocks independent local roadmap work.
+OpenCode/Copilot recipes have local fixture coverage. Verify OpenCode native deny-default agent permissions, external-directory containment, completed-message JSONL and inherited managed configuration. Verify Copilot stdin/silent output, read-only available-tool filtering and non-interactive refusal without broad grants. Inspect custom MCP startup and trusted-folder hooks independently: tool restrictions do not prove that these startup effects are disabled. Keep credential stores in place; no copied tokens or permission bypasses are needed. Verify Cursor Ask/sandbox plus actual worker-local cli.json/hooks.json discovery, read/search-only hook activation, native denial precedence, no reused session and successful final JSON. Exercise shell, write/delete, web, MCP, unknown tools and missing Node against disposable sentinels; inspect native startup effects and logs. Gemini/Antigravity private observer recipes now have local fixture coverage. Verify actual positive read-only registry/private settings and init-before-assignment behavior; a client that waits for input before initialization remains unavailable. None of these owner checks blocks independent local roadmap work.
 
 ## URL adoption and shared publication (P2-08)
 
@@ -431,10 +303,7 @@ blocks independent local roadmap work.
 - [ ] Review and manually post destination-labelled Slack/Teams/email drafts. Confirm no sending capability is present. Review/apply flag proposals externally; native proposal results are explicitly unapplied.
 - [ ] Exercise config-file reads/proposals and external-store conflict/idempotency on Linux and supported Node versions. The native reader requires explicit flag/environment/enabled/exposure/audience and never changes repository bytes.
 
-P4-05 implementation is complete under ADR-0085: client MCP takes priority, HTTP
-is explicitly selected and failed calls do not switch transport. The unchecked
-service/account cases above are deferred certification under ADR-0084, not release
-blockers or executed live tests.
+P4-05 implementation is complete under ADR-0085: client MCP takes priority, HTTP is explicitly selected and failed calls do not switch transport. The unchecked service/account cases above are deferred certification under ADR-0084, not release blockers or executed live tests.
 
 ## decide-next and actual follow-up (P4-04)
 
@@ -543,154 +412,64 @@ The adapter criterion stays unchecked; it does not block dependent local rollout
 
 ## Provider validation still pending
 
-MCP snippets for Claude, Codex, OpenCode and Copilot are golden-tested for HTTP
-and stdio. Merge a snippet into an isolated client configuration and verify an
-actual tool call and authentication before calling that integration supported.
-The eight destination providers have synthetic host-boundary transcripts, not
-live captured responses. Verify actual tool names/arguments, complete reads,
-rich-text preservation, revision conflicts and confirmed external links for each
-configured destination. Check Notion async results and aliases, GitLab version,
-Atlassian fields/permissions, and optional gws creation plus content insertion.
-No integration was installed. Registry detection only establishes declarations or executable presence. No live
-provider operation, model session or OAuth flow was executed here.
+MCP snippets for Claude, Codex, OpenCode and Copilot are golden-tested for HTTP and stdio. Merge a snippet into an isolated client configuration and verify an actual tool call and authentication before calling that integration supported. The eight destination providers have synthetic host-boundary transcripts, not live captured responses. Verify actual tool names/arguments, complete reads, rich-text preservation, revision conflicts and confirmed external links for each configured destination. Check Notion async results and aliases, GitLab version, Atlassian fields/permissions, and optional gws creation plus content insertion. No integration was installed. Registry detection only establishes declarations or executable presence. No live provider operation, model session or OAuth flow was executed here.
 
 ## Source validation still pending
 
-For each configured source, verify the actual project/tenant, regional endpoint,
-live tool schema, permissions, pagination/truncation, query reference and exact
-window/timezone. All eleven source transcripts are synthetic. Replace Metabase's
-example endpoint and configure Zendesk's real tenant/host authentication. Verify
-PostHog tools mode and BigQuery read-only IAM/cost controls. For PostgreSQL use a
-restricted libpq service and verify server read-only rejection, function privileges
-and timeout behavior; process tests used a fixture executable, not a database.
-Failed or incomplete access must produce an explicit unknown rather than a baseline.
+For each configured source, verify the actual project/tenant, regional endpoint, live tool schema, permissions, pagination/truncation, query reference and exact window/timezone. All eleven source transcripts are synthetic. Replace Metabase's example endpoint and configure Zendesk's real tenant/host authentication. Verify PostHog tools mode and BigQuery read-only IAM/cost controls. For PostgreSQL use a restricted libpq service and verify server read-only rejection, function privileges and timeout behavior; process tests used a fixture executable, not a database. Failed or incomplete access must produce an explicit unknown rather than a baseline.
 
 ## Worktree validation still pending
 
-On a representative project, verify dependency/setup commands, actual port
-binding, submodules/LFS, platform-specific Git behavior and the explicit checkout
-opt-out. Local tests used Git 2.49.0 on macOS with real temporary repositories,
-concurrent CLI creation, dirty source checkouts, stacked branches, locks and
-conservative prune. These fixtures also pass on Linux arm64/Node 24/Git 2.39.5;
-other platforms/versions and physical process interruption remain unrun. After
-an interruption, inspect stale lock ownership before clearing it and retrying the
-recorded intent. Stop currently records a lease; no worker/dev-server process
-controller is implemented. Open does not count as the person's test-it approval.
+On a representative project, verify dependency/setup commands, actual port binding, submodules/LFS, platform-specific Git behavior and the explicit checkout opt-out. Local tests used Git 2.49.0 on macOS with real temporary repositories, concurrent CLI creation, dirty source checkouts, stacked branches, locks and conservative prune. These fixtures also pass on Linux arm64/Node 24/Git 2.39.5; other platforms/versions and physical process interruption remain unrun. After an interruption, inspect stale lock ownership before clearing it and retrying the recorded intent. Stop currently records a lease; no worker/dev-server process controller is implemented. Open does not count as the person's test-it approval.
 
 ## Slicing validation still pending
 
-Exercise slice-work with real repository conventions and a challenger in slicing
-mode. Verify that the declared single outcome and demonstration describe a real
-vertical user journey, and that all slices together deliver the scope. Local
-fixtures validate shape, inherited criteria, stable IDs, dependencies and at most
-one part per repository. Contract-first routing is automated; actual contract
-implementation and builder execution are later tasks. Worktree lifecycle has
-separate real Git tests and the owner checks above.
-Remote tracker items/relationships remain pending host writes until linked.
+Exercise slice-work with real repository conventions and a challenger in slicing mode. Verify that the declared single outcome and demonstration describe a real vertical user journey, and that all slices together deliver the scope. Local fixtures validate shape, inherited criteria, stable IDs, dependencies and at most one part per repository. Contract-first routing is automated; actual contract implementation and builder execution are later tasks. Worktree lifecycle has separate real Git tests and the owner checks above. Remote tracker items/relationships remain pending host writes until linked.
 
 ## Definition eval validation still pending
 
-Run the thirty-case seed through a real host challenger with expected labels
-hidden. Preserve raw findings, actual model/client versions and run settings;
-score complete predictions with `eval definitions --predictions`. The committed
-90% recall/0% false-alarm baseline measures deterministic lint only and retains
-two known semantic misses. It does not establish live challenger quality.
+Run the thirty-case seed through a real host challenger with expected labels hidden. Preserve raw findings, actual model/client versions and run settings; score complete predictions with `eval definitions --predictions`. The committed 90% recall/0% false-alarm baseline measures deterministic lint only and retains two known semantic misses. It does not establish live challenger quality.
 
 ## Definition challenger validation still pending
 
-Exercise all four modes in a host using the returned instructions and exact
-artifact. Verify that every mode reports evidence and counterexamples, preserves
-unknowns and leaves files unchanged. Compare challenge dials: tone and extra
-counter-questions can differ, coverage and findings cannot. Numeric lint only
-proves supported pairwise contradictions with explicitly matching contexts/units;
-free-text semantics and multi-constraint consistency remain independent review.
+Exercise all four modes in a host using the returned instructions and exact artifact. Verify that every mode reports evidence and counterexamples, preserves unknowns and leaves files unchanged. Compare challenge dials: tone and extra counter-questions can differ, coverage and findings cannot. Numeric lint only proves supported pairwise contradictions with explicitly matching contexts/units; free-text semantics and multi-constraint consistency remain independent review.
 
 ## Scope validation still pending
 
-Run cut-scopes with actual repository flag naming guidance and ask the challenger
-whether each cut can ship independently. Review the completed plan before
-approving. Exercise rejection, stable-key revision and choosing between multiple
-scopes. Local tracker references and dependency rollback are automated tests;
-remote tracker execution, actual links and semantic critique remain unverified.
-Child scopes exist as drafts and cannot bypass the initiative's pending approval.
+Run cut-scopes with actual repository flag naming guidance and ask the challenger whether each cut can ship independently. Review the completed plan before approving. Exercise rejection, stable-key revision and choosing between multiple scopes. Local tracker references and dependency rollback are automated tests; remote tracker execution, actual links and semantic critique remain unverified. Child scopes exist as drafts and cannot bypass the initiative's pending approval.
 
 ## Spec validation still pending
 
-Run write-spec with a bound repository guide in a real host session. Verify that
-the guide is followed, the challenger catches semantic defects, metrics come from
-actual source evidence and the person reviews the completed revision. Local tests
-use a fictional baseline/query fixture; validation does not execute those queries
-or authenticate the named provider. Exercise rejection, correction and fresh
-approval. External publication remains a pending handoff until linked.
+Run write-spec with a bound repository guide in a real host session. Verify that the guide is followed, the challenger catches semantic defects, metrics come from actual source evidence and the person reviews the completed revision. Local tests use a fictional baseline/query fixture; validation does not execute those queries or authenticate the named provider. Exercise rejection, correction and fresh approval. External publication remains a pending handoff until linked.
 
 ## Framing validation still pending
 
-In a real host session, verify that supportive/balanced/adversarial challenge
-changes tone while preserving every framing question, and that insufficient
-evidence triggers research and explicit TBD markers. Exercise an on-hold call,
-its reopening condition and an explicit reopen. Remote publication remains a
-pending handoff; verify the host write and record its link before reporting it
-published. Cross-repository continuation uses explicit IDs.
+In a real host session, verify that supportive/balanced/adversarial challenge changes tone while preserving every framing question, and that insufficient evidence triggers research and explicit TBD markers. Exercise an on-hold call, its reopening condition and an explicit reopen. Remote publication remains a pending handoff; verify the host write and record its link before reporting it published. Cross-repository continuation uses explicit IDs.
 
 ## Research validation still pending
 
-Run the research skill with real source tools and independent challenger sessions
-once a host adapter is available. Verify source authentication, failure-to-open-
-question handling, read-only workers, actual native fan-out and the same result
-under sequential execution. Local tests use stubbed workers and fixture evidence;
-no real research claim or live provider call was produced in this session.
+Run the research skill with real source tools and independent challenger sessions once a host adapter is available. Verify source authentication, failure-to-open- question handling, read-only workers, actual native fan-out and the same result under sequential execution. Local tests use stubbed workers and fixture evidence; no real research claim or live provider call was produced in this session.
 
 ## Canonical skill validation still pending
 
-P1-12 is verified through compiled CLI workflow tests, including a sentence,
-explicit owner, full framing artifact, no-go outcome, artifact receipt, read-only status and scoped setup. After P0-03
-conformance and adapter generation, exercise the four canonical skills in real
-client sessions: question rendering, repository guidance loading, preflight and
-receipt language, and stopping at unavailable work or human decisions. No model
-session was executed to establish these behaviors in a host client.
+P1-12 is verified through compiled CLI workflow tests, including a sentence, explicit owner, full framing artifact, no-go outcome, artifact receipt, read-only status and scoped setup. After P0-03 conformance and adapter generation, exercise the four canonical skills in real client sessions: question rendering, repository guidance loading, preflight and receipt language, and stopping at unavailable work or human decisions. No model session was executed to establish these behaviors in a host client.
 
 ## Extension smoke checks
 
-Use an isolated configuration home when selecting a custom profile. Run
-`profile scaffold onboarding --output .wholeloop/profiles/onboarding`, inspect
-the kit, then `profile test onboarding` and `profile preset onboarding --scope run`.
-For templates, `template test spec` reports mandatory-section dependents. Lens
-validation checks manifests/resources. Typed gate execution and workflow template
-loading have local fixtures; verify actual model/gate behavior and repository
-guidance effects separately.
+Use an isolated configuration home when selecting a custom profile. Run `profile scaffold onboarding --output .wholeloop/profiles/onboarding`, inspect the kit, then `profile test onboarding` and `profile preset onboarding --scope run`. For templates, `template test spec` reports mandatory-section dependents. Lens validation checks manifests/resources. Typed gate execution and workflow template loading have local fixtures; verify actual model/gate behavior and repository guidance effects separately.
 
 ## Current smoke scenario
 
-Use a temporary `XDG_STATE_HOME` outside any repository and a temporary
-`XDG_CONFIG_HOME` to avoid changing personal defaults. Build first with
-`npm run build`, then use `node /absolute/path/to/wholeloop/dist/wl.mjs`:
+Use a temporary `XDG_STATE_HOME` outside any repository and a temporary `XDG_CONFIG_HOME` to avoid changing personal defaults. Build first with `npm run build`, then use `node /absolute/path/to/wholeloop/dist/wl.mjs`:
 
 1. Begin `step begin frame-problem --input "Find past orders" --owner "Alex" --json`.
 2. Copy its initiative ID. Complete it with `step complete frame-problem
-   --for <id> --artifact <file> --json`; the file must contain all returned framing headings. Use
-   `test/fixtures/framing/frame.md` as a smoke fixture in a temporary location;
-   actual framing must distinguish observed evidence from explicit TBD markers.
-3. Inspect `state get`, `open` and `step plan` for that ID. The next step is
-   `write-spec`, now available. Complete a spec using the returned schema/sections
-   and verify that `next` stops at `approve-spec`; cut-scopes is now available. Approve the spec, complete a scope plan, and verify
-   that both initiative and child continuation stop at approve-scopes. After
-   approval, slice-work is available; complete a vertical slice plan and inspect
-   contract-first routing. Continue build-slice only after its returned agreement,
-   contract/worktree and repository preconditions are satisfied; actual client
-   workers still need separate native verification.
-4. Send a local `msg send --thread <id> --to builder --kind note --body "Ready"`.
-   Read it with `msg read --for builder --reader a`, then repeat: the second
-   read is empty. A different reader still sees it.
-5. Run `resume <id> --json` and `state rebuild --json`; the pack stays bounded
-   and projections rebuild without changing the journal.
-6. Inspect `profile show --json`; try a preset and a dial only in the temporary
-   config home. `profile set depth=technical --scope run --json` must leave
-   configuration unchanged.
+   --for <id> --artifact <file> --json`; the file must contain all returned framing headings. Use `test/fixtures/framing/frame.md` as a smoke fixture in a temporary location; actual framing must distinguish observed evidence from explicit TBD markers.
+3. Inspect `state get`, `open` and `step plan` for that ID. The next step is `write-spec`, now available. Complete a spec using the returned schema/sections and verify that `next` stops at `approve-spec`; cut-scopes is now available. Approve the spec, complete a scope plan, and verify that both initiative and child continuation stop at approve-scopes. After approval, slice-work is available; complete a vertical slice plan and inspect contract-first routing. Continue build-slice only after its returned agreement, contract/worktree and repository preconditions are satisfied; actual client workers still need separate native verification.
+4. Send a local `msg send --thread <id> --to builder --kind note --body "Ready"`. Read it with `msg read --for builder --reader a`, then repeat: the second read is empty. A different reader still sees it.
+5. Run `resume <id> --json` and `state rebuild --json`; the pack stays bounded and projections rebuild without changing the journal.
+6. Inspect `profile show --json`; try a preset and a dial only in the temporary config home. `profile set depth=technical --scope run --json` must leave configuration unchanged.
 
-These core paths also have automated tests. Generated client adapters and later step workflows are implemented locally with
-separate fixtures; actual canonical skill sessions and authenticated provider/native
-acceptance remain unverified. Amplitude retains a pending dashboard handoff until
-a reviewed live MCP contract is supplied; no additional HTTP host is required. Do not interpret this smoke scenario as those acceptance
-checks or as permission to publish.
+These core paths also have automated tests. Generated client adapters and later step workflows are implemented locally with separate fixtures; actual canonical skill sessions and authenticated provider/native acceptance remain unverified. Amplitude retains a pending dashboard handoff until a reviewed live MCP contract is supplied; no additional HTTP host is required. Do not interpret this smoke scenario as those acceptance checks or as permission to publish.
 
 [Roadmap](./README.md) · [Journal](./journal.md)

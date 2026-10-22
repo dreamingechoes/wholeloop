@@ -19,19 +19,9 @@
 
 Every command accepts `--json`. Machine-readable output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape). Unknown options fail rather than silently changing behavior.
 
-The normal test suite compares source and compiled-help commands with the general
-output schema, rejecting missing/duplicate/unversioned branches. It also inventories
-all source schema locations, including event maps, for unique version-one
-identities. Gate/suite event-map wrappers retain the prior payload rules and
-journal format; no event migration follows. Registration does not establish the
-complete v1 compatibility freeze or native execution. See
-[ADR-0065](../decisions/0065-public-output-schema-registration.md).
+The normal test suite compares source and compiled-help commands with the general output schema, rejecting missing/duplicate/unversioned branches. It also inventories all source schema locations, including event maps, for unique version-one identities. Gate/suite event-map wrappers retain the prior payload rules and journal format; no event migration follows. Registration does not establish the complete v1 compatibility freeze or native execution. See [ADR-0065](../decisions/0065-public-output-schema-registration.md).
 
-The v1 candidate now adds per-declaration compatibility fingerprints, retained
-command/exit contracts and explicit delivery-manifest validation. This freezes
-declarations for review without publishing 1.0 or proving runtime semantics. New
-identities and optional command flags remain additive; read the
-[compatibility and deprecation policy](../extending/compatibility.md).
+The v1 candidate now adds per-declaration compatibility fingerprints, retained command/exit contracts and explicit delivery-manifest validation. This freezes declarations for review without publishing 1.0 or proving runtime semantics. New identities and optional command flags remain additive; read the [compatibility and deprecation policy](../extending/compatibility.md).
 
 <!-- commands:start -->
 | Command | Output schema | Purpose |
@@ -297,26 +287,11 @@ A remembered answer is never asked again at that scope. A step that re-asks a se
 
 ## Hooks and guards
 
-Generated Claude/Copilot command hooks and the thin OpenCode JS plugin delegate to
-`wl guard before-tool --stdin`. The core normalizes native names/JSON arguments;
-reports contain only wholeloop/guard@1 decisions and fixed policy reasons, never raw
-tool bodies, commands or remote URLs. Empty native success preserves the client's
-normal permission checks. Missing/invalid/timed-out core results deny. Codex CLI
-uses the Git fallback; desktop plugin support is not proof of a CLI hook surface.
+Generated Claude/Copilot command hooks and the thin OpenCode JS plugin delegate to `wl guard before-tool --stdin`. The core normalizes native names/JSON arguments; reports contain only wholeloop/guard@1 decisions and fixed policy reasons, never raw tool bodies, commands or remote URLs. Empty native success preserves the client's normal permission checks. Missing/invalid/timed-out core results deny. Codex CLI uses the Git fallback; desktop plugin support is not proof of a CLI hook surface.
 
-Build commits require their active assigned workspace/topic. Pass the environment
-returned by build prepare/worktree open, including WL_SUBJECT, to the builder; it
-identifies attempts from the original checkout without guessing a default branch.
-Unmanaged owner commits remain allowed. Pushes require one non-delete update bound
-to a clean pending, human-tested open-pr request with exact SHA, branch, remote and
-snapshot, current gated evidence and no unresolved ancestor decisions. Object-pinned
-producer pushes are supported; extra refs and known non-fast-forward history fail.
+Build commits require their active assigned workspace/topic. Pass the environment returned by build prepare/worktree open, including WL_SUBJECT, to the builder; it identifies attempts from the original checkout without guessing a default branch. Unmanaged owner commits remain allowed. Pushes require one non-delete update bound to a clean pending, human-tested open-pr request with exact SHA, branch, remote and snapshot, current gated evidence and no unresolved ancestor decisions. Object-pinned producer pushes are supported; extra refs and known non-fast-forward history fail.
 
-Use guard state-write --path for the authoritative external destination check.
-StoreFiles also enforces that boundary on every real runtime mutation, including
-Git ancestors and symlinks. Known native writes and staged Git paths reject reserved
-.wholeloop runtime directories; explicit project settings/distribution output are
-separate writes. A generic shell cannot be classified as arbitrary file I/O.
+Use guard state-write --path for the authoritative external destination check. StoreFiles also enforces that boundary on every real runtime mutation, including Git ancestors and symlinks. Known native writes and staged Git paths reject reserved .wholeloop runtime directories; explicit project settings/distribution output are separate writes. A generic shell cannot be classified as arbitrary file I/O.
 
 Install Git fallbacks explicitly, using the compiled core:
 
@@ -326,23 +301,9 @@ wl guard hooks status --repo /path/to/project --json
 wl guard hooks uninstall --repo /path/to/project --json
 ```
 
-An optional --store pins the same external workspace store used by Build/open-pr.
-The installation places a hashed core and wrappers outside repositories, then sets
-one local core.hooksPath override. Existing executable hooks run at their original
-paths; guarded pre-commit/pre-push events are checked before and after them. Other
-existing hooks pass through. Uninstall restores only prior local values, preserving
-effective global settings, and retains the owned installation as a returned backup.
-Changed files/config, partial installs, relative/multiple effective hook paths or
-worktree-specific overrides require inspection/manual chaining. Original hooks are
-not copied; inspect new original hook names before reinstalling wrappers.
+An optional --store pins the same external workspace store used by Build/open-pr. The installation places a hashed core and wrappers outside repositories, then sets one local core.hooksPath override. Existing executable hooks run at their original paths; guarded pre-commit/pre-push events are checked before and after them. Other existing hooks pass through. Uninstall restores only prior local values, preserving effective global settings, and retains the owned installation as a returned backup. Changed files/config, partial installs, relative/multiple effective hook paths or worktree-specific overrides require inspection/manual chaining. Original hooks are not copied; inspect new original hook names before reinstalling wrappers.
 
-These are cooperative hooks, not an adversarial sandbox or complete shell parser.
-Known simple bypass flags are denied natively; disabled hooks, aliases and compound
-programs retain native limits. Copilot outer timeouts can fail open, so keep the Git
-fallback. Authored payload/transport fixtures are synthetic; actual native captures,
-timeouts and cross-platform behavior remain owner checks. Native install/uninstall returns these per-repository activation/removal commands;
-Git configuration remains an explicit separate action. Doctor inspects owned scopes
-without activation. See [ADR-0049](../decisions/0049-shared-guards-and-owned-git-fallbacks.md).
+These are cooperative hooks, not an adversarial sandbox or complete shell parser. Known simple bypass flags are denied natively; disabled hooks, aliases and compound programs retain native limits. Copilot outer timeouts can fail open, so keep the Git fallback. Authored payload/transport fixtures are synthetic; actual native captures, timeouts and cross-platform behavior remain owner checks. Native install/uninstall returns these per-repository activation/removal commands; Git configuration remains an explicit separate action. Doctor inspects owned scopes without activation. See [ADR-0049](../decisions/0049-shared-guards-and-owned-git-fallbacks.md).
 
 ---
 

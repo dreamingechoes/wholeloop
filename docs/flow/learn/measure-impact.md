@@ -67,44 +67,18 @@ wl measure schedule --for scope-a9e0 --json
 wl measure digest --for scope-a9e0,scope-b1f2 --json
 ```
 
-Standalone begin supplies a description, --owner, --measurement (the same explicit
-contract used by launch) and an evidence-backed --launched-at timestamp. A final
-ramp confirmation may supply that anchor; prepared drafts cannot. The anchor stays
-pinned across checkpoints. --at fixes the historical window end; queries use the
-original metric's rolling days/timezone and exact unit. Not-yet-due checkpoints
-leave no synthetic history. learn.checkpoints defaults to launch/d7/d30; custom
-names require --after-days. Status exposes dates and next points at due work.
+Standalone begin supplies a description, --owner, --measurement (the same explicit contract used by launch) and an evidence-backed --launched-at timestamp. A final ramp confirmation may supply that anchor; prepared drafts cannot. The anchor stays pinned across checkpoints. --at fixes the historical window end; queries use the original metric's rolling days/timezone and exact unit. Not-yet-due checkpoints leave no synthetic history. learn.checkpoints defaults to launch/d7/d30; custom names require --after-days. Status exposes dates and next points at due work.
 
-The CLI plans/imports reads; it authenticates no service itself. Normalized results
-use wholeloop/impact-read-responses@1, the exact request run/at and one result or
-unavailable reason per fingerprint. Scalar JSON bodies are `{ "value": 18,
-"unit": "seconds" }`. The SDK can use ImpactWorkflow directly; runImpact gives
-one read-only analyst each source and a separate layout interface.
+The CLI plans/imports reads; it authenticates no service itself. Normalized results use wholeloop/impact-read-responses@1, the exact request run/at and one result or unavailable reason per fingerprint. Scalar JSON bodies are `{ "value": 18,
+"unit": "seconds" }`. The SDK can use ImpactWorkflow directly; runImpact gives one read-only analyst each source and a separate layout interface.
 
-Optional --qualitative takes agreed queries with id/provider/operation/query/days/
-timezone. Supported sources are support, feedback, meetings and knowledge; bodies
-normalize to `{ "text": "sanitized source quote" }`. Quotes remain separate from
-metric assertions. Do not put credentials or private logs in response files.
+Optional --qualitative takes agreed queries with id/provider/operation/query/days/ timezone. Supported sources are support, feedback, meetings and knowledge; bodies normalize to `{ "text": "sanitized source quote" }`. Quotes remain separate from metric assertions. Do not put credentials or private logs in response files.
 
-Actual learn.report instructions are loaded and pinned. A custom report uses
-`wl measure format --for <id> --file <layout.json>` before completion: each section
-has a plain title plus metric and qualitative ID arrays. The host chooses headings
-and order, while the core preserves every value and mandatory source metadata.
-Harness defaults have a built-in layout. New evidence invalidates old layouts.
-Partial progress requires a known unmet baseline and a result closer to the target;
-unknown baseline or regression from an already met baseline cannot imply progress.
+Actual learn.report instructions are loaded and pinned. A custom report uses `wl measure format --for <id> --file <layout.json>` before completion: each section has a plain title plus metric and qualitative ID arrays. The host chooses headings and order, while the core preserves every value and mandatory source metadata. Harness defaults have a built-in layout. New evidence invalidates old layouts. Partial progress requires a known unmet baseline and a result closer to the target; unknown baseline or regression from an already met baseline cannot imply progress.
 
-Every numeric row links to its exact stored query, raw-content hash, observation
-reference/window and metric contract. Missing observations retain reasons. Reports
-measure comparison, not causal attribution. Completion retains canonical artifacts,
-and repeated checkpoints keep immutable earlier histories with latest projections.
+Every numeric row links to its exact stored query, raw-content hash, observation reference/window and metric contract. Missing observations retain reasons. Reports measure comparison, not causal attribution. Completion retains canonical artifacts, and repeated checkpoints keep immutable earlier histories with latest projections.
 
-Digest planning is local. Explicit SDK dispatchImpactDigest creates comms.draft only
-or appends a stable marker-bound note through fresh same-operation docs.update;
-it preserves unrelated content. It journals intent and retains ambiguity without
-retry. These notes are document-body comments, not native threaded comments.
-[ADR-0040](../../decisions/0040-pinned-impact-observations-and-report-layouts.md)
-records the grounding, layout and publication boundaries.
+Digest planning is local. Explicit SDK dispatchImpactDigest creates comms.draft only or appends a stable marker-bound note through fresh same-operation docs.update; it preserves unrelated content. It journals intent and retains ambiguity without retry. These notes are document-body comments, not native threaded comments. [ADR-0040](../../decisions/0040-pinned-impact-observations-and-report-layouts.md) records the grounding, layout and publication boundaries.
 
 | CLI | Invoke | Parallel analysts |
 | --- | --- | --- |

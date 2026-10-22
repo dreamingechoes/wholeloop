@@ -14,21 +14,14 @@
 | Remote integrations | Metabase, PostHog, Notion, Jira, flag services | Experimental, fixture-tested and service-unverified for 1.0; live certification is deferred |
 | Release | npm, GitHub delivery, version/tag, announcement | Owner choices plus actual reviewed publication evidence |
 
-The owner accepted the integration policy in [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md).
-Do not turn unexecuted service checks into passed checks. Later promotion names
-the actual service/version, operations, permissions, date and limitations; it is
-not a claim that every vendor feature has been tested. Missing implementation is
-still missing implementation. Under [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md),
-Amplitude's dashboard operation remains a pending handoff until a known MCP
-contract is supplied; a dedicated HTTP bridge is not a 1.0 requirement.
+The owner accepted the integration policy in [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md). Do not turn unexecuted service checks into passed checks. Later promotion names the actual service/version, operations, permissions, date and limitations; it is not a claim that every vendor feature has been tested. Missing implementation is still missing implementation. Under [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md), Amplitude's dashboard operation remains a pending handoff until a known MCP contract is supplied; a dedicated HTTP bridge is not a 1.0 requirement.
 
-The full roadmap includes all seven native clients. Accepting Claude alone would
-be a separate scope change, not a consequence of experimental service integrations.
+The full roadmap includes all seven native clients. Accepting Claude alone would be a separate scope change, not a consequence of experimental service integrations.
 
 ## What is already confirmed
 
-- [x] The current 1925-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
-- [x] The complete 1925-test check also passes on macOS arm64/Node 22.23.1. The built bundle passes scoped Linux arm64/Node 20.0.0 offline installation, smoke, docs, harness and three-corpus execution with exact Node 24 JSON parity. Eight adapter/dialect framing simulations pass as FIXTURE_PASS; no native client runs. CI now repeats the package and corpus runtime checks, with hosted execution still pending.
+- [x] The current 1955-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
+- [x] The earlier complete 1925-test check passed on macOS arm64/Node 22.23.1, which also passes the new Markdown layout lint. The earlier built bundle passes scoped Linux arm64/Node 20.0.0 offline installation, smoke, docs, harness and three-corpus execution with exact Node 24 JSON parity. Eight adapter/dialect framing simulations pass as FIXTURE_PASS; no native client runs. CI now repeats the package and corpus runtime checks, with hosted execution still pending.
 - [x] The owner installed user-scope Claude loose skills and invoked framing with the eight questions and an explicit human stop.
 - [x] An on-hold outcome retained the owner's reason and reopening condition in external core state.
 - [x] After closing Claude and opening a new session, status recovered that same closed initiative with framing completed and no next step.
@@ -36,17 +29,11 @@ be a separate scope change, not a consequence of experimental service integratio
 - [x] The revised exact-final-approval scenario also passes on Codex 0.163.0, core 10cca6bc, run cf-ade63be4ab7e78074a428393. This source-API runner uses a temporary category-only observer; the installed core and matching final-review journal are real. An earlier revised run stopped before finalization and remains FAIL.
 - [x] The compiled CLI completes a real six-lens headless review in Codex 0.163.0 on core 9ea3a298: gate-35be1f516f42cb8c passes with every worker accepted and the repository unchanged. Alongside stubbed engine verdict/quorum parity, this closes P5-03's one-real-run criterion. Other native workflows and isolation checks remain separate.
 
-That does not establish a complete go/spec path, all skill/agent discovery,
-native permission denial, plugin installation or the final-review scenario on every client.
-The framing document added unapproved conditions and its final semantic revision
-was not challenged; those are implementation/content defects to resolve before
-calling the framing exercise fully accepted.
+That does not establish a complete go/spec path, all skill/agent discovery, native permission denial, plugin installation or the final-review scenario on every client. The framing document added unapproved conditions and its final semantic revision was not challenged; those are implementation/content defects to resolve before calling the framing exercise fully accepted.
 
 ## Who must do the remaining work
 
-The implementation side prepares fixtures, runs local tests, attempts installed
-clients automatically, diagnoses failures, fixes code and updates evidence/docs.
-The owner does not need to author schemas or run every low-level backlog item.
+The implementation side prepares fixtures, runs local tests, attempts installed clients automatically, diagnoses failures, fixes code and updates evidence/docs. The owner does not need to author schemas or run every low-level backlog item.
 
 Owner involvement is needed for:
 
@@ -62,10 +49,7 @@ Accounts with every remote service are absent from this list deliberately.
 
 ### 1. Finish implementation defects first
 
-All currently identified implementation defects below are fixed and tested.
-The fourteen open roadmap tasks require native/workflow acceptance, remaining
-runtime/platform trials or external owner decisions. If a new trial exposes a
-code defect, return it to implementation instead of waiving it as manual work.
+All currently identified implementation defects below are fixed and tested. The fourteen open roadmap tasks require native/workflow acceptance, remaining runtime/platform trials or external owner decisions. If a new trial exposes a code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
@@ -76,15 +60,13 @@ code defect, return it to implementation instead of waiving it as manual work.
 - [x] Supply an exact scripted final-owner declaration for the automatic framing fixture and require the final review in its judge (ADR-0089). Keep fictional approval separate from real human acceptance.
 - [x] Deliver the explicitly selected nightly OpenCode model through its documented native flag, leaving credentials environment-only (ADR-0090).
 - [x] Constrain Codex headless replies to the exact response envelope and retain strict core validation (ADR-0091). A complete real six-lens review passes through the compiled CLI; earlier unbound replies remain failed.
-- [x] Run the complete 1925-test check on macOS and isolated Linux arm64, including offline package execution and all documentation/harness checks.
+- [x] Run the complete 1955-test check on macOS and isolated Linux arm64, including offline package execution and all documentation/harness checks.
 
-The existing stored fictitious framing is evidence of the defect; do not overwrite
-its history to make the old trial appear to have passed.
+The existing stored fictitious framing is evidence of the defect; do not overwrite its history to make the old trial appear to have passed.
 
 ### 2. Check source installation
 
-Run from the wholeloop checkout. The current compatible development environment
-was verified with Node 22.23.1 and 24.22.0. These commands do not require a global wl alias:
+Run from the wholeloop checkout. The current compatible development environment was verified with Node 22.23.1 and 24.22.0. These commands do not require a global wl alias:
 
 ```bash
 npm ci
@@ -100,20 +82,13 @@ node ./dist/wl.mjs install --target claude --scope user --dry-run --json
 node ./dist/wl.mjs install --target claude --scope user --json
 ```
 
-Restart the selected client. Use [local client setup](./platforms/local-onboarding.md)
-for other targets and their exact native names. A doctor version/file observation
-does not replace a model run; resolve actual reported required failures and retain
-unknown optional integrations as unknown.
+Restart the selected client. Use [local client setup](./platforms/local-onboarding.md) for other targets and their exact native names. A doctor version/file observation does not replace a model run; resolve actual reported required failures and retain unknown optional integrations as unknown.
 
-Each command above uses a direct path because separate shell-command executions
-may not retain an earlier export. In one terminal, an absolute WHOLELOOP_CLI export
-also works; exporting it does not install a global command.
+Each command above uses a direct path because separate shell-command executions may not retain an earlier export. In one terminal, an absolute WHOLELOOP_CLI export also works; exporting it does not install a global command.
 
 ### 3. Complete one representative human workflow
 
-Use a disposable project with working tests and a small real change, not the
-wholeloop implementation checkout. Start a fresh native session there. For Claude,
-run claude in that project's terminal, then use these managed loose-skill names:
+Use a disposable project with working tests and a small real change, not the wholeloop implementation checkout. Start a fresh native session there. For Claude, run claude in that project's terminal, then use these managed loose-skill names:
 
 | In the client | Expected observation |
 | --- | --- |
@@ -124,28 +99,15 @@ run claude in that project's terminal, then use these managed loose-skill names:
 | /wl-build-slice | Show repository guidance and a plan, build in the allocated worktree, run verify and review, then stop for human testing. |
 | /wl-status | Recover exact IDs, pending decisions and current gates. Restart the client and confirm the same work resumes. |
 
-Supply the actual idea with the framing command. Do not reuse the already closed
-trial title expecting a new initiative: identity reuse preserves its closure.
-Standalone skills also work; next follows dependencies rather than silently
-approving the intervening steps.
+Supply the actual idea with the framing command. Do not reuse the already closed trial title expecting a new initiative: identity reuse preserves its closure. Standalone skills also work; next follows dependencies rather than silently approving the intervening steps.
 
-For the remaining flow, inspect [open-pr](./flow/build/open-pr.md),
-[prepare-launch](./flow/rollout/prepare-launch.md),
-[ramp-exposure](./flow/rollout/ramp-exposure.md),
-[measure-impact](./flow/learn/measure-impact.md) and
-[decide-next](./flow/learn/decide-next.md). Use a disposable code-host repository
-for actual PR testing. Review the exact publication plan before its push; merge
-remains human. Ramp requires an explicitly confirmed external change, and missing
-measurements must remain unknown. Fixtures can exercise service handoffs, but are
-not production traffic or a real measurement. Service certification stays optional.
+For the remaining flow, inspect [open-pr](./flow/build/open-pr.md), [prepare-launch](./flow/rollout/prepare-launch.md), [ramp-exposure](./flow/rollout/ramp-exposure.md), [measure-impact](./flow/learn/measure-impact.md) and [decide-next](./flow/learn/decide-next.md). Use a disposable code-host repository for actual PR testing. Review the exact publication plan before its push; merge remains human. Ramp requires an explicitly confirmed external change, and missing measurements must remain unknown. Fixtures can exercise service handoffs, but are not production traffic or a real measurement. Service certification stays optional.
 
 ### 4. Let the automatic runner cover the other clients
 
 - [ ] Obtain fresh actual client acceptance after resolving the recorded native blockers. Execution and diagnosis alone do not close acceptance. The recorded Codex passes cover their exact scenarios/cores; the remaining clients and wider workflow checks stay open.
 
-The owner authorized actual model-backed trials of installed clients. This can
-use native accounts and model allowance. No permission bypass is part of the
-recipe. Missing trust/authentication or unavailable models are blockers to report.
+The owner authorized actual model-backed trials of installed clients. This can use native accounts and model allowance. No permission bypass is part of the recipe. Missing trust/authentication or unavailable models are blockers to report.
 
 For example, from the wholeloop checkout:
 
@@ -154,40 +116,22 @@ claude --version
 node ./dist/wl.mjs conformance prepare --target claude --pin 2.1.306 --json
 ```
 
-Use the exact version token observed on your machine, not that example if it
-differs. Preparation returns a fresh fixture root, prompt, recipe and cf ID; it
-does not launch a model. Inspect those paths and arrange the native trust/login
-through the client. Then substitute the complete returned ID:
+Use the exact version token observed on your machine, not that example if it differs. Preparation returns a fresh fixture root, prompt, recipe and cf ID; it does not launch a model. Inspect those paths and arrange the native trust/login through the client. Then substitute the complete returned ID:
 
 ```text
 node ./dist/wl.mjs conformance run <returned-cf-id> --live --json
 node ./dist/wl.mjs conformance report <returned-cf-id> --json
 ```
 
-Repeat with target codex, opencode, copilot, gemini, antigravity and cursor and
-their exact version tokens. Antigravity's executable is agy; Cursor's is agent.
-A failed or interrupted fixture is consumed: retain it and prepare a fresh trial
-after diagnosing the cause. Do not rerun it or change its evidence label.
+Repeat with target codex, opencode, copilot, gemini, antigravity and cursor and their exact version tokens. Antigravity's executable is agy; Cursor's is agent. A failed or interrupted fixture is consumed: retain it and prepare a fresh trial after diagnosing the cause. Do not rerun it or change its evidence label.
 
-Accept a structural trial only when status is PASS, evidence is
-live-process-and-journal, the exact version matches and missing/problems are empty.
-FIXTURE_PASS is simulation. Process exit zero with missing events is a failure.
-This scenario deliberately uses go and a random installed-skill marker; the
-owner's earlier on-hold exercise is useful separate evidence, not its substitute.
+Accept a structural trial only when status is PASS, evidence is live-process-and-journal, the exact version matches and missing/problems are empty. FIXTURE_PASS is simulation. Process exit zero with missing events is a failure. This scenario deliberately uses go and a random installed-skill marker; the owner's earlier on-hold exercise is useful separate evidence, not its substitute.
 
-The bundled Fixture Owner is a scripted fictional actor. Its declaration approves
-one exact final document hash and decision, supplied in the prepared prompt.
-The client must preserve those bytes, perform the final challenger review and
-use frame finalize. Changed bytes require a new declaration; an initial go does
-not approve later edits. No real human approval or customer validation is claimed.
-The judge checks review structure and byte identity; review quality and isolation
-still need observation. --fixture uses a visibly simulated reviewer and remains
-FIXTURE_PASS. See [ADR-0089](./decisions/0089-scripted-final-approval-in-framing-conformance.md).
+The bundled Fixture Owner is a scripted fictional actor. Its declaration approves one exact final document hash and decision, supplied in the prepared prompt. The client must preserve those bytes, perform the final challenger review and use frame finalize. Changed bytes require a new declaration; an initial go does not approve later edits. No real human approval or customer validation is claimed. The judge checks review structure and byte identity; review quality and isolation still need observation. --fixture uses a visibly simulated reviewer and remains FIXTURE_PASS. See [ADR-0089](./decisions/0089-scripted-final-approval-in-framing-conformance.md).
 
 ### 5. Verify permissions, hooks and engine behavior separately
 
-The implementation side prepares these probes in disposable repositories and
-records native outcomes; the owner reviews any actual permission/trust decision:
+The implementation side prepares these probes in disposable repositories and records native outcomes; the owner reviews any actual permission/trust decision:
 
 | Probe | Passing result |
 | --- | --- |
@@ -198,16 +142,11 @@ records native outcomes; the owner reviews any actual permission/trust decision:
 | Launcher sees available communication tools | It can draft, but no sending capability is available |
 | Same pinned gate assignments use native/headless/sequential engines | Equivalent verdict, exact round/input and no crashed worker counted as a refutation |
 
-Capture actual hook payload shape and read-only restrictions for each supported
-client. Codex inherits parent restrictions; its synthetic SDK-shaped payload is
-not proof of an installed CLI hook. Follow [the isolated spike](../test/conformance/notes/README.md)
-and [guard cases](../roadmap/manual-verification.md#common-guards-and-git-fallback-p3-08).
-Repeat supported platform claims on Linux; macOS evidence is not Linux evidence.
+Capture actual hook payload shape and read-only restrictions for each supported client. Codex inherits parent restrictions; its synthetic SDK-shaped payload is not proof of an installed CLI hook. Follow [the isolated spike](../test/conformance/notes/README.md) and [guard cases](../roadmap/manual-verification.md#common-guards-and-git-fallback-p3-08). Repeat supported platform claims on Linux; macOS evidence is not Linux evidence.
 
 ### 6. Review CI and publication when native acceptance is ready
 
-The implementation side prepares the exact bundle, notes, test results and
-commands before asking for activation. Owner confirmations are:
+The implementation side prepares the exact bundle, notes, test results and commands before asking for activation. Owner confirmations are:
 
 - Select native credentials/model access, environment protection and spending for [nightly conformance](./contributing/conformance.md). Verify an actual pinned/latest regression issue with exact version/assertion; synthetic issue drafts do not meet that criterion.
 - Confirm npm ownership and the intended public repository/package identity.
@@ -215,14 +154,11 @@ commands before asking for activation. Owner confirmations are:
 - Complete the timed fresh-machine install for each tier-A client; doctor must explain failures with actionable remedies.
 - Verify actual provenance/publication/tag/announcement. The current private 0.0.0 package is a development build, not a released 1.0.
 
-Optional compiled binaries are not a new mandatory release requirement. The full
-defined roadmap still includes its explicit publication and client criteria.
+Optional compiled binaries are not a new mandatory release requirement. The full defined roadmap still includes its explicit publication and client criteria.
 
 ## Map of remaining roadmap tasks
 
-After the accepted P2-06 scope change, P4-05 MCP-first implementation and P5-03
-native headless acceptance: 40 of 54 tasks are complete; 14 remain open.
-These rows describe closure evidence, not fourteen tests the owner must run alone.
+After the accepted P2-06 scope change, P4-05 MCP-first implementation and P5-03 native headless acceptance: 40 of 54 tasks are complete; 14 remain open. These rows describe closure evidence, not fourteen tests the owner must run alone.
 
 | Task | What closes it | Owner involvement |
 | --- | --- | --- |
@@ -241,19 +177,11 @@ These rows describe closure evidence, not fourteen tests the owner must run alon
 | P5-05 | Reviewed distribution, approved visibility, fresh-machine timing and clean notes | Publication/ownership decision |
 | P5-07 | Actual 1.0 tag and announcement after remaining acceptance | Final release approval |
 
-P4-05 is complete with fixture-tested MCP priority, explicit HTTP selection and
-no automatic fallback. Its unavailable service contracts retain pending handoffs.
-Service-account certification is a deferred backlog, not one more
-release gate for every vendor. Other robustness cases in the manual backlog
-document limitations and follow-up scope rather than silently expanding the task
-table into hundreds of owner-only release prerequisites.
+P4-05 is complete with fixture-tested MCP priority, explicit HTTP selection and no automatic fallback. Its unavailable service contracts retain pending handoffs. Service-account certification is a deferred backlog, not one more release gate for every vendor. Other robustness cases in the manual backlog document limitations and follow-up scope rather than silently expanding the task table into hundreds of owner-only release prerequisites.
 
 ## What evidence to return
 
-For a human observation, send the command/skill, client version, observed outcome
-and any relevant sanitized receipt. A screenshot or summary alone should not
-claim an unseen core write; use status/report to cross-check it. Keep full runtime
-records in the external store. A useful short handoff is:
+For a human observation, send the command/skill, client version, observed outcome and any relevant sanitized receipt. A screenshot or summary alone should not claim an unseen core write; use status/report to cross-check it. Keep full runtime records in the external store. A useful short handoff is:
 
 ```text
 Client / version:
@@ -265,9 +193,7 @@ Relevant non-secret receipt fields:
 Human decision, if any:
 ```
 
-The implementation side updates the narrow checked observation, fixes failures,
-records remaining limits and commits the evidence. It does not rewrite a failed
-trial as passed or ask the owner to repeat already verified checks without cause.
+The implementation side updates the narrow checked observation, fixes failures, records remaining limits and commits the evidence. It does not rewrite a failed trial as passed or ask the owner to repeat already verified checks without cause.
 
 <!-- docnav -->
 [◀ Getting started](getting-started.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)

@@ -74,40 +74,15 @@ wl learn decide iterate --for scope-a9e0 --basis <challenge-event> --by Alex --r
 wl learn report --for scope-a9e0 --json
 ```
 
-`wl learn schema` exposes the counterargument, self-report and iteration fields.
-Counterarguments use wholeloop/learning-challenge@1 with basis (the exact plan
-event), against, alternative, argument, limits and by. The alternative must differ
-from the leaning. Profile tone and additional question budget change; the four
-coverage areas stay fixed. Actual learn.decision instructions are loaded and pinned.
-A changed report/guidance/profile needs a new begin and counterargument.
+`wl learn schema` exposes the counterargument, self-report and iteration fields. Counterarguments use wholeloop/learning-challenge@1 with basis (the exact plan event), against, alternative, argument, limits and by. The alternative must differ from the leaning. Profile tone and additional question budget change; the four coverage areas stay fixed. Actual learn.decision instructions are loaded and pinned. A changed report/guidance/profile needs a new begin and counterargument.
 
-The person must supply a written reason and --ack containing every returned
-unknown/pending-checkpoint key, including an early decision before later
-checkpoints. A missing reason, absent challenge or stale basis cannot close work.
-Measured evidence cannot be replaced by an invocation's self-report. Standalone
---reported supplies summary/promise/refs/by and optional flag, clearly labelled
-self-reported; it never creates numerical observations.
+The person must supply a written reason and --ack containing every returned unknown/pending-checkpoint key, including an early decision before later checkpoints. A missing reason, absent challenge or stale basis cannot close work. Measured evidence cannot be replaced by an invocation's self-report. Standalone --reported supplies summary/promise/refs/by and optional flag, clearly labelled self-reported; it never creates numerical observations.
 
-Iteration input supplies title/problem/audience/impact. The core creates an open
-initiative with a full framing draft, evidence link and owner-labelled questions
-for validation, cost/priority and stop conditions. frame-problem starts and remains
-incomplete. Optional existing selects a closed pre-spec idea in the same repository;
-reopening a developed initiative or the current parent is rejected to preserve
-old scope approvals. No prior validation, spec or future Build is invented.
+Iteration input supplies title/problem/audience/impact. The core creates an open initiative with a full framing draft, evidence link and owner-labelled questions for validation, cost/priority and stop conditions. frame-problem starts and remains incomplete. Optional existing selects a closed pre-spec idea in the same repository; reopening a developed initiative or the current parent is rejected to preserve old scope approvals. No prior validation, spec or future Build is invented.
 
-Keep/unflag propose flag-removal work; kill proposes human disablement/code cleanup.
-Unflag needs a confirmed flag identity. These are unapplied proposals, not actual
-flag/code changes or automatically published tracker tasks. The decision workflow
-has no provider or mutation host. Explicit future work goes through normal Build.
+Keep/unflag propose flag-removal work; kill proposes human disablement/code cleanup. Unflag needs a confirmed flag identity. These are unapplied proposals, not actual flag/code changes or automatically published tracker tasks. The decision workflow has no provider or mutation host. Explicit future work goes through normal Build.
 
-Canonical completion closes the scope, then its initiative only if every scope has
-a completed learning decision. A manually closed sibling does not count. Reopened
-scopes lose eligibility; reopen a closed parent before creating another scope.
-The scope/parent closure shares one atomic journal batch. If a decision is stored
-before interruption, `wl learn complete --for <id> --json` recovers completion
-without duplicating the decision or iteration. Projections and resume refs retain
-all evidence and proposals. [ADR-0041](../../decisions/0041-challenged-learning-decisions-and-scope-closure.md)
-records the human, iteration and closure boundaries.
+Canonical completion closes the scope, then its initiative only if every scope has a completed learning decision. A manually closed sibling does not count. Reopened scopes lose eligibility; reopen a closed parent before creating another scope. The scope/parent closure shares one atomic journal batch. If a decision is stored before interruption, `wl learn complete --for <id> --json` recovers completion without duplicating the decision or iteration. Projections and resume refs retain all evidence and proposals. [ADR-0041](../../decisions/0041-challenged-learning-decisions-and-scope-closure.md) records the human, iteration and closure boundaries.
 
 | CLI | Invoke |
 | --- | --- |

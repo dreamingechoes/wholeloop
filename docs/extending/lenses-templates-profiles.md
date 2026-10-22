@@ -79,25 +79,11 @@ wl lens scaffold accessibility --output .wholeloop/lenses/accessibility --json
 wl lens test accessibility --json
 ```
 
-Each kind supports `list`, `test <id>` and `scaffold <id>`. Scaffold prints a kit
-by default; `--output <directory>` explicitly creates a new directory and refuses
-to overwrite an existing one. Lens kits include `prompt.md`. Template kits contain
-`template.md`; profiles contain `profile.yml`. A flat `templates/<id>.md` also loads.
+Each kind supports `list`, `test <id>` and `scaffold <id>`. Scaffold prints a kit by default; `--output <directory>` explicitly creates a new directory and refuses to overwrite an existing one. Lens kits include `prompt.md`. Template kits contain `template.md`; profiles contain `profile.yml`. A flat `templates/<id>.md` also loads.
 
-Catalog precedence is repository, user, installed packages, then built-in. A
-same-id manifest replaces its predecessor unless it declares `extends`. Maps
-merge recursively and arrays replace. `extends: builtin:pair` names a built-in
-explicitly; `extends: pair` on a same-id override selects the next lower layer.
-Cycles, duplicate IDs within one layer, malformed schemas and unsafe resource
-paths are reported as problems; list/test exits 4 when any problem exists.
-Configuration loading rejects a broken profile catalog rather than silently
-using a different communication profile.
+Catalog precedence is repository, user, installed packages, then built-in. A same-id manifest replaces its predecessor unless it declares `extends`. Maps merge recursively and arrays replace. `extends: builtin:pair` names a built-in explicitly; `extends: pair` on a same-id override selects the next lower layer. Cycles, duplicate IDs within one layer, malformed schemas and unsafe resource paths are reported as problems; list/test exits 4 when any problem exists. Configuration loading rejects a broken profile catalog rather than silently using a different communication profile.
 
-The schemas in `src/extensions/schemas/` describe decoded manifests. Template
-front matter supplies metadata and the Markdown body supplies `content`.
-Profile manifests contain dials only; they cannot alter checks or decisions.
-`profile set` still overrides one dial, while `profile preset <id>` selects any
-validated catalog profile. User preferences keep their normal precedence.
+The schemas in `src/extensions/schemas/` describe decoded manifests. Template front matter supplies metadata and the Markdown body supplies `content`. Profile manifests contain dials only; they cannot alter checks or decisions. `profile set` still overrides one dial, while `profile preset <id>` selects any validated catalog profile. User preferences keep their normal precedence.
 
 ## Decision points
 

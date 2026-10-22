@@ -17,12 +17,7 @@
 - [ ] The `launcher` has no tool able to send a message (adapter test per CLI).
 - [x] Each dashboard links back to the measurement-plan entry it implements.
 
-**Local implementation:** complete and fixture-tested. The core pins measurement
-revisions, loads repository voice/templates, stores complete kits and dispatches
-only explicit draft/create requests through a separate conductor host boundary.
-Per-CLI adapter denial tests remain pending with P1 adapters/conformance; canonical
-read-only metadata and synthetic hosts are not substitutes. This manual/client
-criterion does not block dependent local rollout implementation.
+**Local implementation:** complete and fixture-tested. The core pins measurement revisions, loads repository voice/templates, stores complete kits and dispatches only explicit draft/create requests through a separate conductor host boundary. Per-CLI adapter denial tests remain pending with P1 adapters/conformance; canonical read-only metadata and synthetic hosts are not substitutes. This manual/client criterion does not block dependent local rollout implementation.
 
 **Docs** — flow/rollout/prepare-launch.
 
@@ -85,38 +80,7 @@ criterion does not block dependent local rollout implementation.
 - [x] Each provider passes `wl provider test` with fixtures.
 - [x] Client-owned MCP takes priority for known observed tools; missing contracts retain explicit degradation, and HTTP requires explicit selection without exception-triggered fallback (ADR-0085).
 
-**Local implementation:** offline fixtures cover every declared operation of all
-fourteen targets; native unsent drafts, unapplied proposals, config-file reads and
-metric-linked dashboard handoffs are implemented. Known sending/toggle routes are
-rejected. Fixtures do not establish opaque server semantics. The first explicit LaunchDarkly REST host now reads only complete unrestricted
-boolean user/key configuration through bounded credential-store transport and
-the existing ramp normalizer. A default-preview CLI performs no I/O until --live;
-complex targeting remains unknown. Actual native/service acceptance is unverified.
-The Unleash Admin reader now binds full feature/project/environment state and
-explicit variants, rejecting dependencies/unions/targeting while supporting one
-unrestricted default or ordinary default-stickiness rollout. GrowthBook now reads
-published per-environment boolean/default/force/id-rollout state, ignores drafts,
-checks supplied compiled definitions and labels hash-dependent cohorts explicitly.
-Decimal percentages preserve exact forward/reverse configured values. The PostHog reader now performs complete exact-key lookup then detail GET with
-explicit owner-configured project/environment scope and conservative person-cohort
-normalization. Grafana now has an explicit create-only PromQL host with exact artifact/datasource/
-folder binding, default-preview CLI and once-intent POST/readback.
-Mixpanel binds explicit
-project/workspace, creates a private dashboard and native owned report, and verifies
-exact report/relationship/privacy without interpreting opaque content; Metabase now creates
-one dashboard-owned native SQL question with exact classic-query/attachment
-readback and explicit unverified owner-reviewed time scope; PostHog now has
-explicit project/timezone preconditions, dashboard/insight creation, exact attachment
-readback and retained pending references for known partial outcomes;
-local dashboard output is explicitly pending. ADR-0085 removes the obligation to
-implement more HTTP hosts: Amplitude remains a pending dashboard handoff until a
-known MCP contract is supplied, without claiming remote creation. Existing HTTP
-hosts remain explicit experimental options. Transport planning and the injected client host test MCP-first selection,
-reviewed tool/schema membership, explicit HTTP opt-in and no failure fallback.
-Launch dispatch tests retain exact metric provenance, cached results and ambiguous
-intent across the routed host. Canonical protocols describe this boundary. Authenticated per-vendor
-certification remains deferred under ADR-0084. See the manual checklist, ADR-0042
-and the retained optional transport contracts ADR-0076 through ADR-0083.
+**Local implementation:** offline fixtures cover every declared operation of all fourteen targets; native unsent drafts, unapplied proposals, config-file reads and metric-linked dashboard handoffs are implemented. Known sending/toggle routes are rejected. Fixtures do not establish opaque server semantics. The first explicit LaunchDarkly REST host now reads only complete unrestricted boolean user/key configuration through bounded credential-store transport and the existing ramp normalizer. A default-preview CLI performs no I/O until --live; complex targeting remains unknown. Actual native/service acceptance is unverified. The Unleash Admin reader now binds full feature/project/environment state and explicit variants, rejecting dependencies/unions/targeting while supporting one unrestricted default or ordinary default-stickiness rollout. GrowthBook now reads published per-environment boolean/default/force/id-rollout state, ignores drafts, checks supplied compiled definitions and labels hash-dependent cohorts explicitly. Decimal percentages preserve exact forward/reverse configured values. The PostHog reader now performs complete exact-key lookup then detail GET with explicit owner-configured project/environment scope and conservative person-cohort normalization. Grafana now has an explicit create-only PromQL host with exact artifact/datasource/ folder binding, default-preview CLI and once-intent POST/readback. Mixpanel binds explicit project/workspace, creates a private dashboard and native owned report, and verifies exact report/relationship/privacy without interpreting opaque content; Metabase now creates one dashboard-owned native SQL question with exact classic-query/attachment readback and explicit unverified owner-reviewed time scope; PostHog now has explicit project/timezone preconditions, dashboard/insight creation, exact attachment readback and retained pending references for known partial outcomes; local dashboard output is explicitly pending. ADR-0085 removes the obligation to implement more HTTP hosts: Amplitude remains a pending dashboard handoff until a known MCP contract is supplied, without claiming remote creation. Existing HTTP hosts remain explicit experimental options. Transport planning and the injected client host test MCP-first selection, reviewed tool/schema membership, explicit HTTP opt-in and no failure fallback. Launch dispatch tests retain exact metric provenance, cached results and ambiguous intent across the routed host. Canonical protocols describe this boundary. Authenticated per-vendor certification remains deferred under ADR-0084. See the manual checklist, ADR-0042 and the retained optional transport contracts ADR-0076 through ADR-0083.
 
 **Docs** — configuration/providers.
 
@@ -133,11 +97,7 @@ and the retained optional transport contracts ADR-0076 through ADR-0083.
 - [x] Running `sync` twice in a row changes nothing the second time (test).
 - [x] No item is closed whose PR is not merged.
 
-**Local delivery semantics:** scope delivery-ready requires every slice certified
-merged/closed; the scope stays open for its final human learning decision. Tracker
-transitions use explicit SDK targets/hosts and observed final state; unbound
-references remain handoffs. Cleanup retains active/dirty/not-locally-merged work.
-Real server, scheduling and cross-platform checks remain on the manual checklist.
+**Local delivery semantics:** scope delivery-ready requires every slice certified merged/closed; the scope stays open for its final human learning decision. Tracker transitions use explicit SDK targets/hosts and observed final state; unbound references remain handoffs. Cleanup retains active/dirty/not-locally-merged work. Real server, scheduling and cross-platform checks remain on the manual checklist.
 
 **Docs** — flow/utilities (`sync`).
 

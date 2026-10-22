@@ -9,22 +9,11 @@
 
 ## Integration verification status
 
-All remote vendors in this catalogue currently carry the same release label:
-**experimental · fixture-tested · service-unverified**. This includes Metabase,
-PostHog, Mixpanel, Amplitude, Grafana, trackers, document services, code hosts and
-the other source/rollout integrations. Fixture success checks authored contracts;
-it does not establish account access, actual API compatibility or rendered results.
+All remote vendors in this catalogue currently carry the same release label: **experimental · fixture-tested · service-unverified**. This includes Metabase, PostHog, Mixpanel, Amplitude, Grafana, trackers, document services, code hosts and the other source/rollout integrations. Fixture success checks authored contracts; it does not establish account access, actual API compatibility or rendered results.
 
-You do not need accounts with every vendor to use the local harness or release
-1.0. Real-service checks remain an optional, unchecked certification backlog.
-When you use a service, record the tested date/version, operations and permissions
-before promoting that specific scope to live-verified. No remote integration has
-that promotion yet. Missing operations remain explicitly unavailable even when
-the provider's other operations are fixture-tested.
+You do not need accounts with every vendor to use the local harness or release 1.0. Real-service checks remain an optional, unchecked certification backlog. When you use a service, record the tested date/version, operations and permissions before promoting that specific scope to live-verified. No remote integration has that promotion yet. Missing operations remain explicitly unavailable even when the provider's other operations are fixture-tested.
 
-Claude Code, Codex and the other native clients have a separate conformance matrix;
-this integration policy does not waive their acceptance checks. Local-docs,
-local-tracker and contained repository-file behavior retain their local evidence.
+Claude Code, Codex and the other native clients have a separate conformance matrix; this integration policy does not waive their acceptance checks. Local-docs, local-tracker and contained repository-file behavior retain their local evidence.
 
 ## Capabilities, not vendors
 
@@ -73,42 +62,16 @@ wl provider test slack --fixtures test/fixtures/providers/rollout/slack.json --j
 wl provider test grafana --fixtures test/fixtures/providers/rollout/grafana.json --json
 ```
 
-All fourteen fixture files live under test/fixtures/providers/rollout. Each covers
-every declared operation with exact tool/argument bindings and normalized results.
-Missing coverage, changed calls or malformed results fail. remoteProbed=false is
-mandatory: these synthetic fixtures establish no actual server schema, credentials
-or permissions. `wl provider test <id>` without a fixture only inspects metadata.
+All fourteen fixture files live under test/fixtures/providers/rollout. Each covers every declared operation with exact tool/argument bindings and normalized results. Missing coverage, changed calls or malformed results fail. remoteProbed=false is mandatory: these synthetic fixtures establish no actual server schema, credentials or permissions. `wl provider test <id>` without a fixture only inspects metadata.
 
-An explicit SDK conductor can wrap its actual ProviderHost with `rolloutHost`
-from src/providers/rollout.ts. It implements native unsent drafts, flag proposals,
-dashboard handoffs and config reads. Other calls require an explicit host bridge;
-missing service access stays unknown. Providers are selected explicitly in config;
-adding a catalogue entry never selects it or authorizes remote execution.
+An explicit SDK conductor can wrap its actual ProviderHost with `rolloutHost` from src/providers/rollout.ts. It implements native unsent drafts, flag proposals, dashboard handoffs and config reads. Other calls require an explicit host bridge; missing service access stays unknown. Providers are selected explicitly in config; adding a catalogue entry never selects it or authorizes remote execution.
 
-Config flags default to wholeloop.flags.json under the repository. The versioned
-shape is `{ "schema": "wholeloop/config-flags@1", "flags": [{ "flag": "orders",
-"environment": "disposable", "enabled": false, "exposure": 0, "audience": "all" }] }`.
-Use a repository manifest override for another contained file. A boolean alone
-cannot establish audience or percentage. The reader changes no repository bytes.
+Config flags default to wholeloop.flags.json under the repository. The versioned shape is `{ "schema": "wholeloop/config-flags@1", "flags": [{ "flag": "orders",
+"environment": "disposable", "enabled": false, "exposure": 0, "audience": "all" }] }`. Use a repository manifest override for another contained file. A boolean alone cannot establish audience or percentage. The reader changes no repository bytes.
 
-Provider references checked 2026-10-19: [Figma](https://help.figma.com/hc/en-us/articles/39216419318551-Get-started-with-the-Figma-MCP-server),
-[Datadog setup](https://github.com/datadog-labs/mcp-server) and
-[tools](https://docs.datadoghq.com/mcp_server/tools/),
-[Grafana](https://github.com/grafana/mcp-grafana),
-[LaunchDarkly representation](https://launchdarkly.com/docs/fed-docs/api/feature-flags),
-[Unleash environment](https://docs.getunleash.io/api/get-feature-environment),
-[GrowthBook versioning](https://docs.growthbook.io/api/introduction) and
-[PostHog tool surface](https://github.com/PostHog/posthog/blob/master/services/mcp/README.md).
-These references describe upstream surfaces; their raw schemas are not replaced by
-our normalized fixtures. The Grafana recipe is a pinned read-only Prometheus/Loki
-container invocation; it was not pulled or run. Keep credentials in the host's
-credential store and pass environment names rather than secret values in recipes.
+Provider references checked 2026-10-19: [Figma](https://help.figma.com/hc/en-us/articles/39216419318551-Get-started-with-the-Figma-MCP-server), [Datadog setup](https://github.com/datadog-labs/mcp-server) and [tools](https://docs.datadoghq.com/mcp_server/tools/), [Grafana](https://github.com/grafana/mcp-grafana), [LaunchDarkly representation](https://launchdarkly.com/docs/fed-docs/api/feature-flags), [Unleash environment](https://docs.getunleash.io/api/get-feature-environment), [GrowthBook versioning](https://docs.growthbook.io/api/introduction) and [PostHog tool surface](https://github.com/PostHog/posthog/blob/master/services/mcp/README.md). These references describe upstream surfaces; their raw schemas are not replaced by our normalized fixtures. The Grafana recipe is a pinned read-only Prometheus/Loki container invocation; it was not pulled or run. Keep credentials in the host's credential store and pass environment names rather than secret values in recipes.
 
-P4-05 implements tested MCP-first selection under ADR-0085. A dedicated Amplitude
-HTTP bridge is no longer a prerequisite. Per-vendor live certification remains
-optional under ADR-0084 and is not a 1.0 prerequisite.
-[ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md)
-explains why local handoffs remain explicit instead of fabricated integrations.
+P4-05 implements tested MCP-first selection under ADR-0085. A dedicated Amplitude HTTP bridge is no longer a prerequisite. Per-vendor live certification remains optional under ADR-0084 and is not a 1.0 prerequisite. [ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md) explains why local handoffs remain explicit instead of fabricated integrations.
 
 ## The capability taxonomy
 
@@ -170,9 +133,7 @@ Defaults chosen for breadth of real-world use. **v1** ships with the phase that 
 
 ### Generated declared mappings
 
-These rows come from the bundled manifests. They describe declarations, not live
-server support, authentication, operation semantics or a selected provider. Native
-bridges can remain pending handoffs; the verification limits below still apply.
+These rows come from the bundled manifests. They describe declarations, not live server support, authentication, operation semantics or a selected provider. Native bridges can remain pending handoffs; the verification limits below still apply.
 
 <!-- providers:start -->
 | ID | Capabilities | Declared operations | Access |
@@ -227,22 +188,9 @@ One provider can serve several capabilities — PostHog covers product analytics
 | `google-docs` | Optional gws documents create/get/batchUpdate | Synthetic host transcript; CLI/auth/format pending |
 | `repo-docs` | Native files with a core repository-docs host | Real temporary-file tests; no automatic commit/push |
 
-These mappings were checked against official documentation on 2026-10-18:
-[GitHub](https://github.com/github/github-mcp-server),
-[GitLab](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/),
-[Atlassian](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/),
-[Linear](https://linear.app/integrations/slack),
-[Notion](https://developers.notion.com/guides/mcp/mcp-supported-tools), and
-[Google Workspace CLI](https://github.com/googleworkspace/cli).
-The [Docs MCP reference](https://developers.google.com/workspace/docs/api/reference/mcp)
-currently exposes read/update, so document creation uses optional gws. No tool was
-installed and no authenticated operation was performed here. Discover the actual
-live schema before translating generic input into vendor arguments.
+These mappings were checked against official documentation on 2026-10-18: [GitHub](https://github.com/github/github-mcp-server), [GitLab](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/), [Atlassian](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/), [Linear](https://linear.app/integrations/slack), [Notion](https://developers.notion.com/guides/mcp/mcp-supported-tools), and [Google Workspace CLI](https://github.com/googleworkspace/cli). The [Docs MCP reference](https://developers.google.com/workspace/docs/api/reference/mcp) currently exposes read/update, so document creation uses optional gws. No tool was installed and no authenticated operation was performed here. Discover the actual live schema before translating generic input into vendor arguments.
 
-Canonical resources live under harness/providers. Run `npm run providers:catalog`
-after changing them, then `npm run docs:providers` and `npm run lint:fix`. The provider JSON catalog check enforces semantic source drift; docs check independently verifies the generated declared-mapping table against the built-in registry.
-The bundled registry returns guidanceText even without the source checkout.
-Repository/user resources also retain their file paths and inheritance precedence.
+Canonical resources live under harness/providers. Run `npm run providers:catalog` after changing them, then `npm run docs:providers` and `npm run lint:fix`. The provider JSON catalog check enforces semantic source drift; docs check independently verifies the generated declared-mapping table against the built-in registry. The bundled registry returns guidanceText even without the source checkout. Repository/user resources also retain their file paths and inheritance precedence.
 
 ### Implemented source mappings
 
@@ -260,64 +208,21 @@ Repository/user resources also retain their file paths and inheritance precedenc
 | `confluence` | knowledge | searchConfluence; fetch citations through the host |
 | `notion` | knowledge | notion-search; fetch citations through the host |
 
-Each mapping includes tool-specific guidance within thirty lines and
-open-question degradation. Fixtures are synthetic, never observed product data.
-Official references checked on 2026-10-18:
-[PostHog](https://github.com/PostHog/posthog/blob/master/services/mcp/schema/tool-definitions.json),
-[Mixpanel](https://docs.mixpanel.com/docs/mcp),
-[Amplitude](https://amplitude.com/docs/amplitude-ai/amplitude-mcp),
-[Metabase](https://www.metabase.com/docs/latest/ai/mcp),
-[BigQuery read-only tool](https://docs.cloud.google.com/bigquery/docs/reference/mcp/tools_list/execute_sql_readonly),
-[PostgreSQL](https://www.postgresql.org/docs/current/sql-set-transaction.html),
-[Sentry](https://mcp.sentry.dev/),
-[Zendesk](https://developer.zendesk.com/api-reference/ticketing/ticket-management/search/),
-and [Intercom](https://developers.intercom.com/docs/guides/mcp).
-Knowledge provider references are listed with their destination mappings above.
+Each mapping includes tool-specific guidance within thirty lines and open-question degradation. Fixtures are synthetic, never observed product data. Official references checked on 2026-10-18: [PostHog](https://github.com/PostHog/posthog/blob/master/services/mcp/schema/tool-definitions.json), [Mixpanel](https://docs.mixpanel.com/docs/mcp), [Amplitude](https://amplitude.com/docs/amplitude-ai/amplitude-mcp), [Metabase](https://www.metabase.com/docs/latest/ai/mcp), [BigQuery read-only tool](https://docs.cloud.google.com/bigquery/docs/reference/mcp/tools_list/execute_sql_readonly), [PostgreSQL](https://www.postgresql.org/docs/current/sql-set-transaction.html), [Sentry](https://mcp.sentry.dev/), [Zendesk](https://developer.zendesk.com/api-reference/ticketing/ticket-management/search/), and [Intercom](https://developers.intercom.com/docs/guides/mcp). Knowledge provider references are listed with their destination mappings above.
 
-`querySource` pins the query, operation, owner and explicit timestamp/timezone
-window. A complete successful host result retains its observed content/ref;
-failed, pending or partial results become answerable open questions. It does not
-turn missing results into zero or infer claims from rows. The host translates
-vendor arguments without changing the pinned plan. Research offers exactly
-configured or detected sources, not every catalog entry. curl alone does not
-detect a Zendesk connection; configure the source and actual tenant in the host.
+`querySource` pins the query, operation, owner and explicit timestamp/timezone window. A complete successful host result retains its observed content/ref; failed, pending or partial results become answerable open questions. It does not turn missing results into zero or infer claims from rows. The host translates vendor arguments without changing the pinned plan. Research offers exactly configured or detected sources, not every catalog entry. curl alone does not detect a Zendesk connection; configure the source and actual tenant in the host.
 
-PostgreSqlSource accepts a configured libpq service name, sends one conservatively
-validated SELECT/WITH statement over stdin, and wraps it in BEGIN READ ONLY,
-statement timeout and ROLLBACK. It rejects transaction escapes, modifying CTEs,
-psql commands and unsupported quoting. Tests execute a fixture process; live
-read-only role/function privileges still need verification. Credentials remain
-in the host/tool store. No driver or integration dependency was added.
+PostgreSqlSource accepts a configured libpq service name, sends one conservatively validated SELECT/WITH statement over stdin, and wraps it in BEGIN READ ONLY, statement timeout and ROLLBACK. It rejects transaction escapes, modifying CTEs, psql commands and unsupported quoting. Tests execute a fixture process; live read-only role/function privileges still need verification. Credentials remain in the host/tool store. No driver or integration dependency was added.
 
-PostHog installation permits only mode=tools or mode=cli as one credential-free
-query parameter. Its built-in named tool uses tools mode; arbitrary parameters
-and credential values remain forbidden. Metabase's example host must be replaced
-with the real instance. See
-[ADR-0027](../decisions/0027-read-only-source-evidence-and-degradation.md).
+PostHog installation permits only mode=tools or mode=cli as one credential-free query parameter. Its built-in named tool uses tools mode; arbitrary parameters and credential values remain forbidden. Metabase's example host must be replaced with the real instance. See [ADR-0027](../decisions/0027-read-only-source-evidence-and-degradation.md).
 
 ### Read-modify-write boundary
 
-`performOperation` accepts taxonomy mappings through an injected host that owns
-authentication, tool invocation and vendor-specific response normalization. Fixed
-manifest arguments take precedence over caller input. Exact placeholders preserve
-JSON types; argument values are never interpolated into shell commands by the core.
-This is an execution interface for workflows, not an automatic remote command.
+`performOperation` accepts taxonomy mappings through an injected host that owns authentication, tool invocation and vendor-specific response normalization. Fixed manifest arguments take precedence over caller input. Exact placeholders preserve JSON types; argument values are never interpolated into shell commands by the core. This is an execution interface for workflows, not an automatic remote command.
 
-Generic invocation rejects docs.update. `updateDocument` reads the same reference
-inside that invocation, requires a complete body and revision, then gives the
-snapshot to the transform. It passes source digest/revision with the new body;
-no-op changes skip the write. Truncated, pending or mismatched reads fail before
-the transform. Hosts apply native revision preconditions and preserve rich
-formats. A queued write remains pending. See
-[ADR-0026](../decisions/0026-destination-host-contract-and-document-updates.md).
+Generic invocation rejects docs.update. `updateDocument` reads the same reference inside that invocation, requires a complete body and revision, then gives the snapshot to the transform. It passes source digest/revision with the new body; no-op changes skip the write. Truncated, pending or mismatched reads fail before the transform. Hosts apply native revision preconditions and preserve rich formats. A queued write remains pending. See [ADR-0026](../decisions/0026-destination-host-contract-and-document-updates.md).
 
-RepositoryDocuments publishes only explicit docs/*.md output, using exclusive
-creation, path containment, observed digest conflicts and atomic replacement.
-The writer lock stays external. Other editors do not share it, so this does not
-promise filesystem-wide compare-and-swap. Wholeloop runtime state never becomes
-tracked repository content. Record real links with `wl link <id> <URL> --json`
-after the host confirms success; Define completion still returns pending remote
-handoffs until a host performs that work.
+RepositoryDocuments publishes only explicit docs/*.md output, using exclusive creation, path containment, observed digest conflicts and atomic replacement. The writer lock stays external. Other editors do not share it, so this does not promise filesystem-wide compare-and-swap. Wholeloop runtime state never becomes tracked repository content. Record real links with `wl link <id> <URL> --json` after the host confirms success; Define completion still returns pending remote handoffs until a host performs that work.
 
 ## Available registry commands
 
@@ -336,25 +241,11 @@ Detection reads MCP declarations for all four tier-A clients plus Gemini/Antigra
 
 `mcp add` prints a mergeable snippet with `applied: false`; it never overwrites client configuration or reads a token. OAuth is delegated to the client. Header authentication uses `token_env`, an environment variable name. Copilot remote headers do not expand environment references, so that recipe is explicitly rejected for Copilot and Antigravity instead of embedding credentials. Confirm authentication in a real client session.
 
-Gemini snippets merge into the native .gemini/settings.json mcpServers map (under
-GEMINI_CLI_HOME when set). HTTP recipes use httpUrl, with explicit OAuth enablement
-for requested OAuth and bearer environment placeholders for header auth; stdio
-uses command/args. Gemini 0.27.0 needs explicit OAuth enablement even where newer
-documentation permits discovery. Rendering never applies the snippet, expands a
-credential or contacts the server. Detection reads project/user declarations and
-allowed/excluded server metadata only. Actual auth/tool execution remains unverified.
+Gemini snippets merge into the native .gemini/settings.json mcpServers map (under GEMINI_CLI_HOME when set). HTTP recipes use httpUrl, with explicit OAuth enablement for requested OAuth and bearer environment placeholders for header auth; stdio uses command/args. Gemini 0.27.0 needs explicit OAuth enablement even where newer documentation permits discovery. Rendering never applies the snippet, expands a credential or contacts the server. Detection reads project/user declarations and allowed/excluded server metadata only. Actual auth/tool execution remains unverified.
 
-Antigravity snippets target .gemini/config/mcp_config.json (or a manual project
-merge into .agents/mcp_config.json). HTTP uses serverUrl; stdio uses command/args.
-OAuth discovery stays native. Header recipes are refused because safe environment
-expansion is unverified. Detection reads only declarations and disabled/enabled
-metadata. See the official [MCP format](https://www.antigravity.google/docs/mcp).
+Antigravity snippets target .gemini/config/mcp_config.json (or a manual project merge into .agents/mcp_config.json). HTTP uses serverUrl; stdio uses command/args. OAuth discovery stays native. Header recipes are refused because safe environment expansion is unverified. Detection reads only declarations and disabled/enabled metadata. See the official [MCP format](https://www.antigravity.google/docs/mcp).
 
-Cursor snippets target .cursor/mcp.json under HOME (or a manual project merge).
-HTTP uses url, stdio uses type/command/args, and header recipes contain only a
-Bearer environment reference such as ${env:SUPPORT_AUTH}. OAuth stays native;
-rendering does not expand a value or authenticate. Detection reads declaration
-metadata only. See the official [MCP format](https://cursor.com/docs/mcp).
+Cursor snippets target .cursor/mcp.json under HOME (or a manual project merge). HTTP uses url, stdio uses type/command/args, and header recipes contain only a Bearer environment reference such as ${env:SUPPORT_AUTH}. OAuth stays native; rendering does not expand a value or authenticate. Detection reads declaration metadata only. See the official [MCP format](https://cursor.com/docs/mcp).
 
 The renderers follow the official [Claude Code MCP configuration](https://code.claude.com/docs/en/mcp), [OpenAI MCP configuration](https://developers.openai.com/codex/mcp), [OpenCode MCP configuration](https://opencode.ai/docs/mcp-servers/) and [Copilot MCP configuration](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference#mcp-server-configuration), checked on 2026-10-18. Golden files verify generated shape; they are not native-client conformance runs.
 
@@ -389,18 +280,9 @@ With nothing configured, everything lands in the local store as Markdown — the
 
 ### Tested code-host boundary
 
-`github` uses gh api; `gitlab` uses glab api. Both resolve one explicit remote,
-push a pinned tested commit and verify a matching open draft response. Read/status
-normalize source SHA/branch, target, repository, draft and merge state. Bodies use
-stdin and each CLI's credential store. Optional comments reconcile a stable round
-marker before posting. Local tests use synthetic API-shaped responses and a
-separate real push to a temporary local bare repository; live authentication,
-self-managed versions and network interruption remain owner verification.
+`github` uses gh api; `gitlab` uses glab api. Both resolve one explicit remote, push a pinned tested commit and verify a matching open draft response. Read/status normalize source SHA/branch, target, repository, draft and merge state. Bodies use stdin and each CLI's credential store. Optional comments reconcile a stable round marker before posting. Local tests use synthetic API-shaped responses and a separate real push to a temporary local bare repository; live authentication, self-managed versions and network interruption remain owner verification.
 
-Explicit service execution: the [remote rollout bridge guide](../extending/remote-bridges.md)
-covers non-secret configuration, default-preview/live selection and the first
-conservative LaunchDarkly boolean reader. It does not make metadata-only provider
-tests authenticated health checks or convert dashboard handoffs into remote charts.
+Explicit service execution: the [remote rollout bridge guide](../extending/remote-bridges.md) covers non-secret configuration, default-preview/live selection and the first conservative LaunchDarkly boolean reader. It does not make metadata-only provider tests authenticated health checks or convert dashboard handoffs into remote charts.
 
 <!-- docnav -->
 [◀ Interaction profile](profile.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Repo skills ▶](repo-skills.md)

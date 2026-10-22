@@ -61,38 +61,15 @@ flowchart TD
 
 ## Standalone use
 
-Use `wl step begin slice-work --input "Find past orders" --owner "Alex" --json`
-to create the minimal initiative/scope hierarchy. Earlier Define steps are not
-fabricated. An existing scope uses `--for <scope>`; an initiative ID must first
-select a child scope. URL adoption remains separate P2-08 work.
+Use `wl step begin slice-work --input "Find past orders" --owner "Alex" --json` to create the minimal initiative/scope hierarchy. Earlier Define steps are not fabricated. An existing scope uses `--for <scope>`; an initiative ID must first select a child scope. URL adoption remains separate P2-08 work.
 
-`wl slices plan --for <scope> --json` returns inherited criteria, exact source
-pins and the current checkout as a candidate repository. Confirm actual roots
-before drafting; declaring a path does not prove it is a usable Git repository.
-Read the selected slice.conventions guidance and `wl slices schema --json`.
+`wl slices plan --for <scope> --json` returns inherited criteria, exact source pins and the current checkout as a candidate repository. Confirm actual roots before drafting; declaring a path does not prove it is a usable Git repository. Read the selected slice.conventions guidance and `wl slices schema --json`.
 
-The YAML metadata uses wholeloop/slice-plan@1, repository key/path entries and
-slices with stable key, title, objective, one outcome, an end-to-end demonstration,
-criteria, linked test cases and repository keys. Preserve sourceScope/sourceSpec
-pins and inherited criteria exactly. Multiple repositories require a contract
-repository, interface and examples. Slices default to a chain in plan order;
-blockedBy replaces that default, including an explicit empty array for independent
-work. Keys or existing slice IDs can name dependencies within the same scope.
+The YAML metadata uses wholeloop/slice-plan@1, repository key/path entries and slices with stable key, title, objective, one outcome, an end-to-end demonstration, criteria, linked test cases and repository keys. Preserve sourceScope/sourceSpec pins and inherited criteria exactly. Multiple repositories require a contract repository, interface and examples. Slices default to a chain in plan order; blockedBy replaces that default, including an explicit empty array for independent work. Keys or existing slice IDs can name dependencies within the same scope.
 
-Call `wl challenge plan slicing --file <file> --for <scope> --json`, then
-`wl slices check <file> --for <scope> --json`. Complete through
-`wl step complete slice-work --for <scope> --artifact <file> --json`. Invalid
-criteria, missing demonstrations, multiple declared outcomes, cycles or stale
-source pins leave no partial child updates. Revisions reuse IDs; omissions do
-not delete earlier work, and closed children need explicit reopening.
+Call `wl challenge plan slicing --file <file> --for <scope> --json`, then `wl slices check <file> --for <scope> --json`. Complete through `wl step complete slice-work --for <scope> --artifact <file> --json`. Invalid criteria, missing demonstrations, multiple declared outcomes, cycles or stale source pins leave no partial child updates. Revisions reuse IDs; omissions do not delete earlier work, and closed children need explicit reopening.
 
-The contract repository's part includes its implementation, keeping the total at
-one part per participating repository. Single-repository slices need no child
-part. `next <scope>` selects ready work, then the contract part, or asks between
-independent choices. Recorded dependency completion is required before continuing
-blocked work. Local tracker IDs are stored references; remote publication remains
-pending until the host confirms real writes and records their links. See
-[ADR-0029](../../decisions/0029-vertical-slice-contracts-and-repository-parts.md).
+The contract repository's part includes its implementation, keeping the total at one part per participating repository. Single-repository slices need no child part. `next <scope>` selects ready work, then the contract part, or asks between independent choices. Recorded dependency completion is required before continuing blocked work. Local tracker IDs are stored references; remote publication remains pending until the host confirms real writes and records their links. See [ADR-0029](../../decisions/0029-vertical-slice-contracts-and-repository-parts.md).
 
 ## Run it
 

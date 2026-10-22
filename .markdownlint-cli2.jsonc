@@ -1,9 +1,15 @@
 {
   // Markdown lint for every .md in the repository. Run: npm run lint:md
+  "customRules": ["./scripts/markdown-paragraphs.mjs"],
   "config": {
     "default": true,
     // One paragraph per line keeps diffs reviewable; wrapping is the renderer's job.
     "MD013": false,
+    // These are literal, byte-bound test inputs, not authored documentation.
+    // Keep the remaining Markdown rules active for them.
+    "WL001": {
+      "ignored_paths": ["test/fixtures/", "test/evals/definition/artifacts/"]
+    },
     // A TL;DR quote followed by a GitHub alert ([!NOTE]) must be two separate blockquotes.
     "MD028": false,
     // Repeated headings are fine in different sections (e.g. per-task "Docs").

@@ -58,12 +58,7 @@ Give it a flag name and the criteria you care about ("`orders_csv_export`, watch
 
 ## Run it
 
-The CLI accepts explicit plans and host-normalized reads; it does not authenticate
-or query remote services itself. Use sanitized scalar/flag observations, never
-credentials or raw private logs in response files. Prefer the native client’s
-observed MCP tools through [client-owned transport planning](../../extending/providers.md#client-owned-mcp-transport).
-Missing or failed MCP reads remain unknown and never activate an HTTP bridge
-automatically. Proposals stay native and unapplied.
+The CLI accepts explicit plans and host-normalized reads; it does not authenticate or query remote services itself. Use sanitized scalar/flag observations, never credentials or raw private logs in response files. Prefer the native client’s observed MCP tools through [client-owned transport planning](../../extending/providers.md#client-owned-mcp-transport). Missing or failed MCP reads remain unknown and never activate an HTTP bridge automatically. Proposals stay native and unapplied.
 
 ```bash
 wl ramp schema --json
@@ -79,29 +74,12 @@ wl ramp confirm --for scope-a9e0 --by Alex --file confirmation-responses.json --
 wl ramp report --for scope-a9e0 --json
 ```
 
-`ramp-plan.json` uses wholeloop/ramp-plan@1: environment, confirmedBy, optional
-flag/sourceDigest and stages. Every stage includes key, audience, enabled,
-exposure, exit and checks. A check specifies key, provider, source operation,
-exact query, unit, operator (lt/lte/eq/gte/gt), threshold, required,
-lookbackHours and timezone. Standalone plans require the same explicit facts.
+`ramp-plan.json` uses wholeloop/ramp-plan@1: environment, confirmedBy, optional flag/sourceDigest and stages. Every stage includes key, audience, enabled, exposure, exit and checks. A check specifies key, provider, source operation, exact query, unit, operator (lt/lte/eq/gte/gt), threshold, required, lookbackHours and timezone. Standalone plans require the same explicit facts.
 
-Read results use wholeloop/ramp-read-responses@1 with the exact request run,
-stage, at and mode plus results: each fingerprint carries either a normalized
-result or an unavailable reason. Numeric bodies are `{ "value": 0, "unit":
-"errors" }`; flag bodies preserve flag, environment, enabled, exposure and audience
-with a complete revision-bound read. A missing unit/value is unknown, never zero.
-The SDK can use RampWorkflow with an actual ProviderHost directly.
+Read results use wholeloop/ramp-read-responses@1 with the exact request run, stage, at and mode plus results: each fingerprint carries either a normalized result or an unavailable reason. Numeric bodies are `{ "value": 0, "unit":
+"errors" }`; flag bodies preserve flag, environment, enabled, exposure and audience with a complete revision-bound read. A missing unit/value is unknown, never zero. The SDK can use RampWorkflow with an actual ProviderHost directly.
 
-The local proposal applies nothing. An explicit conductor SDK invocation of
-`dispatchRampProposal` may create a provider proposal only; it journals intent,
-requires applied=false, caches receipts and refuses blind retries after ambiguity.
-A manual-control plan omits flag and supplies --evidence during confirmation.
-Unknown optional checks require --ack with their keys; required unknown/failing
-checks block go. Every confirmation starts a fresh full lookback for the next
-stage. Changed/unreadable controls hold the ramp; restoration resets that window.
-Replay/resume retain the cursor, exact evidence and who/when/basis of each decision.
-[ADR-0039](../../decisions/0039-evidence-bound-human-exposure-stages.md) explains
-why generic approvals, mixed windows and automatic flag changes were rejected.
+The local proposal applies nothing. An explicit conductor SDK invocation of `dispatchRampProposal` may create a provider proposal only; it journals intent, requires applied=false, caches receipts and refuses blind retries after ambiguity. A manual-control plan omits flag and supplies --evidence during confirmation. Unknown optional checks require --ack with their keys; required unknown/failing checks block go. Every confirmation starts a fresh full lookback for the next stage. Changed/unreadable controls hold the ramp; restoration resets that window. Replay/resume retain the cursor, exact evidence and who/when/basis of each decision. [ADR-0039](../../decisions/0039-evidence-bound-human-exposure-stages.md) explains why generic approvals, mixed windows and automatic flag changes were rejected.
 
 | CLI | Invoke |
 | --- | --- |

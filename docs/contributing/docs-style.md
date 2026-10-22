@@ -15,6 +15,14 @@
 - **Say why.** A rule without its reason invites someone to delete it. Long reasons go to an [ADR](../decisions/README.md); the page links it.
 - **Honest status.** Never describe planned behaviour as if it existed. The status banner says which is which.
 
+## Markdown source layout
+
+Keep each prose paragraph on one source line, without a fixed column limit. Use the same layout for prose in list items and blockquotes. Separate paragraphs with a blank line. Let the editor or renderer wrap visually; hard wrapping at 80 columns causes unrelated text to move when a sentence changes and conflicts with the existing EditorConfig and markdownlint settings.
+
+Preserve literal and structural line breaks: fenced/indented code, inline code, HTML, tables, link destinations/titles, explicit Markdown hard breaks and GitHub alert headers. These are syntax, not prose wrapping. Generated sections retain their generator's exact format. Byte-bound Markdown inputs under test/fixtures and test/evals/definition/artifacts are literal test data: WL001 leaves them unchanged while all other Markdown rules remain active.
+
+Run `npm run lint:md` to check the convention through the parser-aware WL001 rule. Run `npm run lint:md:fix` to join soft-wrapped prose and apply the existing Markdown fixes. Both use the project's existing markdownlint toolchain; no additional formatter or dependency is needed. Review the diff before committing, especially literal examples and generated content.
+
 ## Status banner
 
 Every page starts, after the title and TL;DR, with exactly one of:
@@ -29,42 +37,15 @@ Banners are updated **in the same change** that moves the behaviour.
 
 ## Referenced decisions
 
-Every linked numbered ADR and plain ADR-NNNN mention needs exactly one metadata status in the first fifteen
-lines: Accepted, Superseded, Superseded by NNNN, or Superseded by a relative
-Markdown ADR link whose label matches the filename's number. Plain successors must
-resolve uniquely. Successor declarations are checked too; cycles are rejected.
-Missing/proposed/rejected/deprecated, duplicate, late or fenced-example statuses
-fail docs check. Unreferenced draft records may remain Proposed until accepted;
-add the published index/reference when the decision is settled. This enforces
-[P0-07](../../roadmap/phase-0-foundations.md#p0-07--review-and-accept-the-foundational-adrs)
-without claiming that metadata proves agreement with actual native conformance.
+Every linked numbered ADR and plain ADR-NNNN mention needs exactly one metadata status in the first fifteen lines: Accepted, Superseded, Superseded by NNNN, or Superseded by a relative Markdown ADR link whose label matches the filename's number. Plain successors must resolve uniquely. Successor declarations are checked too; cycles are rejected. Missing/proposed/rejected/deprecated, duplicate, late or fenced-example statuses fail docs check. Unreferenced draft records may remain Proposed until accepted; add the published index/reference when the decision is settled. This enforces [P0-07](../../roadmap/phase-0-foundations.md#p0-07--review-and-accept-the-foundational-adrs) without claiming that metadata proves agreement with actual native conformance.
 
 ## Generated references
 
-Build first, then run `wl docs check` to check navigation, status banners, links,
-anchors and the current command/config/provider tables. Reference comparison uses
-the built core's contracts, not a person's resolved configuration or authenticated
-services. Rebuild after changing source definitions. Missing pages or missing,
-reversed or duplicate marker pairs fail; an absent marker must never turn a check
-into an empty successful comparison.
+Build first, then run `wl docs check` to check navigation, status banners, links, anchors and the current command/config/provider tables. Reference comparison uses the built core's contracts, not a person's resolved configuration or authenticated services. Rebuild after changing source definitions. Missing pages or missing, reversed or duplicate marker pairs fail; an absent marker must never turn a check into an empty successful comparison.
 
-`wl docs reference` checks tables without changing files and exits 4 on drift.
-`wl docs reference --write` explicitly regenerates all four sections; --kind
-commands/config/providers/platforms selects one. It preflights every selected page/marker
-before writing, preserves surrounding prose and skips unchanged pages. The write
-batch is not a crash-atomic multi-file transaction; inspect an interrupted write
-and regenerate after restoring any incomplete markers. Valid semantic stale tables
-are replaced from source, while malformed ownership markers require inspection.
+`wl docs reference` checks tables without changing files and exits 4 on drift. `wl docs reference --write` explicitly regenerates all four sections; --kind commands/config/providers/platforms selects one. It preflights every selected page/marker before writing, preserves surrounding prose and skips unchanged pages. The write batch is not a crash-atomic multi-file transaction; inspect an interrupted write and regenerate after restoring any incomplete markers. Valid semantic stale tables are replaced from source, while malformed ownership markers require inspection.
 
-Use `npm run docs:references` to build and regenerate together. Existing docs:commands
-and docs:config scripts delegate to the same renderer; docs:providers updates the
-manifest-derived mapping table; docs:platforms updates adapter declarations. The provider source JSON catalog has its separate
-providers:catalog check. Generated mapping rows describe declared operations/access,
-not authenticated availability or actual server behavior. Local adapter declarations are generated from the build/install registry and remain
-separate from native conformance. Supplied observation snapshots have their own
-explicit conformance matrix --docs destination/time comparison and optional write;
-ordinary docs check cannot reconstruct external evidence. Disabled nightly collection/issue automation has its own explicit owner activation
-and external artifacts; simulation passes cannot establish native support.
+Use `npm run docs:references` to build and regenerate together. Existing docs:commands and docs:config scripts delegate to the same renderer; docs:providers updates the manifest-derived mapping table; docs:platforms updates adapter declarations. The provider source JSON catalog has its separate providers:catalog check. Generated mapping rows describe declared operations/access, not authenticated availability or actual server behavior. Local adapter declarations are generated from the build/install registry and remain separate from native conformance. Supplied observation snapshots have their own explicit conformance matrix --docs destination/time comparison and optional write; ordinary docs check cannot reconstruct external evidence. Disabled nightly collection/issue automation has its own explicit owner activation and external artifacts; simulation passes cannot establish native support.
 
 ## Page templates
 

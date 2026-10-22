@@ -109,13 +109,7 @@ An adapter implements one interface:
 | `renderMcp(provider)` | the CLI's MCP dialect |
 | `headless(prompt, opts)` | the command line for headless workers |
 
-Local adapters are src/adapters/claude.ts and src/adapters/portable.ts, with pure renderers and an owned
-output writer. npm run build embeds bounded canonical resources into the executable;
-`wl build --target claude --out <directory>` renders a distribution tree. Golden
-fixtures and a compiled self-contained execution test cover that path. The same build command accepts codex, opencode and copilot. Tiny skill launchers
-and adapter root resolve the packaged core through symlinked overlays. Hook
-registration and actual client conformance remain pending; generated manifests
-state those gaps explicitly. See [ADR-0047](../decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md).
+Local adapters are src/adapters/claude.ts and src/adapters/portable.ts, with pure renderers and an owned output writer. npm run build embeds bounded canonical resources into the executable; `wl build --target claude --out <directory>` renders a distribution tree. Golden fixtures and a compiled self-contained execution test cover that path. The same build command accepts codex, opencode and copilot. Tiny skill launchers and adapter root resolve the packaged core through symlinked overlays. Hook registration and actual client conformance remain pending; generated manifests state those gaps explicitly. See [ADR-0047](../decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md).
 
 Each adapter ships golden files and a conformance scenario. A new CLI is a new module plus those two; nothing else in the codebase should need to know it exists.
 

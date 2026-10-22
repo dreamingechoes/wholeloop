@@ -73,23 +73,11 @@ wl pr open --for <id> --json
 wl pr reconcile --for <id> --url <observed-pr-url> --json
 ```
 
-Prepare never publishes. Configure providers.codehost as github or gitlab, or pass
-`--provider` while preparing. Standalone use supplies `--base`, `--owner`, `--title`
-and `--body-file` for the currently checked-out branch. Missing facts are questions;
-there is no implicit checkout, commit, fork or fabricated gate result. Branches must
-be clean and contain commits beyond their named target. Finish authorized commits
-before final gates and human testing: a commit changes the gate snapshot.
+Prepare never publishes. Configure providers.codehost as github or gitlab, or pass `--provider` while preparing. Standalone use supplies `--base`, `--owner`, `--title` and `--body-file` for the currently checked-out branch. Missing facts are questions; there is no implicit checkout, commit, fork or fabricated gate result. Branches must be clean and contain commits beyond their named target. Finish authorized commits before final gates and human testing: a commit changes the gate snapshot.
 
-The plan pins its body and repository convention. Human testing includes who and
-what they tried; a generic decision alone cannot publish. Any new plan or code
-requires fresh testing. A durable request prevents duplicate push/create attempts
-on resume. Only a matching open draft can complete. API hosts use CLI credential
-stores and JSON stdin; no credential or temporary body file is written by them.
-See [ADR-0035](../../decisions/0035-tested-draft-plans-and-once-only-publication.md).
+The plan pins its body and repository convention. Human testing includes who and what they tried; a generic decision alone cannot publish. Any new plan or code requires fresh testing. A durable request prevents duplicate push/create attempts on resume. Only a matching open draft can complete. API hosts use CLI credential stores and JSON stdin; no credential or temporary body file is written by them. See [ADR-0035](../../decisions/0035-tested-draft-plans-and-once-only-publication.md).
 
-Stored tracker and known sibling references go into the body. Local links and a
-part's parent slice are updated; unavailable remote tracker mirroring and earlier
-PR back-links remain explicit handoffs. No authenticated publication was exercised.
+Stored tracker and known sibling references go into the body. Local links and a part's parent slice are updated; unavailable remote tracker mirroring and earlier PR back-links remain explicit handoffs. No authenticated publication was exercised.
 
 ## Run it
 
@@ -133,11 +121,7 @@ Next              your review · merge when ready · sync cleans up afterwards
 - **Fed by:** a green [`review-code`](./review-code.md), or any branch you want to publish.
 - **Feeds:** **merge** (yours), then [`prepare-launch`](../rollout/prepare-launch.md); [`sync`](../utilities.md#sync) closes the slice and removes its worktree once the PR merges.
 
-The environment section includes every declared write, its undo argv and working
-directory, with a link to the current ledger. Read `wl env report --for <id>` for
-later testing effects. Declarations include shared ancestors and child parts;
-recipes are shown in reverse declaration order and never executed automatically.
-An empty ledger means no declarations, not observed absence of external changes.
+The environment section includes every declared write, its undo argv and working directory, with a link to the current ledger. Read `wl env report --for <id>` for later testing effects. Declarations include shared ancestors and child parts; recipes are shown in reverse declaration order and never executed automatically. An empty ledger means no declarations, not observed absence of external changes.
 
 ## Gotchas & FAQ
 

@@ -5,11 +5,7 @@
 > [!NOTE]
 > **Status: 🚧 partial.** Local plans validate metric/story ownership, create stable child scopes and tracker references atomically, and stop for revision-bound approval. Remote tracker execution and live challenger sessions remain manual conformance. Tracked in [P2-04](../../../roadmap/phase-2-define.md#p2-04--cut-scopes).
 
-Completed artifacts can join the initiative's explicit shared outbox, including a
-research brief adopted into that initiative. The conductor publishes through the
-selected host and records links only after verifying the complete exact chunk.
-The CLI persists requests and labelled read imports; authenticated tool execution
-remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
+Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
 
 ---
 
@@ -68,28 +64,13 @@ Every scope carries:
 ## Standalone use
 
 Begin with `wl step begin cut-scopes --input "Find past orders" --owner "Alex"
---json`. It creates an initiative for the child scopes without fabricating earlier
-steps. Supply `metricIds` or a reasoned `measurementException` in the plan.
-URL adoption is tracked separately in P2-08. Revisions target the initiative and
-reuse each scope's stable `key`; omitted scopes remain until explicitly closed.
+--json`. It creates an initiative for the child scopes without fabricating earlier steps. Supply `metricIds` or a reasoned `measurementException` in the plan. URL adoption is tracked separately in P2-08. Revisions target the initiative and reuse each scope's stable `key`; omitted scopes remain until explicitly closed.
 
-`wl scopes plan --for <initiative> --json` returns the pinned spec reference,
-metric/story catalog, one suggested scope and batched delivery questions. Fill
-`wholeloop/scope-plan@1` YAML front matter using `wl scopes schema --json`, followed
-by Scope overview, Metric ownership, Delivery plan, Complexity and Open questions.
-A scope without metrics needs `measurementReason`; every scope needs a flag or
-`withoutFlagReason`, plus argued complexity. Read the returned `flags.naming`
-binding before drafting names.
+`wl scopes plan --for <initiative> --json` returns the pinned spec reference, metric/story catalog, one suggested scope and batched delivery questions. Fill `wholeloop/scope-plan@1` YAML front matter using `wl scopes schema --json`, followed by Scope overview, Metric ownership, Delivery plan, Complexity and Open questions. A scope without metrics needs `measurementReason`; every scope needs a flag or `withoutFlagReason`, plus argued complexity. Read the returned `flags.naming` binding before drafting names.
 
 Complete with `wl step complete cut-scopes --for <initiative> --artifact <file>
---json`. Local tracker references point to the created scope records. The exact
-plan, resolved dependencies and tracker status stay in the journal. Remote
-publication is a pending handoff, never a claimed external write. Child scopes
-exist as reviewable drafts before approval, and inherit the initiative's pending
-decisions. After `wl answer decision.approve-scopes=approved --for <initiative>
---by <person> --json`, `next` chooses the sole open scope or asks which to use.
-[ADR-0024](../../decisions/0024-atomic-scope-plans-and-parent-approval.md) explains
-stable keys, atomic publication and the parent approval boundary.
+--json`. Local tracker references point to the created scope records. The exact plan, resolved dependencies and tracker status stay in the journal. Remote publication is a pending handoff, never a claimed external write. Child scopes exist as reviewable drafts before approval, and inherit the initiative's pending decisions. After `wl answer decision.approve-scopes=approved --for <initiative>
+--by <person> --json`, `next` chooses the sole open scope or asks which to use. [ADR-0024](../../decisions/0024-atomic-scope-plans-and-parent-approval.md) explains stable keys, atomic publication and the parent approval boundary.
 
 ## Run it
 

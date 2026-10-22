@@ -38,14 +38,7 @@ npm run smoke      # the built CLI prints the package version
 
 All checks must pass locally and in CI before review.
 
-Install the local commit-message hook with `npm run hooks:install` (idempotent;
-an existing hooks path is preserved). Rebuild with `npm run build` after changing
-the validator. The hook requires a lowercase Conventional Commit subject, a
-body explaining why and what was verified, and no tool attribution or shell
-substitutions. Check a history range with `npm run commits:check -- base..head`;
-PR CI uses the pull request's base and head automatically, without rewriting
-existing history. Imperative wording is reviewed by people; syntax is checked
-by code.
+Install the local commit-message hook with `npm run hooks:install` (idempotent; an existing hooks path is preserved). Rebuild with `npm run build` after changing the validator. The hook requires a lowercase Conventional Commit subject, a body explaining why and what was verified, and no tool attribution or shell substitutions. Check a history range with `npm run commits:check -- base..head`; PR CI uses the pull request's base and head automatically, without rewriting existing history. Imperative wording is reviewed by people; syntax is checked by code.
 
 ## Extensions
 

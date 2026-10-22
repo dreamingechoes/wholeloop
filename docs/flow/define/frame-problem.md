@@ -12,8 +12,7 @@
 Canonical framing uses the new commands after step begin. Run `wl frame schema
 --json` for both input contracts. Save metadata and drafts outside the repository.
 
-1. Capture the owner's explicit outcome/reason, exact reopening condition for
-   on-hold, and only approved stop rules in wholeloop/frame-decision@1:
+1. Capture the owner's explicit outcome/reason, exact reopening condition for on-hold, and only approved stop rules in wholeloop/frame-decision@1:
 
    ```json
    {
@@ -27,25 +26,13 @@ Canonical framing uses the new commands after step begin. Run `wl frame schema
    ```
 
 2. Call `wl frame draft --for <id> --artifact <draft.md> --file <decision.json>
-   --json`. Save its exact artifact.content bytes to the external draft file.
-   The core replaces Stop conditions with the approved data and returns its hash
-   and a reviewTemplate. This command does not complete or change the journal.
-3. Use challenge plan problem on those bytes and give the exact draft to the
-   challenger. Resolve findings or keep evidence gaps explicitly documented.
-   Repeat review after every content edit. A structural pass is insufficient.
-4. Complete reviewTemplate with the actual reviewer, matching final digest,
-   coverage problem/evidence/impact/decision-fidelity and no unresolved findings.
-   Obtain the owner's approval of that same final revision. Names/approval are
-   client-reported; the core cannot authenticate a person or prove semantic truth.
+   --json`. Save its exact artifact.content bytes to the external draft file. The core replaces Stop conditions with the approved data and returns its hash and a reviewTemplate. This command does not complete or change the journal.
+3. Use challenge plan problem on those bytes and give the exact draft to the challenger. Resolve findings or keep evidence gaps explicitly documented. Repeat review after every content edit. A structural pass is insufficient.
+4. Complete reviewTemplate with the actual reviewer, matching final digest, coverage problem/evidence/impact/decision-fidelity and no unresolved findings. Obtain the owner's approval of that same final revision. Names/approval are client-reported; the core cannot authenticate a person or prove semantic truth.
 5. Call `wl frame finalize --for <id> --artifact <draft.md> --file <review.json>
-   --json`. It atomically records the review note, artifact and exact decision.
-   A stale digest, mismatched owner/run, extra stop rule or incomplete review
-   refuses completion. No-go retains its exact reopening condition and stops.
+   --json`. It atomically records the review note, artifact and exact decision. A stale digest, mismatched owner/run, extra stop rule or incomplete review refuses completion. No-go retains its exact reopening condition and stops.
 
-To save the draft and review template without changing the digest, redirect frame
-draft's JSON into an external plan file, then extract its strings exactly. For
-example, after setting FRAME_PLAN_FILE, FRAME_DRAFT_FILE and FRAME_REVIEW_FILE to
-external paths (not repository paths):
+To save the draft and review template without changing the digest, redirect frame draft's JSON into an external plan file, then extract its strings exactly. For example, after setting FRAME_PLAN_FILE, FRAME_DRAFT_FILE and FRAME_REVIEW_FILE to external paths (not repository paths):
 
 ```bash
 node --input-type=module - "$FRAME_PLAN_FILE" "$FRAME_DRAFT_FILE" "$FRAME_REVIEW_FILE" <<'JS'
@@ -57,14 +44,9 @@ writeFileSync(reviewFile, JSON.stringify(plan.reviewTemplate, null, 2) + '\n', {
 JS
 ```
 
-Use new output paths: the example refuses overwriting existing files. The review
-file starts incomplete and is not an approval. Complete it only from the actual
-owner/challenger observations. Line-oriented extraction can append a newline to
-artifact.content; the digest covers every byte, including that newline.
+Use new output paths: the example refuses overwriting existing files. The review file starts incomplete and is not an approval. Complete it only from the actual owner/challenger observations. Line-oriented extraction can append a newline to artifact.content; the digest covers every byte, including that newline.
 
-Legacy step complete is retained for existing callers and historical data; it
-makes no final semantic-review claim. Do not replace the old observed artifact to
-make its historical test appear successful. Repeat acceptance with a new run.
+Legacy step complete is retained for existing callers and historical data; it makes no final semantic-review claim. Do not replace the old observed artifact to make its historical test appear successful. Repeat acceptance with a new run.
 
 ## Available core commands
 
@@ -75,20 +57,12 @@ wl step complete frame-problem --for init-0123abcd --artifact /path/to/frame.md 
 wl step complete frame-problem --for init-0123abcd --artifact /path/to/frame.md --no-go on-hold --reason "Need evidence" --reopen "Ten affected customers confirmed" --json
 ```
 
-The returned `template` lists the exact required headings. Each unknown must name
-both missing evidence and its answerer, for example `TBD: order-search baseline;
-who: product analyst`. This is a structural check, not proof that a factual claim
-is true; the skill and research evidence review establish that distinction.
+The returned `template` lists the exact required headings. Each unknown must name both missing evidence and its answerer, for example `TBD: order-search baseline;
+who: product analyst`. This is a structural check, not proof that a factual claim is true; the skill and research evidence review establish that distinction.
 
-Title reuse normalizes case and whitespace within the same canonical repository path; cross-repository continuation uses an explicit ID. It does not claim semantic duplicate
-detection. Several matches require an explicit ID. A closed outcome must be
-inspected and explicitly reopened with `state update --status open`; rerunning
-an idea does not erase its no-go. Completed-brief adoption records the source
-artifact path and includes it in bounded resume context.
+Title reuse normalizes case and whitespace within the same canonical repository path; cross-repository continuation uses an explicit ID. It does not claim semantic duplicate detection. Several matches require an explicit ID. A closed outcome must be inspected and explicitly reopened with `state update --status open`; rerunning an idea does not erase its no-go. Completed-brief adoption records the source artifact path and includes it in bounded resume context.
 
-Local publication creates no duplicate docs or tracker items. Remote receipts say
-`pending` and add a durable handoff note; they do not claim an external write.
-The broader scenarios below still depend on live clients and provider work.
+Local publication creates no duplicate docs or tracker items. Remote receipts say `pending` and add a durable handoff note; they do not claim an external write. The broader scenarios below still depend on live clients and provider work.
 
 ## At a glance
 

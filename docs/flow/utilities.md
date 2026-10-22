@@ -29,37 +29,19 @@ wl setup --json
 wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
 ```
 
-`next` begins framing from a sentence and reuses initiatives with an equivalent normalized title. Missing ownership becomes a
-question before creating an item; no input selects the sole open item or asks
-which one to continue. IDs reuse unfinished runs. After framing completion it
-can begin the spec and then stops at its required approval. Later unavailable
-steps remain explicit limits. Pending decisions
-become questions for a person, never automatic approvals. `--through` routing remains planned.
+`next` begins framing from a sentence and reuses initiatives with an equivalent normalized title. Missing ownership becomes a question before creating an item; no input selects the sole open item or asks which one to continue. IDs reuse unfinished runs. After framing completion it can begin the spec and then stops at its required approval. Later unavailable steps remain explicit limits. Pending decisions become questions for a person, never automatic approvals. `--through` routing remains planned.
 
-`status` reports stored items, owners, step plans, pending decisions and unread
-message counts without consuming messages or writing the store. It does not yet
-read live integrations or scheduled checkpoints.
+`status` reports stored items, owners, step plans, pending decisions and unread message counts without consuming messages or writing the store. It does not yet read live integrations or scheduled checkpoints.
 
-`setup` returns batched choices or applies an explicit subset of profile/docs/
-tracker choices. `--scope user|project|run` is required before applying choices.
-All selections validate before an atomic settings write. Run scope returns a
-transient override; project profile suggestions still yield to user preferences.
-Adapter installation, MCP configuration edits and authentication remain manual.
-The canonical skills live in `harness/skills/`; live client execution awaits the
-adapter/conformance tasks, while compiled CLI workflow tests exercise these paths.
+`setup` returns batched choices or applies an explicit subset of profile/docs/ tracker choices. `--scope user|project|run` is required before applying choices. All selections validate before an atomic settings write. Run scope returns a transient override; project profile suggestions still yield to user preferences. Adapter installation, MCP configuration edits and authentication remain manual. The canonical skills live in `harness/skills/`; live client execution awaits the adapter/conformance tasks, while compiled CLI workflow tests exercise these paths.
 
 The remaining examples show the broader target behavior.
 
 ## Adopt a URL and publish Define artifacts
 
-`wl next <HTTPS-URL> --json` matches stored adoption/document/tracker/PR links first.
-Fragments and known tracking parameters do not create new identities; semantic
-queries remain distinct. Multiple initiatives require an explicit ID. For an
-unknown URL, next asks for the source provider/kind and owner/title. It never
-invents an authenticated fetch or approvals from imported prose.
+`wl next <HTTPS-URL> --json` matches stored adoption/document/tracker/PR links first. Fragments and known tracking parameters do not create new identities; semantic queries remain distinct. Multiple initiatives require an explicit ID. For an unknown URL, next asks for the source provider/kind and owner/title. It never invents an authenticated fetch or approvals from imported prose.
 
-A client reads the document/item and normalizes a complete result with its exact
-reference, body and revision. Save sanitized observations outside the repository:
+A client reads the document/item and normalizes a complete result with its exact reference, body and revision. Save sanitized observations outside the repository:
 
 ```json
 {"schema":"wholeloop/shared-read@1","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42","result":{"status":"succeeded","ref":"https://docs.example.com/work/42","body":"# Order search\n\nShared context.","revision":"observed-revision","complete":true}}
@@ -70,15 +52,9 @@ wl next https://docs.example.com/work/42 --provider notion --kind docs --file /t
 wl adopt https://docs.example.com/work/42 --provider notion --kind docs --file /tmp/shared-read.json --owner Alex --json
 ```
 
-`adopt` stops after import; `next` continues the stored initiative. A missing
-owner/title becomes batched questions before writing anything. Tracker bodies
-normalize to a JSON string containing title, body and optional owner. Imports are
-labelled observations; they do not prove that this process authenticated a tool.
+`adopt` stops after import; `next` continues the stored initiative. A missing owner/title becomes batched questions before writing anything. Tracker bodies normalize to a JSON string containing title, body and optional owner. Imports are labelled observations; they do not prove that this process authenticated a tool.
 
-Each initiative defaults to local. To share, provide a destination array such as
-`[{"key":"team-docs","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42"}]`.
-Omit ref to create a separate resource per artifact; supply ref to append into an
-existing document/item. Explicit HTTPS destinations are pinned across mode changes.
+Each initiative defaults to local. To share, provide a destination array such as `[{"key":"team-docs","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42"}]`. Omit ref to create a separate resource per artifact; supply ref to append into an existing document/item. Explicit HTTPS destinations are pinned across mode changes.
 
 ```text
 wl share mode --for init-0123abcd --mode shared --by Alex --file /tmp/targets.json --json
@@ -89,21 +65,9 @@ wl share report --for init-0123abcd --json
 wl share mode --for init-0123abcd --mode local --by Alex --json
 ```
 
-Shared mode queues all completed research, framing, specification and scope
-artifacts belonging to the initiative, including an unambiguously adopted research
-brief. Future completions queue in the same journal transaction. A standalone
-unadopted brief has no initiative destinations and stays local.
+Shared mode queues all completed research, framing, specification and scope artifacts belonging to the initiative, including an unambiguously adopted research brief. Future completions queue in the same journal transaction. A standalone unadopted brief has no initiative destinations and stays local.
 
-The conductor consumes these requests through an explicit ProviderHost. The SDK
-SharingWorkflow.mode(..., host) publishes existing artifacts; complete(..., host)
-completes and flushes future work. The CLI queues and exposes a once-only intent:
-it does not authenticate or execute opaque MCP writers. After share request, the
-client performs the requested create or fresh read/append/conditional update,
-then supplies a separate complete read for reconciliation. Only exact artifact
-content earns a published receipt and stored link; the local CLI receipt alone
-means queued. A lost response remains ambiguous: find the resource and read it,
-never blindly repeat the write. Local mode pauses new requests, while a request
-already handed to a client remains that client's responsibility.
+The conductor consumes these requests through an explicit ProviderHost. The SDK SharingWorkflow.mode(..., host) publishes existing artifacts; complete(..., host) completes and flushes future work. The CLI queues and exposes a once-only intent: it does not authenticate or execute opaque MCP writers. After share request, the client performs the requested create or fresh read/append/conditional update, then supplies a separate complete read for reconciliation. Only exact artifact content earns a published receipt and stored link; the local CLI receipt alone means queued. A lost response remains ambiguous: find the resource and read it, never blindly repeat the write. Local mode pauses new requests, while a request already handed to a client remains that client's responsibility.
 
 ## next
 
@@ -204,19 +168,9 @@ wl sync --for scope-a9e0b1c2 --prune off --json
 wl sync --for scope-a9e0b1c2 --file normalized-pr-observations.json --json
 ```
 
-Default code-host reads use gh/glab and their credential stores; the command does
-not push, merge or fetch. An imported wholeloop/sync-observations@1 file contains
-observations with exact published plan event/ref and a normalized complete result
-or explicit unavailable reason. Imports are labelled and prove no authentication.
-Unknown source reads preserve open work and return a precondition exit code.
+Default code-host reads use gh/glab and their credential stores; the command does not push, merge or fetch. An imported wholeloop/sync-observations@1 file contains observations with exact published plan event/ref and a normalized complete result or explicit unavailable reason. Imports are labelled and prove no authentication. Unknown source reads preserve open work and return a precondition exit code.
 
-The SDK `SyncWorkflow.run` accepts a codehost factory and optional tracker host,
-plus explicit per-item provider/ref/state targets. Target references/state IDs are
-never guessed or derived from unresolved publication placeholders. The CLI has no
-authenticated tracker executor; that bridge remains the host's responsibility.
-Reports include changes, unknown observations, delivery readiness, tracker outcomes
-and retained/pruned worktrees. [ADR-0043](../decisions/0043-certified-delivery-sync-and-recoverable-tracker-status.md)
-explains the distinction between delivered code and a decided product outcome.
+The SDK `SyncWorkflow.run` accepts a codehost factory and optional tracker host, plus explicit per-item provider/ref/state targets. Target references/state IDs are never guessed or derived from unresolved publication placeholders. The CLI has no authenticated tracker executor; that bridge remains the host's responsibility. Reports include changes, unknown observations, delivery readiness, tracker outcomes and retained/pruned worktrees. [ADR-0043](../decisions/0043-certified-delivery-sync-and-recoverable-tracker-status.md) explains the distinction between delivered code and a decided product outcome.
 
 ---
 

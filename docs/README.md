@@ -61,8 +61,7 @@
 
 ---
 
-Maintainer activation: [nightly conformance](./contributing/conformance.md) ·
-[release preparation](./contributing/releasing.md).
+Maintainer activation: [nightly conformance](./contributing/conformance.md) · [release preparation](./contributing/releasing.md).
 
 <!-- docnav -->
 [🧭 Concepts](concepts.md)  ·  [Philosophy ▶](philosophy.md)

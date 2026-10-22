@@ -5,29 +5,15 @@
 
 ## Context
 
-Rerunning an idea should refine known work without creating duplicates. The
-store spans repositories, so titles alone are unsafe identities: two projects
-can both have an initiative called "Add search". A no-go also needs to survive
-that rerun rather than silently becoming a fresh project.
+Rerunning an idea should refine known work without creating duplicates. The store spans repositories, so titles alone are unsafe identities: two projects can both have an initiative called "Add search". A no-go also needs to survive that rerun rather than silently becoming a fresh project.
 
 ## Decision
 
-1. Explicit initiative IDs and recorded completed-brief relations establish
-   identity. Record the source artifact path so a later research run cannot
-   rewrite which evidence a framing adopted.
-2. Automatic title reuse normalizes case and whitespace within the same
-   canonical repository path. Several matches or a legacy item without a
-   repository identity require a person to choose the ID. Cross-repository work
-   uses explicit IDs; checkout relocation or worktree aliasing is not inferred.
-3. Framing requires eight questions and ownership. Unresolved placeholders use
-   `TBD: <missing evidence>; who: <person or role>`. Structural validation cannot
-   prove a claim true; evidence review remains part of the skill workflow.
-4. Record go, dropped or on-hold in the journal. A no-go closes the initiative
-   with its reason, and on-hold also needs a reopening condition. Reopening is
-   an explicit state change and retains the earlier decision.
-5. Local docs/tracker destinations refer to the stored artifact and initiative,
-   avoiding duplicate local copies. Remote destinations produce a pending
-   handoff and durable note until a host executes and links the operation.
+1. Explicit initiative IDs and recorded completed-brief relations establish identity. Record the source artifact path so a later research run cannot rewrite which evidence a framing adopted.
+2. Automatic title reuse normalizes case and whitespace within the same canonical repository path. Several matches or a legacy item without a repository identity require a person to choose the ID. Cross-repository work uses explicit IDs; checkout relocation or worktree aliasing is not inferred.
+3. Framing requires eight questions and ownership. Unresolved placeholders use `TBD: <missing evidence>; who: <person or role>`. Structural validation cannot prove a claim true; evidence review remains part of the skill workflow.
+4. Record go, dropped or on-hold in the journal. A no-go closes the initiative with its reason, and on-hold also needs a reopening condition. Reopening is an explicit state change and retains the earlier decision.
+5. Local docs/tracker destinations refer to the stored artifact and initiative, avoiding duplicate local copies. Remote destinations produce a pending handoff and durable note until a host executes and links the operation.
 
 ## Alternatives considered
 

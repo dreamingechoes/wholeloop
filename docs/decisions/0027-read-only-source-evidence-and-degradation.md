@@ -5,30 +5,15 @@
 
 ## Context
 
-Research and later measurement need reusable queries against actual sources.
-Authentication, pending jobs and truncated output cannot become fabricated
-observations. Generic HTTP availability also does not establish a connected
-Zendesk service, and PostgreSQL needs more than a prompt saying read-only.
+Research and later measurement need reusable queries against actual sources. Authentication, pending jobs and truncated output cannot become fabricated observations. Generic HTTP availability also does not establish a connected Zendesk service, and PostgreSQL needs more than a prompt saying read-only.
 
 ## Decision
 
-1. Ship eleven source mappings with bounded, tool-specific guidance: PostHog,
-   Mixpanel, Amplitude, Metabase, BigQuery, PostgreSQL, Sentry, Zendesk, Intercom,
-   and Confluence/Notion knowledge. Every source query degrades to open-question.
-2. Pin provider, operation, exact query, owner and explicit timestamp/timezone
-   window in evidence receipts. Only complete successful observed content becomes
-   evidence. Tool errors, pending jobs and partial results remain questions with
-   an answerer; raw tool error contents are omitted.
-3. Map BigQuery to its explicit read-only tool. Execute PostgreSQL through a
-   conservative single-query scanner and psql stdin inside BEGIN READ ONLY,
-   a local statement timeout and ROLLBACK. Require a non-secret libpq service
-   name, never a credential URI. Restricted database roles remain necessary.
-4. Allow only one known credential-free installation URL query parameter:
-   mode=tools or mode=cli. PostHog uses tools mode for its named execute-sql tool.
-   All other query parameters, duplicate modes, user info and fragments remain
-   invalid. A generic curl executable does not detect service availability.
-5. Clone built-in manifests per registry load. A caller refining one loaded
-   manifest must not mutate later registries or the bundled canonical catalog.
+1. Ship eleven source mappings with bounded, tool-specific guidance: PostHog, Mixpanel, Amplitude, Metabase, BigQuery, PostgreSQL, Sentry, Zendesk, Intercom, and Confluence/Notion knowledge. Every source query degrades to open-question.
+2. Pin provider, operation, exact query, owner and explicit timestamp/timezone window in evidence receipts. Only complete successful observed content becomes evidence. Tool errors, pending jobs and partial results remain questions with an answerer; raw tool error contents are omitted.
+3. Map BigQuery to its explicit read-only tool. Execute PostgreSQL through a conservative single-query scanner and psql stdin inside BEGIN READ ONLY, a local statement timeout and ROLLBACK. Require a non-secret libpq service name, never a credential URI. Restricted database roles remain necessary.
+4. Allow only one known credential-free installation URL query parameter: mode=tools or mode=cli. PostHog uses tools mode for its named execute-sql tool. All other query parameters, duplicate modes, user info and fragments remain invalid. A generic curl executable does not detect service availability.
+5. Clone built-in manifests per registry load. A caller refining one loaded manifest must not mutate later registries or the bundled canonical catalog.
 
 ## Alternatives considered
 
@@ -42,12 +27,7 @@ Zendesk service, and PostgreSQL needs more than a prompt saying read-only.
 
 ## Consequences
 
-PostgreSQL scanning is deliberately conservative and rejects dollar quotes and
-backslash escapes. Server read-only semantics and least-privilege roles still
-matter for functions, temporary objects and external effects. Process tests use
-a real fake-psql executable; no database or live source was queried. Synthetic
-transcripts establish the host contract, while permissions, regions, costs,
-pagination and exact live window behavior remain owner verification.
+PostgreSQL scanning is deliberately conservative and rejects dollar quotes and backslash escapes. Server read-only semantics and least-privilege roles still matter for functions, temporary objects and external effects. Process tests use a real fake-psql executable; no database or live source was queried. Synthetic transcripts establish the host contract, while permissions, regions, costs, pagination and exact live window behavior remain owner verification.
 
 ## Links
 

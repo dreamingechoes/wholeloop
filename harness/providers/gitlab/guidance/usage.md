@@ -1,12 +1,3 @@
 # Gitlab code-host operations
 
-Use glab's own credential store; never copy tokens into files or argv.
-Open only after the exact plan has human test evidence and approval. Push its
-pinned commit to the named remote branch without force, then create an open draft.
-Keep the named target and repository identity; do not fork or guess another remote.
-Send title/body JSON through stdin to glab api, not a shell or temporary body file.
-Read complete PR identity, source SHA/branch, target, draft and merged state.
-A missing field is unavailable evidence, never an inferred pass or merge.
-Comment only when explicitly requested; keep its idempotency key for reconciliation.
-An interrupted push/create/comment has an ambiguous outcome: inspect remote state
-before retrying. Never mark ready, request reviewers, merge, close or delete.
+Use glab's own credential store; never copy tokens into files or argv. Open only after the exact plan has human test evidence and approval. Push its pinned commit to the named remote branch without force, then create an open draft. Keep the named target and repository identity; do not fork or guess another remote. Send title/body JSON through stdin to glab api, not a shell or temporary body file. Read complete PR identity, source SHA/branch, target, draft and merged state. A missing field is unavailable evidence, never an inferred pass or merge. Comment only when explicitly requested; keep its idempotency key for reconciliation. An interrupted push/create/comment has an ambiguous outcome: inspect remote state before retrying. Never mark ready, request reviewers, merge, close or delete.

@@ -5,27 +5,15 @@
 
 ## Context
 
-A person must inspect concrete scopes before approving a cut. Revising that cut
-must preserve identity and metric coverage without leaving half-created tracker
-records or allowing a child ID to bypass the parent's approval.
+A person must inspect concrete scopes before approving a cut. Revising that cut must preserve identity and metric coverage without leaving half-created tracker records or allowing a child ID to bypass the parent's approval.
 
 ## Decision
 
-1. Author a versioned scope plan in YAML front matter, pinning the completed spec
-   artifact. Every spec metric and story has at least one scope owner. Standalone
-   entry declares a minimal metric catalog or an accountable measurement exception.
-2. A stable plan key maps to one child scope within an initiative. Revisions reuse
-   its typed ID and local tracker reference. Omitting a scope does not delete it;
-   closed scopes require explicit reopening before refinement.
-3. Validate definitions, source identity and dependency cycles in the same journal
-   transaction as child creation and completion. Dependencies can name plan keys
-   or existing scopes belonging to the same initiative. Remote trackers remain
-   pending host handoffs until the actual operation succeeds and its link is stored.
-4. Store concrete child drafts before the human decision. Downstream begin and
-   complete operations inspect ancestor approvals, so selecting a child ID cannot
-   evade a pending or rejected parent decision. Upstream corrections remain possible.
-5. An initiative continues through its sole open scope or asks for a choice. A
-   fresh scope starts at slice-work without pretending its own framing/spec ran.
+1. Author a versioned scope plan in YAML front matter, pinning the completed spec artifact. Every spec metric and story has at least one scope owner. Standalone entry declares a minimal metric catalog or an accountable measurement exception.
+2. A stable plan key maps to one child scope within an initiative. Revisions reuse its typed ID and local tracker reference. Omitting a scope does not delete it; closed scopes require explicit reopening before refinement.
+3. Validate definitions, source identity and dependency cycles in the same journal transaction as child creation and completion. Dependencies can name plan keys or existing scopes belonging to the same initiative. Remote trackers remain pending host handoffs until the actual operation succeeds and its link is stored.
+4. Store concrete child drafts before the human decision. Downstream begin and complete operations inspect ancestor approvals, so selecting a child ID cannot evade a pending or rejected parent decision. Upstream corrections remain possible.
+5. An initiative continues through its sole open scope or asks for a choice. A fresh scope starts at slice-work without pretending its own framing/spec ran.
 
 ## Alternatives considered
 
@@ -39,9 +27,7 @@ records or allowing a child ID to bypass the parent's approval.
 
 ## Consequences
 
-Tracker records can exist as unapproved drafts. Remote mirroring still depends on
-host execution and live conformance; local tests establish structural validation,
-identity, atomic rollback and decision propagation, not semantic independence.
+Tracker records can exist as unapproved drafts. Remote mirroring still depends on host execution and live conformance; local tests establish structural validation, identity, atomic rollback and decision propagation, not semantic independence.
 
 ## Links
 

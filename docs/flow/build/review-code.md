@@ -76,19 +76,9 @@ flowchart TD
 | a branch name | that branch |
 
 The executable core uses `wl review begin <branch> --base <base> --owner <person>
---json`, `review input --for <id>` and `review complete --for <id>`. Existing slices
-use `review begin --for <id>`. A PR URL also needs `--branch <resolved-local-head>`.
-The host supplies semantic reviewers/refuters and enforces read-only tools.
+--json`, `review input --for <id>` and `review complete --for <id>`. Existing slices use `review begin --for <id>`. A PR URL also needs `--branch <resolved-local-head>`. The host supplies semantic reviewers/refuters and enforces read-only tools.
 
-Private changed-file objects and scratch indexes stay in the external store;
-rounds include uncommitted edits, new/deleted files, modes and symlink targets.
-The repository index is never used as scratch space. Inputs are bounded and
-sensitive filenames/recognized credential shapes are refused. This is not an
-exhaustive secret detector: inspect other sensitive source paths before reviewing.
-Preserve these objects with the journal; rebuilding projections cannot recreate
-missing source blobs. Rubric changes within a run fail rather than weaken review.
-Prior kept findings remain in context for rechecking, even if absent from the new
-patch. See [ADR-0034](../../decisions/0034-private-incremental-review-inputs-and-pinned-rubrics.md).
+Private changed-file objects and scratch indexes stay in the external store; rounds include uncommitted edits, new/deleted files, modes and symlink targets. The repository index is never used as scratch space. Inputs are bounded and sensitive filenames/recognized credential shapes are refused. This is not an exhaustive secret detector: inspect other sensitive source paths before reviewing. Preserve these objects with the journal; rebuilding projections cannot recreate missing source blobs. Rubric changes within a run fail rather than weaken review. Prior kept findings remain in context for rechecking, even if absent from the new patch. See [ADR-0034](../../decisions/0034-private-incremental-review-inputs-and-pinned-rubrics.md).
 
 ## Run it
 

@@ -85,28 +85,15 @@ An HTTP recipe may use `auth: header` with `token_env: ACME_AUTH`; only the vari
 
 ## Client-owned MCP transport
 
-Use the native client's existing MCP connection; wholeloop does not run another
-MCP client or copy credentials. Read [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md)
-for the decision and the rejected automatic HTTP fallback.
+Use the native client's existing MCP connection; wholeloop does not run another MCP client or copy credentials. Read [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md) for the decision and the rejected automatic HTTP fallback.
 
-1. Configure/authenticate the selected provider in the native client, using its
-   credential store. `wl mcp add` renders configuration; it does not prove login.
-2. Inspect that client's actual tools and input schemas. Supply only non-secret
-   metadata using `wholeloop/client-mcp@1`. Declaration detection alone is insufficient.
-3. Run `wl provider plan <id> <operation> --mcp <external-inventory.json> --json`.
-   This command reads metadata only: it performs no authentication, service call
-   or state write. Exit 0 means a route is planned; exit 3 means unavailable;
-   malformed metadata exits 4. `authentication: client-owned-unverified` is explicit.
-4. For a planned MCP route, the conductor's host invokes the tool through the
-   existing client connection, translates contract arguments against the live
-   schema and normalizes the result. A plan alone is never a publication receipt.
-5. Retain the declared open question or pending handoff if access/schema is
-   missing. If an invocation fails, inspect remote state and retained intent;
-   do not try HTTP automatically or repeat an uncertain write.
+1. Configure/authenticate the selected provider in the native client, using its credential store. `wl mcp add` renders configuration; it does not prove login.
+2. Inspect that client's actual tools and input schemas. Supply only non-secret metadata using `wholeloop/client-mcp@1`. Declaration detection alone is insufficient.
+3. Run `wl provider plan <id> <operation> --mcp <external-inventory.json> --json`. This command reads metadata only: it performs no authentication, service call or state write. Exit 0 means a route is planned; exit 3 means unavailable; malformed metadata exits 4. `authentication: client-owned-unverified` is explicit.
+4. For a planned MCP route, the conductor's host invokes the tool through the existing client connection, translates contract arguments against the live schema and normalizes the result. A plan alone is never a publication receipt.
+5. Retain the declared open question or pending handoff if access/schema is missing. If an invocation fails, inspect remote state and retained intent; do not try HTTP automatically or repeat an uncertain write.
 
-The following **synthetic metadata example** demonstrates planning against a
-built-in mapping. Its schema is illustrative, not a current PostHog server
-contract or evidence of real access. Run from the repository root after building:
+The following **synthetic metadata example** demonstrates planning against a built-in mapping. Its schema is illustrative, not a current PostHog server contract or evidence of real access. Run from the repository root after building:
 
 ```bash
 MCP_INVENTORY_FILE="$(mktemp)"
@@ -125,39 +112,13 @@ node ./dist/wl.mjs provider plan posthog source.product-analytics.query \
 node ./dist/wl.mjs provider plan amplitude dashboards.create --json
 ```
 
-The first plan selects MCP with `effects: not-performed`. The second selects the
-native pending dashboard handoff. `--transport http` alone cannot create a host:
-use an existing explicitly selected bridge command or an injected HTTP host.
-The inventory must be a regular file under 64 KiB, with at most 256 unique tools.
-It contains no token, headers or credential fields; never write runtime metadata
-inside a repository. Wholeloop checks bounded metadata and operation identity;
-the client validates the actual arguments against the observed tool schema.
+The first plan selects MCP with `effects: not-performed`. The second selects the native pending dashboard handoff. `--transport http` alone cannot create a host: use an existing explicitly selected bridge command or an injected HTTP host. The inventory must be a regular file under 64 KiB, with at most 256 unique tools. It contains no token, headers or credential fields; never write runtime metadata inside a repository. Wholeloop checks bounded metadata and operation identity; the client validates the actual arguments against the observed tool schema.
 
-For virtual operations such as `wholeloop.dashboard.handoff`, discovery of an
-arbitrary create-like tool is insufficient. Supply an explicit `bindings` object
-mapping `dashboards.create` to the exact reviewed tool name, and include that
-tool's actual input schema in `tools`. Do not guess a vendor write contract.
-`comms.draft` and `flags.propose-change` cannot receive remote MCP bindings:
-they retain their native unsent/unapplied boundary.
+For virtual operations such as `wholeloop.dashboard.handoff`, discovery of an arbitrary create-like tool is insufficient. Supply an explicit `bindings` object mapping `dashboards.create` to the exact reviewed tool name, and include that tool's actual input schema in `tools`. Do not guess a vendor write contract. `comms.draft` and `flags.propose-change` cannot receive remote MCP bindings: they retain their native unsent/unapplied boundary.
 
-In an embedded TypeScript conductor, load a provider and build
-`clientProviderHost(provider, { mcp: { inventory, invoke } })` from
-src/providers/transport.ts. The `invoke` callback receives an OperationCall with
-the selected tool and original operation identity; its client-owned adapter must
-translate arguments and return the existing normalized OperationResult. Wrap it
-with `rolloutHost(files, root, host)` for native handoffs. Its eligibility hook
-lets reviewed MCP dashboard bindings run before the handoff. Keep dispatch inside
-`dispatchLaunchArtifact` so once-only receipts and ambiguous intents are preserved.
-There is no standalone CLI MCP invocation command.
+In an embedded TypeScript conductor, load a provider and build `clientProviderHost(provider, { mcp: { inventory, invoke } })` from src/providers/transport.ts. The `invoke` callback receives an OperationCall with the selected tool and original operation identity; its client-owned adapter must translate arguments and return the existing normalized OperationResult. Wrap it with `rolloutHost(files, root, host)` for native handoffs. Its eligibility hook lets reviewed MCP dashboard bindings run before the handoff. Keep dispatch inside `dispatchLaunchArtifact` so once-only receipts and ambiguous intents are preserved. There is no standalone CLI MCP invocation command.
 
-Passing an HTTP host to the factory does not activate it. Only
-`clientProviderHost(provider, { transport: 'http', http: explicitHost })` selects
-that experimental host; failure never selects MCP or another transport instead.
-Existing [HTTP bridge commands](./remote-bridges.md) retain their explicit opt-in
-behavior and fixtures. New HTTP coverage requires a concrete required MCP gap
-and a new reviewed decision, rather than an API implementation for every vendor.
-All remote integrations remain **experimental · fixture-tested · service-unverified**
-until the owner records actual service/operation/version evidence.
+Passing an HTTP host to the factory does not activate it. Only `clientProviderHost(provider, { transport: 'http', http: explicitHost })` selects that experimental host; failure never selects MCP or another transport instead. Existing [HTTP bridge commands](./remote-bridges.md) retain their explicit opt-in behavior and fixtures. New HTTP coverage requires a concrete required MCP gap and a new reviewed decision, rather than an API implementation for every vendor. All remote integrations remain **experimental · fixture-tested · service-unverified** until the owner records actual service/operation/version evidence.
 
 ## Target live inspection
 

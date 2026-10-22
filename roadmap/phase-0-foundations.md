@@ -118,10 +118,7 @@
 - [ ] No ADR contradicts the verified platform matrix.
 - [x] Every ADR referenced from docs exists and is `Accepted` or explicitly `Superseded`.
 
-**Local implementation:** docs check now validates referenced metadata, successor
-resolution and cycle refusal. Native/platform truth review still depends on the
-actual P0-03 spike; lifecycle validation does not close that criterion. Historical
-accepted ADRs remain intact until verified findings justify a superseding record.
+**Local implementation:** docs check now validates referenced metadata, successor resolution and cycle refusal. Native/platform truth review still depends on the actual P0-03 spike; lifecycle validation does not close that criterion. Historical accepted ADRs remain intact until verified findings justify a superseding record.
 
 **Docs** — decisions index.
 

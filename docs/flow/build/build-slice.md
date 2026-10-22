@@ -102,36 +102,15 @@ wl worktree prune slice-0123abcd --dry-run --json
 wl worktree prune slice-0123abcd --json
 ```
 
-Create requires an open slice or repository part. A multi-repository slice uses
-its individual part IDs. The repository comes from the recorded definition or
-an explicit --repo root. Supply a named local/remote base; a raw commit is not a
-cleanup target. --after stacks on a recorded predecessor while retaining the
-original integration target. No fetch, push or commit occurs during provisioning.
+Create requires an open slice or repository part. A multi-repository slice uses its individual part IDs. The repository comes from the recorded definition or an explicit --repo root. Supply a named local/remote base; a raw commit is not a cleanup target. --after stacks on a recorded predecessor while retaining the original integration target. No fetch, push or commit occurs during provisioning.
 
-Allocation intent precedes Git mutations. Repeating create reuses active identity
-or recovers a matching unfinished intent. The person's branch, index and working
-files stay unchanged in default worktree mode, including dirty staged/untracked
-work. Provisioning disables checkout hooks for that Git invocation only; later
-builder commits retain normal hooks. Stale locks require owner inspection.
+Allocation intent precedes Git mutations. Repeating create reuses active identity or recovers a matching unfinished intent. The person's branch, index and working files stay unchanged in default worktree mode, including dirty staged/untracked work. Provisioning disables checkout hooks for that Git invocation only; later builder commits retain normal hooks. Stale locks require owner inspection.
 
-Ten-port blocks are reserved within this store from 5200 through 6199. These are
-reservations, not live port probes. Open reports actual HEAD, path, ports and
-detected quality commands without starting anything or recording test-it approval.
-Status and resume link the external workspace projection.
+Ten-port blocks are reserved within this store from 5200 through 6199. These are reservations, not live port probes. Open reports actual HEAD, path, ports and detected quality commands without starting anything or recording test-it approval. Status and resume link the external workspace projection.
 
-Stop records the lease state and preserves files/branches; this manager does not
-control worker/dev-server processes. To reject work explicitly, use
-`worktree stop <id> --abandon --reason "<why>"`. Prune removes only recorded stopped,
-clean work merged into its integration target or explicitly abandoned. It honors
-Git locks, preserves unmerged/dirty/changed-identity work and every topic branch,
-and continues checking other records when one cannot be cleaned. It never runs a
-broad Git metadata sweep or force removal. Dry-run records no lifecycle change.
+Stop records the lease state and preserves files/branches; this manager does not control worker/dev-server processes. To reject work explicitly, use `worktree stop <id> --abandon --reason "<why>"`. Prune removes only recorded stopped, clean work merged into its integration target or explicitly abandoned. It honors Git locks, preserves unmerged/dirty/changed-identity work and every topic branch, and continues checking other records when one cannot be cleaned. It never runs a broad Git metadata sweep or force removal. Dry-run records no lifecycle change.
 
-The checkout opt-out requires a clean, exclusive repository, creates its topic
-branch there, and restores the original branch or detached commit on eligible
-cleanup. It never deletes the person's directory. See
-[ADR-0030](../../decisions/0030-worktree-intents-leases-and-conservative-pruning.md).
-These lifecycle commands are available independently of builder orchestration.
+The checkout opt-out requires a clean, exclusive repository, creates its topic branch there, and restores the original branch or detached commit on eligible cleanup. It never deletes the person's directory. See [ADR-0030](../../decisions/0030-worktree-intents-leases-and-conservative-pruning.md). These lifecycle commands are available independently of builder orchestration.
 
 ## Available build contracts
 
@@ -145,38 +124,13 @@ wl build plan slice-0123abcd --file plan.json --basis '<prepared-snapshot>' --js
 wl build complete slice-0123abcd --json
 ```
 
-Criteria files use `wholeloop/criteria@1`. The builder plan uses
-`wholeloop/builder-plan@1` with steps, tests and assumptions (text, verified/unknown/
-contradicted status, evidence). Plan recording checks the prepared snapshot before
-any code write. Unknown/contradicted assumptions require an explicit
-`wl answer decision.approve-build-plan=approved --for <id> --by <person> --json`.
-Changing the plan requires a fresh assumption decision when still unresolved.
+Criteria files use `wholeloop/criteria@1`. The builder plan uses `wholeloop/builder-plan@1` with steps, tests and assumptions (text, verified/unknown/ contradicted status, evidence). Plan recording checks the prepared snapshot before any code write. Unknown/contradicted assumptions require an explicit `wl answer decision.approve-build-plan=approved --for <id> --by <person> --json`. Changing the plan requires a fresh assumption decision when still unresolved.
 
-The shared `harness/workflows/build.ts` host contract supplies planning, implementation,
-unit inspection, independent refutations and stop state. The core loads selected
-build guidance into that context. `runBuild` resumes existing plans and partial
-rounds; `runBuildGroup` schedules ready dependency waves according to pace. Staged
-uses a whole-round gate lease. Host cancellation of already-running tools remains
-its responsibility. Gate results are observations supplied by that host; planning
-alone never runs project tests or proves semantic correctness.
+The shared `harness/workflows/build.ts` host contract supplies planning, implementation, unit inspection, independent refutations and stop state. The core loads selected build guidance into that context. `runBuild` resumes existing plans and partial rounds; `runBuildGroup` schedules ready dependency waves according to pace. Staged uses a whole-round gate lease. Host cancellation of already-running tools remains its responsibility. Gate results are observations supplied by that host; planning alone never runs project tests or proves semantic correctness.
 
-Every repair that changes code invalidates older passes. Completion requires verify
-and review PASS after the latest plan on identical current bytes, constructs the
-receipt and advances to open-pr without inventing separate standalone step runs.
-Stacking during a build refuses uncommitted predecessor files: commit them only
-when authorized and rerun gates after HEAD changes, because a Git branch cannot
-include another worktree's uncommitted changes. Scope routing preserves declared
-dependency order; choose a named base or explicit stacked predecessor per build.
-The item stays open for human testing and PR work; dependent work can use its green
-build. A later active rebuild blocks those dependencies again. Resume links the
-external builder-plan projection. [ADR-0032](../../decisions/0032-repository-first-build-plans-and-gate-backed-receipts.md)
-records the host and recovery boundaries.
+Every repair that changes code invalidates older passes. Completion requires verify and review PASS after the latest plan on identical current bytes, constructs the receipt and advances to open-pr without inventing separate standalone step runs. Stacking during a build refuses uncommitted predecessor files: commit them only when authorized and rerun gates after HEAD changes, because a Git branch cannot include another worktree's uncommitted changes. Scope routing preserves declared dependency order; choose a named base or explicit stacked predecessor per build. The item stays open for human testing and PR work; dependent work can use its green build. A later active rebuild blocks those dependencies again. Resume links the external builder-plan projection. [ADR-0032](../../decisions/0032-repository-first-build-plans-and-gate-backed-receipts.md) records the host and recovery boundaries.
 
-Issue routing asks for criteria. A host can read the selected tracker through
-`BuildWorkflow.readIssue`; it requires a complete same-reference body/revision.
-CLI agreement can record observed `--issue <url> --revision <revision>` but never
-claims it fetched/authenticated that source. Live normalized reads remain owner
-verification. No push or PR operation exists in this workflow.
+Issue routing asks for criteria. A host can read the selected tracker through `BuildWorkflow.readIssue`; it requires a complete same-reference body/revision. CLI agreement can record observed `--issue <url> --revision <revision>` but never claims it fetched/authenticated that source. Live normalized reads remain owner verification. No push or PR operation exists in this workflow.
 
 ## Standalone use
 
@@ -238,18 +192,9 @@ Next         test it, then /wholeloop:open-pr slice-5e1a
 ## External effects and undo
 
 Record outside-repository effects with `wl env declare --for <id> --file
-<non-secret-declaration.json> --json`. The declaration contains a stable key,
-resource, effect, person and explicit undo working directory/argv. Relative cwd in
-the CLI file resolves at runtime. Never include credential values; use the tool's
-own credential store or a credential-aware wrapper.
+<non-secret-declaration.json> --json`. The declaration contains a stable key, resource, effect, person and explicit undo working directory/argv. Relative cwd in the CLI file resolves at runtime. Never include credential values; use the tool's own credential store or a credential-aware wrapper.
 
-`wl env report --for <id> --json` returns current effects and recipes, including
-this item's descendants and shared ancestor effects without unrelated siblings.
-Build and PR receipts include all declarations present at completion. Resume packs
-point to the current report, so later human-testing effects remain visible without
-rewriting a historical artifact. Undo is displayed in reverse declaration order;
-inspect actual dependencies first. The ledger executes nothing and does not claim
-that either the effect or cleanup succeeded. See [ADR-0036](../../decisions/0036-declarative-environment-undo-ledger.md).
+`wl env report --for <id> --json` returns current effects and recipes, including this item's descendants and shared ancestor effects without unrelated siblings. Build and PR receipts include all declarations present at completion. Resume packs point to the current report, so later human-testing effects remain visible without rewriting a historical artifact. Undo is displayed in reverse declaration order; inspect actual dependencies first. The ledger executes nothing and does not claim that either the effect or cleanup succeeded. See [ADR-0036](../../decisions/0036-declarative-environment-undo-ledger.md).
 
 ```json
 {
@@ -264,8 +209,7 @@ that either the effect or cleanup succeeded. See [ADR-0036](../../decisions/0036
 }
 ```
 
-This is a recipe example, not a command the harness ran. Owner verification must
-exercise actual undo on disposable resources before relying on it for cleanup.
+This is a recipe example, not a command the harness ran. Owner verification must exercise actual undo on disposable resources before relying on it for cleanup.
 
 <!-- docnav -->
 [◀ slice-work](slice-work.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [verify-works ▶](verify-works.md)
