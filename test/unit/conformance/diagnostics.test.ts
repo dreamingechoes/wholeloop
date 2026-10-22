@@ -21,6 +21,7 @@ describe('bounded redacted native diagnostics', () => {
     ['account-ineligible', 'IneligibleTierError'],
     ['permission-denied', 'Permission denied'],
     ['invalid-invocation', 'Unknown flag --fixture'],
+    ['invalid-invocation', 'Unknown agent fixture-inspector'],
     ['connection-failed', 'ECONNREFUSED'],
     ['model-unavailable', 'No model configured'],
   ])('retains only the %s category from structured errors', (signal, message) => {
@@ -90,6 +91,38 @@ describe('bounded redacted native diagnostics', () => {
     )
     const result = capture.finish()
     expect(result).toMatchObject({ signals: ['permission-denied'], errorEvents: 2 })
+    expect(JSON.stringify(result)).not.toContain(privateText)
+  })
+  it('observes OpenCode tool failures but ignores successful tool output containing error words', () => {
+    const capture = nativeDiagnostics()
+    capture.observe(
+      'stdout',
+      json({
+        type: 'tool_use',
+        part: {
+          state: {
+            status: 'error',
+            error: `Permission denied: ${privateText}`,
+            input: { command: privateText },
+          },
+        },
+      }),
+    )
+    capture.observe(
+      'stdout',
+      json({
+        type: 'tool_use',
+        part: {
+          state: {
+            status: 'completed',
+            output: 'Authentication required',
+            input: { error: privateText },
+          },
+        },
+      }),
+    )
+    const result = capture.finish()
+    expect(result).toMatchObject({ signals: ['permission-denied'], errorEvents: 1 })
     expect(JSON.stringify(result)).not.toContain(privateText)
   })
   it.each([502, 503, 504])(

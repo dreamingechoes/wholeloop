@@ -3,6 +3,7 @@ import { homedir } from 'node:os'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
+import { openCodeVersionProbe } from '../diagnostics/doctor.js'
 import { TARGETS } from '../installation/contracts.js'
 import { manageInstallation } from '../installation/manage.js'
 import { storePath } from '../state/paths.js'
@@ -22,6 +23,11 @@ export function installationCommand(
   if (positional.length || (scope !== 'user' && scope !== 'project') || typeof target !== 'string')
     throw new CliError('Use install|uninstall --target <cli,...|all> --scope user|project')
   try {
+    const targets = target === 'all' ? TARGETS : target.split(',')
+    const opencodeVersion =
+      action === 'install' && targets.includes('opencode')
+        ? openCodeVersionProbe(process.env, root).version
+        : undefined
     const result = manageInstallation(action, {
       context: {
         root,
@@ -29,8 +35,9 @@ export function installationCommand(
         store:
           typeof options['--store'] === 'string' ? resolve(root, options['--store']) : storePath(),
         scope,
+        ...(opencodeVersion ? { opencodeVersion } : {}),
       },
-      targets: target === 'all' ? TARGETS : target.split(','),
+      targets,
       canonical: bundledCanonical(),
       core: readFileSync(fileURLToPath(import.meta.url), 'utf8'),
       version: VERSION,

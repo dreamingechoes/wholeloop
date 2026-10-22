@@ -1,5 +1,6 @@
 import { realpathSync, statSync } from 'node:fs'
 import { delimiter, dirname, join, resolve } from 'node:path'
+import { openCodeMajor } from '../adapters/opencode-version.js'
 import { isObject, validate } from '../config/schema.js'
 import type { ConformanceContext } from './contracts.js'
 import { prepareConformance } from './prepare.js'
@@ -57,6 +58,7 @@ export async function collectConformance(
       'Choose explicit fixture or live collection; live requires --bin-root and a bounded timeout',
     )
   const environment = options.env ?? process.env
+  for (const entry of entries) if (entry.cli === 'opencode') openCodeMajor(entry.pin)
   // Preflight every selected native path before creating the first fixture. Missing clients
   // must not silently fall back to a global executable and masquerade as another channel.
   const paths = entries.map((entry) => {

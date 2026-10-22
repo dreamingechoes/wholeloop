@@ -2,6 +2,7 @@ import { lstatSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
 const names = [
+  '.native-config/opencode/opencode.json',
   '.cursor/cli.json',
   '.cursor/hooks.json',
   '.gemini/worker-settings.json',

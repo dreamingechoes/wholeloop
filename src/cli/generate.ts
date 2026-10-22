@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
 import { generateAdapter } from '../adapters/generate.js'
+import { openCodeMajor } from '../adapters/opencode-version.js'
 import { writeAdapter } from '../adapters/write.js'
 import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
@@ -14,10 +15,19 @@ export function generateCommand(
   root: string,
   json: boolean,
   io: Io,
+  native = false,
 ) {
   try {
     const target = options['--target']
     const output = options['--out']
+    const pin = options['--pin']
+    if (native) {
+      if (target !== 'opencode' || typeof pin !== 'string')
+        throw new Error(
+          'Use adapter build-native --target opencode --pin <exact-version> --out <directory>',
+        )
+      openCodeMajor(pin)
+    }
     if (positional.length || typeof target !== 'string' || typeof output !== 'string')
       throw new Error(
         'Use build --target claude|codex|opencode|copilot|gemini|antigravity|cursor --out <directory>',
@@ -27,6 +37,7 @@ export function generateCommand(
       bundledCanonical(),
       readFileSync(fileURLToPath(import.meta.url), 'utf8'),
       VERSION,
+      native && typeof pin === 'string' ? pin : undefined,
     )
     const result = writeAdapter(resolve(root, output), generated, options['--dry-run'] === true)
     io.out(

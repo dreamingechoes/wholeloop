@@ -15,6 +15,7 @@ export interface InstallContext {
   store: string
   scope: 'user' | 'project'
   env?: NodeJS.ProcessEnv
+  opencodeVersion?: string
 }
 export interface InstalledFile extends RenderedFile {
   path: string
@@ -128,7 +129,13 @@ export function installationPlan(
   core: string,
   version: string,
 ): InstallPlan {
-  const generated = generateAdapter(target, canonical, core, version)
+  const generated = generateAdapter(
+    target,
+    canonical,
+    core,
+    version,
+    target === 'opencode' ? context.opencodeVersion : undefined,
+  )
   const locations = installLocations(target, context)
   const files: InstalledFile[] = []
   const exclusive = [artifact]

@@ -4,6 +4,8 @@
 # Checked by `wl harness check` — see docs/decisions/0011-size-budgets-and-enforcement.md.
 version: 1
 rules:
+  - id: opencode-native-dialect
+    enforcers: [src/adapters/opencode-version.ts#openCodeMajor, src/adapters/hooks.ts#hookArtifacts, src/fanout/opencode-v2.ts#openCodeV2Worker, src/cli/fanout.ts#fanoutCommand, test/unit/adapters/opencode-v2.test.ts, test/unit/fanout/fanout.test.ts]
   - id: conformance-redacted-diagnostics
     enforcers: [src/conformance/diagnostics.ts#nativeDiagnostics, src/conformance/diagnostics.ts#conformanceDiagnostics, src/conformance/run.ts#runConformance, test/unit/conformance/diagnostics.test.ts, test/unit/conformance/conformance.test.ts]
   - id: framing-reviewed-decision

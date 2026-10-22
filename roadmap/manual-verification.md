@@ -21,6 +21,13 @@ Any further implementation defect discovered by those trials remains technical
 work, not an owner acceptance checkbox. Track it in [V1 acceptance](../docs/v1-acceptance.md#1-finish-implementation-defects-first)
 and the journal before claiming technical closure.
 
+OpenCode V1/V2 compatibility now has separate deterministic renderers and native
+execution recipes (ADR-0088). Actual V2 inspector discovery/read and an isolated
+user-scope hook read/deny are observed. Complete native review remains unaccepted:
+a six-lens synthetic review attempt failed with five 60-second timeouts and one
+invalid response; a separate 120-second lens attempt also timed out. Do not mark
+native gate parity or the whole platform task complete from the smaller probes.
+
 Remote service integrations are **experimental · fixture-tested ·
 service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md).
 Their authenticated account/API/rendering checks below are deferred certification,
@@ -98,6 +105,17 @@ present different-build observations as a comparable pinned/latest regression.
 No native permission bypass, credential copying, service write or project push
 was requested by these scenarios. Native ambient side effects are not fully
 observed by the structural judge.
+
+### OpenCode V2 transport and guard observations
+
+- [x] Preserve the default/pinned V1 render and add explicit adapter build-native selection. Managed install/conformance/headless execution select the observed exact version; unsupported future majors refuse.
+- [x] Keep native version initialization out of the real home, including install dry-run. Actual --version cache/log side effects were found by a failing regression and isolated in a temporary child home.
+- [x] Actual OpenCode 2.1.1 discovers the inspector from the worker's isolated global config and returns WL_READY. Project-config discovery failed for this noninteractive worker. No personal configuration or permission bypass is used.
+- [x] With that V2 inspector, read the assigned external synthetic README through the actual native reader and receive WL_READY. This is a positive read test, not complete permission isolation.
+- [x] In an isolated user-scope V2 installation on core e601507c, observe actual native README read success and reserved runtime write denial with the core's reason. The reserved file does not exist afterwards. No project checkout or personal native configuration is changed.
+- [ ] Verify project-scope hook activation/trust and negative read-only permission boundaries on the intended native setup. Current policy tests are synthetic; the observed user-scope guard denial covers one version/configuration only.
+- [ ] Obtain a complete real gate review and parity result. The bounded six-lens source-API attempt failed (five timeouts, one invalid response); single-lens retries also timed out. A bounded observer later found a completed response in a Markdown fence; the new strict V2 codec unwraps only one exact JSON object before unchanged assignment/schema validation. Preserve earlier failures; this format fix alone is not a new native gate pass.
+- [ ] Repeat complete framing with the exact approved/reviewed final draft, and repeat supported-version/Linux checks. Earlier V1-rendered receipts are not passes for the new V2 transport.
 
 ## Remote rollout bridge (P4-05 component)
 

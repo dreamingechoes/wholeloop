@@ -136,6 +136,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       return installationCommand(command.path, parsed, root, json, io)
     if (command.path === 'doctor') return doctorCommand(parsed, root, json, io)
     if (command.path === 'adapter root') return adapterRoot(json, io)
+    if (command.path === 'adapter build-native')
+      return generateCommand(parsed, root, json, io, true)
     if (command.path === 'build') return generateCommand(parsed, root, json, io)
     if (command.path.startsWith('build ')) return buildCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)

@@ -29,13 +29,14 @@ const defect: GateFinding = {
 }
 const worker = `#!/usr/bin/env node
 const fs=require('node:fs')
+if(process.argv.includes('--version')){console.log(process.env.WL_FIXTURE_NATIVE_VERSION||'1.17.9');process.exit(0)}
 const format=process.env.WL_FIXTURE_FORMAT
 if(format==='antigravity')console.log(JSON.stringify({event:'init',conversation_id:'fixture-session',init:{cwd:process.cwd(),tools:['view_file','grep_search'],permission_mode:'request-review'}}))
 let raw=''
 process.stdin.on('data',chunk=>raw+=chunk)
 process.stdin.on('end',()=>{
  const received=JSON.parse(raw),a=format==='antigravity'?JSON.parse(received.message.content):received,mode=process.env.WL_FIXTURE_MODE
- const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:process.env.WL_FIXTURE_FORMAT==='opencode'?JSON.parse(process.env.OPENCODE_PERMISSION):undefined,cursorPolicy:process.env.WL_FIXTURE_FORMAT==='cursor'?JSON.parse(fs.readFileSync('.cursor/cli.json','utf8')):undefined,cursorHooks:process.env.WL_FIXTURE_FORMAT==='cursor'?fs.existsSync('.cursor/hooks.json'):undefined,geminiPolicy:process.env.WL_FIXTURE_FORMAT==='gemini'?JSON.parse(fs.readFileSync(process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH,'utf8')):undefined,agyAgent:format==='antigravity'?fs.readFileSync('.agents/agents/'+process.argv[process.argv.indexOf('--agent')+1]+'.md','utf8'):undefined})+'\\n')}
+ const log=action=>{if(process.env.WL_FIXTURE_LOG)fs.appendFileSync(process.env.WL_FIXTURE_LOG,JSON.stringify({action,pid:process.pid,role:a.role,time:Date.now(),cwd:process.cwd(),args:process.argv.slice(2),copilotAllowAll:process.env.COPILOT_ALLOW_ALL,extensions:process.env.GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS,opencodePermissions:format==='opencode'&&process.env.OPENCODE_PERMISSION?JSON.parse(process.env.OPENCODE_PERMISSION):undefined,opencodePolicy:format==='opencode'&&!process.env.OPENCODE_PERMISSION?JSON.parse(fs.readFileSync('.native-config/opencode/opencode.json','utf8')):undefined,cursorPolicy:process.env.WL_FIXTURE_FORMAT==='cursor'?JSON.parse(fs.readFileSync('.cursor/cli.json','utf8')):undefined,cursorHooks:process.env.WL_FIXTURE_FORMAT==='cursor'?fs.existsSync('.cursor/hooks.json'):undefined,geminiPolicy:process.env.WL_FIXTURE_FORMAT==='gemini'?JSON.parse(fs.readFileSync(process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH,'utf8')):undefined,agyAgent:format==='antigravity'?fs.readFileSync('.agents/agents/'+process.argv[process.argv.indexOf('--agent')+1]+'.md','utf8'):undefined})+'\\n')}
  log('start')
  if(mode==='crash' || (mode==='crash-vote' && a.role==='refute'))process.exit(7)
  if(mode==='timeout'){process.on('SIGTERM',()=>{});setInterval(()=>{},1000);return}
@@ -51,7 +52,12 @@ process.stdin.on('end',()=>{
   else if(format==='codex'){console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text}}));console.log(JSON.stringify({type:'turn.completed'}))}
   else if(format==='gemini')process.stdout.write(JSON.stringify({response:text,session_id:'fixture-session'}))
   else if(format==='cursor')process.stdout.write(JSON.stringify({type:'result',subtype:'success',is_error:false,result:text}))
-  else if(format==='opencode'){console.log(JSON.stringify({type:'text',sessionID:'fixture-session',part:{messageID:'final',text,time:{end:1}}}));console.log(JSON.stringify({type:'step_finish',sessionID:'fixture-session',part:{messageID:'final',reason:'stop'}}))}
+  else if(format==='opencode'){
+   if(process.env.WL_FIXTURE_FINAL_TEXT_ONLY==='yes'){
+    console.log(JSON.stringify({type:'step_start',sessionID:'fixture-session',part:{sessionID:'fixture-session',messageID:'final',type:'step-start'}}))
+    console.log(JSON.stringify({type:'text',sessionID:'fixture-session',part:{sessionID:'fixture-session',messageID:'final',type:'text',text:String.fromCharCode(96).repeat(3)+'json\\n'+text+'\\n'+String.fromCharCode(96).repeat(3),time:{start:0,end:1}}}))
+   }else{console.log(JSON.stringify({type:'text',sessionID:'fixture-session',part:{messageID:'final',text,time:{end:1}}}));console.log(JSON.stringify({type:'step_finish',sessionID:'fixture-session',part:{messageID:'final',reason:'stop'}}))}
+  }
   else process.stdout.write(text)
  },Number(process.env.WL_FIXTURE_DELAY||0))
 })
@@ -422,10 +428,20 @@ describe('bounded headless gate processes', () => {
         expect(() => new HeadlessHost(engine, { adapter, ...options })).toThrow(/concurrency/)
       expect(() => headlessAdapter('unimplemented')).toThrow(/unimplemented/)
     }))
-  it.each(['claude', 'codex', 'opencode', 'copilot', 'cursor', 'gemini', 'antigravity'])(
+  it.each([
+    'claude',
+    'codex',
+    'opencode',
+    'opencode-v2',
+    'copilot',
+    'cursor',
+    'gemini',
+    'antigravity',
+  ])(
     'executes compiled %s dispatch through a synthetic client on PATH',
-    (id) =>
+    (selected) =>
       fixture(async ({ dir, engine, plan }) => {
+        const id = selected === 'opencode-v2' ? 'opencode' : selected
         const bin = join(dir, 'bin')
         mkdirSync(bin)
         const executable = id === 'cursor' ? 'agent' : id === 'antigravity' ? 'agy' : id
@@ -458,6 +474,9 @@ describe('bounded headless gate processes', () => {
               XDG_CONFIG_HOME: join(dir, 'user'),
               WL_WORKSPACE: '',
               WL_FIXTURE_FORMAT: id,
+              ...(selected === 'opencode-v2'
+                ? { WL_FIXTURE_NATIVE_VERSION: '2.1.1', WL_FIXTURE_FINAL_TEXT_ONLY: 'yes' }
+                : {}),
               WL_FIXTURE_LOG: join(dir, 'compiled-workers.ndjson'),
               COPILOT_ALLOW_ALL: 'true',
               GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS: 'true',
@@ -493,7 +512,18 @@ describe('bounded headless gate processes', () => {
             expect(row.copilotAllowAll).toBe('false')
             expect(row.extensions).toBe('false')
           }
-          if (id === 'opencode') expect(row.opencodePermissions['*']).toBe('deny')
+          if (id === 'opencode') {
+            if (selected === 'opencode-v2') {
+              expect(row.opencodePolicy.permissions[0]).toEqual({
+                action: '*',
+                resource: '*',
+                effect: 'deny',
+              })
+              expect(row.args).toContain('--standalone')
+              expect(row.args).not.toContain('--pure')
+              expect(row.args).not.toContain('--dir')
+            } else expect(row.opencodePermissions['*']).toBe('deny')
+          }
           if (id === 'cursor') {
             expect(row.cursorPolicy.permissions.deny).toEqual([
               'Shell(*)',

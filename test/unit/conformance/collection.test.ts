@@ -89,7 +89,11 @@ describe('fresh multi-client conformance collection', () => {
     const { root, context } = fixture()
     try {
       const entries = CONFORMANCE_TARGETS.flatMap((cli) =>
-        ['pinned', 'latest'].map((channel) => ({ cli, channel, pin: '99.0.0' })),
+        ['pinned', 'latest'].map((channel) => ({
+          cli,
+          channel,
+          pin: cli === 'opencode' ? (channel === 'pinned' ? '1.17.9' : '2.1.1') : '99.0.0',
+        })),
       )
       const result = await collectConformance(
         context,
@@ -117,6 +121,28 @@ describe('fresh multi-client conformance collection', () => {
       rmSync(root, { recursive: true, force: true })
     }
   }, 60000)
+
+  it('refuses an unsupported OpenCode dialect before writing any earlier entry', async () => {
+    const { root, context } = fixture()
+    try {
+      await expect(
+        collectConformance(
+          context,
+          {
+            schema: 'wholeloop/conformance-collection@1',
+            entries: [
+              { cli: 'codex', channel: 'pinned', pin: '99.0.0' },
+              { cli: 'opencode', channel: 'latest', pin: '3.0.0' },
+            ],
+          },
+          'fixture',
+        ),
+      ).rejects.toThrow(/exact supported/)
+      expect(existsSync(context.store)).toBe(false)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
 
   it('requires every selected binary before writes and never substitutes the global channel', async () => {
     const { root, context } = fixture()

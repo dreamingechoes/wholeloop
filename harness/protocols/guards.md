@@ -14,6 +14,10 @@ Read the versioned wholeloop/guard@1 result, never infer permission from prose.
 - ⛔ `native-guard-preserves-permissions` — native allow produces empty output;
   retain the client's normal sandbox/permission checks. Deny uses its native
   shape. Missing, invalid or timed-out core results deny without raw payloads.
+- ⛔ `opencode-native-dialect` — select native OpenCode execution from an exact
+  observed version; default legacy rendering is unverified. V2 guards use the
+  current session location, not the plugin load location;
+  incomplete context denies. Do not substitute V1 flags or broaden permissions.
 
 Use guard before-tool --stdin for native input; git-commit and git-push for actual
 Git events; state-write for explicit runtime destinations. The StoreFiles boundary
@@ -33,4 +37,5 @@ uses the Git fallback; desktop plugin hook support is not evidence of CLI suppor
 Copilot outer timeouts can fail open, so the Git fallback remains necessary.
 These are cooperative hooks, not a shell parser or an adversarial sandbox. Compound
 shell programs, aliases and disabled hooks retain those native limitations. Payload
-fixtures and transport execution are synthetic; real-client capture remains pending.
+fixtures do not prove activation in a native client. Verify each client/version
+and scope separately; one observed binding is not proof for another.

@@ -76,7 +76,10 @@ per-assignment sessions, timeout/output/concurrency limits, owned-group cancella
 exact response validation, round locks and the existing gate aggregator are tested.
 Native/headless/sequential synthetic verdict parity passes. Claude, Codex, OpenCode,
 Copilot and Cursor recipes are help-probed and tested through synthetic PATH clients.
-OpenCode uses a per-worker deny-default read-only agent and completed-message JSONL;
+OpenCode selects V1/V2 from the observed native version. V2 uses an isolated global
+native config, path-checked reader only and final ended text after clean exit;
+V1 retains its per-worker permissions and completed-step JSONL. Actual V2 loads
+the inspector and returns a no-tool response; full gate parity remains unverified.
 Copilot exposes only view/glob/grep with explicit read grants and silent text.
 Cursor uses Ask/sandbox, private worker-local policy, an explicit read/search-only
 hook and successful native final JSON; no personal/project settings are rewritten.
@@ -237,7 +240,7 @@ is promoted to native support. See ADR-0052, ADR-0061 and ADR-0064.
 
 **Local implementation:** source/compiled command registration checks every declared
 output. The v1 candidate records fifty-two source schemas, 147 output variants,
-thirteen step definitions, 156 command signatures and five exit codes. Individual
+thirteen step definitions, 157 command signatures and five exit codes. Individual
 compatibility cases retain declaration identities, command options/signatures and
 exit meanings; public adapter/distribution manifests validate before emission.
 The compatibility/deprecation policy preserves existing 1.x contracts and requires

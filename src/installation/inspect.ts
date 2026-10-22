@@ -33,18 +33,23 @@ export function inspectInstallation(input: InstallInput) {
       return { ...base, status: 'changed', targets, receipt: control.path(receiptPath) }
     }
     const current = selected.every((component) =>
-      sameComponent(
-        metadata(
-          installationPlan(
-            component.target,
-            context,
-            artifact(component.target),
-            input.canonical,
-            input.core,
-            input.version,
+      (component.target === 'opencode' && input.context.opencodeVersion === undefined
+        ? [context, { ...context, opencodeVersion: '2.0.0' }]
+        : [context]
+      ).some((selectedContext) =>
+        sameComponent(
+          metadata(
+            installationPlan(
+              component.target,
+              selectedContext,
+              artifact(component.target),
+              input.canonical,
+              input.core,
+              input.version,
+            ),
           ),
+          component,
         ),
-        component,
       ),
     )
     return {

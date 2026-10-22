@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'adapter build-native',
+    arguments: '',
+    options: ['--target <opencode>', '--pin <version>', '--out <directory>', '--dry-run'],
+    schema: 'wholeloop/adapter-build@1',
+    summary: 'Render an explicit native-version dialect without changing legacy build output',
+  },
+  {
     path: 'conformance diagnose',
     arguments: '<run>',
     options: ['--store <path>'],

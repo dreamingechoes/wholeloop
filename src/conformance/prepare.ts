@@ -4,6 +4,7 @@ import { lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { canonicalDigest } from '../adapters/canonical.js'
 import { artifactDigest } from '../adapters/generate.js'
+import { openCodeMajor } from '../adapters/opencode-version.js'
 import { isObject } from '../config/schema.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { manageInstallation } from '../installation/manage.js'
@@ -86,6 +87,7 @@ export function prepareConformance(context: ConformanceContext, target: string, 
     !pinPattern.test(pin)
   )
     throw new Error('Choose one conformance target and an exact semantic version pin')
+  if (target === 'opencode') openCodeMajor(pin)
   const { scenario, digest } = conformanceScenario(context.canonical)
   const id = `cf-${randomBytes(12).toString('hex')}`
   const files = runFiles(context, id)
@@ -96,7 +98,13 @@ export function prepareConformance(context: ConformanceContext, target: string, 
   mkdirSync(files.path('empty-hooks'), { mode: 0o700 })
   writeFileSync(join(paths.root, 'README.md'), scenario.readme, { flag: 'wx', mode: 0o644 })
   fixtureGit(paths.root, files.path('empty-hooks'), ['init', '-b', 'conformance'])
-  const installation = { ...paths, store: paths.state, scope: 'project' as const, env: {} }
+  const installation = {
+    ...paths,
+    store: paths.state,
+    scope: 'project' as const,
+    env: {},
+    ...(target === 'opencode' ? { opencodeVersion: pin } : {}),
+  }
   manageInstallation('install', {
     context: installation,
     targets: [target],

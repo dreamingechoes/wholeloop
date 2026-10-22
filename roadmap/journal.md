@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · OpenCode compatibility — retain V1 and select native V2
+
+- Preserve the default and pinned V1 tree, adding explicit exact-version rendering and observed-version selection for managed install, conformance and headless execution. V2 binds guards to the current session location, recognizes patch destinations and uses documented policy actions. Isolate native version side effects so dry-run leaves the real home untouched; validate known artifact dialects without following escaping hints. ADR-0088 records the boundary.
+- Actual OpenCode 2.1.1 loads the private global-config inspector and reads an assigned synthetic README. An isolated user-scope native guard on core e601507c allows a read and denies a reserved runtime write without creating the file. The complete six-lens gate still fails (five timeouts, one invalid result); a diagnostic final response exposes a JSON fence, now decoded strictly. Later retries time out or fail upstream. Preserve those failures, native policy and account/model choices; no complete gate parity or new framing pass is claimed.
+- The final audit corrects policy names to integration.use and refuses escaping/root-symlink dialect hints before reading bytes. Local lint/types, build, all 1887 tests in 85 files (273.07 seconds), smoke, isolated package PASS, references, 266-file docs and 142-file harness pass. Markdown catches unescaped policy wildcards in the new ADR; correct prose formatting and repeat documentation/Markdown/Mermaid checks. Preserve all 212 declarations and append one command (157 total). The framing fixture's missing final-owner declaration and nightly V2 model configuration remain independent technical follow-ups; native trust/access, broader workflow/Linux and release acceptance stay open. No push or publication occurs.
+
 ## 2026-10-22 · Native diagnosis — upstream availability and version boundaries
 
 - Complete the longer OpenCode diagnostic-only attempt: native tools execute, retries continue, then the process exits 1 with a provider error envelope containing HTTP 503 markers. No framing completion or passing receipt is obtained. Preserve the earlier strict FAIL and all diagnostic-only fixtures outside Git; no model, account or permission is substituted.

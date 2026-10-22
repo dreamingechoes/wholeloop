@@ -98,6 +98,7 @@
 | [0085](./0085-client-owned-mcp-first-provider-transport.md) | Client-owned MCP-first provider transport | Accepted | 2026-10-22 |
 | [0086](./0086-exact-final-framing-review-and-owner-decisions.md) | Exact final framing review and owner decisions | Accepted | 2026-10-22 |
 | [0087](./0087-redacted-native-diagnostics-and-explicit-invocations.md) | Redacted native diagnostics and explicit invocations | Accepted | 2026-10-22 |
+| [0088](./0088-version-specific-opencode-native-transports.md) | Version-specific OpenCode native transports | Accepted | 2026-10-22 |
 
 ## Lifecycle
 

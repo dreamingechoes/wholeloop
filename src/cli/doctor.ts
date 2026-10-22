@@ -3,8 +3,7 @@ import { homedir } from 'node:os'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
-import { generateAdapter } from '../adapters/generate.js'
-import { DOCTOR_TARGETS, doctor } from '../diagnostics/doctor.js'
+import { DOCTOR_TARGETS, doctor, expectedArtifact } from '../diagnostics/doctor.js'
 import { storePath } from '../state/paths.js'
 import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
@@ -45,7 +44,7 @@ export function doctorCommand(
           artifact: {
             path: artifact,
             target: targets?.[0] ?? '',
-            expected: generateAdapter(targets?.[0] ?? '', canonical, core, VERSION),
+            expected: expectedArtifact(targets?.[0] ?? '', artifact, canonical, core, VERSION),
           },
         }
       : {}),

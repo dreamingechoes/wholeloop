@@ -34,6 +34,7 @@ export function generateAdapter(
   canonical: ReadonlyMap<string, string>,
   core: string,
   version: string,
+  nativeVersion?: string,
 ) {
   validateCanonical(canonical)
   if (
@@ -80,7 +81,8 @@ export function generateAdapter(
       throw new Error('Adapter artifacts must not replace a generated entrypoint')
     files.set(path, file)
   }
-  for (const [path, file] of hookArtifacts(id, artifactDigest(core))) files.set(path, file)
+  for (const [path, file] of hookArtifacts(id, artifactDigest(core), nativeVersion))
+    files.set(path, file)
   files.set('bin/wl.mjs', { mode: 0o755, content: core })
   const manifest = {
     schema: 'wholeloop/adapter-artifacts@1',

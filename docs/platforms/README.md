@@ -310,6 +310,22 @@ actual discovery/install/Linux checks remain in the
 
 ### Additional tier-A targets
 
+OpenCode's default build retains the V1 dialect and its existing pin. For V2,
+render explicitly; managed install selects the installed observed version:
+
+```text
+wl adapter build-native --target opencode --pin 2.1.1 --out /tmp/wholeloop-opencode-v2 --json
+```
+
+V2 uses its id/setup hook API and current-session location. Its headless inspector
+uses a private global config with only the path-checked reader; search, shell,
+edit, delegation and MCP are denied. Actual 2.1.1 required that global config to
+discover the inspector. Its final ended text is bound to the final step after
+clean exit, decoding at most one exact JSON fence; V1 still requires its stop
+event. The core still checks the exact assignment and result schema. A no-tool V2 response and a native
+user-scope read/deny guard trial are observed, not a complete framing/parity pass.
+See [ADR-0088](../decisions/0088-version-specific-opencode-native-transports.md).
+
 ```text
 wl build --target codex --out /tmp/wholeloop-codex --json
 wl build --target opencode --out /tmp/wholeloop-opencode --json

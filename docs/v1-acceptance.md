@@ -67,6 +67,7 @@ Keep these separate from owner approval:
 - [x] Execute fresh OpenCode, Copilot and Antigravity trials after the owner's explicit private-harness disclosure approval. Preserve their failures: OpenCode reached framing begin before timeout and a longer diagnosis ended with a provider error mentioning HTTP 503; Copilot and Antigravity require native permission review. Recognize soft-denied tools and structured upstream availability errors without retaining native payloads.
 - [ ] Obtain passing fresh actual client acceptance after resolving the recorded blockers. Execution and diagnosis alone do not close acceptance.
 - [x] MCP-first routing is implemented and fixture-tested under ADR-0085. Keep unknown tool contracts pending; real-service certification stays deferred.
+- [x] Add version-specific OpenCode V1/V2 render/guard/headless transports without changing the existing V1 pin. Actual V2 inspector discovery/read and user-scope native hook read/deny are observed; complete review attempts still fail and do not establish native gate parity. See ADR-0088 and the detailed trial record.
 
 The existing stored fictitious framing is evidence of the defect; do not overwrite
 its history to make the old trial appear to have passed.

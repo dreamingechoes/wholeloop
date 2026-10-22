@@ -1,9 +1,9 @@
 import { spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import { existsSync, lstatSync, readFileSync, rmdirSync, rmSync } from 'node:fs'
+import { existsSync, lstatSync, mkdtempSync, readFileSync, rmdirSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
-import { artifactDigest, type generateAdapter } from '../adapters/generate.js'
+import { artifactDigest, generateAdapter } from '../adapters/generate.js'
 import { loadConfig, loadExtensionOptions } from '../config/load.js'
 import type { InstallInput } from '../installation/contracts.js'
 import { inspectInstallation } from '../installation/inspect.js'
@@ -86,6 +86,34 @@ export function versionProbe(
     ? { status: 'observed', version: match[1] }
     : { status: 'invalid', reason: 'invalid-version' }
 }
+/** OpenCode initializes caches/logs before parsing --version; dry-run must not touch the real home. */
+export function openCodeVersionProbe(
+  env: NodeJS.ProcessEnv = process.env,
+  cwd?: string,
+): VersionProbe {
+  const home = mkdtempSync(join(tmpdir(), 'wholeloop-version-'))
+  try {
+    return versionProbe(
+      'opencode',
+      {
+        ...env,
+        HOME: home,
+        USERPROFILE: home,
+        XDG_CONFIG_HOME: join(home, 'config'),
+        XDG_DATA_HOME: join(home, 'data'),
+        XDG_STATE_HOME: join(home, 'state'),
+        XDG_CACHE_HOME: join(home, 'cache'),
+        OPENCODE_CONFIG: undefined,
+        OPENCODE_CONFIG_DIR: undefined,
+        OPENCODE_CONFIG_CONTENT: undefined,
+        OPENCODE_PERMISSION: undefined,
+      },
+      cwd,
+    )
+  } finally {
+    rmSync(home, { recursive: true, force: true })
+  }
+}
 /** A real unique write/rename probe, with cleanup restricted to files/directories it created. */
 export function probeStore(root: string) {
   const files = new StoreFiles(root)
@@ -135,6 +163,41 @@ export function inspectArtifact(path: string, expected: ReturnType<typeof genera
   }
   return expected.manifest
 }
+/** File integrity accepts either known dialect; native compatibility remains a separate observation. */
+export function expectedArtifact(
+  target: string,
+  path: string,
+  canonical: ReadonlyMap<string, string>,
+  core: string,
+  version: string,
+) {
+  if (target === 'opencode') {
+    try {
+      const hook = join(path, '.opencode/plugins/wholeloop.js')
+      const directory = lstatSync(path)
+      const stat = lstatSync(hook)
+      // Format detection must obey the same containment boundary as full inspection.
+      if (
+        directory.isDirectory() &&
+        !directory.isSymbolicLink() &&
+        stat.isFile() &&
+        !stat.isSymbolicLink() &&
+        stat.size <= 65536 &&
+        inside(canonicalPath(path), canonicalPath(hook))
+      ) {
+        const modern = generateAdapter(target, canonical, core, version, '2.0.0')
+        if (
+          artifactDigest(readFileSync(hook, 'utf8')) ===
+          artifactDigest(modern.files.get('.opencode/plugins/wholeloop.js')?.content ?? '')
+        )
+          return modern
+      }
+    } catch {
+      /* The normal artifact inspection reports missing or changed files. */
+    }
+  }
+  return generateAdapter(target, canonical, core, version)
+}
 /** Diagnosis observes availability, not authentication, client discovery or successful model execution. */
 export function doctor(options: DoctorOptions) {
   const targets = options.targets ?? DEFAULT_TARGETS
@@ -161,7 +224,12 @@ export function doctor(options: DoctorOptions) {
           },
         }),
   })
-  const probe = options.probe ?? ((binary: string) => versionProbe(binary, options.env))
+  const probe =
+    options.probe ??
+    ((binary: string) =>
+      binary === 'opencode'
+        ? openCodeVersionProbe(options.env, options.root)
+        : versionProbe(binary, options.env))
   const git = probe('git')
   const parts = git.version?.split('.').map(Number) ?? []
   const gitUsable =
@@ -184,11 +252,13 @@ export function doctor(options: DoctorOptions) {
       : {}),
   })
   let found = 0
+  let opencodeVersion: string | undefined
   for (const target of targets) {
     const observed = probe(
       target === 'antigravity' ? 'agy' : target === 'cursor' ? 'agent' : target,
     )
     const available = observed.status === 'observed'
+    if (target === 'opencode' && available) opencodeVersion = observed.version
     if (available) found++
     checks.push({
       id: `cli.${target}`,
@@ -356,6 +426,7 @@ export function doctor(options: DoctorOptions) {
           home: options.home,
           store: options.store,
           scope,
+          ...(opencodeVersion ? { opencodeVersion } : {}),
           ...(options.env ? { env: options.env } : {}),
         },
       })

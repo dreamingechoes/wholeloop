@@ -31,7 +31,7 @@ const patterns = {
   'permission-denied':
     /permission denied|permission.*required|not allowed|access denied|not trusted|trust.*required/i,
   'invalid-invocation':
-    /unknown (?:option|flag)|unrecognized (?:option|flag)|invalid argument|unexpected argument/i,
+    /unknown (?:option|flag|agent)|agent not found|unrecognized (?:option|flag)|invalid argument|unexpected argument/i,
   'connection-failed':
     /ECONNREFUSED|ECONNRESET|ENOTFOUND|fetch failed|network.*(?:error|unavailable)|connection refused/i,
   'model-unavailable':
@@ -67,6 +67,10 @@ export function nativeDiagnostics() {
       const step =
         name === 'step_update' && isObject(value.step_update) ? value.step_update : undefined
       const tool = step && isObject(step.tool_info) ? step.tool_info : undefined
+      const nativeTool =
+        name === 'tool_use' && isObject(value.part) && isObject(value.part.state)
+          ? value.part.state
+          : undefined
       // AGY soft-denies tools while the enclosing turn still reports SUCCESS and exits zero.
       const denied =
         name === 'result' &&
@@ -79,6 +83,7 @@ export function nativeDiagnostics() {
         result?.status === 'ERROR' ||
         data?.success === false ||
         (step?.state === 'ERROR' && tool?.error !== undefined) ||
+        (nativeTool?.status === 'error' && nativeTool.error !== undefined) ||
         denied
       ) {
         state.errorEvents++
@@ -88,6 +93,7 @@ export function nativeDiagnostics() {
           data?.error ??
           data?.message ??
           tool?.error ??
+          nativeTool?.error ??
           value.message ??
           ''
         // Provider failures can expose only an HTTP status, without a network exception string.

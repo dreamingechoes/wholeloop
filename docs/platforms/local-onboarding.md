@@ -101,6 +101,15 @@ Restart OpenCode, request wl-frame-problem and verify skills/roles plus plugin
 activation. Existing unrelated native configuration is retained; actual permission
 and compatible-skill precedence remain owner checks.
 
+Install selects V1/V2 from an isolated native version probe; even dry-run leaves
+the real home untouched. If the binary cannot report a version, legacy rendering
+is retained. Install the intended client first, or export an explicit dialect
+with adapter build-native --target opencode --pin 2.1.1 --out path --json.
+V2's hook obtains the current session directory and refuses missing context.
+An actual isolated user-scope 2.1.1 trial allowed a README read and denied a
+reserved runtime write. Project-scope activation/trust and other versions remain
+separate checks. Neither install nor doctor certifies native model/permission use.
+
 The headless observer has its own deny-default permissions and fresh agent; it
 does not prove the interactive client's policy. See
 [additional tier-A artifacts](./README.md#additional-tier-a-targets).

@@ -1,3 +1,4 @@
+import { openCodeVersionProbe } from '../diagnostics/doctor.js'
 import { headlessAdapter } from '../fanout/adapters.js'
 import { runHeadless } from '../fanout/run.js'
 import { FlowEngine } from '../flow/engine.js'
@@ -27,8 +28,11 @@ export async function fanoutCommand(
   process.once('SIGINT', stop)
   process.once('SIGTERM', stop)
   try {
+    const observed = adapter === 'opencode' ? openCodeVersionProbe(process.env, root) : undefined
+    if (observed && (observed.status !== 'observed' || !observed.version))
+      throw new Error('Observe the native OpenCode version before selecting a headless dialect')
     const result = await runHeadless(new FlowEngine(new StateStore(), root), subject, gate, {
-      adapter: headlessAdapter(adapter),
+      adapter: headlessAdapter(adapter, observed?.version),
       signal: controller.signal,
       ...(options['--concurrency'] !== undefined
         ? { concurrency: Number(options['--concurrency']) }

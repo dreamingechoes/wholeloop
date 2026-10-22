@@ -76,7 +76,8 @@ describe('standalone conformance runner', () => {
     'executes installed %s launchers while retaining explicit simulation evidence',
     async (target) => {
       await fixture(async (ctx) => {
-        const prepared = prepareConformance(ctx, target, '99.0.0')
+        const pin = target === 'opencode' ? '1.17.9' : '99.0.0'
+        const prepared = prepareConformance(ctx, target, pin)
         expect(reportConformance(ctx, prepared.id).status).toBe('UNRUN')
         const run = readConformance(ctx, prepared.id)
         const prompt = readFileSync(prepared.prompt, 'utf8')
@@ -88,7 +89,7 @@ describe('standalone conformance runner', () => {
         const report = await runConformance(ctx, prepared.id, 'fixture')
         expect(report).toMatchObject({
           cli: target,
-          pin: '99.0.0',
+          pin,
           status: 'FIXTURE_PASS',
           evidence: 'simulation',
           step: 'frame-problem',
@@ -369,10 +370,10 @@ describe('standalone conformance runner', () => {
 
   it('runs OpenCode from the prepared cwd without the unsupported run directory flag', async () => {
     await fixture(async (ctx, dir) => {
-      const prepared = prepareConformance(ctx, 'opencode', '99.0.0')
+      const prepared = prepareConformance(ctx, 'opencode', '1.17.9')
       const env = fakeClient(
         dir,
-        '99.0.0',
+        '1.17.9',
         `;(async()=>{let input='';for await(const chunk of process.stdin)input+=chunk;if(process.argv.includes('--dir')||process.cwd()!==${JSON.stringify(prepared.root)}||!input.includes('Exact --input value'))process.exit(8);})()`,
         'opencode',
       )

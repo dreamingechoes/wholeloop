@@ -1261,6 +1261,12 @@
       "arguments": "<run>",
       "options": ["--store <path>"],
       "schema": "wholeloop/conformance-diagnostics@1"
+    },
+    {
+      "path": "adapter build-native",
+      "arguments": "",
+      "options": ["--target <opencode>", "--pin <version>", "--out <directory>", "--dry-run"],
+      "schema": "wholeloop/adapter-build@1"
     }
   ],
   "exitCodes": {

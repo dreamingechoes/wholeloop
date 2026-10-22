@@ -2,9 +2,14 @@ import { antigravityHook } from './antigravity-hook.js'
 import type { RenderedFile } from './contracts.js'
 import { cursorHook } from './cursor-hook.js'
 import { geminiHook } from './gemini-hook.js'
+import { openCodeMajor } from './opencode-version.js'
 
 /** Native bindings contain transport only. Policy and all state interpretation stay in the core. */
-export function hookArtifacts(target: string, core?: string): Map<string, RenderedFile> {
+export function hookArtifacts(
+  target: string,
+  core?: string,
+  nativeVersion?: string,
+): Map<string, RenderedFile> {
   if (target === 'cursor')
     return new Map([
       [
@@ -51,7 +56,28 @@ export function check(payload) {
   if (target === 'opencode') {
     add(
       '.opencode/plugins/wholeloop.js',
-      `import { check } from '../../hooks/check.mjs'
+      openCodeMajor(nativeVersion) === 2
+        ? `import { isAbsolute } from 'node:path'
+import { check } from '../../hooks/check.mjs'
+export default {
+ id:'wholeloop.guard',
+ async setup(ctx) {
+  await ctx.tool.hook('execute.before',async event=>{
+   // A plugin's load location may differ from the current session or worktree.
+   let cwd
+   try {
+    if(typeof event.sessionID!=='string' || !event.sessionID)throw new Error('session')
+    const session=await ctx.session.get({sessionID:event.sessionID})
+    cwd=session?.location?.directory
+    if(typeof cwd!=='string' || !isAbsolute(cwd))throw new Error('location')
+   }catch{throw new Error('wholeloop guard session context is unavailable.')}
+   const decision=check({event:'before-tool',tool:event.tool,args:event.input,cwd})
+   if(decision.decision==='deny')throw new Error(decision.reasons.join(' '))
+  })
+ }
+}
+`
+        : `import { check } from '../../hooks/check.mjs'
 export const Wholeloop = async ({ directory }) => ({
  'tool.execute.before': async (input, output) => {
   const decision=check({event:'before-tool',tool:input.tool,args:output.args,cwd:directory})

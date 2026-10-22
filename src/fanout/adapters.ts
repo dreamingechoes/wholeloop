@@ -1,9 +1,11 @@
+import { openCodeMajor } from '../adapters/opencode-version.js'
 import { isObject } from '../config/schema.js'
 import { antigravityWorker } from './antigravity.js'
 import { copilotWorker } from './copilot.js'
 import { cursorWorker } from './cursor.js'
 import { geminiWorker } from './gemini.js'
 import { openCodeWorker } from './opencode.js'
+import { openCodeV2Worker } from './opencode-v2.js'
 import type { WorkerPolicyFile } from './policy-files.js'
 
 export interface HeadlessAdapter {
@@ -19,8 +21,9 @@ export interface HeadlessAdapter {
   response(stdout: string, directory: string): string
 }
 /** These recipes are help-probed boundaries, not a claimed authenticated conformance pass. */
-export function headlessAdapter(id: string): HeadlessAdapter {
-  if (id === 'opencode') return openCodeWorker
+export function headlessAdapter(id: string, nativeVersion?: string): HeadlessAdapter {
+  if (id === 'opencode')
+    return openCodeMajor(nativeVersion) === 2 ? openCodeV2Worker : openCodeWorker
   if (id === 'copilot') return copilotWorker
   if (id === 'cursor') return cursorWorker
   if (id === 'gemini') return geminiWorker

@@ -115,7 +115,7 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
       ? 'state-write'
       : /^(bash|shell|exec_command|run_shell_command|run_command|powershell)$/.test(tool)
         ? 'shell'
-        : /^(write|edit|create|delete|delete_file|apply_patch|write_file|edit_file|replace|str_replace_editor|write_to_file|replace_file_content|multi_replace_file_content)$/.test(
+        : /^(write|edit|create|delete|delete_file|apply_patch|patch|write_file|edit_file|replace|str_replace_editor|write_to_file|replace_file_content|multi_replace_file_content)$/.test(
               tool,
             )
           ? 'write'
@@ -138,8 +138,11 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
   ].filter((path) => path !== undefined)
   if (paths.some((path) => typeof path !== 'string' || !path.trim()))
     throw new Error('Write guard needs explicit file paths')
-  if (tool === 'apply_patch' && typeof (args.patch ?? args.input) === 'string')
-    for (const match of String(args.patch ?? args.input).matchAll(
+  if (
+    /^(apply_patch|patch)$/.test(tool) &&
+    typeof (args.patch ?? args.input ?? args.patchText) === 'string'
+  )
+    for (const match of String(args.patch ?? args.input ?? args.patchText).matchAll(
       /^\*\*\* (?:Add File|Update File|Delete File|Move to): (.+)$/gm,
     ))
       paths.push(match[1])
