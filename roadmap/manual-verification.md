@@ -37,6 +37,32 @@ native-client/permission/hook tests, release CI or publication decisions. The
 Amplitude dashboard write remains a pending handoff until its MCP contract is
 known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Automated platform checks (2026-10-22)
+
+The exact source archive from a9c2964 passes the full check on both environments:
+
+| Environment | Node / npm | Executed result |
+| --- | --- | --- |
+| macOS arm64 | 24.22.0 / 11.8.0 | 1907 tests in 86 files; complete check passes |
+| Debian bookworm Linux arm64, Docker | 24.22.0 / 11.19.1 | 1907 tests in 86 files; complete check passes |
+
+Linux uses Git 2.39.5 and the official Node image pinned to
+sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5.
+Dependencies are prepared separately with only the package manifests. The source
+check then runs without network or native credentials, as a non-root user with
+no capabilities, from an immutable source archive and a fresh synthetic Git
+baseline. It does not mount the real checkout/history or personal directories.
+The offline package SHA-256 matches macOS: 863db993992286af9b2ad6767b50c6d2c622c16ffbf3a85df72b13826f873c60.
+
+- [x] Execute lint/types, all unit/process/Git/worktree/compiled CLI fixtures, build/smoke, offline npm packaging, schema compatibility, references, docs, harness, Markdown and all 35 Mermaid diagrams on Linux arm64/Node 24. No test is skipped.
+- [ ] Repeat other supported Node/platform combinations, including the complete Node 20 installed-runtime surface and Linux x64. A Node 24 development check does not establish those results.
+- [ ] Execute real native-client discovery/permissions/hooks/models, authenticated services and hosted release/Actions workflows on Linux. PATH fixtures and local publication simulations do not establish those results.
+
+Earlier per-component observations below remain historical. Their automated
+fixtures now also have the Linux arm64/Node 24 result above; references to other
+versions or real clients/services stay open. New technical defects found by native
+trials still require implementation rather than an owner acceptance waiver.
+
 ## Owner-observed Claude framing and session recovery (2026-10-22)
 
 The owner exercised source-installed user-scope loose skills in Claude Code,
@@ -133,7 +159,7 @@ observed by the structural judge.
 
 - [ ] In a disposable GrowthBook project, verify the explicit reader uses the published revision and live environment controls despite contradictory drafts. Compare default/force/forward/reverse/zero/full state, JSON boolean handling, project scope, compiled definitions and decimal percentages against the actual management API/SDK. Confirm hashed cohorts are labelled contexts with id and cannot satisfy all-context ramp claims; check missing-ID fallback behavior separately. Current responses are synthetic; actual credentials/API/native/Linux acceptance remains open.
 
-- [ ] Run development checks on supported development Node versions and repeat built-CLI/provider runtime scenarios across supported Node/platform versions. Actual Node 20.0.0 macOS arm64 passes only the compiled flag preview and synthetic signal-bearing host subset; Node 24 unit tests cover success/cancellation listener cleanup. Linux, complete Node 20 behavior and actual native/server acceptance remain unverified.
+- [ ] Run development checks on other supported development Node versions and repeat built-CLI/provider runtime scenarios across supported Node/platform versions. Actual Node 20.0.0 macOS arm64 passes only the compiled flag preview and synthetic signal-bearing host subset; the complete Node 24 suite passes on macOS/Linux arm64, including success/cancellation listener cleanup. Complete Node 20 behavior and actual native/server acceptance remain unverified.
 
 - [ ] In a disposable Unleash project, configure the explicit Admin reader and authorize a read with the exact deployment/subpath/project/environment. Compare default and default-stickiness percentage/disabled state with the native console, verify environment variants are fetched, and inspect dependency/targeted/union/release-plan/safeguard refusal. Current tests use synthetic responses and source API contracts; actual authentication/version/native/Linux behavior remains unverified.
 
@@ -204,12 +230,14 @@ model, permission and MCP acceptance remains unverified.
 - [ ] Choose public repository visibility and hosting explicitly, verify npm ownership and activate and verify the implemented trusted publication/provenance workflow. The local exporter changes neither repository visibility nor package privacy and performs no publication.
 - [ ] Run release preflight from the actual source checkout with the intended built/package/lock version and genuine CI repository/event context. Inspect blocked reasons and masked index flags without silently clearing personal setup. A ready local consistency plan is neither authenticated context nor permission to publish; actual ownership/OIDC/provenance and release activation remain separate.
 - [ ] Record actual fresh-machine installation time and review release notes without attribution after delivery activation. Run the local release notes draft against the intended exact range, check actual breaking intent/migration guidance and inspect identity-only rejections. Repeat complete-clone/range/refusal behavior on Linux and supported Node releases; draft impact alone does not verify compatibility. Publication automation is implemented locally; actual hosted/OIDC provenance remains owner verification. Optional compiled binaries remain optional future code work.
-- [ ] Repeat package:check on Linux and supported development Node/npm releases, plus installed-core runtime checks on Node 20. Inspect a retained interrupted/failed fixture before removal. Local offline npm 11.8.0 packaging/install/bin-links/managed-file checks passed on macOS arm64/Node 24.1.0 with private true; native activation and fresh-machine timing remain separate.
+- [x] Repeat package:check on Linux arm64/Node 24.22.0/npm 11.19.1: actual offline archive/install/bin-links/managed-file execution passes, matching the macOS package hash. Package privacy stays true and no publication occurs.
+- [ ] Repeat other supported development Node/npm/platform combinations and the complete installed-core Node 20 runtime surface. Inspect retained interrupted/failed fixtures before removal; native activation and fresh-machine timing remain separate.
 
 ## Generated references (P5-06 local controls)
 
 - [ ] After changing source contracts, rebuild before running docs check. Follow the chosen client onboarding section and keep the selected absolute core path when changing projects; native file installation does not create a global alias. Confirm command/config/provider/adapter sections describe that build, not an older executable on PATH.
-- [ ] On Linux and supported Node releases, repeat read-only drift detection, explicit selective/full regeneration, malformed-marker refusal and preservation of surrounding prose. Current compiled execution is macOS arm64/Node 24 only.
+- [x] On Linux arm64/Node 24, repeat read-only drift detection, explicit selective/full regeneration, malformed-marker refusal and preservation of surrounding prose through the compiled fixtures and complete check.
+- [ ] Repeat the generated-reference fixtures on other supported Node/platform combinations.
 - [ ] If regeneration is interrupted during writes, inspect the affected pages/markers before rerunning. All selected markers are preflighted, but filesystem failures do not provide multi-file crash atomicity.
 
 The generated provider and adapter tables record declarations only. Check that
@@ -227,14 +255,15 @@ sections above. Overview pages retain native/host verification boundaries.
 ## Disposable standalone framing conformance (P1-14)
 
 - [x] Supply an explicit fictional owner declaration for the final exact fixture digest and decision. Require the matching final-review note and artifact; installed-core simulations use a labelled simulated reviewer and remain FIXTURE_PASS (ADR-0089). This closes the one-shot scenario's missing test input, not real-human or native semantic acceptance.
-- [ ] Obtain a fresh native pass on the revised scenario. OpenCode 2.1.1 run cf-c8f17565452bed83624a65b7 on core da2b4506 failed before journal creation (exit 1, one unclassified native error). Preserve the failure and inspect native availability without guessing its cause or weakening final-review checks. Earlier passes have different scenario/core hashes.
+- [ ] Obtain fresh native passes on the remaining clients for the revised scenario. OpenCode 2.1.1 run cf-c8f17565452bed83624a65b7 on core da2b4506 failed before journal creation (exit 1, one unclassified native error). Preserve the failure and inspect native availability without guessing its cause or weakening final-review checks. Earlier passes have different scenario/core hashes.
 - [x] The revised fictional final-approval scenario passes on actual Codex 0.163.0, core 10cca6bc, run cf-ade63be4ab7e78074a428393 through the source-API runner with a temporary closed-category observer. Exact version, marker, final-review note, bytes/decision and journal chain match, with no missing events/problems. Preserve the earlier incomplete run cf-f957433ff689971ec75c84aa; neither outcome establishes reviewer truth/isolation or other workflows/clients.
 - [ ] Build, then prepare one fresh run per actual tier-A client with --target and its exact --pin version. Inspect returned fixture/prompt/native recipe and executable resolution; a version token alone is not binary provenance. Retain source/scenario/core hashes.
 - [ ] Arrange native trust, auth/model selection and external-state permissions without modifying the fixture baseline. Invoke `conformance run <id> --live --json`, inspect process/journal/artifact results and record each actual result. Native customizations remain enabled; no permission bypass or credential copy is performed. Client startup files may trigger an explicit workspace-change failure.
 - [ ] Confirm the real installed skill supplies the random note marker, creates one owned standalone initiative, completes framing with a go receipt and stops before write-spec. A marker proves instruction consumption, not an adversarial loader attestation; review narrative evidence/challenge quality separately.
 - [ ] Exercise actual timeouts, cancellation and native failures; the report must name CLI, step and missing events without retaining stdout/stderr. Interrupted/failed fixtures cannot be retried or relabelled. Inspect retained evidence and prepare a new run.
 - [ ] Inspect native logs, ambient plugins/compatible user skills, ignored files, Git metadata, external writes and any remote effects. This structural scenario does not validate native JSON protocol, read-only role isolation, hook activation or the broader P0-03 matrix.
-- [ ] Repeat on Linux and supported Node versions before claiming portability. Current simulation/compiled-runner execution is macOS arm64/Node 24.
+- [x] Repeat all seven installed-launcher simulations and compiled conformance-runner fixtures on Linux arm64/Node 24 in the complete 1907-test check. Results remain simulation, not native Linux passes.
+- [ ] Repeat real clients and other supported Node/platform combinations before making broader portability claims.
 
 Automated tier-A/Gemini/Antigravity/Cursor installed-launcher simulations report FIXTURE_PASS, never a
 native conformance PASS. Preparation launches no model; --live is an explicit
@@ -499,7 +528,8 @@ On a representative project, verify dependency/setup commands, actual port
 binding, submodules/LFS, platform-specific Git behavior and the explicit checkout
 opt-out. Local tests used Git 2.49.0 on macOS with real temporary repositories,
 concurrent CLI creation, dirty source checkouts, stacked branches, locks and
-conservative prune. Linux and physical process interruption remain unrun. After
+conservative prune. These fixtures also pass on Linux arm64/Node 24/Git 2.39.5;
+other platforms/versions and physical process interruption remain unrun. After
 an interruption, inspect stale lock ownership before clearing it and retrying the
 recorded intent. Stop currently records a lease; no worker/dev-server process
 controller is implemented. Open does not count as the person's test-it approval.

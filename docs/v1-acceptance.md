@@ -27,6 +27,7 @@ be a separate scope change, not a consequence of experimental service integratio
 
 ## What is already confirmed
 
+- [x] The current 1907-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
 - [x] Local check passed 1760 tests in 81 files on macOS arm64/Node 24.22.0, plus build, smoke, offline npm packaging and documentation/harness checks, before subsequent acceptance work.
 - [x] The owner installed user-scope Claude loose skills and invoked framing with the eight questions and an explicit human stop.
 - [x] An on-hold outcome retained the owner's reason and reopening condition in external core state.

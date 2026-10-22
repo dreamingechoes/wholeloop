@@ -59,8 +59,9 @@ An annotation-only or equivalent edit may update its fixture after the reason an
 domain regression checks are recorded. Never refresh fixtures to hide changed
 constraints or meanings under an old identity. Parser, replay, workflow and native
 conformance evidence remain necessary for the behavior they exercise. The current
-checks ran on macOS arm64/Node 24; Linux and other supported runtime checks remain
-in the manual verification list.
+checks ran on macOS and Debian Linux arm64/Node 24, including all 1907 tests,
+compiled fixtures and offline packaging. Other supported Node/platform combinations,
+real native clients and physical upgrade acceptance remain in the manual list.
 
 ## Before the actual release
 

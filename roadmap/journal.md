@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Linux portability — execute the complete isolated check
+
+- Verify the local Docker host is Linux arm64; download the official Node 24.22.0 bookworm image pinned to sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5. Prepare dependencies separately using only package manifests. Run the exact a9c2964 source archive with a fresh synthetic Git baseline as a non-root user, no capabilities, a read-only root filesystem and network disabled; mount no real checkout/history, native homes or credentials.
+- The complete Linux check passes: 1907 tests in 86 files (55.35 seconds, no skipped tests), lint/types, build/smoke, actual offline package PASS, references, 268-file docs, 143-file harness, 267-file Markdown and all 35 Mermaid diagrams. Observe Node 24.22.0, npm 11.19.1 and Git 2.39.5. The package SHA-256 matches macOS, 863db993992286af9b2ad6767b50c6d2c622c16ffbf3a85df72b13826f873c60. Retain logs externally; update the platform evidence and relevant owner checks without promoting fixtures to actual service/client support. Other Node/platform combinations and native Linux/Actions/release acceptance remain open.
+- A separate actual Codex six-lens headless review fails with five invalid replies and one accepted reply; the workspace is unchanged. A fresh diagnostic-only wrapper confirms the five replies are valid JSON but omit the required assignment envelope, while one binds it correctly. Preserve both failed gate receipts. This reveals independent transport implementation work: use the native structured final-output schema rather than accepting unbound inner results or inferring missing identity. No project push, service write or publication occurs.
+
 ## 2026-10-22 · Nightly OpenCode — explicit native model flag
 
 - Replace the nightly host's V1 config injection with a scoped non-secret model identifier and the documented native --model argument for both dialects. Validate before native version startup, keep no-selection local behavior unchanged and retain the selected credential only in the environment. Do not create native config, change accounts, broaden permissions or select a fallback model. ADR-0090 records the choice; actual 2.1.1 help confirms the flag in an isolated child home.
