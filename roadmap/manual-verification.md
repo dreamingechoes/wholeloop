@@ -13,7 +13,8 @@ regressions and limitations rather than assigning every item to the owner.
 Current local remediation is implemented and tested: exact owner-decision framing,
 final revision review and bounded redacted native diagnostics. After explicit
 private-harness disclosure approval, fresh native trials executed on OpenCode,
-Copilot and Antigravity. None passed: OpenCode began framing before its deadline;
+Copilot and Antigravity. None passed: OpenCode began framing before its deadline
+and a longer diagnostic attempt ended with a provider error mentioning HTTP 503;
 Copilot and Antigravity reported native tool permission denials. The latter's
 soft-denial format exposed and now has a diagnostic regression fix.
 Any further implementation defect discovered by those trials remains technical
@@ -57,7 +58,7 @@ them after a code change. All observations below are on macOS arm64/Node 24.22.0
 | Client | Observed version | Actual result | Remaining issue |
 | --- | --- | --- | --- |
 | Codex | 0.163.0 | PASS with live-process-and-journal evidence, no missing events/problems | Standalone framing only; hooks, permissions and broader workflow remain separate |
-| OpenCode | 2.1.1 | Fresh FAIL on core 1237b1be: initiative created and framing started, but the 180-second deadline expired | No completed artifact or go decision; bounded longer diagnosis remains separate from acceptance |
+| OpenCode | 2.1.1 | Fresh FAIL on core 1237b1be: initiative created and framing started, but the 180-second deadline expired | A longer diagnostic-only attempt on core 40482b4d exited 1 with a provider error mentioning HTTP 503; no completed framing or passing receipt |
 | Copilot | 1.0.83 | Fresh FAIL on core 1237b1be: exit 0, no journal events and permission-denied diagnostic | Native permission review for the exact checked launcher is required; no broad tool grants were added |
 | Gemini | 0.27.0 | FAIL; process exited 1 without required events | A separate short probe reports IneligibleTierError; native account/project eligibility needs resolution |
 | Antigravity | 1.4.4 | Fresh FAIL on core 40482b4d: exit 0, no journal events and permission-denied diagnostic | A tool step errors and the successful terminal result lists denied actions; scoped native command approval is required |
@@ -82,6 +83,14 @@ inside a SUCCESS result initially escaped classification. Recognize both bounded
 structured fields without retaining parameters, actions or responses; an actual
 fresh run on core 40482b4d now reports permission-denied and remains FAIL. Earlier
 receipts are preserved. Do not promote these failures or no-tool probes to passes.
+
+A longer OpenCode diagnostic attempt observed tool execution and repeated native
+retries, then an error envelope with type/message/status/response fields and
+provider/request/503 markers. Only bounded metadata was emitted, not native text.
+This is an upstream availability signal, not proof that all OpenCode behavior is
+correct. Map structured numeric HTTP 502/503/504 errors to connection-failed;
+fixture tests cover that mapping and unrelated/malformed statuses. No repeated
+native 503 response is forced, and no model/account is substituted to get a pass.
 
 The Codex receipt and exact passing core are retained externally. Later OpenCode
 and Antigravity recipe changes have their own receipts/core identities; do not

@@ -82,17 +82,22 @@ export function nativeDiagnostics() {
         denied
       ) {
         state.errorEvents++
-        classify(
-          JSON.stringify(
-            value.error ??
-              result?.error ??
-              data?.error ??
-              data?.message ??
-              tool?.error ??
-              value.message ??
-              '',
-          ),
+        const error =
+          value.error ??
+          result?.error ??
+          data?.error ??
+          data?.message ??
+          tool?.error ??
+          value.message ??
+          ''
+        // Provider failures can expose only an HTTP status, without a network exception string.
+        if (
+          isObject(error) &&
+          typeof error.status === 'number' &&
+          [502, 503, 504].includes(error.status)
         )
+          signals.add('connection-failed')
+        classify(JSON.stringify(error))
       }
     } catch {
       /* Non-JSON progress text is not an error or authority to classify a blocker. */
@@ -139,7 +144,7 @@ const remedies: Record<NativeSignal, string> = {
   'invalid-invocation':
     'Compare the exact observed client version and its help with the selected recipe. Preserve this failed run and fix the invocation before retrying a fresh fixture.',
   'connection-failed':
-    'Check the native provider connection and network access. Do not switch providers or credentials automatically.',
+    'Check native provider availability and network access, including upstream HTTP 502/503/504 responses. Do not switch providers or credentials automatically.',
   'model-unavailable':
     'Select an available model through the native client and its existing account; do not silently substitute one.',
 }

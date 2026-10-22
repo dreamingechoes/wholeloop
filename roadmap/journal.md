@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Native diagnosis — upstream availability and version boundaries
+
+- Complete the longer OpenCode diagnostic-only attempt: native tools execute, retries continue, then the process exits 1 with a provider error envelope containing HTTP 503 markers. No framing completion or passing receipt is obtained. Preserve the earlier strict FAIL and all diagnostic-only fixtures outside Git; no model, account or permission is substituted.
+- Map structured numeric upstream HTTP 502/503/504 statuses to the existing connection-failed category and explain provider availability in its fixed remedy. Retain only category/count data. The first focused run finds one incorrect expectation that HTTP 401 has no signal; preserve its existing authentication-required classification and correct the test. All 28 focused cases then pass. The upstream status mapping is fixture-tested; a repeated native 503 is not forced or claimed.
+- Full local check passes 1848 tests in 84 files (236.24 seconds), build/smoke, isolated package PASS, lint/types, unchanged references/catalogues, 265-file docs, 142-file harness, 264-file Markdown and 35 Mermaid diagrams. Public contracts remain unchanged. A separate compatibility audit identifies V1-specific OpenCode hook/headless code while the installed client is 2.1.1 and the frozen native pin is 1.17.9; this remains technical work, independent of upstream availability and owner permission review. Model-free plugin-loader probes were inconclusive, including the documented object baseline, so they establish no native hook activation.
+
 ## 2026-10-22 · Authorized native trials — retain soft-denied tool failures
 
 - After the owner's explicit private-harness disclosure approval, execute fresh OpenCode 2.1.1, Copilot 1.0.83 and Antigravity 1.4.4 framing trials on core 1237b1be. None passes: OpenCode creates the initiative/step but reaches the 180-second deadline; Copilot returns a permission-denied signal with no journal events; Antigravity returns exit zero and SUCCESS despite a denied tool. Preserve every external receipt, account, model and permission policy.

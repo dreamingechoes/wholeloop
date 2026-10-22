@@ -59,6 +59,13 @@ ignore successful tool output and parameters. A fresh actual Antigravity run
 confirms permission-denied with the strict scenario verdict still FAIL. Fixtures
 cover empty/malformed summaries and private action/response omission.
 
+A longer OpenCode diagnosis ended after native retries with a provider error
+mentioning HTTP 503. Numeric upstream 502/503/504 error statuses map to the
+existing connection-failed category; its remedy covers provider availability as
+well as networking. Fixtures verify the status mapping, unrelated authentication
+statuses and private response omission. This does not claim a repeated native 503
+or successful framing, and does not change the configured provider or account.
+
 Sources checked 2026-10-22: [Copilot input semantics](https://docs.github.com/en/copilot/how-tos/copilot-cli/automate-copilot-cli/run-cli-programmatically),
 [Antigravity headless protocol](https://www.antigravity.google/docs/cli/headless/),
 and [OpenCode commands](https://opencode.ai/v2/docs/cli/commands).

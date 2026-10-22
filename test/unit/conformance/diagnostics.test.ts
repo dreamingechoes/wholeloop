@@ -92,6 +92,39 @@ describe('bounded redacted native diagnostics', () => {
     expect(result).toMatchObject({ signals: ['permission-denied'], errorEvents: 2 })
     expect(JSON.stringify(result)).not.toContain(privateText)
   })
+  it.each([502, 503, 504])(
+    'recognizes structured upstream HTTP %s without retaining the response',
+    (status) => {
+      const capture = nativeDiagnostics()
+      capture.observe(
+        'stdout',
+        json({
+          type: 'error',
+          error: {
+            type: 'provider_error',
+            status,
+            message: privateText,
+            response: privateText,
+          },
+        }),
+      )
+      const result = capture.finish()
+      expect(result).toMatchObject({ signals: ['connection-failed'], errorEvents: 1 })
+      expect(JSON.stringify(result)).not.toContain(privateText)
+    },
+  )
+  it.each([400, 401, 403, 429, '503', { status: 503 }])(
+    'does not infer upstream connection failure from an unrelated or malformed status: %j',
+    (status) => {
+      const capture = nativeDiagnostics()
+      capture.observe('stdout', json({ type: 'error', error: { status, message: privateText } }))
+      capture.observe('stdout', json({ type: 'assistant.message', error: { status: 503 } }))
+      expect(capture.finish()).toMatchObject({
+        signals: status === 401 ? ['authentication-required'] : [],
+        errorEvents: 1,
+      })
+    },
+  )
   it.each([[], 0, false, 'permission denied', { message: 'permission denied' }])(
     'ignores an empty or unsupported denial summary: %j',
     (denied_actions) => {
