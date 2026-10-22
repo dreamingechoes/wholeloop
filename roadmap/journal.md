@@ -4,6 +4,11 @@
 
 ---
 
+## 2026-10-22 · Acceptance audit — separate completed code from external checks
+
+- Reconcile the ordered V1 runbook with the completed framing, diagnostic, OpenCode, nightly and native-output fixes. Move the unchecked native-pass requirement out of the implementation-defect list so the owner can see which work is already automated and which requires native access/acceptance. Preserve all failed receipts, deferred experimental-service certification and the rule that newly discovered defects return to implementation.
+- The final audit finds no unstarted/in-progress roadmap implementation task: 40 of 54 are complete and fourteen retain native/workflow/runtime/owner/CI/release acceptance. Optional release artifacts remain optional, not a new mandatory feature. Recheck docs/links, Markdown and whitespace after this documentation-only clarification; the preceding 1925-test macOS/Linux checks and exact native pass remain the execution evidence. No push, visibility/version change, publication or message occurs.
+
 ## 2026-10-22 · P5-03 complete — exact native output and actual headless review
 
 - Derive a closed per-assignment native response schema from copies of the public gate schemas, pinning the envelope and unit/finding/verifier. Use Codex's documented --output-schema flag and existing private whole-batch file staging. Keep core semantic/identity validation unchanged; do not accept bare results or guess missing identity. Clarify complete envelope instructions for all clients. ADR-0091 records the native generation subset and rejected alternatives. The first typecheck catches deletion from an inferred required field; type the cloned projection explicitly and preserve the frozen source schemas.

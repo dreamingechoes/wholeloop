@@ -61,15 +61,21 @@ Accounts with every remote service are absent from this list deliberately.
 
 ### 1. Finish implementation defects first
 
-Keep these separate from owner approval:
+All currently identified implementation defects below are fixed and tested.
+The fourteen open roadmap tasks require native/workflow acceptance, remaining
+runtime/platform trials or external owner decisions. If a new trial exposes a
+code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
 - [x] Add bounded, redacted native diagnosis and explicit version-appropriate invocations. New trials can distinguish structured native errors from an empty journal; exit zero remains insufficient.
 - [x] Execute fresh OpenCode, Copilot and Antigravity trials after the owner's explicit private-harness disclosure approval. Preserve their failures: OpenCode reached framing begin before timeout and a longer diagnosis ended with a provider error mentioning HTTP 503; Copilot and Antigravity require native permission review. Recognize soft-denied tools and structured upstream availability errors without retaining native payloads.
-- [ ] Obtain passing fresh actual client acceptance after resolving the recorded blockers. Execution and diagnosis alone do not close acceptance.
 - [x] MCP-first routing is implemented and fixture-tested under ADR-0085. Keep unknown tool contracts pending; real-service certification stays deferred.
 - [x] Add version-specific OpenCode V1/V2 render/guard/headless transports without changing the existing V1 pin. Actual V2 inspector discovery/read and user-scope native hook read/deny are observed; complete review attempts still fail and do not establish native gate parity. See ADR-0088 and the detailed trial record.
+- [x] Supply an exact scripted final-owner declaration for the automatic framing fixture and require the final review in its judge (ADR-0089). Keep fictional approval separate from real human acceptance.
+- [x] Deliver the explicitly selected nightly OpenCode model through its documented native flag, leaving credentials environment-only (ADR-0090).
+- [x] Constrain Codex headless replies to the exact response envelope and retain strict core validation (ADR-0091). A complete real six-lens review passes through the compiled CLI; earlier unbound replies remain failed.
+- [x] Run the complete 1925-test check on macOS and isolated Linux arm64, including offline package execution and all documentation/harness checks.
 
 The existing stored fictitious framing is evidence of the defect; do not overwrite
 its history to make the old trial appear to have passed.
@@ -133,6 +139,8 @@ measurements must remain unknown. Fixtures can exercise service handoffs, but ar
 not production traffic or a real measurement. Service certification stays optional.
 
 ### 4. Let the automatic runner cover the other clients
+
+- [ ] Obtain fresh actual client acceptance after resolving the recorded native blockers. Execution and diagnosis alone do not close acceptance. The recorded Codex passes cover their exact scenarios/cores; the remaining clients and wider workflow checks stay open.
 
 The owner authorized actual model-backed trials of installed clients. This can
 use native accounts and model allowance. No permission bypass is part of the
