@@ -77,5 +77,15 @@ Use `npm run docs:references` to build and regenerate together. Existing docs:co
 ## Run it                (one example session, then a per-CLI invocation table)
 ## Before & after        (hand-offs: what feeds it, what it feeds)
 ## Gotchas & FAQ
+```
+
+## Tutorials and how-to guides
+
+A tutorial should give the reader a complete route to an observable result: prerequisites, initial working directory, commands or client prompts, expected outputs, a stopping point and the next useful page. Use the [local core tour](../tutorials/local-core.md) for a terminal-only example and [first framing](../tutorials/first-framing.md) for a model-backed procedure.
+
+Label terminal core calls and native skill requests separately. Explain whether a transcript is illustrative or actually observed, and keep native/service acceptance distinct from simulations. Show how to retain IDs, recover in a fresh process/session and interpret expected nonzero exits. Use local, disposable stores for scripted exercises rather than polluting a reader's project or personal work history.
+
+Run copied commands as written and record the environment and limits in the journal. When an instruction needs real accounts, permission choices or a human judgment, describe that boundary and its expected evidence instead of manufacturing a successful transcript. Keep reference/schema detail in the relevant reference page so the first-use route stays readable.
+
 <!-- docnav -->
 [◀ Nightly conformance](conformance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Glossary ▶](../glossary.md)

@@ -1,6 +1,6 @@
 # Utilities — next, status, setup, sync
 
-> **TL;DR** — Four helpers that move you around the flow rather than through one step of it. `next` is the single front door: it figures out where things stand and runs forward to the next decision. `status` shows what is where and what is waiting on whom. `setup` configures your profile, providers and CLIs. `sync` keeps the store and your external tools in agreement.
+> **TL;DR** — The `next` skill orchestrates available steps until a decision; the terminal `wl next` returns the next core contract. `status` inspects stored work, `setup` selects scoped profile/destination preferences, and `sync` reconciles exact delivery evidence. None of these names implies automatic model calls or client authentication.
 
 > [!NOTE]
 > **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status`, `wl setup` and evidence-backed `wl sync` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem). Generated client installation remains pending conformance. URL adoption and explicit shared publication are implemented locally in [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` implementation/owner checks are tracked in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
@@ -13,12 +13,14 @@
 | --- | --- | --- | --- | --- |
 | **next** | `/wholeloop:next` · `$wl-next` · `/wl-next` | anything: nothing, an ID, a URL, an idea | whatever the steps it runs write | the ones in those steps |
 | **status** | `/wholeloop:status` · `$wl-status` · `/wl-status` | the store | nothing | none |
-| **setup** | `/wholeloop:setup` · `$wl-setup` · `/wl-setup` | your CLIs' config, the repo | user / project config · MCP config of chosen CLIs | none |
+| **setup** | `/wholeloop:setup` · `$wl-setup` · `/wl-setup` | layered harness config and provider/profile catalogs | explicitly selected user/project settings, or transient run overrides | explicit choice of scope before saving |
 | **sync** | `/wholeloop:sync` · `$wl-sync` · `/wl-sync` | the store · `codehost` · `tracker` | the store · tracker items | none |
 
 ---
 
 ## Available local commands
+
+Examples below use the core's `wl` shorthand. For a source build, invoke `node "$WHOLELOOP_CLI"` instead. In the native conversation select/request the installed `wl-...` skill; Antigravity uses `wl-agy-...`, and a separate Claude plugin uses `/wholeloop:...`. [Client setup](../platforms/local-onboarding.md) explains namespaces; the [core tour](../tutorials/local-core.md) demonstrates the terminal behavior.
 
 ```text
 wl next "Find old orders faster" --owner Alex --json
@@ -31,11 +33,11 @@ wl setup --profile pair --docs local-docs --tracker local-tracker --scope user -
 
 `next` begins framing from a sentence and reuses initiatives with an equivalent normalized title. Missing ownership becomes a question before creating an item; no input selects the sole open item or asks which one to continue. IDs reuse unfinished runs. After framing completion it can begin the spec and then stops at its required approval. Later unavailable steps remain explicit limits. Pending decisions become questions for a person, never automatic approvals. `--through` routing remains planned.
 
-`status` reports stored items, owners, step plans, pending decisions and unread message counts without consuming messages or writing the store. It does not yet read live integrations or scheduled checkpoints.
+`status` reports stored items, owners, step plans, pending decisions and unread message counts without consuming messages or writing the store. Recorded workspaces and impact schedules appear when present. It does not poll live integrations or infer deployment/service state from them.
 
-`setup` returns batched choices or applies an explicit subset of profile/docs/ tracker choices. `--scope user|project|run` is required before applying choices. All selections validate before an atomic settings write. Run scope returns a transient override; project profile suggestions still yield to user preferences. Adapter installation, MCP configuration edits and authentication remain manual. The canonical skills live in `harness/skills/`; live client execution awaits the adapter/conformance tasks, while compiled CLI workflow tests exercise these paths.
+`setup` returns batched choices or applies an explicit subset of profile/docs/tracker choices. `--scope user|project|run` is required before applying choices. All selections validate before an atomic settings write. Run scope returns a transient override; project profile suggestions still yield to user preferences. Installation uses separate explicit commands; MCP edits and authentication remain client-owned setup. Canonical skills live in `harness/skills/`; compiled CLI workflow tests and scoped native observations are recorded separately in [acceptance](../v1-acceptance.md).
 
-The remaining examples show the broader target behavior.
+The sections below describe skill/orchestrator behavior alongside core commands. A terminal call returns its contract or receipt; the coding client must perform any model-backed work and explicitly selected external handoffs. Setup does not install adapters, edit MCP configuration or authenticate services.
 
 ## Adopt a URL and publish Define artifacts
 

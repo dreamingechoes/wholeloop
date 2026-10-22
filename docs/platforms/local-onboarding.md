@@ -7,6 +7,8 @@
 
 ## Before choosing a target
 
+For the shortest complete route, start with [getting started](../getting-started.md), then [your first framing](../tutorials/first-framing.md). This page is the target-specific reference. Use [troubleshooting](../troubleshooting.md) for a missing executable/skill, ownership conflict or native permission failure.
+
 From the wholeloop checkout, with development Node 22 or newer:
 
 ```bash
@@ -148,7 +150,7 @@ node "$WHOLELOOP_CLI" uninstall --target codex --scope user --dry-run --json
 node "$WHOLELOOP_CLI" uninstall --target codex --scope user --json
 ```
 
-Replace codex with your selected target. Existing edits are preserved; unchanged owned native files are removed while external history/backups remain. Separately activated Git hooks have their own returned uninstall command. Restart the native client to verify removal. Linux/other supported Node/client versions remain explicit owner verification.
+Replace codex with your selected target. Existing edits are preserved; unchanged owned native files are removed while external history/backups remain. Separately activated Git hooks have their own returned uninstall command. Restart the native client to verify removal. Actual native discovery/permissions/models on Linux and other client versions remain separate verification; executed core tests are recorded in [the platform checks](../../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
 
 <!-- docnav -->
 [◀ Platforms](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Architecture ▶](../architecture/README.md)

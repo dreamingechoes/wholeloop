@@ -6,6 +6,10 @@ pages:
   - { path: README.md, title: Docs index }
   - { path: philosophy.md, title: Philosophy }
   - { path: getting-started.md, title: Getting started }
+  - { path: tutorials/first-framing.md, title: First framing }
+  - { path: tutorials/local-core.md, title: Local core tour }
+  - { path: tutorials/small-change.md, title: Small change }
+  - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }
   - { path: flow/README.md, title: The flow }

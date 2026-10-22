@@ -9,8 +9,7 @@
 
 ## Final decision and review
 
-Canonical framing uses the new commands after step begin. Run `wl frame schema
---json` for both input contracts. Save metadata and drafts outside the repository.
+For a first native conversation, follow [your first framing](../../tutorials/first-framing.md). The commands below are the core protocol used by the skill, not a replacement for an owner/challenger conversation. Run `wl frame schema --json` for both input contracts. Save metadata and drafts outside the repository.
 
 1. Capture the owner's explicit outcome/reason, exact reopening condition for on-hold, and only approved stop rules in wholeloop/frame-decision@1:
 
@@ -25,12 +24,10 @@ Canonical framing uses the new commands after step begin. Run `wl frame schema
    }
    ```
 
-2. Call `wl frame draft --for <id> --artifact <draft.md> --file <decision.json>
-   --json`. Save its exact artifact.content bytes to the external draft file. The core replaces Stop conditions with the approved data and returns its hash and a reviewTemplate. This command does not complete or change the journal.
+2. Call `wl frame draft --for <id> --artifact <draft.md> --file <decision.json> --json`. Save its exact artifact.content bytes to the external draft file. The core replaces Stop conditions with the approved data and returns its hash and a reviewTemplate. This command does not complete or change the journal.
 3. Use challenge plan problem on those bytes and give the exact draft to the challenger. Resolve findings or keep evidence gaps explicitly documented. Repeat review after every content edit. A structural pass is insufficient.
 4. Complete reviewTemplate with the actual reviewer, matching final digest, coverage problem/evidence/impact/decision-fidelity and no unresolved findings. Obtain the owner's approval of that same final revision. Names/approval are client-reported; the core cannot authenticate a person or prove semantic truth.
-5. Call `wl frame finalize --for <id> --artifact <draft.md> --file <review.json>
-   --json`. It atomically records the review note, artifact and exact decision. A stale digest, mismatched owner/run, extra stop rule or incomplete review refuses completion. No-go retains its exact reopening condition and stops.
+5. Call `wl frame finalize --for <id> --artifact <draft.md> --file <review.json> --json`. It atomically records the review note, artifact and exact decision. A stale digest, mismatched owner/run, extra stop rule or incomplete review refuses completion. No-go retains its exact reopening condition and stops.
 
 To save the draft and review template without changing the digest, redirect frame draft's JSON into an external plan file, then extract its strings exactly. For example, after setting FRAME_PLAN_FILE, FRAME_DRAFT_FILE and FRAME_REVIEW_FILE to external paths (not repository paths):
 
@@ -53,12 +50,14 @@ Legacy step complete is retained for existing callers and historical data; it ma
 ```text
 wl step begin frame-problem --input "Find old orders" --owner Alex --json
 wl step begin frame-problem --from brief-0123abcd --json
-wl step complete frame-problem --for init-0123abcd --artifact /path/to/frame.md --json
-wl step complete frame-problem --for init-0123abcd --artifact /path/to/frame.md --no-go on-hold --reason "Need evidence" --reopen "Ten affected customers confirmed" --json
+wl frame schema --json
+wl frame draft --for init-0123abcd --artifact /path/to/frame.md --file /path/to/decision.json --json
+wl frame finalize --for init-0123abcd --artifact /path/to/frame.md --file /path/to/review.json --json
 ```
 
-The returned `template` lists the exact required headings. Each unknown must name both missing evidence and its answerer, for example `TBD: order-search baseline;
-who: product analyst`. This is a structural check, not proof that a factual claim is true; the skill and research evidence review establish that distinction.
+These are protocol examples: substitute the actual IDs and external file paths returned in your run. Legacy `step complete frame-problem` remains available for historical callers but does not establish the exact-final-review guarantee; it is not the recommended completion path for new framing.
+
+The returned `template` lists the exact required headings. Each unknown must name both missing evidence and its answerer, for example `TBD: order-search baseline; who: product analyst`. This is a structural check, not proof that a factual claim is true; the skill and research evidence review establish that distinction.
 
 Title reuse normalizes case and whitespace within the same canonical repository path; cross-repository continuation uses an explicit ID. It does not claim semantic duplicate detection. Several matches require an explicit ID. A closed outcome must be inspected and explicitly reopened with `state update --status open`; rerunning an idea does not erase its no-go. Completed-brief adoption records the source artifact path and includes it in bounded resume context.
 
@@ -70,7 +69,7 @@ Local publication creates no duplicate docs or tracker items. Remote receipts sa
 | --- | --- |
 | **Block** | Define — the front door of the flow |
 | **Invoke** | `/wholeloop:frame-problem` · `$wl-frame-problem` · `/wl-frame-problem` |
-| **Decision point** | None — the first one is *approve* at [`write-spec`](./write-spec.md) |
+| **Decision point** | Owner go/on-hold/dropped outcome and approval of the exact final reviewed revision; spec approval is a separate later decision |
 | **Reads** | An idea (text, file, URL) · optionally `--from brief-xxxx` · optionally an existing `init-xxxx` to refine |
 | **Writes** | The initiative (`init-xxxx`) with its framing and owner · optionally a framing document (`docs`) and an idea item (`tracker`) |
 | **Slots** | `frame.template` (a team's own discovery template, if any) |
@@ -118,8 +117,8 @@ The framing answers exactly these questions — no more, no fewer:
 1. **"Don't know yet" is a valid answer; a made-up one isn't.** Write `TBD: <what is missing>; who: <who could answer>`. A few of those usually means [`research`](./research.md) is the next stop.
 2. **You set how hard it pushes.** With `challenge: supportive` it points out gaps; with `adversarial` it argues the other side on purpose. Either way the list of questions stays the same ([profile](../../configuration/profile.md)).
 3. **Every initiative has an owner** — a real person, stored on the initiative. Later decision points go to them unless you say otherwise.
-4. **It publishes only where you told it to.** A configured `docs` provider gets a framing document; a `tracker` gets an idea item. With neither, it all stays in the store until a later `sync`.
-5. **Saying no is a finished outcome.** `--no-go` closes the initiative with the reasoning attached — dropped for good, or on hold with the signal that would reopen it — so the next person to have the same idea starts from that reasoning instead of from zero.
+4. **Destinations are explicit.** Local docs/tracker providers reference the stored artifact and initiative. Shared publication requires selected destinations, a client/host operation and exact reconciliation; no receipt is invented for an unreachable service.
+5. **Saying no is a finished outcome.** Approved dropped/on-hold outcomes close the initiative through finalization, retaining the reason and reopening condition where applicable. Inspect that reasoning instead of opening a duplicate to bypass it.
 
 ## Standalone use
 
@@ -156,9 +155,11 @@ Next                /wholeloop:write-spec init-41c2
 
 | CLI | Invoke |
 | --- | --- |
-| Claude Code | `/wholeloop:frame-problem …` |
+| Claude Code, managed loose skills | `/wl-frame-problem …` |
+| Claude Code, separate generated plugin | `/wholeloop:frame-problem …` |
 | Codex CLI | `$wl-frame-problem …` |
-| OpenCode · Copilot CLI · tier B | `/wl-frame-problem …` |
+| OpenCode · Copilot · Gemini · Cursor | Select/request `wl-frame-problem` |
+| Antigravity | Select/request `wl-agy-frame-problem` |
 
 ## Before & after
 
@@ -167,7 +168,7 @@ Next                /wholeloop:write-spec init-41c2
 
 ## Gotchas & FAQ
 
-**"Nothing asked for my approval."** On purpose. Capturing an idea should cost a minute, not a meeting. Your first sign-off comes with the spec.
+**"Why does framing ask for approval before the spec?"** You own the outcome and exact stop/reopen conditions. The final draft must reflect that decision, receive semantic review and get your approval before finalization. Spec approval is a separate decision; it does not replace framing approval.
 
 **"I have no numbers and nobody has confirmed it yet."** Use `TBD` and name who could fill it in. An honest gap beats a confident guess every time.
 

@@ -1,29 +1,138 @@
 # wholeloop
 
-**An AI development harness that carries one idea all the way through — from the first question to a measured result — on whichever agentic CLI you already use.**
+**A portable development harness for your AI coding CLI: take an idea from its first question to tested code, a deliberate rollout and a measured result.**
 
-> `Agent = Model + Harness`. Everybody rents the same model. The harness — what context the agent gets, which tools it can reach, in what order things happen, where it stops and who decides, and how you know afterwards that it worked — is the half that is yours. `wholeloop` is that half, made portable.
+wholeloop supplies the process around the model: what context to load, which questions and checks to run, where a person decides and what to remember between sessions. Use one step for a small job, or the complete flow with your existing coding client.
 
 > [!NOTE]
-> **Status: early implementation.** The core CLI implements layered configuration, profiles and manifest catalogs, an external journal and mailbox, repository discovery, provider resolution, local framing with explicit outcomes, structured research briefs and validated specs with measurement plans and stable measurable scopes and vertical slice plans with contract-first repository parts. The gate decision layer, isolated worktrees, repository-first builder host workflow, once-per-round verification suites, incremental code review with pinned repository rubrics, human-tested draft PR publication, an external-effect undo ledger, local launch kits, evidence-bound human exposure stages, source-linked impact checkpoints, explicit learning decisions, merge-backed synchronization and conservative cleanup are available. Canonical URL adoption, recoverable shared Define publication, bounded local headless gate transport and self-contained tier-A artifact generation are implemented. Common guards, owned native installation/uninstall and observed diagnostics with managed-file currentness are implemented. Contributor checks and commit hygiene are enforced. The end-to-end harness and published package remain pending. Follow progress in the [roadmap](./roadmap/README.md).
+> **Status: source-installable, before 1.0.** The local core, all thirteen steps and artifact generation for seven clients are implemented. Native compatibility still has open acceptance checks. The repository/package is currently private at version 0.0.0; public npm/marketplace installation is not available. [Current evidence and remaining acceptance](./docs/v1-acceptance.md).
 
----
+## Contents
 
-Remote service integrations are **experimental · fixture-tested · service-unverified**. You do not need accounts with every listed vendor to try the local harness. Remote operations prefer the native client’s existing MCP connection; HTTP bridges are explicit experimental options, with no automatic fallback. See [transport setup and planning](./docs/extending/providers.md#client-owned-mcp-transport). Actual service certification is deferred; missing tool contracts retain pending handoffs in the [provider catalogue](./docs/configuration/providers.md). Native-client compatibility has its own checks and is not implied by provider tests.
+- [What you can do](#what-you-can-do)
+- [Install from source](#install-from-source)
+- [Run your first skill](#run-your-first-skill)
+- [Practical examples](#practical-examples)
+- [The client and the core](#the-client-and-the-core)
+- [Why](#why)
+- [The flow — four blocks, one line](#the-flow--four-blocks-one-line)
+- [Principles](#principles)
+- [Clients and entrypoints](#clients-and-entrypoints)
+- [Local first, integrations when needed](#local-first-integrations-when-needed)
+- [Documentation map](#documentation-map)
+- [Development and contributing](#development-and-contributing)
+- [License](#license)
 
-## Try the local build and finish acceptance
+## What you can do
 
-From this checkout with a compatible development Node version (verified here on Node 24.22.0):
+| Start with | Use | Result |
+| --- | --- | --- |
+| An unvalidated hypothesis | `frame-problem` | An owned problem statement, explicit unknowns and an approved go, on-hold or dropped outcome |
+| A question needing evidence | `research` | A source-linked brief, examined claims and open questions |
+| A confirmed problem | `write-spec` and `cut-scopes` | Acceptance criteria, measurement plans and approved deliverables |
+| A small fix or a ready slice | `build-slice` | Work in an isolated Git worktree, with verification and review evidence |
+| Existing code to inspect | `review-code` | Findings against the actual change and repository rubric |
+| Something already delivered | `measure-impact` and `decide-next` | Observed outcomes or explicit unknowns, followed by a human decision |
+
+You do not have to frame an initiative before reviewing code. Standalone steps retain their own prerequisites and approvals; missing information becomes a question. [Small-change walkthrough](./docs/tutorials/small-change.md).
+
+## Install from source
+
+You need **Node.js 22 or newer and npm to build**, Git 2.30 or newer, and an installed coding client for model-backed use. The checked development versions are Node 22.23.1 and 24.22.0; prefer one of those over an early minor release of a supported major. The bundled core supports Node 20 or newer; native clients have their own requirements. Access is required while this repository is private.
+
+### 1. Build
 
 ```bash
+git clone https://github.com/dreamingechoes/wholeloop.git
+cd wholeloop
 npm ci
 npm run build
 node ./dist/wl.mjs --version
+export WHOLELOOP_CLI="$PWD/dist/wl.mjs"
 ```
 
-Follow [local client setup](./docs/platforms/local-onboarding.md) to install the named target. Restart that client and request wl-setup, wl-frame-problem and wl-status. The source build needs no global wl command or published npm package.
+Already have the checkout? Start with `npm ci` inside it. Keep the absolute `WHOLELOOP_CLI` path when you change into another project. In a new terminal, export it again from this checkout. Native file installation does not create a global `wl` command.
 
-**What remains before 1.0?** Read the [acceptance runbook](./docs/v1-acceptance.md): owner decisions, concrete trial commands, expected results, automatic-client checks and the remaining roadmap tasks. The [manual backlog](./roadmap/manual-verification.md) holds detailed cases; optional service certification does not block 1.0.
+### 2. Install for one client
+
+This example selects Claude Code. Replace `claude` with your [target](#clients-and-entrypoints).
+
+```bash
+node "$WHOLELOOP_CLI" install --target claude --scope user --dry-run --json
+node "$WHOLELOOP_CLI" install --target claude --scope user --json
+node "$WHOLELOOP_CLI" doctor --target claude --json
+```
+
+The dry run shows intended files. User scope installs owned skills, roles and guard components outside your projects. Installation does not install the coding client, authenticate it, configure MCP or start a model. Doctor checks observed versions, store access and managed files; it does not prove native activation or read-only isolation.
+
+Restart the selected client in the repository you want to work on. For project scope, other clients, updates and removal, follow [getting started](./docs/getting-started.md) and [local client setup](./docs/platforms/local-onboarding.md). If a check fails or a skill is missing, start with [troubleshooting](./docs/troubleshooting.md).
+
+No client or model account yet? The [local core tour](./docs/tutorials/local-core.md) exercises configuration, preflight questions and recoverable state without either.
+
+## Run your first skill
+
+In your coding client's conversation, select/request the installed `wl-frame-problem` skill. Antigravity uses `wl-agy-frame-problem`. Supply your actual owner name and application context:
+
+```text
+Use wl-frame-problem for this idea:
+"People with long task lists may need to find tasks by title."
+I am the owner. This is an unvalidated hypothesis, not a confirmed problem.
+Frame it only: ask for missing facts, preserve unknowns and stop for my
+outcome and final-draft approval before specification or code.
+```
+
+Use a real application with a task list, or the explicitly fictional scenario in [your first framing](./docs/tutorials/first-framing.md). The harness should not infer a task application from its own implementation repository.
+
+Expect a preflight, the eight framing questions, explicit `TBD: ...; who: ...` gaps, challenger feedback and a request for your outcome. The exact final draft needs review and your approval. On-hold is a valid completed framing; no evidence needs to be invented to keep the flow moving.
+
+Save the returned initiative ID. Request `wl-status` with it, restart the client and ask again. [The tutorial](./docs/tutorials/first-framing.md) covers answers, final review, receipts and recovery in detail.
+
+## Practical examples
+
+These are **requests to the coding client**, not shell commands. They describe intended work; actual model/permission behavior remains scoped to your client's recorded acceptance.
+
+### Fix a small, agreed bug
+
+```text
+Use wl-build-slice to reject an empty task title.
+Agree on acceptance criteria and the relevant existing tests first.
+Follow this repository's conventions and use the allocated worktree.
+Run verification and review, then stop for my local testing before any PR.
+```
+
+[Follow the small-change walkthrough](./docs/tutorials/small-change.md) to inspect the worktree, interpret gate results and decide when to publish.
+
+### Review without requesting a repair
+
+```text
+Use wl-review-code on this branch against its agreed base; ask if unclear.
+Follow the repository's review rubric. Report findings with evidence;
+do not edit the implementation or publish comments.
+```
+
+### Recover before continuing
+
+```text
+Use wl-status for the initiative ID I saved.
+Show its current state and pending decisions. Do not advance the flow yet.
+```
+
+After inspecting the state, request `wl-next` with that ID to continue. Reading status and authorizing continuation are separate actions.
+
+## The client and the core
+
+**Your coding client runs the skills:** it uses the model and tools you configured to ask questions, draft artifacts, edit code and coordinate reviewers. **The `wl` core manages deterministic rules:** it validates input, stores work and decisions, plans gates and returns the next available contract.
+
+Running `node dist/wl.mjs next ...` in a terminal does not start an AI conversation or independently implement a feature. Request `wl-next` in the client for orchestration. For direct inspection, keep the absolute executable path exported and set `INITIATIVE_ID` to an actual receipt ID:
+
+```bash
+node "$WHOLELOOP_CLI" --help
+node "$WHOLELOOP_CLI" status --json
+node "$WHOLELOOP_CLI" status "$INITIATIVE_ID" --json
+node "$WHOLELOOP_CLI" resume "$INITIATIVE_ID" --json
+```
+
+Status and resume inspect local state; `next` can begin the next available contract. Journals, artifacts and ownership/backups live outside repositories, normally under `$XDG_STATE_HOME/wholeloop` or `$HOME/.local/state/wholeloop`. User settings normally live under `$XDG_CONFIG_HOME/wholeloop` or `$HOME/.config/wholeloop`. [Core command reference](./docs/architecture/core-cli.md#implemented-commands) · [State and recovery](./docs/architecture/state-and-messaging.md).
 
 ## Why
 
@@ -66,9 +175,20 @@ flowchart LR
   style L fill:#f6dcef,stroke:#b03a8c,color:#3a0b2c
 ```
 
-The orange hexagons are where **a person decides**; the machine does the rest. Merging is always human too: the harness never merges, never sends a message to a user and never touches a feature flag.
+The orange hexagons mark the main human decision points. Framing also requires an explicit owner outcome and approval of its final reviewed revision; the spec is not the first time your judgment matters. Merging is always human too: the harness never merges, never sends a message to a user and never touches a feature flag.
 
 **Use all of it, or just one step.** Every step is a complete entry point on its own — `research` a topic, `build-slice` a small fix, `review-code` a pull request — without running anything before it. The full flow is simply what you get when you chain them with `next`.
+
+### Step references
+
+| Block | Step references | Main handoff |
+| --- | --- | --- |
+| Define | [research](./docs/flow/define/research.md) · [frame-problem](./docs/flow/define/frame-problem.md) · [write-spec](./docs/flow/define/write-spec.md) · [cut-scopes](./docs/flow/define/cut-scopes.md) | Evidence, owner outcome, approved spec/scopes |
+| Build | [slice-work](./docs/flow/build/slice-work.md) · [build-slice](./docs/flow/build/build-slice.md) · [verify-works](./docs/flow/build/verify-works.md) · [review-code](./docs/flow/build/review-code.md) · [open-pr](./docs/flow/build/open-pr.md) | Checked work, human testing, deliberate draft publication |
+| Rollout | [prepare-launch](./docs/flow/rollout/prepare-launch.md) · [ramp-exposure](./docs/flow/rollout/ramp-exposure.md) | Drafts, measurement readiness and exposure decisions |
+| Learn | [measure-impact](./docs/flow/learn/measure-impact.md) · [decide-next](./docs/flow/learn/decide-next.md) | Observed results and an explicit human decision |
+
+Utilities: [next, status, setup and sync](./docs/flow/utilities.md).
 
 ## Principles
 
@@ -79,29 +199,68 @@ The orange hexagons are where **a person decides**; the machine does the rest. M
 5. **Bring your own tools.** Where documents live, where work is tracked, which data answers a question: every integration is a provider you choose, and adding a new one is a manifest, not a fork.
 6. **People decide at fixed points.** The machine does the volume; judgement stays with a person at the same few decision points, every time, in every mode.
 7. **Always legible.** Every run states its plan first, narrates as it goes, stops when told, and ends with a table of what it produced and how to undo it.
-8. **Done means measured, not merged.** Most of the flow sits after the merge, because that is where you find out whether any of it mattered.
+8. **Done means measured, not merged.** The flow continues after the merge, because that is where you find out whether any of it mattered.
 9. **Small, correctable, alive.** Skills are short, every hard rule has something that executes it, and a harness that stops changing has stopped describing its team.
 
 The long version, with the reasoning behind each one: [docs/philosophy.md](./docs/philosophy.md).
 
-## Works where you work
+## Clients and entrypoints
 
-One canonical source — open standards first ([Agent Skills](https://agentskills.io), `AGENTS.md`, MCP) — and a generator that writes what each CLI expects.
+All seven targets have implemented artifact/installation paths. This table identifies the target and installed framing skill; it does not claim complete live certification for every client.
 
-| Tier | CLIs |
-| --- | --- |
-| **A** — supported from the first release | Claude Code · OpenAI Codex CLI · OpenCode · GitHub Copilot CLI |
-| **B** — next | Gemini CLI · Google Antigravity CLI · Cursor CLI |
+| Client | Install target | Skill to select/request |
+| --- | --- | --- |
+| Claude Code | `claude` | `wl-frame-problem` |
+| OpenAI Codex CLI | `codex` | `wl-frame-problem` |
+| OpenCode | `opencode` | `wl-frame-problem` |
+| GitHub Copilot CLI | `copilot` | `wl-frame-problem` |
+| Gemini CLI | `gemini` | `wl-frame-problem` |
+| Google Antigravity CLI | `antigravity` | `wl-agy-frame-problem` |
+| Cursor CLI | `cursor` | `wl-frame-problem` |
 
-Details, capability matrix and what degrades where: [docs/platforms/README.md](./docs/platforms/README.md).
+Managed Claude loose skills use `/wl-frame-problem`; a separately installed generated Claude plugin uses `/wholeloop:frame-problem`. Codex's skill picker uses `$wl-frame-problem`. Other clients can be asked to use the exact installed name. [Client setup](./docs/platforms/local-onboarding.md) explains delivery routes; [platforms](./docs/platforms/README.md) records boundaries and evidence.
 
-## Documentation
+The owner has exercised Claude framing and session recovery. Actual Codex framing and one six-lens headless review have passing observations. These results are scoped to their recorded versions/builds; other trials have recorded permission, access or availability failures. See [acceptance](./docs/v1-acceptance.md) before treating copied files or simulations as native passes.
 
-Everything is documented in [`docs/`](./docs/README.md) — start with [concepts](./docs/concepts.md), then the [flow](./docs/flow/README.md). Decisions and their reasons live in [`docs/decisions/`](./docs/decisions/README.md).
+## Local first, integrations when needed
 
-## Contributing
+No Jira, Notion, analytics or flag account is required for local framing. The default local document/tracker providers reference stored artifacts. To select them explicitly:
 
-The project is built in small, session-sized tasks described in the [roadmap](./roadmap/README.md). Read [CONTRIBUTING.md](./CONTRIBUTING.md) before your first change.
+```bash
+node "$WHOLELOOP_CLI" setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
+```
+
+Add remote providers when your workflow needs them. Operations prefer the coding client's existing MCP connection and must match its exact discovered tools. Existing HTTP bridges are explicit experimental alternatives, with no automatic fallback. Setup does not authenticate services or rewrite client MCP settings.
+
+Remote integrations are **experimental · fixture-tested · service-unverified**. Certification is deferred; accounts with every listed vendor are not required for 1.0. Missing observations stay unknown and unknown contracts stay pending handoffs. [Provider configuration](./docs/configuration/providers.md) · [MCP transport](./docs/extending/providers.md#client-owned-mcp-transport).
+
+## Documentation map
+
+| I want to… | Start here | Then read |
+| --- | --- | --- |
+| Install and run my first skill | [Getting started](./docs/getting-started.md) | [Client setup](./docs/platforms/local-onboarding.md) · [First framing](./docs/tutorials/first-framing.md) |
+| Try the core without a model | [Local core tour](./docs/tutorials/local-core.md) | [Core reference](./docs/architecture/core-cli.md) |
+| Work through a practical change | [Small-change walkthrough](./docs/tutorials/small-change.md) | [All thirteen steps](./docs/flow/README.md) |
+| Resolve a setup/session problem | [Troubleshooting](./docs/troubleshooting.md) | [FAQ](./docs/faq.md) |
+| Understand the design | [Concepts](./docs/concepts.md) | [Philosophy](./docs/philosophy.md) · [Architecture](./docs/architecture/README.md) |
+| Configure my team and tools | [Configuration](./docs/configuration/README.md) | [Profiles](./docs/configuration/profile.md) · [Providers](./docs/configuration/providers.md) · [Repository guidance](./docs/configuration/repo-skills.md) |
+| Extend the harness | [Extensions](./docs/extending/README.md) | [Providers](./docs/extending/providers.md) · [Lenses/templates/profiles](./docs/extending/lenses-templates-profiles.md) · [Compatibility](./docs/extending/compatibility.md) |
+| Assess readiness for 1.0 | [Acceptance](./docs/v1-acceptance.md) | [Roadmap](./roadmap/README.md) · [Detailed verification](./roadmap/manual-verification.md) |
+| Contribute or prepare a release | [Contributing](./CONTRIBUTING.md) | [Authoring](./docs/contributing/authoring.md) · [Release preparation](./docs/contributing/releasing.md) · [Decisions](./docs/decisions/README.md) |
+
+The [documentation index](./docs/README.md) contains the complete topic map and reading paths.
+
+## Development and contributing
+
+```bash
+npm run check
+npm run build
+npm run smoke
+```
+
+The complete check includes lint, types, unit/workflow tests, offline package installation, generated references, harness rules, Markdown and Mermaid. Markdown prose uses one paragraph per source line: check with `npm run lint:md`, or apply fixes with `npm run lint:md:fix`.
+
+Read the [working agreement](./AGENTS.md), [contribution guide](./CONTRIBUTING.md) and [roadmap journal](./roadmap/journal.md). The bootstrap currently commits directly to `main`; the future branch/PR switch will be recorded explicitly. Public visibility, npm publication and the 1.0 release remain owner decisions.
 
 ## License
 

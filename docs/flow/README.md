@@ -3,11 +3,13 @@
 > **TL;DR** — Define shapes the problem, Build ships it right, Rollout releases it with care, Learn measures and decides. Each step is a skill you can run on its own; `next` chains them and stops wherever a person has to decide.
 
 > [!NOTE]
-> **Status: 🚧 partial.** All thirteen local step cores and canonical skills are implemented, including human decisions, recoverable handoffs and measured closure. Generated clients still need actual model/permission checks; remote dashboard/flag bridges and unsupported transports remain open. Per-step pages and the [manual checklist](../../roadmap/manual-verification.md) state those limits.
+> **Status: 🚧 partial.** All thirteen local step cores and canonical skills are implemented, including human decisions, recoverable handoffs and measured closure. Actual native model/permission checks remain scoped acceptance; remote integrations are experimental and fixture-tested, with service certification deferred. Per-step pages and the [manual checklist](../../roadmap/manual-verification.md) state those limits.
 
 ---
 
 ## The whole line
+
+For a practical entrypoint, follow [first framing](../tutorials/first-framing.md) or [a small change](../tutorials/small-change.md). The diagram describes orchestration by skills in your coding client. A terminal `wl next` call returns a core contract rather than performing every step itself. Framing requires an owner outcome and exact final-draft approval in addition to the shared decision points drawn below.
 
 ```mermaid
 flowchart LR
@@ -44,7 +46,7 @@ flowchart LR
 | Block | # | Step | You get | Decision point |
 | --- | --- | --- | --- | --- |
 | Define | 0 | [`research`](./define/research.md) | An evidence-first brief with confidence and open questions | — |
-| Define | 1 | [`frame-problem`](./define/frame-problem.md) | A framed problem with an owner — or an argued no-go | — |
+| Define | 1 | [`frame-problem`](./define/frame-problem.md) | A framed problem with an owner — or an argued no-go | **owner outcome and final revision** |
 | Define | 2 | [`write-spec`](./define/write-spec.md) | A spec with user stories, acceptance criteria and a measurement plan | **approve** |
 | Define | 3 | [`cut-scopes`](./define/cut-scopes.md) | One scope per deliverable, each with its flag and metrics | **approve** |
 | Build | 4 | [`slice-work`](./build/slice-work.md) | Sequential vertical slices with criteria written before code | — |
@@ -67,6 +69,10 @@ flowchart LR
 | Something half done, maybe by someone else | `next <id or URL>` | Finds the first step whose output is missing and continues |
 
 ## Naming
+
+### Reading invocation examples
+
+Step pages may show `/wholeloop:<step>` for a separately installed Claude plugin. Managed source installation uses `wl-<step>` skills: `/wl-<step>` in Claude's loose-skill UI, `$wl-<step>` in Codex's skill picker, or the exact skill name requested in other clients. Antigravity uses `wl-agy-<step>`. These are conversation entrypoints, not terminal commands. [Client setup](../platforms/local-onboarding.md) lists the installed names.
 
 Step names are **verb + object** and say what you get, not which methodology they come from. Where a team already uses its own vocabulary (Frame, Shape, Bet, PRD…), the [glossary](../glossary.md) maps it.
 

@@ -24,6 +24,10 @@
 
 ---
 
+## The coding client and the core
+
+Skills run inside your coding client and use its model/tools. The `wl` executable computes deterministic preflights, validates artifacts and records state. A direct `wl next` call returns one action/contract; the `wl-next` skill carries out the model-backed work and continues until a required decision. For a runnable distinction, take the [local core tour](./tutorials/local-core.md).
+
 ## The work tree
 
 Whatever the flow produces has an address in one small tree.
@@ -53,6 +57,8 @@ flowchart TD
 - **Loose artifacts** — a research brief, an ad-hoc slice for a small fix, a standalone review. They live in the same store, can be attached to an initiative later (`--from brief-7f3a`), or never.
 
 IDs are short, typed and stable (`init-41c2`, `scope-a9e0`, `slice-0d4e`, `brief-7f3a`), so a human can say them out loud and an agent can pass them between sessions.
+
+Diagrams use abbreviated IDs for readability. Copy the full actual ID from a receipt when running commands; the illustrative diagram labels are not existing store records.
 
 ## Steps, blocks and utilities
 
@@ -91,6 +97,8 @@ One rule survives standalone use: **what a step promises, it keeps**. `build-sli
 
 The machine runs a lot on its own, but it **stops for a person at six fixed points** — in every mode, every profile, every CLI.
 
+These shared decision points are joined by step-specific approvals. In particular, framing requires your go/on-hold/dropped outcome, approved stop/reopen conditions and approval of the exact final reviewed draft. The later spec approval does not substitute for that framing decision. [First-framing walkthrough](./tutorials/first-framing.md#5-choose-the-outcome-and-approve-exact-wording).
+
 | # | Decision | Where | Why a person |
 | --- | --- | --- | --- |
 | 1 | **Approve the spec** | end of `write-spec` | Commits the team to a problem, a solution shape and a definition of success |
@@ -124,6 +132,8 @@ sequenceDiagram
 ```
 
 The **core decides** (preconditions, missing inputs, which questions, which skills and providers apply, whether an artifact has the right shape, what comes next). The **skill creates**. That split is what makes the process testable without a model ([ADR-0003](./decisions/0003-deterministic-core-cli.md)).
+
+The sequence is a general lifecycle, not a shortcut around workflow-specific evidence. New framing uses `frame draft` and `frame finalize` to bind the exact owner decision and semantic review; legacy `step complete` cannot establish that guarantee. Build, verification, review and publication also retain their own receipt/gate preconditions.
 
 ## State and mailbox
 
@@ -162,7 +172,7 @@ Always legible, in any profile:
 
 1. **Preflight** — plan · where · bindings · gates · what it will never do · how to stop.
 2. **Narration** — one line per event while it runs.
-3. **Stop** — "stop" halts everything immediately; nothing is half-published.
+3. **Stop** — skills stop on request and hosts cancel owned workers. Inspect retained receipts for an in-flight external operation; stopping is not an automatic rollback of a remote write.
 4. **Receipt** — what was produced, actionable rows first, each with the command that opens or undoes it.
 
 ---

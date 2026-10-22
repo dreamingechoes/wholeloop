@@ -1,6 +1,8 @@
 # Contributing to wholeloop
 
-Thanks for wanting to help. `wholeloop` is built in small, session-sized tasks, in the open.
+`wholeloop` is built in small, session-sized tasks. Start with the working agreement and current journal; the repository remains private until the owner explicitly approves public release.
+
+To use wholeloop rather than change it, start with the [README](./README.md) and [getting started](./docs/getting-started.md). The agreement below concerns implementation of this repository.
 
 ## Before your first change
 
@@ -10,11 +12,11 @@ Thanks for wanting to help. `wholeloop` is built in small, session-sized tasks, 
 
 ## Making a change
 
-- **One task, end to end.** Code, tests and documentation land in the same pull request.
+- **One task, end to end.** Code, tests and documentation land in the same change. Follow the current bootstrap commit workflow below.
 - **Determinism first.** Anything with one right answer goes into the core, with a test.
 - **Keep harness files short.** Size budgets are enforced ([ADR-0011](./docs/decisions/0011-size-budgets-and-enforcement.md)).
 - **Docs follow the style guide.** Status banner, TL;DR, templates, Mermaid palette, generated navigation ([docs-style](./docs/contributing/docs-style.md)).
-- **Decisions get an ADR.** A change of design is a new ADR in the same PR ([decisions](./docs/decisions/README.md)).
+- **Decisions get an ADR.** A change of design is a new ADR in the same change ([decisions](./docs/decisions/README.md)).
 
 ## Commits and pull requests
 
@@ -31,7 +33,7 @@ Node ≥ 22 and npm for development (the published CLI runs on Node ≥ 20):
 
 ```bash
 npm ci
-npm run check      # lint · typecheck · unit tests · markdownlint
+npm run check      # lint · types · tests · offline package · docs · harness
 npm run build      # dist/wl.mjs
 npm run smoke      # the built CLI prints the package version
 ```
