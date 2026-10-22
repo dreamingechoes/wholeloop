@@ -32,9 +32,10 @@ be a separate scope change, not a consequence of experimental service integratio
 - [x] An on-hold outcome retained the owner's reason and reopening condition in external core state.
 - [x] After closing Claude and opening a new session, status recovered that same closed initiative with framing completed and no next step.
 - [x] The automatic standalone framing scenario passed on actual Codex 0.163.0 after correcting the exact-input prompt. The other five attempted clients have failures recorded in [the native trial table](../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22).
+- [x] The revised exact-final-approval scenario also passes on Codex 0.163.0, core 10cca6bc, run cf-ade63be4ab7e78074a428393. This source-API runner uses a temporary category-only observer; the installed core and matching final-review journal are real. An earlier revised run stopped before finalization and remains FAIL.
 
-That does not establish a successful go/spec path, all skill/agent discovery,
-native permission denial, plugin installation or the live random-marker scenario.
+That does not establish a complete go/spec path, all skill/agent discovery,
+native permission denial, plugin installation or the final-review scenario on every client.
 The framing document added unapproved conditions and its final semantic revision
 was not challenged; those are implementation/content defects to resolve before
 calling the framing exercise fully accepted.

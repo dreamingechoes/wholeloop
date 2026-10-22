@@ -9,7 +9,7 @@ export function conformanceBinary(target: string) {
 }
 
 /** Native skill discovery needs project customizations; the observer gate recipes deliberately disable them. */
-export function conformanceRecipe(run: PreparedConformance) {
+export function conformanceRecipe(run: PreparedConformance, model?: string) {
   const common = { command: conformanceBinary(run.target), cwd: run.root }
   if (run.target === 'cursor')
     return {
@@ -84,12 +84,21 @@ export function conformanceRecipe(run: PreparedConformance) {
         '-',
       ],
     }
-  if (run.target === 'opencode')
+  if (run.target === 'opencode') {
+    if (model !== undefined && !/^openai\/[A-Za-z0-9._:-]{1,100}$/.test(model))
+      throw new Error('Use an explicit bounded OpenAI model identifier for nightly conformance')
     // OpenCode 2.x removed run's --dir option; spawn already sets the exact fixture cwd.
     return {
       ...common,
-      args: ['run', ...(run.pin.startsWith('2.') ? ['--standalone'] : []), '--format', 'json'],
+      args: [
+        'run',
+        ...(run.pin.startsWith('2.') ? ['--standalone'] : []),
+        '--format',
+        'json',
+        ...(model === undefined ? [] : ['--model', model]),
+      ],
     }
+  }
   if (run.target === 'copilot')
     return {
       ...common,

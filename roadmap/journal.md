@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Nightly OpenCode — explicit native model flag
+
+- Replace the nightly host's V1 config injection with a scoped non-secret model identifier and the documented native --model argument for both dialects. Validate before native version startup, keep no-selection local behavior unchanged and retain the selected credential only in the environment. Do not create native config, change accounts, broaden permissions or select a fallback model. ADR-0090 records the choice; actual 2.1.1 help confirms the flag in an isolated child home.
+- Pass 56 focused cases, then the complete local check: 1907 tests in 86 files (264.26 seconds), lint/types, build/smoke, isolated package PASS, references, 268-file docs, 143-file harness, 267-file Markdown and all 35 Mermaid diagrams. Existing 213 declarations/157 commands remain unchanged. Actual authenticated nightly/Actions use remains unverified.
+- The first revised Codex 0.163.0 framing run cf-f957433ff689971ec75c84aa on core da2b4506 exits zero after initiative/start/marker and the exact draft, but never finalizes: retain FAIL. A fresh source-API runner with a temporary closed-category observer passes on core 10cca6bc: cf-ade63be4ab7e78074a428393 has exact version, final review, matching bytes/decision and no missing events/problems. Sixteen commands complete with no failed command; raw output is discarded. This establishes that structural scenario only, not semantic truth, reviewer isolation, hooks or full client/platform support. Docker reports a local Linux arm64 host; isolated portability checks are a separate follow-up. No push or publication occurs.
+
 ## 2026-10-22 · Conformance framing — explicit fictional final approval
 
 - Add a bounded scripted declaration for the fictional Fixture Owner's exact final document digest and decision. Bind both source inputs into the scenario hash, share pure decision rendering and retain unchanged real-human framing behavior. The native prompt supplies approved test bytes but no reviewer; semantic challenge remains required. ADR-0089 explains why neither an initial go nor automatic approval of arbitrary model output is sufficient.

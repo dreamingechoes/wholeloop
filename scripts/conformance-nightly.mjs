@@ -106,7 +106,9 @@ export function nativeNightlyEnvironment(cli, home, key, model = '') {
       /^openai\/[A-Za-z0-9._:-]{1,100}$/.test(model),
       'Select an explicit OpenAI model for the OpenCode nightly transport',
     )
-    environment.OPENCODE_CONFIG_CONTENT = JSON.stringify({ model })
+    // Carry only the reviewed non-secret identifier; the collector uses the
+    // documented native --model flag for both supported dialects, not V1 config injection.
+    environment.WL_CONFORMANCE_OPENCODE_MODEL = model
     environment.OPENCODE_DISABLE_AUTOUPDATE = 'true'
   }
   return environment

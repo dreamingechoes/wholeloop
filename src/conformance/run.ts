@@ -44,11 +44,13 @@ export async function runConformance(
   try {
     if (workspaceSnapshot(run.root).digest !== run.baseline) run.problem = 'workspace-changed'
     else if (mode === 'live') {
-      const probe = versionProbe(conformanceRecipe(run).command, env, run.root)
+      // Validate the explicit host selection before launching even the version probe.
+      // No selection leaves the user's existing account/model behavior unchanged.
+      const recipe = conformanceRecipe(run, env.WL_CONFORMANCE_OPENCODE_MODEL)
+      const probe = versionProbe(recipe.command, env, run.root)
       if (probe.status !== 'observed' || !probe.version) run.problem = 'version-unobserved'
       else if (probe.version !== run.pin) run.problem = 'version-mismatch'
       else {
-        const recipe = conformanceRecipe(run)
         observed = true
         const result = await workerProcess(recipe.command, recipe.args, {
           cwd: recipe.cwd,

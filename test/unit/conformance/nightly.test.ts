@@ -127,10 +127,10 @@ describe('explicit nightly context and native boundaries', () => {
     expect(env).not.toHaveProperty('NODE_OPTIONS')
     expect(env.HOME).toBe('/tmp/fixture-home')
     expect(env.XDG_DATA_HOME).toBe('/tmp/fixture-home/data')
-    if (cli === 'opencode')
-      expect(JSON.parse(env.OPENCODE_CONFIG_CONTENT ?? '{}')).toEqual({
-        model: 'openai/fixture-model',
-      })
+    if (cli === 'opencode') {
+      expect(env.WL_CONFORMANCE_OPENCODE_MODEL).toBe('openai/fixture-model')
+      expect(env).not.toHaveProperty('OPENCODE_CONFIG_CONTENT')
+    }
   })
   it('refuses ambiguous provisioning options and absent/unsafe keys or model selection', () => {
     expect(provisionArguments(['--target', 'gemini', '--install', '/tmp/new'])).toEqual({
@@ -198,6 +198,10 @@ describe('explicit nightly context and native boundaries', () => {
             expect(options.env).not.toHaveProperty('GH_TOKEN')
             expect(options.env).not.toHaveProperty('NODE_OPTIONS')
             expect(options.env).not.toHaveProperty('CONFORMANCE_NATIVE_KEY')
+            if (cli === 'opencode') {
+              expect(options.env?.WL_CONFORMANCE_OPENCODE_MODEL).toBe('openai/fixture-model')
+              expect(options.env).not.toHaveProperty('OPENCODE_CONFIG_CONTENT')
+            }
             const selected = JSON.parse(readFileSync(String(args[3]), 'utf8')).entries[0]
             const home = String(options.env?.HOME)
             homes.push(home)

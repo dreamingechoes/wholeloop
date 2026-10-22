@@ -29,11 +29,18 @@ Store only the intended native credential in each named GitHub environment secre
 | Cursor | WL_CONFORMANCE_CURSOR_KEY | CURSOR_API_KEY |
 
 For OpenCode, explicitly select an available openai/model identifier through the
-WHOLELOOP_CONFORMANCE_OPENCODE_MODEL variable. The host puts only that non-secret
-model selection in OPENCODE_CONFIG_CONTENT. Other clients retain their native
+WHOLELOOP_CONFORMANCE_OPENCODE_MODEL variable. The host carries only that non-secret
+identifier in WL_CONFORMANCE_OPENCODE_MODEL; the collector validates it before
+native startup and supplies the documented --model flag for both V1 and V2.
+No configuration file or legacy config injection is needed. The API key stays
+only in the selected child's environment. Other clients retain their native
 model selection. Check account access, model choice and costs before activation.
 Missing keys, or the missing OpenCode model, produce an unconfigured receipt and
 UNRUN rows without launching a native scenario.
+
+An ordinary local trial without this explicit nightly host value keeps its
+existing account/model selection. This is not automatic model substitution;
+see [ADR-0090](../decisions/0090-explicit-nightly-native-model-selection.md).
 
 The host creates non-secret authentication-mode settings only inside each fresh
 Gemini/Antigravity HOME: Gemini's gemini-api-key selected type and Antigravity's

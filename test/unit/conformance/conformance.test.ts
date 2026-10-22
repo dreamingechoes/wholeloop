@@ -488,6 +488,63 @@ describe('standalone conformance runner', () => {
     })
   }, 30000)
 
+  it.each(['1.17.9', '2.1.1'])(
+    'delivers only an explicit non-secret nightly model through the native %s flag',
+    async (pin) => {
+      await fixture(async (ctx, dir) => {
+        const prepared = prepareConformance(ctx, 'opencode', pin)
+        const env = fakeClient(
+          dir,
+          pin,
+          `if(process.argv[process.argv.indexOf('--model')+1]!=='openai/fixture-model'||process.argv.includes('fixture-only-noncredential')||process.env.OPENAI_API_KEY!=='fixture-only-noncredential'||process.env.OPENCODE_CONFIG_CONTENT!==undefined)process.exit(8);process.stdin.resume()`,
+          'opencode',
+        )
+        const report = await runConformance(ctx, prepared.id, 'live', {
+          env: {
+            ...env,
+            OPENCODE_CONFIG_CONTENT: undefined,
+            OPENAI_API_KEY: 'fixture-only-noncredential',
+            WL_CONFORMANCE_OPENCODE_MODEL: 'openai/fixture-model',
+          },
+        })
+        expect(report.process).toMatchObject({ status: 'succeeded', code: 0, version: pin })
+        expect(report.status).toBe('FAIL')
+        const recipe = conformanceRecipe(readConformance(ctx, prepared.id))
+        expect(recipe.args).not.toContain('--model')
+        expect(recipe.args.includes('--standalone')).toBe(pin.startsWith('2.'))
+        expect(JSON.stringify(runFiles(ctx, prepared.id).read('run.json'))).not.toContain(
+          'fixture-only-noncredential',
+        )
+      })
+    },
+    30000,
+  )
+
+  it('rejects an invalid nightly model before launching a native binary or copying its value', async () => {
+    await fixture(async (ctx, dir) => {
+      const prepared = prepareConformance(ctx, 'opencode', '2.1.1')
+      const sentinel = join(dir, 'native-started')
+      const bin = join(dir, 'invalid-model-bin')
+      mkdirSync(bin)
+      writeFileSync(
+        join(bin, 'opencode'),
+        `#!${process.execPath}\nrequire('node:fs').writeFileSync(${JSON.stringify(sentinel)},'started')\n`,
+        { mode: 0o700 },
+      )
+      const report = await runConformance(ctx, prepared.id, 'live', {
+        env: {
+          ...process.env,
+          PATH: `${bin}:${dirname(process.execPath)}`,
+          WL_CONFORMANCE_OPENCODE_MODEL: 'private-fixture-detail',
+        },
+      })
+      expect(report.status).toBe('FAIL')
+      expect(report.problems).toContain('process-failed')
+      expect(JSON.stringify(report)).not.toContain('private-fixture-detail')
+      expect(existsSync(sentinel)).toBe(false)
+    })
+  })
+
   it('runs compiled prepare/fixture/report with the complete embedded catalog and explicit mode validation', async () => {
     await fixture(async (ctx, dir) => {
       const core = resolve('dist/wl.mjs')
