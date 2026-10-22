@@ -62,6 +62,57 @@ describe('bounded redacted native diagnostics', () => {
       events: ['assistant.message', 'init'],
     })
   })
+  it('recognizes AGY soft denials inside a successful turn without retaining actions', () => {
+    const capture = nativeDiagnostics()
+    capture.observe(
+      'stdout',
+      json({
+        event: 'step_update',
+        step_update: {
+          state: 'ERROR',
+          tool_info: {
+            parameters: { command: privateText },
+            error: { message: `Permission denied: ${privateText}` },
+          },
+        },
+      }),
+    )
+    capture.observe(
+      'stdout',
+      json({
+        event: 'result',
+        result: {
+          status: 'SUCCESS',
+          response: privateText,
+          denied_actions: [{ command: privateText }],
+        },
+      }),
+    )
+    const result = capture.finish()
+    expect(result).toMatchObject({ signals: ['permission-denied'], errorEvents: 2 })
+    expect(JSON.stringify(result)).not.toContain(privateText)
+  })
+  it.each([[], 0, false, 'permission denied', { message: 'permission denied' }])(
+    'ignores an empty or unsupported denial summary: %j',
+    (denied_actions) => {
+      const capture = nativeDiagnostics()
+      capture.observe(
+        'stdout',
+        json({ event: 'result', result: { status: 'SUCCESS', denied_actions } }),
+      )
+      capture.observe(
+        'stdout',
+        json({
+          event: 'step_update',
+          step_update: {
+            state: 'DONE',
+            tool_info: { output: 'permission denied', parameters: { error: 'permission denied' } },
+          },
+        }),
+      )
+      expect(capture.finish()).toMatchObject({ signals: [], errorEvents: 0 })
+    },
+  )
   it('decodes split UTF-8 and classifies an unterminated stderr line without retaining prose', () => {
     const capture = nativeDiagnostics()
     const bytes = Buffer.from(`Permission denied: répertoire ${privateText}`)

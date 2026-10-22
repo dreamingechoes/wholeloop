@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Authorized native trials — retain soft-denied tool failures
+
+- After the owner's explicit private-harness disclosure approval, execute fresh OpenCode 2.1.1, Copilot 1.0.83 and Antigravity 1.4.4 framing trials on core 1237b1be. None passes: OpenCode creates the initiative/step but reaches the 180-second deadline; Copilot returns a permission-denied signal with no journal events; Antigravity returns exit zero and SUCCESS despite a denied tool. Preserve every external receipt, account, model and permission policy.
+- Diagnose AGY's structured ERROR tool_info.error and nonempty result.denied_actions without retaining commands, parameters or responses. Extend the existing bounded classifier and add false-positive/privacy regressions. An actual fresh run on core 40482b4d now reports permission-denied and remains FAIL. A longer isolated OpenCode diagnosis remains ongoing; neither these executions nor permission review closes native acceptance.
+- Focused diagnostics pass 19 tests. Full local check passes 1839 tests in 84 files (235.33 seconds), build/smoke, isolated package PASS, lint/types, unchanged references/catalogues, 265-file docs, 142-file harness, 264-file Markdown and 35 Mermaid diagrams. No public contract or command changes. Native permissions, OpenCode's unfinished diagnosis, broader workflow/platform acceptance and release actions remain open; no push or publication occurs.
+
 ## 2026-10-22 · Native diagnosis — bounded signals and explicit transport
 
 - Add structured, redacted native diagnostics and an additive conformance diagnose command. Capture failed stderr before the transport discards it; persist only closed categories/events/counts with exact run/core identity and fixed recommendations. Retain unknown for old/simulation runs and ordinary stdout prose. No credential, transcript or native payload is persisted by this feature. ADR-0087 records the boundary.

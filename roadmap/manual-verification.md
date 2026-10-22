@@ -11,10 +11,11 @@ commands, passing results and who does each part. This page retains detailed
 regressions and limitations rather than assigning every item to the owner.
 
 Current local remediation is implemented and tested: exact owner-decision framing,
-final revision review and bounded redacted native diagnostics. Fresh complete native
-trials remain pending explicit disclosure approval after automatic review refused
-sending the private harness to configured model providers. That pending execution
-is not a native failure or evidence that the earlier client failures are resolved.
+final revision review and bounded redacted native diagnostics. After explicit
+private-harness disclosure approval, fresh native trials executed on OpenCode,
+Copilot and Antigravity. None passed: OpenCode began framing before its deadline;
+Copilot and Antigravity reported native tool permission denials. The latter's
+soft-denial format exposed and now has a diagnostic regression fix.
 Any further implementation defect discovered by those trials remains technical
 work, not an owner acceptance checkbox. Track it in [V1 acceptance](../docs/v1-acceptance.md#1-finish-implementation-defects-first)
 and the journal before claiming technical closure.
@@ -56,10 +57,10 @@ them after a code change. All observations below are on macOS arm64/Node 24.22.0
 | Client | Observed version | Actual result | Remaining issue |
 | --- | --- | --- | --- |
 | Codex | 0.163.0 | PASS with live-process-and-journal evidence, no missing events/problems | Standalone framing only; hooks, permissions and broader workflow remain separate |
-| OpenCode | 2.1.1 | FAIL; native process exited 1 and required events were absent | Removed an unsupported run --dir flag; the corrected invocation still failed, requiring further diagnosis |
-| Copilot | 1.0.83 | FAIL; process exited 0 without required journal events, including after the prompt correction | A short model-access probe succeeds; that does not establish framing/tool execution |
+| OpenCode | 2.1.1 | Fresh FAIL on core 1237b1be: initiative created and framing started, but the 180-second deadline expired | No completed artifact or go decision; bounded longer diagnosis remains separate from acceptance |
+| Copilot | 1.0.83 | Fresh FAIL on core 1237b1be: exit 0, no journal events and permission-denied diagnostic | Native permission review for the exact checked launcher is required; no broad tool grants were added |
 | Gemini | 0.27.0 | FAIL; process exited 1 without required events | A separate short probe reports IneligibleTierError; native account/project eligibility needs resolution |
-| Antigravity | 1.4.4 | FAIL; process exited 0 without required events | An attached empty print prompt parses and emits init; actual assignment execution remains unverified |
+| Antigravity | 1.4.4 | Fresh FAIL on core 40482b4d: exit 0, no journal events and permission-denied diagnostic | A tool step errors and the successful terminal result lists denied actions; scoped native command approval is required |
 | Cursor | 2026.07.16-899851b | FAIL; process exited 1 without required events | A separate short probe reports missing native authentication |
 
 - [x] Execute and retain the six initial real reports outside Git, with exact observed versions.
@@ -74,8 +75,13 @@ Antigravity 1.4.4 returned model responses, including piped Copilot and both AGY
 input variants. This is transport/model-access evidence only. A later full-trial
 host invocation was rejected by automatic approval review over possible private
 harness disclosure before native execution; it is not a new native failure.
-Explicit disclosure approval is pending. Keep the earlier failed reports intact;
-repeat fresh complete scenarios rather than promoting the no-tool probes.
+The owner subsequently explicitly approved that disclosure. Fresh execution on
+core 1237b1be created OpenCode's initiative but timed out; Copilot reported a
+permission denial. Antigravity's ERROR tool step and nonempty denied_actions
+inside a SUCCESS result initially escaped classification. Recognize both bounded
+structured fields without retaining parameters, actions or responses; an actual
+fresh run on core 40482b4d now reports permission-denied and remains FAIL. Earlier
+receipts are preserved. Do not promote these failures or no-tool probes to passes.
 
 The Codex receipt and exact passing core are retained externally. Later OpenCode
 and Antigravity recipe changes have their own receipts/core identities; do not

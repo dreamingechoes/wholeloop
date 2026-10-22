@@ -64,16 +64,33 @@ export function nativeDiagnostics() {
       if (typeof name === 'string' && events.has(name)) observed.add(name)
       const result = isObject(value.result) ? value.result : undefined
       const data = isObject(value.data) ? value.data : undefined
+      const step =
+        name === 'step_update' && isObject(value.step_update) ? value.step_update : undefined
+      const tool = step && isObject(step.tool_info) ? step.tool_info : undefined
+      // AGY soft-denies tools while the enclosing turn still reports SUCCESS and exits zero.
+      const denied =
+        name === 'result' &&
+        Array.isArray(result?.denied_actions) &&
+        result.denied_actions.length > 0
+      if (denied) signals.add('permission-denied')
       if (
         name === 'error' ||
         name === 'session.error' ||
         result?.status === 'ERROR' ||
-        data?.success === false
+        data?.success === false ||
+        (step?.state === 'ERROR' && tool?.error !== undefined) ||
+        denied
       ) {
         state.errorEvents++
         classify(
           JSON.stringify(
-            value.error ?? result?.error ?? data?.error ?? data?.message ?? value.message ?? '',
+            value.error ??
+              result?.error ??
+              data?.error ??
+              data?.message ??
+              tool?.error ??
+              value.message ??
+              '',
           ),
         )
       }

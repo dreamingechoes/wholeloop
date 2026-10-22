@@ -52,6 +52,13 @@ no-tool probes observed model responses on OpenCode 2.1.1, Copilot 1.0.83 and
 Antigravity 1.4.4, including piped Copilot and stream-only AGY. They prove neither
 framing execution nor permission/hook isolation.
 
+Subsequent explicitly authorized full trials observed Copilot permission denial
+and Antigravity soft-denied tools despite a SUCCESS turn and zero exit. Classify
+the latter's structured ERROR tool_info.error and nonempty result.denied_actions;
+ignore successful tool output and parameters. A fresh actual Antigravity run
+confirms permission-denied with the strict scenario verdict still FAIL. Fixtures
+cover empty/malformed summaries and private action/response omission.
+
 Sources checked 2026-10-22: [Copilot input semantics](https://docs.github.com/en/copilot/how-tos/copilot-cli/automate-copilot-cli/run-cli-programmatically),
 [Antigravity headless protocol](https://www.antigravity.google/docs/cli/headless/),
 and [OpenCode commands](https://opencode.ai/v2/docs/cli/commands).

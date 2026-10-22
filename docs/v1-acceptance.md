@@ -64,7 +64,8 @@ Keep these separate from owner approval:
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
 - [x] Add bounded, redacted native diagnosis and explicit version-appropriate invocations. New trials can distinguish structured native errors from an empty journal; exit zero remains insufficient.
-- [ ] Complete fresh actual client acceptance. Sending the private harness to native model providers needs the explicit disclosure approval requested after automatic review rejected that execution.
+- [x] Execute fresh OpenCode, Copilot and Antigravity trials after the owner's explicit private-harness disclosure approval. Preserve their failures: OpenCode reached framing begin before timeout; Copilot and Antigravity require native permission review. Recognize Antigravity soft-denied tools even when the turn exits zero.
+- [ ] Obtain passing fresh actual client acceptance after resolving the recorded blockers. Execution and diagnosis alone do not close acceptance.
 - [x] MCP-first routing is implemented and fixture-tested under ADR-0085. Keep unknown tool contracts pending; real-service certification stays deferred.
 
 The existing stored fictitious framing is evidence of the defect; do not overwrite
