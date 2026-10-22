@@ -28,6 +28,7 @@ be a separate scope change, not a consequence of experimental service integratio
 ## What is already confirmed
 
 - [x] The current 1925-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
+- [x] The complete 1925-test check also passes on macOS arm64/Node 22.23.1. The built bundle passes scoped Linux arm64/Node 20.0.0 offline installation, smoke, docs, harness and three-corpus execution with exact Node 24 JSON parity. Eight adapter/dialect framing simulations pass as FIXTURE_PASS; no native client runs. CI now repeats the package and corpus runtime checks, with hosted execution still pending.
 - [x] The owner installed user-scope Claude loose skills and invoked framing with the eight questions and an explicit human stop.
 - [x] An on-hold outcome retained the owner's reason and reopening condition in external core state.
 - [x] After closing Claude and opening a new session, status recovered that same closed initiative with framing completed and no next step.
@@ -83,7 +84,7 @@ its history to make the old trial appear to have passed.
 ### 2. Check source installation
 
 Run from the wholeloop checkout. The current compatible development environment
-was verified with Node 24.22.0. These commands do not require a global wl alias:
+was verified with Node 22.23.1 and 24.22.0. These commands do not require a global wl alias:
 
 ```bash
 npm ci

@@ -56,8 +56,10 @@ native-output-schema candidate also passes the complete check on both:
 | --- | --- | --- |
 | macOS arm64 | 24.22.0 / 11.8.0 | 1925 tests in 87 files; complete check passes |
 | Debian bookworm Linux arm64, Docker | 24.22.0 / 11.19.1 | 1925 tests in 87 files; complete check passes |
+| macOS arm64 | 22.23.1 / 11.8.0 | 1925 tests in 87 files (272.82 seconds); complete check passes |
+| Debian bullseye Linux arm64, Docker | 20.0.0 / 9.6.4 | Built runtime only: offline package, smoke, docs, harness, three corpora and eight explicit conformance simulations pass |
 
-Linux uses Git 2.39.5 and the official Node image pinned to
+The Node 24 Linux check uses Git 2.39.5 and the official Node image pinned to
 sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5.
 Dependencies are prepared separately with only the package manifests. The source
 check then runs without network or native credentials, as a non-root user with
@@ -69,8 +71,33 @@ candidate attempt; retain its partial log and repeat in a fresh container. The
 successful run takes 52.62 seconds with no skipped tests. Its offline package
 SHA-256 matches macOS: 6956be93c238a526a84b7b72a289bc88cf4c7c1b6570ff9b1f4fc324cdc55d5f.
 
+The additional Node checks use source revision 455433c and core SHA-256
+9ea3a2985503d57aef4f38ef60d06dfd9173db858e629713e165008db5315b58.
+The Node 20 image is pinned to
+sha256:942fa0013e9adfbde06ad07433bdb0a67cc2ac0d5a3db38f12a9c8f710b41f1c;
+it has Git 2.30.2. Its credential-free, network-disabled container receives an
+immutable source archive (63096aff51dc27127e044e82741add452563305c995980d1c606c2b0f760004a)
+and a separate already-built bundle, with no development dependencies or real
+checkout/history. Offline package installation verifies both aliases and Codex
+managed install/idempotency/removal. The npm 9 archive has its own valid SHA-256,
+94611448defd9e8aa53a0389095ae7717f1dda1ea955fae336be77c340aba7d5;
+do not require different npm versions to produce byte-identical archives.
+
+All seven pinned adapter scenarios plus OpenCode 2.1.1 return FIXTURE_PASS with
+simulation evidence; missing/conflicting execution modes refuse and report replay
+matches exactly. No native client runs. Definitions (30 cases), gates (24 supplied
+prediction cases) and grounding (20 cases) return exactly the same JSON as macOS
+Node 24. Definitions retain two semantic misses; supplied gate predictions retain
+six misses and two false positives after refutation. Those are existing evaluator
+limitations, not perfect model-quality scores. Grounding passes all 20 cases.
+CI now repeats offline package execution, harness and the three built-CLI corpora
+under Node 20 after building on Node 22. The exact YAML run block also passes
+locally in a fresh Node 20 container; actual hosted execution is still pending.
+
 - [x] Execute lint/types, all unit/process/Git/worktree/compiled CLI fixtures, build/smoke, offline npm packaging, schema compatibility, references, docs, harness, Markdown and all 35 Mermaid diagrams on Linux arm64/Node 24. No test is skipped.
-- [ ] Repeat other supported Node/platform combinations, including the complete Node 20 installed-runtime surface and Linux x64. A Node 24 development check does not establish those results.
+- [x] Run the complete check on macOS arm64/Node 22.23.1, including all 1925 tests and the offline package. No test is skipped.
+- [x] Execute the scoped Node 20.0.0 Linux arm64 built-runtime checks above, including eight explicitly simulated adapter/dialect scenarios and exact three-corpus parity with Node 24.
+- [ ] Repeat other supported Node/platform combinations, including Linux x64 and the remaining Node 20 workflow/provider/native surfaces. The scoped runtime probes do not establish every installed command or actual client/service behavior.
 - [ ] Execute real native-client discovery/permissions/hooks/models, authenticated services and hosted release/Actions workflows on Linux. PATH fixtures and local publication simulations do not establish those results.
 
 Earlier per-component observations below remain historical. Their automated
@@ -174,7 +201,7 @@ observed by the structural judge.
 
 - [ ] In a disposable GrowthBook project, verify the explicit reader uses the published revision and live environment controls despite contradictory drafts. Compare default/force/forward/reverse/zero/full state, JSON boolean handling, project scope, compiled definitions and decimal percentages against the actual management API/SDK. Confirm hashed cohorts are labelled contexts with id and cannot satisfy all-context ramp claims; check missing-ID fallback behavior separately. Current responses are synthetic; actual credentials/API/native/Linux acceptance remains open.
 
-- [ ] Run development checks on other supported development Node versions and repeat built-CLI/provider runtime scenarios across supported Node/platform versions. Actual Node 20.0.0 macOS arm64 passes only the compiled flag preview and synthetic signal-bearing host subset; the complete Node 24 suite passes on macOS/Linux arm64, including success/cancellation listener cleanup. Complete Node 20 behavior and actual native/server acceptance remain unverified.
+- [ ] Repeat the remaining built-CLI/provider runtime scenarios across supported Node/platform versions. The complete check now passes on macOS Node 22 and macOS/Linux Node 24; Node 20 Linux package/corpora/conformance simulations pass at the scoped surface above. Actual Node 20.0.0 macOS arm64 also passes the earlier compiled flag preview and synthetic signal-bearing host subset. Complete Node 20 behavior and actual native/server acceptance remain unverified.
 
 - [ ] In a disposable Unleash project, configure the explicit Admin reader and authorize a read with the exact deployment/subpath/project/environment. Compare default and default-stickiness percentage/disabled state with the native console, verify environment variants are fetched, and inspect dependency/targeted/union/release-plan/safeguard refusal. Current tests use synthetic responses and source API contracts; actual authentication/version/native/Linux behavior remains unverified.
 

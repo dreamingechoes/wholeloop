@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-22 · Automatic acceptance — development Node 22 and runtime Node 20
+
+- Execute the complete macOS arm64 check with Node 22.23.1/npm 11.8.0: all 1925 tests in 87 files pass (272.82 seconds), together with lint/types, build/smoke, offline package, references, docs, harness, Markdown and 35 Mermaid diagrams. The check reaches its final successful command; the external shell wrapper then fails by assigning zsh's read-only status variable. Retain that operator failure separately from the completed npm check; no product correction is required.
+- Execute the 455433c archive and core 9ea3a298 in a non-root, network-disabled Node 20.0.0/npm 9.6.4 Linux arm64 container without development dependencies, real history or credentials. Offline install/aliases/managed Codex lifecycle, smoke, docs and harness pass. The first operator probe incorrectly uses development eval scripts and fails attempting to import absent esbuild; preserve its log and repeat directly against the bundle in a fresh container. All three corpora then execute and match macOS Node 24 JSON exactly; retain the existing definition/gate misses rather than claiming perfect quality. Grounding passes all 20 cases.
+- A separate fresh Node 20 container passes all seven pinned framing simulations plus OpenCode V2, including invalid-mode refusal and exact report replay. Every result stays FIXTURE_PASS/simulation; no actual native client runs. Extend the existing Node 20 CI runtime step with offline package, harness and direct corpus commands, retaining the development build before runtime selection. The exact YAML run block passes locally in a fresh Node 20 container. Record the scoped passes in acceptance docs; Linux x64, other runtime surfaces, actual native permissions/accounts and hosted release acceptance remain open. Recheck final workflow syntax, documentation, Markdown, whitespace and commit hygiene. No push, publication or native policy change occurs.
+
 ## 2026-10-22 · Acceptance audit — separate completed code from external checks
 
 - Reconcile the ordered V1 runbook with the completed framing, diagnostic, OpenCode, nightly and native-output fixes. Move the unchecked native-pass requirement out of the implementation-defect list so the owner can see which work is already automated and which requires native access/acceptance. Preserve all failed receipts, deferred experimental-service certification and the rule that newly discovered defects return to implementation.

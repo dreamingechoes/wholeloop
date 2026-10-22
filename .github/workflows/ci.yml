@@ -51,4 +51,13 @@ jobs:
         with:
           node-version: 20
       - name: The bundled CLI runs on the oldest supported Node
-        run: node --version && npm run smoke && node dist/wl.mjs docs check
+        # Build before switching Node: runtime checks must not invoke development tooling.
+        run: |
+          node --version
+          npm run smoke
+          node scripts/check-package.mjs
+          node dist/wl.mjs docs check
+          node dist/wl.mjs harness check
+          node dist/wl.mjs eval definitions test/evals/definition/corpus.json --json
+          node dist/wl.mjs eval gates test/evals/gates/corpus.json --predictions test/evals/gates/baseline-predictions.json --json
+          node dist/wl.mjs eval grounding test/evals/grounding/corpus.json --json
