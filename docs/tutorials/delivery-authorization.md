@@ -90,4 +90,4 @@ The current core exposes no worker-side operator endpoint or automatic process l
 You have exercised explicit authorization, independent-process inspection and durable revocation in a disposable external store. Retain the tutorial directory for inspection. Follow [Phase 6](../../roadmap/phase-6-autonomous-delivery.md) for journaled delivery states, queue/fencing, real environments, actual QA and PR/merge evidence. No native/service acceptance is marked passed by these metadata operations.
 
 <!-- docnav -->
-[◀ Delivery planning](delivery-plan.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Delivery planning](delivery-plan.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)

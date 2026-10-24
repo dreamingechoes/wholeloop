@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-journal-replay
+    enforcers: [src/delivery/journal.ts#DeliveryJournal, src/delivery/reducer.ts#replayDelivery, src/delivery/lifecycle.ts#DeliveryLifecycle, test/unit/delivery/journal.test.ts, test/unit/delivery/journal-cli.test.ts]
   - id: delivery-operator-authority
     enforcers: [src/delivery/authority.ts#DeliveryAuthority, src/delivery/authority.ts#deliveryReadOperation, test/unit/delivery/authority.test.ts]
   - id: delivery-worker-broker

@@ -3,6 +3,7 @@ import { readSourceFile, SOURCE_REQUEST_SCHEMA, SourceInputError } from '../deli
 import { DeliverySources } from '../delivery/source.js'
 import type { parseArguments } from './arguments.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
+import { deliveryJournalCommand } from './delivery-journal.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -14,6 +15,16 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (
+    [
+      'delivery state-schema',
+      'delivery track',
+      'delivery status',
+      'delivery events',
+      'delivery rebuild',
+    ].includes(command)
+  )
+    return deliveryJournalCommand(command, { options, positional: [] }, root, json, io)
   if (
     [
       'delivery authority-schema',

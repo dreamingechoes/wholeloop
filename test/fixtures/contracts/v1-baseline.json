@@ -233,7 +233,18 @@
     "schema:wholeloop/delivery-broker-request@1": "23a3ff1e1c1e75e65cea69783fb6ad0389c3b1a17807b81b43692f1db14926c8",
     "schema:wholeloop/delivery-revocation-request@1": "5d63fc5cc2c8a80c351bc429dadb2a4be9a9b772321784f75eb90b98f812c143",
     "output:wholeloop/delivery-authority-schema@1": "85e2120e0501b1bb25e91c23122d2c5f1b2b6275919c7ca61b1ff9556c967e42",
-    "output:wholeloop/delivery-authorization@1": "5c9b1bdd6f23a0f92d240131874abdf1002a2a71a981165a8451f28e63cb33c1"
+    "output:wholeloop/delivery-authorization@1": "5c9b1bdd6f23a0f92d240131874abdf1002a2a71a981165a8451f28e63cb33c1",
+    "output:wholeloop/delivery-state-schema@1": "5ead564bf42877a5553b8c9540610aeb0eaf851bf65b9edc347b3fa87945a32a",
+    "output:wholeloop/delivery-status@1": "f8b05969a9f92cc45184e5387f1875cde6e1af034255ea22d1b8051e9dbe2705",
+    "output:wholeloop/delivery-events@1": "20470ff72c77b95caddbf4364cfd1347bf375edf7ddc1722a4a29c80ae93f74d",
+    "output:wholeloop/delivery-rebuild@1": "2b3388af4c34cb5d05a4a4512a088f4f5d4450638a05e57c28a0f4bd32c7a4d9",
+    "schema:wholeloop/delivery-attempt-event@1": "bdf856468b93835babadaf3e9c221a3084e661f20d7553d6fe906ac3b8880e02",
+    "schema:wholeloop/delivery-attempts@1": "c6c36e8a9c916d0d0ab7fd150b0bc28eb3d967d208c4e585552d0de2789a786a",
+    "schema:wholeloop/delivery-control-event@1": "e68878530a6a09dbb0902c32b3699020dbf35ec5d3b7e80fd31afcaa41860f42",
+    "schema:wholeloop/delivery-event@1": "5f2ac9ce2436b7eefec45b93aa09c907f37bba3e66f68945d19d86fda39080b2",
+    "schema:wholeloop/delivery-grant-event@1": "b81dcb84e964a8494649a236be6a73039ed7cc1e2bc337a1893543c3fa9a11e1",
+    "schema:wholeloop/delivery-registration-event@1": "7374b7ce2f4b67bca17f39ee00c34cd529af7dc81b4ca58703d3dc7e29e0694a",
+    "schema:wholeloop/delivery-state@1": "b077bccd379e8f113d875f307e1287557bcdfefd6f099aec91129d84fd559682"
   },
   "commands": [
     {
@@ -1347,6 +1358,42 @@
       "arguments": "",
       "options": ["--id <authorization-id>", "--store <path>"],
       "schema": "wholeloop/delivery-authorization@1"
+    },
+    {
+      "path": "delivery state-schema",
+      "arguments": "",
+      "schema": "wholeloop/delivery-state-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery track",
+      "arguments": "",
+      "schema": "wholeloop/delivery-status@1",
+      "options": [
+        "--run <delivery-id>",
+        "--revision <number>",
+        "--envelope <digest>",
+        "--grant <authorization-id>",
+        "--store <path>"
+      ]
+    },
+    {
+      "path": "delivery status",
+      "arguments": "",
+      "schema": "wholeloop/delivery-status@1",
+      "options": ["--run <delivery-id>", "--store <path>"]
+    },
+    {
+      "path": "delivery events",
+      "arguments": "",
+      "schema": "wholeloop/delivery-events@1",
+      "options": ["--run <delivery-id>", "--after <sequence>", "--limit <number>", "--store <path>"]
+    },
+    {
+      "path": "delivery rebuild",
+      "arguments": "",
+      "schema": "wholeloop/delivery-rebuild@1",
+      "options": ["--store <path>"]
     }
   ],
   "exitCodes": {

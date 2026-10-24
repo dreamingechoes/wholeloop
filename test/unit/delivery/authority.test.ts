@@ -12,36 +12,10 @@ import {
   type TrustedBrokerRuntime,
 } from '../../../src/delivery/broker.js'
 import type { DeliveryPlan } from '../../../src/delivery/plan.js'
-import { entry, envelope, fixture, git } from '../../support/delivery.js'
+import { authorization, entry, envelope, fixture, git } from '../../support/delivery.js'
 import { environmentNames } from '../../support/platform.js'
 
 const at = '2026-10-24T10:00:00.000Z'
-function authorization(plan: DeliveryPlan, digest: string): AuthorizationRequest {
-  return {
-    schema: 'wholeloop/delivery-authorization-request@1',
-    id: 'authorization-0123456789abcdef',
-    operator: 'Fixture Operator',
-    basis: { kind: 'plan', digest, run: plan.run, revision: plan.revision },
-    effects: [
-      'source.read',
-      'report.write',
-      'workspace.create',
-      'code.write',
-      'test.run',
-      'git.commit',
-    ],
-    decisions: [],
-    repositories: plan.repositories.map((repo) => ({
-      repository: repo.id,
-      topicPrefix: 'wl/',
-      ...(repo.remote ? { remote: repo.remote.name } : {}),
-    })),
-    reads: [
-      { provider: 'github-issues', scope: 'example/tasks', operations: ['tracker.read-item'] },
-    ],
-    effectLimit: 20,
-  }
-}
 function assignment(plan: DeliveryPlan, digest: string): BrokerScope {
   return {
     grant: 'authorization-0123456789abcdef',

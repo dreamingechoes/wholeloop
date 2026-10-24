@@ -106,6 +106,7 @@
 | [0093](./0093-immutable-delivery-source-intake.md) | Immutable delivery sources without execution authority | Accepted | 2026-10-24 |
 | [0094](./0094-revision-bound-delivery-plans-and-envelopes.md) | Revision-bound delivery plans and request envelopes | Accepted | 2026-10-24 |
 | [0095](./0095-operator-grants-and-scoped-worker-claims.md) | Operator grants and scoped worker claims | Accepted | 2026-10-24 |
+| [0096](./0096-replayable-delivery-journal-without-authority-recovery.md) | Replayable delivery journal without authority recovery | Accepted | 2026-10-24 |
 
 ## Lifecycle
 

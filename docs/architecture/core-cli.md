@@ -23,6 +23,8 @@ delivery source --file request.json captures one bounded request into an immutab
 
 Delivery authority-schema exposes the operator/broker contracts. authorize records a bounded explicit plan/envelope grant; grant inspects it; revoke retains a durable revocation. Repeating the same action preserves its deadline and cannot renew expired/revoked authority. These metadata commands start no process and perform no remote effect. Broker requests are scoped worker claims, independently gated by current controller/runtime context. See [authorization and revocation](../tutorials/delivery-authorization.md) and [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md). Actual backend isolation/dispatch and delegated acceptance remain later work; existing supervised human gates are unchanged.
 
+Delivery state-schema exposes event and projection envelopes plus every registered closed payload/facet family. track observes a stored plan/envelope and optional private grant without starting execution. status replays authoritative delivery history; events pages it by exclusive global sequence; rebuild repairs disposable caches without reconstructing authority or changing legacy human/PR history. See the [recovery tutorial](../tutorials/delivery-recovery.md) and [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md). General worker/lock/effect reconciliation remains a later runner increment.
+
 Delivery planning adds plan-schema, envelope, plan and inspect-plan. These validate and preserve proposals with explicit ownership, dependency waves, local target SHAs and immutable policy/guidance bindings, without creating items, approvals, grants or workers. Inspecting a historic revision does not require today's target to match its old base. An initial envelope bounds a derived plan structurally; independent semantic acceptance and execution authority remain separate. The [planning tutorial](../tutorials/delivery-plan.md) exercises both proposal types and fresh-process recovery; [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) explains the boundary.
 
 Every command accepts `--json`. Machine-readable output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape). Unknown options fail rather than silently changing behavior.
@@ -34,6 +36,11 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery state-schema` | `wholeloop/delivery-state-schema@1` | Show delivery event, registered payload and projection contracts |
+| `wl delivery track` | `wholeloop/delivery-status@1` | Track a stored plan or envelope without granting authority or starting work |
+| `wl delivery status` | `wholeloop/delivery-status@1` | Replay authoritative delivery state independently of cached projections |
+| `wl delivery events` | `wholeloop/delivery-events@1` | Read bounded delivery event pages without changing legacy item history |
+| `wl delivery rebuild` | `wholeloop/delivery-rebuild@1` | Rebuild disposable delivery projections without restoring grants or effects |
 | `wl delivery authority-schema` | `wholeloop/delivery-authority-schema@1` | Show explicit operator authorization, revocation and worker request contracts |
 | `wl delivery authorize` | `wholeloop/delivery-authorization@1` | Record a bounded operator grant without starting workers or external effects |
 | `wl delivery revoke` | `wholeloop/delivery-authorization@1` | Revoke a grant for later assignments and effects while retaining history |

@@ -3,7 +3,11 @@
 > **TL;DR** — Persist scheduling decisions, attempt ownership and external-effect intents. Resume through fresh bounded contexts after interruption. A crash, timeout or unknown remote outcome cannot become a successful step or an invisible duplicate attempt.
 
 > [!NOTE]
-> **Status: 📐 design.** Accepted design target for P6-04–P6-10. The existing headless gate host is a foundation, not a persistent builder service.
+> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. Queue, process/checkpoint recovery, budgets and actual worker orchestration remain P6-05–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
+
+## Implemented local state boundary
+
+See the [recovery tutorial](../../../docs/tutorials/delivery-recovery.md) and [ADR-0096](../../../docs/decisions/0096-replayable-delivery-journal-without-authority-recovery.md). The core validates the versioned event envelope plus its registered closed payload schema, then replays exact revisions, state edges, grant observations and attempt identities. Immutable numbered transaction segments commit before disposable projections. Cache reconstruction neither recreates private authority nor reinterprets existing human/PR records; no worker or endpoint completion is implied. Later event/facet families remain additive and unknown versions refuse.
 
 ## State model
 

@@ -60,6 +60,14 @@ interface Revocation extends Omit<RevocationRequest, 'schema'> {
   at: string
   provenance: 'operator-control'
 }
+export interface AuthorizationReceipt {
+  schema: 'wholeloop/delivery-authorization@1'
+  digest: string
+  grant: DeliveryGrant
+  status: 'active' | 'expired' | 'revoked' | 'clock-invalid'
+  revocation: Revocation | null
+  runtime: 'not-observed-by-this-command'
+}
 export class DeliveryAuthorityError extends Error {
   constructor(readonly problem: string) {
     super(`Delivery authority refused: ${problem}; contents omitted`)
@@ -145,7 +153,7 @@ export class DeliveryAuthority {
     })
   }
 
-  inspect(id: string) {
+  inspect(id: string): AuthorizationReceipt {
     this.id(id)
     const grant = this.read(this.path(id)) as unknown as DeliveryGrant
     safeShape(grant, grantSchema)

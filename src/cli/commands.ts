@@ -8,6 +8,47 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery state-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-state-schema@1',
+    summary: 'Show delivery event, registered payload and projection contracts',
+  },
+  {
+    path: 'delivery track',
+    arguments: '',
+    options: [
+      '--run <delivery-id>',
+      '--revision <number>',
+      '--envelope <digest>',
+      '--grant <authorization-id>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/delivery-status@1',
+    summary: 'Track a stored plan or envelope without granting authority or starting work',
+  },
+  {
+    path: 'delivery status',
+    arguments: '',
+    options: ['--run <delivery-id>', '--store <path>'],
+    schema: 'wholeloop/delivery-status@1',
+    summary: 'Replay authoritative delivery state independently of cached projections',
+  },
+  {
+    path: 'delivery events',
+    arguments: '',
+    options: ['--run <delivery-id>', '--after <sequence>', '--limit <number>', '--store <path>'],
+    schema: 'wholeloop/delivery-events@1',
+    summary: 'Read bounded delivery event pages without changing legacy item history',
+  },
+  {
+    path: 'delivery rebuild',
+    arguments: '',
+    options: ['--store <path>'],
+    schema: 'wholeloop/delivery-rebuild@1',
+    summary: 'Rebuild disposable delivery projections without restoring grants or effects',
+  },
+  {
     path: 'delivery authority-schema',
     arguments: '',
     options: [],

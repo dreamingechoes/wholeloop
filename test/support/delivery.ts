@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import type { AuthorizationRequest } from '../../src/delivery/authority.js'
 import {
   DEFAULT_DELIVERY_BUDGETS,
   type DeliveryEnvelope,
@@ -165,5 +166,32 @@ export function envelope(plan: DeliveryPlan): DeliveryEnvelope {
     ...structuredClone(basis),
     schema: 'wholeloop/delivery-envelope@1',
     limits: { work: 100, criteria: 1000, revisions: 10 },
+  }
+}
+
+export function authorization(plan: DeliveryPlan, digest: string): AuthorizationRequest {
+  return {
+    schema: 'wholeloop/delivery-authorization-request@1',
+    id: 'authorization-0123456789abcdef',
+    operator: 'Fixture Operator',
+    basis: { kind: 'plan', digest, run: plan.run, revision: plan.revision },
+    effects: [
+      'source.read',
+      'report.write',
+      'workspace.create',
+      'code.write',
+      'test.run',
+      'git.commit',
+    ],
+    decisions: [],
+    repositories: plan.repositories.map((repo) => ({
+      repository: repo.id,
+      topicPrefix: 'wl/',
+      ...(repo.remote ? { remote: repo.remote.name } : {}),
+    })),
+    reads: [
+      { provider: 'github-issues', scope: 'example/tasks', operations: ['tracker.read-item'] },
+    ],
+    effectLimit: 20,
   }
 }

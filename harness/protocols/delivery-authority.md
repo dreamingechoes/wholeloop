@@ -4,4 +4,6 @@
 - ⛔ `delivery-worker-broker` — broker-managed workers require a live controller-selected assignment, active grant and trusted isolated runtime boundary before admission and again per message. Keep worker results as claims; they cannot write human-testing/approval records, alter budgets or call operator/publication/merge methods. Fixture observations remain fixtures.
 - ⛔ `delivery-worker-environment` — construct worker environments from explicit backend values without inheriting the controller's credentials, home or runtime options. An unrestricted native process is not a protected broker worker; retain the existing supervised route without an automatic broader fallback.
 
+- ⛔ `delivery-journal-replay` — replay only known complete delivery event families in contiguous digest-bound order. Keep projections disposable and authority private; cache repair cannot reconstruct grants or rewrite legacy human decisions/PR receipts. Refuse unknown versions, mismatched attempts and namespace aliases before writing.
+
 Inspect authority with `wl delivery grant`; revocation prevents later requests but does not erase evidence or undo an observed effect. Grant metadata does not start a runtime or prove actual backend/client containment. Initial envelopes still need independent derived-plan acceptance, and execution/CI/merge need their own current evidence.

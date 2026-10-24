@@ -41,6 +41,12 @@ $XDG_STATE_HOME/wholeloop/            default: ~/.local/state/wholeloop
 
 Workspace allocations are journaled before Git provisioning, then marked ready or failed. Their projections live at `items/<id>/worktree.json` and in the readable item's Workspace section; status includes them and resume links the projection. The separate worktree-control lock coordinates Git lifecycle operations without holding the journal lock across external mutations. The manager must be called outside a journal transaction. Worktree output lives under the store, while journal/lock metadata stays outside those Git checkouts. Retry and cleanup rules are recorded in [ADR-0030](../decisions/0030-worktree-intents-leases-and-conservative-pruning.md).
 
+## Delivery journal and cache recovery
+
+Delivery metadata uses separate immutable segments at `delivery/journal/<first-sequence>.ndjson` and disposable `delivery/state/<run>.json` projections. Track stored plans/envelopes and private grant observations with delivery track; status always replays the authoritative segments, and delivery events provides bounded per-run pages. delivery rebuild repairs only projections, never grants/revocations, legacy history or external effects. These commands start no worker and imply no execution authority.
+
+Each transaction commits one atomic segment before its caches. Core validation requires known versioned payload/facet schemas, contiguous global sequence and predecessor digests, exact revisions/attempt identities and valid lifecycle transitions. Unknown/incomplete history refuses writes; recognizable future caches and aliases into another store namespace refuse repair. The [recovery tutorial](../tutorials/delivery-recovery.md) exercises independent-process inspection and byte-identical cache reconstruction. [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md) preserves legacy human/PR semantics and separates recovery from live admission. General stale-lock/worker/effect reconciliation remains a later runner increment.
+
 ## Shared work and the publication outbox
 
 URL adoption matches canonical stored links before importing a complete provider read. An imported initiative retains its source revision/digest and host/import origin; reading a document never fabricates Define completion or approval.

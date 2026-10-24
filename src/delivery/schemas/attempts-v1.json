@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-attempts@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "records"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-attempts@1"
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "basis", "role", "generation", "state", "observedAt"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^attempt-[a-f0-9]{16}$"
+          },
+          "basis": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "unit": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+          },
+          "cell": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "builder",
+              "verifier",
+              "reviewer",
+              "refuter",
+              "researcher",
+              "planner",
+              "challenger"
+            ]
+          },
+          "generation": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "runtime": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["backend", "instance", "worker"],
+            "properties": {
+              "backend": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "instance": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "worker": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            }
+          },
+          "evidence": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["claimed", "started", "stopping", "stopped", "completed", "failed", "fenced"]
+          },
+          "observedAt": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{3}Z$"
+          }
+        }
+      }
+    }
+  }
+}

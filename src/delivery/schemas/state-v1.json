@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-state@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "run",
+    "sequence",
+    "digest",
+    "registeredAt",
+    "updatedAt",
+    "maxObservedAt",
+    "clockWentBackwards",
+    "state",
+    "basis",
+    "source",
+    "policy",
+    "units",
+    "plans",
+    "facets"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-state@1"
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "registeredAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{3}Z$"
+    },
+    "updatedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{3}Z$"
+    },
+    "maxObservedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{3}Z$"
+    },
+    "clockWentBackwards": {
+      "type": "boolean"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "queued",
+        "running",
+        "waiting-input",
+        "waiting-external",
+        "paused",
+        "stopping",
+        "stopped",
+        "exhausted",
+        "completed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "digest"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["plan", "envelope"]
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["digest", "endpoint", "intervention"],
+      "properties": {
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "endpoint": {
+          "type": "string",
+          "enum": ["research-report", "local-handoff", "to-pr", "to-merge"]
+        },
+        "intervention": {
+          "type": "string",
+          "enum": ["supervised", "on-exception", "none"]
+        }
+      }
+    },
+    "units": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "role"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["contract", "implementation", "research"]
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+          }
+        }
+      }
+    },
+    "envelope": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "plans": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["revision", "digest"],
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "digest", "basis", "status"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-grant-event@1"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^authorization-[a-f0-9]{16}$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "basis": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "expired", "revoked", "clock-invalid"]
+        }
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "research-report-complete",
+        "completed-with-unknowns",
+        "code-ready",
+        "draft-pr",
+        "ready-pr",
+        "merge-queued",
+        "merged",
+        "partial",
+        "blocked",
+        "failed",
+        "exhausted",
+        "stopped"
+      ]
+    },
+    "facets": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["schema"],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "pattern": "^wholeloop/delivery-[a-z][a-z0-9-]*@[1-9][0-9]*$"
+          }
+        }
+      }
+    }
+  }
+}

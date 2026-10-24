@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-registration-event@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "basis", "source", "policy", "units"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-registration-event@1"
+    },
+    "basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "digest"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["plan", "envelope"]
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["digest", "endpoint", "intervention"],
+      "properties": {
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "endpoint": {
+          "type": "string",
+          "enum": ["research-report", "local-handoff", "to-pr", "to-merge"]
+        },
+        "intervention": {
+          "type": "string",
+          "enum": ["supervised", "on-exception", "none"]
+        }
+      }
+    },
+    "units": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "role"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["contract", "implementation", "research"]
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+          }
+        }
+      }
+    },
+    "previous": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "envelope": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

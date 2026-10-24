@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-attempt-event@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "basis", "role", "generation", "action"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-attempt-event@1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^attempt-[a-f0-9]{16}$"
+    },
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "unit": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+    },
+    "cell": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "role": {
+      "type": "string",
+      "enum": ["builder", "verifier", "reviewer", "refuter", "researcher", "planner", "challenger"]
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "claimed",
+        "started",
+        "heartbeat",
+        "stopping",
+        "stopped",
+        "completed",
+        "failed",
+        "fenced"
+      ]
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backend", "instance", "worker"],
+      "properties": {
+        "backend": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "instance": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "worker": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "evidence": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

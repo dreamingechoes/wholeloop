@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-control-event@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "from", "to", "basis", "reason"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-control-event@1"
+    },
+    "from": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "queued",
+        "running",
+        "waiting-input",
+        "waiting-external",
+        "paused",
+        "stopping",
+        "stopped",
+        "exhausted",
+        "completed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "to": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "queued",
+        "running",
+        "waiting-input",
+        "waiting-external",
+        "paused",
+        "stopping",
+        "stopped",
+        "exhausted",
+        "completed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "research-report-complete",
+        "completed-with-unknowns",
+        "code-ready",
+        "draft-pr",
+        "ready-pr",
+        "merge-queued",
+        "merged",
+        "partial",
+        "blocked",
+        "failed",
+        "exhausted",
+        "stopped"
+      ]
+    },
+    "evidence": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

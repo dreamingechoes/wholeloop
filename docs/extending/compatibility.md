@@ -3,7 +3,7 @@
 > **TL;DR** — The v1 candidate freezes existing schema declarations, step contracts, command signatures and exit codes. New commands and optional flags are additive; changing an existing format needs a new identity and a migration path. Commit classifications alone do not establish compatibility.
 
 > [!NOTE]
-> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers fifty-three source JSON Schemas, 147 command-output variants, thirteen steps, 157 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
+> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers 72 source JSON Schemas, 158 command-output variants, thirteen steps, 172 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
 
 ## What is versioned
 
@@ -32,6 +32,12 @@ The normal unit suite compares source declarations with test/fixtures/contracts/
 Every current declaration must have a recorded baseline entry; old entries cannot disappear or change silently. New identities are appended with their tests, not used to overwrite old definitions. Existing commands keep their positional and output contracts and all prior flags. Run npm run check after changing a contract; its source/compiled inventory check also catches missing general-schema branches.
 
 A fingerprint change flags review; it is not a semantic compatibility proof. An annotation-only or equivalent edit may update its fixture after the reason and domain regression checks are recorded. Never refresh fixtures to hide changed constraints or meanings under an old identity. Parser, replay, workflow and native conformance evidence remain necessary for the behavior they exercise. The current checks ran on macOS and Debian Linux arm64/Node 24, including all 1925 tests, compiled fixtures and offline packaging. Other supported Node/platform combinations, real native clients and physical upgrade acceptance remain in the manual list.
+
+## Delivery event extensions
+
+The separate delivery journal preserves legacy item schema identities, human decisions and PR receipts byte-for-byte. Its frozen envelopes use independently versioned payload/facet families: validation requires both the envelope and a registered exact closed family schema/reducer. Add a new family identity rather than weakening or silently extending an old payload. Unknown versions refuse replay/writes; older readers are not promised to understand future delivery events.
+
+Disposable delivery cache repair cannot recover private grants, erase revocations or migrate old human records. Recognizable future cache versions remain intact. [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md) documents the journal commit and compatibility boundaries.
 
 ## Before the actual release
 

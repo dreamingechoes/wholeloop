@@ -3,7 +3,7 @@
 > **TL;DR** — The planned runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator grant/revocation metadata and scoped broker admission are implemented. Actual native/backend workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
+> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator grant/revocation metadata scoped broker admission and replayable delivery state/cache recovery are implemented. Actual native/backend workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
 
 ## Read the proposal
 
@@ -27,6 +27,8 @@ Use [delivery source](../tutorials/delivery-intake.md) to capture bounded local 
 | Complete no-intervention research/implementation | [Delegated decisions](../../roadmap/specifications/autonomous-delivery/10-unattended-decisions-and-research.md) |
 
 ## Design boundaries
+
+[Delivery recovery](../tutorials/delivery-recovery.md) tracks prepared plans/envelopes, replays immutable delivery events and reconstructs disposable caches without recreating private authority or changing legacy human/PR receipts. Unknown versions and mismatched identities refuse. Queue scheduling, actual workers and endpoint evidence remain later increments.
 
 [Delivery authorization](../tutorials/delivery-authorization.md) records exact operator grants and durable revocations without starting workers or executing external effects. Endpoints are permission ceilings; effect/decision/repository/read scopes remain explicit. Broker admission and messages require current private controller context and an isolated runtime observation; worker output stays a claim and cannot forge human testing. Fixture runtime evidence does not establish actual containment. [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md) records this implemented boundary and the later backend/runner obligations.
 

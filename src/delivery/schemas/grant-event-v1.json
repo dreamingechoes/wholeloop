@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-grant-event@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "digest", "basis", "status"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-grant-event@1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^authorization-[a-f0-9]{16}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "expired", "revoked", "clock-invalid"]
+    }
+  }
+}

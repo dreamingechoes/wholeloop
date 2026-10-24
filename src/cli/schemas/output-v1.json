@@ -3770,6 +3770,105 @@
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "eventSchema", "payloadSchemas", "stateSchema", "facetSchemas"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-state-schema@1"
+        },
+        "eventSchema": {
+          "type": "object"
+        },
+        "payloadSchemas": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "stateSchema": {
+          "type": "object"
+        },
+        "facetSchemas": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "state", "projectionCache", "authority", "effects"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-status@1"
+        },
+        "state": {
+          "type": "object"
+        },
+        "projectionCache": {
+          "enum": ["current", "missing", "stale"]
+        },
+        "authority": {
+          "const": "not-implied"
+        },
+        "effects": {
+          "const": "not-performed"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "run", "events", "nextCursor"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-events@1"
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "events": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "type": "object"
+          }
+        },
+        "nextCursor": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "runs", "written", "authority", "effects"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-rebuild@1"
+        },
+        "runs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "written": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "authority": {
+          "const": "not-restored"
+        },
+        "effects": {
+          "const": "not-performed"
+        }
+      }
     }
   ],
   "$defs": {
