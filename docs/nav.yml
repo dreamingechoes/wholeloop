@@ -9,6 +9,7 @@ pages:
   - { path: tutorials/first-framing.md, title: First framing }
   - { path: tutorials/local-core.md, title: Local core tour }
   - { path: tutorials/small-change.md, title: Small change }
+  - { path: tutorials/delivery-intake.md, title: Delivery request intake }
   - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }

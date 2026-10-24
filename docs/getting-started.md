@@ -24,6 +24,7 @@
 | An installed client with working model access | This page, then [first framing](./tutorials/first-framing.md) | A framing conversation, final decision and recoverable receipt |
 | Node and Git, but no client/model account | [Local core tour](./tutorials/local-core.md) | Configuration, preflight questions, stored state and context recovery |
 | A working installation and a small change | [Small-change walkthrough](./tutorials/small-change.md) | Criteria, worktree, verification/review and the human testing handoff |
+| An issue, document or local request to pin before delivery planning | [Delivery request intake](./tutorials/delivery-intake.md) | An immutable source revision; no worker starts |
 | A failed command or missing skill | [Troubleshooting](./troubleshooting.md) | A specific diagnosis rather than another blind installation attempt |
 
 The core manages state and deterministic rules. Skills in your coding client perform the model-backed work. A successful terminal command alone does not prove native discovery, review or isolation.

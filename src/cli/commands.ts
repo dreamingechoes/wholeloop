@@ -8,6 +8,20 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery source-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-source-schema@1',
+    summary: 'Show the bounded delivery request and imported observation contract',
+  },
+  {
+    path: 'delivery source',
+    arguments: '',
+    options: ['--file <request.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/delivery-source-intake@1',
+    summary: 'Capture an immutable external request snapshot without starting work',
+  },
+  {
     path: 'adapter build-native',
     arguments: '',
     options: ['--target <opencode>', '--pin <version>', '--out <directory>', '--dry-run'],

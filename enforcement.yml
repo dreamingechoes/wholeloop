@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-source-identity
+    enforcers: [src/delivery/input.ts#sourceRequest, src/delivery/input.ts#readSourceFile, src/delivery/source.ts#DeliverySources, src/delivery/source-host.ts#readProviderSource, test/unit/delivery/source.test.ts]
   - id: headless-native-response-schema
     enforcers: [src/fanout/response-schema.ts#headlessResponseSchema, src/fanout/host.ts#HeadlessHost, src/fanout/adapters.ts#headlessAdapter, src/fanout/policy-files.ts#stageWorkerPolicy, test/unit/fanout/response-schema.test.ts, test/unit/fanout/fanout.test.ts]
   - id: conformance-scripted-final-approval

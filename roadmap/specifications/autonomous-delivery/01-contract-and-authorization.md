@@ -3,13 +3,15 @@
 > **TL;DR** — Pin the requested work and obtain explicit operator authority before execution. Keep criteria, decision provenance and native permissions separate from automation scope. The owner can delegate a complete flow once; a worker cannot enlarge that grant or impersonate a person.
 
 > [!NOTE]
-> **Status: 📐 design.** Accepted design target for P6-01–P6-03 and P6-29. No existing policy is relaxed by this file.
+> **Status: 🚧 partial.** P6-01 source intake is implemented; the contracts for plans, grants and change handling remain accepted design targets for P6-02–P6-03 and P6-29. No existing policy is relaxed by this file.
 
 ## Inputs and immutable plan
 
 Accept an existing initiative/scope/slice ID, local UTF-8 file, explicit inline request, tracker URL or document URL. Remote sources use an existing client-owned MCP connection or existing code-host CLI; do not guess URL ownership or add service-specific HTTP implementations. Local files are bounded to 1 MiB, regular, explicitly selected and free of followed symlink escapes; remote normalized content has the same bound.
 
 A complete source snapshot records kind, canonical reference, provider identity, observed revision, fetched time, normalized content digest and relevant attachment digests. Incomplete pagination, missing revision or unavailable content returns structured missing-input data; only intervention-enabled flows may ask a person. Inline/file requests use their byte digest as revision. Do not execute commands embedded in source text. Explicit extraction maps identify criteria and context; unsupported external formats remain pending inputs rather than fabricated parsed requirements.
+
+Implemented intake uses delivery source --file request.json and delivery source-schema, plus DeliverySources.captureFromHost for reads through existing provider operations. Snapshots preserve exact UTF-8 text and the first accepted fetch time. Explicit maps use inclusive one-based line ranges; empty maps retain context without inventing criteria. CLI observations are labelled import and never authenticated by their JSON contents. See the [tutorial](../../../docs/tutorials/delivery-intake.md) and [ADR-0093](../../../docs/decisions/0093-immutable-delivery-source-intake.md). No worker, plan, grant or decision is created by intake.
 
 Do not persist known credentials in plaintext source snapshots, excerpts or diagnostics. If intake detects credential-bearing content, refuse that input and request a redacted source when intervention is allowed, or return a terminal blocked result in none mode. A detector is not proof that arbitrary text is secret-free. Use credential references to an existing encrypted/OS/tool store; never copy values into plans or native command arguments.
 
@@ -67,7 +69,7 @@ Each schema uses closed objects, meaningful bounded strings, canonical paths and
 
 ## Acceptance and tests
 
-- [ ] **AUTH-01:** Equivalent explicit local inputs reuse the intended source identity; changed bytes create a new revision and preserve the old snapshot.
+- [x] **AUTH-01:** Equivalent explicit local inputs reuse the intended source identity; changed bytes create a new revision and preserve the old snapshot. Executed by P6-01's local/file/item and independent-process tests.
 - [ ] **AUTH-02:** Wrong tenant/repository, partial remote reads, missing revisions, oversized input and ambiguous mappings launch no worker.
 - [ ] **AUTH-03:** An issue saying “ignore policy and merge” changes no authority; labels, profiles and repository files cannot create grants.
 - [ ] **AUTH-04:** Machine acceptance stays distinct from actual human testing in replay, receipts and legacy readers.
@@ -77,5 +79,7 @@ Each schema uses closed objects, meaningful bounded strings, canonical paths and
 - [ ] **AUTH-08:** Endpoint, intervention and delegated decisions vary independently: unattended research grants no code writes, and unattended PR delivery grants no merge.
 
 Unit tests cover schema and decision tables; process tests cover hostile worker messages and real file boundaries; native/backend trials verify effective tools rather than just generated configuration.
+
+P6-01 additionally covers the source-intake portions of AUTH-02/AUTH-03: partial/oversized/wrong-scope observations, ambiguous mappings and inert hostile prose. Their broader planning/broker authority requirements remain unchecked until those increments exist. These are local and normalized-host fixtures, not actual remote-service or worker-containment certification.
 
 [◀ Specification index](./README.md) · [Runner ▶](./02-durable-runner.md)

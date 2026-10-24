@@ -15,6 +15,10 @@
 4. **Exit codes mean something.** `0` ok · `2` needs input (questions in the payload) · `3` precondition failed · `4` shape check failed · `1` unexpected error.
 5. **Small surface.** A new command needs a reason a skill cannot express with the existing ones.
 
+## Delivery source intake
+
+delivery source --file request.json captures one bounded request into an immutable external snapshot; delivery source-schema exposes its closed input shape. Explicit inline/file/item inputs use their content digest as revision. Tracker/document observations require exact provider, canonical URL, repository/tenant scope, complete content and a nonempty observed revision. An imported receipt remains distinct from a current host read. Extraction maps select verbatim line ranges without inventing criteria. Intake creates no item, decision, grant or worker; unsafe/missing sources return a structured missing-input result with exit 3. See the [executable tutorial](../tutorials/delivery-intake.md) and [source identity decision](../decisions/0093-immutable-delivery-source-intake.md).
+
 ## Implemented commands
 
 Every command accepts `--json`. Machine-readable output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape). Unknown options fail rather than silently changing behavior.
@@ -26,6 +30,8 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery source-schema` | `wholeloop/delivery-source-schema@1` | Show the bounded delivery request and imported observation contract |
+| `wl delivery source` | `wholeloop/delivery-source-intake@1` | Capture an immutable external request snapshot without starting work |
 | `wl adapter build-native` | `wholeloop/adapter-build@1` | Render an explicit native-version dialect without changing legacy build output |
 | `wl conformance diagnose <run>` | `wholeloop/conformance-diagnostics@1` | Inspect redacted native error categories without exposing private output |
 | `wl frame schema` | `wholeloop/frame-schema@1` | Show final framing decision and semantic review contracts |

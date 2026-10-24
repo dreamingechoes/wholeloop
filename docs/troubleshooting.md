@@ -119,4 +119,4 @@ Include the exact source revision/core version, operating system/architecture, N
 Use [V1 acceptance](./v1-acceptance.md#what-evidence-to-return) for the handoff format. A discovered implementation defect returns to technical work; it is not waived as another manual checkbox.
 
 <!-- docnav -->
-[◀ Small change](tutorials/small-change.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)
+[◀ Delivery request intake](tutorials/delivery-intake.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)

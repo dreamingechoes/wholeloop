@@ -15,6 +15,12 @@ You do not need accounts with every vendor to use the local harness or release 1
 
 Claude Code, Codex and the other native clients have a separate conformance matrix; this integration policy does not waive their acceptance checks. Local-docs, local-tracker and contained repository-file behavior retain their local evidence.
 
+## Delivery source observations
+
+Delivery request intake reuses the existing tracker.read-item and docs.read provider operations through an explicitly supplied SourceProviderHost. Its client normalizer must return the repository/tenant scope observed in the response, complete content and pagination, a nonempty revision and relevant attachment digests. The core compares provider, canonical reference and scope with the explicit request before storing anything. It never infers tenant ownership from a URL or invokes a write operation.
+
+The terminal delivery source command imports an explicitly supplied observation and labels it import. It authenticates no account. Only a read performed in DeliverySources.captureFromHost records host provenance, which still does not certify that service or establish a containment boundary. Missing/partial/inconsistent observations return missing-input without starting work. See the [intake tutorial](../tutorials/delivery-intake.md) and [ADR-0093](../decisions/0093-immutable-delivery-source-intake.md). No vendor API or transport fallback is added.
+
 ## Capabilities, not vendors
 
 ```mermaid

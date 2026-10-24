@@ -17,7 +17,7 @@
 
 ## Start with your goal
 
-For the next 1.0 scope, review the [autonomous-delivery design](./architecture/autonomous-delivery.md), [detailed specifications](../roadmap/specifications/autonomous-delivery/README.md) and [34 Phase 6 tasks](../roadmap/phase-6-autonomous-delivery.md). They propose complete no-intervention flows after initial authorization and are accepted for implementation; the new behavior remains unimplemented.
+For the expanded 1.0 scope, review the [autonomous-delivery design](./architecture/autonomous-delivery.md), [detailed specifications](../roadmap/specifications/autonomous-delivery/README.md) and [34 Phase 6 tasks](../roadmap/phase-6-autonomous-delivery.md). Revision-bound source intake is available; complete no-intervention flows after initial authorization remain under implementation.
 
 | Goal | First page | Successful stopping point |
 | --- | --- | --- |
@@ -25,6 +25,7 @@ For the next 1.0 scope, review the [autonomous-delivery design](./architecture/a
 | Try it without a model account | [Local core tour](./tutorials/local-core.md) | An initiative, preflight questions and recoverable local context |
 | Understand what to answer during framing | [First framing](./tutorials/first-framing.md) | An approved final draft or recorded no-go, followed by recovery |
 | Build a bounded change | [Small-change walkthrough](./tutorials/small-change.md) | Verified/reviewed work and a human testing handoff before publication |
+| Pin a request before delivery planning | [Delivery intake](./tutorials/delivery-intake.md) | An immutable source revision without starting workers |
 | Recover from a setup/workflow problem | [Troubleshooting](./troubleshooting.md) | A specific diagnosis and next action |
 | Assess readiness for 1.0 | [Acceptance](./v1-acceptance.md) | Executed checks separated from owner decisions and deferred services |
 
@@ -37,6 +38,7 @@ For the next 1.0 scope, review the [autonomous-delivery design](./architecture/a
 | [Local core tour](./tutorials/local-core.md) | What the deterministic CLI does without a model |
 | [First framing](./tutorials/first-framing.md) | Context, answers, owner outcome, exact final review and session recovery |
 | [Small change](./tutorials/small-change.md) | Criteria, worktrees, gates and the human testing handoff |
+| [Delivery intake](./tutorials/delivery-intake.md) | Bounded local/item/remote input, explicit maps and recoverable source identity |
 | [Utilities](./flow/utilities.md) | Skills versus core calls for `next`, `status`, `setup` and `sync` |
 | [Troubleshooting](./troubleshooting.md) | Executable paths, discovery, permissions, state and exit codes |
 | [FAQ](./faq.md) | Short answers and links for common choices |

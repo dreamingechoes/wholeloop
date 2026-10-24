@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 📐 design · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. Execution criteria remain pending until tested. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01 is implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 40 complete, fourteen original open tasks and 34 new pending tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 41 complete, fourteen original open tasks and 33 new pending tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -39,7 +39,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-01 · Revision-bound request intake
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P2-08, P3-04
+**Status:** ✅ · **Size:** M · **Depends on:** P2-08, P3-04
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -49,13 +49,15 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Acceptance criteria:**
 
-- [ ] Local/inline changes create new immutable revisions; repeated identical intake preserves identity.
-- [ ] Incomplete, oversized, ambiguous or wrong-repository remote observations launch no worker.
-- [ ] Fetched instructions cannot change authority or execute commands.
+- [x] Local/inline changes create new immutable revisions; repeated identical intake preserves identity.
+- [x] Incomplete, oversized, ambiguous or wrong-repository remote observations launch no worker.
+- [x] Fetched instructions cannot change authority or execute commands.
 
 **Tests** — AUTH-01–AUTH-02 and AUTH-03: schema tables, local-file/symlink fixtures and complete/partial remote host fixtures.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/01-contract-and-authorization.md); getting-started, core CLI, provider boundaries.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/01-contract-and-authorization.md), [executable tutorial](../docs/tutorials/delivery-intake.md), getting-started, core CLI and provider boundaries.
+
+**Evidence** — 52 intake tests, 353 focused intake/contract checks and the complete macOS arm64/Node 24.22.0 check (2015 tests in 89 files). Execute the tutorial on Linux arm64/Node 20.0.0 and 24.22.0 and five real descriptor/boundary refusals on each. Remote observations remain normalized-host fixtures/imports, not actual service certification; no worker or external effect is launched.
 
 ---
 

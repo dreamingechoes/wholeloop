@@ -3,11 +3,15 @@
 > **TL;DR** — The planned runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
-> **Status: 📐 design.** This expanded 1.0 scope was requested on 2026-10-24 and has been reviewed/accepted by the owner, with sequential implementation authorized. These capabilities are not current commands or permissions. Existing supervised behavior and acceptance evidence remain unchanged.
+> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Revision-bound source intake is implemented. Plans, grants, workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
 
 ## Read the proposal
 
-The [specification index](../../roadmap/specifications/autonomous-delivery/README.md) links ten detailed chapters. The [Phase 6 roadmap](../../roadmap/phase-6-autonomous-delivery.md) contains 34 pending tasks with dependencies, deliverables, acceptance criteria, test cases and documentation obligations.
+The [specification index](../../roadmap/specifications/autonomous-delivery/README.md) links ten detailed chapters. The [Phase 6 roadmap](../../roadmap/phase-6-autonomous-delivery.md) tracks 34 accepted tasks with dependencies, deliverables, acceptance criteria, test cases and documentation obligations.
+
+## Available now: request intake
+
+Use [delivery source](../tutorials/delivery-intake.md) to capture bounded local files, inline requests, existing items or complete explicitly scoped remote observations. Immutable external snapshots bind content/revision, reference, provider, repository/tenant scope, attachment digests and extraction maps. Repeating identical intake preserves identity; changed inputs retain their own snapshots. Imported observations remain distinct from reads actually performed through the existing provider host path. Intake starts no worker and grants no execution or publication authority. [ADR-0093](../decisions/0093-immutable-delivery-source-intake.md) defines this implemented boundary.
 
 | Concern | Detailed contract |
 | --- | --- |
@@ -36,7 +40,7 @@ The accepted [planning decision](../decisions/0092-expanded-v1-autonomous-delive
 
 ## Accepted implementation scope
 
-The owner accepted this scope and authorized pragmatic implementation decisions, passing tests, docs and incremental commits without waiting for manual checks or further signals. Every proposed acceptance case remains unchecked. No cloud platform, marketplace, vendor API expansion or actual production operation is included.
+The owner accepted this scope and authorized pragmatic implementation decisions, passing tests, docs and incremental commits without waiting for manual checks or further signals. Implemented intake evidence is recorded in Phase 6; later capability acceptance remains pending. No cloud platform, marketplace, vendor API expansion or actual production operation is included.
 
 <!-- docnav -->
 [◀ Architecture](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Core CLI ▶](core-cli.md)

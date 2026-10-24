@@ -7,6 +7,7 @@ import { COMMANDS } from './commands.js'
 import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
 import { conformanceCommand } from './conformance.js'
+import { deliveryCommand } from './delivery.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav, docsReference } from './docs.js'
 import { doctorCommand } from './doctor.js'
@@ -100,6 +101,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path.startsWith('delivery '))
+      return deliveryCommand(command.path, parsed, root, json, io)
     if (command.path === 'release verify') return releaseVerifyCommand(parsed, root, json, io)
     if (command.path === 'release artifacts') return releaseArtifacts(parsed, root, json, io)
     if (command.path === 'release notes') return releaseNotesCommand(parsed, root, json, io)

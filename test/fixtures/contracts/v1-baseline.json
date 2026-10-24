@@ -214,7 +214,12 @@
     "schema:wholeloop/frame-review@1": "e96a508d794d90b4fac96e8185f215952e8f520c1d29c1732b1bcdf3f255a114",
     "output:wholeloop/conformance-diagnostics@1": "c5f29473fa81bbc523fe97c9e2ac1ded57165cd9eb2808cfcc52dcd2eb2b99a4",
     "schema:wholeloop/conformance-diagnostics@1": "5c8e4462bbf587b3fb10514015f8d1a7d6c3244e62d81de53dec839e4506c746",
-    "schema:wholeloop/conformance-frame-approval@1": "0dd71e2e051b1617308dbb17ffa0ee834950ff0d3b28d8888dbfd3033d39076e"
+    "schema:wholeloop/conformance-frame-approval@1": "0dd71e2e051b1617308dbb17ffa0ee834950ff0d3b28d8888dbfd3033d39076e",
+    "schema:wholeloop/delivery-source-observation@1": "b046dffc260d43dbac8a12447b9889c2a77ef09a4cc499c0ba7371dce2da8b3f",
+    "schema:wholeloop/delivery-source-request@1": "51977f8bc67ca4a7259a091856a06b6b87cb03a090ad0dd62d32aabb946c4d81",
+    "schema:wholeloop/delivery-source-snapshot@1": "ddf3a237b596dda60704ff4bd9a7d1b93130d19f9378780ce8c50ec3ed503253",
+    "output:wholeloop/delivery-source-schema@1": "6108a79fb9f17c9ec08dffa92ad83793b676b07ea79825bff3805025532faf4a",
+    "output:wholeloop/delivery-source-intake@1": "2d6cacf6307d92bd1ebf2f4c767b1efdec0c50b4b42a4c49a8c8d215ae03f96d"
   },
   "commands": [
     {
@@ -1268,6 +1273,18 @@
       "arguments": "",
       "options": ["--target <opencode>", "--pin <version>", "--out <directory>", "--dry-run"],
       "schema": "wholeloop/adapter-build@1"
+    },
+    {
+      "path": "delivery source-schema",
+      "arguments": "",
+      "options": [],
+      "schema": "wholeloop/delivery-source-schema@1"
+    },
+    {
+      "path": "delivery source",
+      "arguments": "",
+      "options": ["--file <request.json>", "--root <directory>", "--store <path>"],
+      "schema": "wholeloop/delivery-source-intake@1"
     }
   ],
   "exitCodes": {
