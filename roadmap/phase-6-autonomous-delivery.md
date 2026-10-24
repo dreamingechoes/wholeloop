@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01/P6-02 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-03 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 42 complete, fourteen original open tasks and 32 new pending tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 43 complete, fourteen original open tasks and 31 new pending tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -87,7 +87,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-03 · Operator grants and trusted effect broker
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-02
+**Status:** ✅ · **Size:** L · **Depends on:** P6-02
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -97,13 +97,15 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Acceptance criteria:**
 
-- [ ] Workers cannot create grants, forge human testing, alter budgets or access controller credentials.
-- [ ] Read-only research, PR publication and merge have independent effect authority.
-- [ ] Non-contained native execution remains supervised; unavailable containment never silently broadens access.
+- [x] Workers cannot create grants, forge human testing, alter budgets or access controller credentials.
+- [x] Read-only research, PR publication and merge have independent effect authority.
+- [x] Non-contained native execution remains supervised; unavailable containment never silently broadens access.
 
 **Tests** — AUTH-03–AUTH-08: hostile broker/process fixtures and no-credential-propagation probes. Actual native filesystem containment is exercised by P6-12/P6-27 before that capability can be advertised.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/01-contract-and-authorization.md); architecture, guards, installation/native capability boundaries.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/01-contract-and-authorization.md), [authorization guide](../docs/tutorials/delivery-authorization.md), architecture, state and native capability boundaries.
+
+**Evidence** — 42 new authority/broker tests and 460 focused source/plan/authority/contract checks pass on macOS and isolated Linux arm64/Node 24.22.0. The complete macOS check passes 2122 tests in 91 files. Exact planning/authorization/revocation tutorials pass on macOS and Linux Node 20.0.0/24.22.0. These prove the local control/protocol boundary, not actual native filesystem denial. No protected worker/backend or external effect starts; P6-12/P6-27 retain actual containment acceptance. Broker fixture observations and machine claims are never promoted to human testing or execution proof.
 
 ---
 

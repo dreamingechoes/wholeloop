@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-revocation@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "grant", "operator", "reason", "at", "provenance"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-revocation@1"
+    },
+    "grant": {
+      "type": "string",
+      "pattern": "^authorization-[a-f0-9]{16}$"
+    },
+    "operator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{3}Z$"
+    },
+    "provenance": {
+      "type": "string",
+      "const": "operator-control"
+    }
+  }
+}

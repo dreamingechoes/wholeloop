@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-broker-receipt@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "request", "status", "reason", "assignment", "origin", "effects"],
+  "properties": {
+    "schema": {
+      "const": "wholeloop/delivery-broker-receipt@1"
+    },
+    "request": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^request-[a-f0-9]{16}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": ["recorded", "denied"]
+    },
+    "reason": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,127}$"
+    },
+    "assignment": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "origin": {
+      "const": "worker-claim"
+    },
+    "effects": {
+      "const": "not-performed"
+    },
+    "runtime": {
+      "enum": ["fixture", "host-observed"]
+    }
+  }
+}

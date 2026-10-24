@@ -11,6 +11,7 @@ pages:
   - { path: tutorials/small-change.md, title: Small change }
   - { path: tutorials/delivery-intake.md, title: Delivery request intake }
   - { path: tutorials/delivery-plan.md, title: Delivery planning }
+  - { path: tutorials/delivery-authorization.md, title: Delivery authorization }
   - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }

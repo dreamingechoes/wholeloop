@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery authority-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-authority-schema@1',
+    summary: 'Show explicit operator authorization, revocation and worker request contracts',
+  },
+  {
+    path: 'delivery authorize',
+    arguments: '',
+    options: ['--file <operator-request.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/delivery-authorization@1',
+    summary: 'Record a bounded operator grant without starting workers or external effects',
+  },
+  {
+    path: 'delivery revoke',
+    arguments: '',
+    options: ['--file <operator-request.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/delivery-authorization@1',
+    summary: 'Revoke a grant for later assignments and effects while retaining history',
+  },
+  {
+    path: 'delivery grant',
+    arguments: '',
+    options: ['--id <authorization-id>', '--store <path>'],
+    schema: 'wholeloop/delivery-authorization@1',
+    summary: 'Inspect a grant, its finite deadline and any retained revocation',
+  },
+  {
     path: 'delivery plan-schema',
     arguments: '',
     options: [],

@@ -1,5 +1,5 @@
 import { isAbsolute, resolve } from 'node:path'
-import { validate } from '../config/schema.js'
+import { type Schema, validate } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { type Criterion, lintCriteria } from '../definition/criteria.js'
 import { knownSlot } from '../discovery/rules.js'
@@ -130,9 +130,9 @@ function references(values: string[], known: string[], category: string): void {
 }
 
 /** Proposals bind evidence descriptors; they do not certify caller-supplied capabilities. */
-function shape(value: unknown, schema: typeof planSchema | typeof envelopeSchema): void {
+export function validateDeliveryShape(value: unknown, schema: Schema): void {
   if (validate(value, schema).length) throw new DeliveryPlanError('invalid-shape')
-  const bound = (value: unknown, rule: Record<string, unknown>) => {
+  const bound = (value: unknown, rule: Schema & { maxLength?: number; maxItems?: number }) => {
     if (typeof value === 'string') {
       if (
         value.length > Number(rule.maxLength ?? 4096) ||
@@ -145,10 +145,12 @@ function shape(value: unknown, schema: typeof planSchema | typeof envelopeSchema
     } else if (Array.isArray(value)) {
       if (value.length > Number(rule.maxItems ?? 1000))
         throw new DeliveryPlanError('limit-exceeded')
-      for (const entry of value) bound(entry, rule.items as Record<string, unknown>)
+      for (const entry of value) if (rule.items) bound(entry, rule.items)
     } else if (value !== null && typeof value === 'object') {
-      const properties = rule.properties as Record<string, Record<string, unknown>>
-      for (const [key, entry] of Object.entries(value)) bound(entry, properties[key] ?? {})
+      for (const [key, entry] of Object.entries(value)) {
+        const property = rule.properties?.[key]
+        if (property) bound(entry, property)
+      }
     }
   }
   bound(value, schema)
@@ -253,14 +255,14 @@ export function observePlanBases(repositories: DeliveryRepository[]): void {
 }
 
 export function validateDeliveryEnvelope(value: unknown, source: SourceSnapshot): DeliveryEnvelope {
-  shape(value, envelopeSchema)
+  validateDeliveryShape(value, envelopeSchema)
   const envelope = structuredClone(value) as DeliveryEnvelope
   basis(envelope, source)
   return envelope
 }
 
 export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): DeliveryPlan {
-  shape(value, planSchema)
+  validateDeliveryShape(value, planSchema)
   const plan = structuredClone(value) as DeliveryPlan
   basis(plan, source)
   if ((plan.revision === 1) !== (plan.previous === undefined))

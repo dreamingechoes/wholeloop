@@ -2,6 +2,7 @@ import { resolve } from 'node:path'
 import { readSourceFile, SOURCE_REQUEST_SCHEMA, SourceInputError } from '../delivery/input.js'
 import { DeliverySources } from '../delivery/source.js'
 import type { parseArguments } from './arguments.js'
+import { deliveryAuthorityCommand } from './delivery-authority.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -13,6 +14,15 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (
+    [
+      'delivery authority-schema',
+      'delivery authorize',
+      'delivery revoke',
+      'delivery grant',
+    ].includes(command)
+  )
+    return deliveryAuthorityCommand(command, { options, positional: [] }, root, json, io)
   if (!['delivery source', 'delivery source-schema'].includes(command))
     return deliveryPlanningCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery source-schema') {

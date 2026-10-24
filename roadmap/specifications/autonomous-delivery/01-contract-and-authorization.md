@@ -3,7 +3,7 @@
 > **TL;DR** — Pin the requested work and obtain explicit operator authority before execution. Keep criteria, decision provenance and native permissions separate from automation scope. The owner can delegate a complete flow once; a worker cannot enlarge that grant or impersonate a person.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-01 source intake and P6-02 plan/envelope preparation are implemented; grants and change handling remain accepted design targets for P6-03 and P6-29. No existing policy is relaxed by this file.
+> **Status: 🚧 partial.** P6-01 source intake, P6-02 plan/envelope preparation and P6-03 grant/revocation metadata plus broker admission/request validation are implemented. Actual native/backend execution and requirement revision handling remain later increments. No existing human gate is relaxed by these metadata contracts.
 
 ## Inputs and immutable plan
 
@@ -37,7 +37,7 @@ An already-defined feature may enter directly at build after explicit criteria a
 
 ## Grants and acceptance
 
-A proposed `wholeloop/delivery-grant@1` binds an exact plan digest or an initial request-envelope digest, operator action, mode/endpoint, intervention policy, delegated decision IDs and rubrics, uncertainty fallbacks, allowed repositories/branches, capability policy, expiry, maximum revisions, effect limits and revocation identity. An envelope permits independently challenged derived plans inside its immutable bounds, avoiding a mandatory second human approval. Default expiry is 24 hours; the operator may select a shorter or longer finite deadline. Expiry prevents new work and new external effects; retain in-flight evidence for reconciliation.
+The implemented wholeloop/delivery-grant@1 binds an exact plan or initial-envelope basis, explicit operator action, endpoint/intervention policy, named delegated decisions, finite budgets/effect limit, read/repository/topic scopes, expiry and revocation identity. The referenced plan/envelope retains rubric, capability and revision bounds. Initial-envelope code assignments require structural fit and separately verified independent plan acceptance; the actual decision/worker host follows in P6-08/P6-34. Default expiry is 24 hours; an explicit finite deadline may be shorter or longer. Repeating the same action ID does not renew it. Actual assignment/effect admission refuses expired/revoked grants; full runner reconciliation/counters remain later increments. See the [authorization guide](../../../docs/tutorials/delivery-authorization.md) and [ADR-0095](../../../docs/decisions/0095-operator-grants-and-scoped-worker-claims.md).
 
 | Authority | Default | Grant required |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ An operator can authorize the complete research/`to-pr`/`to-merge` route once, s
 
 Authorization must reside in an operator-controlled boundary unavailable to builder/test processes. Workers receive scoped views and a narrow protocol, not writable access to the grant journal, controller store, personal home, code-host credentials or an unrestricted `wl answer`/`state update` interface.
 
-The broker validates run/attempt identity and permits only the assigned actions: propose a plan, emit a patch/result, submit assigned gate evidence and request an explicitly eligible effect. It refuses grant creation/revocation, changing budgets, approving decisions and editing unrelated journal records. The controller stamps observed execution metadata; worker-written JSON alone cannot establish an observed command or approval.
+The implemented broker closes over controller-selected run/plan/attempt/generation and role/cell scope. Admission and each message recheck current context, grant and the trusted runtime boundary. Requests may propose artifacts, submit scoped worker claims/findings, request a named read or propose an explicitly owned local commit; recording them performs none of those effects. Publication/merge stay controller-only after later eligibility. The worker channel refuses grant creation/revocation, budget changes and forged human records. Actual execution stamping/dispatch follows in the worker/runner increments; worker JSON alone cannot establish an observed command or approval. Runtime callbacks are read-only lease observations, not worker-supplied proofs or nested store mutations.
 
 Use the selected isolated backend for delegated publication and merge. A same-user unrestricted process can impersonate local tooling; label it non-contained and keep it supervised. Native flags/hooks and worktree snapshots are defense layers, not proof of a filesystem or credential boundary.
 
@@ -65,7 +65,7 @@ MCP remains client-owned and allowlisted per assignment. If the native client ca
 
 ## Proposed commands and outputs
 
-Installed preparation commands are wl delivery plan-schema, envelope, plan and inspect-plan. They return versioned proposals, immutable digests and a proposed route, without questions, workers or grants. The later authorization surface includes authorize/revoke and run inspection; it is not implemented yet. Authorization is an explicit operator action, never an instruction inferred from fetched content. An authorization receipt must record its actual mode and limits.
+Installed preparation commands are wl delivery plan-schema, envelope, plan and inspect-plan. They return versioned proposals, immutable digests and a proposed route. Operator metadata commands are delivery authority-schema, authorize, grant and revoke. They record/inspect explicit permissions without starting a process or performing external effects. Full run inspection/execution remains later work. Authorization is an explicit operator control action, never an instruction inferred from fetched content; its receipt records exact mode, scope, deadline and limits.
 
 Each schema uses closed objects, meaningful bounded strings, canonical paths and versioned JSON. Limit a plan to 100 work units, 16 repositories and 1000 criteria; reject overflow before creating work. Reject duplicate criteria, unknown dependencies, cycles and unmapped required outcomes.
 
@@ -84,6 +84,8 @@ Unit tests cover schema and decision tables; process tests cover hostile worker 
 
 P6-01 additionally covers the source-intake portions of AUTH-02/AUTH-03: partial/oversized/wrong-scope observations, ambiguous mappings and inert hostile prose. Their broader planning/broker authority requirements remain unchecked until those increments exist. These are local and normalized-host fixtures, not actual remote-service or worker-containment certification.
 
-P6-02 covers planning portions of AUTH-01–AUTH-04 and INT-02 with actual disposable repositories, dense generated DAGs, base/remote changes, immutable revisions, simultaneous compiled preparation and unchanged legacy events. A plan records machine/human acceptance intent without forging an actual acceptance receipt. The full broker, delegated acceptance, committed-candidate assembly and native containment cases remain later increments.
+P6-02 covers planning portions of AUTH-01–AUTH-04 and INT-02 with actual disposable repositories, dense generated DAGs, base/remote changes, immutable revisions, simultaneous compiled preparation and unchanged legacy events. A plan records machine/human acceptance intent without forging an actual acceptance receipt. Actual effect dispatch, delegated acceptance, committed-candidate assembly and native containment cases remain later increments.
+
+P6-03 adds local operator/grant/revocation and hostile broker protocol/process fixtures for AUTH-03–AUTH-08. Unknown operator methods, role/budget/human-test claims, stale contexts, unsupported runtime observations and unauthorized reads/effects are refused. Synthetic runtime observations stay fixture; an actual child environment probe does not establish filesystem denial. Actual native/backend containment, delegated acceptance, execution counters and full-flow case closure remain P6-07/P6-12/P6-20/P6-27/P6-34 work.
 
 [◀ Specification index](./README.md) · [Runner ▶](./02-durable-runner.md)

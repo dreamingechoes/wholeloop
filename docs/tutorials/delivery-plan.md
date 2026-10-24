@@ -3,7 +3,7 @@
 > **TL;DR** — Prepare an initial request envelope and a revision-bound plan with explicit criteria, repositories, policy and finite budgets. Inspect dependency waves and the proposed route in another process. Planning starts no worker and grants no execution authority.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Closed plan/envelope validation, immutable external revisions, local Git basis observations and deterministic routing are implemented. Authorization, delegated decisions and the unattended runner remain subsequent increments.
+> **Status: ✅ implemented.** Closed plan/envelope validation, immutable external revisions, local Git basis observations and deterministic routing are implemented. [Operator grant metadata](./delivery-authorization.md) is available; actual delegated decisions and the unattended runner remain subsequent increments.
 
 ## Before you start
 
@@ -143,4 +143,4 @@ For incomplete intent, definition.ready is false and definition.missing lists ac
 You have a reviewable immutable envelope and plan, with an explicit route and dependency waves. The private records live under the external state/delivery directory; retain the temporary directory to inspect or replay them in another terminal. This increment cannot authorize or run workers. Follow [Phase 6](../../roadmap/phase-6-autonomous-delivery.md) for grants, actual execution and expanded acceptance, or use the existing [small-change route](./small-change.md).
 
 <!-- docnav -->
-[◀ Delivery request intake](delivery-intake.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Delivery request intake](delivery-intake.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery authorization ▶](delivery-authorization.md)

@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-broker-request@1",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "method", "data"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-broker-request@1"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^request-[a-f0-9]{16}$"
+        },
+        "method": {
+          "type": "string",
+          "const": "artifact.propose"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ref", "sha256", "kind"],
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "kind": {
+              "type": "string",
+              "enum": ["plan", "patch", "report"]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "method", "data"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-broker-request@1"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^request-[a-f0-9]{16}$"
+        },
+        "method": {
+          "type": "string",
+          "const": "evidence.submit"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ref", "sha256", "claim"],
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "claim": {
+              "type": "string",
+              "enum": ["pass", "fail", "unknown"]
+            },
+            "criterion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "finding": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "contract": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "method", "data"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-broker-request@1"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^request-[a-f0-9]{16}$"
+        },
+        "method": {
+          "type": "string",
+          "const": "finding.submit"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ref", "sha256"],
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "method", "data"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-broker-request@1"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^request-[a-f0-9]{16}$"
+        },
+        "method": {
+          "type": "string",
+          "const": "source.read"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ref", "sha256", "provider", "scope", "operation"],
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "provider": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "operation": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "method", "data"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-broker-request@1"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^request-[a-f0-9]{16}$"
+        },
+        "method": {
+          "type": "string",
+          "const": "effect.request"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["effect", "repository", "branch", "sha256"],
+          "properties": {
+            "effect": {
+              "type": "string",
+              "enum": ["git.commit", "git.push", "pr.create", "pr.update", "pr.ready", "pr.merge"]
+            },
+            "repository": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "branch": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

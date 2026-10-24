@@ -152,5 +152,7 @@ Delivery source snapshots live under delivery/sources in the external store. Pla
 
 These are immutable artifacts, not new legacy item events or an alternative item hierarchy. Existing projection rebuilds leave them intact and do not reconstruct missing immutable artifacts. Delivery lifecycle journaling/recovery is P6-04 work. No plan proposal is a grant or actual human decision. See [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) and the [planning tutorial](../tutorials/delivery-plan.md).
 
+Operator grants/revocations add private immutable delivery/authority records, while delivery/broker retains scoped worker requests as claims with effects not-performed. Stable action IDs prevent implicit renewal, reads verify record digests and revoked/expired authority refuses later admission/requests. These artifacts do not append legacy human approval/testing events. A grant ID is not a bearer credential; only controller-owned session context and the separately observed runtime boundary can make a broker session available. Full lifecycle journaling and actual native/backend ownership follow in later increments. See [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md).
+
 <!-- docnav -->
 [◀ Core CLI](core-cli.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Orchestration and gates ▶](orchestration-and-gates.md)

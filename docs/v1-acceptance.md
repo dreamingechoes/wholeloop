@@ -55,7 +55,7 @@ Independent local implementation is authorized to proceed before the remaining o
 
 ### 1. Finish implementation defects first
 
-The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external owner decisions; P6-01 source intake and P6-02 plan/envelope preparation are implemented and tested, and 32 new Phase 6 tasks remain unimplemented. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
+The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external owner decisions; P6-01–P6-03 source/plan/envelope/authority and broker contracts are implemented and tested, and 31 new Phase 6 tasks remain unimplemented. Actual native/backend containment is still later acceptance. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
@@ -164,7 +164,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 42 complete and 46 open: P6-01/P6-02 are complete and 32 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 43 complete and 45 open: P6-01–P6-03 are complete and 31 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Owner involvement |
 | --- | --- | --- |

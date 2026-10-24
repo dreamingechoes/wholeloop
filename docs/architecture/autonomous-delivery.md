@@ -3,7 +3,7 @@
 > **TL;DR** — The planned runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Revision-bound source intake and closed plan/envelope preparation are implemented. Grants, workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
+> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator grant/revocation metadata and scoped broker admission are implemented. Actual native/backend workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
 
 ## Read the proposal
 
@@ -27,6 +27,8 @@ Use [delivery source](../tutorials/delivery-intake.md) to capture bounded local 
 | Complete no-intervention research/implementation | [Delegated decisions](../../roadmap/specifications/autonomous-delivery/10-unattended-decisions-and-research.md) |
 
 ## Design boundaries
+
+[Delivery authorization](../tutorials/delivery-authorization.md) records exact operator grants and durable revocations without starting workers or executing external effects. Endpoints are permission ceilings; effect/decision/repository/read scopes remain explicit. Broker admission and messages require current private controller context and an isolated runtime observation; worker output stays a claim and cannot forge human testing. Fixture runtime evidence does not establish actual containment. [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md) records this implemented boundary and the later backend/runner obligations.
 
 [Delivery planning](../tutorials/delivery-plan.md) adds immutable plan revisions and initial request envelopes. It checks exact source criteria, unique ownership, complete outcome/milestone coverage, contract-first dependencies and local repository bases. Receipts expose dependency waves and a policy-selected proposed route while retaining not-granted/not-started. Existing item references and historical human records remain unchanged. [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) separates structural fit from independent semantic acceptance and actual execution authority.
 

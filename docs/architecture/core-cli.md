@@ -21,6 +21,8 @@ delivery source --file request.json captures one bounded request into an immutab
 
 ## Implemented commands
 
+Delivery authority-schema exposes the operator/broker contracts. authorize records a bounded explicit plan/envelope grant; grant inspects it; revoke retains a durable revocation. Repeating the same action preserves its deadline and cannot renew expired/revoked authority. These metadata commands start no process and perform no remote effect. Broker requests are scoped worker claims, independently gated by current controller/runtime context. See [authorization and revocation](../tutorials/delivery-authorization.md) and [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md). Actual backend isolation/dispatch and delegated acceptance remain later work; existing supervised human gates are unchanged.
+
 Delivery planning adds plan-schema, envelope, plan and inspect-plan. These validate and preserve proposals with explicit ownership, dependency waves, local target SHAs and immutable policy/guidance bindings, without creating items, approvals, grants or workers. Inspecting a historic revision does not require today's target to match its old base. An initial envelope bounds a derived plan structurally; independent semantic acceptance and execution authority remain separate. The [planning tutorial](../tutorials/delivery-plan.md) exercises both proposal types and fresh-process recovery; [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) explains the boundary.
 
 Every command accepts `--json`. Machine-readable output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape). Unknown options fail rather than silently changing behavior.
@@ -32,6 +34,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery authority-schema` | `wholeloop/delivery-authority-schema@1` | Show explicit operator authorization, revocation and worker request contracts |
+| `wl delivery authorize` | `wholeloop/delivery-authorization@1` | Record a bounded operator grant without starting workers or external effects |
+| `wl delivery revoke` | `wholeloop/delivery-authorization@1` | Revoke a grant for later assignments and effects while retaining history |
+| `wl delivery grant` | `wholeloop/delivery-authorization@1` | Inspect a grant, its finite deadline and any retained revocation |
 | `wl delivery plan-schema` | `wholeloop/delivery-planning-schema@1` | Show the closed delivery plan and initial request-envelope contracts |
 | `wl delivery plan` | `wholeloop/delivery-plan-prepared@1` | Validate and preserve an exact delivery proposal without granting execution |
 | `wl delivery envelope` | `wholeloop/delivery-envelope-prepared@1` | Pin initial request bounds for later independent planning and authorization |

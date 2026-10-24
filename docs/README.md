@@ -17,7 +17,7 @@
 
 ## Start with your goal
 
-For the expanded 1.0 scope, review the [autonomous-delivery design](./architecture/autonomous-delivery.md), [detailed specifications](../roadmap/specifications/autonomous-delivery/README.md) and [34 Phase 6 tasks](../roadmap/phase-6-autonomous-delivery.md). Revision-bound source intake and plan/envelope preparation are available; complete no-intervention flows after initial authorization remain under implementation.
+For the expanded 1.0 scope, review the [autonomous-delivery design](./architecture/autonomous-delivery.md), [detailed specifications](../roadmap/specifications/autonomous-delivery/README.md) and [34 Phase 6 tasks](../roadmap/phase-6-autonomous-delivery.md). Revision-bound source intake, plan/envelope preparation and operator authorization/revocation metadata are available; complete no-intervention flows after initial authorization remain under implementation.
 
 | Goal | First page | Successful stopping point |
 | --- | --- | --- |
@@ -40,6 +40,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 | [Small change](./tutorials/small-change.md) | Criteria, worktrees, gates and the human testing handoff |
 | [Delivery intake](./tutorials/delivery-intake.md) | Bounded local/item/remote input, explicit maps and recoverable source identity |
 | [Delivery planning](./tutorials/delivery-plan.md) | Explicit criterion ownership, dependency contracts, initial envelopes and plan revisions |
+| [Delivery authorization](./tutorials/delivery-authorization.md) | Exact operator grants, finite deadlines, revocation and the worker trust boundary |
 | [Utilities](./flow/utilities.md) | Skills versus core calls for `next`, `status`, `setup` and `sync` |
 | [Troubleshooting](./troubleshooting.md) | Executable paths, discovery, permissions, state and exit codes |
 | [FAQ](./faq.md) | Short answers and links for common choices |

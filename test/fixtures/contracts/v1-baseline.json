@@ -225,7 +225,15 @@
     "schema:wholeloop/delivery-envelope@1": "3e2990ccfe59d15ded5283c175393bbea30249b2c1d533c4ea1c5d0e6965f088",
     "output:wholeloop/delivery-planning-schema@1": "b32b1209068cd385f9fb5cba27463db9889cc5c9d5a7278fc8638f526c6c9ed4",
     "output:wholeloop/delivery-plan-prepared@1": "bcd3a49c3538e5437345bbda7e821a82bf7c875596287f0f2a7b774d5a823043",
-    "output:wholeloop/delivery-envelope-prepared@1": "df3306106aad7c05d93c2a47a24539bf8e9f23128ff5263d4fc6cb93878290cc"
+    "output:wholeloop/delivery-envelope-prepared@1": "df3306106aad7c05d93c2a47a24539bf8e9f23128ff5263d4fc6cb93878290cc",
+    "schema:wholeloop/delivery-broker-receipt@1": "853922aa12c98d527e0a462d634e4b85bc46328abc7294c67f14e3e1287ac641",
+    "schema:wholeloop/delivery-authorization-request@1": "6d10ef22b9ce0f0b50ee58813606a955f77ef3a5d8508a5e46fb7c289ea8fb7d",
+    "schema:wholeloop/delivery-revocation@1": "69568d8840612b2ec5973485db73b68af1f485db58cfe28b115b4a9c2caeeebe",
+    "schema:wholeloop/delivery-grant@1": "8584da5d14b7bbd7ec3e547e660fd618e2fbb1eb605f0483359cbf553fc2bc4f",
+    "schema:wholeloop/delivery-broker-request@1": "23a3ff1e1c1e75e65cea69783fb6ad0389c3b1a17807b81b43692f1db14926c8",
+    "schema:wholeloop/delivery-revocation-request@1": "5d63fc5cc2c8a80c351bc429dadb2a4be9a9b772321784f75eb90b98f812c143",
+    "output:wholeloop/delivery-authority-schema@1": "85e2120e0501b1bb25e91c23122d2c5f1b2b6275919c7ca61b1ff9556c967e42",
+    "output:wholeloop/delivery-authorization@1": "5c9b1bdd6f23a0f92d240131874abdf1002a2a71a981165a8451f28e63cb33c1"
   },
   "commands": [
     {
@@ -1315,6 +1323,30 @@
       "arguments": "",
       "options": ["--run <delivery-id>", "--revision <number>", "--store <path>"],
       "schema": "wholeloop/delivery-plan-prepared@1"
+    },
+    {
+      "path": "delivery authority-schema",
+      "arguments": "",
+      "options": [],
+      "schema": "wholeloop/delivery-authority-schema@1"
+    },
+    {
+      "path": "delivery authorize",
+      "arguments": "",
+      "options": ["--file <operator-request.json>", "--root <directory>", "--store <path>"],
+      "schema": "wholeloop/delivery-authorization@1"
+    },
+    {
+      "path": "delivery revoke",
+      "arguments": "",
+      "options": ["--file <operator-request.json>", "--root <directory>", "--store <path>"],
+      "schema": "wholeloop/delivery-authorization@1"
+    },
+    {
+      "path": "delivery grant",
+      "arguments": "",
+      "options": ["--id <authorization-id>", "--store <path>"],
+      "schema": "wholeloop/delivery-authorization@1"
     }
   ],
   "exitCodes": {
