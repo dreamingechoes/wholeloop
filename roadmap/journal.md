@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-25 · P6-11 complete — explicit environment recipes
+
+- Keep discovery inert and bind selected commands, immutable images, source bytes, logical mounts, network phases and finite capacity before any backend action. Preserve the old undo ledger as declarations only.
+- Use content-addressed external recipes with current-input comparison; preparation grants no authority and establishes no runtime readiness.
+- Add closed recipe/record schemas, bounded inert candidate discovery, exact npm/file/image/literal argv origins, logical workspace/data/input mounts, immutable images, service DAGs, network phases and finite capacity/retention. Retain selected UTF-8 bytes before the immutable manifest, verify historical blobs separately from changed live inputs and preserve the old undo ledger. Add four commands, the exact executable tutorial, ADR-0102 and a named hard-rule enforcer. Append two schema and four output identities and four commands without changing prior public declarations.
+- Forty new cases and complete checks pass 2407 tests in 104 files on macOS arm64/Node 24.22.0 (324.63 seconds) and isolated Debian Linux arm64/Node 24.22.0 (72.05 seconds), plus all remaining checks. Preserve the initial CLI test expectation failure: the real rejection already exits 3; assert its actual message field. Correct the first missing docnav marker and stale generated reference, then pass docs/harness/Markdown. The exact inert tutorial passes on macOS Node 24 and Linux Node 20/24; ShellCheck passes. Candidate archive 171e42b451903fbdad1fe7f7cdeeb95b071601dd2daa107f8924ea5c423e0836 and copied core 1cd2557e7e4f9a787c10a1f1f87f955794df07ccea86b0b31ffc374958b8f9ff. Record exact package/platform evidence, recheck final docs/package and commit P6-11 (50/88 complete, 24 new tasks pending). Continue P6-12. No script, backend resource, model or remote publication is executed by recipe preparation.
+
 ## 2026-10-25 · P6-09 complete — dedicated native delivery hosts
 
 - Negotiate exact native role/tool/output/cancellation capabilities without widening existing read-only gate launchers. Keep actual backend boundary observations separate from version/help and synthetic-client fixtures.

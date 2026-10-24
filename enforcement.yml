@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-environment-recipe
+    enforcers: [src/environment/recipe.ts#validateEnvironmentRecipe, src/environment/recipe.ts#observeEnvironmentFiles, src/environment/recipe-store.ts#discoverEnvironment, src/environment/recipe-store.ts#EnvironmentRecipes, test/unit/environment/recipe.test.ts, test/unit/environment/environment.test.ts]
   - id: delivery-native-host
     enforcers: [src/delivery/native-adapters.ts#nativeDeliveryRecipe, src/delivery/native-capabilities.ts#negotiateNativeDelivery, src/delivery/native-host.ts#NativeDeliveryHost, src/delivery/native-workspace.ts#sealNativeGitControl, src/fanout/process.ts#workerProcess, test/unit/delivery/native-host.test.ts]
   - id: delivery-worker-protocol

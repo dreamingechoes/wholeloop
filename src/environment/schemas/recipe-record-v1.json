@@ -1,0 +1,589 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/environment-recipe-record@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/environment-recipe-record@1"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/environment-recipe@1"
+        },
+        "backend": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "const": "docker"
+            },
+            "os": {
+              "type": "string",
+              "const": "linux"
+            },
+            "architecture": {
+              "type": "string",
+              "enum": ["arm64", "amd64"]
+            },
+            "emulation": {
+              "type": "string",
+              "enum": ["forbid", "allow"]
+            }
+          },
+          "required": ["id", "os", "architecture", "emulation"]
+        },
+        "repositories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+              },
+              "root": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              }
+            },
+            "required": ["id", "root"]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+              },
+              "repository": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+              },
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "sha256": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "kind": {
+                "type": "string",
+                "enum": ["package", "script", "guidance", "tool", "fixture"]
+              }
+            },
+            "required": ["id", "repository", "ref", "sha256", "kind"]
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+          },
+          "minItems": 0,
+          "maxItems": 64
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+              },
+              "image": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[a-z0-9][a-z0-9./:_-]*@sha256:[a-f0-9]{64}$"
+              },
+              "acquisition": {
+                "type": "string",
+                "enum": ["cache-only", "explicit-pull"]
+              },
+              "after": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+                },
+                "minItems": 0,
+                "maxItems": 32
+              },
+              "mounts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": ["workspace", "data", "input"]
+                    },
+                    "source": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+                    },
+                    "target": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1024
+                    },
+                    "access": {
+                      "type": "string",
+                      "enum": ["read", "write"]
+                    }
+                  },
+                  "required": ["kind", "source", "target", "access"]
+                },
+                "minItems": 0,
+                "maxItems": 64
+              },
+              "start": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "argv": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 4096
+                    },
+                    "minItems": 0,
+                    "maxItems": 100
+                  },
+                  "cwd": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "origin": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "enum": ["recipe", "image", "file", "package-script"]
+                      },
+                      "file": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+                      },
+                      "script": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      }
+                    },
+                    "required": ["kind"]
+                  }
+                },
+                "required": ["argv", "cwd", "origin"]
+              },
+              "readiness": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["tcp", "exec"]
+                  },
+                  "timeoutMs": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3600000
+                  },
+                  "port": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
+                  },
+                  "command": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "argv": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "maxLength": 4096
+                        },
+                        "minItems": 0,
+                        "maxItems": 100
+                      },
+                      "cwd": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      "origin": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "enum": ["recipe", "image", "file", "package-script"]
+                          },
+                          "file": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+                          },
+                          "script": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          }
+                        },
+                        "required": ["kind"]
+                      }
+                    },
+                    "required": ["argv", "cwd", "origin"]
+                  }
+                },
+                "required": ["kind", "timeoutMs"]
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "container": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 65535
+                    },
+                    "publish": {
+                      "type": "string",
+                      "enum": ["none", "loopback"]
+                    }
+                  },
+                  "required": ["container", "publish"]
+                },
+                "minItems": 0,
+                "maxItems": 32
+              },
+              "memoryMiB": {
+                "type": "integer",
+                "minimum": 16,
+                "maximum": 65536
+              },
+              "cpus": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 64
+              },
+              "secrets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[A-Z][A-Z0-9_]{0,63}$"
+                    },
+                    "provider": {
+                      "type": "string",
+                      "enum": ["stdin", "os-keyring", "native-store"]
+                    },
+                    "ref": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9/_.-]{0,255}$"
+                    }
+                  },
+                  "required": ["name", "provider", "ref"]
+                },
+                "minItems": 0,
+                "maxItems": 32
+              }
+            },
+            "required": [
+              "id",
+              "image",
+              "acquisition",
+              "after",
+              "mounts",
+              "start",
+              "readiness",
+              "ports",
+              "memoryMiB",
+              "cpus",
+              "secrets"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+              },
+              "service": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+              },
+              "phase": {
+                "type": "string",
+                "enum": ["setup", "seed", "test"]
+              },
+              "command": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "argv": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 4096
+                    },
+                    "minItems": 0,
+                    "maxItems": 100
+                  },
+                  "cwd": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "origin": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "enum": ["recipe", "image", "file", "package-script"]
+                      },
+                      "file": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+                      },
+                      "script": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      }
+                    },
+                    "required": ["kind"]
+                  }
+                },
+                "required": ["argv", "cwd", "origin"]
+              },
+              "timeoutMs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3600000
+              }
+            },
+            "required": ["id", "service", "phase", "command", "timeoutMs"]
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "network": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "setup": {
+              "type": "string",
+              "enum": ["none", "internal", "scoped"]
+            },
+            "runtime": {
+              "type": "string",
+              "enum": ["none", "internal", "scoped"]
+            },
+            "destinations": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256,
+                "pattern": "^[a-z0-9][a-z0-9.-]*:[1-9][0-9]{0,4}$"
+              },
+              "minItems": 0,
+              "maxItems": 128
+            }
+          },
+          "required": ["setup", "runtime", "destinations"]
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "setupMs": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600000
+            },
+            "readinessMs": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600000
+            },
+            "services": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 32
+            },
+            "memoryMiB": {
+              "type": "integer",
+              "minimum": 16,
+              "maximum": 65536
+            },
+            "cpus": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 64
+            },
+            "outputBytes": {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 8388608
+            }
+          },
+          "required": ["setupMs", "readinessMs", "services", "memoryMiB", "cpus", "outputBytes"]
+        },
+        "retention": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "failure": {
+              "type": "string",
+              "const": "keep"
+            },
+            "success": {
+              "type": "string",
+              "enum": ["keep", "retire"]
+            },
+            "reviewAfterMs": {
+              "type": "integer",
+              "minimum": 60000,
+              "maximum": 2592000000
+            },
+            "expiryAction": {
+              "type": "string",
+              "const": "retain"
+            }
+          },
+          "required": ["failure", "success", "reviewAfterMs", "expiryAction"]
+        }
+      },
+      "required": [
+        "schema",
+        "backend",
+        "repositories",
+        "files",
+        "data",
+        "services",
+        "commands",
+        "network",
+        "limits",
+        "retention"
+      ]
+    },
+    "files": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+          },
+          "repository": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["package", "script", "guidance", "tool", "fixture"]
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1048576
+          }
+        },
+        "required": ["id", "repository", "ref", "sha256", "kind", "bytes"]
+      }
+    }
+  },
+  "required": ["schema", "digest", "recipe", "files"]
+}

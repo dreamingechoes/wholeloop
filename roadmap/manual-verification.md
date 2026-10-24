@@ -8,7 +8,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ## Expanded 1.0 acceptance boundary
 
-[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 49 complete and 39 open (25 new implementation tasks plus the fourteen original open tasks).
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 50 complete and 38 open (24 new implementation tasks plus the fourteen original open tasks).
 
 - [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
 - [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
@@ -23,6 +23,22 @@ OpenCode V1/V2 compatibility now has separate deterministic renderers and native
 Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 each fail with five invalid responses and one accepted response; the repository is unchanged. Bounded diagnostics establish missing envelope identities in those five JSON objects. ADR-0091 adds an exact native generation schema, preserving strict host validation. Preserve both failed rounds. The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six workers in actual Codex 0.163.0, with no missing coverage or repository edits. That fulfills P5-03's one-real-run criterion together with stubbed three-engine verdict/quorum parity; earlier failures and wider native checks remain unchanged.
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
+
+## Environment planning platform checks (2026-10-25)
+
+P6-11 adds inert recipe discovery, exact selected non-secret UTF-8 bytes, explicit command origins, immutable image descriptors, logical mounts, service dependencies, finite capacity, network phases and retained manifests. Forty new cases include actual descriptor/path/symlink/oversize reads, duplicate package JSON, stale selection, corrupted historical bytes and independent compiled commands. Malicious candidate hooks and existing undo declarations remain unexecuted.
+
+| Environment | Executed result |
+| --- | --- |
+| macOS arm64 / Node 24.22.0 | Complete check: 2407 tests in 104 files (324.63 seconds), lint/types/build/smoke, offline package, 312-file docs/references, 148-file harness, 311-file Markdown and 36 diagrams |
+| Debian Linux arm64 / Node 24.22.0 | Same complete check: 2407 tests in 104 files (72.05 seconds), no skips; isolated non-root container without network/private history/credentials |
+| macOS Node 24 and Linux Node 20.0.0/24.22.0 | Exact environment-planning tutorial passes; ShellCheck passes; no Docker/application startup is needed |
+
+Immutable candidate archive 171e42b451903fbdad1fe7f7cdeeb95b071601dd2daa107f8924ea5c423e0836 is based on c3dcc13 plus P6-11 source/tests. Copied core: 1cd2557e7e4f9a787c10a1f1f87f955794df07ccea86b0b31ffc374958b8f9ff. Pre-evidence package receipts are macOS 1927ee7b98a96e9836eeb43b882c0d2c161d19320f020cae5f0bd1b8625d5797 and Linux f8125fc4d5902ce213ff3ed03e949a12a5ec059397fd57ec3fd9bea12d902f63. Preserve their existing dependency-path build distinction; final evidence-only docs receive another local package/docs check.
+
+The initial targeted run has one test expectation failure after the CLI correctly rejects a changed source with exit 3: the test checks a nonexistent error property. Assert the actual message property, keeping the rejection and every guard. Add a final package-filename regression so npm run cannot bind another JSON file. All final cases/checks pass. The first documentation run rejects a missing docnav marker and stale generated command reference; correct/regenerate both and retain their earlier refusal.
+
+Actual Docker version/image/capacity reads for subsequent work observe client/daemon 29.9.2, a Linux aarch64 daemon with four CPUs and 4107141120 bytes memory behind this macOS host, and an already cached Linux arm64 Node image. These read-only observations create no backend resources and do not establish actual application/denial/lifecycle acceptance. P6-12/P6-13/P6-27 retain those obligations, including a separate real Linux-host observation.
 
 ## Native delivery host checks (2026-10-25)
 

@@ -211,5 +211,9 @@ Record outside-repository effects with `wl env declare --for <id> --file
 
 This is a recipe example, not a command the harness ran. Owner verification must exercise actual undo on disposable resources before relying on it for cleanup.
 
+## Planned application environments
+
+The [environment planning guide](../../tutorials/delivery-environments.md) prepares explicit setup/readiness/data/network contracts without running a script. It does not replace the existing environment ledger or prove an application is ready. Actual owned isolated backend execution follows in the expanded delivery roadmap.
+
 <!-- docnav -->
 [◀ slice-work](slice-work.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [verify-works ▶](verify-works.md)

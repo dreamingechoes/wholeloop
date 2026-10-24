@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery environment-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/environment-schema@1',
+    summary: 'Show inert environment recipe and immutable selection contracts',
+  },
+  {
+    path: 'delivery environment-discover',
+    arguments: '',
+    options: ['--root <directory>'],
+    schema: 'wholeloop/environment-discovery@1',
+    summary: 'Discover bounded setup candidates without executing scripts',
+  },
+  {
+    path: 'delivery environment-plan',
+    arguments: '',
+    options: ['--file <recipe.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/environment-recipe-prepared@1',
+    summary: 'Pin explicit isolated environment setup without granting execution',
+  },
+  {
+    path: 'delivery environment-inspect',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/environment-recipe-inspection@1',
+    summary: 'Compare recipe inputs without asserting environment readiness',
+  },
+  {
     path: 'delivery native-schema',
     arguments: '',
     options: [],

@@ -8,6 +8,7 @@ import { WORKER_SCHEMAS } from '../delivery/worker-protocol.js'
 import type { parseArguments } from './arguments.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
 import { deliveryBudgetCommand } from './delivery-budgets.js'
+import { deliveryEnvironmentCommand } from './delivery-environment.js'
 import { deliveryJournalCommand } from './delivery-journal.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
 import { deliveryQueueCommand } from './delivery-queue.js'
@@ -22,6 +23,8 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (command.startsWith('delivery environment-'))
+    return deliveryEnvironmentCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery native-schema') {
     io.out(
       JSON.stringify(

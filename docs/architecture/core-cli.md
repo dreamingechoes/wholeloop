@@ -40,6 +40,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery environment-schema` | `wholeloop/environment-schema@1` | Show inert environment recipe and immutable selection contracts |
+| `wl delivery environment-discover` | `wholeloop/environment-discovery@1` | Discover bounded setup candidates without executing scripts |
+| `wl delivery environment-plan` | `wholeloop/environment-recipe-prepared@1` | Pin explicit isolated environment setup without granting execution |
+| `wl delivery environment-inspect` | `wholeloop/environment-recipe-inspection@1` | Compare recipe inputs without asserting environment readiness |
 | `wl delivery native-schema` | `wholeloop/delivery-native-schema@1` | Show native role capabilities, reference pins and non-accepting execution records |
 | `wl delivery worker-schema` | `wholeloop/delivery-worker-schema@1` | Show role-bound worker assignment, claim and controller execution contracts |
 | `wl delivery budget-schema` | `wholeloop/delivery-budget-schema@1` | Show finite usage constraint contracts without granting authority |

@@ -3,11 +3,11 @@
 > **TL;DR** — Start the actual application and its dependencies in resources owned by one execution. Separate controller authority from untrusted build/test commands, and retain observed lifecycle receipts. A worktree or declared undo recipe alone is not containment.
 
 > [!NOTE]
-> **Status: 📐 design.** Accepted design target for P6-11–P6-13. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
+> **Status: 🚧 partial.** P6-11 implements inert discovery, closed recipes, exact selected-byte retention and current-input inspection. Actual backend lifecycle remains P6-12–P6-13. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
 
 ## Environment recipe
 
-Proposed `wholeloop/environment-recipe@1` contains a named backend, immutable image identity, explicit repository mounts, bounded argv/cwd commands, service dependencies, readiness checks, fixture-data setup, ports, resource limits, network policy, secret references and cleanup policy. Do not store secret values or accept arbitrary executable provider plugins.
+Implemented planning contract `wholeloop/environment-recipe@1` contains a named backend, immutable image identity, explicit repository mounts, bounded argv/cwd commands, service dependencies, readiness checks, fixture-data setup, ports, resource limits, network policy, secret references and cleanup policy. Do not store secret values or accept arbitrary executable provider plugins.
 
 Discover candidates from repository guidance, then require explicit selection and pin their bytes. Existing scripts/package commands may be referenced; discovery never executes them. Shell-dependent setup must select a named shell explicitly rather than turn every command into interpolated text.
 
@@ -22,6 +22,8 @@ Discover candidates from repository guidance, then require explicit selection an
 | Retire | Exact owned resources removed or retained, with reason |
 
 A setup failure is not an application defect. Baseline readiness must be observed before judging a feature. Defaults proposed for review: 5 minute setup deadline, 2 minute readiness deadline, at most 8 services, 8 GiB memory and 4 CPUs per environment; smaller host capacity causes an explicit capacity pause. Overrides are finite and operator-authorized.
+
+The [executable environment guide](../../../docs/tutorials/delivery-environments.md) exercises discovery/preparation/inspection without a backend. [ADR-0102](../../../docs/decisions/0102-inert-environment-recipes-and-pinned-setup-origins.md) distinguishes logical mounts and read origins, explicit argv origins, retained bytes and requested capabilities from actual execution evidence.
 
 ## Containment contract
 

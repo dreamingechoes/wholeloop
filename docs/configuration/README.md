@@ -154,5 +154,9 @@ Source: `src/config/schema.json`. Regenerate with `npm run docs:config` or `wl d
 
 ---
 
+## Application environment recipes
+
+[Environment planning](../tutorials/delivery-environments.md) uses an explicit per-run recipe rather than auto-executing project configuration. Discovery is inert; image digests, selected bytes, command origins, network phases, logical mounts and finite limits are pinned separately from operator authority and actual backend observations. Existing environment undo declarations stay unexecuted.
+
 <!-- docnav -->
 [◀ Utilities](../flow/utilities.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Interaction profile ▶](profile.md)

@@ -1,6 +1,6 @@
 # Roadmap — built in vertical phases, worked in session-sized tasks
 
-> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. The owner accepted Phase 6 for 1.0 and authorized sequential implementation; P6-01–P6-09 are complete and 25 tasks remain pending.
+> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. The owner accepted Phase 6 for 1.0 and authorized sequential implementation; P6-01–P6-09 and P6-11 are complete and 24 tasks remain pending.
 
 ---
 
@@ -10,7 +10,7 @@ Current manual checks and owner-only actions: [manual verification](./manual-ver
 
 Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [34 Phase 6 tasks](./phase-6-autonomous-delivery.md). The owner reviewed and accepted every new task on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
 
-The roadmap now contains 88 tasks: 49 completed tasks (forty original plus P6-01–P6-09), fourteen original open tasks and 25 new pending implementation tasks. The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
+The roadmap now contains 88 tasks: 50 completed tasks (forty original plus P6-01–P6-09 and P6-11), fourteen original open tasks and 24 new pending implementation tasks. The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
 
 No cloud platform, marketplace, vendor API expansion or production automation is added. Local P6 implementation is authorized to proceed without waiting for unrelated native/account acceptance. Those original checks and the new capability-specific acceptance still need their stated evidence before release.
 

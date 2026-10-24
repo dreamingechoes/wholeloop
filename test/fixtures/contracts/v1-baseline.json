@@ -275,7 +275,13 @@
     "schema:wholeloop/delivery-worker-result@1": "7f650676bf8fc500427b4deaf3e0b12858347f2aa7d3d64fc83fabec497452b3",
     "output:wholeloop/delivery-native-schema@1": "57244baec61f38be30927a809bd6a03dcf6637163349ea2b7898fa73e7bb75d5",
     "schema:wholeloop/delivery-native-observation@1": "23279519806f7e4dbadf07ef90f15cda0f3336b199d54f894019bc4cef6b8c9b",
-    "schema:wholeloop/delivery-native-run@1": "6808dd7003eedd34abefb282c21425b3d5e921fdf834decf82a8de80eab7c57a"
+    "schema:wholeloop/delivery-native-run@1": "6808dd7003eedd34abefb282c21425b3d5e921fdf834decf82a8de80eab7c57a",
+    "output:wholeloop/environment-schema@1": "ee0765c7e6ffa15c8a19693b07532cd87777d686a047cd8621b7b994bf3d98fd",
+    "output:wholeloop/environment-recipe-prepared@1": "e8efec12ddb6af58505d6b826f73d44b4e7fe521982894e0efdafa4e7df120ff",
+    "output:wholeloop/environment-recipe-inspection@1": "137d93178b4c46bd404c18be41cde158582ebd4613d1e4e8523542cc260646ca",
+    "output:wholeloop/environment-discovery@1": "0b27ec1e5e188aa65308d283ff92c0ce5666c733cef86974619b5c39a87b6bd5",
+    "schema:wholeloop/environment-recipe-record@1": "f0f2aee95011283e6d95c83d01c5ac53acdd7c11ba9e4e607869fd315b7e885b",
+    "schema:wholeloop/environment-recipe@1": "c0656bbb57aa97e91b8fe3ee1863125c2d637bb5e1d1654056025e41992c8858"
   },
   "commands": [
     {
@@ -1532,6 +1538,30 @@
       "arguments": "",
       "schema": "wholeloop/delivery-native-schema@1",
       "options": []
+    },
+    {
+      "path": "delivery environment-schema",
+      "arguments": "",
+      "schema": "wholeloop/environment-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery environment-discover",
+      "arguments": "",
+      "schema": "wholeloop/environment-discovery@1",
+      "options": ["--root <directory>"]
+    },
+    {
+      "path": "delivery environment-plan",
+      "arguments": "",
+      "schema": "wholeloop/environment-recipe-prepared@1",
+      "options": ["--file <recipe.json>", "--root <directory>", "--store <path>"]
+    },
+    {
+      "path": "delivery environment-inspect",
+      "arguments": "",
+      "schema": "wholeloop/environment-recipe-inspection@1",
+      "options": ["--digest <sha256>", "--store <path>"]
     }
   ],
   "exitCodes": {

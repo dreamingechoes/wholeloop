@@ -66,4 +66,4 @@ A native-run receipt retains process exit/signal when observed, typed failure, o
 Hard native token/currency caps remain unsupported. Usage without a trustworthy observation stays unknown rather than zero. See [ADR-0101](../decisions/0101-dedicated-native-delivery-hosts-and-runtime-proof.md), [runtime acceptance](../v1-acceptance.md) and the [durable runner specification](../../roadmap/specifications/autonomous-delivery/02-durable-runner.md).
 
 <!-- docnav -->
-[◀ Delivery workers](delivery-workers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Delivery workers](delivery-workers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment planning ▶](delivery-environments.md)
