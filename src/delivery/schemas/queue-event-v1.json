@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-queue-event@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "action", "id", "basis"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-queue-event@1"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["enqueued", "deferred", "claimed", "settled", "requeued"]
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^queue-[a-f0-9]{32}$"
+    },
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "unit": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["builder", "verifier", "reviewer", "refuter", "researcher"]
+    },
+    "cell": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": -100,
+      "maximum": 100
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+    },
+    "repositoryKey": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "attempt": {
+      "type": "string",
+      "pattern": "^attempt-[a-f0-9]{16}$"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "controller": {
+      "type": "string",
+      "pattern": "^controller-[a-f0-9]{32}$"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "evidence": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["complete", "cancelled"]
+    },
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provenance", "evidence"],
+      "properties": {
+        "provenance": {
+          "type": "string",
+          "enum": ["fixture", "host-observed"]
+        },
+        "evidence": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "remoteKey": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

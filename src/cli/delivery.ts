@@ -5,6 +5,7 @@ import type { parseArguments } from './arguments.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
 import { deliveryJournalCommand } from './delivery-journal.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
+import { deliveryQueueCommand } from './delivery-queue.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
 
@@ -15,6 +16,8 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (['delivery enqueue', 'delivery queue'].includes(command))
+    return deliveryQueueCommand(command, { options, positional: [] }, root, json, io)
   if (
     [
       'delivery state-schema',

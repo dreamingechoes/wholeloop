@@ -10,6 +10,7 @@ import {
   validateDeliveryEvent,
   validateDeliveryProjection,
 } from './events.js'
+import { reduceDeliveryQueue } from './queue-events.js'
 
 const EDGES: Record<DeliveryState, readonly DeliveryState[]> = {
   planned: ['queued', 'waiting-input', 'paused', 'stopping', 'blocked', 'failed'],
@@ -316,6 +317,9 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
           }
           break
         }
+        case 'wholeloop/delivery-queue-event@1':
+          reduceDeliveryQueue(state, event, payload)
+          break
         default:
           throw new DeliveryJournalError('unsupported-payload-reducer')
       }

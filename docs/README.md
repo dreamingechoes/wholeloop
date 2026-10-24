@@ -42,6 +42,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 | [Delivery planning](./tutorials/delivery-plan.md) | Explicit criterion ownership, dependency contracts, initial envelopes and plan revisions |
 | [Delivery authorization](./tutorials/delivery-authorization.md) | Exact operator grants, finite deadlines, revocation and the worker trust boundary |
 | [Delivery recovery](./tutorials/delivery-recovery.md) | Independent-process history inspection and cache repair without reconstructing authority |
+| [Delivery queue](./tutorials/delivery-queue.md) | Durable work slots, dependency reasons and the boundary before actual worker dispatch |
 | [Utilities](./flow/utilities.md) | Skills versus core calls for `next`, `status`, `setup` and `sync` |
 | [Troubleshooting](./troubleshooting.md) | Executable paths, discovery, permissions, state and exit codes |
 | [FAQ](./faq.md) | Short answers and links for common choices |

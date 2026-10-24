@@ -13,6 +13,7 @@ pages:
   - { path: tutorials/delivery-plan.md, title: Delivery planning }
   - { path: tutorials/delivery-authorization.md, title: Delivery authorization }
   - { path: tutorials/delivery-recovery.md, title: Delivery recovery }
+  - { path: tutorials/delivery-queue.md, title: Delivery queue }
   - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }

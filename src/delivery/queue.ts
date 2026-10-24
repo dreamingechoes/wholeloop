@@ -1,0 +1,480 @@
+import { randomBytes } from 'node:crypto'
+import { contractDigest } from '../contracts/compatibility.js'
+import { repository } from '../worktrees/git.js'
+import type { DeliveryGrant } from './authority.js'
+import type { BrokerScope } from './broker.js'
+import { type AttemptPayload, DeliveryJournalError, type DeliveryProjection } from './events.js'
+import { DeliveryLifecycle } from './lifecycle.js'
+import { type DeliveryPlan, deliveryPlanRoute, observePlanBases } from './plan.js'
+import { deliveryQueue, type QueueAdmission, type QueueRecord } from './queue-events.js'
+import { deliveryAttempts } from './reducer.js'
+
+export interface QueueAssignment {
+  queue: string
+  run: string
+  plan: string
+  revision: number
+  unit: string
+  role: BrokerScope['role']
+  cell?: string
+  attempt: string
+  generation: number
+  controller: string
+  grant: string
+}
+export type QueueReadiness =
+  | ({ ready: true } & QueueAdmission)
+  | {
+      ready: false
+      reason:
+        | 'capability-unavailable'
+        | 'environment-unavailable'
+        | 'budget-unavailable'
+        | 'unaccepted-plan'
+        | 'unverified-dependencies'
+    }
+export interface QueueCandidate {
+  run: string
+  entry: QueueRecord
+  plan: DeliveryPlan
+  grant: DeliveryGrant
+}
+export const DEFAULT_QUEUE_CAPACITY = { builders: 2, buildersPerRepository: 1, evaluators: 4 }
+const ACTOR = { kind: 'controller', name: 'wholeloop' } as const
+const ACTIVE = new Set(['claimed', 'started', 'stopping'])
+const execution = (role: string) => ['builder', 'researcher'].includes(role)
+const slot = (value: { unit?: string; role: string; cell?: string }) =>
+  contractDigest({ unit: value.unit ?? null, role: value.role, cell: value.cell ?? null })
+
+/** Reservations are journaled, not leased by elapsed time. Callbacks only observe trusted hosts. */
+export class DeliveryQueue {
+  readonly lifecycle: DeliveryLifecycle
+  readonly capacity: typeof DEFAULT_QUEUE_CAPACITY
+  constructor(store?: string, now?: () => string, capacity = DEFAULT_QUEUE_CAPACITY) {
+    this.lifecycle = new DeliveryLifecycle(store, now)
+    this.capacity = Object.freeze({ ...capacity })
+    if (
+      Object.keys(this.capacity).sort().join(',') !== 'builders,buildersPerRepository,evaluators' ||
+      Object.values(this.capacity).some(
+        (value) => !Number.isSafeInteger(value) || value < 1 || value > 1000,
+      )
+    )
+      throw new DeliveryJournalError('invalid-queue-capacity')
+  }
+
+  enqueue(
+    run: string,
+    input: { unit: string; role?: BrokerScope['role']; cell?: string; priority?: number },
+  ): QueueRecord {
+    let id = ''
+    this.lifecycle.journal.transaction(ACTOR, (view, append) => {
+      const state = this.state(view(), run)
+      this.grant(state)
+      const plan = this.plan(state)
+      const unit = plan.work.find((entry) => entry.id === input.unit)
+      if (!unit) throw new DeliveryJournalError('unknown-queue-unit')
+      const role = input.role ?? (unit.role === 'research' ? 'researcher' : 'builder')
+      id = `queue-${contractDigest({ run, basis: state.basis.digest, unit: unit.id, role, cell: input.cell ?? null }).slice(0, 32)}`
+      const old = deliveryQueue(state).records.find((entry) => entry.id === id)
+      if (old) {
+        if (old.priority !== (input.priority ?? 0))
+          throw new DeliveryJournalError('changed-queue-priority')
+        return
+      }
+      const repo = plan.repositories.find((entry) => entry.id === unit.repository)
+      append(run, {
+        schema: 'wholeloop/delivery-queue-event@1',
+        action: 'enqueued',
+        id,
+        basis: state.basis.digest,
+        unit: unit.id,
+        role,
+        priority: input.priority ?? 0,
+        ...(input.cell !== undefined ? { cell: input.cell } : {}),
+        ...(repo
+          ? {
+              repository: repo.id,
+              repositoryKey: contractDigest(repository(repo.root).commonDir),
+              ...(repo.remote ? { remoteKey: contractDigest(repo.remote.url) } : {}),
+            }
+          : {}),
+        reason: unit.after.length ? 'dependencies-pending' : 'awaiting-host-admission',
+      })
+      if (state.state === 'planned')
+        append(run, {
+          schema: 'wholeloop/delivery-control-event@1',
+          from: 'planned',
+          to: 'queued',
+          basis: state.basis.digest,
+          reason: 'Work queued under an existing explicit grant.',
+        })
+    })
+    const record = this.inspect(run).find((entry) => entry.id === id)
+    if (!record) throw new DeliveryJournalError('missing-queue-entry')
+    return record
+  }
+
+  inspect(run: string): QueueRecord[] {
+    return deliveryQueue(this.lifecycle.journal.get(run)).records
+  }
+
+  claim(
+    controller: string,
+    admit: (candidate: Readonly<QueueCandidate>) => QueueReadiness = () => ({
+      ready: false,
+      reason: 'capability-unavailable',
+    }),
+  ) {
+    if (!/^controller-[a-f0-9]{32}$/.test(controller))
+      throw new DeliveryJournalError('invalid-controller')
+    let assignment: QueueAssignment | null = null
+    const deferred: { run: string; queue: string; reason: string }[] = []
+    this.lifecycle.journal.transaction(ACTOR, (view, append) => {
+      const states = view()
+      const candidates = [...states.values()]
+        .flatMap((state) =>
+          deliveryQueue(state)
+            .records.filter(
+              (entry) => entry.status === 'pending' && entry.basis === state.basis.digest,
+            )
+            .map((entry) => ({ run: state.run, entry })),
+        )
+        .sort(
+          (a, b) =>
+            b.entry.priority - a.entry.priority ||
+            a.entry.sequence - b.entry.sequence ||
+            a.entry.id.localeCompare(b.entry.id),
+        )
+      let recordedDeferrals = 0
+      for (const candidate of candidates) {
+        const state = this.state(states, candidate.run)
+        const entry = candidate.entry
+        let reason = ''
+        let admission: QueueAdmission | undefined
+        try {
+          if (!['queued', 'running'].includes(state.state)) reason = `run-${state.state}`
+          else if (this.lifecycle.journal.now() < state.maxObservedAt) reason = 'clock-regression'
+          else {
+            const plan = this.plan(state),
+              grant = this.grant(state)
+            const unit = plan.work.find((work) => work.id === entry.unit)
+            if (!unit) throw new DeliveryJournalError('unknown-queue-unit')
+            if (
+              deliveryPlanRoute(plan).next === 'blocked' ||
+              (entry.role === 'builder' && deliveryPlanRoute(plan).next !== 'build')
+            )
+              reason = 'definition-unavailable'
+            else if (
+              unit.after.some(
+                (id) =>
+                  !deliveryQueue(state).records.some(
+                    (prior) =>
+                      prior.basis === entry.basis &&
+                      prior.unit === id &&
+                      prior.status === 'complete' &&
+                      execution(prior.role),
+                  ),
+              )
+            )
+              reason = 'dependencies-pending'
+            else if (!this.effects(entry, grant)) reason = 'effect-not-granted'
+            else {
+              observePlanBases(plan.repositories)
+              const repo = plan.repositories.find((value) => value.id === entry.repository)
+              if (repo && contractDigest(repository(repo.root).commonDir) !== entry.repositoryKey)
+                reason = 'repository-identity-changed'
+              else if (
+                deliveryAttempts(state).records.some(
+                  (record) =>
+                    slot(record) === slot(entry) &&
+                    !ACTIVE.has(record.state) &&
+                    record.state !== 'fenced',
+                )
+              )
+                reason = 'prior-attempt-unfenced'
+              else reason = this.reservations(states, state, entry, plan)
+              if (!reason) {
+                const ready = admit(structuredClone({ run: state.run, entry, plan, grant }))
+                if (!ready.ready) reason = ready.reason
+                else admission = { provenance: ready.provenance, evidence: ready.evidence }
+              }
+            }
+          }
+        } catch {
+          // Missing private artifacts or unavailable Git/hosts must hold, never free, reservations.
+          reason = 'basis-or-admission-unavailable'
+        }
+        if (reason || !admission) {
+          reason ||= 'capability-unavailable'
+          if (deferred.length < 1000) deferred.push({ run: state.run, queue: entry.id, reason })
+          // Reserve two events for a winning attempt/claim within the transaction limit.
+          if (entry.reason !== reason && recordedDeferrals < 998) {
+            append(state.run, {
+              schema: 'wholeloop/delivery-queue-event@1',
+              action: 'deferred',
+              id: entry.id,
+              basis: entry.basis,
+              reason,
+            })
+            recordedDeferrals++
+          }
+          continue
+        }
+        const siblings = deliveryAttempts(state).records.filter(
+          (record) => slot(record) === slot(entry),
+        )
+        const generation = Math.max(0, ...siblings.map((record) => record.generation)) + 1
+        const attempt = `attempt-${randomBytes(8).toString('hex')}`
+        append(state.run, {
+          schema: 'wholeloop/delivery-attempt-event@1',
+          action: 'claimed',
+          id: attempt,
+          basis: entry.basis,
+          unit: entry.unit,
+          role: entry.role,
+          generation,
+          ...(entry.cell !== undefined ? { cell: entry.cell } : {}),
+        })
+        append(state.run, {
+          schema: 'wholeloop/delivery-queue-event@1',
+          action: 'claimed',
+          id: entry.id,
+          basis: entry.basis,
+          attempt,
+          generation,
+          controller,
+          admission,
+        })
+        const current = this.state(view(), state.run)
+        const claimed = deliveryQueue(current).records.find((record) => record.id === entry.id)
+        if (!claimed) throw new DeliveryJournalError('missing-queue-entry')
+        assignment = this.assignment(current, claimed)
+        break
+      }
+    })
+    return { assignment, deferred, effects: 'not-performed' as const }
+  }
+
+  start(assignment: QueueAssignment, runtime: NonNullable<AttemptPayload['runtime']>): void {
+    this.lifecycle.journal.transaction(ACTOR, (view, append) => {
+      const { state } = this.lease(view(), assignment)
+      this.grant(state)
+      if (
+        !['queued', 'running'].includes(state.state) ||
+        this.lifecycle.journal.now() < state.maxObservedAt
+      )
+        throw new DeliveryJournalError('queue-start-state')
+      if (
+        [...view().values()].some((run) =>
+          deliveryAttempts(run).records.some(
+            (record) =>
+              record.id !== assignment.attempt &&
+              ACTIVE.has(record.state) &&
+              record.runtime &&
+              contractDigest(record.runtime) === contractDigest(runtime),
+          ),
+        )
+      )
+        throw new DeliveryJournalError('runtime-already-assigned')
+      append(state.run, { ...this.attempt(assignment), action: 'started', runtime })
+      if (state.state === 'queued')
+        append(state.run, {
+          schema: 'wholeloop/delivery-control-event@1',
+          from: 'queued',
+          to: 'running',
+          basis: state.basis.digest,
+          reason: 'The trusted host observed this exact worker identity.',
+        })
+    })
+  }
+
+  finish(
+    assignment: QueueAssignment,
+    action: 'completed' | 'stopped' | 'failed',
+    evidence: string,
+  ): void {
+    this.lifecycle.journal.transaction(ACTOR, (view, append) => {
+      const { state } = this.lease(view(), assignment)
+      if (action === 'completed') this.grant(state)
+      append(state.run, { ...this.attempt(assignment), action, evidence })
+      append(state.run, {
+        schema: 'wholeloop/delivery-queue-event@1',
+        action: 'settled',
+        id: assignment.queue,
+        basis: assignment.plan,
+        attempt: assignment.attempt,
+        generation: assignment.generation,
+        outcome: action === 'completed' ? 'complete' : 'cancelled',
+        evidence,
+      })
+    })
+  }
+
+  fence(assignment: QueueAssignment): void {
+    this.lifecycle.journal.transaction(ACTOR, (view, append) => {
+      this.lease(view(), assignment)
+      append(assignment.run, { ...this.attempt(assignment), action: 'fenced' })
+    })
+  }
+
+  requeue(assignment: QueueAssignment, evidence: string): void {
+    this.lifecycle.journal.transaction(ACTOR, (view, append) => {
+      const { state } = this.lease(view(), assignment)
+      this.grant(state)
+      append(state.run, {
+        schema: 'wholeloop/delivery-queue-event@1',
+        action: 'requeued',
+        id: assignment.queue,
+        basis: assignment.plan,
+        attempt: assignment.attempt,
+        generation: assignment.generation,
+        reason: 'The previous attempt is terminal and fenced; retry admission remains required.',
+        evidence,
+      })
+    })
+  }
+
+  /** Read-only broker lease check; it performs no nested transaction or external effect. */
+  current(scope: Readonly<BrokerScope>): boolean {
+    try {
+      const state = this.lifecycle.journal.get(scope.run)
+      const record = deliveryQueue(state).records.find((entry) => entry.attempt === scope.attempt)
+      const attempt = deliveryAttempts(state).records.find((entry) => entry.id === scope.attempt)
+      return (
+        state.state === 'running' &&
+        state.basis.digest === scope.plan &&
+        state.basis.revision === scope.revision &&
+        state.grant?.id === scope.grant &&
+        record?.status === 'claimed' &&
+        record.unit === scope.unit &&
+        record.role === scope.role &&
+        record.generation === scope.generation &&
+        attempt?.state === 'started' &&
+        attempt.runtime?.instance === scope.runtime
+      )
+    } catch {
+      return false
+    }
+  }
+
+  private state(states: ReadonlyMap<string, DeliveryProjection>, run: string): DeliveryProjection {
+    const state = states.get(run)
+    if (!state) throw new DeliveryJournalError('unknown-run')
+    return state
+  }
+  private plan(state: DeliveryProjection): DeliveryPlan {
+    if (state.basis.kind !== 'plan' || !state.basis.revision)
+      throw new DeliveryJournalError('queue-needs-plan')
+    const prepared = this.lifecycle.authority.planning.getPlan(state.run, state.basis.revision)
+    if (prepared.digest !== state.basis.digest)
+      throw new DeliveryJournalError('queue-plan-mismatch')
+    return prepared.plan
+  }
+  private grant(state: DeliveryProjection): DeliveryGrant {
+    const observed = state.grant ? this.lifecycle.authority.inspect(state.grant.id) : undefined
+    if (observed?.status !== 'active' || observed.digest !== state.grant?.digest)
+      throw new DeliveryJournalError('inactive-authority')
+    return observed.grant
+  }
+  private effects(entry: QueueRecord, grant: DeliveryGrant): boolean {
+    const required =
+      entry.role === 'builder'
+        ? ['workspace.create', 'code.write']
+        : entry.role === 'verifier'
+          ? ['test.run']
+          : entry.role === 'researcher'
+            ? ['source.read', 'report.write']
+            : ['report.write']
+    return required.every((effect) => grant.effects.some((value) => value === effect))
+  }
+  private reservations(
+    states: ReadonlyMap<string, DeliveryProjection>,
+    state: DeliveryProjection,
+    entry: QueueRecord,
+    plan: DeliveryPlan,
+  ): string {
+    const active = [...states.values()].flatMap((run) =>
+      deliveryAttempts(run)
+        .records.filter((attempt) => ACTIVE.has(attempt.state))
+        .map((attempt) => ({
+          run: run.run,
+          attempt,
+          entry: deliveryQueue(run).records.find((record) => record.attempt === attempt.id),
+        })),
+    )
+    if (
+      active.some(
+        (value) => execution(value.attempt.role) === execution(entry.role) && !value.entry,
+      )
+    )
+      return 'unknown-reservation'
+    if (active.some((value) => value.run === state.run && slot(value.attempt) === slot(entry)))
+      return 'slot-reserved'
+    const group = active.filter((value) => execution(value.attempt.role) === execution(entry.role))
+    if (group.length >= (execution(entry.role) ? this.capacity.builders : this.capacity.evaluators))
+      return 'global-capacity'
+    if (
+      group.filter((value) => value.run === state.run).length >=
+      (execution(entry.role) ? plan.budgets.builders : plan.budgets.evaluators)
+    )
+      return 'run-capacity'
+    if (execution(entry.role) && entry.repositoryKey) {
+      const same = group.filter(
+        (value) =>
+          value.entry?.repositoryKey === entry.repositoryKey ||
+          (entry.remoteKey !== undefined && value.entry?.remoteKey === entry.remoteKey),
+      )
+      if (same.length >= this.capacity.buildersPerRepository) return 'repository-capacity'
+      if (
+        same.filter((value) => value.run === state.run).length >= plan.budgets.buildersPerRepository
+      )
+        return 'run-repository-capacity'
+    }
+    return ''
+  }
+  private assignment(state: DeliveryProjection, record: QueueRecord): QueueAssignment {
+    if (
+      !record.attempt ||
+      !record.generation ||
+      !record.controller ||
+      !state.grant ||
+      !state.basis.revision
+    )
+      throw new DeliveryJournalError('missing-queue-lease')
+    return {
+      queue: record.id,
+      run: state.run,
+      plan: record.basis,
+      revision: state.basis.revision,
+      unit: record.unit,
+      role: record.role,
+      ...(record.cell !== undefined ? { cell: record.cell } : {}),
+      attempt: record.attempt,
+      generation: record.generation,
+      controller: record.controller,
+      grant: state.grant.id,
+    }
+  }
+  private lease(states: ReadonlyMap<string, DeliveryProjection>, assignment: QueueAssignment) {
+    const state = this.state(states, assignment.run)
+    const record = deliveryQueue(state).records.find((entry) => entry.id === assignment.queue)
+    if (
+      !record ||
+      state.basis.digest !== assignment.plan ||
+      contractDigest(this.assignment(state, record)) !== contractDigest(assignment)
+    )
+      throw new DeliveryJournalError('stale-queue-lease')
+    return { state, record }
+  }
+  private attempt(value: QueueAssignment): Omit<AttemptPayload, 'action'> {
+    return {
+      schema: 'wholeloop/delivery-attempt-event@1',
+      id: value.attempt,
+      basis: value.plan,
+      unit: value.unit,
+      role: value.role,
+      generation: value.generation,
+      ...(value.cell !== undefined ? { cell: value.cell } : {}),
+    }
+  }
+}

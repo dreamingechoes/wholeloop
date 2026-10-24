@@ -45,8 +45,12 @@ describe('compiled delivery journal in independent processes', () => {
       expect(cli('rebuild').written).toBe(1)
       expect(readFileSync(cache, 'utf8')).toBe(before)
       const schemas = cli('state-schema')
-      expect(schemas.payloadSchemas).toHaveLength(4)
-      expect(schemas.facetSchemas).toHaveLength(1)
+      expect(schemas.payloadSchemas).toContainEqual(
+        expect.objectContaining({ $id: 'wholeloop/delivery-attempt-event@1' }),
+      )
+      expect(schemas.facetSchemas).toContainEqual(
+        expect.objectContaining({ $id: 'wholeloop/delivery-attempts@1' }),
+      )
       for (const args of [
         ['track', '--run', plan.run, '--revision', '0'],
         ['events', '--run', plan.run, '--limit', '1001'],

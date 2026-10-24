@@ -3,7 +3,7 @@
 > **TL;DR** — The v1 candidate freezes existing schema declarations, step contracts, command signatures and exit codes. New commands and optional flags are additive; changing an existing format needs a new identity and a migration path. Commit classifications alone do not establish compatibility.
 
 > [!NOTE]
-> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers 72 source JSON Schemas, 158 command-output variants, thirteen steps, 172 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
+> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers 74 source JSON Schemas, 159 command-output variants, thirteen steps, 174 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
 
 ## What is versioned
 

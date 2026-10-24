@@ -8,6 +8,27 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery enqueue',
+    arguments: '',
+    options: [
+      '--run <delivery-id>',
+      '--unit <work-id>',
+      '--role <role>',
+      '--cell <id>',
+      '--priority <number>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/delivery-queue-status@1',
+    summary: 'Persist an authorized work slot without starting a worker',
+  },
+  {
+    path: 'delivery queue',
+    arguments: '',
+    options: ['--run <delivery-id>', '--store <path>'],
+    schema: 'wholeloop/delivery-queue-status@1',
+    summary: 'Inspect persisted queue reasons and reservations without dispatching work',
+  },
+  {
     path: 'delivery state-schema',
     arguments: '',
     options: [],

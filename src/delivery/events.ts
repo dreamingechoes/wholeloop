@@ -1,8 +1,15 @@
 import { randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
+import { DeliveryJournalError } from './journal-error.js'
 import type { DeliveryPolicy } from './plan.js'
 import { validateDeliveryShape } from './plan.js'
+import {
+  type QueueFacet,
+  type QueuePayload,
+  queueEventSchema,
+  queueFacetSchema,
+} from './queue-events.js'
 import attemptSchema from './schemas/attempt-event-v1.json' with { type: 'json' }
 import attemptsSchema from './schemas/attempts-v1.json' with { type: 'json' }
 import controlSchema from './schemas/control-event-v1.json' with { type: 'json' }
@@ -18,8 +25,9 @@ export const DELIVERY_PAYLOAD_SCHEMAS = [
   grantSchema,
   controlSchema,
   attemptSchema,
+  queueEventSchema,
 ]
-export const DELIVERY_FACET_SCHEMAS = [attemptsSchema]
+export const DELIVERY_FACET_SCHEMAS = [attemptsSchema, queueFacetSchema]
 export const DELIVERY_STATES = [
   'planned',
   'queued',
@@ -107,7 +115,12 @@ export interface AttemptPayload {
   runtime?: { backend: string; instance: string; worker: string }
   evidence?: string
 }
-export type DeliveryPayload = RegistrationPayload | GrantPayload | ControlPayload | AttemptPayload
+export type DeliveryPayload =
+  | RegistrationPayload
+  | GrantPayload
+  | ControlPayload
+  | AttemptPayload
+  | QueuePayload
 export interface DeliveryEvent {
   schema: 'wholeloop/delivery-event@1'
   id: string
@@ -146,15 +159,9 @@ export interface DeliveryProjection {
   grant?: GrantPayload
   reason?: string
   outcome?: DeliveryOutcome
-  facets: AttemptsFacet[]
+  facets: (AttemptsFacet | QueueFacet)[]
 }
-export class DeliveryJournalError extends Error {
-  constructor(readonly problem: string) {
-    super(
-      `Delivery journal refused: ${problem}; retain the original journal and recover before writing`,
-    )
-  }
-}
+export { DeliveryJournalError }
 export function deliveryTimestamp(value: string): void {
   if (!Number.isFinite(Date.parse(value)) || new Date(value).toISOString() !== value)
     throw new DeliveryJournalError('invalid-time')

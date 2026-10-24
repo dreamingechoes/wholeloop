@@ -244,7 +244,10 @@
     "schema:wholeloop/delivery-event@1": "5f2ac9ce2436b7eefec45b93aa09c907f37bba3e66f68945d19d86fda39080b2",
     "schema:wholeloop/delivery-grant-event@1": "b81dcb84e964a8494649a236be6a73039ed7cc1e2bc337a1893543c3fa9a11e1",
     "schema:wholeloop/delivery-registration-event@1": "7374b7ce2f4b67bca17f39ee00c34cd529af7dc81b4ca58703d3dc7e29e0694a",
-    "schema:wholeloop/delivery-state@1": "b077bccd379e8f113d875f307e1287557bcdfefd6f099aec91129d84fd559682"
+    "schema:wholeloop/delivery-state@1": "b077bccd379e8f113d875f307e1287557bcdfefd6f099aec91129d84fd559682",
+    "output:wholeloop/delivery-queue-status@1": "0853375d80bf3909dec7420cbbf2b7503e63acb16fe78d48d1ca21ee811ea4cd",
+    "schema:wholeloop/delivery-queue-event@1": "d2e742aaff1e0ac68e54d2065569a51eb616f8e523a7a0d28fee217c2b4b479c",
+    "schema:wholeloop/delivery-queue@1": "dabcb4fee5d3dcd9f93d7898b3960826c93b7b11cb1072f8d7da4deb77791a3a"
   },
   "commands": [
     {
@@ -1394,6 +1397,25 @@
       "arguments": "",
       "schema": "wholeloop/delivery-rebuild@1",
       "options": ["--store <path>"]
+    },
+    {
+      "path": "delivery enqueue",
+      "arguments": "",
+      "schema": "wholeloop/delivery-queue-status@1",
+      "options": [
+        "--run <delivery-id>",
+        "--unit <work-id>",
+        "--role <role>",
+        "--cell <id>",
+        "--priority <number>",
+        "--store <path>"
+      ]
+    },
+    {
+      "path": "delivery queue",
+      "arguments": "",
+      "schema": "wholeloop/delivery-queue-status@1",
+      "options": ["--run <delivery-id>", "--store <path>"]
     }
   ],
   "exitCodes": {

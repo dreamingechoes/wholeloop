@@ -3,7 +3,7 @@
 > **TL;DR** — Persist scheduling decisions, attempt ownership and external-effect intents. Resume through fresh bounded contexts after interruption. A crash, timeout or unknown remote outcome cannot become a successful step or an invisible duplicate attempt.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. Queue, process/checkpoint recovery, budgets and actual worker orchestration remain P6-05–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
+> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. P6-05 adds durable queue ordering, canonical repository/global reservations and atomic fenced attempts under explicit host admission. Process/checkpoint recovery, budgets and actual worker orchestration remain P6-06–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
 
 ## Implemented local state boundary
 
@@ -29,6 +29,8 @@ See the [recovery tutorial](../../../docs/tutorials/delivery-recovery.md) and [A
 Item, step and gate states remain authoritative for their domains. A runner completion cannot override a failed gate or close learning work after merge. `completed` records the requested endpoint: research report, local handoff, observed PR or observed merge. Zero-intervention runs never wait for human input, open an interactive question tool or wait indefinitely for native approval; they use a permitted policy decision or return a terminal blocked/failed/exhausted receipt.
 
 State and outcome are separate fields. For example, a research contract permitting open questions may end in state `completed` with outcome `completed-with-unknowns`; the same missing required fact may end another contract in state `blocked`. Exit success describes the requested control/inspection operation, not an assumed successful feature.
+
+Implemented queue metadata is available through [enqueue and queue inspection](../../../docs/tutorials/delivery-queue.md). Claims use the trusted controller API, default unavailable host admission and retained fixture/host provenance; no command starts a worker. Shared Git/explicit remote identities enforce capacity across runs/clones. Completed dependency attempts establish scheduling order, while actual contract/gate acceptance remains a separate host prerequisite. [ADR-0097](../../../docs/decisions/0097-durable-queue-reservations-and-current-attempt-fences.md) records the claim/fencing and non-expiring reservation decisions.
 
 ## Journal and claims
 

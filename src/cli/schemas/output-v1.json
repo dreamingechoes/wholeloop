@@ -3869,6 +3869,39 @@
           "const": "not-performed"
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "run", "state", "plan", "entries", "workers", "effects"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-queue-status@1"
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "state": {
+          "type": "string"
+        },
+        "plan": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "workers": {
+          "const": "not-started-by-this-command"
+        },
+        "effects": {
+          "const": "not-performed"
+        }
+      }
     }
   ],
   "$defs": {
