@@ -1,6 +1,18 @@
 import { randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
+import {
+  type CheckpointPayload,
+  type CheckpointsFacet,
+  checkpointEventSchema,
+  checkpointFacetSchema,
+} from './checkpoint-events.js'
+import {
+  type EffectPayload,
+  type EffectsFacet,
+  effectEventSchema,
+  effectFacetSchema,
+} from './effect-events.js'
 import { DeliveryJournalError } from './journal-error.js'
 import type { DeliveryPolicy } from './plan.js'
 import { validateDeliveryShape } from './plan.js'
@@ -10,6 +22,12 @@ import {
   queueEventSchema,
   queueFacetSchema,
 } from './queue-events.js'
+import {
+  type RecoveryFacet,
+  type RecoveryPayload,
+  recoveryEventSchema,
+  recoveryFacetSchema,
+} from './recovery-events.js'
 import attemptSchema from './schemas/attempt-event-v1.json' with { type: 'json' }
 import attemptsSchema from './schemas/attempts-v1.json' with { type: 'json' }
 import controlSchema from './schemas/control-event-v1.json' with { type: 'json' }
@@ -26,8 +44,17 @@ export const DELIVERY_PAYLOAD_SCHEMAS = [
   controlSchema,
   attemptSchema,
   queueEventSchema,
+  checkpointEventSchema,
+  effectEventSchema,
+  recoveryEventSchema,
 ]
-export const DELIVERY_FACET_SCHEMAS = [attemptsSchema, queueFacetSchema]
+export const DELIVERY_FACET_SCHEMAS = [
+  attemptsSchema,
+  queueFacetSchema,
+  checkpointFacetSchema,
+  effectFacetSchema,
+  recoveryFacetSchema,
+]
 export const DELIVERY_STATES = [
   'planned',
   'queued',
@@ -121,6 +148,9 @@ export type DeliveryPayload =
   | ControlPayload
   | AttemptPayload
   | QueuePayload
+  | CheckpointPayload
+  | EffectPayload
+  | RecoveryPayload
 export interface DeliveryEvent {
   schema: 'wholeloop/delivery-event@1'
   id: string
@@ -159,7 +189,7 @@ export interface DeliveryProjection {
   grant?: GrantPayload
   reason?: string
   outcome?: DeliveryOutcome
-  facets: (AttemptsFacet | QueueFacet)[]
+  facets: (AttemptsFacet | QueueFacet | CheckpointsFacet | EffectsFacet | RecoveryFacet)[]
 }
 export { DeliveryJournalError }
 export function deliveryTimestamp(value: string): void {

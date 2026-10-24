@@ -20,7 +20,8 @@ The full roadmap includes all seven native clients. Accepting Claude alone would
 
 ## What is already confirmed
 
-- [x] The current 1955-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
+- [x] The expanded delivery candidate passes the complete 2252-test check on macOS and Debian Linux arm64/Node 24.22.0, including actual local recovery fixtures and offline packaging. See [expanded platform evidence](../roadmap/manual-verification.md#expanded-delivery-platform-checks-2026-10-24) for exact candidate/layout hashes and the retained first Linux failure.
+- [x] The earlier 1955-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
 - [x] The earlier complete 1925-test check passed on macOS arm64/Node 22.23.1, which also passes the new Markdown layout lint. The earlier built bundle passes scoped Linux arm64/Node 20.0.0 offline installation, smoke, docs, harness and three-corpus execution with exact Node 24 JSON parity. Eight adapter/dialect framing simulations pass as FIXTURE_PASS; no native client runs. CI now repeats the package and corpus runtime checks, with hosted execution still pending.
 - [x] The owner installed user-scope Claude loose skills and invoked framing with the eight questions and an explicit human stop.
 - [x] An on-hold outcome retained the owner's reason and reopening condition in external core state.
@@ -49,13 +50,13 @@ Accounts with every remote service are absent from this list deliberately.
 
 ### 0. Review and implement expanded 1.0
 
-The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. The owner accepted every new task on 2026-10-24 and authorized sequential implementation without further signals. No new task is complete, no runtime permission changes and no old native failure becomes a pass.
+The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. The owner accepted every new task on 2026-10-24 and authorized sequential implementation without further signals. P6-01–P6-06 are complete at their stated local contract boundaries. Actual native/backend execution remains later work and no old native failure becomes a pass.
 
 Independent local implementation is authorized to proceed before the remaining original manual/account checks. Use the [new validation plan](../roadmap/specifications/autonomous-delivery/09-validation-and-acceptance.md) for the additional actual backend, native research/implementation and disposable code-host evidence. Production effects and release remain separately authorized.
 
 ### 1. Finish implementation defects first
 
-The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external owner decisions; P6-01–P6-05 source/plan/envelope/authority, broker, replayable delivery-state and durable queue/fencing contracts are implemented and tested, and 29 new Phase 6 tasks remain unimplemented. Actual native/backend containment is still later acceptance. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
+The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external owner decisions; P6-01–P6-06 source/plan/envelope/authority, broker, replayable delivery-state and durable queue/fencing and checkpoint/effect/ownership recovery contracts are implemented and tested, and 28 new Phase 6 tasks remain unimplemented. Actual native/backend containment is still later acceptance. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
@@ -164,7 +165,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 45 complete and 43 open: P6-01–P6-05 are complete and 29 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 46 complete and 42 open: P6-01–P6-06 are complete and 28 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Owner involvement |
 | --- | --- | --- |

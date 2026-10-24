@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-effect-intent@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "key",
+    "run",
+    "basis",
+    "grant",
+    "grantDigest",
+    "operation",
+    "ref",
+    "inputDigest"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-effect-intent@1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^effect-[a-f0-9]{32}$"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$"
+    },
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "grant": {
+      "type": "string",
+      "pattern": "^authorization-[a-f0-9]{16}$"
+    },
+    "grantDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "workspace.create",
+        "code.write",
+        "test.run",
+        "git.commit",
+        "git.push",
+        "pr.create",
+        "pr.update",
+        "pr.ready",
+        "pr.merge",
+        "report.write"
+      ]
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "expectedHead": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$"
+    },
+    "inputDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "generation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^attempt-[a-f0-9]{16}$"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+}

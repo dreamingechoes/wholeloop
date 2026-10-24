@@ -8,7 +8,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ## Expanded 1.0 acceptance boundary
 
-[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 45 complete and 43 open (29 new implementation tasks plus the fourteen original open tasks).
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 46 complete and 42 open (28 new implementation tasks plus the fourteen original open tasks).
 
 - [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
 - [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
@@ -23,6 +23,22 @@ OpenCode V1/V2 compatibility now has separate deterministic renderers and native
 Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 each fail with five invalid responses and one accepted response; the repository is unchanged. Bounded diagnostics establish missing envelope identities in those five JSON objects. ADR-0091 adds an exact native generation schema, preserving strict host validation. Preserve both failed rounds. The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six workers in actual Codex 0.163.0, with no missing coverage or repository edits. That fulfills P5-03's one-real-run criterion together with stubbed three-engine verdict/quorum parity; earlier failures and wider native checks remain unchanged.
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
+
+## Expanded delivery platform checks (2026-10-24)
+
+P6-01–P6-06 local contracts are implemented: immutable intake/planning, operator/broker separation, replayable state, queue/fencing, exact checkpoints and conservative worker/effect/lock recovery. This does not certify actual native/backend containment, behavioral QA or hosted publication/merge. Those remain on the expanded acceptance plan.
+
+| Environment | Executed result |
+| --- | --- |
+| macOS arm64 / Node 24.22.0 | Complete check: 2252 tests in 98 files (282.61 seconds), lint/types/build/smoke, offline package, docs/references/harness/Markdown and 36 diagrams |
+| Debian Linux arm64 / Node 24.22.0 | Same complete check: 2252 tests in 98 files (54.01 seconds), no skipped cases; isolated non-root container, no network/private history/credentials |
+| Linux arm64 / Node 20.0.0 and 24.22.0 | Exact combined planning, authorization, cache recovery, queue and checkpoint tutorials pass against the copied macOS-built core |
+
+The immutable code candidate archive is 6d22b942d89fce2b0bef19c5be1b92e16d1e514b8812501bd16f72427193ed13, based on 4175e68 plus P6-06 source/tests. Actual SIGKILL cases cover checkpoint manifest/journal boundaries and effect issue/invocation boundaries. Recovery retains the same run, an exhausted legacy gate and writer ownership evidence. Actual owned-child cancellation preserves a separate unrelated child. Backend/model/service fixtures remain explicitly fixtures.
+
+Preserve the first Linux failure: /tmp was mounted noexec, preventing executable hook/client fixtures and producing 31 failures. Confirm the mount flags, enable execution only in the isolated temporary filesystem and repeat the unchanged candidate successfully. No assertion or product policy is weakened.
+
+The copied macOS core is d06b99d57c76ae0aff27f61d059c362d907b6df1acb1017cb8b7cc87fdb1e329. The source-built Linux core is 846f317b215f139e2484c810abb326f2be419dba9bb9bc19f4c7075d75564ee4; its immutable dependency cache uses a different filesystem path. Replacing only that embedded dependency-source prefix yields the exact macOS core hash. The actual pre-evidence-update offline package receipts remain distinct: macOS a1e67f88a74f6f146a0b679ebac6c066224ec75f5bc5711ec45155cf08f13c33 and Linux 865002bae023ca2a98a32be1726a9be3bbfb8b98225136db8077da666858aee6. Do not exchange their exact-byte receipts or describe those archives as identical. Final README/evidence edits have their own package check; no package is published.
 
 ## Automated platform checks (2026-10-22)
 

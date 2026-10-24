@@ -6,6 +6,7 @@ import { deliveryAuthorityCommand } from './delivery-authority.js'
 import { deliveryJournalCommand } from './delivery-journal.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
 import { deliveryQueueCommand } from './delivery-queue.js'
+import { deliveryRecoveryCommand } from './delivery-recovery.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
 
@@ -16,6 +17,22 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (command === 'delivery recover')
+    throw new CliError(
+      'Use the asynchronous CLI entrypoint for delivery recovery',
+      EXIT.precondition,
+    )
+  if (
+    [
+      'delivery recovery-schema',
+      'delivery checkpoint',
+      'delivery checkpoints',
+      'delivery effects',
+      'delivery lock-status',
+      'delivery repair-lock',
+    ].includes(command)
+  )
+    return deliveryRecoveryCommand(command, { options, positional: [] }, root, json, io)
   if (['delivery enqueue', 'delivery queue'].includes(command))
     return deliveryQueueCommand(command, { options, positional: [] }, root, json, io)
   if (

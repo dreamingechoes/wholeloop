@@ -6,22 +6,16 @@ import type { BrokerScope } from './broker.js'
 import { type AttemptPayload, DeliveryJournalError, type DeliveryProjection } from './events.js'
 import { DeliveryLifecycle } from './lifecycle.js'
 import { type DeliveryPlan, deliveryPlanRoute, observePlanBases } from './plan.js'
-import { deliveryQueue, type QueueAdmission, type QueueRecord } from './queue-events.js'
+import {
+  deliveryQueue,
+  type QueueAdmission,
+  type QueueAssignment,
+  type QueueRecord,
+  queueAssignment,
+} from './queue-events.js'
 import { deliveryAttempts } from './reducer.js'
 
-export interface QueueAssignment {
-  queue: string
-  run: string
-  plan: string
-  revision: number
-  unit: string
-  role: BrokerScope['role']
-  cell?: string
-  attempt: string
-  generation: number
-  controller: string
-  grant: string
-}
+export type { QueueAssignment } from './queue-events.js'
 export type QueueReadiness =
   | ({ ready: true } & QueueAdmission)
   | {
@@ -38,6 +32,11 @@ export interface QueueCandidate {
   entry: QueueRecord
   plan: DeliveryPlan
   grant: DeliveryGrant
+}
+export interface QueueClaimResult {
+  assignment: QueueAssignment | null
+  deferred: { run: string; queue: string; reason: string }[]
+  effects: 'not-performed'
 }
 export const DEFAULT_QUEUE_CAPACITY = { builders: 2, buildersPerRepository: 1, evaluators: 4 }
 const ACTOR = { kind: 'controller', name: 'wholeloop' } as const
@@ -118,13 +117,20 @@ export class DeliveryQueue {
     return deliveryQueue(this.lifecycle.journal.get(run)).records
   }
 
+  assigned(run: string, attempt: string): QueueAssignment {
+    const state = this.lifecycle.journal.get(run)
+    const record = deliveryQueue(state).records.find((record) => record.attempt === attempt)
+    if (!record) throw new DeliveryJournalError('unknown-queue-assignment')
+    return this.assignment(state, record)
+  }
+
   claim(
     controller: string,
     admit: (candidate: Readonly<QueueCandidate>) => QueueReadiness = () => ({
       ready: false,
       reason: 'capability-unavailable',
     }),
-  ) {
+  ): QueueClaimResult {
     if (!/^controller-[a-f0-9]{32}$/.test(controller))
       throw new DeliveryJournalError('invalid-controller')
     let assignment: QueueAssignment | null = null
@@ -433,27 +439,7 @@ export class DeliveryQueue {
     return ''
   }
   private assignment(state: DeliveryProjection, record: QueueRecord): QueueAssignment {
-    if (
-      !record.attempt ||
-      !record.generation ||
-      !record.controller ||
-      !state.grant ||
-      !state.basis.revision
-    )
-      throw new DeliveryJournalError('missing-queue-lease')
-    return {
-      queue: record.id,
-      run: state.run,
-      plan: record.basis,
-      revision: state.basis.revision,
-      unit: record.unit,
-      role: record.role,
-      ...(record.cell !== undefined ? { cell: record.cell } : {}),
-      attempt: record.attempt,
-      generation: record.generation,
-      controller: record.controller,
-      grant: state.grant.id,
-    }
+    return queueAssignment(state, record)
   }
   private lease(states: ReadonlyMap<string, DeliveryProjection>, assignment: QueueAssignment) {
     const state = this.state(states, assignment.run)

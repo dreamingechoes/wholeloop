@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-05 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-06 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 45 complete, fourteen original open tasks and 29 new pending tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 46 complete, fourteen original open tasks and 28 new pending tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -155,7 +155,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-06 · Checkpoint recovery and effect reconciliation
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-05
+**Status:** ✅ · **Size:** L · **Depends on:** P6-05
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -165,9 +165,9 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Acceptance criteria:**
 
-- [ ] Crash injection around each checkpoint resumes the same run and preserves gate budgets.
-- [ ] Unknown process identity pauses instead of stealing a claim or killing an unrelated PID.
-- [ ] An ambiguous write stays pending until an exact read reconciles it; no blind replay occurs.
+- [x] Crash injection around each checkpoint resumes the same run and preserves gate budgets.
+- [x] Unknown process identity pauses instead of stealing a claim or killing an unrelated PID.
+- [x] An ambiguous write stays pending until an exact read reconciles it; no blind replay occurs.
 
 **Tests** — RUN-02–RUN-05: actual process termination, lost-response hosts and reused-PID/fence simulations.
 

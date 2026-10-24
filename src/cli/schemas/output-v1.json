@@ -3902,6 +3902,133 @@
           "const": "not-performed"
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "checkpointRequestSchema",
+        "checkpointManifestSchema",
+        "effectIntentSchema"
+      ],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-recovery-schema@1"
+        },
+        "checkpointRequestSchema": {
+          "type": "object"
+        },
+        "checkpointManifestSchema": {
+          "type": "object"
+        },
+        "effectIntentSchema": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "run", "checkpoints", "authority", "effects"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-checkpoints-status@1"
+        },
+        "run": {
+          "type": "string"
+        },
+        "checkpoints": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "authority": {
+          "const": "not-implied"
+        },
+        "effects": {
+          "const": "not-invoked"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "run", "records", "effects", "observation"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-effects-status@1"
+        },
+        "run": {
+          "type": "string"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "effects": {
+          "const": "not-invoked"
+        },
+        "observation": {
+          "const": "retained-local-records"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "inspection", "repair", "processes", "authority"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-lock-status@1"
+        },
+        "inspection": {
+          "type": "object"
+        },
+        "repair": {
+          "type": ["object", "null"]
+        },
+        "processes": {
+          "const": "not-signalled"
+        },
+        "authority": {
+          "const": "not-restored"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "run", "ready", "problems", "state", "workers", "effects"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-recovery-result@1"
+        },
+        "run": {
+          "type": "string"
+        },
+        "ready": {
+          "type": "boolean"
+        },
+        "problems": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "type": "object"
+        },
+        "workers": {
+          "const": "not-started"
+        },
+        "effects": {
+          "const": "not-invoked"
+        }
+      }
     }
   ],
   "$defs": {

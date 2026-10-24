@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-checkpoint-request@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "key", "stage", "inputs"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-checkpoint-request@1"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "source-adopted",
+        "plan-accepted",
+        "environment-ready",
+        "builder-plan",
+        "implementation-committed",
+        "gate-sealed",
+        "integrated-candidate",
+        "publication-observed",
+        "ci-observed",
+        "merge-observed"
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "pattern": "^(?:delivery/(?:sources|plans|envelopes|artifacts)/|items/[a-z][a-z0-9-]*/artifacts/)[a-zA-Z0-9][a-zA-Z0-9._/-]{0,4095}$"
+      }
+    },
+    "attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "generation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^attempt-[a-f0-9]{16}$"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+}

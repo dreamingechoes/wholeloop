@@ -3,7 +3,7 @@
 > **TL;DR** — Track a prepared plan, inspect it from independent processes, read its retained events and rebuild a missing projection. None of these operations starts a worker, grants authority or performs an external effect.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The commands below exercise local delivery metadata and cache recovery. Complete runner, stale-lock handling, actual workers and endpoint acceptance remain subsequent Phase 6 work.
+> **Status: ✅ implemented.** The commands below exercise local delivery metadata and cache recovery. [Checkpoint/ownership recovery and explicit stopped-writer repair](./delivery-checkpoints.md) are also available. Complete runner, actual native/backend workers and endpoint acceptance remain subsequent Phase 6 work.
 
 ## Before you start
 
@@ -75,7 +75,7 @@ Status still succeeds without a cache because it replays the journal. The first 
 
 A delivery transaction commits one immutable, atomically replaced numbered journal segment before writing its projections. Interrupted projection writes can be rebuilt from that segment. An incomplete/corrupt segment, unknown event/facet version or mismatched identity refuses replay/writes; preserve those original files for inspection. Rebuild refuses recognizable future cache versions rather than overwriting a newer writer's state. Namespace aliases into other private files also refuse.
 
-A killed writer may retain a store lock. This increment does not guess whether its worker/resources are still alive or steal that lock; general process/lock/effect recovery belongs to P6-06. [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md) explains the commit boundary, version registry and compatibility decisions.
+A killed writer may retain a store lock. This increment does not guess whether its worker/resources are still alive or steal that lock; use the [checkpoint/ownership recovery guide](./delivery-checkpoints.md) for the implemented controller contracts and explicit non-destructive stopped-writer repair. Actual native/backend ownership remains separate acceptance. [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md) explains the commit boundary, version registry and compatibility decisions.
 
 Retain the external tutorial directory for inspection. Existing item-state commands and human/PR history remain separate and unchanged. No manual/native/service acceptance is marked passed by this local exercise.
 

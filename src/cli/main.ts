@@ -8,6 +8,7 @@ import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
 import { conformanceCommand } from './conformance.js'
 import { deliveryCommand } from './delivery.js'
+import { deliveryRecoverCommand } from './delivery-recovery.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav, docsReference } from './docs.js'
 import { doctorCommand } from './doctor.js'
@@ -213,6 +214,7 @@ export async function runAsync(
     (command) =>
       ((command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
         command.path === 'fanout run' ||
+        command.path === 'delivery recover' ||
         command.path.startsWith('conformance ') ||
         command.path === 'adopt' ||
         command.path.startsWith('share ') ||
@@ -244,6 +246,8 @@ export async function runAsync(
     )
     if (command.path.startsWith('guard '))
       return await guardCommand(command.path, parsed, root, json, io)
+    if (command.path === 'delivery recover')
+      return await deliveryRecoverCommand(parsed, root, json, io)
     if (command.path === 'provider read-flags') return await flagReadCommand(parsed, root, json, io)
     if (command.path === 'launch dispatch')
       return await launchDispatchCommand(parsed, root, json, io)

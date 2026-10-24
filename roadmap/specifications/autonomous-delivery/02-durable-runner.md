@@ -3,7 +3,7 @@
 > **TL;DR** — Persist scheduling decisions, attempt ownership and external-effect intents. Resume through fresh bounded contexts after interruption. A crash, timeout or unknown remote outcome cannot become a successful step or an invisible duplicate attempt.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. P6-05 adds durable queue ordering, canonical repository/global reservations and atomic fenced attempts under explicit host admission. Process/checkpoint recovery, budgets and actual worker orchestration remain P6-06–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
+> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. P6-05 adds durable queue ordering, canonical repository/global reservations and atomic fenced attempts under explicit host admission. P6-06 adds exact checkpoint manifests, single-invocation effect records, finite read reconciliation, observed worker recovery and explicit stopped-writer lock retention. Persisted aggregate budgets and actual worker orchestration remain P6-07–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
 
 ## Implemented local state boundary
 
@@ -55,6 +55,8 @@ Builder output is a plan/patch/result for the allocated workspace. Reviewers and
 Reuse existing native adapters through a dedicated builder-host contract; do not widen read-only gate recipes. Capability negotiation records version, containment, tool control, cancellation and output support for each role. Missing capability stops that role; sequential scheduling cannot substitute for missing containment.
 
 ## Checkpoints and effects
+
+The implemented [checkpoint/recovery tutorial](../../../docs/tutorials/delivery-checkpoints.md) exercises exact inputs, stale refusal and same-run metadata recovery. Core host APIs issue one scoped action after retaining its finite invocation, then reconcile separately by exact resource observation. A not-applied result requires a confirmed stopped invoker; timeouts or resource absence alone cannot authorize retry. Local actual child/crash tests preserve exhausted legacy gates. Unknown native/backend identity still refuses and retains reservations; actual hosts remain later increments. [ADR-0098](../../../docs/decisions/0098-checkpoint-recovery-and-observed-effect-reconciliation.md) also defines explicit lock retention after observed writer absence.
 
 Checkpoint after source adoption, approved plan, environment readiness, recorded builder plan, committed implementation, each sealed gate, integrated candidate, publication intent/result, CI observation and merge intent/result. Reference exact immutable artifacts rather than raw conversations.
 

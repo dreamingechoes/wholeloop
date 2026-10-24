@@ -1,4 +1,5 @@
-import type { BrokerRole } from './broker.js'
+import { contractDigest } from '../contracts/compatibility.js'
+import type { BrokerRole, BrokerScope } from './broker.js'
 import type { DeliveryEvent, DeliveryProjection } from './events.js'
 import { DeliveryJournalError } from './journal-error.js'
 import queueEventSchema from './schemas/queue-event-v1.json' with { type: 'json' }
@@ -98,6 +99,8 @@ export function reduceDeliveryQueue(
     const unit = state.units.find((entry) => entry.id === payload.unit)
     if (
       record ||
+      payload.id !==
+        `queue-${contractDigest({ run: state.run, basis: payload.basis, unit: payload.unit, role: payload.role, cell: payload.cell ?? null }).slice(0, 32)}` ||
       !unit ||
       !payload.role ||
       payload.priority === undefined ||
@@ -192,6 +195,9 @@ export function reduceDeliveryQueue(
     } else {
       if (
         !['cancelled', 'complete'].includes(record.status) ||
+        !['queued', 'running', 'paused', 'stopped', 'waiting-input', 'waiting-external'].includes(
+          state.state,
+        ) ||
         attempt.state !== 'fenced' ||
         !payload.reason
       )
@@ -204,5 +210,43 @@ export function reduceDeliveryQueue(
       delete record.controller
       delete record.admission
     }
+  }
+}
+
+export interface QueueAssignment {
+  queue: string
+  run: string
+  plan: string
+  revision: number
+  unit: string
+  role: BrokerScope['role']
+  cell?: string
+  attempt: string
+  generation: number
+  controller: string
+  grant: string
+}
+export function queueAssignment(state: DeliveryProjection, record: QueueRecord): QueueAssignment {
+  if (
+    state.basis.digest !== record.basis ||
+    !record.attempt ||
+    !record.generation ||
+    !record.controller ||
+    !state.grant ||
+    !state.basis.revision
+  )
+    throw new DeliveryJournalError('missing-queue-lease')
+  return {
+    queue: record.id,
+    run: state.run,
+    plan: record.basis,
+    revision: state.basis.revision,
+    unit: record.unit,
+    role: record.role,
+    ...(record.cell !== undefined ? { cell: record.cell } : {}),
+    attempt: record.attempt,
+    generation: record.generation,
+    controller: record.controller,
+    grant: state.grant.id,
   }
 }

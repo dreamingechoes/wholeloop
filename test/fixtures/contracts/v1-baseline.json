@@ -247,7 +247,22 @@
     "schema:wholeloop/delivery-state@1": "b077bccd379e8f113d875f307e1287557bcdfefd6f099aec91129d84fd559682",
     "output:wholeloop/delivery-queue-status@1": "0853375d80bf3909dec7420cbbf2b7503e63acb16fe78d48d1ca21ee811ea4cd",
     "schema:wholeloop/delivery-queue-event@1": "d2e742aaff1e0ac68e54d2065569a51eb616f8e523a7a0d28fee217c2b4b479c",
-    "schema:wholeloop/delivery-queue@1": "dabcb4fee5d3dcd9f93d7898b3960826c93b7b11cb1072f8d7da4deb77791a3a"
+    "schema:wholeloop/delivery-queue@1": "dabcb4fee5d3dcd9f93d7898b3960826c93b7b11cb1072f8d7da4deb77791a3a",
+    "output:wholeloop/delivery-recovery-schema@1": "59f121d6659ab1516c27787d39cb194b0ce62fa1c4020ff5b0c65ee5bed7ebaa",
+    "output:wholeloop/delivery-checkpoints-status@1": "cee1ffee13e048725e15cb959d62081c12f4e3ddb2072be1f1296be38535da3c",
+    "output:wholeloop/delivery-effects-status@1": "03d54ac66b2e7ca1b249d1d779227697f7b3d465b5faceb9d23d0abfbfe8cf5b",
+    "output:wholeloop/delivery-lock-status@1": "c43368d6da70347f0e446ec0c10d01ca91b740128ff921b87b7b9ccd5c3d5dde",
+    "output:wholeloop/delivery-recovery-result@1": "1d9f63feb341a380b11dd9c7f781f99529a8e098865c3941484bd259740ca068",
+    "schema:wholeloop/delivery-checkpoint-event@1": "85b802a30aa96fe0072c66b45eb5df5eef30d0e7e32b48d3fd8ccb9b38ae2eb0",
+    "schema:wholeloop/delivery-checkpoint-manifest@1": "85f9e87c75ff1b72d63d2b26b1c265a9ccc3c83c962a431341fb34b96db89c40",
+    "schema:wholeloop/delivery-checkpoint-request@1": "ea5fc528aa8b063b1a7f0d4205da7b3e6ea360050940775928ef67b587bc4f59",
+    "schema:wholeloop/delivery-checkpoints@1": "2c77ba64639a9f4b10d8f4652fe396a6eeffcad9208ce863c6f66a1c28805525",
+    "schema:wholeloop/delivery-effect-event@1": "dfc3a26c7e8e348a561a18e0aad6557ace6caac6b6ce06164342f9ebdaa1a6d7",
+    "schema:wholeloop/delivery-effect-intent@1": "5118c9160641d9cd4e22eadd5d4515a9c5a164b37d5c83ba7d13cfc4fb1af482",
+    "schema:wholeloop/delivery-effects@1": "c7fabd3c86db36a712f9fcf2a0dab9f503f104ed77d32e6b75fb04a295b0995d",
+    "schema:wholeloop/delivery-lock-recovery@1": "cba1fcceee91e444e7c384a1d95f6bb3c894c87296f17f67b9a097ba26533cf9",
+    "schema:wholeloop/delivery-recovery-event@1": "e740e8f2bea7df3f2c5f95ab00f3f0e28509f27ba912655d9f8581c0ffb40755",
+    "schema:wholeloop/delivery-recovery@1": "81ec32d75401ff2d2e82a2a47c14ac42b86d1d7202e3ba9663f59416f809871c"
   },
   "commands": [
     {
@@ -1416,6 +1431,53 @@
       "arguments": "",
       "schema": "wholeloop/delivery-queue-status@1",
       "options": ["--run <delivery-id>", "--store <path>"]
+    },
+    {
+      "path": "delivery recovery-schema",
+      "arguments": "",
+      "schema": "wholeloop/delivery-recovery-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery checkpoint",
+      "arguments": "",
+      "schema": "wholeloop/delivery-checkpoints-status@1",
+      "options": [
+        "--run <delivery-id>",
+        "--file <checkpoint.json>",
+        "--root <directory>",
+        "--store <path>"
+      ]
+    },
+    {
+      "path": "delivery checkpoints",
+      "arguments": "",
+      "schema": "wholeloop/delivery-checkpoints-status@1",
+      "options": ["--run <delivery-id>", "--store <path>"]
+    },
+    {
+      "path": "delivery effects",
+      "arguments": "",
+      "schema": "wholeloop/delivery-effects-status@1",
+      "options": ["--run <delivery-id>", "--store <path>"]
+    },
+    {
+      "path": "delivery lock-status",
+      "arguments": "",
+      "schema": "wholeloop/delivery-lock-status@1",
+      "options": ["--store <path>"]
+    },
+    {
+      "path": "delivery repair-lock",
+      "arguments": "",
+      "schema": "wholeloop/delivery-lock-status@1",
+      "options": ["--owner-digest <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery recover",
+      "arguments": "",
+      "schema": "wholeloop/delivery-recovery-result@1",
+      "options": ["--run <delivery-id>", "--resume", "--store <path>"]
     }
   ],
   "exitCodes": {

@@ -134,6 +134,20 @@ export function sourceRequest(value: unknown): SourceRequest {
 
 /** Open the selected descriptor without following a final symlink or blocking on a FIFO. */
 export function readSourceFile(root: string, file: string, limit = SOURCE_LIMIT): string {
+  try {
+    const content = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(
+      readSourceBytes(root, file, limit),
+    )
+    safeSourceText(content, limit)
+    return content
+  } catch (error) {
+    if (error instanceof SourceInputError) throw error
+    throw new SourceInputError('unsafe-file')
+  }
+}
+
+/** Checkpoint binary inputs use the same stable descriptor boundary without decoding/copying them. */
+export function readSourceBytes(root: string, file: string, limit = SOURCE_LIMIT): Buffer {
   let fd: number | undefined
   try {
     const boundary = realpathSync(root)
@@ -165,11 +179,7 @@ export function readSourceFile(root: string, file: string, limit = SOURCE_LIMIT)
       current.ino !== after.ino
     )
       throw new SourceInputError('unsafe-file')
-    const content = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(
-      bytes.subarray(0, length),
-    )
-    safeSourceText(content, limit)
-    return content
+    return bytes.subarray(0, length)
   } catch (error) {
     if (error instanceof SourceInputError) throw error
     throw new SourceInputError('unsafe-file')

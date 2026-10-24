@@ -8,6 +8,60 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery recovery-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-recovery-schema@1',
+    summary: 'Show checkpoint request, input manifest and effect intent contracts',
+  },
+  {
+    path: 'delivery checkpoint',
+    arguments: '',
+    options: [
+      '--run <delivery-id>',
+      '--file <checkpoint.json>',
+      '--root <directory>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/delivery-checkpoints-status@1',
+    summary: 'Retain an exact checkpoint input manifest without granting acceptance',
+  },
+  {
+    path: 'delivery checkpoints',
+    arguments: '',
+    options: ['--run <delivery-id>', '--store <path>'],
+    schema: 'wholeloop/delivery-checkpoints-status@1',
+    summary: 'Inspect current and stale checkpoint inputs without rewriting history',
+  },
+  {
+    path: 'delivery effects',
+    arguments: '',
+    options: ['--run <delivery-id>', '--store <path>'],
+    schema: 'wholeloop/delivery-effects-status@1',
+    summary: 'Inspect retained effect intents and observations without invoking a host',
+  },
+  {
+    path: 'delivery lock-status',
+    arguments: '',
+    options: ['--store <path>'],
+    schema: 'wholeloop/delivery-lock-status@1',
+    summary: 'Inspect writer ownership without signalling or removing a process',
+  },
+  {
+    path: 'delivery repair-lock',
+    arguments: '',
+    options: ['--owner-digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/delivery-lock-status@1',
+    summary: 'Retain an exactly observed absent writer lock without restoring authority',
+  },
+  {
+    path: 'delivery recover',
+    arguments: '',
+    options: ['--run <delivery-id>', '--resume', '--store <path>'],
+    schema: 'wholeloop/delivery-recovery-result@1',
+    summary: 'Validate recovery inputs and ownership without starting replacement workers',
+  },
+  {
     path: 'delivery enqueue',
     arguments: '',
     options: [

@@ -62,6 +62,31 @@ export class StoreFiles {
     }
   }
 
+  /** Preserve a verified stopped writer's lock instead of deleting its ownership evidence. */
+  retainLock(destination: string): void {
+    const lock = this.path('.lock'),
+      target = this.path(destination)
+    if (
+      lock !== resolve(this.root, '.lock') ||
+      target !== resolve(this.root, destination) ||
+      !/^delivery\/recovered-locks\/[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(
+        destination,
+      ) ||
+      existsSync(target)
+    )
+      throw new Error('Refuse an aliased or occupied lock retention destination')
+    mkdirSync(dirname(target), { recursive: true, mode: 0o700 })
+    renameSync(lock, target)
+    for (const path of [this.root, dirname(target)]) {
+      const directory = openSync(path, 'r')
+      try {
+        fsyncSync(directory)
+      } finally {
+        closeSync(directory)
+      }
+    }
+  }
+
   locked<T>(operation: () => T, timeoutMs = 5000): T {
     mkdirSync(this.path('.'), { recursive: true, mode: 0o700 })
     const lock = this.path('.lock')

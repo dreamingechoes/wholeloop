@@ -23,6 +23,8 @@ delivery source --file request.json captures one bounded request into an immutab
 
 Delivery authority-schema exposes the operator/broker contracts. authorize records a bounded explicit plan/envelope grant; grant inspects it; revoke retains a durable revocation. Repeating the same action preserves its deadline and cannot renew expired/revoked authority. These metadata commands start no process and perform no remote effect. Broker requests are scoped worker claims, independently gated by current controller/runtime context. See [authorization and revocation](../tutorials/delivery-authorization.md) and [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md). Actual backend isolation/dispatch and delegated acceptance remain later work; existing supervised human gates are unchanged.
 
+Delivery recovery-schema exposes checkpoint and effect-intent contracts. checkpoint captures exact input manifests; checkpoints inspects current/stale inputs; effects reports retained local intent/observation records. recover optionally resumes metadata after current inputs, authority and ownership are known; it supplies no backend automatically. lock-status/repair-lock retain a verified stopped writer record without signalling processes or recreating authority. See the [checkpoint/recovery tutorial](../tutorials/delivery-checkpoints.md) and [ADR-0098](../decisions/0098-checkpoint-recovery-and-observed-effect-reconciliation.md). Actual worker/backend dispatch and operation-specific publication eligibility remain later work.
+
 Delivery enqueue persists an authorized exact work slot; queue inspects retained entries, reasons and reservations. Both commands start no worker. Atomic claims, current generations and repository/global capacity live in the trusted controller API, with unavailable host admission by default. See the [queue tutorial](../tutorials/delivery-queue.md) and [ADR-0097](../decisions/0097-durable-queue-reservations-and-current-attempt-fences.md); actual dispatch/environment/QA evidence remains later work.
 
 Delivery state-schema exposes event and projection envelopes plus every registered closed payload/facet family. track observes a stored plan/envelope and optional private grant without starting execution. status replays authoritative delivery history; events pages it by exclusive global sequence; rebuild repairs disposable caches without reconstructing authority or changing legacy human/PR history. See the [recovery tutorial](../tutorials/delivery-recovery.md) and [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md). General worker/lock/effect reconciliation remains a later runner increment.
@@ -38,6 +40,13 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery recovery-schema` | `wholeloop/delivery-recovery-schema@1` | Show checkpoint request, input manifest and effect intent contracts |
+| `wl delivery checkpoint` | `wholeloop/delivery-checkpoints-status@1` | Retain an exact checkpoint input manifest without granting acceptance |
+| `wl delivery checkpoints` | `wholeloop/delivery-checkpoints-status@1` | Inspect current and stale checkpoint inputs without rewriting history |
+| `wl delivery effects` | `wholeloop/delivery-effects-status@1` | Inspect retained effect intents and observations without invoking a host |
+| `wl delivery lock-status` | `wholeloop/delivery-lock-status@1` | Inspect writer ownership without signalling or removing a process |
+| `wl delivery repair-lock` | `wholeloop/delivery-lock-status@1` | Retain an exactly observed absent writer lock without restoring authority |
+| `wl delivery recover` | `wholeloop/delivery-recovery-result@1` | Validate recovery inputs and ownership without starting replacement workers |
 | `wl delivery enqueue` | `wholeloop/delivery-queue-status@1` | Persist an authorized work slot without starting a worker |
 | `wl delivery queue` | `wholeloop/delivery-queue-status@1` | Inspect persisted queue reasons and reservations without dispatching work |
 | `wl delivery state-schema` | `wholeloop/delivery-state-schema@1` | Show delivery event, registered payload and projection contracts |

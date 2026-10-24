@@ -108,6 +108,7 @@
 | [0095](./0095-operator-grants-and-scoped-worker-claims.md) | Operator grants and scoped worker claims | Accepted | 2026-10-24 |
 | [0096](./0096-replayable-delivery-journal-without-authority-recovery.md) | Replayable delivery journal without authority recovery | Accepted | 2026-10-24 |
 | [0097](./0097-durable-queue-reservations-and-current-attempt-fences.md) | Durable queue reservations and current attempt fences | Accepted | 2026-10-24 |
+| [0098](./0098-checkpoint-recovery-and-observed-effect-reconciliation.md) | Checkpoint recovery and observed effect reconciliation | Accepted | 2026-10-24 |
 
 ## Lifecycle
 

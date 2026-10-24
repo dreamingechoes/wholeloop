@@ -3,7 +3,7 @@
 > **TL;DR** — The planned runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator grant/revocation metadata scoped broker admission and replayable delivery state/cache recovery and durable queue/fenced claims are implemented. Actual native/backend workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
+> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery are implemented. Actual native/backend workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
 
 ## Read the proposal
 
@@ -27,6 +27,8 @@ Use [delivery source](../tutorials/delivery-intake.md) to capture bounded local 
 | Complete no-intervention research/implementation | [Delegated decisions](../../roadmap/specifications/autonomous-delivery/10-unattended-decisions-and-research.md) |
 
 ## Design boundaries
+
+[Checkpoint recovery](../tutorials/delivery-checkpoints.md) pins exact input manifests, retains finite single effect invocations and observes outcomes separately. Unknown ownership or response never starts a replacement or repeats a possible write. Actual child/crash fixtures verify local recovery while native/backend and operation-specific hosts remain pending. ADR-0098 preserves legacy exhausted gates and adds explicit non-destructive stopped-writer lock retention.
 
 [Delivery recovery](../tutorials/delivery-recovery.md) tracks prepared plans/envelopes, replays immutable delivery events and reconstructs disposable caches without recreating private authority or changing legacy human/PR receipts. Unknown versions and mismatched identities refuse. Durable queue ordering/reservations and scoped claim/fencing are also implemented; actual workers and endpoint evidence remain later increments. The [queue guide](../tutorials/delivery-queue.md) exposes metadata without dispatch, and ADR-0097 defines its trusted host admission boundary.
 

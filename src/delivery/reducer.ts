@@ -1,4 +1,6 @@
 import { contractDigest } from '../contracts/compatibility.js'
+import { reduceDeliveryCheckpoint } from './checkpoint-events.js'
+import { reduceDeliveryEffect } from './effect-events.js'
 import {
   type AttemptRecord,
   type AttemptsFacet,
@@ -11,6 +13,7 @@ import {
   validateDeliveryProjection,
 } from './events.js'
 import { reduceDeliveryQueue } from './queue-events.js'
+import { reduceDeliveryRecovery } from './recovery-events.js'
 
 const EDGES: Record<DeliveryState, readonly DeliveryState[]> = {
   planned: ['queued', 'waiting-input', 'paused', 'stopping', 'blocked', 'failed'],
@@ -64,6 +67,11 @@ function active(state: DeliveryProjection): boolean {
   return deliveryAttempts(state).records.some((record) => ACTIVE.has(record.state))
 }
 function control(state: DeliveryProjection, payload: ControlPayload): void {
+  const unresolved = state.facets
+    .find((facet) => facet.schema === 'wholeloop/delivery-effects@1')
+    ?.records.some((record) => ['prepared', 'pending', 'unknown'].includes(record.status))
+  if (unresolved && ['completed', 'stopped'].includes(payload.to))
+    throw new DeliveryJournalError('unreconciled-effects')
   if (
     payload.basis !== state.basis.digest ||
     payload.from !== state.state ||
@@ -165,7 +173,10 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
         if (
           payload.basis.kind !== 'plan' ||
           ['completed', 'failed', 'exhausted', 'blocked'].includes(state.state) ||
-          active(state)
+          active(state) ||
+          state.facets
+            .find((facet) => facet.schema === 'wholeloop/delivery-effects@1')
+            ?.records.some((record) => ['prepared', 'pending', 'unknown'].includes(record.status))
         )
           throw new DeliveryJournalError('registration-state')
         const last = state.plans.at(-1)
@@ -319,6 +330,15 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
         }
         case 'wholeloop/delivery-queue-event@1':
           reduceDeliveryQueue(state, event, payload)
+          break
+        case 'wholeloop/delivery-checkpoint-event@1':
+          reduceDeliveryCheckpoint(state, event, payload)
+          break
+        case 'wholeloop/delivery-effect-event@1':
+          reduceDeliveryEffect(state, event, payload)
+          break
+        case 'wholeloop/delivery-recovery-event@1':
+          reduceDeliveryRecovery(state, event, payload)
           break
         default:
           throw new DeliveryJournalError('unsupported-payload-reducer')

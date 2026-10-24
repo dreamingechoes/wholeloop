@@ -71,7 +71,7 @@ A trusted controller must retain exact observed runtime identity and terminal ev
 
 ## Stopping point
 
-You have queued local metadata without launching a native model, backend, test application or remote operation. General process/checkpoint recovery, persisted runtime budgets, actual environments and full runner execution remain on [Phase 6](../../roadmap/phase-6-autonomous-delivery.md). [ADR-0097](../decisions/0097-durable-queue-reservations-and-current-attempt-fences.md) records the local coordination boundary. Retain the external tutorial directory for inspection; no manual or account acceptance is marked passed.
+You have queued local metadata without launching a native model, backend, test application or remote operation. [Checkpoint and conservative ownership/effect recovery](./delivery-checkpoints.md) are now available. Persisted aggregate budgets, actual environments and full runner execution remain on [Phase 6](../../roadmap/phase-6-autonomous-delivery.md). [ADR-0097](../decisions/0097-durable-queue-reservations-and-current-attempt-fences.md) records the local coordination boundary. Retain the external tutorial directory for inspection; no manual or account acceptance is marked passed.
 
 <!-- docnav -->
-[◀ Delivery recovery](delivery-recovery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Delivery recovery](delivery-recovery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery checkpoints ▶](delivery-checkpoints.md)
