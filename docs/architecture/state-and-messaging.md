@@ -146,5 +146,11 @@ The local store is personal. Sharing happens through **providers**: in synced mo
 
 ---
 
+## Immutable delivery inputs and proposals
+
+Delivery source snapshots live under delivery/sources in the external store. Planning adds content-addressed delivery/envelopes and numbered delivery/plans/RUN/REVISION.json records with canonical value digests. Repeated preparation reuses the exact record; a conflicting replacement or damaged digest is refused. New plan revisions pin their predecessor. Inspection reads stored structure and source identities without demanding that today's local target or remote still match the original observation.
+
+These are immutable artifacts, not new legacy item events or an alternative item hierarchy. Existing projection rebuilds leave them intact and do not reconstruct missing immutable artifacts. Delivery lifecycle journaling/recovery is P6-04 work. No plan proposal is a grant or actual human decision. See [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) and the [planning tutorial](../tutorials/delivery-plan.md).
+
 <!-- docnav -->
 [◀ Core CLI](core-cli.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Orchestration and gates ▶](orchestration-and-gates.md)

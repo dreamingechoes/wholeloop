@@ -3,7 +3,7 @@
 > **TL;DR** — Pin the requested work and obtain explicit operator authority before execution. Keep criteria, decision provenance and native permissions separate from automation scope. The owner can delegate a complete flow once; a worker cannot enlarge that grant or impersonate a person.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-01 source intake is implemented; the contracts for plans, grants and change handling remain accepted design targets for P6-02–P6-03 and P6-29. No existing policy is relaxed by this file.
+> **Status: 🚧 partial.** P6-01 source intake and P6-02 plan/envelope preparation are implemented; grants and change handling remain accepted design targets for P6-03 and P6-29. No existing policy is relaxed by this file.
 
 ## Inputs and immutable plan
 
@@ -15,7 +15,7 @@ Implemented intake uses delivery source --file request.json and delivery source-
 
 Do not persist known credentials in plaintext source snapshots, excerpts or diagnostics. If intake detects credential-bearing content, refuse that input and request a redacted source when intervention is allowed, or return a terminal blocked result in none mode. A detector is not proof that arbitrary text is secret-free. Use credential references to an existing encrypted/OS/tool store; never copy values into plans or native command arguments.
 
-Proposed `wholeloop/delivery-plan@1` includes:
+Implemented `wholeloop/delivery-plan@1` includes:
 
 | Field | Meaning |
 | --- | --- |
@@ -30,6 +30,8 @@ Proposed `wholeloop/delivery-plan@1` includes:
 | `capabilities` | Exact client/host versions and independently observed capability results |
 
 Keep existing item IDs and thirteen steps; a delivery run coordinates them rather than creating a second product hierarchy. Prose generation remains client-owned; deterministic code validates identities, coverage, dependencies and policy.
+
+The implemented [planning tutorial](../../../docs/tutorials/delivery-plan.md) prepares a closed envelope before its derived plan, then inspects the exact revision in another process. Plan/envelope proposals pin descriptors and local observations without claiming actual runtime capability, semantic acceptance or authorization. Plans use run IDs prefixed delivery-, increasing revision numbers and an optional previous digest (absent only at revision one). Immutable planning records remain separate from legacy item events; delivery lifecycle journaling follows in P6-04. [ADR-0094](../../../docs/decisions/0094-revision-bound-delivery-plans-and-envelopes.md) defines the implemented contract and conservative envelope fit.
 
 An already-defined feature may enter directly at build after explicit criteria agreement. Missing product intent follows the intervention/decision policy: ask when permitted, run delegated Define/research within bounds, or return a terminal limitation. Never fabricate framing/spec approval to keep a delivery run moving.
 
@@ -63,7 +65,7 @@ MCP remains client-owned and allowlisted per assignment. If the native client ca
 
 ## Proposed commands and outputs
 
-The intended surface is `wl delivery plan`, `authorize`, `revoke` and `inspect`; these are not installed commands. Authorization is an explicit operator action, never an instruction inferred from fetched content. A plan returns questions, source/plan digests, expected effects and missing capabilities. An authorization receipt records its actual mode and limits.
+Installed preparation commands are wl delivery plan-schema, envelope, plan and inspect-plan. They return versioned proposals, immutable digests and a proposed route, without questions, workers or grants. The later authorization surface includes authorize/revoke and run inspection; it is not implemented yet. Authorization is an explicit operator action, never an instruction inferred from fetched content. An authorization receipt must record its actual mode and limits.
 
 Each schema uses closed objects, meaningful bounded strings, canonical paths and versioned JSON. Limit a plan to 100 work units, 16 repositories and 1000 criteria; reject overflow before creating work. Reject duplicate criteria, unknown dependencies, cycles and unmapped required outcomes.
 
@@ -81,5 +83,7 @@ Each schema uses closed objects, meaningful bounded strings, canonical paths and
 Unit tests cover schema and decision tables; process tests cover hostile worker messages and real file boundaries; native/backend trials verify effective tools rather than just generated configuration.
 
 P6-01 additionally covers the source-intake portions of AUTH-02/AUTH-03: partial/oversized/wrong-scope observations, ambiguous mappings and inert hostile prose. Their broader planning/broker authority requirements remain unchecked until those increments exist. These are local and normalized-host fixtures, not actual remote-service or worker-containment certification.
+
+P6-02 covers planning portions of AUTH-01–AUTH-04 and INT-02 with actual disposable repositories, dense generated DAGs, base/remote changes, immutable revisions, simultaneous compiled preparation and unchanged legacy events. A plan records machine/human acceptance intent without forging an actual acceptance receipt. The full broker, delegated acceptance, committed-candidate assembly and native containment cases remain later increments.
 
 [◀ Specification index](./README.md) · [Runner ▶](./02-durable-runner.md)

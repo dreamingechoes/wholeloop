@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-plan-contract
+    enforcers: [src/delivery/plan.ts#validateDeliveryPlan, src/delivery/plan.ts#checkPlanEnvelope, src/delivery/plan.ts#deliveryPlanRoute, src/delivery/planning-store.ts#DeliveryPlanning, test/unit/delivery/plan.test.ts]
   - id: delivery-source-identity
     enforcers: [src/delivery/input.ts#sourceRequest, src/delivery/input.ts#readSourceFile, src/delivery/source.ts#DeliverySources, src/delivery/source-host.ts#readProviderSource, test/unit/delivery/source.test.ts]
   - id: headless-native-response-schema

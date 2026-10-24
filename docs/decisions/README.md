@@ -104,6 +104,7 @@
 | [0091](./0091-native-exact-headless-response-schemas.md) | Native exact headless response schemas | Accepted | 2026-10-22 |
 | [0092](./0092-expanded-v1-autonomous-delivery-planning.md) | Expanded V1 planning; runtime authority unchanged | Accepted | 2026-10-24 |
 | [0093](./0093-immutable-delivery-source-intake.md) | Immutable delivery sources without execution authority | Accepted | 2026-10-24 |
+| [0094](./0094-revision-bound-delivery-plans-and-envelopes.md) | Revision-bound delivery plans and request envelopes | Accepted | 2026-10-24 |
 
 ## Lifecycle
 

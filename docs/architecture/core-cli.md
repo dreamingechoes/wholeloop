@@ -21,6 +21,8 @@ delivery source --file request.json captures one bounded request into an immutab
 
 ## Implemented commands
 
+Delivery planning adds plan-schema, envelope, plan and inspect-plan. These validate and preserve proposals with explicit ownership, dependency waves, local target SHAs and immutable policy/guidance bindings, without creating items, approvals, grants or workers. Inspecting a historic revision does not require today's target to match its old base. An initial envelope bounds a derived plan structurally; independent semantic acceptance and execution authority remain separate. The [planning tutorial](../tutorials/delivery-plan.md) exercises both proposal types and fresh-process recovery; [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) explains the boundary.
+
 Every command accepts `--json`. Machine-readable output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape). Unknown options fail rather than silently changing behavior.
 
 The normal test suite compares source and compiled-help commands with the general output schema, rejecting missing/duplicate/unversioned branches. It also inventories all source schema locations, including event maps, for unique version-one identities. Gate/suite event-map wrappers retain the prior payload rules and journal format; no event migration follows. Registration does not establish the complete v1 compatibility freeze or native execution. See [ADR-0065](../decisions/0065-public-output-schema-registration.md).
@@ -30,6 +32,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery plan-schema` | `wholeloop/delivery-planning-schema@1` | Show the closed delivery plan and initial request-envelope contracts |
+| `wl delivery plan` | `wholeloop/delivery-plan-prepared@1` | Validate and preserve an exact delivery proposal without granting execution |
+| `wl delivery envelope` | `wholeloop/delivery-envelope-prepared@1` | Pin initial request bounds for later independent planning and authorization |
+| `wl delivery inspect-plan` | `wholeloop/delivery-plan-prepared@1` | Read a stored plan revision, proposed route and dependency waves |
 | `wl delivery source-schema` | `wholeloop/delivery-source-schema@1` | Show the bounded delivery request and imported observation contract |
 | `wl delivery source` | `wholeloop/delivery-source-intake@1` | Capture an immutable external request snapshot without starting work |
 | `wl adapter build-native` | `wholeloop/adapter-build@1` | Render an explicit native-version dialect without changing legacy build output |

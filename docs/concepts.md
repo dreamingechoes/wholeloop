@@ -191,5 +191,11 @@ Always legible, in any profile:
 
 ---
 
+## Delivery plans and initial envelopes
+
+A delivery plan coordinates existing work through explicit criteria, repositories, dependency contracts and milestones. Optional work.subject IDs retain the current item hierarchy; preparing a plan creates no slices, grants or human approvals. The [planning tutorial](./tutorials/delivery-plan.md) shows a small source-defined feature proposing build directly and a fresh process reading the same immutable revision.
+
+An initial request envelope bounds the source, intent, repositories, policy/guidance and finite limits before detailed planning. A derived plan must fit those bounds. Structural fit, semantic acceptance, actual execution capability and operator authorization remain distinct. Endpoint and intervention are independent, and a none proposal retaining human-only acceptance is blocked. Grants and complete unattended execution remain subsequent Phase 6 work.
+
 <!-- docnav -->
 [◀ V1 acceptance](v1-acceptance.md)  ·  [📖 Docs index](README.md)  ·  [The flow ▶](flow/README.md)

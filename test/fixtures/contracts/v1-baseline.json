@@ -219,7 +219,13 @@
     "schema:wholeloop/delivery-source-request@1": "51977f8bc67ca4a7259a091856a06b6b87cb03a090ad0dd62d32aabb946c4d81",
     "schema:wholeloop/delivery-source-snapshot@1": "ddf3a237b596dda60704ff4bd9a7d1b93130d19f9378780ce8c50ec3ed503253",
     "output:wholeloop/delivery-source-schema@1": "6108a79fb9f17c9ec08dffa92ad83793b676b07ea79825bff3805025532faf4a",
-    "output:wholeloop/delivery-source-intake@1": "2d6cacf6307d92bd1ebf2f4c767b1efdec0c50b4b42a4c49a8c8d215ae03f96d"
+    "output:wholeloop/delivery-source-intake@1": "2d6cacf6307d92bd1ebf2f4c767b1efdec0c50b4b42a4c49a8c8d215ae03f96d",
+    "schema:wholeloop/delivery-plan@1": "8548485cf7018438e1b0b4041de175da477216ff272b03afd13e301dbbe2c763",
+    "schema:wholeloop/delivery-planning-record@1": "524e0cb216e79abf4e35bb982bf06b0a76add05debe6c49c724b35445eefdd65",
+    "schema:wholeloop/delivery-envelope@1": "3e2990ccfe59d15ded5283c175393bbea30249b2c1d533c4ea1c5d0e6965f088",
+    "output:wholeloop/delivery-planning-schema@1": "b32b1209068cd385f9fb5cba27463db9889cc5c9d5a7278fc8638f526c6c9ed4",
+    "output:wholeloop/delivery-plan-prepared@1": "bcd3a49c3538e5437345bbda7e821a82bf7c875596287f0f2a7b774d5a823043",
+    "output:wholeloop/delivery-envelope-prepared@1": "df3306106aad7c05d93c2a47a24539bf8e9f23128ff5263d4fc6cb93878290cc"
   },
   "commands": [
     {
@@ -1285,6 +1291,30 @@
       "arguments": "",
       "options": ["--file <request.json>", "--root <directory>", "--store <path>"],
       "schema": "wholeloop/delivery-source-intake@1"
+    },
+    {
+      "path": "delivery plan-schema",
+      "arguments": "",
+      "options": [],
+      "schema": "wholeloop/delivery-planning-schema@1"
+    },
+    {
+      "path": "delivery plan",
+      "arguments": "",
+      "options": ["--file <proposal.json>", "--root <directory>", "--store <path>"],
+      "schema": "wholeloop/delivery-plan-prepared@1"
+    },
+    {
+      "path": "delivery envelope",
+      "arguments": "",
+      "options": ["--file <proposal.json>", "--root <directory>", "--store <path>"],
+      "schema": "wholeloop/delivery-envelope-prepared@1"
+    },
+    {
+      "path": "delivery inspect-plan",
+      "arguments": "",
+      "options": ["--run <delivery-id>", "--revision <number>", "--store <path>"],
+      "schema": "wholeloop/delivery-plan-prepared@1"
     }
   ],
   "exitCodes": {

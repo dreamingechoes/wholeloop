@@ -3,7 +3,7 @@
 > **TL;DR** — Capture a file, inline request, existing item or complete remote observation before planning work. The result is an immutable source ID in an external store. Intake requires no model and starts no worker.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Local and imported source intake, explicit extraction maps and the programmatic existing-provider host path are implemented and fixture-tested. Remote service certification remains experimental. Plans, grants and the unattended runner are subsequent Phase 6 increments.
+> **Status: ✅ implemented.** Local and imported source intake, explicit extraction maps and the programmatic existing-provider host path are implemented and fixture-tested. Remote service certification remains experimental. [Plan preparation](./delivery-plan.md) is available; grants and the unattended runner are subsequent Phase 6 increments.
 
 ## Before you start
 
@@ -83,4 +83,4 @@ Content is limited to 1 MiB of UTF-8 bytes. The request JSON wrapper is limited 
 You have reached the stopping point when the same ID survives another invocation and changed text produces a new ID. Retain the temporary directory if you want to inspect the snapshots. The [expanded roadmap](../../roadmap/phase-6-autonomous-delivery.md) tracks planning, authorization and execution separately; the original [small-change route](./small-change.md) remains available.
 
 <!-- docnav -->
-[◀ Small change](small-change.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Small change](small-change.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery planning ▶](delivery-plan.md)

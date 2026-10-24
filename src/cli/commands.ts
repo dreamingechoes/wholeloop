@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery plan-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-planning-schema@1',
+    summary: 'Show the closed delivery plan and initial request-envelope contracts',
+  },
+  {
+    path: 'delivery plan',
+    arguments: '',
+    options: ['--file <proposal.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/delivery-plan-prepared@1',
+    summary: 'Validate and preserve an exact delivery proposal without granting execution',
+  },
+  {
+    path: 'delivery envelope',
+    arguments: '',
+    options: ['--file <proposal.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/delivery-envelope-prepared@1',
+    summary: 'Pin initial request bounds for later independent planning and authorization',
+  },
+  {
+    path: 'delivery inspect-plan',
+    arguments: '',
+    options: ['--run <delivery-id>', '--revision <number>', '--store <path>'],
+    schema: 'wholeloop/delivery-plan-prepared@1',
+    summary: 'Read a stored plan revision, proposed route and dependency waves',
+  },
+  {
     path: 'delivery source-schema',
     arguments: '',
     options: [],

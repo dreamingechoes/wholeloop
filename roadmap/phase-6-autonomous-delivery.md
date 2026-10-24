@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01 is implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01/P6-02 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 41 complete, fourteen original open tasks and 33 new pending tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 42 complete, fourteen original open tasks and 32 new pending tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -63,7 +63,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-02 · Delivery plans and dependency contracts
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-01, P3-01
+**Status:** ✅ · **Size:** M · **Depends on:** P6-01, P3-01
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -73,13 +73,15 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Acceptance criteria:**
 
-- [ ] Cycles, unknown dependencies, duplicate ownership and uncovered outcomes refuse planning.
-- [ ] Input, criteria, guidance and initial repository bases bind the exact plan revision.
-- [ ] A source-defined small feature enters build without fabricated Define approvals; vague work follows its intervention policy.
+- [x] Cycles, unknown dependencies, duplicate ownership and uncovered outcomes refuse planning.
+- [x] Input, criteria, guidance and initial repository bases bind the exact plan revision.
+- [x] A source-defined small feature enters build without fabricated Define approvals; vague work follows its intervention policy.
 
 **Tests** — AUTH-01–AUTH-04 and INT-02: plan/parser tables, existing hierarchy compatibility and generated DAG cases.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/01-contract-and-authorization.md); concepts, core CLI, state, slicing.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/01-contract-and-authorization.md), [executable planning tutorial](../docs/tutorials/delivery-plan.md), concepts, core CLI and state.
+
+**Evidence** — 42 planning tests, 404 focused source/plan/contract checks and the complete macOS arm64/Node 24.22.0 check (2066 tests in 90 files). The exact tutorial and prepare/inspect replay pass on macOS and isolated Linux arm64/Node 20.0.0/24.22.0. Tests exercise actual disposable repositories, contract-first dense DAGs, concurrent processes, unchanged legacy events, base/remote changes and credential refusal. Build/Define/research are proposed routes; no grant or worker is created. Actual execution-time guidance/capability checks and semantic acceptance remain later increments.
 
 ---
 
