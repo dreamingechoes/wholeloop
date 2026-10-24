@@ -7,6 +7,8 @@ metadata:
 ---
 # Investigate one source
 
+For an explicit wholeloop/delivery-worker-assignment@1 from the controller, read delivery-workers and use its exact response contract; other response formats below describe the standalone flow. Return blocked or owned unknowns to the controller rather than asking the person directly. Do not recover tools, permissions or private context from an earlier conversation.
+
 Read source-evidence and the assigned provider guidance before querying.
 
 Read the research plan and your assigned angle. Query only the provider and operation in that assignment, using tools actually available in the host client. Configuration or PATH detection does not establish authentication.

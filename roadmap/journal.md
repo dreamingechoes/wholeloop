@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-24 · P6-08 complete — role-bound fresh worker contexts
+
+- Bind assignments/results to the exact run, plan, role, attempt and fencing generation. Keep bounded resume evidence and role-scoped tools separate from controller authority and actual host execution metadata.
+- Reject stale/truncated output, forged process or human-testing claims and interactive tools in unattended assignments. Actual native host and filesystem containment remain their dedicated subsequent tasks.
+
+- Add closed assignment/result/execution schemas for seven roles, exact response generation constraints, actual bounded artifact readers and fresh context assembly from immutable source/criteria, pinned guidance/contracts and current queue reservations. Keep builder worktrees distinct from the person's checkout and private acceptance in its own verifier attempt. Add live private-grant and full runtime tuple checks; execution observations retain fixture provenance and explicitly establish no acceptance. Add ADR-0100, the schema-only CLI, reproducible guide, canonical role routing and two named enforcers. Preserve all earlier declarations while appending three schema identities, one output identity and one command.
+- Thirty new worker tests and 321 focused worker/contract checks pass. Correct fixture typing and exercise nested traversal after its earlier schema refusal; require the actual artifact reader rather than weakening the successful-observation guard. Complete checks pass 2324 tests in 102 files on macOS arm64/Node 24.22.0 (273.22 seconds) and isolated Debian Linux arm64/Node 24.22.0 (61.70 seconds), plus lint/types/build/smoke, offline package, 307-file docs, references, 147-file harness, 306-file Markdown and 36 diagrams. Exact combined tutorials pass on macOS Node 24 and Linux Node 20/24; shellcheck passes. Candidate archive 25b76c1c1984341d51c7b73936c55d5653ed9915d8b075b758497507e2c4e0b6 and copied core 64edc5325f13e18cc0548ef5d8fc58e6031a36de63613629f7f1b366b68eae45. Record distinct exact package receipts and static isolated-HOME Codex 0.163.0/Claude 2.1.307 version/help probes without claiming model or role certification. Mark P6-08 complete at its protocol boundary (48/88 complete, 26 new tasks pending), recheck final docs/package and commit, then continue P6-09. Actual native/backend enforcement and independent semantic acceptance remain their own tasks; no worker, publication or merge occurs.
+
 ## 2026-10-24 · P6-07 complete — persistent finite execution budgets
 
 - Pin run/attempt deadlines and cumulative usage/counters across restarts. Reuse journaled claims and effect invocations rather than treating a fresh controller as a new budget.

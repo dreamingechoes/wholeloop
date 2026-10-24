@@ -24,6 +24,20 @@ Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 eac
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Worker protocol platform checks (2026-10-24)
+
+P6-08 adds exact fresh assignments/results, role-scoped tools, private verifier audiences, bounded hash-pinned resume packs and separate controller execution observations. Thirty new tests exercise all seven schema roles, hostile/truncated output, current runtime/fence/private-grant checks, actual disposable worktree snapshots and guidance files, deadline refusal and artifact-byte observation. Actual native permission/filesystem denial and complete unattended delivery remain P6-09/P6-12/P6-27; no actual model or new service capability is certified.
+
+| Environment | Executed result |
+| --- | --- |
+| macOS arm64 / Node 24.22.0 | Complete check: 2324 tests in 102 files (273.22 seconds), lint/types/build/smoke, offline package, 307-file docs/references, 147-file harness, 306-file Markdown and 36 diagrams |
+| Debian Linux arm64 / Node 24.22.0 | Same complete check: 2324 tests in 102 files (61.70 seconds), no skips; isolated non-root container without network/private history/credentials |
+| macOS and Linux arm64 / Node 20.0.0 and 24.22.0 | Exact combined tutorials including worker-schema assertions pass; macOS executes Node 24 and Linux executes both versions; shellcheck passes |
+
+The immutable code candidate archive is 25b76c1c1984341d51c7b73936c55d5653ed9915d8b075b758497507e2c4e0b6, based on 07078e5 plus P6-08 source/tests. The copied macOS core is 64edc5325f13e18cc0548ef5d8fc58e6031a36de63613629f7f1b366b68eae45. Actual pre-evidence-update package receipts are macOS cfdf70af75e779137bdbd8b5b6d18df300128425c4f5af78296ae75607c76fb2 and Linux fee7daf2fea23c7e53a4c559d2c62acfb2bf9314e6ff88b5bb8826165e45f0db. Isolated dependency-cache paths retain their documented build difference; do not exchange exact-byte receipts. Final README/evidence edits receive another package check.
+
+Focused checks initially reject a traversal fixture at the schema layer and a success fixture missing the newly required actual artifact reader. Exercise nested traversal at the semantic boundary and provide the bounded reader; preserve those refusals and all guards. Native version/help-only probes in an isolated empty HOME observe Codex 0.163.0 and Claude 2.1.307 without launching models. These are static observations for subsequent host work, not actual role, authentication or containment certification.
+
 ## Persistent budget platform checks (2026-10-24)
 
 P6-07 adds persistent finite deadlines, reservations, CI/restart/repair counters, usage provenance, no-progress signatures and binary artifact accounting. Twenty-six new budget cases cover fake clocks, derived/revised plans, unknown historical usage, hard-cap refusal, stream deduplication, overrun evidence, actual concurrent processes and SIGKILL before/after artifact replacement. Missing historical usage remains explicitly unmetered and keeps newer totals partial; retroactive hard constraints refuse. Prior gate events and native/service acceptance retain their meanings.

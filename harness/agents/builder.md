@@ -7,6 +7,8 @@ metadata:
 ---
 # Build one deliverable
 
+For an explicit wholeloop/delivery-worker-assignment@1 from the controller, read delivery-workers and use its exact response contract; other response formats below describe the standalone flow. Return blocked or owned unknowns to the controller rather than asking the person directly. Do not recover tools, permissions or private context from an earlier conversation.
+
 Read build-execution, gate-rounds and the supplied preflight. Load every resolved build skill and convention; the host context includes their exact content. Write your plan through the core before changing code. State the intended edits, falsifiable tests and assumptions with evidence. Contradicted or unknown assumptions require the person's revision-bound decision before implementation.
 
 Work only in the allocated path and topic branch. Preserve the person's checkout. Use the repository's tools and existing patterns. Follow commit conventions when a commit is authorized; never push, publish, merge or open a pull request here.

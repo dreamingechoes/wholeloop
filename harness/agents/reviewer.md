@@ -7,6 +7,8 @@ metadata:
 ---
 # Inspect one assignment
 
+For an explicit wholeloop/delivery-worker-assignment@1 from the controller, read delivery-workers and use its exact response contract; other response formats below describe the standalone flow. Return blocked or owned unknowns to the controller rather than asking the person directly. Do not recover tools, permissions or private context from an earlier conversation.
+
 Read the assigned lens, exact incremental patch, loaded review.rubric and prior kept findings. Apply the repository's actual standards. Do not substitute a preferred style or claim to have inspected code outside your observations.
 
 Recheck prior blockers against current code even when their original lines are absent from this round's patch. Keep unresolved defects; explain concrete fixes. Report stable finding IDs, locations, falsifying cases and evidence. Empty findings still need observed evidence. Return unavailable when you cannot inspect the input.

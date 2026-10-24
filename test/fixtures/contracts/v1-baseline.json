@@ -268,7 +268,11 @@
     "output:wholeloop/delivery-artifact-capture@1": "b46d9c858a9e1c57ed1c8a5e4f967544ba5d3eebf84f96c6f427b678b8a6803d",
     "schema:wholeloop/delivery-budget-constraints@1": "c2d19ade7dd5eb0eb6abb638a1901534e71b04155e10123772a29f54a60abc73",
     "schema:wholeloop/delivery-budget-event@1": "4548d325c28630f00154725a211a7ac60401096fe31adf74ec0cf68cc0f18c15",
-    "schema:wholeloop/delivery-budget@1": "31bdf7bb1190def6535015e191ac1b8d8d454cef91302e49d60e685c84f88ee8"
+    "schema:wholeloop/delivery-budget@1": "31bdf7bb1190def6535015e191ac1b8d8d454cef91302e49d60e685c84f88ee8",
+    "output:wholeloop/delivery-worker-schema@1": "c23b4e3dee724a4cad2929cfe9d6ce922a94ab182c79c8ba2972cdcab0c5513a",
+    "schema:wholeloop/delivery-worker-assignment@1": "07fb9dfd0d13135a2564e2585db4e3b8d8c4ac60457a64ce2f8e86e48b45b468",
+    "schema:wholeloop/delivery-worker-execution@1": "eee85be9618c95099b2016deab8eb36d09d498bbd8afe6078e039936eebf15a6",
+    "schema:wholeloop/delivery-worker-result@1": "7f650676bf8fc500427b4deaf3e0b12858347f2aa7d3d64fc83fabec497452b3"
   },
   "commands": [
     {
@@ -1513,6 +1517,12 @@
         "--root <directory>",
         "--store <path>"
       ]
+    },
+    {
+      "path": "delivery worker-schema",
+      "arguments": "",
+      "schema": "wholeloop/delivery-worker-schema@1",
+      "options": []
     }
   ],
   "exitCodes": {

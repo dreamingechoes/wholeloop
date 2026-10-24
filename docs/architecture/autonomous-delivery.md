@@ -3,7 +3,7 @@
 > **TL;DR** — The planned runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery and persistent finite budgets are implemented. Actual native/backend workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
+> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery and persistent finite budgets and role-bound worker/context contracts are implemented. Actual native/backend workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
 
 ## Read the proposal
 
@@ -27,6 +27,8 @@ Use [delivery source](../tutorials/delivery-intake.md) to capture bounded local 
 | Complete no-intervention research/implementation | [Delegated decisions](../../roadmap/specifications/autonomous-delivery/10-unattended-decisions-and-research.md) |
 
 ## Design boundaries
+
+[Delivery workers](../tutorials/delivery-workers.md) bind fresh role tools, context audiences, current queue attempts and private grants. Closed worker output stays a claim; separate controller observations require actual artifact bytes and current runtime ownership and still establish no acceptance. Actual native/backend enforcement remains subsequent work under ADR-0100.
 
 [Delivery budgets](../tutorials/delivery-budgets.md) retain original deadlines, usage provenance, lifetime reservations, CI/repair counters, artifact bytes and no-progress signatures across controllers and plan revisions. Unsupported hard metering refuses; historical unmetered work stays unknown and cannot receive retroactive hard caps. ADR-0099 separates validated progress from heartbeats and preserves old gate budgets.
 

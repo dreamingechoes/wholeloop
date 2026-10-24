@@ -7,6 +7,10 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-worker-protocol
+    enforcers: [src/delivery/worker-protocol.ts#validateWorkerAssignment, src/delivery/worker-protocol.ts#decodeWorkerResult, src/delivery/worker-protocol.ts#stampWorkerExecution, test/unit/delivery/worker-protocol.test.ts]
+  - id: delivery-worker-context
+    enforcers: [src/delivery/worker-protocol.ts#workerTools, src/delivery/worker-protocol.ts#workerResumePack, src/delivery/worker-context.ts#workerContextForClaim, test/unit/delivery/worker-protocol.test.ts]
   - id: delivery-finite-budgets
     enforcers: [src/delivery/budget-events.ts#reduceDeliveryBudget, src/delivery/budget-policy.ts#prepareBudgetAdmission, src/delivery/budgets.ts#DeliveryBudgets, test/unit/delivery/budgets.test.ts, test/unit/delivery/budget-process.test.ts, test/unit/delivery/budget-cli.test.ts]
   - id: delivery-checkpoint-inputs

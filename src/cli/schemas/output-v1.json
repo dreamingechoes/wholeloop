@@ -4147,6 +4147,25 @@
           "const": "not-granted"
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "assignmentSchema", "resultSchema", "executionSchema"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-worker-schema@1"
+        },
+        "assignmentSchema": {
+          "type": "object"
+        },
+        "resultSchema": {
+          "type": "object"
+        },
+        "executionSchema": {
+          "type": "object"
+        }
+      }
     }
   ],
   "$defs": {

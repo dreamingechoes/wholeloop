@@ -7,6 +7,10 @@
 
 ---
 
+## Expanded delivery protocol boundary
+
+[Delivery workers](../tutorials/delivery-workers.md) now have exact fresh assignments, bounded role contexts and separate controller execution observations. This is a tested local protocol boundary, not a new native capability certification. Claude/Codex reference delivery hosts and seven-target capability/denial handling follow in P6-09; filesystem containment remains P6-12/P6-27. Existing native successes, failures and service-unverified integrations below retain their original scope.
+
 ## Tiers
 
 | Tier | CLIs | Why |

@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-07 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-08 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 47 complete, fourteen original open tasks and 27 new pending tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 48 complete, fourteen original open tasks and 26 new pending tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -201,7 +201,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-08 · Role-bound worker protocol
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-02, P6-03
+**Status:** ✅ · **Size:** M · **Depends on:** P6-02, P6-03
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -211,13 +211,15 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Acceptance criteria:**
 
-- [ ] Wrong run/revision/role/fence, truncated output and forged process results refuse.
-- [ ] Reviewer/evaluator sessions cannot modify implementation or hidden acceptance.
-- [ ] Workers cannot invoke ask-user tools in none-policy assignments.
+- [x] Wrong run/revision/role/fence, truncated output and forged process results refuse.
+- [x] Reviewer/evaluator sessions cannot modify implementation or hidden acceptance.
+- [x] Workers cannot invoke ask-user tools in none-policy assignments.
 
 **Tests** — RUN-04, RUN-06–RUN-07 and DEC-05: codec fixtures, hostile broker calls and independent-context checks.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/02-durable-runner.md); agents, adapters, orchestration, enforcement.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/02-durable-runner.md); [worker guide](../docs/tutorials/delivery-workers.md), agents, adapters, orchestration, enforcement and ADR-0100.
+
+**Evidence** — Thirty new worker tests and 321 focused worker/contract checks pass. Complete macOS arm64/Node 24.22.0 and isolated Debian Linux arm64/Node 24.22.0 checks pass 2324 tests in 102 files, plus all other checks. The exact guide passes on macOS and Linux Node 20.0.0/24.22.0 with shellcheck. Exercise actual disposable worktree snapshots and guidance files, current private grants, wrong runtime/fence/role, output/context byte changes, private verifier audiences and forged observations. This completes protocol/context enforcement, not actual native or filesystem certification: those remain P6-09/P6-12/P6-27. No worker starts and no human/semantic acceptance is fabricated.
 
 ---
 

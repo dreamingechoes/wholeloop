@@ -3,7 +3,7 @@
 > **TL;DR** — Persist scheduling decisions, attempt ownership and external-effect intents. Resume through fresh bounded contexts after interruption. A crash, timeout or unknown remote outcome cannot become a successful step or an invisible duplicate attempt.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. P6-05 adds durable queue ordering, canonical repository/global reservations and atomic fenced attempts under explicit host admission. P6-06 adds exact checkpoint manifests, single-invocation effect records, finite read reconciliation, observed worker recovery and explicit stopped-writer lock retention. P6-07 adds persistent finite admission, usage provenance, no-progress detection and artifact accounting. Actual worker orchestration remains P6-08–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
+> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. P6-05 adds durable queue ordering, canonical repository/global reservations and atomic fenced attempts under explicit host admission. P6-06 adds exact checkpoint manifests, single-invocation effect records, finite read reconciliation, observed worker recovery and explicit stopped-writer lock retention. P6-07 adds persistent finite admission, usage provenance, no-progress detection and artifact accounting. P6-08 adds closed role assignments/results, scoped resume contexts and separate host execution observations. Actual native orchestration remains P6-09–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
 
 ## Implemented local state boundary
 
@@ -53,6 +53,8 @@ Each assignment binds plan revision, subject, role, repository snapshot, environ
 Builder output is a plan/patch/result for the allocated workspace. Reviewers and acceptance evaluators have separate sessions and narrower capabilities. The core validates assignment identity, schema, current bytes and actual host execution receipts before recording completion.
 
 Reuse existing native adapters through a dedicated builder-host contract; do not widen read-only gate recipes. Capability negotiation records version, containment, tool control, cancellation and output support for each role. Missing capability stops that role; sequential scheduling cannot substitute for missing containment.
+
+The implemented [worker protocol guide](../../../docs/tutorials/delivery-workers.md) and [ADR-0100](../../../docs/decisions/0100-role-bound-worker-contexts-and-execution-observations.md) separate exact worker claims from controller process observations. Current-lease context assembly pins actual source/criteria, guidance/contracts and workspace bytes; hidden acceptance is confined to its verifier attempt. All worker roles disable interactive questions, leaving permitted human routing to the controller. These local codec/context checks do not certify native tool enforcement, physical containment or semantic acceptance.
 
 ## Checkpoints and effects
 

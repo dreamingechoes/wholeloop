@@ -11,6 +11,10 @@
 
 Expanded delivery uses independent [run budgets](../tutorials/delivery-budgets.md), bound to its immutable plan and private grant. Original deadlines and counters survive recovery and stricter plan revisions; unknown usage remains unknown and unavailable hard metering refuses admission. Interaction profiles cannot expand these allowances or turn fixture evidence into actual execution. Existing gate rounds remain unchanged. The complete native unattended runner is subsequent Phase 6 work.
 
+## Fresh delivery workers
+
+Expanded [worker assignments](../tutorials/delivery-workers.md) pin role tools, exact attempt/fence, bounded resume bytes and private context audiences. The controller assembles current queue contexts from immutable sources/plans and live grants. Worker output remains a claim; separate execution observations require current ownership and actual artifact bytes, and still establish no acceptance. Workers return blocked/unknowns to the controller and never ask directly. Actual native/backend enforcement remains P6-09/P6-12, rather than following from prompt text or these schemas. [ADR-0100](../decisions/0100-role-bound-worker-contexts-and-execution-observations.md) preserves the standalone gate-host boundary.
+
 ## The agents
 
 | Role | Job | Can write code? | Used by |

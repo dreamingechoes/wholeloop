@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import { readSourceFile, SOURCE_REQUEST_SCHEMA, SourceInputError } from '../delivery/input.js'
 import { DeliverySources } from '../delivery/source.js'
+import { WORKER_SCHEMAS } from '../delivery/worker-protocol.js'
 import type { parseArguments } from './arguments.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
 import { deliveryBudgetCommand } from './delivery-budgets.js'
@@ -18,6 +19,21 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (command === 'delivery worker-schema') {
+    io.out(
+      JSON.stringify(
+        {
+          schema: 'wholeloop/delivery-worker-schema@1',
+          assignmentSchema: WORKER_SCHEMAS.assignment,
+          resultSchema: WORKER_SCHEMAS.result,
+          executionSchema: WORKER_SCHEMAS.execution,
+        },
+        null,
+        json ? undefined : 2,
+      ),
+    )
+    return EXIT.ok
+  }
   if (
     [
       'delivery budget-schema',

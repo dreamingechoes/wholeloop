@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery worker-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-worker-schema@1',
+    summary: 'Show role-bound worker assignment, claim and controller execution contracts',
+  },
+  {
     path: 'delivery budget-schema',
     arguments: '',
     options: [],
