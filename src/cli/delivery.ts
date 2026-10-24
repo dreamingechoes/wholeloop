@@ -1,5 +1,8 @@
 import { resolve } from 'node:path'
 import { readSourceFile, SOURCE_REQUEST_SCHEMA, SourceInputError } from '../delivery/input.js'
+import { NATIVE_DELIVERY_TARGETS, REFERENCE_NATIVE_VERSIONS } from '../delivery/native-adapters.js'
+import { NATIVE_OBSERVATION_SCHEMA } from '../delivery/native-capabilities.js'
+import nativeRunSchema from '../delivery/schemas/native-run-v1.json' with { type: 'json' }
 import { DeliverySources } from '../delivery/source.js'
 import { WORKER_SCHEMAS } from '../delivery/worker-protocol.js'
 import type { parseArguments } from './arguments.js'
@@ -19,6 +22,23 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (command === 'delivery native-schema') {
+    io.out(
+      JSON.stringify(
+        {
+          schema: 'wholeloop/delivery-native-schema@1',
+          observationSchema: NATIVE_OBSERVATION_SCHEMA,
+          runSchema: nativeRunSchema,
+          targets: NATIVE_DELIVERY_TARGETS,
+          referenceVersions: REFERENCE_NATIVE_VERSIONS,
+          dispatch: 'not-performed',
+        },
+        null,
+        json ? undefined : 2,
+      ),
+    )
+    return EXIT.ok
+  }
   if (command === 'delivery worker-schema') {
     io.out(
       JSON.stringify(

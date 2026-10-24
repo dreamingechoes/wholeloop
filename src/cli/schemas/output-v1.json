@@ -4166,6 +4166,44 @@
           "type": "object"
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "observationSchema",
+        "runSchema",
+        "targets",
+        "referenceVersions",
+        "dispatch"
+      ],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-native-schema@1"
+        },
+        "observationSchema": {
+          "type": "object"
+        },
+        "runSchema": {
+          "type": "object"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "referenceVersions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "dispatch": {
+          "const": "not-performed"
+        }
+      }
     }
   ],
   "$defs": {

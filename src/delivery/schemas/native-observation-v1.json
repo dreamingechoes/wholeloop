@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-native-observation@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "target",
+    "version",
+    "role",
+    "assignment",
+    "policy",
+    "evidence",
+    "provenance",
+    "model",
+    "authenticated",
+    "boundary",
+    "metering"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-native-observation@1"
+    },
+    "target": {
+      "type": "string",
+      "enum": ["claude", "codex", "opencode", "copilot", "cursor", "gemini", "antigravity"]
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "role": {
+      "type": "string",
+      "enum": ["builder", "verifier", "reviewer", "refuter", "researcher", "planner", "challenger"]
+    },
+    "assignment": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "policy": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "evidence": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["fixture", "host-observed"]
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "authenticated": {
+      "type": "boolean"
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contained",
+        "controllerStoreDenied",
+        "credentialsDenied",
+        "toolsRestricted",
+        "interactiveDisabled",
+        "cancellable",
+        "completeOutput",
+        "ownedOutputReader"
+      ],
+      "properties": {
+        "contained": {
+          "type": "boolean"
+        },
+        "controllerStoreDenied": {
+          "type": "boolean"
+        },
+        "credentialsDenied": {
+          "type": "boolean"
+        },
+        "toolsRestricted": {
+          "type": "boolean"
+        },
+        "interactiveDisabled": {
+          "type": "boolean"
+        },
+        "cancellable": {
+          "type": "boolean"
+        },
+        "completeOutput": {
+          "type": "boolean"
+        },
+        "ownedOutputReader": {
+          "type": "boolean"
+        }
+      }
+    },
+    "metering": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hardTokens", "hardCurrency"],
+      "properties": {
+        "hardTokens": {
+          "type": "boolean",
+          "const": false
+        },
+        "hardCurrency": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}

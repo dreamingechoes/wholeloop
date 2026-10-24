@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery native-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-native-schema@1',
+    summary: 'Show native role capabilities, reference pins and non-accepting execution records',
+  },
+  {
     path: 'delivery worker-schema',
     arguments: '',
     options: [],

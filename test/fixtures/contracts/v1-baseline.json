@@ -272,7 +272,10 @@
     "output:wholeloop/delivery-worker-schema@1": "c23b4e3dee724a4cad2929cfe9d6ce922a94ab182c79c8ba2972cdcab0c5513a",
     "schema:wholeloop/delivery-worker-assignment@1": "07fb9dfd0d13135a2564e2585db4e3b8d8c4ac60457a64ce2f8e86e48b45b468",
     "schema:wholeloop/delivery-worker-execution@1": "eee85be9618c95099b2016deab8eb36d09d498bbd8afe6078e039936eebf15a6",
-    "schema:wholeloop/delivery-worker-result@1": "7f650676bf8fc500427b4deaf3e0b12858347f2aa7d3d64fc83fabec497452b3"
+    "schema:wholeloop/delivery-worker-result@1": "7f650676bf8fc500427b4deaf3e0b12858347f2aa7d3d64fc83fabec497452b3",
+    "output:wholeloop/delivery-native-schema@1": "57244baec61f38be30927a809bd6a03dcf6637163349ea2b7898fa73e7bb75d5",
+    "schema:wholeloop/delivery-native-observation@1": "23279519806f7e4dbadf07ef90f15cda0f3336b199d54f894019bc4cef6b8c9b",
+    "schema:wholeloop/delivery-native-run@1": "6808dd7003eedd34abefb282c21425b3d5e921fdf834decf82a8de80eab7c57a"
   },
   "commands": [
     {
@@ -1522,6 +1525,12 @@
       "path": "delivery worker-schema",
       "arguments": "",
       "schema": "wholeloop/delivery-worker-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery native-schema",
+      "arguments": "",
+      "schema": "wholeloop/delivery-native-schema@1",
       "options": []
     }
   ],

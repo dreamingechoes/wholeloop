@@ -1,0 +1,695 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-native-run@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "run",
+    "attempt",
+    "assignment",
+    "target",
+    "version",
+    "model",
+    "status",
+    "directory",
+    "acceptance",
+    "authority",
+    "publication"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-native-run@1"
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$",
+      "maxLength": 25
+    },
+    "attempt": {
+      "type": "string",
+      "pattern": "^attempt-[a-f0-9]{16}$",
+      "maxLength": 24
+    },
+    "assignment": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "status": {
+      "type": "string",
+      "enum": ["unavailable", "succeeded", "failed", "blocked"]
+    },
+    "directory": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^delivery/native/delivery-[a-f0-9]{16}/attempt-[a-f0-9]{16}/[a-f0-9-]{36}$"
+    },
+    "acceptance": {
+      "type": "string",
+      "const": "not-established"
+    },
+    "authority": {
+      "type": "string",
+      "const": "not-granted"
+    },
+    "publication": {
+      "type": "string",
+      "const": "not-performed"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "runtime-unobserved",
+        "invalid-runtime-observation",
+        "runtime-binding",
+        "authentication-required",
+        "containment-unavailable",
+        "permission-denied",
+        "model-unavailable",
+        "mcp-unavailable",
+        "invalid-output",
+        "launch-failed",
+        "timed-out",
+        "cancelled",
+        "output-limit",
+        "stale",
+        "changed",
+        "unknown-target",
+        "expanded-target-unverified",
+        "native-version-unverified",
+        "missing-workspace",
+        "unexpected-workspace",
+        "unsupported-hard-metering",
+        "input-limit",
+        "artifact-limit"
+      ]
+    },
+    "signal": {
+      "type": "string",
+      "pattern": "^SIG[A-Z0-9]+$",
+      "maxLength": 32
+    },
+    "observation": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "wholeloop/delivery-native-observation@1",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "target",
+        "version",
+        "role",
+        "assignment",
+        "policy",
+        "evidence",
+        "provenance",
+        "model",
+        "authenticated",
+        "boundary",
+        "metering"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-native-observation@1"
+        },
+        "target": {
+          "type": "string",
+          "enum": ["claude", "codex", "opencode", "copilot", "cursor", "gemini", "antigravity"]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "builder",
+            "verifier",
+            "reviewer",
+            "refuter",
+            "researcher",
+            "planner",
+            "challenger"
+          ]
+        },
+        "assignment": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "policy": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "evidence": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "provenance": {
+          "type": "string",
+          "enum": ["fixture", "host-observed"]
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "authenticated": {
+          "type": "boolean"
+        },
+        "boundary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contained",
+            "controllerStoreDenied",
+            "credentialsDenied",
+            "toolsRestricted",
+            "interactiveDisabled",
+            "cancellable",
+            "completeOutput",
+            "ownedOutputReader"
+          ],
+          "properties": {
+            "contained": {
+              "type": "boolean"
+            },
+            "controllerStoreDenied": {
+              "type": "boolean"
+            },
+            "credentialsDenied": {
+              "type": "boolean"
+            },
+            "toolsRestricted": {
+              "type": "boolean"
+            },
+            "interactiveDisabled": {
+              "type": "boolean"
+            },
+            "cancellable": {
+              "type": "boolean"
+            },
+            "completeOutput": {
+              "type": "boolean"
+            },
+            "ownedOutputReader": {
+              "type": "boolean"
+            }
+          }
+        },
+        "metering": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hardTokens", "hardCurrency"],
+          "properties": {
+            "hardTokens": {
+              "type": "boolean",
+              "const": false
+            },
+            "hardCurrency": {
+              "type": "boolean",
+              "const": false
+            }
+          }
+        }
+      }
+    },
+    "execution": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "wholeloop/delivery-worker-execution@1",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "assignment",
+        "identity",
+        "runtime",
+        "status",
+        "stdout",
+        "stderr",
+        "startedAt",
+        "finishedAt",
+        "provenance",
+        "origin",
+        "acceptance"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-worker-execution@1"
+        },
+        "assignment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["run", "plan", "revision", "role", "attempt", "generation"],
+          "properties": {
+            "run": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 25,
+              "pattern": "^delivery-[a-f0-9]{16}$"
+            },
+            "plan": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "builder",
+                "verifier",
+                "reviewer",
+                "refuter",
+                "researcher",
+                "planner",
+                "challenger"
+              ]
+            },
+            "attempt": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 24,
+              "pattern": "^attempt-[a-f0-9]{16}$"
+            },
+            "generation": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+            },
+            "cell": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          }
+        },
+        "runtime": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["backend", "instance", "worker"],
+          "properties": {
+            "backend": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "instance": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "worker": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "succeeded",
+            "failed",
+            "timed-out",
+            "cancelled",
+            "invalid-output",
+            "changed",
+            "stale"
+          ]
+        },
+        "code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "stdout": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "stderr": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "result": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "startedAt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 24
+        },
+        "finishedAt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 24
+        },
+        "provenance": {
+          "type": "string",
+          "enum": ["fixture", "host-observed"]
+        },
+        "origin": {
+          "type": "string",
+          "const": "controller-observation"
+        },
+        "acceptance": {
+          "type": "string",
+          "const": "not-established"
+        }
+      }
+    },
+    "result": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "wholeloop/delivery-worker-result@1",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "assignment",
+        "identity",
+        "status",
+        "origin",
+        "summary",
+        "artifacts",
+        "criteria",
+        "findings",
+        "unknowns"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-worker-result@1"
+        },
+        "assignment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["run", "plan", "revision", "role", "attempt", "generation"],
+          "properties": {
+            "run": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 25,
+              "pattern": "^delivery-[a-f0-9]{16}$"
+            },
+            "plan": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "builder",
+                "verifier",
+                "reviewer",
+                "refuter",
+                "researcher",
+                "planner",
+                "challenger"
+              ]
+            },
+            "attempt": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 24,
+              "pattern": "^attempt-[a-f0-9]{16}$"
+            },
+            "generation": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+            },
+            "cell": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["complete", "blocked", "unavailable", "failed"]
+        },
+        "origin": {
+          "type": "string",
+          "const": "worker-claim"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8192
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref", "sha256", "bytes", "kind"],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096,
+                "pattern": "^artifacts/[a-zA-Z0-9][a-zA-Z0-9._/-]{0,4085}$"
+              },
+              "sha256": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1048576
+              },
+              "kind": {
+                "type": "string",
+                "enum": ["plan", "patch", "report", "evidence"]
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status", "evidence"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["pass", "fail", "unavailable"]
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096,
+                  "pattern": "^artifacts/[a-zA-Z0-9][a-zA-Z0-9._/-]{0,4085}$"
+                },
+                "minItems": 1,
+                "maxItems": 100,
+                "uniqueItems": true
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "text", "evidence"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 8192
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096,
+                  "pattern": "^artifacts/[a-zA-Z0-9][a-zA-Z0-9._/-]{0,4085}$"
+                },
+                "minItems": 1,
+                "maxItems": 100,
+                "uniqueItems": true
+              },
+              "criterion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[a-z][a-z0-9_-]{0,127}$"
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["question", "reason", "owner"],
+            "properties": {
+              "question": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "owner": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["head", "snapshot"],
+      "properties": {
+        "head": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$",
+          "maxLength": 40
+        },
+        "snapshot": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["digest", "bytes", "ref", "worker"],
+        "properties": {
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "ref": {
+            "type": "string",
+            "pattern": "^delivery/artifacts/delivery-[a-f0-9]{16}/[a-f0-9]{64}$"
+          },
+          "worker": {
+            "type": "string",
+            "pattern": "^artifacts/[a-zA-Z0-9][a-zA-Z0-9._/-]{0,4085}$",
+            "maxLength": 4096
+          }
+        }
+      }
+    }
+  }
+}

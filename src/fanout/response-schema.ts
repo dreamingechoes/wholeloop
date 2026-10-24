@@ -2,7 +2,7 @@ import type { Schema } from '../config/schema.js'
 import { GATE_SCHEMAS } from '../gates/contracts.js'
 
 /** Native generation supports a subset; the unchanged core validator still enforces all constraints. */
-function generationSchema(rule: Schema): Schema {
+export function generationSchema(rule: Schema): Schema {
   if (rule.type === 'object') {
     const properties = Object.fromEntries(
       Object.entries(rule.properties ?? {}).map(([key, child]) => [key, generationSchema(child)]),

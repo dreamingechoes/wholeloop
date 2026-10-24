@@ -8,7 +8,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ## Expanded 1.0 acceptance boundary
 
-[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 46 complete and 42 open (28 new implementation tasks plus the fourteen original open tasks).
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 49 complete and 39 open (25 new implementation tasks plus the fourteen original open tasks).
 
 - [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
 - [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
@@ -23,6 +23,24 @@ OpenCode V1/V2 compatibility now has separate deterministic renderers and native
 Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 each fail with five invalid responses and one accepted response; the repository is unchanged. Bounded diagnostics establish missing envelope identities in those five JSON objects. ADR-0091 adds an exact native generation schema, preserving strict host validation. Preserve both failed rounds. The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six workers in actual Codex 0.163.0, with no missing coverage or repository edits. That fulfills P5-03's one-real-run criterion together with stubbed three-engine verdict/quorum parity; earlier failures and wider native checks remain unchanged.
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
+
+## Native delivery host checks (2026-10-25)
+
+P6-09 implements separate pinned Claude/Codex transports with observed capability requirements, fresh bounded inputs, actual runtime registration, current authority checks, owned artifact capture and sanitized receipts. Other expanded targets remain explicitly unverified. Thirty new cases use actual synthetic processes; no actual model/account execution or service certification occurs.
+
+| Environment | Executed result |
+| --- | --- |
+| macOS arm64 / Node 24.22.0 | Complete check: 2359 tests in 103 files (315.22 seconds), lint/types/build/smoke, offline package, 309-file docs/references, 147-file harness, 308-file Markdown and 36 diagrams |
+| Debian Linux arm64 / Node 24.22.0 | Same complete check: 2359 tests in 103 files (67.67 seconds), no skips; isolated non-root container without network/private history/credentials |
+| macOS Node 24 and Linux Node 20.0.0/24.22.0 | Exact combined tutorials including native-schema assertions pass; shellcheck passes |
+
+Final code candidate archive 2a320d129c57a779776c4831dc8badf6fda23a580f2d7da346498a79e14c7c7e is based on 627a732 plus P6-09 source/tests. Copied core: 69c290621b73a935437f2b4061360a7ff3374d5e3766fdf948174da342352c34. Pre-evidence package receipts: macOS 60e95754d2daf7d08e9453e075e80bac90be1287d5e221c857224640b8846a72 and Linux 5698e86d9021221767c0c22c9a0b46676b85dcf9e33689470d9240db5fdf61b2. Preserve the documented dependency-path build difference. Final evidence-only docs receive another local package/docs check.
+
+Initial full checks pass 2356 tests on both hosts. Final review identifies a needless application-workspace requirement for source-only research. Add two actual synthetic reference-client runs and a read-only mutation regression; the first research fixture correctly fails empty-work validation, then is corrected to own its actual source criterion. All thirty native cases and final full checks pass. Preserve those failures rather than weakening validation.
+
+Actual isolated-HOME version/help probes observe Codex 0.163.0, Claude 2.1.307, OpenCode 2.1.1, Copilot 1.0.83, Cursor 2026.07.16-899851b, Gemini 0.27.0 and Antigravity 1.4.7. Antigravity help returns empty stdout, so it establishes no help flags. These probes launch no model and change no historical native certification.
+
+A separate actual macOS Codex permission-profile-only command reports allowed owned output plus denied forbidden-sibling read and write. The first nested sandbox probe fails with OS sandbox_apply denial; a later profile probe denies Node's default OpenSSL configuration. Selecting an empty probe-owned OpenSSL configuration permits the unchanged narrow profile test. This verifies that one command filesystem profile on macOS, not native model/tools/accounts, Linux containment or the complete backend. P6-12/P6-27 retain those actual acceptance obligations.
 
 ## Worker protocol platform checks (2026-10-24)
 

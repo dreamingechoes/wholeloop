@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-25 · P6-09 complete — dedicated native delivery hosts
+
+- Negotiate exact native role/tool/output/cancellation capabilities without widening existing read-only gate launchers. Keep actual backend boundary observations separate from version/help and synthetic-client fixtures.
+- Use Claude/Codex as initial reference transports and preserve explicit unsupported/permission/model/MCP outcomes for all seven targets. Missing containment or native controls must refuse rather than substitute a broader mode or model.
+- Add exact reference recipes, separately bound runtime observations, fresh private input staging, synchronous actual process registration, live grant/fence cancellation, Git-control seals and byte-observed budgeted artifacts. Retain closed native receipts without promoting worker claims to QA or publication. Add ADR-0101, schema inspection, guide and named enforcer; append public identities without changing prior declarations.
+- Thirty new native-host cases and complete checks pass 2359 tests in 103 files on macOS arm64/Node 24.22.0 (315.22 seconds) and isolated Debian Linux arm64/Node 24.22.0 (67.67 seconds), with all other checks green. Initial 2356-test passes precede a source-only research correction and three final regressions; preserve the first empty-work fixture refusal. Exact tutorials pass on macOS Node 24 and Linux Node 20/24 with shellcheck. Record exact candidate/core/package hashes and seven version/help-only probes in platform evidence. An actual macOS Codex command-profile probe denies owned forbidden reads/writes after retaining earlier sandbox/OpenSSL denials; it does not certify model/account/tool-registry or full backend behavior. Mark P6-09 complete at its local host boundary (49/88 complete, 25 new tasks pending), recheck final docs/package and commit. Continue P6-11 while P6-10 waits for its decision-policy dependency. No model, service mutation, publication or merge occurs.
+
 ## 2026-10-24 · P6-08 complete — role-bound fresh worker contexts
 
 - Bind assignments/results to the exact run, plan, role, attempt and fencing generation. Keep bounded resume evidence and role-scoped tools separate from controller authority and actual host execution metadata.

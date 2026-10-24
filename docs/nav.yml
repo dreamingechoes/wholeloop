@@ -17,6 +17,7 @@ pages:
   - { path: tutorials/delivery-checkpoints.md, title: Delivery checkpoints }
   - { path: tutorials/delivery-budgets.md, title: Delivery budgets }
   - { path: tutorials/delivery-workers.md, title: Delivery workers }
+  - { path: tutorials/delivery-native.md, title: Native delivery hosts }
   - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }

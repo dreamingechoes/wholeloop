@@ -40,6 +40,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery native-schema` | `wholeloop/delivery-native-schema@1` | Show native role capabilities, reference pins and non-accepting execution records |
 | `wl delivery worker-schema` | `wholeloop/delivery-worker-schema@1` | Show role-bound worker assignment, claim and controller execution contracts |
 | `wl delivery budget-schema` | `wholeloop/delivery-budget-schema@1` | Show finite usage constraint contracts without granting authority |
 | `wl delivery budget-configure` | `wholeloop/delivery-budget-status@1` | Bind optional immutable usage constraints before execution starts |

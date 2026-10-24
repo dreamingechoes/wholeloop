@@ -111,6 +111,7 @@
 | [0098](./0098-checkpoint-recovery-and-observed-effect-reconciliation.md) | Checkpoint recovery and observed effect reconciliation | Accepted | 2026-10-24 |
 | [0099](./0099-persistent-finite-delivery-budgets.md) | Persistent finite delivery budgets | Accepted | 2026-10-24 |
 | [0100](./0100-role-bound-worker-contexts-and-execution-observations.md) | Role-bound worker contexts and execution observations | Accepted | 2026-10-24 |
+| [0101](./0101-dedicated-native-delivery-hosts-and-runtime-proof.md) | Dedicated native delivery hosts and runtime proof | Accepted | 2026-10-25 |
 
 ## Lifecycle
 

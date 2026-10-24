@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-08 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 48 complete, fourteen original open tasks and 26 new pending tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 49 complete, fourteen original open tasks and 25 new pending tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -195,7 +195,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/07-controls-and-observability.md); [budget tutorial](../docs/tutorials/delivery-budgets.md), configuration, profiles, orchestration and ADR-0099.
 
-**Evidence** — 26 new budget tests plus the complete macOS arm64/Node 24.22.0 and isolated Debian Linux arm64/Node 24.22.0 checks pass: 2287 tests in 101 files, with all remaining checks green. Exact combined tutorials pass on macOS and Linux Node 20.0.0/24.22.0; shellcheck passes. Exercise actual concurrent reservations, artifact-quota races and killed blob writers, stricter derived/revised plans, usage overrun, historical unmetered work and no-progress exhaustion. Native model metering, semantic progress validation and complete runner/host acceptance remain their later tasks; old gate/acceptance evidence is unchanged.
+**Evidence** — 25 new budget tests plus the complete macOS arm64/Node 24.22.0 and isolated Debian Linux arm64/Node 24.22.0 checks pass: 2287 tests in 101 files, with all remaining checks green. Exact combined tutorials pass on macOS and Linux Node 20.0.0/24.22.0; shellcheck passes. Exercise actual concurrent reservations, artifact-quota races and killed blob writers, stricter derived/revised plans, usage overrun, historical unmetered work and no-progress exhaustion. Native model metering, semantic progress validation and complete runner/host acceptance remain their later tasks; old gate/acceptance evidence is unchanged.
 
 ---
 
@@ -225,7 +225,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-09 · Native builder and evaluator hosts
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-08, P5-03
+**Status:** ✅ · **Size:** L · **Depends on:** P6-08, P5-03
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -235,13 +235,15 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Acceptance criteria:**
 
-- [ ] All seven targets have deterministic protocol/capability/denial tests.
-- [ ] Claude/Codex are the initial native reference clients; other expanded capabilities stay unverified until observed.
-- [ ] Native permission/model/MCP failures preserve policy and produce typed outcomes, never a bypass or model substitution.
+- [x] All seven targets have deterministic protocol/capability/denial tests.
+- [x] Claude/Codex are the initial native reference clients; other expanded capabilities stay unverified until observed.
+- [x] Native permission/model/MCP failures preserve policy and produce typed outcomes, never a bypass or model substitution.
 
 **Tests** — RUN-06–RUN-08: synthetic PATH clients, actual help/version probes and separately scoped real role trials.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/02-durable-runner.md); platforms, conformance, headless transports.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/02-durable-runner.md); [native host guide](../docs/tutorials/delivery-native.md), platforms, conformance, headless transports and ADR-0101.
+
+**Evidence** — Thirty new native-host cases exercise seven-target role/denial tables, actual synthetic Claude/Codex processes, artifact bytes, timeout/cancellation/revocation, source-only research and read-only mutation refusal. Complete checks pass 2359 tests in 103 files on macOS arm64/Node 24.22.0 and isolated Debian Linux arm64/Node 24.22.0, plus all remaining checks. Exact tutorials pass on macOS Node 24 and Linux Node 20/24. Seven actual version/help probes remain metadata only. A separate actual macOS Codex permission-profile command denies owned forbidden read/write fixtures; it establishes no model/account/tool-registry, Linux or backend certification. Actual native/backend acceptance remains P6-12/P6-27; no model, publication or merge occurs.
 
 ---
 
