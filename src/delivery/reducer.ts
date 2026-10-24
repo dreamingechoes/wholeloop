@@ -1,4 +1,5 @@
 import { contractDigest } from '../contracts/compatibility.js'
+import { findBudget, reduceDeliveryBudget } from './budget-events.js'
 import { reduceDeliveryCheckpoint } from './checkpoint-events.js'
 import { reduceDeliveryEffect } from './effect-events.js'
 import {
@@ -16,7 +17,7 @@ import { reduceDeliveryQueue } from './queue-events.js'
 import { reduceDeliveryRecovery } from './recovery-events.js'
 
 const EDGES: Record<DeliveryState, readonly DeliveryState[]> = {
-  planned: ['queued', 'waiting-input', 'paused', 'stopping', 'blocked', 'failed'],
+  planned: ['queued', 'waiting-input', 'paused', 'stopping', 'blocked', 'failed', 'exhausted'],
   queued: [
     'running',
     'waiting-input',
@@ -253,6 +254,20 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
             })
           const record = facet.records.find((entry) => entry.id === payload.id)
           if (payload.action === 'claimed') {
+            const budget = findBudget(state)
+            if (
+              budget?.startedAt &&
+              !budget.reservations.some(
+                (reservation) =>
+                  reservation.kind === 'attempt' &&
+                  reservation.id === payload.id &&
+                  reservation.unit === payload.unit &&
+                  reservation.role === payload.role &&
+                  reservation.cell === payload.cell &&
+                  reservation.generation === payload.generation,
+              )
+            )
+              throw new DeliveryJournalError('missing-attempt-budget')
             if (
               attempts.has(payload.id) ||
               !['queued', 'running'].includes(state.state) ||
@@ -339,6 +354,9 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
           break
         case 'wholeloop/delivery-recovery-event@1':
           reduceDeliveryRecovery(state, event, payload)
+          break
+        case 'wholeloop/delivery-budget-event@1':
+          reduceDeliveryBudget(state, event, payload)
           break
         default:
           throw new DeliveryJournalError('unsupported-payload-reducer')

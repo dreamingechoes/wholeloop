@@ -97,6 +97,11 @@ export function safeSourceText(text: string, limit = SOURCE_LIMIT): void {
   if (Buffer.byteLength(text) > limit) throw new SourceInputError('oversized')
   if (Buffer.from(text).toString('utf8') !== text || text.includes('\0'))
     throw new SourceInputError('invalid-input')
+  rejectSourceCredentials(text)
+}
+
+/** Binary artifact capture reuses recognizable-text credential refusal without requiring UTF-8 data. */
+export function rejectSourceCredentials(text: string): void {
   if (
     /-----BEGIN (?:[A-Z ]+ )?PRIVATE KEY-----|\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|sk-[A-Za-z0-9_-]{40,}|AKIA[A-Z0-9]{16})\b|\b[a-z][a-z0-9+.-]*:\/\/[^\s/]+:[^\s/]+@/i.test(
       text,

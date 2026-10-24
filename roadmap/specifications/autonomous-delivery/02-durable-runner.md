@@ -3,7 +3,7 @@
 > **TL;DR** — Persist scheduling decisions, attempt ownership and external-effect intents. Resume through fresh bounded contexts after interruption. A crash, timeout or unknown remote outcome cannot become a successful step or an invisible duplicate attempt.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. P6-05 adds durable queue ordering, canonical repository/global reservations and atomic fenced attempts under explicit host admission. P6-06 adds exact checkpoint manifests, single-invocation effect records, finite read reconciliation, observed worker recovery and explicit stopped-writer lock retention. Persisted aggregate budgets and actual worker orchestration remain P6-07–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
+> **Status: 🚧 partial.** P6-04 implements versioned delivery state/event families, exact reducers, immutable atomic journal segments and disposable cache recovery, preserving legacy human/PR history. P6-05 adds durable queue ordering, canonical repository/global reservations and atomic fenced attempts under explicit host admission. P6-06 adds exact checkpoint manifests, single-invocation effect records, finite read reconciliation, observed worker recovery and explicit stopped-writer lock retention. P6-07 adds persistent finite admission, usage provenance, no-progress detection and artifact accounting. Actual worker orchestration remains P6-08–P6-10 work. The existing headless gate host is a foundation, not a persistent builder service.
 
 ## Implemented local state boundary
 

@@ -109,6 +109,7 @@
 | [0096](./0096-replayable-delivery-journal-without-authority-recovery.md) | Replayable delivery journal without authority recovery | Accepted | 2026-10-24 |
 | [0097](./0097-durable-queue-reservations-and-current-attempt-fences.md) | Durable queue reservations and current attempt fences | Accepted | 2026-10-24 |
 | [0098](./0098-checkpoint-recovery-and-observed-effect-reconciliation.md) | Checkpoint recovery and observed effect reconciliation | Accepted | 2026-10-24 |
+| [0099](./0099-persistent-finite-delivery-budgets.md) | Persistent finite delivery budgets | Accepted | 2026-10-24 |
 
 ## Lifecycle
 

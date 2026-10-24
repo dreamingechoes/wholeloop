@@ -1,6 +1,12 @@
 import { randomBytes } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryGrant } from './authority.js'
+import type { BudgetClock, BudgetMetering } from './budget-events.js'
+import {
+  currentBudgetReservation,
+  deliveryBudgetClock,
+  prepareBudgetAdmission,
+} from './budget-policy.js'
 import {
   deliveryEffects,
   type EffectIntent,
@@ -25,6 +31,7 @@ export interface EffectHost {
     allowed: boolean
     provenance: 'fixture' | 'host-observed'
     evidence: string
+    metering?: BudgetMetering
   }
   invoke(intent: Readonly<EffectIntent>, invocation: string, signal: AbortSignal): Promise<void>
   observe(
@@ -45,8 +52,10 @@ export interface EffectRequest {
 const ACTOR = { kind: 'controller', name: 'wholeloop' } as const
 export class DeliveryEffects {
   readonly lifecycle: DeliveryLifecycle
-  constructor(store?: string, now?: () => string) {
+  readonly budgetClock: () => BudgetClock
+  constructor(store?: string, now?: () => string, clock?: () => BudgetClock) {
     this.lifecycle = new DeliveryLifecycle(store, now)
+    this.budgetClock = clock ?? (() => deliveryBudgetClock(this.lifecycle.journal.now))
   }
 
   prepare(run: string, request: EffectRequest): EffectRecord {
@@ -112,10 +121,25 @@ export class DeliveryEffects {
       if (
         !eligible.allowed ||
         !/^[a-f0-9]{64}$/.test(eligible.evidence) ||
-        !['fixture', 'host-observed'].includes(eligible.provenance)
+        !['fixture', 'host-observed'].includes(eligible.provenance) ||
+        (eligible.metering && eligible.metering.provenance !== eligible.provenance)
       )
         throw new DeliveryJournalError('effect-host-unavailable')
       invocation = `invocation-${randomBytes(8).toString('hex')}`
+      const budget = prepareBudgetAdmission(
+        state,
+        grant,
+        this.budgetClock(),
+        {
+          id: invocation,
+          kind: 'effect',
+          operation: record.intent.operation,
+          ...(eligible.metering ? { metering: eligible.metering } : {}),
+        },
+        prepared.plan.budgets,
+      )
+      if (budget.problem) throw new DeliveryJournalError(budget.problem)
+      for (const payload of budget.payloads) append(run, payload)
       append(run, {
         schema: 'wholeloop/delivery-effect-event@1',
         action: 'issued',
@@ -124,12 +148,7 @@ export class DeliveryEffects {
         digest: record.digest,
         invocation,
         admission: { evidence: eligible.evidence, provenance: eligible.provenance },
-        deadline: new Date(
-          Math.min(
-            Date.parse(grant.expiresAt),
-            Date.parse(this.lifecycle.journal.now()) + grant.budgets.attemptMs,
-          ),
-        ).toISOString(),
+        deadline: budget.reservation.deadline,
       })
       append(run, {
         schema: 'wholeloop/delivery-control-event@1',
@@ -147,6 +166,8 @@ export class DeliveryEffects {
     try {
       const state = this.lifecycle.journal.get(run)
       this.scope(state, intent, this.grant(state))
+      if (!currentBudgetReservation(state, invocation, this.budgetClock()))
+        throw new DeliveryJournalError('expired-effect-budget')
     } catch {
       this.observe(run, id, {
         binding: current.digest,

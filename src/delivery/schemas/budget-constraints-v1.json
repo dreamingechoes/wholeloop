@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-budget-constraints@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "operator", "run", "basis", "grantDigest", "requirements"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-budget-constraints@1"
+    },
+    "operator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$"
+    },
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "grantDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "tokens": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["limit", "mode"],
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "mode": {
+              "type": "string",
+              "enum": ["hard", "advisory"]
+            }
+          }
+        },
+        "currency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["currency", "micros", "mode"],
+          "properties": {
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "micros": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "mode": {
+              "type": "string",
+              "enum": ["hard", "advisory"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

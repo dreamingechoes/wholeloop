@@ -5,4 +5,6 @@
 - ⛔ `delivery-recovery-ownership` — recover or cancel only exact observed assignment/backend/instance/worker identity. A stop return or reused PID cannot prove termination. Retain reservations and previous gates/budgets; unknown ownership pauses or ends none as blocked without asking a human or starting a replacement.
 - ⛔ `delivery-stopped-writer-repair` — ordinary commands never steal locks. Explicit digest-bound repair requires observed absence for the unchanged writer record, serializes repairers and retains the original ownership directory/receipt. Signal no PID, delete no evidence and reconstruct no authority; unknown/live/reused ownership refuses.
 
+- ⛔ `delivery-finite-budgets` — preserve original run/attempt deadlines, finite CI/restart/repair counters, unique artifact reservations and repeated-failure limits across recovery and revisions. Unsupported hard usage caps refuse; missing spend stays unknown and fixture observations stay fixtures. Only a new validated typed result resets no-progress; heartbeats and narration cannot. Never refund or extend a hard allowance implicitly.
+
 The CLI supplies no actual native/backend host automatically. Inspect checkpoints, effects and writer ownership separately; local fixtures do not certify containment, actual QA or operation-specific publication/merge eligibility.

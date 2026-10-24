@@ -303,7 +303,11 @@ describe('effect intent and exact read reconciliation', () => {
       queue.lifecycle.authority.authorize(authorization(plan, prepared.digest))
       queue.lifecycle.track({ run: plan.run, revision: 1, grant: 'authorization-0123456789abcdef' })
       queue.enqueue(plan.run, { unit: 'contract' })
-      const effects = new DeliveryEffects(planning.sources.files.root, () => at)
+      const effects = new DeliveryEffects(
+        planning.sources.files.root,
+        () => at,
+        () => ({ wall: at, monotonicMs: 0, epoch: 'fixture-admission-clock' }),
+      )
       const effect = effects.prepare(plan.run, {
         key: 'report',
         operation: 'report.write',

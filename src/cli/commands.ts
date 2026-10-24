@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery budget-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-budget-schema@1',
+    summary: 'Show finite usage constraint contracts without granting authority',
+  },
+  {
+    path: 'delivery budget-configure',
+    arguments: '',
+    options: ['--file <constraints.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/delivery-budget-status@1',
+    summary: 'Bind optional immutable usage constraints before execution starts',
+  },
+  {
+    path: 'delivery budget',
+    arguments: '',
+    options: ['--run <delivery-id>', '--store <path>'],
+    schema: 'wholeloop/delivery-budget-status@1',
+    summary: 'Inspect retained deadlines, unknown usage and no-progress findings',
+  },
+  {
+    path: 'delivery artifact',
+    arguments: '',
+    options: ['--run <delivery-id>', '--file <artifact>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/delivery-artifact-capture@1',
+    summary: 'Reserve unique artifact bytes before copying bounded local evidence',
+  },
+  {
     path: 'delivery recovery-schema',
     arguments: '',
     options: [],

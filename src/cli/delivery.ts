@@ -3,6 +3,7 @@ import { readSourceFile, SOURCE_REQUEST_SCHEMA, SourceInputError } from '../deli
 import { DeliverySources } from '../delivery/source.js'
 import type { parseArguments } from './arguments.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
+import { deliveryBudgetCommand } from './delivery-budgets.js'
 import { deliveryJournalCommand } from './delivery-journal.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
 import { deliveryQueueCommand } from './delivery-queue.js'
@@ -17,6 +18,15 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (
+    [
+      'delivery budget-schema',
+      'delivery budget-configure',
+      'delivery budget',
+      'delivery artifact',
+    ].includes(command)
+  )
+    return deliveryBudgetCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery recover')
     throw new CliError(
       'Use the asynchronous CLI entrypoint for delivery recovery',

@@ -40,6 +40,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery budget-schema` | `wholeloop/delivery-budget-schema@1` | Show finite usage constraint contracts without granting authority |
+| `wl delivery budget-configure` | `wholeloop/delivery-budget-status@1` | Bind optional immutable usage constraints before execution starts |
+| `wl delivery budget` | `wholeloop/delivery-budget-status@1` | Inspect retained deadlines, unknown usage and no-progress findings |
+| `wl delivery artifact` | `wholeloop/delivery-artifact-capture@1` | Reserve unique artifact bytes before copying bounded local evidence |
 | `wl delivery recovery-schema` | `wholeloop/delivery-recovery-schema@1` | Show checkpoint request, input manifest and effect intent contracts |
 | `wl delivery checkpoint` | `wholeloop/delivery-checkpoints-status@1` | Retain an exact checkpoint input manifest without granting acceptance |
 | `wl delivery checkpoints` | `wholeloop/delivery-checkpoints-status@1` | Inspect current and stale checkpoint inputs without rewriting history |

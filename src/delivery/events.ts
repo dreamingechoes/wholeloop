@@ -2,6 +2,12 @@ import { randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import {
+  type BudgetFacet,
+  type BudgetPayload,
+  budgetEventSchema,
+  budgetFacetSchema,
+} from './budget-events.js'
+import {
   type CheckpointPayload,
   type CheckpointsFacet,
   checkpointEventSchema,
@@ -47,6 +53,7 @@ export const DELIVERY_PAYLOAD_SCHEMAS = [
   checkpointEventSchema,
   effectEventSchema,
   recoveryEventSchema,
+  budgetEventSchema,
 ]
 export const DELIVERY_FACET_SCHEMAS = [
   attemptsSchema,
@@ -54,6 +61,7 @@ export const DELIVERY_FACET_SCHEMAS = [
   checkpointFacetSchema,
   effectFacetSchema,
   recoveryFacetSchema,
+  budgetFacetSchema,
 ]
 export const DELIVERY_STATES = [
   'planned',
@@ -151,6 +159,7 @@ export type DeliveryPayload =
   | CheckpointPayload
   | EffectPayload
   | RecoveryPayload
+  | BudgetPayload
 export interface DeliveryEvent {
   schema: 'wholeloop/delivery-event@1'
   id: string
@@ -189,7 +198,14 @@ export interface DeliveryProjection {
   grant?: GrantPayload
   reason?: string
   outcome?: DeliveryOutcome
-  facets: (AttemptsFacet | QueueFacet | CheckpointsFacet | EffectsFacet | RecoveryFacet)[]
+  facets: (
+    | AttemptsFacet
+    | QueueFacet
+    | CheckpointsFacet
+    | EffectsFacet
+    | RecoveryFacet
+    | BudgetFacet
+  )[]
 }
 export { DeliveryJournalError }
 export function deliveryTimestamp(value: string): void {

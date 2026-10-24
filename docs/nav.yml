@@ -15,6 +15,7 @@ pages:
   - { path: tutorials/delivery-recovery.md, title: Delivery recovery }
   - { path: tutorials/delivery-queue.md, title: Delivery queue }
   - { path: tutorials/delivery-checkpoints.md, title: Delivery checkpoints }
+  - { path: tutorials/delivery-budgets.md, title: Delivery budgets }
   - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }

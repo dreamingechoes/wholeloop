@@ -24,6 +24,20 @@ Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 eac
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Persistent budget platform checks (2026-10-24)
+
+P6-07 adds persistent finite deadlines, reservations, CI/restart/repair counters, usage provenance, no-progress signatures and binary artifact accounting. Twenty-six new budget cases cover fake clocks, derived/revised plans, unknown historical usage, hard-cap refusal, stream deduplication, overrun evidence, actual concurrent processes and SIGKILL before/after artifact replacement. Missing historical usage remains explicitly unmetered and keeps newer totals partial; retroactive hard constraints refuse. Prior gate events and native/service acceptance retain their meanings.
+
+| Environment | Executed result |
+| --- | --- |
+| macOS arm64 / Node 24.22.0 | Complete check: 2287 tests in 101 files (269.63 seconds), lint/types/build/smoke, offline package, 304-file docs/references, 146-file harness, 303-file Markdown and 36 diagrams |
+| Debian Linux arm64 / Node 24.22.0 | Same complete check: 2287 tests in 101 files (68.86 seconds), no skips; isolated non-root container, no network/private history/credentials |
+| macOS and Linux arm64 / Node 20.0.0 and 24.22.0 | Exact combined planning, authorization, replay, queue, checkpoint and budget tutorials pass; macOS executes Node 24 and Linux executes both versions |
+
+The final code candidate archive is 3be6fdf392fb4e3f39903932d90d52161b637a5648e36f3c44f7c9d7637b27ac, based on 5f8d81f plus P6-07 source/tests; the copied macOS core is 85c9bc61c73c25caa6926e8038440140c3a80988ceeb329cae36db33ca89f30b. Actual pre-evidence-update package receipts are macOS 1a2ce5655b5d77cc01ba29f6c0432c00c59a51a30cd2031f5877954f40c826f6 and Linux 2025034c41984a216a3d6081aeb400b77ed4325caa0bd5cd8fda12d685b28f01. The Linux build uses the isolated dependency-cache path described below; these archives are not claimed identical. Final README/evidence edits receive another local package check.
+
+Preserve initial checks: both hosts pass 2286 tests before final review identifies unmetered legacy accounting. Add that regression, correct its missing queued-state setup and two expected report fields after the first targeted failure, then pass the final 2287-test checks. The first CLI probe also incorrectly supplies --store to the schema-only command; correct the probe, retaining option validation. Earlier process-timeout fixtures use an injected admission clock so the 1 ms test still reaches the actual bounded host call. No assertion is weakened and no fixture becomes native model, hard-metering, service or semantic QA certification.
+
 ## Expanded delivery platform checks (2026-10-24)
 
 P6-01–P6-06 local contracts are implemented: immutable intake/planning, operator/broker separation, replayable state, queue/fencing, exact checkpoints and conservative worker/effect/lock recovery. This does not certify actual native/backend containment, behavioral QA or hosted publication/merge. Those remain on the expanded acceptance plan.

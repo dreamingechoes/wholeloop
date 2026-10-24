@@ -3,6 +3,13 @@ import { contractDigest } from '../contracts/compatibility.js'
 import { repository } from '../worktrees/git.js'
 import type { DeliveryGrant } from './authority.js'
 import type { BrokerScope } from './broker.js'
+import type { BudgetClock, BudgetMetering, BudgetPayload } from './budget-events.js'
+import {
+  currentBudgetReservation,
+  deliveryBudgetClock,
+  effectiveBudget,
+  prepareBudgetAdmission,
+} from './budget-policy.js'
 import { type AttemptPayload, DeliveryJournalError, type DeliveryProjection } from './events.js'
 import { DeliveryLifecycle } from './lifecycle.js'
 import { type DeliveryPlan, deliveryPlanRoute, observePlanBases } from './plan.js'
@@ -17,7 +24,7 @@ import { deliveryAttempts } from './reducer.js'
 
 export type { QueueAssignment } from './queue-events.js'
 export type QueueReadiness =
-  | ({ ready: true } & QueueAdmission)
+  | ({ ready: true; metering?: BudgetMetering } & QueueAdmission)
   | {
       ready: false
       reason:
@@ -49,8 +56,15 @@ const slot = (value: { unit?: string; role: string; cell?: string }) =>
 export class DeliveryQueue {
   readonly lifecycle: DeliveryLifecycle
   readonly capacity: typeof DEFAULT_QUEUE_CAPACITY
-  constructor(store?: string, now?: () => string, capacity = DEFAULT_QUEUE_CAPACITY) {
+  readonly budgetClock: () => BudgetClock
+  constructor(
+    store?: string,
+    now?: () => string,
+    capacity = DEFAULT_QUEUE_CAPACITY,
+    clock?: () => BudgetClock,
+  ) {
     this.lifecycle = new DeliveryLifecycle(store, now)
+    this.budgetClock = clock ?? (() => deliveryBudgetClock(this.lifecycle.journal.now))
     this.capacity = Object.freeze({ ...capacity })
     if (
       Object.keys(this.capacity).sort().join(',') !== 'builders,buildersPerRepository,evaluators' ||
@@ -157,6 +171,7 @@ export class DeliveryQueue {
         const entry = candidate.entry
         let reason = ''
         let admission: QueueAdmission | undefined
+        let reserved: { attempt: string; generation: number; payloads: BudgetPayload[] } | undefined
         try {
           if (!['queued', 'running'].includes(state.state)) reason = `run-${state.state}`
           else if (this.lifecycle.journal.now() < state.maxObservedAt) reason = 'clock-regression'
@@ -202,7 +217,35 @@ export class DeliveryQueue {
               if (!reason) {
                 const ready = admit(structuredClone({ run: state.run, entry, plan, grant }))
                 if (!ready.ready) reason = ready.reason
-                else admission = { provenance: ready.provenance, evidence: ready.evidence }
+                else if (ready.metering && ready.metering.provenance !== ready.provenance)
+                  reason = 'metering-provenance-mismatch'
+                else {
+                  const siblings = deliveryAttempts(state).records.filter(
+                    (record) => slot(record) === slot(entry),
+                  )
+                  const generation = Math.max(0, ...siblings.map((record) => record.generation)) + 1
+                  const attempt = `attempt-${randomBytes(8).toString('hex')}`
+                  const budget = prepareBudgetAdmission(
+                    state,
+                    grant,
+                    this.budgetClock(),
+                    {
+                      id: attempt,
+                      kind: 'attempt',
+                      unit: entry.unit,
+                      role: entry.role,
+                      generation,
+                      ...(entry.cell !== undefined ? { cell: entry.cell } : {}),
+                      ...(ready.metering ? { metering: ready.metering } : {}),
+                    },
+                    plan.budgets,
+                  )
+                  if (budget.problem) reason = budget.problem
+                  else {
+                    reserved = { attempt, generation, payloads: budget.payloads }
+                    admission = { provenance: ready.provenance, evidence: ready.evidence }
+                  }
+                }
               }
             }
           }
@@ -213,8 +256,8 @@ export class DeliveryQueue {
         if (reason || !admission) {
           reason ||= 'capability-unavailable'
           if (deferred.length < 1000) deferred.push({ run: state.run, queue: entry.id, reason })
-          // Reserve two events for a winning attempt/claim within the transaction limit.
-          if (entry.reason !== reason && recordedDeferrals < 998) {
+          // Clock/reservation and attempt/claim commit together within the segment's event limit.
+          if (entry.reason !== reason && recordedDeferrals < 996) {
             append(state.run, {
               schema: 'wholeloop/delivery-queue-event@1',
               action: 'deferred',
@@ -226,11 +269,9 @@ export class DeliveryQueue {
           }
           continue
         }
-        const siblings = deliveryAttempts(state).records.filter(
-          (record) => slot(record) === slot(entry),
-        )
-        const generation = Math.max(0, ...siblings.map((record) => record.generation)) + 1
-        const attempt = `attempt-${randomBytes(8).toString('hex')}`
+        if (!reserved) throw new DeliveryJournalError('missing-budget-reservation')
+        const { generation, attempt } = reserved
+        for (const payload of reserved.payloads) append(state.run, payload)
         append(state.run, {
           schema: 'wholeloop/delivery-attempt-event@1',
           action: 'claimed',
@@ -265,6 +306,8 @@ export class DeliveryQueue {
     this.lifecycle.journal.transaction(ACTOR, (view, append) => {
       const { state } = this.lease(view(), assignment)
       this.grant(state)
+      if (!currentBudgetReservation(state, assignment.attempt, this.budgetClock()))
+        throw new DeliveryJournalError('expired-attempt-budget')
       if (
         !['queued', 'running'].includes(state.state) ||
         this.lifecycle.journal.now() < state.maxObservedAt
@@ -301,7 +344,11 @@ export class DeliveryQueue {
   ): void {
     this.lifecycle.journal.transaction(ACTOR, (view, append) => {
       const { state } = this.lease(view(), assignment)
-      if (action === 'completed') this.grant(state)
+      if (action === 'completed') {
+        this.grant(state)
+        if (!currentBudgetReservation(state, assignment.attempt, this.budgetClock()))
+          throw new DeliveryJournalError('expired-attempt-budget')
+      }
       append(state.run, { ...this.attempt(assignment), action, evidence })
       append(state.run, {
         schema: 'wholeloop/delivery-queue-event@1',
@@ -356,7 +403,8 @@ export class DeliveryQueue {
         record.role === scope.role &&
         record.generation === scope.generation &&
         attempt?.state === 'started' &&
-        attempt.runtime?.instance === scope.runtime
+        attempt.runtime?.instance === scope.runtime &&
+        currentBudgetReservation(state, scope.attempt, this.budgetClock())
       )
     } catch {
       return false
@@ -399,6 +447,12 @@ export class DeliveryQueue {
     entry: QueueRecord,
     plan: DeliveryPlan,
   ): string {
+    const limits = effectiveBudget(
+      state,
+      this.grant(state),
+      this.budgetClock(),
+      plan.budgets,
+    ).limits
     const active = [...states.values()].flatMap((run) =>
       deliveryAttempts(run)
         .records.filter((attempt) => ACTIVE.has(attempt.state))
@@ -421,7 +475,7 @@ export class DeliveryQueue {
       return 'global-capacity'
     if (
       group.filter((value) => value.run === state.run).length >=
-      (execution(entry.role) ? plan.budgets.builders : plan.budgets.evaluators)
+      (execution(entry.role) ? limits.builders : limits.evaluators)
     )
       return 'run-capacity'
     if (execution(entry.role) && entry.repositoryKey) {
@@ -431,9 +485,7 @@ export class DeliveryQueue {
           (entry.remoteKey !== undefined && value.entry?.remoteKey === entry.remoteKey),
       )
       if (same.length >= this.capacity.buildersPerRepository) return 'repository-capacity'
-      if (
-        same.filter((value) => value.run === state.run).length >= plan.budgets.buildersPerRepository
-      )
+      if (same.filter((value) => value.run === state.run).length >= limits.buildersPerRepository)
         return 'run-repository-capacity'
     }
     return ''

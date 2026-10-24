@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-24 · P6-07 complete — persistent finite execution budgets
+
+- Pin run/attempt deadlines and cumulative usage/counters across restarts. Reuse journaled claims and effect invocations rather than treating a fresh controller as a new budget.
+- Refuse unavailable hard token/currency caps, retain unknown usage honestly and distinguish validated progress from heartbeats or repeated identical failures.
+
+- Bind optional operator usage constraints before execution, charge hard maxima conservatively, preserve fixture/host provenance and unknown/partial usage, and reserve unique binary artifact bytes before replacement. Tighten current and persisted plan limits without granting a later extension. Recovery refuses exhausted budgets while retaining exact ownership and old gate records. Add ADR-0099, CLI schema/configuration/inspection/capture, a reproducible tutorial and the enforced delivery-finite-budgets rule; preserve every prior public contract while adding three schema identities, three output identities and four commands.
+- All 26 new budget cases pass, including actual process contention and killed artifact writers. Initial complete checks pass 2286 tests on both hosts; final review catches unknown historical usage being omitted from completeness. Add explicit unmetered counts and reject retroactive hard constraints. Preserve the initial targeted fixture-state/report-field failures, correct those expectations and rerun complete checks: 2287 tests in 101 files on macOS arm64/Node 24.22.0 (269.63 seconds) and isolated Debian Linux arm64/Node 24.22.0 (68.86 seconds), plus lint/types/build/smoke, offline package, 304-file docs, generated references, 146-file harness, 303-file Markdown and 36 diagrams. Exact combined tutorials pass on macOS Node 24 and Linux Node 20/24; shellcheck passes. The final immutable code archive is 3be6fdf392fb4e3f39903932d90d52161b637a5648e36f3c44f7c9d7637b27ac and copied core is 85c9bc61c73c25caa6926e8038440140c3a80988ceeb329cae36db33ca89f30b. Retain exact distinct package receipts and earlier failures in platform evidence. Mark P6-07 complete (47/88 complete, 27 new tasks pending); recheck final docs/package and commit hygiene, then continue P6-08. Actual native metering, semantic QA, backend containment and hosted effects remain separate; no publication or merge occurs.
+
 ## 2026-10-24 · P6-06 complete — checkpoints and conservative reconciliation
 
 - Persist exact checkpoint input manifests and effect intent/observation identities. Retain interrupted or ambiguous actions until an exact read reconciles them; never replay a possible write blindly.

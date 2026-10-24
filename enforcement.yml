@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-finite-budgets
+    enforcers: [src/delivery/budget-events.ts#reduceDeliveryBudget, src/delivery/budget-policy.ts#prepareBudgetAdmission, src/delivery/budgets.ts#DeliveryBudgets, test/unit/delivery/budgets.test.ts, test/unit/delivery/budget-process.test.ts, test/unit/delivery/budget-cli.test.ts]
   - id: delivery-checkpoint-inputs
     enforcers: [src/delivery/checkpoints.ts#DeliveryCheckpoints, src/delivery/checkpoint-events.ts#reduceDeliveryCheckpoint, test/unit/delivery/recovery.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/recovery-cli.test.ts]
   - id: delivery-effect-reconciliation

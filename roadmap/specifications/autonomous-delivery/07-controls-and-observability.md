@@ -3,7 +3,13 @@
 > **TL;DR** — A long-running flow has finite work and effect limits, visible progress and inspectable reasons for every pause or terminal result. Usage is observed or unknown. Operators retain control without a mandatory web service.
 
 > [!NOTE]
-> **Status: 📐 design.** Accepted design target for P6-07 and P6-25. Existing gate-round and worker-timeout limits are preserved.
+> **Status: 🚧 partial.** P6-07 persistent budget admission, usage accounting and no-progress controls are implemented and process/fixture-tested. P6-25 timeline/control/report integration remains pending. Existing gate-round and worker-timeout limits are preserved.
+
+## Implemented budget boundary
+
+The [budget tutorial](../../../docs/tutorials/delivery-budgets.md) configures optional immutable advisory constraints, inspects unknown consumption and captures byte-bounded binary artifacts. Run/attempt deadlines, issued CI pushes, repair counters, hard maximum reservations, artifact bytes and failure signatures survive independent controllers and plan revisions. Tighter current plans and persisted limits constrain initial-envelope grants; later larger revisions cannot restore the allowance. Recovery refuses exhausted runs, without changing old gate events. [ADR-0099](../../../docs/decisions/0099-persistent-finite-delivery-budgets.md) records the conservative accounting and clock limitations.
+
+OPS-01–OPS-04 have local fake-clock, replay, compiled-CLI and actual concurrent-process/crash coverage. These tests prove accounting and refusal boundaries, not native billing, hard-cap support or actual semantic QA. Initial native dispatch, complete runner integration and operational reports remain their later Phase 6 tasks. No old manual failure is waived.
 
 ## Budget contract
 

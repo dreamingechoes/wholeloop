@@ -38,7 +38,7 @@ export class StoreFiles {
     }
   }
 
-  atomic(relative: string, content: string): void {
+  atomic(relative: string, content: string | Uint8Array): void {
     const path = this.path(relative)
     mkdirSync(dirname(path), { recursive: true, mode: 0o700 })
     const temporary = this.path(`${relative}.${randomUUID()}.tmp`)

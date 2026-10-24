@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-06 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-07 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 46 complete, fourteen original open tasks and 28 new pending tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 47 complete, fourteen original open tasks and 27 new pending tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -177,7 +177,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-07 · Run budgets and no-progress detection
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-04
+**Status:** ✅ · **Size:** M · **Depends on:** P6-04
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -187,13 +187,15 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Acceptance criteria:**
 
-- [ ] Restarts do not reset elapsed deadlines, CI cycles or gate budgets.
-- [ ] Unsupported hard token/currency limits refuse eligibility instead of becoming an assumed zero.
-- [ ] Repeated identical failures terminate with retained findings and no automatic extension.
+- [x] Restarts do not reset elapsed deadlines, CI cycles or gate budgets.
+- [x] Unsupported hard token/currency limits refuse eligibility instead of becoming an assumed zero.
+- [x] Repeated identical failures terminate with retained findings and no automatic extension.
 
 **Tests** — OPS-01–OPS-04: fake-clock boundaries, cumulative-usage replay and repeated-failure fixtures.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/07-controls-and-observability.md); configuration, profiles, orchestration.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/07-controls-and-observability.md); [budget tutorial](../docs/tutorials/delivery-budgets.md), configuration, profiles, orchestration and ADR-0099.
+
+**Evidence** — 26 new budget tests plus the complete macOS arm64/Node 24.22.0 and isolated Debian Linux arm64/Node 24.22.0 checks pass: 2287 tests in 101 files, with all remaining checks green. Exact combined tutorials pass on macOS and Linux Node 20.0.0/24.22.0; shellcheck passes. Exercise actual concurrent reservations, artifact-quota races and killed blob writers, stricter derived/revised plans, usage overrun, historical unmetered work and no-progress exhaustion. Native model metering, semantic progress validation and complete runner/host acceptance remain their later tasks; old gate/acceptance evidence is unchanged.
 
 ---
 

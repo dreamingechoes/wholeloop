@@ -1,5 +1,6 @@
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryEffect } from './authority.js'
+import { findBudget } from './budget-events.js'
 import type { DeliveryEvent, DeliveryProjection } from './events.js'
 import { DeliveryJournalError } from './journal-error.js'
 import effectEventSchema from './schemas/effect-event-v1.json' with { type: 'json' }
@@ -135,6 +136,20 @@ export function reduceDeliveryEffect(
       throw new DeliveryJournalError('cannot-abandon-issued-effect')
     record.status = 'abandoned'
   } else if (payload.action === 'issued') {
+    const budget = findBudget(state)
+    if (
+      budget?.startedAt &&
+      (!budget.reservations.some(
+        (reservation) =>
+          reservation.id === payload.invocation &&
+          reservation.kind === 'effect' &&
+          reservation.deadline === payload.deadline,
+      ) ||
+        (record.intent.operation === 'git.push' &&
+          records.filter((entry) => entry.intent.operation === 'git.push' && entry.invocation)
+            .length >= (budget.limits?.ciPushes ?? 0)))
+    )
+      throw new DeliveryJournalError('missing-or-exhausted-effect-budget')
     if (
       record.status !== 'prepared' ||
       !payload.invocation ||

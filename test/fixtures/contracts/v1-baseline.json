@@ -262,7 +262,13 @@
     "schema:wholeloop/delivery-effects@1": "c7fabd3c86db36a712f9fcf2a0dab9f503f104ed77d32e6b75fb04a295b0995d",
     "schema:wholeloop/delivery-lock-recovery@1": "cba1fcceee91e444e7c384a1d95f6bb3c894c87296f17f67b9a097ba26533cf9",
     "schema:wholeloop/delivery-recovery-event@1": "e740e8f2bea7df3f2c5f95ab00f3f0e28509f27ba912655d9f8581c0ffb40755",
-    "schema:wholeloop/delivery-recovery@1": "81ec32d75401ff2d2e82a2a47c14ac42b86d1d7202e3ba9663f59416f809871c"
+    "schema:wholeloop/delivery-recovery@1": "81ec32d75401ff2d2e82a2a47c14ac42b86d1d7202e3ba9663f59416f809871c",
+    "output:wholeloop/delivery-budget-schema@1": "9db84855b7e110c21ae2b4d92357399615af2f9da01f4674b23abae746a6cecf",
+    "output:wholeloop/delivery-budget-status@1": "3364cb5262131491374a4ae2e11de039b7438a7d35227b6d469eddb980b77361",
+    "output:wholeloop/delivery-artifact-capture@1": "b46d9c858a9e1c57ed1c8a5e4f967544ba5d3eebf84f96c6f427b678b8a6803d",
+    "schema:wholeloop/delivery-budget-constraints@1": "c2d19ade7dd5eb0eb6abb638a1901534e71b04155e10123772a29f54a60abc73",
+    "schema:wholeloop/delivery-budget-event@1": "4548d325c28630f00154725a211a7ac60401096fe31adf74ec0cf68cc0f18c15",
+    "schema:wholeloop/delivery-budget@1": "31bdf7bb1190def6535015e191ac1b8d8d454cef91302e49d60e685c84f88ee8"
   },
   "commands": [
     {
@@ -1478,6 +1484,35 @@
       "arguments": "",
       "schema": "wholeloop/delivery-recovery-result@1",
       "options": ["--run <delivery-id>", "--resume", "--store <path>"]
+    },
+    {
+      "path": "delivery budget-schema",
+      "arguments": "",
+      "schema": "wholeloop/delivery-budget-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery budget-configure",
+      "arguments": "",
+      "schema": "wholeloop/delivery-budget-status@1",
+      "options": ["--file <constraints.json>", "--root <directory>", "--store <path>"]
+    },
+    {
+      "path": "delivery budget",
+      "arguments": "",
+      "schema": "wholeloop/delivery-budget-status@1",
+      "options": ["--run <delivery-id>", "--store <path>"]
+    },
+    {
+      "path": "delivery artifact",
+      "arguments": "",
+      "schema": "wholeloop/delivery-artifact-capture@1",
+      "options": [
+        "--run <delivery-id>",
+        "--file <artifact>",
+        "--root <directory>",
+        "--store <path>"
+      ]
     }
   ],
   "exitCodes": {

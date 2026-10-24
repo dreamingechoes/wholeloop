@@ -94,4 +94,4 @@ Effect inspection shows retained local records, not a new remote read. The trust
 Use delivery recovery-schema --json for checkpoint request/manifest and effect-intent contracts; delivery state-schema also includes every registered event/facet family. [ADR-0098](../decisions/0098-checkpoint-recovery-and-observed-effect-reconciliation.md) explains finite read retries, process ownership, explicit lock repair and the remaining native acceptance boundary. Retain the external tutorial directory; this exercise marks no human/native/account acceptance passed.
 
 <!-- docnav -->
-[◀ Delivery queue](delivery-queue.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Delivery queue](delivery-queue.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery budgets ▶](delivery-budgets.md)

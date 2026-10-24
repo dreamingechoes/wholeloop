@@ -4029,6 +4029,124 @@
           "const": "not-invoked"
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "constraintsSchema"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-budget-schema@1"
+        },
+        "constraintsSchema": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "run",
+        "state",
+        "started",
+        "limits",
+        "startedAt",
+        "deadline",
+        "elapsedMs",
+        "remainingMs",
+        "problem",
+        "requirements",
+        "usage",
+        "reservations",
+        "counters",
+        "noProgress",
+        "artifacts",
+        "omissions",
+        "authority"
+      ],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-budget-status@1"
+        },
+        "run": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "started": {
+          "type": "boolean"
+        },
+        "limits": {
+          "type": ["object", "null"]
+        },
+        "startedAt": {
+          "type": ["string", "null"]
+        },
+        "deadline": {
+          "type": ["string", "null"]
+        },
+        "elapsedMs": {
+          "type": "number"
+        },
+        "remainingMs": {
+          "type": ["number", "null"]
+        },
+        "problem": {
+          "type": ["string", "null"]
+        },
+        "requirements": {
+          "type": "object"
+        },
+        "usage": {
+          "type": "object"
+        },
+        "reservations": {
+          "type": "array"
+        },
+        "counters": {
+          "type": "object"
+        },
+        "noProgress": {
+          "type": "object"
+        },
+        "artifacts": {
+          "type": "array"
+        },
+        "omissions": {
+          "type": "array"
+        },
+        "authority": {
+          "const": "not-granted"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "run", "stored", "artifact", "reason", "authority"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-artifact-capture@1"
+        },
+        "run": {
+          "type": "string"
+        },
+        "stored": {
+          "type": "boolean"
+        },
+        "artifact": {
+          "type": "object"
+        },
+        "reason": {
+          "enum": [null, "artifact-byte-limit", "credential-bearing"]
+        },
+        "authority": {
+          "const": "not-granted"
+        }
+      }
     }
   ],
   "$defs": {

@@ -1,5 +1,6 @@
 import { contractDigest } from '../contracts/compatibility.js'
 import { DeliveryAuthority } from './authority.js'
+import { type BudgetLimits, findBudget } from './budget-events.js'
 import {
   type ControlPayload,
   type DeliveryActor,
@@ -28,9 +29,11 @@ export class DeliveryLifecycle {
   }): DeliveryProjection {
     this.journal.transaction(CONTROLLER, (view, append) => {
       let registration: RegistrationPayload
+      let limits: BudgetLimits
       if (input.envelope !== undefined) {
         if (input.revision !== undefined) throw new DeliveryJournalError('ambiguous-registration')
         const receipt = this.authority.planning.getEnvelope(input.envelope)
+        limits = receipt.envelope.budgets
         registration = {
           schema: 'wholeloop/delivery-registration-event@1',
           basis: { kind: 'envelope', digest: receipt.digest },
@@ -46,6 +49,7 @@ export class DeliveryLifecycle {
         if (input.revision === undefined) throw new DeliveryJournalError('missing-plan-revision')
         const receipt = this.authority.planning.getPlan(input.run, input.revision)
         const plan = receipt.plan
+        limits = plan.budgets
         if (plan.envelope)
           checkPlanEnvelope(plan, this.authority.planning.getEnvelope(plan.envelope).envelope)
         registration = {
@@ -67,7 +71,25 @@ export class DeliveryLifecycle {
         }
       }
       const current = view().get(input.run)
-      if (current?.basis.digest !== registration.basis.digest) append(input.run, registration)
+      if (current?.basis.digest !== registration.basis.digest) {
+        append(input.run, registration)
+        const pinned = current ? findBudget(current)?.limits : undefined
+        if (pinned) {
+          const tightened = Object.fromEntries(
+            Object.entries(pinned).map(([key, value]) => [
+              key,
+              Math.min(value, limits[key as keyof BudgetLimits]),
+            ]),
+          ) as unknown as BudgetLimits
+          if (contractDigest(tightened) !== contractDigest(pinned))
+            append(input.run, {
+              schema: 'wholeloop/delivery-budget-event@1',
+              action: 'limits',
+              basis: registration.basis.digest,
+              limits: tightened,
+            })
+        }
+      }
       if (input.grant) {
         const receipt = this.authority.inspect(input.grant)
         const state = view().get(input.run)

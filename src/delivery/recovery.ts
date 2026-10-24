@@ -1,4 +1,6 @@
 import { contractDigest } from '../contracts/compatibility.js'
+import type { BudgetClock } from './budget-events.js'
+import { DeliveryBudgets } from './budgets.js'
 import { DeliveryCheckpoints } from './checkpoints.js'
 import { DeliveryEffects } from './effects.js'
 import type { AttemptPayload } from './events.js'
@@ -34,10 +36,12 @@ export class DeliveryRecovery {
   readonly queue: DeliveryQueue
   readonly checkpoints: DeliveryCheckpoints
   readonly effects: DeliveryEffects
-  constructor(store?: string, now?: () => string) {
-    this.queue = new DeliveryQueue(store, now)
+  readonly budgets: DeliveryBudgets
+  constructor(store?: string, now?: () => string, clock?: () => BudgetClock) {
+    this.queue = new DeliveryQueue(store, now, undefined, clock)
+    this.budgets = new DeliveryBudgets(this.queue.lifecycle.journal.files.root, now, clock)
     this.checkpoints = new DeliveryCheckpoints(this.queue.lifecycle.journal.files.root, now)
-    this.effects = new DeliveryEffects(this.queue.lifecycle.journal.files.root, now)
+    this.effects = new DeliveryEffects(this.queue.lifecycle.journal.files.root, now, clock)
   }
 
   async recover(
@@ -127,6 +131,12 @@ export class DeliveryRecovery {
           problems.add('retry-ineligible')
         }
       }
+    }
+    try {
+      const budget = this.budgets.enforce(run)
+      if (budget.problem) problems.add(`budget-${budget.problem}`)
+    } catch {
+      problems.add('unavailable-budget-state')
     }
     const state = this.queue.lifecycle.journal.get(run)
     const known = new Set(

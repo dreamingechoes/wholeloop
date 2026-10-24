@@ -123,4 +123,4 @@ Use [V1 acceptance](./v1-acceptance.md#what-evidence-to-return) for the handoff 
 Use [checkpoint and recovery inspection](./tutorials/delivery-checkpoints.md) to distinguish stale inputs, an unobserved worker, an ambiguous effect and a retained writer lock. Status/effect inspection starts no host. Ordinary commands never steal a lock; explicit digest-bound repair retains a writer record only after observing its PID absent. Live/reused/inaccessible or malformed identities require inspection. Restore/rebind actual inputs and authority rather than marking a pending write applied or resetting an exhausted gate.
 
 <!-- docnav -->
-[◀ Delivery checkpoints](tutorials/delivery-checkpoints.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)
+[◀ Delivery budgets](tutorials/delivery-budgets.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)
