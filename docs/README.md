@@ -17,6 +17,8 @@
 
 ## Start with your goal
 
+For the next 1.0 scope, review the [autonomous-delivery design](./architecture/autonomous-delivery.md), [detailed specifications](../roadmap/specifications/autonomous-delivery/README.md) and [34 Phase 6 tasks](../roadmap/phase-6-autonomous-delivery.md). They propose complete no-intervention flows after initial authorization and are accepted for implementation; the new behavior remains unimplemented.
+
 | Goal | First page | Successful stopping point |
 | --- | --- | --- |
 | Install in my existing coding client | [Getting started](./getting-started.md) | Managed files installed, doctor interpreted, skill selected |

@@ -1,6 +1,6 @@
 # V1 acceptance — what remains and who does it
 
-> **TL;DR** — Native clients, remote integrations and publication are separate checks. The owner has verified Claude framing and recovery across sessions. Remote integrations ship experimentally with fixtures; accounts with every vendor are not required. Implementation defects, native compatibility and the actual release still need evidence.
+> **TL;DR** — Expanded 1.0 now includes 34 accepted autonomous-delivery/research tasks authorized for implementation, alongside the original native/workflow/release acceptance. Existing observations stay valid at their recorded scope. Remote services remain experimental; accounts with every vendor are not required.
 
 > [!NOTE]
 > **Status: 🚧 partial.** This is the acceptance runbook for the defined roadmap. Procedures below describe expected results, not completed tests. Check off observations only after execution. The [manual backlog](../roadmap/manual-verification.md) preserves detailed cases; the [journal](../roadmap/journal.md) records actual results.
@@ -47,9 +47,15 @@ Accounts with every remote service are absent from this list deliberately.
 
 ## Practical order
 
+### 0. Review and implement expanded 1.0
+
+The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. The owner accepted every new task on 2026-10-24 and authorized sequential implementation without further signals. No new task is complete, no runtime permission changes and no old native failure becomes a pass.
+
+Independent local implementation is authorized to proceed before the remaining original manual/account checks. Use the [new validation plan](../roadmap/specifications/autonomous-delivery/09-validation-and-acceptance.md) for the additional actual backend, native research/implementation and disposable code-host evidence. Production effects and release remain separately authorized.
+
 ### 1. Finish implementation defects first
 
-All currently identified implementation defects below are fixed and tested. The fourteen open roadmap tasks require native/workflow acceptance, remaining runtime/platform trials or external owner decisions. If a new trial exposes a code defect, return it to implementation instead of waiving it as manual work.
+The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external owner decisions; 34 new Phase 6 tasks are unimplemented. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
@@ -158,7 +164,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-After the accepted P2-06 scope change, P4-05 MCP-first implementation and P5-03 native headless acceptance: 40 of 54 tasks are complete; 14 remain open. These rows describe closure evidence, not fourteen tests the owner must run alone.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding 34 pending Phase 6 tasks yields 88 tasks, 40 complete and 48 open. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Owner involvement |
 | --- | --- | --- |
@@ -178,6 +184,8 @@ After the accepted P2-06 scope change, P4-05 MCP-first implementation and P5-03 
 | P5-07 | Actual 1.0 tag and announcement after remaining acceptance | Final release approval |
 
 P4-05 is complete with fixture-tested MCP priority, explicit HTTP selection and no automatic fallback. Its unavailable service contracts retain pending handoffs. Service-account certification is a deferred backlog, not one more release gate for every vendor. Other robustness cases in the manual backlog document limitations and follow-up scope rather than silently expanding the task table into hundreds of owner-only release prerequisites.
+
+The new [Phase 6 task groups](../roadmap/phase-6-autonomous-delivery.md#task-groups) separately cover inputs/authority, durable workers, environments, actual QA, integration, publication/CI/merge, operational evidence, requirement changes, learning, research and delegated decisions. Their checkboxes remain empty until implementation and the specified execution-level evidence exist. Native reference-client trials do not replace the original seven-client obligations.
 
 ## What evidence to return
 

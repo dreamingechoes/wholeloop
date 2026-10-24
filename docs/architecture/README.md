@@ -9,6 +9,8 @@
 
 ## The three layers
 
+The [expanded V1 autonomous-delivery design](./autonomous-delivery.md) proposes a local durable runner over these layers, complete zero-intervention research/implementation, executable integrated QA and opt-in conditional merge. The owner accepted the scope and authorized implementation; it is not current runtime behavior.
+
 ```mermaid
 flowchart TB
   subgraph H["Canonical harness — written once"]
@@ -117,4 +119,4 @@ The skill never computes a verdict, a precedence or a next step. It asks the cor
 ---
 
 <!-- docnav -->
-[◀ Local client setup](../platforms/local-onboarding.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Core CLI ▶](core-cli.md)
+[◀ Local client setup](../platforms/local-onboarding.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Autonomous delivery design ▶](autonomous-delivery.md)

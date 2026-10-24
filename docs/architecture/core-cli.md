@@ -308,4 +308,4 @@ These are cooperative hooks, not an adversarial sandbox or complete shell parser
 ---
 
 <!-- docnav -->
-[◀ Architecture](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [State and messaging ▶](state-and-messaging.md)
+[◀ Autonomous delivery design](autonomous-delivery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [State and messaging ▶](state-and-messaging.md)

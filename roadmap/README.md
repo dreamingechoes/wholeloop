@@ -1,10 +1,18 @@
 # Roadmap — built in vertical phases, worked in session-sized tasks
 
-> **TL;DR** — Six phases, each one a vertical slice that leaves something usable behind. Every phase is split into tasks small enough for one focused working session, each with a goal, deliverables, acceptance criteria and the docs it must update. Pick the first unblocked task, do it end to end, record it in the [journal](./journal.md).
+> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. The owner accepted Phase 6 for 1.0 and authorized sequential implementation; all 34 tasks remain pending.
 
 ---
 
 Current manual checks and owner-only actions: [manual verification](./manual-verification.md). Start with the [V1 acceptance runbook](../docs/v1-acceptance.md) for executable trials, expected results and the distinction between owner decisions, implementation work and deferred service certification.
+
+## Expanded 1.0 review
+
+Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [34 Phase 6 tasks](./phase-6-autonomous-delivery.md). The owner reviewed and accepted every new task on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
+
+The roadmap now contains 88 tasks: 40 completed original tasks, fourteen original open tasks and 34 new pending implementation tasks. The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
+
+No cloud platform, marketplace, vendor API expansion or production automation is added. Local P6 implementation is authorized to proceed without waiting for unrelated native/account acceptance. Those original checks and the new capability-specific acceptance still need their stated evidence before release.
 
 ## Phases
 
@@ -14,7 +22,9 @@ flowchart LR
   P1 --> P2["P2 · Define<br/>research → cut-scopes"]:::define
   P2 --> P3["P3 · Build<br/>slices · worktrees · gates · PRs"]:::build
   P3 --> P4["P4 · Rollout & Learn<br/>launch · ramp · measure · decide"]:::rollout
-  P4 --> P5["P5 · Reach & release<br/>tier B · headless · 1.0"]:::learn
+  P4 --> P5["P5 · Reach & release<br/>tier B · headless · distribution"]:::learn
+  P5 --> P6["P6 · Autonomous delivery<br/>unattended research · integrated QA"]:::build
+  P6 --> V1["P5-07 · Expanded 1.0 release"]:::learn
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
   classDef define fill:#d9f2e3,stroke:#1f7a45,color:#0b2e1a;
   classDef build fill:#dce9fb,stroke:#2f6fc4,color:#0b1f3a;
@@ -30,8 +40,9 @@ flowchart LR
 | [P3 · Build](./phase-3-build.md) | A slice is built in a worktree, verified, reviewed and opened as a draft PR | 10 |
 | [P4 · Rollout & Learn](./phase-4-rollout-learn.md) | The loop closes: launch kit, ramp evidence, measured impact, recorded decision | 7 |
 | [P5 · Reach & release](./phase-5-reach-release.md) | Tier B CLIs, headless engine, nightly conformance, 1.0 published | 7 |
+| [P6 · Autonomous delivery](./phase-6-autonomous-delivery.md) | Recoverable no-intervention research/implementation, actual integrated QA, authorized PR/merge and evaluation; before P5-07 | 34 |
 
-Phases are ordered, but a task only waits for the tasks listed in its **Depends on** line.
+Phase IDs preserve the existing history: P6 is inside expanded 1.0 and precedes final P5-07 closure. Tasks follow their explicit dependencies and any phase review hold; the diagram is an overview, not a requirement to wait for unrelated manual checks.
 
 ## Task format
 
@@ -67,7 +78,7 @@ Phases are ordered, but a task only waits for the tasks listed in its **Depends 
 ## Working in sessions
 
 1. **Orient.** Read [`AGENTS.md`](../AGENTS.md), the last three [journal](./journal.md) entries, and the current phase file.
-2. **Pick.** The first ⬜ task whose dependencies are ✅. Mark it 🔄 in the phase file.
+2. **Pick.** The first ⬜ task whose dependencies are ✅ and whose phase is authorized and not on review hold. Mark it 🔄 in the phase file.
 3. **Do it end to end.** Code, tests and docs land together. Keep files inside the [size budgets](../docs/decisions/0011-size-budgets-and-enforcement.md).
 4. **Check.** Every acceptance criterion ticked, all local checks green.
 5. **Record.** Mark the task ✅, add a journal entry (what changed, decisions taken, follow-ups), update status banners in the docs.

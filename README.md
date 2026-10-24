@@ -9,6 +9,8 @@ wholeloop supplies the process around the model: what context to load, which que
 
 ## Contents
 
+**Expanded 1.0 proposal:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [34 pending tasks](./roadmap/phase-6-autonomous-delivery.md). The owner accepted the scope and authorized implementation; current installation and usage below retain their existing supervised behavior.
+
 - [What you can do](#what-you-can-do)
 - [Install from source](#install-from-source)
 - [Run your first skill](#run-your-first-skill)

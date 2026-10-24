@@ -2,6 +2,8 @@
 
 > **Outcome** — Tier B CLIs are supported, the headless engine makes parallel gates available everywhere, conformance runs every night against pinned CLI versions, and 1.0 is published with documentation generated from the code it describes.
 
+Expanded 1.0 also includes [Phase 6](./phase-6-autonomous-delivery.md). Its autonomous-delivery/research design is accepted for implementation; P5-07 now waits for that implementation and acceptance. Existing checked criteria and native failures in this phase retain their original scope.
+
 ---
 
 ## P5-01 · Adapters — Gemini CLI and Antigravity CLI
@@ -106,7 +108,7 @@
 
 ## P5-07 · 1.0
 
-**Status:** ⏸️ · **Size:** S · **Depends on:** P5-05, P5-06
+**Status:** ⏸️ · **Size:** S · **Depends on:** P5-05, P5-06, P6-32
 
 **Goal** — A stable contract others can build extensions against.
 
@@ -116,6 +118,7 @@
 
 - [x] Every schema has a version and a compatibility test.
 - [ ] The 1.0 release is tagged and announced.
+- [ ] Phase 6's expanded contracts, zero-intervention research/implementation, actual QA/integration, authorized PR/merge and required capability-level acceptance are closed through P6-32.
 
 **Local implementation:** source/compiled command registration checks every declared output. The v1 candidate records fifty-three source schemas, 147 output variants, thirteen step definitions, 157 command signatures and five exit codes. Individual compatibility cases retain declaration identities, command options/signatures and exit meanings; public adapter/distribution manifests validate before emission. The compatibility/deprecation policy preserves existing 1.x contracts and requires new identities/migrations for changed formats. Conservative fingerprints do not prove runtime semantics or native support. Actual release/tag/announcement, released README status and remaining delivery/native acceptance remain open; package version/privacy are unchanged. Further collector, headless and distribution code does not wait for owner checks and adds new identities to this candidate.
 
@@ -123,4 +126,4 @@
 
 ---
 
-[◀ P4](./phase-4-rollout-learn.md)  ·  [Roadmap](./README.md)  ·  [📓 Journal](./journal.md)
+[◀ P4](./phase-4-rollout-learn.md)  ·  [Roadmap](./README.md)  ·  [P6 ▶](./phase-6-autonomous-delivery.md)  ·  [📓 Journal](./journal.md)

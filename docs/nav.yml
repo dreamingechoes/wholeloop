@@ -39,6 +39,7 @@ pages:
   - { path: platforms/README.md, title: Platforms }
   - { path: platforms/local-onboarding.md, title: Local client setup }
   - { path: architecture/README.md, title: Architecture }
+  - { path: architecture/autonomous-delivery.md, title: Autonomous delivery design }
   - { path: architecture/core-cli.md, title: Core CLI }
   - { path: architecture/state-and-messaging.md, title: State and messaging }
   - { path: architecture/orchestration-and-gates.md, title: Orchestration and gates }

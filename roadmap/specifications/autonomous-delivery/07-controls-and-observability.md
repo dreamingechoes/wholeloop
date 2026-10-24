@@ -1,0 +1,66 @@
+# Budgets, progress and operator visibility
+
+> **TL;DR** — A long-running flow has finite work and effect limits, visible progress and inspectable reasons for every pause or terminal result. Usage is observed or unknown. Operators retain control without a mandatory web service.
+
+> [!NOTE]
+> **Status: 📐 design.** Accepted design target for P6-07 and P6-25. Existing gate-round and worker-timeout limits are preserved.
+
+## Budget contract
+
+| Limit | Proposed default | Enforcement |
+| --- | --- | --- |
+| Run wall time | 4 hours | Controller deadline survives restart |
+| Grant expiry | 24 hours | No new assignments/effects after expiry |
+| Concurrent builders | 2 globally, 1 per repository | Durable admission reservation |
+| Concurrent gate/evaluator workers | 4 globally | Shared scheduler capacity |
+| Builder attempt deadline | 30 minutes | Owned process/backend cancellation |
+| Builder restarts | 2 after the first attempt | New attempt IDs; never reset gates |
+| CI pushes | 2 total | Persisted cycle counter |
+| Integration repairs | 3 candidates after the initial candidate | Persisted milestone counter |
+| No-progress boundary | 3 repeated identical failure/snapshot signatures | Explain exhausted progress budget |
+| Artifact bytes | 200 MiB per run | Preflight capture and record omissions |
+| Tokens/currency | No invented default price or guaranteed cap | Operator selects limits only with reliable host metering |
+
+These are review-candidate defaults, not measured optimal settings. All limits are finite, pinned and displayed; operator overrides are explicit. Existing verification/review round defaults and fail-safe quorums do not decrease because a global budget is exhausted.
+
+Admission reserves capacity before dispatch, including expected assignments from refutation fan-out. If an exact token ceiling cannot be enforced by the client, label the limit advisory/unsupported. An operator requiring a hard unavailable cap makes that execution ineligible. Cost absence never means zero.
+
+Report wall time separately from active work, external waits and human waits. A zero-intervention run has zero human waits, including after restart. Backoff/polling consumes the run deadline.
+
+## Progress and failure categories
+
+Progress means a new validated artifact, observed behavior, resolved finding, accepted candidate or reconciled effect. Heartbeats, narrative updates, rereading files and repeated identical outputs are liveness, not progress.
+
+Use bounded structured categories: missing-input, policy, denied-access, unavailable-model, transient-provider, invalid-output, failed-behavior, stale-evidence, conflict, ambiguous-effect, capacity, deadline and no-progress. Preserve original failed attempts and make later repairs new evidence.
+
+Repeated signatures include role, normalized failure category, candidate digest and kept finding IDs. Avoid storing private model output just to detect repetition. A heuristic signal can stop for inspection but cannot invent a successful result or automatically widen a budget.
+
+## Inspection surfaces
+
+Proposed `wl delivery status|events|report` emits versioned JSON and a concise terminal rendering. A watch option may stream events from the local controller; it does not start a network listener.
+
+Show endpoint, intervention, grant status, plan/source revisions, active attempts, ready/blocked work, checkpoints, environment ownership, criterion coverage, gate budgets, CI state, pending effects, deadline, usage provenance and exact next permitted action. Explain why a run did not proceed.
+
+Terminal receipts distinguish research-report-complete, code-ready, draft-PR, ready-PR, merge-queued, merged, partial, blocked, failed, exhausted and stopped. Store all artifacts externally and offer explicit local opening paths. Do not put run state into the source repository.
+
+## Diagnostics and export
+
+An opt-in redacted diagnostic bundle contains schema/core/client/backend versions, event categories, digests, control transitions and sanitized errors. Raw prompts, conversations, environment dumps, source content, provider responses and credentials are excluded by default.
+
+A separate explicit recovery bundle may include private required artifacts and references after inventory/size review. Verify checksums before import, preserve existing stores and require explicit repository-path rebinding. Import restores records, not active authority or running claims; grants must be renewed on a new execution host.
+
+OpenTelemetry export may be a later sink over the same event model. It is not a required dependency, a hosted observability platform or an excuse to send private traces automatically.
+
+## Acceptance and tests
+
+- [ ] **OPS-01:** Concurrent attempts cannot oversubscribe reserved slots or exceed persisted attempt/effect counters.
+- [ ] **OPS-02:** Restart preserves deadlines and usage totals without double-counting cumulative native reports.
+- [ ] **OPS-03:** Unsupported token/currency metering is unknown/advisory and refuses a requested hard cap.
+- [ ] **OPS-04:** Repeated no-progress attempts stop with retained findings and never reset gate budgets.
+- [ ] **OPS-05:** Status/report is read-only; control requests are explicit, audited and respected before later effects.
+- [ ] **OPS-06:** Diagnostic exports exclude sensitive fixture payloads; recovery imports detect tampering and restore no live authority.
+- [ ] **OPS-07:** Supervised, on-exception and none runs report different intervention outcomes accurately.
+
+Use injected clocks/counters for boundaries, real process cancellation for deadlines, fixture secret canaries for export and deterministic event replay for reports.
+
+[◀ Publication](./06-publication-ci-and-merge.md) · [Learning ▶](./08-learning-and-maintenance.md)

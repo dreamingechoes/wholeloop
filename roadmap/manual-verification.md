@@ -1,10 +1,20 @@
 # Manual verification — current implementation
 
-> Automated results and pending work are separate. A checked roadmap task means its local acceptance checks passed, not that every target CLI or platform has been exercised. Updated 2026-10-22.
+> Automated results and pending work are separate. A checked roadmap task means its local acceptance checks passed, not that every target CLI or platform has been exercised. Expanded-scope planning updated 2026-10-24; historical execution observations retain their original dates.
 
 ## How to use this backlog
 
 Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan, commands, passing results and who does each part. This page retains detailed regressions and limitations rather than assigning every item to the owner.
+
+## Expanded 1.0 acceptance boundary
+
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, forty complete and 48 open.
+
+- [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
+- [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
+- [ ] Separately authorize disposable hosted publication/conditional-merge trials and retain their actual outcomes.
+
+Only design review/implementation authorization above is confirmed. The execution checks remain future acceptance, not work already executed or permission to mutate a real project. Existing native/account checks need not block independent local implementation after authorization. Zero-intervention product usage remains opt-in; runtime policies are unchanged today.
 
 Current local remediation is implemented and tested: exact owner-decision framing, final revision review and bounded redacted native diagnostics. After explicit private-harness disclosure approval, fresh native trials executed on OpenCode, Copilot and Antigravity. None passed: OpenCode began framing before its deadline and a longer diagnostic attempt ended with a provider error mentioning HTTP 503; Copilot and Antigravity reported native tool permission denials. The latter's soft-denial format exposed and now has a diagnostic regression fix. Any further implementation defect discovered by those trials remains technical work, not an owner acceptance checkbox. Track it in [V1 acceptance](../docs/v1-acceptance.md#1-finish-implementation-defects-first) and the journal before claiming technical closure.
 
