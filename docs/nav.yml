@@ -27,6 +27,7 @@ pages:
   - { path: tutorials/delivery-private-acceptance.md, title: Private acceptance and regression sensitivity }
   - { path: tutorials/delivery-integration-candidates.md, title: Integrated milestone candidates }
   - { path: tutorials/delivery-assembly.md, title: Owned assembly and combined verification }
+  - { path: tutorials/delivery-evaluation-fixtures.md, title: Original delivery evaluation fixtures }
   - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }

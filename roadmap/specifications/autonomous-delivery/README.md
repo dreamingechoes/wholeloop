@@ -3,7 +3,7 @@
 > **TL;DR** — Start from a revision-bound issue, document, approved initiative or local request. Run implementation, behavioral QA, independent adversarial review and integration validation through recoverable workers, or complete an evidence-backed research flow. An explicit initial policy can delegate the entire flow with no subsequent human intervention. Deliver a report, pull request or separately authorized conditional merge. Keep the deterministic core, existing clients and external state.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The owner requested this expanded 1.0 scope on 2026-10-24. The owner reviewed/accepted all new tasks and authorized sequential implementation on 2026-10-24. P6-01–P6-09, P6-11 and P6-13–P6-19 are complete at their evidenced local boundaries. P6-12 is implemented with actual reference Docker observations and independent Linux-host acceptance pending. The remaining sixteen tasks retain accepted implementation targets, not actual run grants. Browser/API/CLI observations remain separate from native-model and independent-platform certification. The existing supervised behavior, native failures and release checks remain in force.
+> **Status: 🚧 partial.** The owner requested this expanded 1.0 scope on 2026-10-24. The owner reviewed/accepted all new tasks and authorized sequential implementation on 2026-10-24. P6-01–P6-09, P6-11, P6-13–P6-19 and P6-26 are complete at their evidenced local boundaries. P6-12 is implemented with actual reference Docker observations and independent Linux-host acceptance pending. The remaining fifteen tasks retain accepted implementation targets, not actual run grants. Browser/API/CLI observations remain separate from native-model and independent-platform certification. The existing supervised behavior, native failures and release checks remain in force.
 
 ## Read and review
 
@@ -85,7 +85,7 @@ Intervention is a separate axis: `supervised` keeps current stops, `on-exception
 
 Phase 6 is inside the expanded 1.0, numbered after the existing phases to retain stable task links. It runs before P5-07's release closure. Local implementation can proceed independently of unresolved original native/account checks under the owner's implementation authorization; those checks remain release obligations at their existing scope.
 
-The expanded roadmap has 88 tasks: 54 original tasks (40 complete, fourteen open) and 34 new tasks (seventeen complete, P6-12 implemented with independent Linux-host acceptance pending, sixteen awaiting implementation). The owner has lifted the review hold and authorized sequential implementation; pending tasks still need their actual tests and evidence before completion. Its size estimates are planning hypotheses and may be split without weakening acceptance.
+The expanded roadmap has 88 tasks: 54 original tasks (40 complete, fourteen open) and 34 new tasks (eighteen complete, P6-12 implemented with independent Linux-host acceptance pending, fifteen awaiting implementation). The owner has lifted the review hold and authorized sequential implementation; pending tasks still need their actual tests and evidence before completion. Its size estimates are planning hypotheses and may be split without weakening acceptance.
 
 ## Opportunity disposition
 

@@ -1,0 +1,41 @@
+{
+  "schema": "wholeloop/evaluation-oracle@1",
+  "scenario": "durable-board",
+  "relevant": ["after-restart"],
+  "cases": [
+    {
+      "id": "create",
+      "kind": "http",
+      "service": "app",
+      "method": "POST",
+      "path": "/tasks",
+      "body": "{\"title\":\"Persistent caf\u00e9 task\"}",
+      "json": "{\"id\":\"task-1\",\"title\":\"Persistent caf\u00e9 task\"}",
+      "httpStatus": 201
+    },
+    {
+      "id": "restart",
+      "kind": "restart",
+      "service": "app"
+    },
+    {
+      "id": "after-restart",
+      "kind": "http",
+      "service": "app",
+      "method": "GET",
+      "path": "/tasks",
+      "json": "{\"tasks\":[{\"id\":\"task-1\",\"title\":\"Persistent caf\u00e9 task\"}]}",
+      "httpStatus": 200
+    },
+    {
+      "id": "empty-title",
+      "kind": "http",
+      "service": "app",
+      "method": "POST",
+      "path": "/tasks",
+      "body": "{\"title\":\"\"}",
+      "json": "{\"error\":\"title required\"}",
+      "httpStatus": 400
+    }
+  ]
+}

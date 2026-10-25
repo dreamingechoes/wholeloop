@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'eval delivery-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/evaluation-schema@1',
+    summary: 'Show original evaluation catalog, oracle and seed contracts',
+  },
+  {
+    path: 'eval delivery-catalog',
+    arguments: '<catalog>',
+    options: [],
+    schema: 'wholeloop/evaluation-catalog@1',
+    summary: 'Inspect reviewed scenario identities without revealing expected outcomes',
+  },
+  {
+    path: 'eval delivery-seed',
+    arguments: '<catalog>',
+    options: ['--scenario <id>', '--variant <baseline|reference>', '--key <id>', '--store <path>'],
+    schema: 'wholeloop/evaluation-seed@1',
+    summary: 'Pin private standards and create disposable original Git applications',
+  },
+  {
+    path: 'eval delivery-inspect',
+    arguments: '<digest>',
+    options: ['--store <path>'],
+    schema: 'wholeloop/evaluation-seed@1',
+    summary: 'Verify immutable expected outcomes without overwriting implementation files',
+  },
+  {
     path: 'delivery integration-assembly-reconcile',
     arguments: '',
     options: ['--digest <sha256>', '--store <path>'],

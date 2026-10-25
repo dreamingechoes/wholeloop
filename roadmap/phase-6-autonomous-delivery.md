@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-19 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11, P6-13–P6-19 and P6-26 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 57 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 16 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 58 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 15 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -627,7 +627,7 @@ The available Linux controller container is not that proof. Actual native client
 
 ## P6-26 · Original end-to-end evaluation applications
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-02, P6-14, P6-18
+**Status:** ✅ · **Size:** M · **Depends on:** P6-02, P6-14, P6-18, P6-19
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -637,9 +637,9 @@ The available Linux controller container is not that proof. Actual native client
 
 **Acceptance criteria:**
 
-- [ ] Fixtures exercise a bug, persistence feature, integration disagreement and malicious input.
-- [ ] Runtime state and evaluation artifacts remain external; literal fixtures retain exact byte baselines.
-- [ ] Expected results are pinned and cannot be changed by the implementation under evaluation.
+- [x] Fixtures exercise a bug, persistence feature, integration disagreement and malicious input.
+- [x] Runtime state and evaluation artifacts remain external; literal fixtures retain exact byte baselines.
+- [x] Expected results are pinned and cannot be changed by the implementation under evaluation.
 
 **Tests** — EVAL-01–EVAL-03 and EVAL-06: fixture self-checks, oracle sensitivity and controller-owned expected-result validation.
 

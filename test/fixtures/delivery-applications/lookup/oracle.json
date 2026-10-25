@@ -1,0 +1,68 @@
+{
+  "schema": "wholeloop/evaluation-oracle@1",
+  "scenario": "lookup-regression",
+  "relevant": ["mixed-case-cli", "mixed-case-api", "unicode-api"],
+  "cases": [
+    {
+      "id": "mixed-case-cli",
+      "kind": "cli",
+      "repository": "app",
+      "argv": ["--query", "rElEaSe"],
+      "exit": 0,
+      "json": "{\"ids\":[\"task-1\"]}"
+    },
+    {
+      "id": "mixed-case-api",
+      "kind": "http",
+      "service": "app",
+      "method": "GET",
+      "path": "/?title=rElEaSe",
+      "json": "{\"ids\":[\"task-1\"]}",
+      "httpStatus": 200
+    },
+    {
+      "id": "unicode-api",
+      "kind": "http",
+      "service": "app",
+      "method": "GET",
+      "path": "/?title=CAF%C3%89",
+      "json": "{\"ids\":[\"task-2\"]}",
+      "httpStatus": 200
+    },
+    {
+      "id": "ordinary-api",
+      "kind": "http",
+      "service": "app",
+      "method": "GET",
+      "path": "/?title=view",
+      "httpStatus": 200,
+      "json": "{\"ids\":[\"task-2\"]}"
+    },
+    {
+      "id": "no-match",
+      "kind": "http",
+      "service": "app",
+      "method": "GET",
+      "path": "/?title=absent",
+      "json": "{\"ids\":[]}",
+      "httpStatus": 200
+    },
+    {
+      "id": "empty-cli",
+      "kind": "cli",
+      "repository": "app",
+      "argv": ["--query", ""],
+      "exit": 7,
+      "stderr": "title required\n"
+    },
+    {
+      "id": "empty-api",
+      "kind": "http",
+      "service": "app",
+      "method": "GET",
+      "path": "/?title=",
+      "json": "{\"error\":\"title required\"}",
+      "httpStatus": 400
+    }
+  ]
+}

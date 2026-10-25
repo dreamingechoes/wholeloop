@@ -53,7 +53,9 @@
     "eval:browsers": "node scripts/check-browsers.mjs",
     "eval:private": "node scripts/check-private.mjs",
     "eval:integration": "node scripts/check-integration-candidates.mjs",
-    "eval:assembly": "node scripts/check-assembly.mjs"
+    "eval:assembly": "node scripts/check-assembly.mjs",
+    "eval:delivery-fixtures": "node scripts/check-delivery-fixtures.mjs",
+    "eval:delivery-browser": "node scripts/check-delivery-browser.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

@@ -1,0 +1,166 @@
+{
+  "schema": "wholeloop/evaluation-applications@1",
+  "id": "original-delivery-v1",
+  "license": "MIT",
+  "scenarios": [
+    {
+      "id": "lookup-regression",
+      "category": "regression",
+      "surfaces": ["cli", "api"],
+      "requirements": {
+        "ref": "lookup/requirements.md",
+        "sha256": "2b5adf93d138a44f35df9517d54173ae5124ef2b93216b0c11c239ccb306e5ef"
+      },
+      "oracle": {
+        "ref": "lookup/oracle.json",
+        "sha256": "d8864e72943f901ac506b25c1e3c15473f3aaeb102b9d583b07f8ad19e995ab3"
+      },
+      "repositories": [
+        {
+          "id": "app",
+          "baseline": [
+            {
+              "ref": "lookup/baseline.cjs",
+              "sha256": "65456c7f3000e29df883536d45ecd2dc8d184a2cde181d2cedba6618aded573e",
+              "target": "app.cjs"
+            }
+          ],
+          "reference": [
+            {
+              "ref": "lookup/reference.cjs",
+              "sha256": "6679f1300a560cf977279ae97c757cfc4942b9bda260484dbc86e2664f32cf44",
+              "target": "app.cjs"
+            }
+          ]
+        }
+      ],
+      "timeoutMs": 60000
+    },
+    {
+      "id": "durable-board",
+      "category": "persistence",
+      "surfaces": ["api", "browser"],
+      "requirements": {
+        "ref": "durable/requirements.md",
+        "sha256": "2890e643c5d45ef0c176ad5113fc15efc2ad7b5834389741957b408ca5293f8e"
+      },
+      "oracle": {
+        "ref": "durable/oracle.json",
+        "sha256": "08cec6edebc9ae492ff21b364e235e7fbecd785b75d6aa258e8854ca566ed7d8"
+      },
+      "repositories": [
+        {
+          "id": "app",
+          "baseline": [
+            {
+              "ref": "durable/baseline.cjs",
+              "sha256": "50bc1dd15e658f21acafccf885bc3f55f688b90b768761c1585237c98c7847df",
+              "target": "app.cjs"
+            }
+          ],
+          "reference": [
+            {
+              "ref": "durable/reference.cjs",
+              "sha256": "260c96c0084df6e0c7c34d105ec5f9989bf312b9256c878b3acc73fcd22e3fe5",
+              "target": "app.cjs"
+            }
+          ]
+        }
+      ],
+      "timeoutMs": 60000
+    },
+    {
+      "id": "protocol-disagreement",
+      "category": "integration",
+      "surfaces": ["cli", "api"],
+      "requirements": {
+        "ref": "protocol/requirements.md",
+        "sha256": "aaea8d5dc4a53c688d213ef72efed03b509356d6ecb3f0ffa76832727b6ca8ca"
+      },
+      "oracle": {
+        "ref": "protocol/oracle.json",
+        "sha256": "4ca8f5a838d91c687e260c925e04c8eade2a844a0c83751358a8c45b4ccd1ff1"
+      },
+      "repositories": [
+        {
+          "id": "backend",
+          "baseline": [
+            {
+              "ref": "protocol/backend-baseline.cjs",
+              "sha256": "b45eb61bbc6aff30de6ec2746aea5baa99677ddf75cedce06c6ea72705a27135",
+              "target": "app.cjs"
+            }
+          ],
+          "reference": [
+            {
+              "ref": "protocol/backend-reference.cjs",
+              "sha256": "953c7a588a59fae8c1d8cd4a1a0e1481b808e4243c6e561bb3699d577afc0f23",
+              "target": "app.cjs"
+            }
+          ]
+        },
+        {
+          "id": "frontend",
+          "baseline": [
+            {
+              "ref": "protocol/frontend.cjs",
+              "sha256": "be22ec05c32fb64b8ac25b7187e9f20856ce0a79f44b07e953b1e16138da1e02",
+              "target": "app.cjs"
+            }
+          ],
+          "reference": [
+            {
+              "ref": "protocol/frontend.cjs",
+              "sha256": "be22ec05c32fb64b8ac25b7187e9f20856ce0a79f44b07e953b1e16138da1e02",
+              "target": "app.cjs"
+            }
+          ]
+        }
+      ],
+      "timeoutMs": 60000
+    },
+    {
+      "id": "policy-injection",
+      "category": "adversarial",
+      "surfaces": ["broker"],
+      "requirements": {
+        "ref": "injection/requirements.md",
+        "sha256": "4c58c4c648ec9ec923661c306b77cf6626c93c2bd98989f09af4ca7d8dc63b72"
+      },
+      "oracle": {
+        "ref": "injection/oracle.json",
+        "sha256": "c3bd3aff63a106019f1d3005e699eb46334139bf8fb46e44418dfb4b8fcea2e0"
+      },
+      "repositories": [
+        {
+          "id": "app",
+          "baseline": [
+            {
+              "ref": "lookup/baseline.cjs",
+              "sha256": "65456c7f3000e29df883536d45ecd2dc8d184a2cde181d2cedba6618aded573e",
+              "target": "app.cjs"
+            },
+            {
+              "ref": "injection/feedback.md",
+              "sha256": "765d8202fa9d5107f24d8550665721ac6f139f39e25968de62527e138b86491a",
+              "target": "feedback.md"
+            }
+          ],
+          "reference": [
+            {
+              "ref": "lookup/reference.cjs",
+              "sha256": "6679f1300a560cf977279ae97c757cfc4942b9bda260484dbc86e2664f32cf44",
+              "target": "app.cjs"
+            },
+            {
+              "ref": "injection/feedback.md",
+              "sha256": "765d8202fa9d5107f24d8550665721ac6f139f39e25968de62527e138b86491a",
+              "target": "feedback.md"
+            }
+          ]
+        }
+      ],
+      "timeoutMs": 60000
+    }
+  ]
+}

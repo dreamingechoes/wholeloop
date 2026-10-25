@@ -1,0 +1,30 @@
+{
+  "schema": "wholeloop/evaluation-oracle@1",
+  "scenario": "protocol-disagreement",
+  "relevant": ["combined-api"],
+  "cases": [
+    {
+      "id": "backend-unit",
+      "kind": "cli",
+      "repository": "backend",
+      "argv": ["--unit"],
+      "exit": 0
+    },
+    {
+      "id": "frontend-unit",
+      "kind": "cli",
+      "repository": "frontend",
+      "argv": ["--unit"],
+      "exit": 0
+    },
+    {
+      "id": "combined-api",
+      "kind": "http",
+      "service": "frontend",
+      "method": "GET",
+      "path": "/tasks",
+      "json": "{\"ids\":[\"task-1\"]}",
+      "httpStatus": 200
+    }
+  ]
+}

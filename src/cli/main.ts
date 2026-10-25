@@ -19,6 +19,7 @@ import { doctorCommand } from './doctor.js'
 import { environmentCommand } from './environment.js'
 import { CliError } from './errors.js'
 import { evalCommand, gateEvalCommand } from './eval.js'
+import { evaluationFixturesCommand } from './evaluation-fixtures.js'
 import { extensionCommand } from './extensions.js'
 import { fanoutCommand } from './fanout.js'
 import { flagReadCommand } from './flag-read.js'
@@ -188,6 +189,11 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
         return docsNav(root, json, io)
       case 'docs check':
         return docsCheck(root, json, io)
+      case 'eval delivery-schema':
+      case 'eval delivery-catalog':
+      case 'eval delivery-seed':
+      case 'eval delivery-inspect':
+        return evaluationFixturesCommand(command.path, parsed, root, json, io)
       case 'docs reference':
         return docsReference(parsed, root, json, io)
       case 'harness check':

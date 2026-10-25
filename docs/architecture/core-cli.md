@@ -40,6 +40,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl eval delivery-schema` | `wholeloop/evaluation-schema@1` | Show original evaluation catalog, oracle and seed contracts |
+| `wl eval delivery-catalog <catalog>` | `wholeloop/evaluation-catalog@1` | Inspect reviewed scenario identities without revealing expected outcomes |
+| `wl eval delivery-seed <catalog>` | `wholeloop/evaluation-seed@1` | Pin private standards and create disposable original Git applications |
+| `wl eval delivery-inspect <digest>` | `wholeloop/evaluation-seed@1` | Verify immutable expected outcomes without overwriting implementation files |
 | `wl delivery integration-assembly-reconcile` | `wholeloop/integration-assembly-status@1` | Observe already-issued owned Git steps without dispatching or restoring authority |
 | `wl delivery integration-assembly-schema` | `wholeloop/integration-assembly-schema@1` | Show owned assembly and whole-milestone verification contracts |
 | `wl delivery integration-assemble` | `wholeloop/integration-assembly-status@1` | Assemble required committed parts in owned worktrees under original grants |

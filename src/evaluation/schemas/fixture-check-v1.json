@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/evaluation-fixture-check@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/evaluation-fixture-check@1"
+    },
+    "catalog": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "seed": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "scenario": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$",
+      "maxLength": 64
+    },
+    "variant": {
+      "type": "string",
+      "enum": ["baseline", "reference"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed"]
+    },
+    "expected": {
+      "type": "string",
+      "enum": ["relevant-failure", "all-pass"]
+    },
+    "relevantFailed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{0,63}$",
+        "maxLength": 64
+      },
+      "maxItems": 64
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}$",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "unavailable"]
+          },
+          "evidence": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "maxLength": 64
+          }
+        },
+        "required": ["id", "status", "evidence"]
+      }
+    },
+    "browser": {
+      "type": "string",
+      "enum": ["not-executed", "not-applicable"]
+    },
+    "provenance": {
+      "type": "string",
+      "const": "trusted-fixture-control"
+    },
+    "authority": {
+      "type": "string",
+      "const": "not-granted"
+    },
+    "nativeAcceptance": {
+      "type": "string",
+      "const": "not-established"
+    }
+  },
+  "required": [
+    "schema",
+    "catalog",
+    "seed",
+    "scenario",
+    "variant",
+    "status",
+    "expected",
+    "relevantFailed",
+    "cases",
+    "browser",
+    "provenance",
+    "authority",
+    "nativeAcceptance"
+  ]
+}

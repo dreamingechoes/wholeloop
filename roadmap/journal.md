@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-25 · P6-26 complete — original applications and private evaluation standards
+
+- Add four original MIT scenarios covering CLI/API regressions, durable browser/API behavior, incompatible components and hostile feedback. Validate exact reviewed bytes, pin requirements/private oracles before external committed Git seeds, preserve edits/interrupted setup and inspect files without running worker-owned Git configuration. Add four commands, twelve additive identities, ADR-0111, a practical guide and the named standard enforcer. No application or model executes through the installed seed/inspect commands.
+- Twenty-three new cases and 568 focused checks pass. Complete checks pass 2799 tests in 127 files on macOS arm64/Node 24.22.0 (345.82 seconds) and isolated Debian Linux arm64/Node 24.22.0 (99.50 seconds), plus all remaining checks. All eight actual trusted baseline/reference Node/HTTP/restart controls pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5. Four separate actual Chromium/private-MCP/Docker observations detect baseline data loss, verify reference persistence and observe exact owned retirement. The terminal guide passes with ShellCheck and identical inert runtime schema output. Broker fixtures remain fixtures; no native-model or hosted certification follows.
+- Preserve initial type/format failures without skips, deadline increases or weakened standards. Archive e28ea3039f399a2b0fec78bd240420f55d9664bd5d11891ed82e0c28f1a9f464 and core c2d0c5d1d0332e36dcc07e5fe500c85c3c26e2b6ffd3938b3e1cd5374bf2429c identify pre-evidence checks. Recheck final evidence-only docs/package, commit P6-26 (58/88 complete; P6-12 independent Linux-host acceptance open; fifteen new implementation tasks pending), then continue P6-34, the first ready task. No model, account, hosted write or project merge occurs.
+
 ## 2026-10-25 · P6-19 complete — owned assembly and whole-milestone verification
 
 - Create separate owned integration worktrees under the original private grant, with one finite effect/native observation per creation and merge. Respect global cross-repository dependency waves, preserve conflicts/ordinary failures and worker/personal files, and consume the original integration-repair counter for fresh owned repairs. Fence superseded assemblies and reconcile issued steps read-only without restoring authority or signalling stored PIDs. Preserve the previous Docker wrapper's exact bytes and wire format while sharing its native ownership/drain implementation.

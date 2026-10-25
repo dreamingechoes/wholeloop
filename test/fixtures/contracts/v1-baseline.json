@@ -356,7 +356,19 @@
     "schema:wholeloop/integration-assembly@1": "cf341b69e867c11f84db2a2b93573c4a33398d416cb5fe5167d728fe3105d631",
     "schema:wholeloop/integration-operation-outcome@1": "597f9828e5919f1e14d4dacc7849c844351deecd2ab5f49c4b4a31ee49066c49",
     "schema:wholeloop/integration-verification-request@1": "b2143d18221d52a136852c8629a0272921a4fc169cde9af38ec439f579d1ddaf",
-    "schema:wholeloop/integration-verification@1": "5ecc4bf8fd4cfa5c0a62430faaa731d441ccbf2918e5960722bd80286e6a2bf1"
+    "schema:wholeloop/integration-verification@1": "5ecc4bf8fd4cfa5c0a62430faaa731d441ccbf2918e5960722bd80286e6a2bf1",
+    "output:wholeloop/evaluation-schema@1": "b7a9dd208b523b2297a74619a0489bf33a6aae0bec72dd73addd1a49d7d95266",
+    "output:wholeloop/evaluation-catalog@1": "b0af56f87b5c17c48f5a7954ef10ea4de05c45c60e8a113ab27c7dc614242b27",
+    "output:wholeloop/evaluation-seed@1": "52434e4c64b7a36d73c7514ac2e1b9120b8019ee4c1d2825cc1ef812225c0c28",
+    "schema:wholeloop/evaluation-browser-fixtures@1": "a2f0695079932f48c9dbf4df1f54e8a75236ba9b535938fd7b0892f260f20630",
+    "schema:wholeloop/evaluation-catalog@1": "044f5b722b8aa7a797ea16713549dd7acff64a51a49870881caafa1833c0de6f",
+    "schema:wholeloop/evaluation-applications@1": "7c5686920c105dd3ee579c7562e3cab8caa28aef6eb9c482848bd0fdee8028a4",
+    "schema:wholeloop/evaluation-fixture-check@1": "f528f75a48e8705b8b0d04516b9f4a38c60f903724c635fee8167cbcf172246b",
+    "schema:wholeloop/evaluation-fixture-controls@1": "41009a947f8b6452611f8553b0c34d0b2bc82a17179aedc2b6745577b7de47a5",
+    "schema:wholeloop/evaluation-oracle@1": "d4657dfabf37812e266a28e3100120368b87767f2726b58d69732840050e83d1",
+    "schema:wholeloop/evaluation-seed@1": "cc610c6d684882df85b97359ae2d695bfd76ef8a2be07b04d09860de55ec6c10",
+    "schema:wholeloop/evaluation-seed-record@1": "0c9657472ac8db8ccc59cefb7254b5ddcd32b3bb4e29c1ec565e89079d238bcd",
+    "schema:wholeloop/evaluation-seed-request@1": "eed70481c901899e6914f3a4cceeb88efba5cafaa2a9746000fd41fdee53124c"
   },
   "commands": [
     {
@@ -1848,6 +1860,35 @@
       "arguments": "",
       "schema": "wholeloop/integration-verification@1",
       "options": ["--file <file>", "--root <path>", "--store <path>"]
+    },
+    {
+      "path": "eval delivery-schema",
+      "arguments": "",
+      "schema": "wholeloop/evaluation-schema@1",
+      "options": []
+    },
+    {
+      "path": "eval delivery-catalog",
+      "arguments": "<catalog>",
+      "schema": "wholeloop/evaluation-catalog@1",
+      "options": []
+    },
+    {
+      "path": "eval delivery-seed",
+      "arguments": "<catalog>",
+      "schema": "wholeloop/evaluation-seed@1",
+      "options": [
+        "--scenario <id>",
+        "--variant <baseline|reference>",
+        "--key <id>",
+        "--store <path>"
+      ]
+    },
+    {
+      "path": "eval delivery-inspect",
+      "arguments": "<digest>",
+      "schema": "wholeloop/evaluation-seed@1",
+      "options": ["--store <path>"]
     }
   ],
   "exitCodes": {

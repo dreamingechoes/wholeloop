@@ -9,7 +9,7 @@ wholeloop supplies the process around the model: what context to load, which que
 
 ## Contents
 
-**Expanded 1.0:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [eighteen implemented tasks and 16 pending implementation tasks](./roadmap/phase-6-autonomous-delivery.md). The owner accepted the scope and authorized implementation; P6-12 retains a separate Linux-host acceptance check, and current installation and usage below retain their existing supervised behavior.
+**Expanded 1.0:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [nineteen implemented tasks and 15 pending implementation tasks](./roadmap/phase-6-autonomous-delivery.md). The owner accepted the scope and authorized implementation; P6-12 retains a separate Linux-host acceptance check, and current installation and usage below retain their existing supervised behavior.
 
 - [What you can do](#what-you-can-do)
 - [Install from source](#install-from-source)
@@ -244,6 +244,7 @@ Remote integrations are **experimental · fixture-tested · service-unverified**
 | Try the core without a model | [Local core tour](./docs/tutorials/local-core.md) | [Core reference](./docs/architecture/core-cli.md) |
 | Inspect exact integrated milestone candidates | [Integration candidate guide](./docs/tutorials/delivery-integration-candidates.md) | [Delivery planning](./docs/tutorials/delivery-plan.md) |
 | Assemble and test the complete milestone | [Owned assembly guide](./docs/tutorials/delivery-assembly.md) | [Behavioral acceptance](./docs/tutorials/delivery-acceptance.md) |
+| Exercise original delivery controls | [Evaluation fixture guide](./docs/tutorials/delivery-evaluation-fixtures.md) | [Acceptance evidence](./docs/v1-acceptance.md) |
 | Keep acceptance inputs private and observe red/green | [Private evaluator guide](./docs/tutorials/delivery-private-acceptance.md) | [Pinned acceptance](./docs/tutorials/delivery-acceptance.md) |
 | Exercise actual UI and persistence | [Browser acceptance](./docs/tutorials/delivery-browsers.md) | [Pinned acceptance](./docs/tutorials/delivery-acceptance.md) |
 | Execute objective API or CLI acceptance | [Behavior host guide](./docs/tutorials/delivery-behaviors.md) | [Pinned acceptance](./docs/tutorials/delivery-acceptance.md) |

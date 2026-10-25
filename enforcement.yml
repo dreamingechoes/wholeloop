@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-evaluation-standards
+    enforcers: [src/evaluation/catalog.ts#loadEvaluationCatalog, src/evaluation/store.ts#EvaluationSeeds, test/unit/evaluation/catalog.test.ts, test/unit/evaluation/oracle.test.ts, test/evals/delivery/self-check.ts, test/evals/delivery/run.ts, test/evals/delivery/browser.ts]
   - id: delivery-integration-assembly
     enforcers: [src/integration/assembly.ts#IntegrationAssembly, src/integration/git-process.ts#AssemblyGitProcess, src/integration/parts.ts#observeRequiredParts, src/integration/verification.ts#IntegrationVerification, test/unit/integration/assembly.test.ts, test/unit/integration/git-process.test.ts, test/unit/integration/verification.test.ts, test/evals/assembly/run.ts]
   - id: delivery-integration-candidates

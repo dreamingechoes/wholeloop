@@ -121,6 +121,7 @@
 | [0108](./0108-evaluator-only-inputs-and-observed-regression-sensitivity.md) | Evaluator-only inputs and observed regression sensitivity | Accepted | 2026-10-25 |
 | [0109](./0109-exact-read-only-integrated-milestone-candidates.md) | Exact read-only integrated milestone candidates | Accepted | 2026-10-25 |
 | [0110](./0110-owned-assembly-and-complete-milestone-verification.md) | Owned assembly and complete milestone verification | Accepted | 2026-10-25 |
+| [0111](./0111-original-delivery-fixtures-and-controller-owned-oracles.md) | Original delivery fixtures and controller-owned oracles | Accepted | 2026-10-25 |
 
 ## Lifecycle
 
