@@ -13,6 +13,8 @@
 
 [Browser acceptance](../tutorials/delivery-browsers.md) reuses digest-pinned Playwright MCP in an owned isolated container through a private registered stdio pipe. This is separate from a coding client's MCP configuration or a person's browser. Actual Chromium/form/restart/backend observations are scoped to this controller/daemon pair; unsupported versions, devices or capabilities remain unavailable. The private Docker container boundary is required even though the reference Chromium command disables its internal sandbox. See [ADR-0107](../decisions/0107-private-stdio-browser-acceptance.md).
 
+[Private HTTP evaluation](../tutorials/delivery-private-acceptance.md) uses a separate owned read-only verifier mount and actual clean-base/current-candidate observations. Application-container read/write denials establish that Docker boundary only. Native worker admission still requires observed containment and controller-store denial; a same-user shared filesystem is not private evaluation. Reported mutation counters and native-client/model certification remain separate.
+
 ## Expanded delivery protocol boundary
 
 [Delivery workers](../tutorials/delivery-workers.md) now have exact fresh assignments, bounded role contexts and separate controller execution observations. This is a tested local protocol boundary, not a new native capability certification. P6-09 adds dedicated pinned Claude/Codex reference transports, actual synthetic-process execution and seven-target capability/denial handling. It requires separate observed runtime proof; other expanded targets remain unverified. Actual native/tool/filesystem conformance remains P6-12/P6-27. Existing native successes, failures and service-unverified integrations below retain their original scope.

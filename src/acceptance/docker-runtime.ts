@@ -14,7 +14,7 @@ import {
 import { TCP_READY } from '../environment/docker-readiness.js'
 import { DockerResources } from '../environment/docker-resources.js'
 import { EnvironmentOperations } from '../environment/operations.js'
-import type { EnvironmentRecipe } from '../environment/recipe.js'
+import type { EnvironmentCommand, EnvironmentRecipe } from '../environment/recipe.js'
 import { EnvironmentRecipes } from '../environment/recipe-store.js'
 import {
   type EnvironmentResource,
@@ -194,6 +194,22 @@ export class DockerBehaviorRuntime {
       },
       serviceId,
     )
+    return this.observeJob(
+      job,
+      declared.command,
+      image.ref,
+      input,
+      Math.min(maximum, declared.timeoutMs),
+    )
+  }
+  /** Source-only jobs retain the same native close and daemon-exit proof as declared commands. */
+  async observeJob(
+    job: EnvironmentResource,
+    command: EnvironmentCommand,
+    image: string,
+    input: string,
+    maximum: number,
+  ) {
     const stdout: Buffer[] = [],
       stderr: Buffer[] = []
     let process: DockerProcessObservation | undefined
@@ -226,7 +242,7 @@ export class DockerBehaviorRuntime {
       this.recipe.limits.outputBytes,
     )
     try {
-      await jobs.job(job, input, this.remaining(Math.min(maximum, declared.timeoutMs)))
+      await jobs.job(job, input, this.remaining(maximum))
     } catch (error) {
       // A deliberate negative case may expect a nonzero application exit. Timeouts and overflow never qualify.
       if (!(error instanceof DockerEnvironmentError) || error.problem !== 'command-failed')
@@ -273,9 +289,9 @@ export class DockerBehaviorRuntime {
         controllerOperation: completion.operation,
         clientExit: completion.code,
         container: job.id,
-        image: image.ref,
-        argv: declared.command.argv,
-        cwd: declared.command.cwd,
+        image,
+        argv: command.argv,
+        cwd: command.cwd,
         startedAt: state.StartedAt,
         endedAt: state.FinishedAt,
         applicationPid: 'not-observed',

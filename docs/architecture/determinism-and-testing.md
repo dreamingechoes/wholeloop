@@ -124,6 +124,12 @@ The judge requires exact metric/unit/query/source/body provenance, complete case
 
 The report explicitly lists frame-problem, research, prepare-launch and decide-next as unevaluated: narrative numbers, qualitative statistics, production query truth and causal interpretations remain separate semantic checks. See the [grounding seed guide](../../test/evals/grounding/README.md), [baseline](../../test/evals/grounding/baseline.json) and [ADR-0044](../decisions/0044-grounding-fixtures-and-exact-numeric-provenance.md).
 
+## Actual model-free acceptance boundaries
+
+The [API/CLI](../tutorials/delivery-behaviors.md), [browser](../tutorials/delivery-browsers.md) and [private evaluator](../tutorials/delivery-private-acceptance.md) opt-in evaluations exercise disposable owned applications rather than a model's claim. Run eval:behaviors, eval:browsers or eval:private with --retire-success after explicitly caching their reviewed immutable images. Reports and failures stay external; exact successful retirement observes owned resource absence. Run heavy Docker evaluations and full macOS/Linux checks sequentially so independent installation deadlines retain their original meaning.
+
+Private HTTP assertions use the same complete-response/objective comparison core in a build-time embedded verifier. Unchanged cases must fail on the actual clean base and pass on the latest comparable candidate when regression sensitivity applies. Pinned inputs remain outside builder workspaces and private verifier mounts remain separate from application code. Fixtures, application-container denials and coding-client conformance have different scopes. Optional native mutation counters remain repository-reported with semantic sensitivity unknown; a constant scan or model statement cannot replace actual relevant execution.
+
 ## Enforcement — every hard rule executes somewhere
 
 A rule written only in prose is a suggestion the agent can reason around. `enforcement.yml` maps each hard rule to the code, test or lint that enforces it; the enforcement lint fails on a rule with no enforcer, an enforcer that is only a restatement, or a skill that contradicts a rule. Details: [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md).

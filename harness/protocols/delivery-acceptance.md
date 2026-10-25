@@ -6,6 +6,8 @@
 
 A prepared acceptance plan executes nothing. Objective behavior hosts and independent evaluators supply observations; an agent's result is a claim until the controller binds actual execution and evidence. Human-only criteria remain pending until an explicit named operator note on the exact candidate. Existing suite/gate policies and original supervised records remain unchanged.
 
+⛔ `delivery-private-acceptance` — Keep pinned evaluator inputs outside builder workspaces and actual evaluator mounts separate. Applicable regression acceptance requires the unchanged case to fail on the clean base and pass on the current candidate; fixture claims, native counters and model statements never prove private boundaries or semantic sensitivity.
+
 ⛔ `delivery-browser-execution` — Execute browser cases only through the pinned private-stdio host and observed owned page context. Ground controls in selected inputs and fresh native references; require objective assertions and backend roundtrips for persistence. Screenshots and worker claims establish neither persistence nor human approval.
 
 ⛔ `delivery-behavior-execution` — Execute objective API/CLI cases only through the fixed declared behavior host on the exact owned application; preserve incomplete responses, unknown effects, actual process/exit facts and original suite/gate budgets. A green unit suite cannot substitute for acceptance.

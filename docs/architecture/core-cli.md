@@ -40,6 +40,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery private-schema` | `wholeloop/private-acceptance-schema@1` | Show private evaluator inputs and observed sensitivity contracts |
+| `wl delivery private-plan` | `wholeloop/private-acceptance-prepared@1` | Pin private evaluator inputs outside builder workspaces |
+| `wl delivery private-inspect` | `wholeloop/private-acceptance-inspection@1` | Inspect private definition identity without exposing hidden input values |
+| `wl delivery private-sensitivity` | `wholeloop/acceptance-sensitivity@1` | Compare actual unchanged baseline and current candidate observations |
 | `wl delivery browser-schema` | `wholeloop/browser-schema@1` | Show grounded browser cases and the reviewed immutable MCP reference |
 | `wl delivery acceptance-run` | `wholeloop/acceptance-case-result@1` | Execute pinned API or CLI assertions against an exact owned application |
 | `wl delivery behavior-schema` | `wholeloop/behavior-schema@1` | Show the closed input contract for the fixed API and CLI behavior host |

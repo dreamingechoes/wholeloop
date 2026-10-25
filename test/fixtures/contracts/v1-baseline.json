@@ -326,7 +326,18 @@
     "schema:wholeloop/browser-input@1": "ac676cc97e1eac956f46a2521e6a79312a4413dee2a9623ebf83f8a64ba5388e",
     "output:wholeloop/browser-schema@1": "d846cf4e5946bb40ad6fcbd5c4108f756a416e39463d68d561825558031b2db3",
     "schema:wholeloop/environment-exec-release@1": "eebe69e61ea8a0c3734d4584e2489ddb961836e6f6b282c6b82a240042a477b4",
-    "schema:wholeloop/environment-operation@2": "d54251d6afe8d5763b1365bdb1488a4a82575ffcacff1bd88996c476be0cae00"
+    "schema:wholeloop/environment-operation@2": "d54251d6afe8d5763b1365bdb1488a4a82575ffcacff1bd88996c476be0cae00",
+    "schema:wholeloop/mutation-counters@1": "af51f03a0fc8538b8383ec78f7cb22d5dcd9faa74366f062a6334ccb621c1265",
+    "schema:wholeloop/private-acceptance@1": "65ec1e6291a7adc437acdc923ca04dfe788d168b5dd204621354eadc712d65d8",
+    "schema:wholeloop/private-case-input@1": "dba51e9d8bb1a9a4a867df74a7e1b3a3092a97a5d7b682d17a47360325b92339",
+    "schema:wholeloop/private-evaluation@1": "aa624aadad1fb86391799f74e322dbccb7d60c380248eaa175d0b96a5dca224e",
+    "schema:wholeloop/private-evaluation-observation@1": "bbaa85e99f148ed809722b5a6338f32ad7c830d83615d8e79b1c130eee2619b3",
+    "schema:wholeloop/acceptance-sensitivity-request@1": "216ad7c8ed3cc0353e2554925c1329908c7778a313ea20a6d81dd45549d861c2",
+    "schema:wholeloop/acceptance-sensitivity@1": "a7f6290cc30ea3918653d7e0f7c958bc2cae0334a7df2076f8b2f77c1095a5db",
+    "output:wholeloop/private-acceptance-schema@1": "574c4bac62f0b24ca9bd039c26164b375c48436ec730467e1689a9ee5b508436",
+    "output:wholeloop/private-acceptance-prepared@1": "a874094bd95796748783350eb10fdb13a441cd266d2233ebce7eafa6206733f0",
+    "output:wholeloop/private-acceptance-inspection@1": "f5f1122b98532f7c4f8f046f3ec7a82a5b462cbe86c107c6f33cb97dcb6b8388",
+    "output:wholeloop/acceptance-sensitivity@1": "59ba227777ed15dadf8318b07542c1e4aca28d8a4f8a4549f5c7011d5211ff34"
   },
   "commands": [
     {
@@ -1734,6 +1745,30 @@
       "arguments": "",
       "schema": "wholeloop/browser-schema@1",
       "options": []
+    },
+    {
+      "path": "delivery private-schema",
+      "arguments": "",
+      "schema": "wholeloop/private-acceptance-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery private-plan",
+      "arguments": "",
+      "schema": "wholeloop/private-acceptance-prepared@1",
+      "options": ["--file <file>", "--root <path>", "--store <path>"]
+    },
+    {
+      "path": "delivery private-inspect",
+      "arguments": "",
+      "schema": "wholeloop/private-acceptance-inspection@1",
+      "options": ["--digest <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery private-sensitivity",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-sensitivity@1",
+      "options": ["--file <file>", "--root <path>", "--store <path>"]
     }
   ],
   "exitCodes": {

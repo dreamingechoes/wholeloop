@@ -3,7 +3,7 @@
 > **TL;DR** — Pin objective cases, start the declared Docker application and execute each case with a stable key. Wholeloop compares complete real responses or command output; unit suites and manual acceptance remain separate evidence.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The fixed host, exact effect/candidate binding, complete output checks, restart/persistence and once-per-round suite reuse pass local automated verification and actual Docker observations. [Browser execution](./delivery-browsers.md) is also available; private semantic evaluation remains P6-17. No native model or vendor account is required for this evaluator.
+> **Status: ✅ implemented.** The fixed host, exact effect/candidate binding, complete output checks, restart/persistence and once-per-round suite reuse pass local automated verification and actual Docker observations. [Browser execution](./delivery-browsers.md) is also available; [private HTTP regression evaluation](./delivery-private-acceptance.md) is available. Semantic/native certification remains separate. No native model or vendor account is required for this evaluator.
 
 ## Inspect the contract without executing anything
 

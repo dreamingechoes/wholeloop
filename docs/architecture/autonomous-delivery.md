@@ -7,7 +7,7 @@
 
 ## Observed behavior hosts
 
-Pinned acceptance cases execute objective [API/CLI](../tutorials/delivery-behaviors.md) and [browser](../tutorials/delivery-browsers.md) behavior in exact owned environments. The browser uses the official MCP SDK, fixed native tool constraints and a private registered Docker exec pipe. Fresh observed references, exact page/tab context, complete bounded PNGs and separate backend roundtrips prevent screenshots or cosmetic state from establishing persistence. Original grants, effect budgets, candidate binding and unknown-action refusal apply to every host. Independent private evaluation remains P6-17; native/model and independent host certification retain their separate scope.
+Pinned acceptance cases execute objective [API/CLI](../tutorials/delivery-behaviors.md) and [browser](../tutorials/delivery-browsers.md) behavior in exact owned environments. The browser uses the official MCP SDK, fixed native tool constraints and a private registered Docker exec pipe. Fresh observed references, exact page/tab context, complete bounded PNGs and separate backend roundtrips prevent screenshots or cosmetic state from establishing persistence. Original grants, effect budgets, candidate binding and unknown-action refusal apply to every host. [Private HTTP evaluation](../tutorials/delivery-private-acceptance.md) mounts pinned inputs only into the owned verifier and requires relevant observed red/green sensitivity for applicable regression acceptance. A candidate-only pass leaves aggregate/sealed acceptance unestablished; native/model and independent host certification retain their separate scope.
 
 ## Read the proposal
 

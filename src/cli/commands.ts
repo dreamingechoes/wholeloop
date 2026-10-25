@@ -8,6 +8,35 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery private-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/private-acceptance-schema@1',
+    summary: 'Show private evaluator inputs and observed sensitivity contracts',
+  },
+  {
+    path: 'delivery private-plan',
+    arguments: '',
+    options: ['--file <file>', '--root <path>', '--store <path>'],
+    schema: 'wholeloop/private-acceptance-prepared@1',
+    summary: 'Pin private evaluator inputs outside builder workspaces',
+  },
+  {
+    path: 'delivery private-inspect',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/private-acceptance-inspection@1',
+    summary: 'Inspect private definition identity without exposing hidden input values',
+  },
+  {
+    path: 'delivery private-sensitivity',
+    arguments: '',
+    options: ['--file <file>', '--root <path>', '--store <path>'],
+    schema: 'wholeloop/acceptance-sensitivity@1',
+    summary: 'Compare actual unchanged baseline and current candidate observations',
+  },
+
+  {
     path: 'delivery browser-schema',
     arguments: '',
     options: [],

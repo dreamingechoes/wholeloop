@@ -86,4 +86,4 @@ The evaluator creates only disposable owned task applications, Chromium instance
 Protocol fixtures and capability/schema inspection do not certify actual native coding clients, vendor accounts, independent controller platforms or human acceptance. Keep those checks separately labelled in [manual verification](../../roadmap/manual-verification.md).
 
 <!-- docnav -->
-[◀ Execute API and CLI acceptance](delivery-behaviors.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Execute API and CLI acceptance](delivery-behaviors.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Private acceptance and regression sensitivity ▶](delivery-private-acceptance.md)

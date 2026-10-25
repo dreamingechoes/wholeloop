@@ -21,7 +21,7 @@ export async function observeHttp(
     if (response.url !== url || response.redirected)
       throw new AcceptanceError('wrong-response-origin')
     const location = response.headers.get('location')
-    if (location && new URL(location, url).origin !== origin)
+    if (location && new URL(location, url).origin !== new URL(origin).origin)
       throw new AcceptanceError('foreign-response-location')
     if (![null, 'identity'].includes(response.headers.get('content-encoding')))
       throw new AcceptanceError('encoded-response-unavailable')

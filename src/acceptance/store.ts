@@ -132,6 +132,30 @@ export class DeliveryAcceptance {
       environment,
     )
   }
+  observedResults(digest: string, caseId: string) {
+    const { plan } = this.get(digest)
+    this.test(plan, caseId)
+    return this.results(digest, caseId).sort((a, b) => a.sequence - b.sequence)
+  }
+  async currentObservedCase(digest: string, caseId: string, boundary: AcceptanceBoundary) {
+    const { plan } = this.get(digest),
+      bindings = await boundary.observe(plan)
+    this.bindings(plan, bindings)
+    const result = this.observedResults(digest, caseId).at(-1),
+      state = this.currentState(plan.run)
+    const current =
+      !!result &&
+      sameAcceptanceInputs(result.bindings, bindings) &&
+      (!state || (state.plans.at(-1)?.digest === plan.plan && state.source === plan.source))
+    return { bindings, ...(result ? { result } : {}), current }
+  }
+  /** Historical controller receipts remain readable after candidate changes; this dispatches nothing. */
+  observedCase(digest: string, caseId: string, key: string) {
+    const { plan } = this.get(digest)
+    const test = this.test(plan, caseId)
+    this.key(key)
+    return this.result(`${this.casePath(digest, caseId)}/${key}/result.json`, digest, test)
+  }
   async executeCase(
     digest: string,
     caseId: string,
@@ -422,14 +446,20 @@ export class DeliveryAcceptance {
         const results = this.results(digest, test.id).sort((a, b) => a.sequence - b.sequence)
         const result = results.at(-1)
         if (result?.provenance === 'fixture') fixture = true
+        let status: AcceptanceStatus = !result
+          ? 'unavailable'
+          : !sameAcceptanceInputs(result.bindings, bindings)
+            ? 'stale'
+            : result.status
+        if (status === 'passed' && result && test.runner.capability === 'evaluator.private-http') {
+          const { requiredPrivateSensitivity } = await import('./sensitivity.js')
+          if (!requiredPrivateSensitivity(this, digest, test, result).allowed)
+            status = 'unavailable'
+        }
         cases.push({
           id: test.id,
           owner: test.owner,
-          status: !result
-            ? 'unavailable'
-            : !sameAcceptanceInputs(result.bindings, bindings)
-              ? 'stale'
-              : result.status,
+          status,
           evidence: result ? [contractDigest(result)] : [],
         })
       }

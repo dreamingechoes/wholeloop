@@ -24,6 +24,7 @@ pages:
   - { path: tutorials/delivery-acceptance.md, title: Behavioral acceptance and evidence }
   - { path: tutorials/delivery-behaviors.md, title: Execute API and CLI acceptance }
   - { path: tutorials/delivery-browsers.md, title: Execute isolated browser acceptance }
+  - { path: tutorials/delivery-private-acceptance.md, title: Private acceptance and regression sensitivity }
   - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }

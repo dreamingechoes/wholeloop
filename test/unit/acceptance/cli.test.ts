@@ -41,6 +41,10 @@ it('prepares and reads pinned definitions and captures budgeted bytes without Do
       reference: { id: 'playwright-mcp@0.0.83' },
       executed: false,
     })
+    expect(cli(['private-schema'])).toMatchObject({
+      schema: 'wholeloop/private-acceptance-schema@1',
+      executed: false,
+    })
     const schemas = cli(['acceptance-schema'])
     expect(schemas).toMatchObject({ schema: 'wholeloop/acceptance-schema@1', executed: false })
     expect(Object.keys(schemas.contracts)).toHaveLength(8)

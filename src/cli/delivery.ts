@@ -17,6 +17,7 @@ import { deliveryBudgetCommand } from './delivery-budgets.js'
 import { deliveryEnvironmentCommand } from './delivery-environment.js'
 import { deliveryJournalCommand } from './delivery-journal.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
+import { deliveryPrivateCommand } from './delivery-private.js'
 import { deliveryQueueCommand } from './delivery-queue.js'
 import { deliveryRecoveryCommand } from './delivery-recovery.js'
 import { CliError } from './errors.js'
@@ -31,6 +32,7 @@ export function deliveryCommand(
 ): number {
   if (
     [
+      'delivery private-sensitivity',
       'delivery environment-backend',
       'delivery environment-start',
       'delivery environment-status',
@@ -47,6 +49,8 @@ export function deliveryCommand(
       'Use the asynchronous CLI entrypoint for environment runtime operations',
       EXIT.precondition,
     )
+  if (command.startsWith('delivery private-'))
+    return deliveryPrivateCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery browser-schema') {
     io.out(
       JSON.stringify({

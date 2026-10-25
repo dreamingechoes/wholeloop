@@ -10,6 +10,7 @@ import { conformanceCommand } from './conformance.js'
 import { deliveryCommand } from './delivery.js'
 import { deliveryAcceptanceAsyncCommand } from './delivery-acceptance.js'
 import { deliveryEnvironmentRuntimeCommand } from './delivery-environment-runtime.js'
+import { deliveryPrivateAsyncCommand } from './delivery-private.js'
 import { deliveryRecoverCommand } from './delivery-recovery.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav, docsReference } from './docs.js'
@@ -218,6 +219,7 @@ export async function runAsync(
         command.path === 'fanout run' ||
         command.path === 'delivery recover' ||
         [
+          'delivery private-sensitivity',
           'delivery environment-backend',
           'delivery environment-start',
           'delivery environment-status',
@@ -280,6 +282,8 @@ export async function runAsync(
       ].includes(command.path)
     )
       return await deliveryAcceptanceAsyncCommand(command.path, parsed, root, json, io)
+    if (command.path === 'delivery private-sensitivity')
+      return await deliveryPrivateAsyncCommand(parsed, root, json, io)
     if (command.path === 'delivery recover')
       return await deliveryRecoverCommand(parsed, root, json, io)
     if (command.path === 'provider read-flags') return await flagReadCommand(parsed, root, json, io)

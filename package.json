@@ -50,7 +50,8 @@
     "eval:grounding": "npm run build && node dist/wl.mjs eval grounding test/evals/grounding/corpus.json",
     "eval:environments": "node scripts/check-environments.mjs",
     "eval:behaviors": "node scripts/check-behaviors.mjs",
-    "eval:browsers": "node scripts/check-browsers.mjs"
+    "eval:browsers": "node scripts/check-browsers.mjs",
+    "eval:private": "node scripts/check-private.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

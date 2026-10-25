@@ -8376,6 +8376,322 @@
           "additionalProperties": true
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/private-acceptance-schema@1"
+        },
+        "contracts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "plan": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "input": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "observation": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "sensitivityRequest": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "sensitivity": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "mutation": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "plan",
+            "input",
+            "observation",
+            "sensitivityRequest",
+            "sensitivity",
+            "mutation"
+          ]
+        },
+        "runner": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "executed": {
+          "type": "boolean",
+          "const": false
+        }
+      },
+      "required": ["schema", "contracts", "runner", "executed"]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/private-acceptance-prepared@1"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "run": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "plan": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "case": {
+          "type": "string"
+        },
+        "requests": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "assertions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "privacy": {
+          "type": "string",
+          "const": "controller-only"
+        },
+        "executed": {
+          "type": "boolean",
+          "const": false
+        },
+        "acceptance": {
+          "type": "string",
+          "const": "not-established"
+        },
+        "publication": {
+          "type": "string",
+          "const": "not-performed"
+        }
+      },
+      "required": [
+        "schema",
+        "digest",
+        "run",
+        "revision",
+        "plan",
+        "source",
+        "case",
+        "requests",
+        "assertions",
+        "privacy",
+        "executed",
+        "acceptance",
+        "publication"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/private-acceptance-inspection@1"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "run": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "plan": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "case": {
+          "type": "string"
+        },
+        "requests": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "assertions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "privacy": {
+          "type": "string",
+          "const": "controller-only"
+        },
+        "executed": {
+          "type": "boolean",
+          "const": false
+        },
+        "acceptance": {
+          "type": "string",
+          "const": "not-established"
+        },
+        "publication": {
+          "type": "string",
+          "const": "not-performed"
+        }
+      },
+      "required": [
+        "schema",
+        "digest",
+        "run",
+        "revision",
+        "plan",
+        "source",
+        "case",
+        "requests",
+        "assertions",
+        "privacy",
+        "executed",
+        "acceptance",
+        "publication"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/acceptance-sensitivity@1"
+        },
+        "plan": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "case": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "maxLength": 64
+        },
+        "definition": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "status": {
+          "type": "string",
+          "enum": ["proven", "unproven", "not-applicable", "stale", "unavailable"]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "baseline": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "environment": {
+              "type": "string",
+              "pattern": "^environment-[a-f0-9]{32}$",
+              "maxLength": 44
+            },
+            "key": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "maxLength": 64
+            },
+            "result": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            }
+          },
+          "required": ["environment", "key"]
+        },
+        "candidate": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "environment": {
+              "type": "string",
+              "pattern": "^environment-[a-f0-9]{32}$",
+              "maxLength": 44
+            },
+            "key": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "maxLength": 64
+            },
+            "result": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            }
+          },
+          "required": ["environment", "key"]
+        },
+        "mutation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["observed", "unavailable"]
+            },
+            "reason": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "evidence": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            }
+          },
+          "required": ["status", "reason"]
+        },
+        "semanticSensitivity": {
+          "type": "string",
+          "const": "unknown"
+        },
+        "publication": {
+          "type": "string",
+          "const": "not-performed"
+        }
+      },
+      "required": [
+        "schema",
+        "plan",
+        "case",
+        "definition",
+        "status",
+        "reason",
+        "candidate",
+        "mutation",
+        "semanticSensitivity",
+        "publication"
+      ]
     }
   ],
   "$defs": {

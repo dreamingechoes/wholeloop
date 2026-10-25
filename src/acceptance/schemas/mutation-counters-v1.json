@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/mutation-counters@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/mutation-counters@1"
+    },
+    "engine": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "complete": {
+      "type": "boolean",
+      "const": true
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "killed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "survived": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "timedOut": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "uncovered": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "errors": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    }
+  },
+  "required": [
+    "schema",
+    "engine",
+    "version",
+    "complete",
+    "total",
+    "killed",
+    "survived",
+    "timedOut",
+    "uncovered",
+    "errors"
+  ]
+}

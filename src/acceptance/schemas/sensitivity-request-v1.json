@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/acceptance-sensitivity-request@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/acceptance-sensitivity-request@1"
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "case": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "maxLength": 64
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "type": "string",
+          "pattern": "^environment-[a-f0-9]{32}$",
+          "maxLength": 44
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "maxLength": 64
+        }
+      },
+      "required": ["environment", "key"]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "type": "string",
+          "pattern": "^environment-[a-f0-9]{32}$",
+          "maxLength": 44
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "maxLength": 64
+        }
+      },
+      "required": ["environment", "key"]
+    }
+  },
+  "required": ["schema", "plan", "case", "candidate"]
+}

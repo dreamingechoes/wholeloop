@@ -3,7 +3,7 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-16 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-17 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
@@ -423,7 +423,7 @@ The available Linux controller container is not that proof. Actual native client
 
 ## P6-17 · Independent acceptance and test sensitivity
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-15, P6-03
+**Status:** ✅ · **Size:** M · **Depends on:** P6-15, P6-03
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -433,13 +433,15 @@ The available Linux controller container is not that proof. Actual native client
 
 **Acceptance criteria:**
 
-- [ ] A builder cannot read/edit hidden inputs or weaken the pinned acceptance plan.
-- [ ] Applicable regression cases fail on the actual baseline and pass on the candidate.
-- [ ] Unknown semantic sensitivity is not labelled proven by constant-assertion lint or a model statement.
+- [x] A builder cannot read/edit hidden inputs or weaken the pinned acceptance plan.
+- [x] Applicable regression cases fail on the actual baseline and pass on the candidate.
+- [x] Unknown semantic sensitivity is not labelled proven by constant-assertion lint or a model statement.
 
 **Tests** — QA-03–QA-04 and QA-06: actual denied input access, red/green fixture and mutation-host unavailable cases.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/04-behavioral-qa.md); determinism and testing, verification, runtime boundaries.
+
+**Evidence** — Twenty-two new unit regressions, the 727-case focused pre-byte-fix run and final complete checks pass. Complete checks execute 2686 tests in 119 files on macOS arm64/Node 24.22.0 (340.60 seconds) and isolated Debian Linux arm64/Node 24.22.0 (76.69 seconds), plus all remaining checks. Actual private Docker observations deny input/controller reads and input writes, preserve the same clean-base/current-candidate test/program, classify unavailable mutation/new-feature cases, retain synthetic native counters as reported data, withhold aggregate/sealed acceptance without relevant baseline proof and invalidate candidate edits. All nine pass with a large Unicode case and exact retirement; nine API/CLI and five browser regressions also pass. Preserve initial helper-budget/type/fixture failures and the actual Unicode-copy failure: its hash guard refuses corruption, bounded canonical byte framing fixes it, and the unchanged one-MiB/256-KiB/two-MiB bounds pass. Node 20.0.0 Linux HTTP/byte fixtures and inert schema parity pass. Add four commands, eleven source/output identities, guide, ADR-0108 and named enforcer while preserving old declarations. Same-user controller privacy, real mutation-engine semantics and native/model/independent Docker-host certification remain outside these observations.
 
 ---
 

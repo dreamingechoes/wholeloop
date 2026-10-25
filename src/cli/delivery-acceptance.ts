@@ -106,7 +106,14 @@ export async function deliveryAcceptanceAsyncCommand(
               environment.environment,
               caseId,
             )
-          : new DockerBehaviorHost(acceptance, digest, environment.environment, caseId)
+          : test?.runner.capability === 'evaluator.private-http'
+            ? new (await import('../acceptance/docker-private.js')).DockerPrivateHost(
+                acceptance,
+                digest,
+                environment.environment,
+                caseId,
+              )
+            : new DockerBehaviorHost(acceptance, digest, environment.environment, caseId)
       receipt = await acceptance.executeCase(
         digest,
         caseId,

@@ -71,6 +71,15 @@ describe('grounded native browser observations', () => {
   ])('refuses an unowned browser route %j', (path) => {
     expect(() => ownedBrowserUrl('http://web:3000', path)).toThrow()
   })
+  it('compares canonical default HTTP ports without treating an owned page as foreign', () => {
+    expect(ownedBrowserUrl('http://web:80', '/')).toBe('http://web/')
+    expect(
+      browserPage(page.replaceAll('http://web:3000/', 'http://web/'), 'http://web:80').url,
+    ).toBe('http://web/')
+    expect(browserTabs('### Result\n- 0: (current) [](http://web/)', 'http://web:80')).toBe(
+      'http://web/',
+    )
+  })
   it('preserves an explicitly declared SPA hash route and query', () => {
     expect(ownedBrowserUrl('http://web:3000', '/?title=two#/tasks')).toBe(
       'http://web:3000/?title=two#/tasks',

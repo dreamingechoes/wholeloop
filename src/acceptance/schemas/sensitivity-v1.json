@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/acceptance-sensitivity@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/acceptance-sensitivity@1"
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "case": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "maxLength": 64
+    },
+    "definition": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "status": {
+      "type": "string",
+      "enum": ["proven", "unproven", "not-applicable", "stale", "unavailable"]
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 256
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "type": "string",
+          "pattern": "^environment-[a-f0-9]{32}$",
+          "maxLength": 44
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "maxLength": 64
+        },
+        "result": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        }
+      },
+      "required": ["environment", "key"]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "type": "string",
+          "pattern": "^environment-[a-f0-9]{32}$",
+          "maxLength": 44
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "maxLength": 64
+        },
+        "result": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        }
+      },
+      "required": ["environment", "key"]
+    },
+    "mutation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["observed", "unavailable"]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "evidence": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        }
+      },
+      "required": ["status", "reason"]
+    },
+    "semanticSensitivity": {
+      "type": "string",
+      "const": "unknown"
+    },
+    "publication": {
+      "type": "string",
+      "const": "not-performed"
+    }
+  },
+  "required": [
+    "schema",
+    "plan",
+    "case",
+    "definition",
+    "status",
+    "reason",
+    "candidate",
+    "mutation",
+    "semanticSensitivity",
+    "publication"
+  ]
+}

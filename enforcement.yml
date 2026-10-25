@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-private-acceptance
+    enforcers: [src/acceptance/private-plan.ts#PrivateAcceptance, src/acceptance/docker-private.ts#DockerPrivateHost, src/acceptance/private-executor.ts, src/acceptance/private-seed.ts#privateSeedInput, src/acceptance/sensitivity.ts#requiredPrivateSensitivity, src/acceptance/store.ts#DeliveryAcceptance, test/unit/acceptance/private.test.ts, test/unit/acceptance/private-engine.test.ts, test/unit/acceptance/private-identity.test.ts, test/evals/private/run.ts]
   - id: delivery-browser-execution
     enforcers: [src/acceptance/docker-browser.ts#DockerBrowserHost, src/acceptance/browser-client.ts#BrowserMcpSession, src/acceptance/browser-transport.ts#BrowserStdioTransport, src/environment/operations.ts#EnvironmentOperations, test/unit/acceptance/browser.test.ts, test/unit/acceptance/browser-client.test.ts, test/unit/environment/interactive.test.ts, test/evals/browser/run.ts]
   - id: delivery-behavior-execution

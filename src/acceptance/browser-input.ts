@@ -152,7 +152,7 @@ export function ownedBrowserUrl(origin: string, path: string) {
   } catch {
     throw new AcceptanceError('browser-invalid-url')
   }
-  if (url.origin !== origin || url.username || url.password)
+  if (url.origin !== new URL(origin).origin || url.username || url.password)
     throw new AcceptanceError('browser-wrong-origin')
   return url.href
 }

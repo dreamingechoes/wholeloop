@@ -126,7 +126,7 @@ export function ownedRequestUrl(origin: string, path: string) {
   } catch {
     throw new AcceptanceError('invalid-request-url')
   }
-  if (url.origin !== origin || url.username || url.password || url.hash)
+  if (url.origin !== new URL(origin).origin || url.username || url.password || url.hash)
     throw new AcceptanceError('wrong-request-origin')
   return url.href
 }

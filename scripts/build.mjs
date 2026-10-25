@@ -2,6 +2,7 @@ import { chmod, readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 import { harnessAssets } from './harness-assets.mjs'
+import { privateEvaluator } from './private-evaluator.mjs'
 
 const { version } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'))
 const outfile = 'dist/wl.mjs'
@@ -20,6 +21,7 @@ await build({
   },
   define: {
     __WL_VERSION__: JSON.stringify(version),
+    __WL_PRIVATE_EVALUATOR__: JSON.stringify(await privateEvaluator(import.meta.url)),
     __WL_HARNESS__: JSON.stringify(harnessAssets(fileURLToPath(new URL('../', import.meta.url)))),
   },
   legalComments: 'none',

@@ -3,7 +3,7 @@
 > **TL;DR** — Execute the approved behavior against the actual candidate and bind evidence to its bytes. Preserve unit/suite checks and adversarial review. Machine acceptance must be independently observable and must never impersonate a person's local testing.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-14 implements pinned coverage/ownership, controller-host evidence contracts, current-candidate validation, human notes and immutable budgeted artifacts. P6-15 adds actual declared CLI/API execution, complete output/response assertions, service restart/persistence, exact client-close observation and pinned-round suite reuse. P6-16 adds actual private-stdio MCP browser journeys, grounded current references, bounded complete PNGs and UI/restart/fresh-context/backend persistence. Private evaluation remains P6-17. Current testability checks and semantic gates remain required foundations.
+> **Status: 🚧 partial.** P6-14 implements pinned coverage/ownership, controller-host evidence contracts, current-candidate validation, human notes and immutable budgeted artifacts. P6-15 adds actual declared CLI/API execution, complete output/response assertions, service restart/persistence, exact client-close observation and pinned-round suite reuse. P6-16 adds actual private-stdio MCP browser journeys, grounded current references, bounded complete PNGs and UI/restart/fresh-context/backend persistence. P6-17 adds evaluator-only HTTP inputs, actual clean-base/current-candidate sensitivity, optional native counter observations and aggregate applicability enforcement. Semantic truth and native/model certification remain separately scoped. Current testability checks and semantic gates remain required foundations.
 
 ## Acceptance plan
 
@@ -56,18 +56,20 @@ The [browser execution guide](../../../docs/tutorials/delivery-browsers.md) defi
 
 Builders cannot edit pinned acceptance definitions, required check configuration, evaluator policies or hidden case inputs. The controller mounts acceptance inputs separately into an evaluator/backend and exposes only needed outcomes to the builder. A same-user shared filesystem cannot claim hidden evaluation.
 
+The [private HTTP reference host](../../../docs/tutorials/delivery-private-acceptance.md) implements the evaluator-only mount and immutable definition boundary. Public inspection returns identity/counts rather than hidden requests or expected values. Applicable regression sensitivity also gates aggregate acceptance, so a candidate-only pass cannot establish it. A sealed report retains its actual failed/unavailable state.
+
 For a regression fix, execute the relevant test against an isolated baseline and then the candidate. Require an observed relevant baseline failure and candidate success when the plan marks red/green sensitivity applicable. New-feature baseline absence and pre-existing broken setup are different outcomes, not manufactured failures.
 
 Offer bounded repository-native mutation tests where available; do not add a universal mutation dependency or claim semantic coverage from the existing constant-assertion scan. A model-generated evaluator is still a model: prefer deterministic assertions for objective outcomes and record uncertainty for qualitative judgments.
 
-Proposed outcomes: `passed`, `failed`, `pending-human`, `unavailable`, `interrupted`, `stale`. Only complete current required coverage can yield delegated machine acceptance. Adversarial reviewers cannot refute an actual failed execution into success.
+Implemented case/report outcomes: `passed`, `failed`, `pending-human`, `unavailable`, `interrupted`, `stale`. Only complete current required coverage can yield delegated machine acceptance. Adversarial reviewers cannot refute an actual failed execution into success.
 
 ## Acceptance and tests
 
 - [x] **QA-01:** Missing criteria coverage, wrong candidate, forged process metadata and stale artifacts refuse acceptance.
 - [x] **QA-02:** A feature with a green unit suite but broken persistence/UI behavior fails a real behavior case. P6-15 observes actual API persistence failure and repair; P6-16 observes cosmetic UI success/capture followed by real restart/fresh-context/backend failure and a repaired roundtrip.
-- [ ] **QA-03:** An empty-title regression fails on the baseline and passes on the candidate with matching test identity.
-- [ ] **QA-04:** A builder cannot modify hidden acceptance inputs or grant evaluator authority; validate the actual backend boundary.
+- [x] **QA-03:** An empty-title regression fails on the baseline and passes on the candidate with matching test identity.
+- [x] **QA-04:** Actual owned application-container reads/writes of private evaluator inputs and controller files are denied; pinned definitions cannot change after builder admission or confer authority. Native coding-client containment retains its separate observed-host acceptance.
 - [x] **QA-05:** Missing browser access, unsupported devices, timing failure and incomplete capture remain unavailable/failed, not passed.
 - [x] **QA-06:** A repaired candidate reruns required evidence; previous success and exhausted budgets remain historical.
 - [ ] **QA-07:** Human-only criteria block automated publication even when all machine cases pass.

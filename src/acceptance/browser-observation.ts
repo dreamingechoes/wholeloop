@@ -15,7 +15,7 @@ export function browserPage(text: string, origin: string) {
   } catch {
     throw new AcceptanceError('browser-url-unobserved')
   }
-  if (url.origin !== origin || url.username || url.password)
+  if (url.origin !== new URL(origin).origin || url.username || url.password)
     throw new AcceptanceError('browser-wrong-origin')
   const snapshot = fenced[0]?.[1] ?? ''
   if (!snapshot.trim() || snapshot.split('\n').length > 10000)
@@ -48,7 +48,7 @@ export function browserTabs(text: string, origin: string) {
   } catch {
     throw new AcceptanceError('browser-context-unobserved')
   }
-  if (url.origin !== origin || url.username || url.password)
+  if (url.origin !== new URL(origin).origin || url.username || url.password)
     throw new AcceptanceError('browser-wrong-origin')
   return url.href
 }
