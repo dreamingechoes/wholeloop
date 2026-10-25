@@ -40,6 +40,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery environment-lifecycle-schema` | `wholeloop/environment-lifecycle-schema@1` | Show owned stop, reconciliation and explicit retirement contracts |
+| `wl delivery environment-stop` | `wholeloop/environment-lifecycle-receipt@1` | Stop exact owned resources and retain data and evidence |
+| `wl delivery environment-reconcile` | `wholeloop/environment-lifecycle-receipt@1` | Recover an interrupted owned stop or retirement without replaying startup |
+| `wl delivery environment-retire` | `wholeloop/environment-lifecycle-receipt@1` | Explicitly retire exact owned resources after observed shutdown |
 | `wl delivery environment-runtime-schema` | `wholeloop/environment-runtime-schema@1` | Show owned Docker runtime contracts without starting resources |
 | `wl delivery environment-backend` | `wholeloop/environment-backend-preflight@1` | Observe local Docker capacity and cached images without provisioning |
 | `wl delivery environment-start` | `wholeloop/environment-provision-result@1` | Provision an explicitly authorized owned application environment |

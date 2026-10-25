@@ -289,7 +289,20 @@
     "schema:wholeloop/environment-evaluation@1": "bc7684402f97d393042c82b91db371f2cbc576e2ee3595b136c3acf8de94f974",
     "schema:wholeloop/environment-provision-request@1": "c091ebe240e3e45065b0f302ebd9449253bcea454b6e09a070041aa90b07d523",
     "schema:wholeloop/environment-runtime-snapshot@1": "217025d4606584246eb43adaa2d4b5a52067194cbafb2dd2e03ed635e7e9051a",
-    "schema:wholeloop/environment-runtime@1": "96fc6bd64242ffda736fecf707bffcef6120a84cdea31e616723d24551ed81af"
+    "schema:wholeloop/environment-runtime@1": "96fc6bd64242ffda736fecf707bffcef6120a84cdea31e616723d24551ed81af",
+    "output:wholeloop/environment-lifecycle-receipt@1": "849176743a563556b12a4d00d4cdd490d082b2097ae702d163555f99462f55db",
+    "output:wholeloop/environment-lifecycle-schema@1": "c9d3cdd0a4896661be26a94a438621e491d4e5d36eb557ae9b8bfd91d9a419e2",
+    "schema:wholeloop/environment-fence@1": "c3828f6a607feeee0dbe3e5724ec49ec5ec0eab801711719d07ef88043549fb1",
+    "schema:wholeloop/environment-lifecycle-claim@1": "8b66bf71ca07c634a5ca61162dbe1ef0e5ccb533ac82bb419d60e28ab35015d4",
+    "schema:wholeloop/environment-lifecycle-receipt@1": "eb94404dd3d4bca6d011a0fa8b0595ceb17c0baf3ecf462dde267b9ae2f7c88e",
+    "schema:wholeloop/environment-lifecycle-release@1": "e7791dd2b43bdeaac92097a59d2b6d91daf3840571ab4fb06b2d783d99da19eb",
+    "schema:wholeloop/environment-lifecycle-request@1": "0b0e50b0bc0e4031a17a094b521c9727b9bacbf61e9472f2feecab780d6e2c98",
+    "schema:wholeloop/environment-operation-cancel@1": "ebcbb2bc667ad2b33971c039e1b6d70d814595f0e2697646cfbdf2ebbd232242",
+    "schema:wholeloop/environment-operation-close@1": "8c4fe815bed2055f31c96b2c4ec4997191d4ebf3fe48f6a202ae3ef2f25ab9b8",
+    "schema:wholeloop/environment-operation-outcome@1": "9bc94b1090f81f935ea4d1e10a0810cf2a4c4830b72df605e7b2326f0970f0d5",
+    "schema:wholeloop/environment-operation-started@1": "4fce582dfcc0f098a531d4bc7c4fdf79a8e00af026596e2588f4d66204367cab",
+    "schema:wholeloop/environment-operation@1": "7008060c9a74b1cee57dead86bf760bf819e59fdd6e392f72585d951b80b9714",
+    "schema:wholeloop/environment-provision-tracking@1": "1dec09db488b071de0d22aa3ae5baaa0e0a1f94a2b2a90d9f2fab0a8dc35a73e"
   },
   "commands": [
     {
@@ -1594,6 +1607,30 @@
       "arguments": "",
       "schema": "wholeloop/environment-status@1",
       "options": ["--environment <environment-id>", "--store <path>"]
+    },
+    {
+      "path": "delivery environment-lifecycle-schema",
+      "arguments": "",
+      "schema": "wholeloop/environment-lifecycle-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery environment-stop",
+      "arguments": "",
+      "schema": "wholeloop/environment-lifecycle-receipt@1",
+      "options": ["--file <lifecycle.json>", "--root <directory>", "--store <path>"]
+    },
+    {
+      "path": "delivery environment-reconcile",
+      "arguments": "",
+      "schema": "wholeloop/environment-lifecycle-receipt@1",
+      "options": ["--file <lifecycle.json>", "--root <directory>", "--store <path>"]
+    },
+    {
+      "path": "delivery environment-retire",
+      "arguments": "",
+      "schema": "wholeloop/environment-lifecycle-receipt@1",
+      "options": ["--file <lifecycle.json>", "--root <directory>", "--store <path>"]
     }
   ],
   "exitCodes": {

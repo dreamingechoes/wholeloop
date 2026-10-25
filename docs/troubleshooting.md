@@ -124,7 +124,7 @@ Use [checkpoint and recovery inspection](./tutorials/delivery-checkpoints.md) to
 
 ## Docker environment unavailable or stale
 
-Use the [Docker environment guide](./tutorials/delivery-docker.md) and retain the exact runtime ID/history. Preflight starts nothing: verify the explicit image cache, observed engine/platform support, requested capacity including helper/proxy overhead and current private grant. Scoped egress or secret delivery is explicitly unavailable. A changed candidate, old ready record or successful Docker client exit cannot establish readiness. Never retry an issued ambiguous creation by name or execute an undo declaration automatically; lifecycle reconciliation remains separate.
+Use the [Docker environment guide](./tutorials/delivery-docker.md) and retain the exact runtime ID/history. Preflight starts nothing: verify the explicit image cache, observed engine/platform support, requested capacity including helper/proxy overhead and current private grant. Scoped egress or secret delivery is explicitly unavailable. A changed candidate, old ready record or successful Docker client exit cannot establish readiness. Never retry an issued ambiguous creation by name or execute an undo declaration automatically; use the [lifecycle guide](./tutorials/delivery-lifecycle.md) for explicit observed stop/reconciliation/retirement. Unknown invokers or resource identities retain data; no stored PID is signaled.
 
 <!-- docnav -->
-[◀ Docker application environments](tutorials/delivery-docker.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)
+[◀ Environment stop and retirement](tutorials/delivery-lifecycle.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)

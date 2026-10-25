@@ -3,6 +3,7 @@ import { readSourceFile } from '../delivery/input.js'
 import { DockerCli } from '../environment/docker-command.js'
 import { DOCKER_REFERENCE_HELPER, dockerPreflight } from '../environment/docker-policy.js'
 import { inspectEnvironment } from '../environment/inspect.js'
+import { EnvironmentLifecycle, type EnvironmentLifecycleRequest } from '../environment/lifecycle.js'
 import { DeliveryEnvironments, type EnvironmentProvisionRequest } from '../environment/provision.js'
 import { EnvironmentRecipes } from '../environment/recipe-store.js'
 import { EnvironmentResources } from '../environment/runtime.js'
@@ -40,6 +41,25 @@ export async function deliveryEnvironmentRuntimeCommand(
       if (typeof id !== 'string')
         throw new CliError('Provide --environment <environment-id>', EXIT.input)
       receipt = await inspectEnvironment(new EnvironmentResources(recipes.files), id, driver)
+    } else if (
+      [
+        'delivery environment-stop',
+        'delivery environment-reconcile',
+        'delivery environment-retire',
+      ].includes(command)
+    ) {
+      if (typeof options['--file'] !== 'string')
+        throw new CliError('Provide --file <lifecycle.json>', EXIT.input)
+      const boundary =
+        typeof options['--root'] === 'string' ? resolve(root, options['--root']) : root
+      const request = JSON.parse(
+        readSourceFile(boundary, options['--file'], 65536),
+      ) as EnvironmentLifecycleRequest
+      if (request.action !== command.slice('delivery environment-'.length))
+        throw new CliError('Lifecycle action must match the selected command', EXIT.input)
+      const result = await new EnvironmentLifecycle(recipes.files, driver).execute(request)
+      receipt = result
+      if (result.state === 'unknown') code = EXIT.precondition
     } else {
       if (typeof options['--file'] !== 'string')
         throw new CliError('Provide --file <provision.json>', EXIT.input)

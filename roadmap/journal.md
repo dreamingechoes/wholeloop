@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-25 · P6-13 complete — observed owned environment lifecycle
+
+- Add digest-bound operator lifecycle requests, immutable private control records, actual native dispatch registration and fixed cancellation channels. Never signal stored PIDs or reconstruct authority from worker/process claims. Serialize cleanup controllers and preserve ambiguous old invokers rather than inventing tracking.
+- Permanently fence startup, stop exact owned containers, preserve failure volumes/evidence and explicitly retire containers/networks/volumes only after shutdown and positive absence. Recover IDs from full original intent tuples, refuse foreign/replaced resources, inspect lost removals and release observed stopped compute reservations. Preserve the old ledger and all topic/worktree rules. Refuse credential-bearing metadata before writing and reserve snapshot capacity for lifecycle completion. Prevent the old starter from overwriting a fenced lifecycle state.
+- Fourteen lifecycle cases, four actual native-process cases, one extra history-budget regression and closed-contract tables pass; six focused environment files pass 110 cases. Complete checks pass 2504 tests in 108 files on macOS arm64/Node 24.22.0 (362.24 seconds) and isolated Debian Linux arm64/Node 24.22.0 (88.80 seconds), plus all other checks. Preserve sandbox/fixture/schema failures and the first macOS startup-fixture timeout; correct only fixture setup/margins and pass the final candidate. The exact schema instruction passes on macOS Node 24 and Linux Node 20/24 with ShellCheck.
+- Seventeen actual Docker observations pass on this macOS controller/Linux aarch64 daemon, including retained data, a same-name foreign volume and deliberately killed retirement controllers recovered by fresh compiled CLI processes. Retain all reports and initial failures. Candidate archive 2fed11a246aa3cc9c92fcc460f38b72883ce93122939b72b8ba869de76c86f4e; copied core ee539c3d00c4772eab9a01f691944bf21530c8ba2c9186a228154ad2fa3172a6. Add four commands, thirteen schema/output identities, guide, ADR-0104 and two enforced rules without changing prior declarations. Recheck final evidence-only docs/package, commit P6-13 (51/88 complete, P6-12 host-acceptance open, 22 new implementation tasks pending) and continue P6-14. No native model, account, publication or merge occurs.
+
 ## 2026-10-25 · P6-12 implementation complete — reference Docker proof; Linux host pending
 
 - Bind an actual Docker daemon and immutable helper/application images to finite owned environment resources. Persist intent before creation and exact labels/IDs before startup; retain unknown or failed resources rather than replaying writes.

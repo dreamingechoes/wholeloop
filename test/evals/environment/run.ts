@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { spawn } from 'node:child_process'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
 import { validateDeliveryShape } from '../../../src/delivery/plan.js'
@@ -8,6 +9,10 @@ import { DockerCli, dockerJson } from '../../../src/environment/docker-command.j
 import { DOCKER_REFERENCE_HELPER } from '../../../src/environment/docker-policy.js'
 import { DockerResources } from '../../../src/environment/docker-resources.js'
 import { inspectEnvironment } from '../../../src/environment/inspect.js'
+import {
+  EnvironmentLifecycle,
+  type EnvironmentLifecycleRequest,
+} from '../../../src/environment/lifecycle.js'
 import {
   DeliveryEnvironments,
   type EnvironmentProvisionResult,
@@ -65,6 +70,7 @@ async function retireFixture(
   environments: DeliveryEnvironments,
   result: EnvironmentProvisionResult,
   driver: DockerCli,
+  foreignProbe = false,
 ) {
   assert.ok(result.environment)
   const id = result.environment.record.id
@@ -75,56 +81,132 @@ async function retireFixture(
     () => {},
     new AbortController().signal,
   )
-  const resources = environments.resources.get(id).record.resources
-  // Validate every exact identity before the first destructive operation; names alone do not qualify.
-  for (const resource of resources) await runtime.owned(resource, false)
-  for (const resource of resources
-    .slice()
-    .sort(
-      (a, b) =>
-        ({ container: 0, network: 1, volume: 2 })[a.kind] -
-        { container: 0, network: 1, volume: 2 }[b.kind],
-    )) {
-    assert.ok(resource.id)
-    await runtime.owned(resource, false)
-    const removed = await driver.call([
-      resource.kind,
-      'rm',
-      ...(resource.kind === 'container' ? ['--force'] : []),
-      resource.id,
-    ])
-    assert.equal(removed.status, 'succeeded')
-    const listed = await driver.call([
-      resource.kind,
-      'ls',
-      ...(resource.kind === 'container'
-        ? ['--all', '--no-trunc']
-        : resource.kind === 'network'
-          ? ['--no-trunc']
-          : []),
-      '--filter',
-      `label=org.wholeloop.resource=${resource.token}`,
-      '--format',
-      resource.kind === 'volume' ? '{{json .Name}}' : '{{json .ID}}',
-    ])
-    assert.equal(listed.status, 'succeeded')
-    assert.equal(listed.stdout.trim(), '')
-    environments.resources.update(id, (record) => {
-      const entry = record.resources.find((entry) => entry.slot === resource.slot)
-      assert.ok(entry)
-      entry.status = 'retired'
-      record.observations.push({
-        stage: 'fixture-retirement',
-        status: 'absence-observed',
-        at: new Date().toISOString(),
-        evidence: listed.digest,
-        resource: resource.slot,
-      })
-    })
+  const input: EnvironmentLifecycleRequest = {
+    schema: 'wholeloop/environment-lifecycle-request@1',
+    id: 'fixture-stop',
+    environment: id,
+    expected: environments.resources.get(id).digest,
+    action: 'stop',
+    reason: 'Observe shutdown while retaining this disposable fixture data and evidence.',
   }
-  environments.resources.update(id, (record) => {
-    record.state = 'retired'
-  })
+  const stopped = await new EnvironmentLifecycle(environments.recipes.files, driver).execute(input)
+  assert.ok(['stopped', 'retained'].includes(stopped.state), JSON.stringify(stopped))
+  const retained = environments.resources
+    .get(id)
+    .record.resources.filter((resource) => resource.kind === 'volume')
+  for (const resource of retained) await runtime.owned(resource, false)
+  check('observed-stop-retains-owned-volumes', { id, stopped, volumes: retained.length })
+  const request: EnvironmentLifecycleRequest = {
+    ...input,
+    id: 'fixture-retire',
+    expected: environments.resources.get(id).digest,
+    action: 'retire',
+    reason: 'Explicitly retire the reviewed disposable fixture after retaining its observations.',
+  }
+  if (foreignProbe) {
+    const name = `wl-${id.slice(12)}-foreign-fixture`,
+      token = `foreign-fixture-${id}`
+    assert.equal(
+      (
+        await driver.call([
+          'volume',
+          'create',
+          '--label',
+          `org.wholeloop.foreign-fixture=${token}`,
+          name,
+        ])
+      ).status,
+      'succeeded',
+    )
+    environments.resources.update(id, (record) =>
+      record.resources.push({
+        kind: 'volume',
+        slot: 'foreign-fixture',
+        purpose: 'data',
+        name,
+        token: `unissued-${id}`,
+        status: 'intent',
+      }),
+    )
+    request.expected = environments.resources.get(id).digest
+    const refused = await new EnvironmentLifecycle(environments.recipes.files, driver).execute(
+      request,
+    )
+    assert.equal(refused.state, 'unknown')
+    const foreign = dockerJson(await driver.call(['volume', 'inspect', name])) as {
+      Labels: Record<string, string>
+    }[]
+    assert.equal(foreign[0]?.Labels['org.wholeloop.foreign-fixture'], token)
+    check('same-name-foreign-volume-is-not-retired', { id, resource: name, refused })
+    // Explicit fixture teardown owns this collision separately from the unissued environment intent.
+    assert.equal((await driver.call(['volume', 'rm', name])).status, 'succeeded')
+  }
+  const boundary = join(output.root, id)
+  mkdirSync(boundary)
+  const file = join(boundary, 'request.json'),
+    marker = join(boundary, 'result.json')
+  writeFileSync(file, JSON.stringify(request))
+  const child = async (fault?: string) => {
+    const args = fault
+      ? [
+          join(dirname(process.argv[1] ?? ''), 'lifecycle-child.mjs'),
+          environments.recipes.files.root,
+          file,
+          marker,
+          fault,
+        ]
+      : [
+          resolve('dist/wl.mjs'),
+          'delivery',
+          'environment-retire',
+          '--file',
+          'request.json',
+          '--root',
+          boundary,
+          '--store',
+          environments.recipes.files.root,
+          '--json',
+        ]
+    const command = spawn(process.execPath, args, {
+      shell: false,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        PATH: process.env.PATH,
+        HOME: process.env.HOME,
+        ...Object.fromEntries(
+          ['DOCKER_HOST', 'DOCKER_CONTEXT', 'DOCKER_CONFIG'].flatMap((key) =>
+            process.env[key] ? [[key, process.env[key]]] : [],
+          ),
+        ),
+      },
+    })
+    let stdout = '',
+      stderr = ''
+    command.stdout.setEncoding('utf8').on('data', (chunk) => {
+      stdout += chunk
+      assert.ok(stdout.length < 1048576)
+    })
+    command.stderr.setEncoding('utf8').on('data', (chunk) => {
+      stderr += chunk
+      assert.ok(stderr.length < 1048576)
+    })
+    if (!fault) command.once('close', () => writeFileSync(marker, stdout))
+
+    return await new Promise<{ code: number | null; signal: NodeJS.Signals | null }>(
+      (resolve, reject) => {
+        command.once('error', reject)
+        command.once('close', (code, signal) => resolve({ code, signal }))
+      },
+    )
+  }
+  assert.equal((await child('after-remove')).signal, 'SIGKILL')
+  const interrupted = JSON.parse(readFileSync(marker, 'utf8'))
+  assert.ok(interrupted.resource)
+  assert.equal((await child()).code, 0)
+  const receipt = JSON.parse(readFileSync(marker, 'utf8'))
+  assert.equal(receipt.state, 'retired')
+  assert.equal(environments.resources.get(id).record.state, 'retired')
+  check('killed-retirement-controller-recovers-exact-owned-absence', { id, interrupted, receipt })
 }
 try {
   await fixture(
@@ -346,7 +428,7 @@ try {
       )
       check('changed-candidate-invalidates-readiness', { snapshot: snapshot.digest })
       if (retire) {
-        await retireFixture(environments, first, driver)
+        await retireFixture(environments, first, driver, true)
         await retireFixture(environments, second, driver)
         writeFileSync(join(path, 'app.cjs'), app)
         assert.equal(workspaceSnapshot(path).digest, snapshot.digest)

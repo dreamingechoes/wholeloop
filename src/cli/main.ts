@@ -220,6 +220,9 @@ export async function runAsync(
           'delivery environment-backend',
           'delivery environment-start',
           'delivery environment-status',
+          'delivery environment-stop',
+          'delivery environment-reconcile',
+          'delivery environment-retire',
         ].includes(command.path) ||
         command.path.startsWith('conformance ') ||
         command.path === 'adopt' ||
@@ -257,6 +260,9 @@ export async function runAsync(
         'delivery environment-backend',
         'delivery environment-start',
         'delivery environment-status',
+        'delivery environment-stop',
+        'delivery environment-reconcile',
+        'delivery environment-retire',
       ].includes(command.path)
     )
       return await deliveryEnvironmentRuntimeCommand(command.path, parsed, root, json, io)

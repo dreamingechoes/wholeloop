@@ -38,6 +38,17 @@ it('inspects closed runtime contracts and refuses ungranted starts without invok
     expect(contracts.runtimeSchema.properties.acceptance.const).toBe('not-established')
     expect(contracts.runtimeSchema.additionalProperties).toBe(false)
     expect(contracts.provisionSchema.additionalProperties).toBe(false)
+    const lifecycle = cli(['environment-lifecycle-schema'])
+    expect(lifecycle).toMatchObject({
+      schema: 'wholeloop/environment-lifecycle-schema@1',
+      executed: false,
+    })
+    expect(lifecycle.contracts).toHaveLength(4)
+    expect(
+      lifecycle.contracts.every(
+        (schema: { additionalProperties: boolean }) => schema.additionalProperties === false,
+      ),
+    ).toBe(true)
     planning.preparePlan(plan)
     writeFileSync(
       join(root, 'provision.json'),

@@ -3,7 +3,7 @@
 > **TL;DR** — The Docker backend executes an explicitly selected recipe under a current delivery grant, verifies actual resources and retains failure evidence. A separate model-free evaluation exercises real applications and boundary denials; no native client or service account is needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Owned provisioning, setup/readiness, isolated application networking, loopback publication and reinspection are implemented. The reference Docker trial is scoped to a macOS arm64 controller and Linux arm64 daemon. Public lifecycle/recovery, the complete unattended runner and independent Linux-host/native acceptance remain subsequent tasks.
+> **Status: 🚧 partial.** Owned provisioning, setup/readiness, isolated application networking, loopback publication and reinspection are implemented. The reference Docker trial is scoped to a macOS arm64 controller and Linux arm64 daemon. Owned stop/reconciliation/retirement are also implemented. The complete unattended runner and independent Linux-host/native acceptance remain subsequent tasks.
 
 ## Requirements and costs
 
@@ -30,7 +30,7 @@ Expected successful observations:
 - Application commands cannot read the benign controller/home/credential/sibling marker fixtures, Git control or Docker socket, modify read-only implementation/input files, or inherit the controller's marker environment variable.
 - Setup and application execution observe denied external routes. Setup that exits 7 never becomes ready or starts its service.
 - Repeating a successful key reinspects the same environment without reissuing the effect. A changed candidate makes its previous readiness stale.
-- The explicit successful-evaluation teardown verifies every exact identity, retires only those fixture resources and observes absence. This includes expected failure cases after their assertions pass. An unexpected failure keeps resources and their external history for inspection.
+- The explicit successful-evaluation teardown observes stop with retained volumes, refuses a same-name foreign volume and recovers a deliberately killed retirement controller through a fresh compiled CLI. It verifies every exact identity and observes absence. This includes expected failure cases after their assertions pass. An unexpected failure keeps resources and their external history for inspection.
 
 Omit --retire-success to retain successful fixture environments deliberately. The retained report is the actual observation; do not mark a missing/unavailable Docker run as passed. It identifies the controller runtime and daemon separately and launches no model. Running the suite on another host creates new evidence for that host, not certification of all platforms or clients.
 
@@ -88,7 +88,7 @@ Runtime history records immutable resource intents, IDs/labels/creation fingerpr
 
 Application networking stays on no network or an isolated internal bridge. A separate fixed controller proxy exposes only the intended owned service through loopback; it has no application mounts and cannot select a destination from incoming bytes. Each connection is limited to four MiB, thirty seconds and eight concurrent connections, and its lifetime is finite. This is application infrastructure, not a native model permission proof.
 
-Keep the printed external history when reporting failures. Do not remove guessed names or run ledger undo commands automatically. Public environment stop/recovery/retirement follows in P6-13. See [ADR-0103](../decisions/0103-owned-docker-environments-and-isolated-publication.md), the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) and [V1 acceptance](../v1-acceptance.md) for remaining host/native obligations.
+Keep the printed external history when reporting failures. Do not remove guessed names or run ledger undo commands automatically. Use the [lifecycle guide](./delivery-lifecycle.md) for public stop, reconciliation and explicit retirement. These commands fence provisioning, preserve failure data by default and recover only through exact ownership/absence observations. See [ADR-0103](../decisions/0103-owned-docker-environments-and-isolated-publication.md), the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) and [V1 acceptance](../v1-acceptance.md) for remaining host/native obligations.
 
 <!-- docnav -->
-[◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment stop and retirement ▶](delivery-lifecycle.md)

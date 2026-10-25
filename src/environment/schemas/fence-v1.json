@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/environment-fence@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/environment-fence@1"
+    },
+    "environment": {
+      "type": "string",
+      "maxLength": 44,
+      "pattern": "^environment-[a-f0-9]{32}$"
+    },
+    "request": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "at": {
+      "type": "string",
+      "maxLength": 64
+    }
+  },
+  "required": ["schema", "environment", "request", "reason", "at"]
+}

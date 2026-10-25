@@ -256,7 +256,16 @@ export async function dockerPreflight(
       )
     )
       throw new DockerEnvironmentError('image-not-cached')
-    if (recipe.services.length * 65 + recipe.commands.length * 6 + recipe.files.length * 2 > 900)
+    // Reserve immutable snapshot capacity for initial startup, observed stop and
+    // one complete retirement as well as ten readiness attempts per service.
+    const volumes = recipe.repositories.length + recipe.data.length + recipe.files.length
+    const containers =
+      1 +
+      recipe.commands.filter((command) => command.phase !== 'test').length +
+      recipe.services.length * 11 +
+      proxies
+    const networks = (recipe.network.runtime === 'internal' ? 1 : 0) + (proxies ? 1 : 0)
+    if (20 + volumes * 4 + containers * 8 + networks * 4 + recipe.services.length * 2 > 900)
       throw new DockerEnvironmentError('resource-history-capacity')
     result.available = true
   } catch (error) {

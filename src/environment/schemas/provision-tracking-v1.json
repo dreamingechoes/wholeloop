@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/environment-provision-tracking@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/environment-provision-tracking@1"
+    },
+    "environment": {
+      "type": "string",
+      "pattern": "^environment-[a-f0-9]{32}$",
+      "maxLength": 44
+    },
+    "effect": {
+      "type": "string",
+      "pattern": "^effect-[a-f0-9]{32}$",
+      "maxLength": 39
+    },
+    "invocation": {
+      "type": "string",
+      "pattern": "^invocation-[a-f0-9]{16}$",
+      "maxLength": 27
+    },
+    "at": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["fixture", "host-observed"]
+    }
+  },
+  "required": ["schema", "environment", "effect", "invocation", "at", "provenance"]
+}

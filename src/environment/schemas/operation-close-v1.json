@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/environment-operation-close@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/environment-operation-close@1"
+    },
+    "operation": {
+      "type": "string",
+      "maxLength": 46,
+      "pattern": "^operation-[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$"
+    },
+    "nonce": {
+      "type": "string",
+      "maxLength": 36,
+      "pattern": "^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["succeeded", "crashed", "timeout", "cancelled", "overflow"]
+    },
+    "code": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "evidence": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "at": {
+      "type": "string",
+      "maxLength": 64
+    }
+  },
+  "required": ["schema", "operation", "nonce", "status", "evidence", "at"]
+}

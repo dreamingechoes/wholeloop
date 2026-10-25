@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery environment-lifecycle-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/environment-lifecycle-schema@1',
+    summary: 'Show owned stop, reconciliation and explicit retirement contracts',
+  },
+  {
+    path: 'delivery environment-stop',
+    arguments: '',
+    options: ['--file <lifecycle.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/environment-lifecycle-receipt@1',
+    summary: 'Stop exact owned resources and retain data and evidence',
+  },
+  {
+    path: 'delivery environment-reconcile',
+    arguments: '',
+    options: ['--file <lifecycle.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/environment-lifecycle-receipt@1',
+    summary: 'Recover an interrupted owned stop or retirement without replaying startup',
+  },
+  {
+    path: 'delivery environment-retire',
+    arguments: '',
+    options: ['--file <lifecycle.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/environment-lifecycle-receipt@1',
+    summary: 'Explicitly retire exact owned resources after observed shutdown',
+  },
+  {
     path: 'delivery environment-runtime-schema',
     arguments: '',
     options: [],

@@ -44,6 +44,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 | [Delivery recovery](./tutorials/delivery-recovery.md) | Independent-process history inspection and cache repair without reconstructing authority |
 | [Delivery queue](./tutorials/delivery-queue.md) | Durable work slots, dependency reasons and the boundary before actual worker dispatch |
 | [Docker application environments](./tutorials/delivery-docker.md) | Scoped provisioning, actual resource/readiness observations and model-free Docker evaluation |
+| [Environment stop and retirement](./tutorials/delivery-lifecycle.md) | Observed shutdown, retained data and interrupted exact-resource cleanup |
 | [Environment planning](./tutorials/delivery-environments.md) | Inert discovery, pinned setup origins and explicit isolated resource plans |
 | [Native delivery hosts](./tutorials/delivery-native.md) | Pinned reference recipes, runtime-proof requirements and explicit unsupported targets |
 | [Delivery workers](./tutorials/delivery-workers.md) | Exact role contexts, worker claims and separate controller execution evidence |

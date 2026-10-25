@@ -246,6 +246,36 @@ export class DockerResources {
       }
     return value
   }
+  /** Recovery binds a previously unknown ID only from this intent's full ownership tuple and policy. */
+  recover(resource: EnvironmentResource, value: Record<string, unknown>) {
+    const record = this.records.get(this.environment).record
+    const id = resource.kind === 'volume' ? value.Name : value.Id
+    if (typeof id !== 'string' || (resource.kind !== 'volume' && !/^[a-f0-9]{64}$/.test(id)))
+      throw new DockerEnvironmentError('invalid-recovered-resource-id')
+    const observed = { ...resource, id }
+    const created = Date.parse(String(resource.kind === 'volume' ? value.CreatedAt : value.Created))
+    if (
+      !this.matches(observed, value) ||
+      !Number.isFinite(created) ||
+      created < Date.parse(record.createdAt) - 1000 ||
+      created > Date.now() + 1000 ||
+      (resource.kind === 'container' &&
+        (!resource.policy || contractDigest(observedContainerPolicy(value)) !== resource.policy)) ||
+      (resource.kind === 'volume' &&
+        (value.Driver !== 'local' || Object.keys(this.object(value.Options ?? {})).length > 0)) ||
+      (resource.kind === 'network' &&
+        (value.Driver !== 'bridge' || value.Internal !== (resource.purpose !== 'ingress')))
+    )
+      throw new DockerEnvironmentError('unowned-recovery-resource')
+    this.records.update(this.environment, (current) => {
+      const entry = this.resource(current.resources, resource.slot)
+      if (entry.id) throw new DockerEnvironmentError('resource-already-observed')
+      entry.id = id
+      entry.stamp = this.stamp(observed, value)
+      entry.status = 'observed'
+    })
+    return this.refresh(resource)
+  }
   observation(stage: string, status: string, evidence: string, resource?: string) {
     this.records.update(this.environment, (record) =>
       record.observations.push({

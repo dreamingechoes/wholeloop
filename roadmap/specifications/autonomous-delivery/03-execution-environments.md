@@ -3,7 +3,7 @@
 > **TL;DR** — Start the actual application and its dependencies in resources owned by one execution. Separate controller authority from untrusted build/test commands, and retain observed lifecycle receipts. A worktree or declared undo recipe alone is not containment.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-11 implements inert discovery, closed recipes, exact selected-byte retention and current-input inspection. P6-12 adds owned Docker provisioning/setup/readiness and current-resource inspection. Public lifecycle/recovery remains P6-13; an independent Linux-host and actual native acceptance remain open. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
+> **Status: 🚧 partial.** P6-11 implements inert discovery, closed recipes, exact selected-byte retention and current-input inspection. P6-12 adds owned Docker provisioning/setup/readiness and current-resource inspection. P6-13 adds owned stop, private native cancellation, partial lifecycle recovery and explicit retirement; an independent Linux-host and actual native acceptance remain open. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
 
 ## Environment recipe
 
@@ -53,12 +53,14 @@ Support keep-on-failure and explicit retention deadlines. Default successful dis
 
 Automated cleanup executes only reviewed backend-owned lifecycle operations on exact owned resources. Current environment-ledger undo recipes stay declarations requiring their existing inspection boundary. Report partial teardown and attempt no unrelated deletion. Worktree cleanup retains its merge/abandon rules.
 
+The [lifecycle guide](../../../docs/tutorials/delivery-lifecycle.md) describes closed digest-bound requests, permanent startup fences and retained failure data. [ADR-0104](../../../docs/decisions/0104-owned-environment-lifecycle-and-private-cancellation.md) records why recovery cancels through private channels and never signals stored PIDs.
+
 ## Acceptance and tests
 
 - [ ] **ENV-01:** Two environments start the same application with disjoint ports and data; writes in one are absent from the other.
 - [ ] **ENV-02:** Backend tests deny controller-store, home, credential, sibling-worktree and Docker-socket access.
 - [ ] **ENV-03:** Wrong service identity, dependency cycles, bad readiness, setup failure and port exhaustion refuse readiness.
-- [ ] **ENV-04:** Stop/restart/retire under interruption preserve exact ownership; an unowned resource is never removed.
+- [x] **ENV-04:** Stop/restart/retire under interruption preserve exact ownership; an unowned resource is never removed.
 - [ ] **ENV-05:** Network-denied setup and missing images are reported explicitly; no ambient credentials or automatic broad fallback appear.
 - [ ] **ENV-06:** Recipe changes invalidate environment readiness and dependent QA evidence.
 - [ ] **ENV-07:** Real backend checks run on macOS and Linux hosts, recording architecture and limitations; Docker fixtures alone do not pass them.

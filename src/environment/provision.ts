@@ -23,6 +23,7 @@ import {
 import { publishDockerService } from './docker-proxy.js'
 import { DockerResources } from './docker-resources.js'
 import { inspectEnvironment } from './inspect.js'
+import { EnvironmentOperations, environmentFenced, TrackedDockerTransport } from './operations.js'
 import type { EnvironmentRecipe, EnvironmentService } from './recipe.js'
 import { EnvironmentRecipes } from './recipe-store.js'
 import {
@@ -154,7 +155,8 @@ export class DeliveryEnvironments {
       saved = this.resources.create(record, (existing) => {
         this.authority(input.run)
         const active = existing.filter(
-          (entry) => !['retired', 'unavailable'].includes(entry.record.state),
+          (entry) =>
+            !['retired', 'unavailable', 'stopped', 'retained'].includes(entry.record.state),
         )
         const memory = active.reduce(
           (sum, entry) => sum + this.recipes.get(entry.record.recipe).recipe.limits.memoryMiB,
@@ -310,6 +312,8 @@ export class DeliveryEnvironments {
   }
   private current(id: string) {
     const { record } = this.resources.get(id)
+    if (environmentFenced(this.recipes.files, id))
+      throw new DockerEnvironmentError('environment-fenced')
     const { state } = this.authority(record.run)
     if (
       state.basis.digest !== record.basis ||
@@ -351,10 +355,12 @@ export class DeliveryEnvironments {
     let setupDeadline = Date.now() + recipe.limits.setupMs
     let readinessRemaining = recipe.limits.readinessMs
     let readiness = false
+    const operations = new EnvironmentOperations(this.recipes.files, id, this.driver.provenance)
+    const tracked = new TrackedDockerTransport(this.driver, operations)
     const runtime = new DockerResources(
       this.resources,
       id,
-      this.driver,
+      tracked,
       () => {
         if (abort.signal.aborted) throw new DockerEnvironmentError('environment-cancelled')
         this.current(id)
@@ -365,6 +371,7 @@ export class DeliveryEnvironments {
       recipe.limits.outputBytes,
     )
     try {
+      operations.activateProvisioning()
       const images = new Map<string, DockerImage>()
       for (const observed of preflight.images) {
         const image = await dockerImage(this.driver, observed.ref, recipe.backend.architecture)
@@ -384,7 +391,7 @@ export class DeliveryEnvironments {
       for (const ref of preflight.missing) {
         this.current(id)
         runtime.observation('image-pull-issued', 'issued', contractDigest({ ref }))
-        const pulled = await this.driver.call(
+        const pulled = await tracked.call(
           ['image', 'pull', '--platform', `linux/${recipe.backend.architecture}`, ref],
           { timeoutMs: this.remaining(id, recipe.limits.setupMs), signal: abort.signal },
         )
@@ -588,6 +595,8 @@ export class DeliveryEnvironments {
         })
       })
     } catch (error) {
+      // Lifecycle recovery owns shutdown after fencing; the old starter must not revive or race its final state.
+      if (environmentFenced(this.recipes.files, id)) return
       let unknown = false
       for (const resource of this.resources
         .get(id)
@@ -599,7 +608,7 @@ export class DeliveryEnvironments {
         )) {
         try {
           await runtime.owned(resource, false)
-          await this.driver.call(['container', 'stop', '--time', '1', resource.id ?? ''], {
+          await tracked.call(['container', 'stop', '--time', '1', resource.id ?? ''], {
             timeoutMs: 5000,
           })
           const value = await runtime.owned(resource, false)
@@ -614,6 +623,7 @@ export class DeliveryEnvironments {
         }
       }
       this.resources.update(id, (record) => {
+        if (environmentFenced(this.recipes.files, id)) return
         record.state = unknown ? 'unknown' : 'failed'
         record.reason =
           error instanceof DockerEnvironmentError ? error.problem : 'backend-operation-failed'

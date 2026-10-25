@@ -22,6 +22,16 @@ await build({
     js: "import {createRequire} from 'node:module';const require=createRequire(import.meta.url);",
   },
 })
+await build({
+  entryPoints: [resolve(root, 'test/evals/environment/lifecycle-child.ts')],
+  outfile: join(destination, 'lifecycle-child.mjs'),
+  bundle: true,
+  platform: 'node',
+  format: 'esm',
+  banner: {
+    js: "import {createRequire} from 'node:module';const require=createRequire(import.meta.url);",
+  },
+})
 console.log(`Retained evaluation: ${destination}`)
 const child = spawn(process.execPath, [runner, join(destination, 'results'), ...args], {
   cwd: root,

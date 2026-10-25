@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09 and P6-11 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 50 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 23 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 51 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 22 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -327,7 +327,7 @@ The available Linux controller container is not that proof. Actual native client
 
 ## P6-13 · Owned environment stop and retirement
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-12, P6-06
+**Status:** ✅ · **Size:** M · **Depends on:** P6-12, P6-06
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -337,13 +337,15 @@ The available Linux controller container is not that proof. Actual native client
 
 **Acceptance criteria:**
 
-- [ ] Interrupted cleanup removes only exact controller-owned resources.
-- [ ] Failed-run evidence and volumes remain inspectable under the selected retention policy.
-- [ ] No ledger undo, topic deletion or unrelated container deletion is inferred from stop.
+- [x] Interrupted cleanup removes only exact controller-owned resources.
+- [x] Failed-run evidence and volumes remain inspectable under the selected retention policy.
+- [x] No ledger undo, topic deletion or unrelated container deletion is inferred from stop.
 
 **Tests** — ENV-04 and RUN-05: actual service shutdown, interrupted teardown, foreign-resource and retained-evidence cases.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/03-execution-environments.md); worktree lifecycle, environment ledger, recovery.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/03-execution-environments.md); [lifecycle guide](../docs/tutorials/delivery-lifecycle.md), environment ledger, recovery and ADR-0104.
+
+**Evidence** — Fourteen lifecycle cases, four actual native-process cases, one additional backend history-budget regression and closed contract tables pass; all six focused environment files pass 110 cases. Complete checks pass 2504 tests in 108 files on macOS arm64/Node 24.22.0 (362.24 seconds) and isolated Debian Linux arm64/Node 24.22.0 (88.80 seconds), with all remaining checks green. Actual Docker evaluation passes seventeen observations, including retained volumes, a same-name foreign volume, killed retirement controllers and fresh compiled CLI recovery. The exact schema instruction passes on macOS Node 24 and Linux Node 20/24 with ShellCheck. Independent Linux-host/backend and native-model acceptance remain open.
 
 ---
 

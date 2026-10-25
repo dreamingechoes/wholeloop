@@ -28,6 +28,9 @@ export function deliveryCommand(
       'delivery environment-backend',
       'delivery environment-start',
       'delivery environment-status',
+      'delivery environment-stop',
+      'delivery environment-reconcile',
+      'delivery environment-retire',
     ].includes(command)
   )
     throw new CliError(

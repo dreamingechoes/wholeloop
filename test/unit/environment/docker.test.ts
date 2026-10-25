@@ -532,3 +532,28 @@ it('preserves old input-file planning contracts while advertising the directory 
   expect(validateEnvironmentRecipe(input)).toEqual(input)
   expect((await dockerPreflight(driver, input, DOCKER_REFERENCE_HELPER)).available).toBe(true)
 })
+
+it('reserves immutable history space for observed stop and retirement before starting many setup jobs', async () => {
+  const input = recipe()
+  input.commands = Array.from({ length: 110 }, (_, index) => ({
+    id: `seed-${index}`,
+    service: 'web',
+    phase: 'seed' as const,
+    command: {
+      argv: ['node', '-e', 'process.exit(0)'],
+      cwd: '/tmp',
+      origin: { kind: 'recipe' as const },
+    },
+    timeoutMs: 1000,
+  }))
+  const { driver, calls } = preflightDriver()
+  const result = await dockerPreflight(driver, input, DOCKER_REFERENCE_HELPER)
+  expect(result).toMatchObject({
+    available: false,
+    reason: 'resource-history-capacity',
+    executed: false,
+  })
+  expect(
+    calls.every((args) => ['context', 'info', 'version', 'image'].includes(args[0] ?? '')),
+  ).toBe(true)
+})

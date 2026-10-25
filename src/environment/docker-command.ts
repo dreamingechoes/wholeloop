@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto'
 import { homedir } from 'node:os'
 import { workerProcess } from '../fanout/process.js'
+import { DOCKER_OPERATION_WRAPPER } from './operation-wrapper.js'
+import type { DockerOperationRegistration } from './operations.js'
 
 export interface DockerResult {
   status: 'succeeded' | 'crashed' | 'timeout' | 'cancelled' | 'overflow'
@@ -13,7 +15,13 @@ export interface DockerTransport {
   provenance: 'fixture' | 'host-observed'
   call(
     args: string[],
-    options?: { input?: string; timeoutMs?: number; signal?: AbortSignal; outputBytes?: number },
+    options?: {
+      input?: string
+      timeoutMs?: number
+      signal?: AbortSignal
+      outputBytes?: number
+      registration?: DockerOperationRegistration
+    },
   ): Promise<DockerResult>
 }
 /** Docker authenticates through its own native store; application containers receive none of this environment. */
@@ -30,6 +38,7 @@ export class DockerCli implements DockerTransport {
       timeoutMs?: number
       signal?: AbortSignal
       outputBytes?: number
+      registration?: DockerOperationRegistration
     } = {},
   ): Promise<DockerResult> {
     if (
@@ -49,21 +58,38 @@ export class DockerCli implements DockerTransport {
     const hash = createHash('sha256')
     let output = 0
     let overflow = false
-    const result = await workerProcess(this.command, args, {
-      cwd: homedir(),
-      env,
-      input: options.input ?? '',
-      timeoutMs: options.timeoutMs ?? 10000,
-      signal: options.signal ?? new AbortController().signal,
-      observe: (stream, bytes) => {
-        hash.update(stream).update(bytes)
-        output += bytes.length
-        if (output > (options.outputBytes ?? 1024 * 1024)) {
-          overflow = true
-          throw new Error('Bounded Docker output exceeded')
-        }
+    const registration = options.registration
+    const result = await workerProcess(
+      registration ? process.execPath : this.command,
+      registration ? ['--input-type=module', '-e', DOCKER_OPERATION_WRAPPER] : args,
+      {
+        cwd: homedir(),
+        env,
+        input: registration
+          ? JSON.stringify({
+              operation: registration.operation,
+              nonce: registration.nonce,
+              cancel: registration.cancel,
+              outcome: registration.outcome,
+              command: this.command,
+              args,
+              input: options.input ?? '',
+              timeoutMs: options.timeoutMs ?? 10000,
+            })
+          : (options.input ?? ''),
+        ...(registration ? { started: registration.started } : {}),
+        timeoutMs: options.timeoutMs ?? 10000,
+        signal: options.signal ?? new AbortController().signal,
+        observe: (stream, bytes) => {
+          hash.update(stream).update(bytes)
+          output += bytes.length
+          if (output > (options.outputBytes ?? 1024 * 1024)) {
+            overflow = true
+            throw new Error('Bounded Docker output exceeded')
+          }
+        },
       },
-    })
+    )
     return {
       ...result,
       digest: hash.digest('hex'),

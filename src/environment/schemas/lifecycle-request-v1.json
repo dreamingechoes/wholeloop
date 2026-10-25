@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/environment-lifecycle-request@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/environment-lifecycle-request@1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9-]{0,127}$"
+    },
+    "environment": {
+      "type": "string",
+      "pattern": "^environment-[a-f0-9]{32}$",
+      "maxLength": 44
+    },
+    "expected": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "action": {
+      "type": "string",
+      "enum": ["stop", "reconcile", "retire"]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    }
+  },
+  "required": ["schema", "id", "environment", "expected", "action", "reason"]
+}

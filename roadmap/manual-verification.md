@@ -8,7 +8,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ## Expanded 1.0 acceptance boundary
 
-[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 50 complete and 38 open (23 new implementation tasks, one implemented task awaiting Linux-host acceptance, plus the fourteen original open tasks).
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 51 complete and 37 open (22 new implementation tasks, one implemented task awaiting Linux-host acceptance, plus the fourteen original open tasks).
 
 - [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
 - [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
@@ -23,6 +23,23 @@ OpenCode V1/V2 compatibility now has separate deterministic renderers and native
 Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 each fail with five invalid responses and one accepted response; the repository is unchanged. Bounded diagnostics establish missing envelope identities in those five JSON objects. ADR-0091 adds an exact native generation schema, preserving strict host validation. Preserve both failed rounds. The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six workers in actual Codex 0.163.0, with no missing coverage or repository edits. That fulfills P5-03's one-real-run criterion together with stubbed three-engine verdict/quorum parity; earlier failures and wider native checks remain unchanged.
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
+
+## Owned environment lifecycle checks (2026-10-25)
+
+P6-13 implements operator-only digest-bound stop/reconcile/retire requests, permanent startup fences, private native cancellation, observed shutdown, retained volumes and interruption recovery. Fourteen lifecycle cases, four actual native-process cases and an additional backend history-budget regression pass, together with automatic closed-contract checks. Six focused environment files pass 110 cases. The old undo ledger and topic/worktree rules remain unchanged.
+
+| Environment | Executed result |
+| --- | --- |
+| macOS arm64 / Node 24.22.0 | Complete check: 2504 tests in 108 files (362.24 seconds), lint/types/build/smoke, offline package, 316-file docs/references, 148-file harness, 315-file Markdown and 36 diagrams |
+| Debian Linux arm64 / Node 24.22.0 | Same complete check: 2504 tests in 108 files (88.80 seconds), no skips; isolated non-root container without network, private history, credentials or Docker socket |
+| macOS arm64 controller / Docker 29.9.2 / Linux aarch64 daemon | Seventeen actual observations pass: original app/data/boundary/setup cases plus shutdown with retained volumes, a same-name unrelated volume and killed retirement controllers recovered by fresh compiled CLI processes |
+| macOS Node 24 and Linux Node 20.0.0/24.22.0 | Exact lifecycle-schema instruction passes with ShellCheck; the full operational procedure still requires an actual owned environment |
+
+Final immutable candidate archive: 2fed11a246aa3cc9c92fcc460f38b72883ce93122939b72b8ba869de76c86f4e. Copied core: ee539c3d00c4772eab9a01f691944bf21530c8ba2c9186a228154ad2fa3172a6. Pre-evidence package receipts: macOS be43897ae5abb992d9692325f9c636c70d4f44e085513adb32f3a671a46ee298 and Linux 5e01c5cf5194e9e75d06f866b7ba9be5ca589474cf2765104f17603120d89127. Keep the established dependency-cache build distinction; evidence-only docs receive a final docs/Markdown/package check. External trial reports and interruption metadata remain retained; successful exact-owned test resources and separately owned collision fixtures are retired after their assertions pass.
+
+Preserve initial failures and corrections. A sandbox-denied process-table read correctly remains unknown; execute actual process verification with permission to read numeric PID/group metadata. Fix the missing live marker and invalid invocation/reason fields in synthetic fixtures without weakening the schemas. The first complete macOS check passes 2501 of 2502 cases but its new startup fixture exceeds three seconds under parallel load; retain that failure and give only the synthetic startup ten seconds, keeping product deadlines. The final candidate adds credential refusal before metadata persistence and reserves immutable history for observed stop/retirement. Final complete checks and real backend trials pass. The first harness check correctly rejects undeclared rule mappings; add their canonical hard rules and pass enforcement.
+
+The [lifecycle guide](../docs/tutorials/delivery-lifecycle.md) explains current reviews, historical idempotent receipts, partial cleanup, private cancellation, legacy invoker uncertainty and explicit data retirement. No PID from history is signaled. No fixture becomes human testing, actual native/model certification or remote publication. P6-12 remains acceptance-open for ENV-07 on an independent Linux host, which is separate from the Linux controller container and this Linux VM daemon. Continue P6-14 under the existing authorization.
 
 ## Owned Docker application backend checks (2026-10-25)
 
@@ -47,7 +64,7 @@ Preserve failures and corrections:
 - Precise platform image inspection exposes engine root ID sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5 and selected arm64 manifest sha256:0e84a1a8a11b9a42374419513e0825262dfd6f072eeb4a724c52fc0aab3061d2. The first stricter run refuses startup. Preserve that failure, bind both IDs/platforms and pass the final actual input/setup/data/boundary trials. Retire the three reviewed failed-probe resources only after exact ownership/daemon checks and observed absence; retain their diagnostic history.
 - Initial fixture TypeScript errors use mutable types for readonly tables and a null-only capability field. Correct fixture types, not product guards. No original native failure or service-unverified integration becomes passed.
 
-The backend has no remaining P6-12 code blocker. P6-13 may proceed under the owner's explicit instruction to defer manual/host acceptance. P6-12 stays open for ENV-07; actual native clients/models remain P6-27, with original fourteen open tasks unchanged. No hosted publication, merge, production resource or account-bound service trial occurs.
+The backend has no remaining P6-12 code blocker. P6-13 has since passed its own local/reference lifecycle checks above, under the owner's explicit instruction to defer manual/host acceptance. P6-12 stays open for ENV-07; actual native clients/models remain P6-27, with original fourteen open tasks unchanged. No hosted publication, merge, production resource or account-bound service trial occurs.
 
 ## Environment planning platform checks (2026-10-25)
 

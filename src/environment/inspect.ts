@@ -8,6 +8,7 @@ import {
   dockerJson,
 } from './docker-command.js'
 import { DockerResources } from './docker-resources.js'
+import { environmentFenced } from './operations.js'
 import { EnvironmentRecipes } from './recipe-store.js'
 import type { EnvironmentResources } from './runtime.js'
 
@@ -29,7 +30,7 @@ export async function inspectEnvironment(
     authority: 'not-granted-by-this-command',
     acceptance: 'not-established',
   }
-  if (record.state !== 'ready') return result
+  if (record.state !== 'ready' || environmentFenced(records.files, id)) return result
   if (now() >= record.lifetimeDeadline) return { ...result, state: 'expired' as const }
   try {
     const info = dockerJson(await driver.call(['info', '--format', '{{json .}}'])) as {

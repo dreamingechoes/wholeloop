@@ -7,6 +7,10 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-environment-lifecycle
+    enforcers: [src/environment/lifecycle.ts#EnvironmentLifecycle, src/environment/docker-resources.ts#DockerResources, test/unit/environment/lifecycle.test.ts, test/evals/environment/run.ts, test/evals/environment/lifecycle-child.ts]
+  - id: delivery-environment-private-cancellation
+    enforcers: [src/environment/operations.ts#EnvironmentOperations, src/environment/operations.ts#TrackedDockerTransport, src/environment/operation-wrapper.ts#DOCKER_OPERATION_WRAPPER, src/environment/docker-command.ts#DockerCli, test/unit/environment/operations.test.ts]
   - id: delivery-environment-runtime
     enforcers: [src/environment/provision.ts#DeliveryEnvironments, src/environment/candidates.ts#captureEnvironmentCandidates, src/environment/docker-policy.ts#dockerPreflight, src/environment/docker-policy.ts#observedContainerPolicy, src/environment/docker-resources.ts#DockerResources, test/unit/environment/docker.test.ts, test/evals/environment/run.ts]
   - id: delivery-environment-observation
