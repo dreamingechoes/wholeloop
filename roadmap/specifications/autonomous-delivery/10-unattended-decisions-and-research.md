@@ -3,7 +3,11 @@
 > **TL;DR** — The owner may authorize an entire flow with zero subsequent human intervention. Delegate the named decisions under explicit constraints, keep machine decisions visibly machine-made and return an honest terminal limitation when a required condition cannot be met. Preserve all quality gates and native permissions.
 
 > [!NOTE]
-> **Status: 📐 design.** Accepted design target for P6-33–P6-34. The owner explicitly requested this option on 2026-10-24. Existing mandatory-human behavior remains the default until this separately reviewed policy is implemented.
+> **Status: 🚧 partial.** P6-34 private decision policy, rubric pins, independent controller-host judgments, machine provenance, current-plan readers and no-prompt fallbacks pass complete macOS/Linux checks at their deterministic/controller-host boundary. Complete native route orchestration and P6-33 research remain pending. Legacy supervised commands retain their existing approvals. See the [controller guide](../../../docs/tutorials/delivery-decisions.md).
+
+## Implemented policy boundary
+
+P6-34 implements DEC-02–DEC-06 policy/record enforcement through purpose-specific private rubric pins, exact current input bindings, independent trusted host observations, machine provenance, no-prompt fallbacks, finite original budgets and read-only historical inspection. Model-free controls and compiled CLI tests preserve fixture provenance. Interrupted published locators recover without replay; unpublished results and stale decisions cannot supply authority. DEC-01 and native end-to-end portions retain their P6-10/P6-27 obligations. P6-33 implements the complete research route later.
 
 ## Independent axes
 

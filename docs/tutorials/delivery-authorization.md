@@ -3,7 +3,7 @@
 > **TL;DR** — Record one explicit grant for a prepared plan or initial request envelope, inspect its finite deadline and revoke it without losing history. This configures authority; it starts no worker and performs no publication or merge.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Operator grant/revocation lifecycle and scoped broker admission/request validation are implemented and fixture-tested. The actual worker/backend/runner and delegated decision hosts are subsequent increments. Actual native filesystem/credential containment remains unverified.
+> **Status: 🚧 partial.** Operator grant/revocation lifecycle and scoped broker admission/request validation are implemented and fixture-tested. Role-bound native/backend contracts and the [delegated-decision controller](./delivery-decisions.md) are implemented separately; complete unattended orchestration remains pending. Actual native filesystem/credential containment remains unverified.
 
 ## Before you start
 
@@ -90,4 +90,4 @@ The current core exposes no worker-side operator endpoint or automatic process l
 You have exercised explicit authorization, independent-process inspection and durable revocation in a disposable external store. Retain the tutorial directory for inspection. Follow [Phase 6](../../roadmap/phase-6-autonomous-delivery.md) for journaled delivery states, queue/fencing, real environments, actual QA and PR/merge evidence. No native/service acceptance is marked passed by these metadata operations.
 
 <!-- docnav -->
-[◀ Delivery planning](delivery-plan.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)
+[◀ Delivery planning](delivery-plan.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delegated machine decisions ▶](delivery-decisions.md)

@@ -1,4 +1,5 @@
 import { contractDigest } from '../contracts/compatibility.js'
+import { acceptedDecisionPlan } from '../decisions/accepted.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { canonicalPath } from '../state/paths.js'
 import { repository } from '../worktrees/git.js'
@@ -96,7 +97,14 @@ export function workerContextForClaim(
       if (
         prepared.plan.envelope !== authority.grant.basis.digest ||
         !authority.grant.decisions.includes('delivery-plan') ||
-        !input.planAccepted?.(authority.digest, prepared.digest)
+        !(
+          input.planAccepted?.(authority.digest, prepared.digest) ??
+          acceptedDecisionPlan(
+            queue.lifecycle.journal.files.root,
+            authority.digest,
+            prepared.digest,
+          )
+        )
       )
         throw new WorkerProtocolError('unaccepted-plan')
       checkPlanEnvelope(

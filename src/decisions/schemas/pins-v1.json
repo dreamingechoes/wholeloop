@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delegated-decision-pins@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delegated-decision-pins@1"
+    },
+    "grant": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "grantDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "policyDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "rubrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "delivery-plan",
+              "research-plan",
+              "research-sources",
+              "frame-outcome",
+              "approve-spec",
+              "approve-scopes",
+              "approve-build-plan",
+              "acceptance",
+              "learning-outcome",
+              "ramp-assessment"
+            ]
+          },
+          "original": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$",
+                "maxLength": 64
+              }
+            },
+            "required": ["ref", "sha256"]
+          },
+          "pinned": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$",
+                "maxLength": 64
+              }
+            },
+            "required": ["ref", "sha256"]
+          }
+        },
+        "required": ["decision", "original", "pinned"]
+      },
+      "minItems": 0,
+      "maxItems": 10
+    },
+    "authority": {
+      "type": "string",
+      "enum": ["original-grant-only"]
+    }
+  },
+  "required": ["schema", "grant", "grantDigest", "policyDigest", "rubrics", "authority"]
+}

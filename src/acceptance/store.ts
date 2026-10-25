@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { existsSync, readdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
+import { acceptedDecisionPlan } from '../decisions/accepted.js'
 import { currentBudgetReservation } from '../delivery/budget-policy.js'
 import { DeliveryBudgets } from '../delivery/budgets.js'
 import { deliveryEffects } from '../delivery/effect-events.js'
@@ -559,7 +560,10 @@ export class DeliveryAcceptance {
       authority.grant.basis.kind === 'plan'
         ? authority.grant.basis.digest !== plan.plan
         : !authority.grant.decisions.includes('delivery-plan') ||
-          !this.options.planAccepted?.(authority.digest, plan.plan)
+          !(
+            this.options.planAccepted?.(authority.digest, plan.plan) ??
+            acceptedDecisionPlan(this.planning.sources.files.root, authority.digest, plan.plan)
+          )
     )
       throw new AcceptanceError('unaccepted-delivery-plan')
     if (this.budgets.inspect(plan.run).problem) throw new AcceptanceError('acceptance-budget')

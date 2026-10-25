@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery decision-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delegated-decision-schema@1',
+    summary: 'Show delegated decision contracts without executing a host',
+  },
+  {
+    path: 'delivery decision-pin',
+    arguments: '',
+    options: ['--grant <id>', '--store <path>'],
+    schema: 'wholeloop/delegated-decision-pins@1',
+    summary: 'Pin decision-specific rubrics from an active original private grant',
+  },
+  {
+    path: 'delivery decision-preflight',
+    arguments: '',
+    options: ['--run <id>', '--revision <n>', '--grant <id>', '--store <path>'],
+    schema: 'wholeloop/delegated-decision-preflight@1',
+    summary: 'Inspect delegation scope without certifying runtime capability',
+  },
+  {
+    path: 'delivery decision-inspect',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/delegated-decision-status@1',
+    summary: 'Inspect historical machine decisions and current eligibility',
+  },
+  {
     path: 'eval delivery-schema',
     arguments: '',
     options: [],

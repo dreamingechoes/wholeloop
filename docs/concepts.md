@@ -95,9 +95,9 @@ One rule survives standalone use: **what a step promises, it keeps**. `build-sli
 
 ## Decision points
 
-This section describes current supervised behavior. The [expanded V1 design](./architecture/autonomous-delivery.md) proposes a separate explicit decision-delegation policy, including zero subsequent human intervention. That future policy is unimplemented and does not change today's approvals.
+This section describes current supervised behavior. The separate [delegated-decision controller](./tutorials/delivery-decisions.md) supports original private grants, pinned rubrics and independent machine provenance, including no-prompt policy limits. Full native unattended orchestration remains under implementation; legacy step commands retain their supervised approvals.
 
-The machine runs a lot on its own, but it **stops for a person at six fixed points** — in every mode, every profile, every CLI.
+The machine runs a lot on its own, but it **stops for a person at six fixed points** — in the existing supervised step flow, on every profile and CLI.
 
 These shared decision points are joined by step-specific approvals. In particular, framing requires your go/on-hold/dropped outcome, approved stop/reopen conditions and approval of the exact final reviewed draft. The later spec approval does not substitute for that framing decision. [First-framing walkthrough](./tutorials/first-framing.md#5-choose-the-outcome-and-approve-exact-wording).
 

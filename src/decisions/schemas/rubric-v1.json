@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delegated-decision-rubric@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delegated-decision-rubric@1"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "delivery-plan",
+        "research-plan",
+        "research-sources",
+        "frame-outcome",
+        "approve-spec",
+        "approve-scopes",
+        "approve-build-plan",
+        "acceptance",
+        "learning-outcome",
+        "ramp-assessment"
+      ]
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,127}$",
+            "maxLength": 128
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "required": ["id", "text"]
+      },
+      "minItems": 1,
+      "maxItems": 100
+    },
+    "outcomes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "accept",
+          "reject",
+          "go",
+          "on-hold",
+          "dropped",
+          "keep",
+          "iterate",
+          "kill",
+          "unflag",
+          "propose"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 10
+    },
+    "unknowns": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,127}$",
+            "maxLength": 128
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "defaults": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]{0,127}$",
+                "maxLength": 128
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              }
+            },
+            "required": ["id", "value", "reason"]
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": ["allowed", "defaults"]
+    },
+    "timeoutMs": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1800000
+    }
+  },
+  "required": ["schema", "decision", "purpose", "rules", "outcomes", "unknowns", "timeoutMs"]
+}

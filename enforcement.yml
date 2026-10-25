@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-delegated-decisions
+    enforcers: [src/decisions/store.ts#DelegatedDecisions, src/decisions/policy.ts#decisionFallback, src/delivery/reducer.ts#replayDelivery, test/unit/decisions/decisions.test.ts, test/unit/decisions/cli.test.ts, test/evals/decisions/run.ts]
   - id: delivery-evaluation-standards
     enforcers: [src/evaluation/catalog.ts#loadEvaluationCatalog, src/evaluation/store.ts#EvaluationSeeds, test/unit/evaluation/catalog.test.ts, test/unit/evaluation/oracle.test.ts, test/evals/delivery/self-check.ts, test/evals/delivery/run.ts, test/evals/delivery/browser.ts]
   - id: delivery-integration-assembly

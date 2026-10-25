@@ -11,6 +11,10 @@ Pinned acceptance cases execute objective [API/CLI](../tutorials/delivery-behavi
 
 [Integrated milestone preparation](../tutorials/delivery-integration-candidates.md) observes the complete required committed Git vector, contracts, recipes, acceptance/data/gate-policy inputs and repair ownership. Immutable records recheck current inputs and block moving bases. Preparation performs no assembly, execution or publication and grants no reuse authority. [Owned assembly](../tutorials/delivery-assembly.md) supplies separate original-grant/per-step Git effects, global dependency order, retained conflicts, finite repair counters and current complete application/contract verification. Existing fixed hosts execute cases; milestone reports retain exact failed/passed artifacts and grant no whole-feature completion, publication or rollback authority.
 
+## Delegated decisions
+
+The [decision controller](../tutorials/delivery-decisions.md) pins original private rubrics, exact artifacts/evidence and independent planner/challenger observations. It preserves machine provenance and current eligibility separately from legacy human approvals. Fixture judgments cannot enable actual envelope execution. Policy-only preflight and no-prompt fallbacks preserve missing facts, mandatory gates, original budgets and runtime limitations; complete native delivery/research routes remain under implementation.
+
 ## Read the proposal
 
 The [specification index](../../roadmap/specifications/autonomous-delivery/README.md) links ten detailed chapters. The [Phase 6 roadmap](../../roadmap/phase-6-autonomous-delivery.md) tracks 34 accepted tasks with dependencies, deliverables, acceptance criteria, test cases and documentation obligations.

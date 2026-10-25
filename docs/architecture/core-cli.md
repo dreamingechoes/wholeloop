@@ -21,7 +21,7 @@ delivery source --file request.json captures one bounded request into an immutab
 
 ## Implemented commands
 
-Delivery authority-schema exposes the operator/broker contracts. authorize records a bounded explicit plan/envelope grant; grant inspects it; revoke retains a durable revocation. Repeating the same action preserves its deadline and cannot renew expired/revoked authority. These metadata commands start no process and perform no remote effect. Broker requests are scoped worker claims, independently gated by current controller/runtime context. See [authorization and revocation](../tutorials/delivery-authorization.md) and [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md). Actual backend isolation/dispatch and delegated acceptance remain later work; existing supervised human gates are unchanged.
+Delivery authority-schema exposes the operator/broker contracts. authorize records a bounded explicit plan/envelope grant; grant inspects it; revoke retains a durable revocation. Repeating the same action preserves its deadline and cannot renew expired/revoked authority. These metadata commands start no process and perform no remote effect. Broker requests are scoped worker claims, independently gated by current controller/runtime context. See [authorization and revocation](../tutorials/delivery-authorization.md) and [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md). Owned backend/behavior hosts and [private delegated decisions](../tutorials/delivery-decisions.md) are implemented separately; complete native orchestration remains pending and existing supervised human gates are unchanged.
 
 Delivery recovery-schema exposes checkpoint and effect-intent contracts. checkpoint captures exact input manifests; checkpoints inspects current/stale inputs; effects reports retained local intent/observation records. recover optionally resumes metadata after current inputs, authority and ownership are known; it supplies no backend automatically. lock-status/repair-lock retain a verified stopped writer record without signalling processes or recreating authority. See the [checkpoint/recovery tutorial](../tutorials/delivery-checkpoints.md) and [ADR-0098](../decisions/0098-checkpoint-recovery-and-observed-effect-reconciliation.md). Actual worker/backend dispatch and operation-specific publication eligibility remain later work.
 
@@ -40,6 +40,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery decision-schema` | `wholeloop/delegated-decision-schema@1` | Show delegated decision contracts without executing a host |
+| `wl delivery decision-pin` | `wholeloop/delegated-decision-pins@1` | Pin decision-specific rubrics from an active original private grant |
+| `wl delivery decision-preflight` | `wholeloop/delegated-decision-preflight@1` | Inspect delegation scope without certifying runtime capability |
+| `wl delivery decision-inspect` | `wholeloop/delegated-decision-status@1` | Inspect historical machine decisions and current eligibility |
 | `wl eval delivery-schema` | `wholeloop/evaluation-schema@1` | Show original evaluation catalog, oracle and seed contracts |
 | `wl eval delivery-catalog <catalog>` | `wholeloop/evaluation-catalog@1` | Inspect reviewed scenario identities without revealing expected outcomes |
 | `wl eval delivery-seed <catalog>` | `wholeloop/evaluation-seed@1` | Pin private standards and create disposable original Git applications |

@@ -9,6 +9,10 @@ Custom presets use the same layered manifest catalog as templates and lenses. Se
 
 ---
 
+## Delegation is separate from a profile
+
+The [delegated-decision controller](../tutorials/delivery-decisions.md) reads original private plan/envelope grants and purpose-specific rubrics. Selecting autopilot or changing stops cannot delegate a decision, impersonate the owner or bypass a gate. Explicit none-policy limitations never become hidden human waits; the complete native runner remains under implementation.
+
 ## Persistent delivery limits
 
 Expanded delivery uses independent [run budgets](../tutorials/delivery-budgets.md), bound to its immutable plan and private grant. Original deadlines and counters survive recovery and stricter plan revisions; unknown usage remains unknown and unavailable hard metering refuses admission. Interaction profiles cannot expand these allowances or turn fixture evidence into actual execution. Existing gate rounds remain unchanged. The complete native unattended runner is subsequent Phase 6 work.

@@ -55,7 +55,8 @@
     "eval:integration": "node scripts/check-integration-candidates.mjs",
     "eval:assembly": "node scripts/check-assembly.mjs",
     "eval:delivery-fixtures": "node scripts/check-delivery-fixtures.mjs",
-    "eval:delivery-browser": "node scripts/check-delivery-browser.mjs"
+    "eval:delivery-browser": "node scripts/check-delivery-browser.mjs",
+    "eval:decisions": "node scripts/check-decisions.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

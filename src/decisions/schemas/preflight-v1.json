@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delegated-decision-preflight@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delegated-decision-preflight@1"
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$",
+      "maxLength": 25
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "grantDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "intervention": {
+      "type": "string",
+      "enum": ["supervised", "on-exception", "none"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ready", "needs-input", "blocked"]
+    },
+    "problems": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "interactive": {
+      "type": "string",
+      "enum": ["disabled", "permitted"]
+    },
+    "gates": {
+      "type": "string",
+      "enum": ["mandatory"]
+    },
+    "effects": {
+      "type": "string",
+      "enum": ["original-grant-only"]
+    },
+    "scope": {
+      "type": "string",
+      "const": "policy-only"
+    },
+    "runtime": {
+      "type": "string",
+      "const": "not-observed"
+    }
+  },
+  "required": [
+    "schema",
+    "run",
+    "revision",
+    "plan",
+    "grantDigest",
+    "intervention",
+    "status",
+    "problems",
+    "interactive",
+    "gates",
+    "effects",
+    "scope",
+    "runtime"
+  ]
+}

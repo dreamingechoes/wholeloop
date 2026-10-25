@@ -2,6 +2,7 @@ import { existsSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { acceptanceShape } from '../acceptance/contracts.js'
 import { contractDigest } from '../contracts/compatibility.js'
+import { acceptedDecisionPlan } from '../decisions/accepted.js'
 import { findBudget } from '../delivery/budget-events.js'
 import { DeliveryBudgets } from '../delivery/budgets.js'
 import type { EffectRecord } from '../delivery/effect-events.js'
@@ -92,7 +93,10 @@ export class IntegrationAssembly {
       observed.grant.basis.kind === 'envelope' &&
       (prepared.plan.envelope !== observed.grant.basis.digest ||
         !observed.grant.decisions.includes('delivery-plan') ||
-        !this.planAccepted?.(observed.digest, prepared.digest))
+        !(
+          this.planAccepted?.(observed.digest, prepared.digest) ??
+          acceptedDecisionPlan(this.files.root, observed.digest, prepared.digest)
+        ))
     )
       throw new IntegrationError('unaccepted-derived-assembly-plan')
     if (observeGit) for (const repo of prepared.plan.repositories) assertAssemblyGit(repo.root)

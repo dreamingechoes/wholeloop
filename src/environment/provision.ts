@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { posix } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
+import { acceptedDecisionPlan } from '../decisions/accepted.js'
 import { currentBudgetReservation } from '../delivery/budget-policy.js'
 import { DeliveryEffects, type EffectHost } from '../delivery/effects.js'
 import { readSourceFile, sourceHash } from '../delivery/input.js'
@@ -299,7 +300,10 @@ export class DeliveryEnvironments {
       if (
         prepared.plan.envelope !== receipt.grant.basis.digest ||
         !receipt.grant.decisions.includes('delivery-plan') ||
-        !this.planAccepted?.(receipt.digest, prepared.digest)
+        !(
+          this.planAccepted?.(receipt.digest, prepared.digest) ??
+          acceptedDecisionPlan(this.recipes.files.root, receipt.digest, prepared.digest)
+        )
       )
         throw new DockerEnvironmentError('unaccepted-environment-plan')
       checkPlanEnvelope(

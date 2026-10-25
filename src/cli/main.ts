@@ -7,6 +7,7 @@ import { COMMANDS } from './commands.js'
 import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
 import { conformanceCommand } from './conformance.js'
+import { delegatedDecisionsCommand } from './decisions.js'
 import { deliveryCommand } from './delivery.js'
 import { deliveryAcceptanceAsyncCommand } from './delivery-acceptance.js'
 import { deliveryAssemblyCommand } from './delivery-assembly.js'
@@ -107,6 +108,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
+    if (command.path.startsWith('delivery decision-'))
+      return delegatedDecisionsCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('delivery '))
       return deliveryCommand(command.path, parsed, root, json, io)
     if (command.path === 'release verify') return releaseVerifyCommand(parsed, root, json, io)

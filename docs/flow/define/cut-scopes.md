@@ -7,6 +7,8 @@
 
 Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
 
+The separate [delegated-decision controller](../../tutorials/delivery-decisions.md) records explicitly authorized exact-revision machine judgments with independent challenge. It never writes this step's legacy human approval fields. The commands on this page retain their supervised contract; complete native unattended orchestration remains under implementation.
+
 ---
 
 ## At a glance

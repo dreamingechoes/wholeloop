@@ -1,0 +1,465 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delegated-decision@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delegated-decision@1"
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delegated-decision-request@1"
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,127}$",
+          "maxLength": 128
+        },
+        "grant": {
+          "type": "string",
+          "pattern": "^authorization-[a-f0-9]{16}$"
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$",
+          "maxLength": 25
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "plan": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "delivery-plan",
+            "research-plan",
+            "research-sources",
+            "frame-outcome",
+            "approve-spec",
+            "approve-scopes",
+            "approve-build-plan",
+            "acceptance",
+            "learning-outcome",
+            "ramp-assessment"
+          ]
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$",
+                "maxLength": 64
+              }
+            },
+            "required": ["ref", "sha256"]
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$",
+                "maxLength": 64
+              }
+            },
+            "required": ["id", "ref", "sha256"]
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]{0,127}$",
+                "maxLength": 128
+              },
+              "missing": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "who": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": ["id", "missing", "who"]
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "schema",
+        "key",
+        "grant",
+        "run",
+        "revision",
+        "plan",
+        "decision",
+        "artifacts",
+        "evidence",
+        "unknowns"
+      ]
+    },
+    "grantDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "policyDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "rubric": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        }
+      },
+      "required": ["ref", "sha256"]
+    },
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "actorKind": {
+      "type": "string",
+      "enum": ["machine"]
+    },
+    "judgment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assignment": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "worker": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "invocation": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "role": {
+              "type": "string",
+              "enum": ["planner", "challenger"]
+            },
+            "runtime": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "state": {
+              "type": "string",
+              "enum": ["completed"]
+            },
+            "provenance": {
+              "type": "string",
+              "enum": ["fixture", "host-observed"]
+            }
+          },
+          "required": [
+            "assignment",
+            "worker",
+            "invocation",
+            "role",
+            "runtime",
+            "state",
+            "provenance"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "outcome": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]{0,127}$",
+                "maxLength": 128
+              },
+              "missing": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "who": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": ["id", "missing", "who"]
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": ["identity", "basis", "outcome", "rationale", "uncertainties"]
+    },
+    "challenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assignment": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "worker": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "invocation": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "role": {
+              "type": "string",
+              "enum": ["planner", "challenger"]
+            },
+            "runtime": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "state": {
+              "type": "string",
+              "enum": ["completed"]
+            },
+            "provenance": {
+              "type": "string",
+              "enum": ["fixture", "host-observed"]
+            }
+          },
+          "required": [
+            "assignment",
+            "worker",
+            "invocation",
+            "role",
+            "runtime",
+            "state",
+            "provenance"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "judgment": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["supported", "rejected", "unknown"]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]{0,127}$",
+                "maxLength": 128
+              },
+              "missing": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "who": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": ["id", "missing", "who"]
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": ["identity", "basis", "judgment", "verdict", "rationale", "uncertainties"]
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "unknown", "human-required"]
+          },
+          "observation": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "maxLength": 64
+          },
+          "provenance": {
+            "type": "string",
+            "enum": ["fixture", "host-observed"]
+          }
+        },
+        "required": ["id", "ref", "sha256", "status", "observation", "provenance"]
+      },
+      "minItems": 1,
+      "maxItems": 100
+    },
+    "status": {
+      "type": "string",
+      "enum": ["recorded", "blocked", "fixture-only"]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "gates": {
+      "type": "string",
+      "enum": ["unchanged"]
+    },
+    "humanApproval": {
+      "type": "string",
+      "enum": ["not-recorded"]
+    },
+    "effects": {
+      "type": "string",
+      "enum": ["not-granted"]
+    }
+  },
+  "required": [
+    "schema",
+    "request",
+    "grantDigest",
+    "policyDigest",
+    "rubric",
+    "basis",
+    "actorKind",
+    "judgment",
+    "challenge",
+    "observations",
+    "status",
+    "reason",
+    "at",
+    "gates",
+    "humanApproval",
+    "effects"
+  ]
+}

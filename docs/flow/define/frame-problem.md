@@ -5,6 +5,8 @@
 > [!NOTE]
 > **Status: 🚧 partial.** The core enforces all eight framing questions plus ownership, explicit TBD markers, completed-brief adoption, normalized-title reuse and argued dropped/on-hold outcomes. Local docs/tracker publication references the existing store records; remote destinations return pending handoffs. Canonical skill escalation to research follows the challenge style. Canonical URL adoption, per-initiative shared outboxes and explicit host publication/reconciliation are implemented locally. An [owner-observed Claude run](../../../roadmap/manual-verification.md#owner-observed-claude-framing-and-session-recovery-2026-10-22) completed an on-hold outcome and recovered status across sessions, and exposed narrative decision-fidelity and final-review gaps now addressed by exact owner-decision rendering and digest-bound finalization under [ADR-0086](../../decisions/0086-exact-final-framing-review-and-owner-decisions.md). New native acceptance remains pending. Authenticated remote publication and broader client conformance remain unverified. [P2-02](../../../roadmap/phase-2-define.md#p2-02--frame-problem-complete).
 
+The separate [delegated-decision controller](../../tutorials/delivery-decisions.md) records explicitly authorized exact-revision machine judgments with independent challenge. It never writes this step's legacy human approval fields. The commands on this page retain their supervised contract; complete native unattended orchestration remains under implementation.
+
 ---
 
 ## Final decision and review

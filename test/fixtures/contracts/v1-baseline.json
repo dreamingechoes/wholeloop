@@ -368,7 +368,17 @@
     "schema:wholeloop/evaluation-oracle@1": "d4657dfabf37812e266a28e3100120368b87767f2726b58d69732840050e83d1",
     "schema:wholeloop/evaluation-seed@1": "cc610c6d684882df85b97359ae2d695bfd76ef8a2be07b04d09860de55ec6c10",
     "schema:wholeloop/evaluation-seed-record@1": "0c9657472ac8db8ccc59cefb7254b5ddcd32b3bb4e29c1ec565e89079d238bcd",
-    "schema:wholeloop/evaluation-seed-request@1": "eed70481c901899e6914f3a4cceeb88efba5cafaa2a9746000fd41fdee53124c"
+    "schema:wholeloop/evaluation-seed-request@1": "eed70481c901899e6914f3a4cceeb88efba5cafaa2a9746000fd41fdee53124c",
+    "output:wholeloop/delegated-decision-schema@1": "d1d7177eb141061c425971341ef8c09cc09432753a033f1b3ebbe286d12697d1",
+    "output:wholeloop/delegated-decision-pins@1": "771bfee5859788748b4857f37b7b4490d58d0b9af9a4cd32226d5259f6b06b72",
+    "output:wholeloop/delegated-decision-preflight@1": "7770ef5a01c53f45344476c0c484a2c6121d19772a2215089f7a29f273a309be",
+    "output:wholeloop/delegated-decision-status@1": "36d146c3dc1b2506075ac49bb662e31941ca25f95d109aa767a498a2b220aa8c",
+    "schema:wholeloop/delegated-decision-status@1": "4af9fc1da881d727ec5ec8247b9aae4a6c7315bdd3e988280d8169bed796070e",
+    "schema:wholeloop/delegated-decision-pins@1": "e42b0a803036e82e6cd446fd4551a2ce78a6f30279d2a4b1b8433af4ef15b2cf",
+    "schema:wholeloop/delegated-decision-preflight@1": "24a7543f47766f9225b86740df84a51304cfbc7c92015f48cbea68cfda1a8d05",
+    "schema:wholeloop/delegated-decision@1": "9e193473dd6670c9495fe1c4a3f9b311b21b8eba1dad26f73781312958906bc0",
+    "schema:wholeloop/delegated-decision-request@1": "c4be317c0dfbbc0d9c66f4f0e53143b545fc313d2c39a39f4684556d9c4998f7",
+    "schema:wholeloop/delegated-decision-rubric@1": "a2b0dfc98e37e63f877b4e79be0aef0c521f170f7aebc0319c981ad7237b5723"
   },
   "commands": [
     {
@@ -1889,6 +1899,30 @@
       "arguments": "<digest>",
       "schema": "wholeloop/evaluation-seed@1",
       "options": ["--store <path>"]
+    },
+    {
+      "path": "delivery decision-schema",
+      "arguments": "",
+      "schema": "wholeloop/delegated-decision-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery decision-pin",
+      "arguments": "",
+      "schema": "wholeloop/delegated-decision-pins@1",
+      "options": ["--grant <id>", "--store <path>"]
+    },
+    {
+      "path": "delivery decision-preflight",
+      "arguments": "",
+      "schema": "wholeloop/delegated-decision-preflight@1",
+      "options": ["--run <id>", "--revision <n>", "--grant <id>", "--store <path>"]
+    },
+    {
+      "path": "delivery decision-inspect",
+      "arguments": "",
+      "schema": "wholeloop/delegated-decision-status@1",
+      "options": ["--digest <sha256>", "--store <path>"]
     }
   ],
   "exitCodes": {

@@ -43,6 +43,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 | [Integrated milestone candidates](./tutorials/delivery-integration-candidates.md) | Exact committed vectors, protected inputs, stale inspection and conservative comparison |
 | [Owned assembly and combined verification](./tutorials/delivery-assembly.md) | Separate integration worktrees, retained conflicts, bounded repairs and actual whole-milestone behavior |
 | [Original delivery evaluation fixtures](./tutorials/delivery-evaluation-fixtures.md) | Pinned original applications, protected expectations and actual baseline/reference controls |
+| [Delegated machine decisions](./tutorials/delivery-decisions.md) | Pinned purpose-specific policy, independent machine provenance and no-prompt limitations |
 | [Delivery authorization](./tutorials/delivery-authorization.md) | Exact operator grants, finite deadlines, revocation and the worker trust boundary |
 | [Delivery recovery](./tutorials/delivery-recovery.md) | Independent-process history inspection and cache repair without reconstructing authority |
 | [Delivery queue](./tutorials/delivery-queue.md) | Durable work slots, dependency reasons and the boundary before actual worker dispatch |
