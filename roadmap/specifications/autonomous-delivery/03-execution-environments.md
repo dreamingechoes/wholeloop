@@ -3,7 +3,7 @@
 > **TL;DR** — Start the actual application and its dependencies in resources owned by one execution. Separate controller authority from untrusted build/test commands, and retain observed lifecycle receipts. A worktree or declared undo recipe alone is not containment.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-11 implements inert discovery, closed recipes, exact selected-byte retention and current-input inspection. Actual backend lifecycle remains P6-12–P6-13. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
+> **Status: 🚧 partial.** P6-11 implements inert discovery, closed recipes, exact selected-byte retention and current-input inspection. P6-12 adds owned Docker provisioning/setup/readiness and current-resource inspection. Public lifecycle/recovery remains P6-13; an independent Linux-host and actual native acceptance remain open. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
 
 ## Environment recipe
 
@@ -34,6 +34,8 @@ The worker cannot run as privileged, request host networking or gain the control
 Image acquisition, package downloads and model access require declared network phases. Offline runs do not quietly gain egress to make setup succeed. Treat image provisioning as an explicit effect; pin digests and distinguish prepared-cache use from a real pull. No runtime platform claim follows from an image tag or a synthetic host.
 
 The initial Docker backend supports a local Linux daemon, including a macOS-hosted Linux VM. Report host OS, daemon OS, architecture and emulation separately. Do not claim native macOS application execution inside a Linux container. An absent backend produces a supported supervised fallback offer, never an automatic permission change.
+
+The [Docker guide](../../../docs/tutorials/delivery-docker.md) documents current commands, the pinned helper, real disposable evaluation and explicit unsupported capabilities. [ADR-0103](../../../docs/decisions/0103-owned-docker-environments-and-isolated-publication.md) records observed image/index, publication and cancellation constraints.
 
 ## Services and data
 

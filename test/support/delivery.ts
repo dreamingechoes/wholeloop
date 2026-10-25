@@ -39,6 +39,7 @@ export async function fixture(
     plan: DeliveryPlan
     state: StateStore
   }) => void | Promise<void>,
+  options: { retain?: boolean } = {},
 ) {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-delivery-plan-')))
   const root = join(dir, 'repo')
@@ -146,7 +147,7 @@ export async function fixture(
       state: new StateStore(planning.sources.files.root),
     })
   } finally {
-    rmSync(dir, { recursive: true, force: true })
+    if (!options.retain) rmSync(dir, { recursive: true, force: true })
   }
 }
 export function envelope(plan: DeliveryPlan): DeliveryEnvelope {

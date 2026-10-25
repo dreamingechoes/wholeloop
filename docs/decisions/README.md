@@ -113,6 +113,7 @@
 | [0100](./0100-role-bound-worker-contexts-and-execution-observations.md) | Role-bound worker contexts and execution observations | Accepted | 2026-10-24 |
 | [0101](./0101-dedicated-native-delivery-hosts-and-runtime-proof.md) | Dedicated native delivery hosts and runtime proof | Accepted | 2026-10-25 |
 | [0102](./0102-inert-environment-recipes-and-pinned-setup-origins.md) | Pin environment recipes without treating discovery as execution | Accepted | 2026-10-25 |
+| [0103](./0103-owned-docker-environments-and-isolated-publication.md) | Own Docker resources and isolate application publication | Accepted | 2026-10-25 |
 
 ## Lifecycle
 

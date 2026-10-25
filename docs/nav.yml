@@ -19,6 +19,7 @@ pages:
   - { path: tutorials/delivery-workers.md, title: Delivery workers }
   - { path: tutorials/delivery-native.md, title: Native delivery hosts }
   - { path: tutorials/delivery-environments.md, title: Environment planning }
+  - { path: tutorials/delivery-docker.md, title: Docker application environments }
   - { path: troubleshooting.md, title: Troubleshooting }
   - { path: v1-acceptance.md, title: V1 acceptance }
   - { path: concepts.md, title: Concepts }

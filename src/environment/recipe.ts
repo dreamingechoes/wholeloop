@@ -298,6 +298,7 @@ function validateCommand(
   )
   const input = service.mounts.find((mount) => mount.kind === 'input' && mount.source === file.id)
   const path = workspace ? `${workspace.target}/${file.ref}` : input?.target
+  const inputFile = input ? `${input.target}/${posix.basename(file.ref)}` : undefined
   if (!path) refuse('unmounted-command-origin')
   if (command.origin.kind === 'package-script') {
     if (
@@ -312,7 +313,7 @@ function validateCommand(
   } else if (
     command.origin.script ||
     !['script', 'tool'].includes(file.kind) ||
-    !command.argv.includes(path)
+    (!command.argv.includes(path) && !(inputFile && command.argv.includes(inputFile)))
   )
     refuse('ambiguous-file-command')
 }

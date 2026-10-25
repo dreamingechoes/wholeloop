@@ -8,6 +8,7 @@ import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
 import { conformanceCommand } from './conformance.js'
 import { deliveryCommand } from './delivery.js'
+import { deliveryEnvironmentRuntimeCommand } from './delivery-environment-runtime.js'
 import { deliveryRecoverCommand } from './delivery-recovery.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav, docsReference } from './docs.js'
@@ -215,6 +216,11 @@ export async function runAsync(
       ((command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
         command.path === 'fanout run' ||
         command.path === 'delivery recover' ||
+        [
+          'delivery environment-backend',
+          'delivery environment-start',
+          'delivery environment-status',
+        ].includes(command.path) ||
         command.path.startsWith('conformance ') ||
         command.path === 'adopt' ||
         command.path.startsWith('share ') ||
@@ -246,6 +252,14 @@ export async function runAsync(
     )
     if (command.path.startsWith('guard '))
       return await guardCommand(command.path, parsed, root, json, io)
+    if (
+      [
+        'delivery environment-backend',
+        'delivery environment-start',
+        'delivery environment-status',
+      ].includes(command.path)
+    )
+      return await deliveryEnvironmentRuntimeCommand(command.path, parsed, root, json, io)
     if (command.path === 'delivery recover')
       return await deliveryRecoverCommand(parsed, root, json, io)
     if (command.path === 'provider read-flags') return await flagReadCommand(parsed, root, json, io)

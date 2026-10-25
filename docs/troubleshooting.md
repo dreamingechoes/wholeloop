@@ -122,5 +122,9 @@ Use [V1 acceptance](./v1-acceptance.md#what-evidence-to-return) for the handoff 
 
 Use [checkpoint and recovery inspection](./tutorials/delivery-checkpoints.md) to distinguish stale inputs, an unobserved worker, an ambiguous effect and a retained writer lock. Status/effect inspection starts no host. Ordinary commands never steal a lock; explicit digest-bound repair retains a writer record only after observing its PID absent. Live/reused/inaccessible or malformed identities require inspection. Restore/rebind actual inputs and authority rather than marking a pending write applied or resetting an exhausted gate.
 
+## Docker environment unavailable or stale
+
+Use the [Docker environment guide](./tutorials/delivery-docker.md) and retain the exact runtime ID/history. Preflight starts nothing: verify the explicit image cache, observed engine/platform support, requested capacity including helper/proxy overhead and current private grant. Scoped egress or secret delivery is explicitly unavailable. A changed candidate, old ready record or successful Docker client exit cannot establish readiness. Never retry an issued ambiguous creation by name or execute an undo declaration automatically; lifecycle reconciliation remains separate.
+
 <!-- docnav -->
-[◀ Environment planning](tutorials/delivery-environments.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)
+[◀ Docker application environments](tutorials/delivery-docker.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [V1 acceptance ▶](v1-acceptance.md)

@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/environment-evaluation@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/environment-evaluation@1"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pass", "failed", "unavailable"]
+    },
+    "controller": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "os": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "architecture": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "node": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "required": ["os", "architecture", "node"]
+    },
+    "scope": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "nativeModels": {
+      "type": "string",
+      "const": "not-executed"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "status": {
+            "type": "string",
+            "const": "pass"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": ["id", "status", "evidence"]
+      },
+      "maxItems": 64
+    },
+    "environments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 44,
+            "pattern": "^environment-[a-f0-9]{32}$"
+          },
+          "digest": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "daemon": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "os": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "architecture": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "cpus": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 4096
+              },
+              "memoryBytes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": ["id", "version", "os", "architecture", "cpus", "memoryBytes"]
+          }
+        },
+        "required": ["id", "digest"]
+      },
+      "maxItems": 64
+    },
+    "retainedFixture": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "retirement": {
+      "type": "string",
+      "enum": [
+        "not-requested",
+        "retained-by-request",
+        "exact-owned-absence-observed",
+        "failed-resources-retained"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 128
+    }
+  },
+  "required": [
+    "schema",
+    "status",
+    "controller",
+    "scope",
+    "nativeModels",
+    "checks",
+    "environments",
+    "retirement"
+  ]
+}

@@ -7,6 +7,10 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-environment-runtime
+    enforcers: [src/environment/provision.ts#DeliveryEnvironments, src/environment/candidates.ts#captureEnvironmentCandidates, src/environment/docker-policy.ts#dockerPreflight, src/environment/docker-policy.ts#observedContainerPolicy, src/environment/docker-resources.ts#DockerResources, test/unit/environment/docker.test.ts, test/evals/environment/run.ts]
+  - id: delivery-environment-observation
+    enforcers: [src/environment/runtime.ts#EnvironmentResources, src/environment/docker-resources.ts#DockerResources, src/environment/docker-proxy.ts#publishDockerService, src/environment/inspect.ts#inspectEnvironment, test/unit/environment/docker.test.ts, test/evals/environment/run.ts]
   - id: delivery-environment-recipe
     enforcers: [src/environment/recipe.ts#validateEnvironmentRecipe, src/environment/recipe.ts#observeEnvironmentFiles, src/environment/recipe-store.ts#discoverEnvironment, src/environment/recipe-store.ts#EnvironmentRecipes, test/unit/environment/recipe.test.ts, test/unit/environment/environment.test.ts]
   - id: delivery-native-host

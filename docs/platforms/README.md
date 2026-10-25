@@ -7,6 +7,8 @@
 
 ---
 
+[Owned Docker environments](../tutorials/delivery-docker.md) have a separate actual application/backend evaluation. Its reference controller is macOS arm64 with a Linux aarch64 daemon; this does not certify native models/tools or an independent Linux host. Existing client/service evidence retains its original scope.
+
 ## Expanded delivery protocol boundary
 
 [Delivery workers](../tutorials/delivery-workers.md) now have exact fresh assignments, bounded role contexts and separate controller execution observations. This is a tested local protocol boundary, not a new native capability certification. P6-09 adds dedicated pinned Claude/Codex reference transports, actual synthetic-process execution and seven-target capability/denial handling. It requires separate observed runtime proof; other expanded targets remain unverified. Actual native/tool/filesystem conformance remains P6-12/P6-27. Existing native successes, failures and service-unverified integrations below retain their original scope.

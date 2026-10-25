@@ -1,0 +1,94 @@
+# Run owned Docker application environments
+
+> **TL;DR** — The Docker backend executes an explicitly selected recipe under a current delivery grant, verifies actual resources and retains failure evidence. A separate model-free evaluation exercises real applications and boundary denials; no native client or service account is needed.
+
+> [!NOTE]
+> **Status: 🚧 partial.** Owned provisioning, setup/readiness, isolated application networking, loopback publication and reinspection are implemented. The reference Docker trial is scoped to a macOS arm64 controller and Linux arm64 daemon. Public lifecycle/recovery, the complete unattended runner and independent Linux-host/native acceptance remain subsequent tasks.
+
+## Requirements and costs
+
+Use a source checkout with development dependencies installed to run the evaluation. The bundled CLI supports the runtime commands separately. Docker must be available through a local Unix socket with permission to create disposable containers, local volumes and bridge networks. The reference daemon is Docker 29.9.2; required platform-manifest inspection and isolation controls must be observed on your engine. A version string alone is insufficient.
+
+The trusted Node helper is pinned to node@sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5. Prepare that exact image in the native Docker cache explicitly. The backend does not silently download it. Application images are also immutable; cache-only and explicitly authorized acquisition are separate choices. Docker uses its own credential store, and credentials never enter generated config, argv or application environment.
+
+The two-environment evaluation requests four aggregate CPUs and one GiB across its retained environment reservations. Each environment includes fixed helper/proxy overhead: helpers use 256 MiB and a quarter CPU, and each published port adds a 128 MiB, quarter-CPU proxy. Smaller capacity returns an explicit refusal. Application images must support UID/GID 65532 and the selected commands; setup dependencies must already be available for offline operation. Scoped egress, secret delivery, legacy direct input-file mounts and unavailable image/engine controls refuse execution.
+
+## Run the actual disposable evaluation
+
+From the repository root:
+
+```bash
+set -euo pipefail
+npm run eval:environments -- --retire-success
+```
+
+The command prints an external retained evaluation directory and a versioned report. It creates its own disposable Git source/worktree, private fixture grants, recipes and Docker resources. It never uses the person's checkout as an application mount or contacts a native model. Fixture owner/grant records are evaluation data, not human acceptance of a product change.
+
+Expected successful observations:
+
+- Two applications receive distinct actual loopback ports and owned data volumes; a write in one does not appear in the other.
+- Application commands cannot read the benign controller/home/credential/sibling marker fixtures, Git control or Docker socket, modify read-only implementation/input files, or inherit the controller's marker environment variable.
+- Setup and application execution observe denied external routes. Setup that exits 7 never becomes ready or starts its service.
+- Repeating a successful key reinspects the same environment without reissuing the effect. A changed candidate makes its previous readiness stale.
+- The explicit successful-evaluation teardown verifies every exact identity, retires only those fixture resources and observes absence. This includes expected failure cases after their assertions pass. An unexpected failure keeps resources and their external history for inspection.
+
+Omit --retire-success to retain successful fixture environments deliberately. The retained report is the actual observation; do not mark a missing/unavailable Docker run as passed. It identifies the controller runtime and daemon separately and launches no model. Running the suite on another host creates new evidence for that host, not certification of all platforms or clients.
+
+## Inspect contracts without Docker
+
+Set WHOLELOOP_CLI to the absolute built dist/wl.mjs path, as in the [planning guide](./delivery-environments.md).
+
+```bash
+set -euo pipefail
+: "${WHOLELOOP_CLI:?Set WHOLELOOP_CLI to the absolute built CLI path}"
+node "$WHOLELOOP_CLI" delivery environment-runtime-schema --json | node --input-type=module -e '
+import assert from "node:assert/strict"
+let text = ""
+for await (const chunk of process.stdin) text += chunk
+const value = JSON.parse(text)
+assert.equal(value.schema, "wholeloop/environment-runtime-schema@1")
+assert.equal(value.executed, false)
+assert.equal(value.runtimeSchema.additionalProperties, false)
+assert.equal(value.provisionSchema.additionalProperties, false)
+assert.equal(value.snapshotSchema.additionalProperties, false)
+assert.equal(value.runtimeSchema.properties.acceptance.const, "not-established")
+assert.equal(value.runtimeSchema.properties.publication.const, "not-performed")
+assert.match(value.referenceHelper, /@sha256:[a-f0-9]{64}$/)
+console.log("PASS: closed owned-runtime contracts; no execution, acceptance or publication")
+'
+```
+
+## Provision an existing authorized run
+
+These are command forms, not a substitute for preparing their inputs:
+
+| Command | Meaning |
+| --- | --- |
+| delivery environment-backend --digest RECIPE --store STORE --json | Read local daemon capacity and exact cached image/platform descriptors; start nothing |
+| delivery environment-start --file REQUEST --root INPUT_ROOT --store STORE --json | Execute the exact closed provision request under the current private delivery grant |
+| delivery environment-status --environment ID --store STORE --json | Reinspect exact owned resources, selected inputs and candidate bytes; grant nothing |
+
+The request schema contains run, recipe digest, stable key, trusted helper image and exact repository/path/HEAD/snapshot candidate bindings. Prepare the plan, grant and queue state through the [delivery guides](./delivery-authorization.md). Native/envelope delegation still requires independently accepted planning evidence through the controller; importing raw worker JSON cannot supply it. The complete terminal runner is a later increment.
+
+Start requires workspace.create and test.run, the current plan/grant digest and an allowed separately allocated topic worktree for every selected repository. The helper receives only bounded copied regular files and its owned volumes. It never mounts the source root or runtime store. The backend rechecks authority around mutations, retains the issued effect and cannot invoke the same key again after an ambiguous response.
+
+An input mount is a read-only directory: /inputs/ID/basename contains the exact selected file. Recipe-v1's older direct-file planning form remains readable, but this backend reports that direct mount capability unavailable; it never rewrites the stored command silently. Recipe inspection and actual environment status remain different observations.
+
+## Read outcomes and failures
+
+| Result | Interpretation |
+| --- | --- |
+| ready | Actual owned resources and readiness were observed for this exact candidate/recipe; semantic acceptance is not established |
+| unavailable | Required backend/capacity/image/network/secret capability is absent; no fallback is selected |
+| failed | Observed setup/execution failed; partial resources and evidence remain retained |
+| unknown | An action, identity or observation is unresolved; inspect/reconcile it before attempting another write |
+| stale or expired status | The old environment cannot establish current readiness for the changed candidate or elapsed lifetime |
+
+Runtime history records immutable resource intents, IDs/labels/creation fingerprints, actual image/index and platform-manifest bindings, process outcomes, copy hashes and observations outside Git. Raw image configuration and diagnostics do not enter receipts. Docker client cancellation alone proves no daemon-side shutdown; bounded jobs stop and reinspect their exact container. Existing env declare/report undo recipes remain unexecuted.
+
+Application networking stays on no network or an isolated internal bridge. A separate fixed controller proxy exposes only the intended owned service through loopback; it has no application mounts and cannot select a destination from incoming bytes. Each connection is limited to four MiB, thirty seconds and eight concurrent connections, and its lifetime is finite. This is application infrastructure, not a native model permission proof.
+
+Keep the printed external history when reporting failures. Do not remove guessed names or run ledger undo commands automatically. Public environment stop/recovery/retirement follows in P6-13. See [ADR-0103](../decisions/0103-owned-docker-environments-and-isolated-publication.md), the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) and [V1 acceptance](../v1-acceptance.md) for remaining host/native obligations.
+
+<!-- docnav -->
+[◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)

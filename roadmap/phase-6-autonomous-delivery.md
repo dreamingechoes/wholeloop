@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09 and P6-11 are implemented and tested; later execution criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09 and P6-11 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 50 complete, fourteen original open tasks and 24 new pending tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 50 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 23 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -295,7 +295,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-12 · Owned isolated application environments
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-11, P6-09
+**Status:** ⏸️ · **Size:** L · **Depends on:** P6-11, P6-09
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -305,13 +305,23 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Acceptance criteria:**
 
-- [ ] Two actual fixture applications have disjoint data and ports.
-- [ ] Workers cannot read controller/home/credential/sibling roots or use the host Docker socket.
-- [ ] Host/daemon platform and architecture are reported honestly; absent containment refuses delegated operation.
+- [x] Two actual fixture applications have disjoint data and ports.
+- [x] Workers cannot read controller/home/credential/sibling roots or use the host Docker socket.
+- [x] Host/daemon platform and architecture are reported honestly; absent containment refuses delegated operation.
 
 **Tests** — ENV-01–ENV-03 and ENV-05–ENV-07: actual disposable backend boundary/data tests on macOS and Linux hosts.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/03-execution-environments.md); platforms, environment recipes, troubleshooting.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/03-execution-environments.md); [Docker guide](../docs/tutorials/delivery-docker.md), platforms, environment recipes, troubleshooting and ADR-0103.
+
+**Local implementation** — Docker provisioning, current private authority/effect admission, exact image/root/platform-manifest bindings, volume-only candidate/input copies, actual byte/mode observation, finite setup/readiness jobs, isolated networks, fixed-target loopback proxies, ownership history and reinspection are implemented. Forty-one backend unit cases, a compiled CLI canary and 504 focused environment/contract checks pass. Complete checks pass 2461 tests in 106 files on macOS arm64/Node 24.22.0 (334.74 seconds) and isolated Debian Linux arm64/Node 24.22.0 (72.86 seconds), plus all remaining checks. Linux full checks exercise deterministic/fixture backend contracts and do not have a Docker socket.
+
+**Actual backend evidence** — The explicit model-free evaluation passes ten observations on a macOS arm64 controller with Docker 29.9.2 and a Linux aarch64 daemon: two actual applications, disjoint ports/data, read-only copied input and implementation, denied controller/home/credential/sibling/socket/environment access, denied setup/runtime egress, no effect reissue, candidate invalidation and setup exit 7 refusing readiness. Explicit successful-test teardown verifies exact identities and observes absence. Preserve both the first missing-publication failure and the platform-image identity refusal; fix the contracts and pass the final trials without weakening policy.
+
+**Acceptance remaining:**
+
+- [ ] ENV-07 on an independent Linux host, with controller/daemon/architecture and actual denials recorded.
+
+The available Linux controller container is not that proof. Actual native clients/models remain P6-27. P6-12 stays open for that acceptance; its completed implementation satisfies P6-13's technical dependency, and the owner explicitly authorized continuing without waiting for manual/host trials.
 
 ---
 

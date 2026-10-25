@@ -281,7 +281,15 @@
     "output:wholeloop/environment-recipe-inspection@1": "137d93178b4c46bd404c18be41cde158582ebd4613d1e4e8523542cc260646ca",
     "output:wholeloop/environment-discovery@1": "0b27ec1e5e188aa65308d283ff92c0ce5666c733cef86974619b5c39a87b6bd5",
     "schema:wholeloop/environment-recipe-record@1": "f0f2aee95011283e6d95c83d01c5ac53acdd7c11ba9e4e607869fd315b7e885b",
-    "schema:wholeloop/environment-recipe@1": "c0656bbb57aa97e91b8fe3ee1863125c2d637bb5e1d1654056025e41992c8858"
+    "schema:wholeloop/environment-recipe@1": "c0656bbb57aa97e91b8fe3ee1863125c2d637bb5e1d1654056025e41992c8858",
+    "output:wholeloop/environment-runtime-schema@1": "b465324dc6ce209043273b769218fa98d68250ef042959d6b91ca97d514d29cb",
+    "output:wholeloop/environment-backend-preflight@1": "05236e5f1d5ab6f8f13fa5b8c68fa90e37e4e23c5d91068c59de17dbeb57dbdf",
+    "output:wholeloop/environment-provision-result@1": "7bc02156794c8ba987ce83aa5cc72c0ce25924bf8c43f454bd5bd5690e6cb4ce",
+    "output:wholeloop/environment-status@1": "b490573515a8a62b6ee77d96121bece1226d6861ab2cd1aeeb572115e992559d",
+    "schema:wholeloop/environment-evaluation@1": "bc7684402f97d393042c82b91db371f2cbc576e2ee3595b136c3acf8de94f974",
+    "schema:wholeloop/environment-provision-request@1": "c091ebe240e3e45065b0f302ebd9449253bcea454b6e09a070041aa90b07d523",
+    "schema:wholeloop/environment-runtime-snapshot@1": "217025d4606584246eb43adaa2d4b5a52067194cbafb2dd2e03ed635e7e9051a",
+    "schema:wholeloop/environment-runtime@1": "96fc6bd64242ffda736fecf707bffcef6120a84cdea31e616723d24551ed81af"
   },
   "commands": [
     {
@@ -1562,6 +1570,30 @@
       "arguments": "",
       "schema": "wholeloop/environment-recipe-inspection@1",
       "options": ["--digest <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery environment-runtime-schema",
+      "arguments": "",
+      "schema": "wholeloop/environment-runtime-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery environment-backend",
+      "arguments": "",
+      "schema": "wholeloop/environment-backend-preflight@1",
+      "options": ["--digest <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery environment-start",
+      "arguments": "",
+      "schema": "wholeloop/environment-provision-result@1",
+      "options": ["--file <provision.json>", "--root <directory>", "--store <path>"]
+    },
+    {
+      "path": "delivery environment-status",
+      "arguments": "",
+      "schema": "wholeloop/environment-status@1",
+      "options": ["--environment <environment-id>", "--store <path>"]
     }
   ],
   "exitCodes": {

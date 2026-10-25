@@ -50,13 +50,13 @@ Accounts with every remote service are absent from this list deliberately.
 
 ### 0. Review and implement expanded 1.0
 
-The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. The owner accepted every new task on 2026-10-24 and authorized sequential implementation without further signals. P6-01–P6-09 and P6-11 are complete at their stated local contract boundaries. Actual native/backend execution remains later work and no old native failure becomes a pass.
+The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. The owner accepted every new task on 2026-10-24 and authorized sequential implementation without further signals. P6-01–P6-09 and P6-11 are complete at their stated local contract boundaries. P6-12 implements and actually exercises the reference Docker application backend; its independent Linux-host acceptance remains open. Actual native client/model execution remains separate and no old native failure becomes a pass.
 
 Independent local implementation is authorized to proceed before the remaining original manual/account checks. Use the [new validation plan](../roadmap/specifications/autonomous-delivery/09-validation-and-acceptance.md) for the additional actual backend, native research/implementation and disposable code-host evidence. Production effects and release remain separately authorized.
 
 ### 1. Finish implementation defects first
 
-The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external owner decisions; P6-01–P6-09 and P6-11 source/plan/envelope/authority, broker, replayable delivery-state and durable queue/fencing and checkpoint/effect/ownership recovery and persistent finite budget and role-bound worker/context and dedicated native-host contracts are implemented and tested, and 24 new Phase 6 tasks remain unimplemented. Actual native/backend containment is still later acceptance. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
+The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external owner decisions; P6-01–P6-09 and P6-11 source/plan/envelope/authority, broker, replayable delivery-state and durable queue/fencing and checkpoint/effect/ownership recovery and persistent finite budget and role-bound worker/context and dedicated native-host contracts are implemented and tested. P6-12 Docker execution is implemented with an independent Linux-host acceptance trial pending, and 23 new Phase 6 tasks remain unimplemented. Actual native/backend containment is still later acceptance. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
@@ -163,9 +163,13 @@ The implementation side prepares the exact bundle, notes, test results and comma
 
 Optional compiled binaries are not a new mandatory release requirement. The full defined roadmap still includes its explicit publication and client criteria.
 
+## Expanded Docker host trial
+
+[The Docker guide](./tutorials/delivery-docker.md) provides the exact model-free evaluation. macOS arm64 with a Linux aarch64 daemon has actual passing application/data/filesystem/network/input/setup-failure observations. P6-12 stays open until ENV-07 is also executed on an independent Linux host. This can be automated by an agent when that host is available; no vendor/model account is required. The isolated Linux full check has no Docker socket and proves its core/fixture scope only. This acceptance does not block the authorized implementation of P6-13 or subsequent tasks.
+
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 50 complete and 38 open: P6-01–P6-09 and P6-11 are complete and 24 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 50 complete and 38 open: P6-01–P6-09 and P6-11 are complete. P6-12 has implemented code and reference Docker observations but remains open for independent Linux-host acceptance, and 23 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Owner involvement |
 | --- | --- | --- |

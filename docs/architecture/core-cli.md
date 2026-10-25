@@ -40,6 +40,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery environment-runtime-schema` | `wholeloop/environment-runtime-schema@1` | Show owned Docker runtime contracts without starting resources |
+| `wl delivery environment-backend` | `wholeloop/environment-backend-preflight@1` | Observe local Docker capacity and cached images without provisioning |
+| `wl delivery environment-start` | `wholeloop/environment-provision-result@1` | Provision an explicitly authorized owned application environment |
+| `wl delivery environment-status` | `wholeloop/environment-status@1` | Reinspect exact owned resources and current candidate readiness |
 | `wl delivery environment-schema` | `wholeloop/environment-schema@1` | Show inert environment recipe and immutable selection contracts |
 | `wl delivery environment-discover` | `wholeloop/environment-discovery@1` | Discover bounded setup candidates without executing scripts |
 | `wl delivery environment-plan` | `wholeloop/environment-recipe-prepared@1` | Pin explicit isolated environment setup without granting execution |

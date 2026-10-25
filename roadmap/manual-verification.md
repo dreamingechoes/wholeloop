@@ -8,7 +8,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ## Expanded 1.0 acceptance boundary
 
-[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 50 complete and 38 open (24 new implementation tasks plus the fourteen original open tasks).
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 50 complete and 38 open (23 new implementation tasks, one implemented task awaiting Linux-host acceptance, plus the fourteen original open tasks).
 
 - [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
 - [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
@@ -23,6 +23,31 @@ OpenCode V1/V2 compatibility now has separate deterministic renderers and native
 Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 each fail with five invalid responses and one accepted response; the repository is unchanged. Bounded diagnostics establish missing envelope identities in those five JSON objects. ADR-0091 adds an exact native generation schema, preserving strict host validation. Preserve both failed rounds. The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six workers in actual Codex 0.163.0, with no missing coverage or repository edits. That fulfills P5-03's one-real-run criterion together with stubbed three-engine verdict/quorum parity; earlier failures and wider native checks remain unchanged.
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
+
+## Owned Docker application backend checks (2026-10-25)
+
+P6-12 implementation is complete and remains acceptance-open for an independent Linux host. Forty-one backend unit cases plus one compiled CLI canary cover capability/denial policy, actual-inspect-shaped fixtures, private-authority refusal, immutable ownership, image/index/manifest/platform bindings, output bounds, compatible bounded snapshots and preserved input-file planning contracts. The six focused files pass 504 environment/contract checks. Actual Docker observations below are separate from fixtures and native/model acceptance.
+
+| Environment | Executed result |
+| --- | --- |
+| macOS arm64 / Node 24.22.0 | Complete check: 2461 tests in 106 files (334.74 seconds), lint/types/build/smoke, offline package, 314-file docs/references, 148-file harness, 313-file Markdown and 36 diagrams |
+| Debian Linux arm64 / Node 24.22.0 | Same complete check: 2461 tests in 106 files (72.86 seconds), no skips; isolated non-root controller container without network, private history, credentials or Docker socket; backend execution there is fixture scope |
+| macOS Node 24 and Linux Node 20.0.0/24.22.0 | Exact closed-runtime-schema guide assertions pass with ShellCheck; these launch no Docker/model |
+| macOS arm64 controller / Linux aarch64 daemon / Docker 29.9.2 | Actual model-free evaluation passes ten observations: two app endpoints/data sets, copied read-only inputs/implementation, denied controller/home/credential/sibling/socket/environment access, denied setup/runtime egress, no effect reissue, stale candidate invalidation and setup exit 7 refusing readiness |
+| Independent Linux host/backend | Not executed; ENV-07 remains unchecked. Repeat the explicit evaluation on an available Linux host and record the actual controller/daemon/architecture; no service/model accounts are needed |
+
+Frozen candidate archive f69f7e627d7396fab32b71f5301a14ea9a2155ac59c0ecfc4307b11765ffe619 is based on 2e229a2 plus P6-12 source/tests. Copied core: 9fe69a3d578dee041b8379c312e175796a1e728199ac595532ce9701055ab006. Pre-evidence package receipts: macOS eea7bfd7be62f2e687de943c8278061123b503a5c4dc7ad05ee9f1ae94f59b7f and Linux c09e633dfdebd167db5ca54f3be3915ddcd976c8cbb4dafd0020b2063e078d90. Preserve the existing dependency-path build distinction; final evidence-only docs receive another local package/docs check.
+
+Actual final evaluation command: npm run eval:environments -- --retire-success. The retained final report has status pass, ten checks and exact-owned-absence-observed. Its actual controller/daemon scope does not establish a native model/tool permission guarantee or an independent Linux host. Versioned receipts retain current resource IDs, labels, creation fingerprints, original deadlines, exact copied bytes and image/platform identities; no raw image environment or credentials enter reports. The explicit fixture teardown observes absence; unexpected failures remain retained.
+
+Preserve failures and corrections:
+
+- The first actual app trial returns internal readiness but no allocated host port. Its evaluation fails. Fix the erroneous ready condition, keep application networking isolated and introduce the fixed-target controller publisher; the repeated actual endpoint returns HTTP 200.
+- The first anonymized inspection fixture assigns volume names by array order. The positive policy comparison fails while its negative cases were already different. Correct names by mount destination and require baseline equality before each mutation; final negative cases now exercise the intended control independently.
+- Precise platform image inspection exposes engine root ID sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5 and selected arm64 manifest sha256:0e84a1a8a11b9a42374419513e0825262dfd6f072eeb4a724c52fc0aab3061d2. The first stricter run refuses startup. Preserve that failure, bind both IDs/platforms and pass the final actual input/setup/data/boundary trials. Retire the three reviewed failed-probe resources only after exact ownership/daemon checks and observed absence; retain their diagnostic history.
+- Initial fixture TypeScript errors use mutable types for readonly tables and a null-only capability field. Correct fixture types, not product guards. No original native failure or service-unverified integration becomes passed.
+
+The backend has no remaining P6-12 code blocker. P6-13 may proceed under the owner's explicit instruction to defer manual/host acceptance. P6-12 stays open for ENV-07; actual native clients/models remain P6-27, with original fourteen open tasks unchanged. No hosted publication, merge, production resource or account-bound service trial occurs.
 
 ## Environment planning platform checks (2026-10-25)
 

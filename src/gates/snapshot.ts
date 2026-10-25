@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { lstatSync, readFileSync, readlinkSync } from 'node:fs'
 import { join } from 'node:path'
+import { readSourceBytes } from '../delivery/input.js'
 import { git } from '../worktrees/git.js'
 
 export interface WorkspaceSnapshot {
@@ -10,7 +11,10 @@ export interface WorkspaceSnapshot {
 }
 
 /** Hash bytes and index entries, never copy project files (or credentials) into state. */
-export function workspaceSnapshot(root: string): WorkspaceSnapshot {
+export function workspaceSnapshot(
+  root: string,
+  bounds?: { maxFileBytes: number; maxBytes: number; maxFiles: number; denySymlinks: boolean },
+): WorkspaceSnapshot {
   const head = git(root, ['rev-parse', 'HEAD']).trim()
   const branch = git(root, ['branch', '--show-current']).trim()
   const hash = createHash('sha256')
@@ -27,15 +31,27 @@ export function workspaceSnapshot(root: string): WorkspaceSnapshot {
         .filter(Boolean),
     ),
   ].sort()
+  if (bounds && paths.length > bounds.maxFiles)
+    throw new Error('Workspace snapshot exceeds its file limit')
+  let bytes = 0
   for (const path of paths) {
     add(path)
     try {
       const file = join(root, path)
       const stat = lstatSync(file)
       add(String(stat.mode))
-      if (stat.isSymbolicLink()) add(readlinkSync(file))
-      else if (stat.isFile()) add(readFileSync(file))
-      else throw new Error('Gate snapshots need regular files; inspect submodules explicitly')
+      if (stat.isSymbolicLink()) {
+        if (bounds?.denySymlinks) throw new Error('Workspace snapshot refuses symbolic links')
+        add(readlinkSync(file))
+      } else if (stat.isFile()) {
+        const content = bounds
+          ? readSourceBytes(root, path, bounds.maxFileBytes)
+          : readFileSync(file)
+        bytes += content.length
+        if (bounds && bytes > bounds.maxBytes)
+          throw new Error('Workspace snapshot exceeds its byte limit')
+        add(content)
+      } else throw new Error('Gate snapshots need regular files; inspect submodules explicitly')
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
       add('missing')

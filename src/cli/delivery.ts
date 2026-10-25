@@ -23,6 +23,17 @@ export function deliveryCommand(
   json: boolean,
   io: Io,
 ): number {
+  if (
+    [
+      'delivery environment-backend',
+      'delivery environment-start',
+      'delivery environment-status',
+    ].includes(command)
+  )
+    throw new CliError(
+      'Use the asynchronous CLI entrypoint for environment runtime operations',
+      EXIT.precondition,
+    )
   if (command.startsWith('delivery environment-'))
     return deliveryEnvironmentCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery native-schema') {

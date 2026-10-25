@@ -8,6 +8,34 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery environment-runtime-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/environment-runtime-schema@1',
+    summary: 'Show owned Docker runtime contracts without starting resources',
+  },
+  {
+    path: 'delivery environment-backend',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/environment-backend-preflight@1',
+    summary: 'Observe local Docker capacity and cached images without provisioning',
+  },
+  {
+    path: 'delivery environment-start',
+    arguments: '',
+    options: ['--file <provision.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/environment-provision-result@1',
+    summary: 'Provision an explicitly authorized owned application environment',
+  },
+  {
+    path: 'delivery environment-status',
+    arguments: '',
+    options: ['--environment <environment-id>', '--store <path>'],
+    schema: 'wholeloop/environment-status@1',
+    summary: 'Reinspect exact owned resources and current candidate readiness',
+  },
+  {
     path: 'delivery environment-schema',
     arguments: '',
     options: [],

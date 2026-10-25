@@ -1,11 +1,15 @@
 import { resolve } from 'node:path'
 import { readSourceFile } from '../delivery/input.js'
+import { DOCKER_REFERENCE_HELPER } from '../environment/docker-policy.js'
 import { ENVIRONMENT_RECIPE_SCHEMA } from '../environment/recipe.js'
 import {
   discoverEnvironment,
   ENVIRONMENT_RECORD_SCHEMA,
   EnvironmentRecipes,
 } from '../environment/recipe-store.js'
+import provisionSchema from '../environment/schemas/provision-request-v1.json' with { type: 'json' }
+import snapshotSchema from '../environment/schemas/runtime-snapshot-v1.json' with { type: 'json' }
+import runtimeSchema from '../environment/schemas/runtime-v1.json' with { type: 'json' }
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -20,7 +24,16 @@ export function deliveryEnvironmentCommand(
   try {
     let receipt: unknown
     const boundary = typeof options['--root'] === 'string' ? resolve(root, options['--root']) : root
-    if (command === 'delivery environment-schema')
+    if (command === 'delivery environment-runtime-schema')
+      receipt = {
+        schema: 'wholeloop/environment-runtime-schema@1',
+        runtimeSchema,
+        snapshotSchema,
+        provisionSchema,
+        referenceHelper: DOCKER_REFERENCE_HELPER,
+        executed: false,
+      }
+    else if (command === 'delivery environment-schema')
       receipt = {
         schema: 'wholeloop/environment-schema@1',
         recipeSchema: ENVIRONMENT_RECIPE_SCHEMA,

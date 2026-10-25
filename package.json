@@ -47,7 +47,8 @@
     "providers:catalog": "node scripts/generate-providers.mjs",
     "eval:definitions": "npm run build && node dist/wl.mjs eval definitions test/evals/definition/corpus.json",
     "eval:gates": "npm run build && node dist/wl.mjs eval gates test/evals/gates/corpus.json --predictions test/evals/gates/baseline-predictions.json",
-    "eval:grounding": "npm run build && node dist/wl.mjs eval grounding test/evals/grounding/corpus.json"
+    "eval:grounding": "npm run build && node dist/wl.mjs eval grounding test/evals/grounding/corpus.json",
+    "eval:environments": "node scripts/check-environments.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
