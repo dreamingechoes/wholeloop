@@ -201,6 +201,27 @@ export class EnvironmentOperations {
       }
     })
   }
+  completion(args: string[], pid: number) {
+    const matching = this.list().filter(
+      (operation) =>
+        operation.command === contractDigest(args) &&
+        this.read(operation.id, 'started')?.pid === pid,
+    )
+    if (matching.length !== 1) return undefined
+    const operation = matching[0]
+    if (!operation) return undefined
+    // list/get validates nonce, actual registered invoker and the closed outcome before this read.
+    const outcome = this.read(operation.id, 'outcome')
+    if (
+      outcome?.reason !== 'finished' ||
+      outcome.signal !== undefined ||
+      !Number.isInteger(outcome.code) ||
+      Number(outcome.code) < 0 ||
+      Number(outcome.code) > 255
+    )
+      return undefined
+    return { operation: operation.id, code: Number(outcome.code), at: String(outcome.at) }
+  }
   inspect() {
     const entries = this.list().map((operation) => ({
       operation,

@@ -1,5 +1,6 @@
 import { resolve } from 'node:path'
 import { ACCEPTANCE_SCHEMAS, type AcceptanceArtifact } from '../acceptance/contracts.js'
+import { DockerBehaviorHost } from '../acceptance/docker-behavior.js'
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { readSourceBytes, readSourceFile } from '../delivery/input.js'
 import type { parseArguments } from './arguments.js'
@@ -94,7 +95,21 @@ export async function deliveryAcceptanceAsyncCommand(
       environment = acceptance.boundary(required(options, '--environment'))
     let receipt: unknown
     let code: number = EXIT.ok
-    if (command === 'delivery acceptance-seal') {
+    if (command === 'delivery acceptance-run') {
+      receipt = await acceptance.executeCase(
+        digest,
+        required(options, '--case'),
+        required(options, '--key'),
+        environment,
+        new DockerBehaviorHost(
+          acceptance,
+          digest,
+          environment.environment,
+          required(options, '--case'),
+        ),
+      )
+      if ((receipt as { status: string }).status !== 'passed') code = EXIT.precondition
+    } else if (command === 'delivery acceptance-seal') {
       receipt = {
         schema: 'wholeloop/acceptance-sealed@1',
         ...(await acceptance.seal(digest, environment)),

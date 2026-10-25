@@ -94,6 +94,37 @@ function planned(workflow: VerificationWorkflow) {
 }
 
 describe('real once-per-round suite execution', () => {
+  it('shares a failed trusted-host receipt once without replacing the pinned round policy', async () =>
+    fixture(async ({ workflow, engine }) => {
+      const { subject, plan } = planned(workflow)
+      let calls = 0
+      const executor = async (_root: string, command: { ref: string }) => {
+        calls++
+        return {
+          receipt: {
+            ref: command.ref,
+            exitCode: 7,
+            signal: '',
+            stdout: 'a'.repeat(64),
+            stderr: 'b'.repeat(64),
+          },
+          output: { ref: command.ref, stdout: '', stderr: 'Explicit synthetic executor failure.' },
+        }
+      }
+      const first = await runSuite(engine, subject ?? '', plan.run, plan.round, { executor })
+      expect(first.result.status).toBe('failed')
+      const cached = await runSuite(engine, subject ?? '', plan.run, plan.round, { executor })
+      expect(calls).toBe(1)
+      expect(cached.cached).toBe(true)
+      expect(cached.result.commands[0]?.exitCode).toBe(7)
+      const gates = new GateWorkflow(engine)
+      expect(gates.verdict(subject ?? '', 'verify').verdict).not.toBe('PASS')
+      const next = gates.plan(subject ?? '', 'verify').plan
+      expect(next.run).toBe(plan.run)
+      expect(next.round).toBe(plan.round + 1)
+      expect(next.budget).toBe(plan.budget)
+    }))
+
   it('runs checks once, shares the receipt, returns output without storing it, and completes from a current PASS', async () =>
     fixture(async ({ workflow, engine }) => {
       const { subject, plan } = planned(workflow)

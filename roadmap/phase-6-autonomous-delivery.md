@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-14 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-15 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 52 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 21 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 53 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 20 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -375,7 +375,7 @@ The available Linux controller container is not that proof. Actual native client
 
 ## P6-15 · Executable API and CLI acceptance
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-12, P6-14, P3-05
+**Status:** ✅ · **Size:** M · **Depends on:** P6-12, P6-14, P3-05
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -385,13 +385,15 @@ The available Linux controller container is not that proof. Actual native client
 
 **Acceptance criteria:**
 
-- [ ] Green unit tests cannot hide a deliberately broken real behavior.
-- [ ] Wrong exits, missing versus zero values, wrong origins and incomplete responses remain failures/unknowns.
-- [ ] Candidate repair invalidates execution evidence without resetting the existing gate policy.
+- [x] Green unit tests cannot hide a deliberately broken real behavior.
+- [x] Wrong exits, missing versus zero values, wrong origins and incomplete responses remain failures/unknowns.
+- [x] Candidate repair invalidates execution evidence without resetting the existing gate policy.
 
 **Tests** — QA-01–QA-03 and QA-06: real disposable CLI/API applications, actual restart and failed suite receipts.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/04-behavioral-qa.md); verify-works, behavioral test reference.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/04-behavioral-qa.md); [behavior host tutorial](../docs/tutorials/delivery-behaviors.md), verify-works, acceptance and ADR-0106.
+
+**Evidence** — Complete checks pass 2602 tests in 113 files on macOS arm64/Node 24.22.0 (301.87 seconds) and isolated Debian Linux arm64/Node 24.22.0 (77.12 seconds), plus all remaining checks. Actual disposable Docker observations expose broken persistence behind a green unit suite, verify a repaired candidate after restart, reject missing/zero and wrong-exit substitutions, observe exit seven and preserve failed-suite reuse and original gate budgets. Preserve the initial authority-watch and fixture failures, the first concurrent macOS installation timeout, and the real native-output truncation probe (196608 of 220000 bytes); the corrected wrapper drains all bytes and verifies the exact finished client close. Native models, browser/private evaluation, accounts, publication and independent Linux Docker-host acceptance remain separate.
 
 ---
 

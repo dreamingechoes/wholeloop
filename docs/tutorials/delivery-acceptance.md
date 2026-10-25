@@ -3,7 +3,7 @@
 > **TL;DR** — Pin the agreed cases before execution, preserve human/machine ownership and inspect coverage against the exact candidate. Artifact capture and sealed reports remain private, bounded and separate from publication permission.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Closed definitions, current-input evidence validation, typed reports, explicit human notes and immutable budgeted artifacts are implemented. Deterministic CLI/API execution, browser execution and private evaluator boundaries remain P6-15–P6-17; normalized host fixtures do not certify those capabilities.
+> **Status: ✅ implemented.** Closed definitions, current-input evidence validation, typed reports, explicit human notes and immutable budgeted artifacts are implemented. The [fixed CLI/API host](./delivery-behaviors.md) adds actual execution in P6-15; browser execution and private evaluation remain P6-16–P6-17. Normalized fixtures alone do not certify these capabilities.
 
 ## Before you start
 
@@ -96,4 +96,4 @@ A human-only criterion remains pending-human until an explicit current operator 
 See [ADR-0105](../decisions/0105-pinned-acceptance-and-observed-evidence.md), the [behavioral QA specification](../../roadmap/specifications/autonomous-delivery/04-behavioral-qa.md) and [V1 acceptance](../v1-acceptance.md) for the remaining actual execution/native boundaries.
 
 <!-- docnav -->
-[◀ Environment stop and retirement](delivery-lifecycle.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Environment stop and retirement](delivery-lifecycle.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Execute API and CLI acceptance ▶](delivery-behaviors.md)

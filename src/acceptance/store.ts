@@ -1,7 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import { existsSync, readdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
+import { currentBudgetReservation } from '../delivery/budget-policy.js'
 import { DeliveryBudgets } from '../delivery/budgets.js'
+import { deliveryEffects } from '../delivery/effect-events.js'
 import { readSourceFile } from '../delivery/input.js'
 import { DeliveryJournalError } from '../delivery/journal-error.js'
 import { DeliveryPlanning } from '../delivery/planning-store.js'
@@ -51,6 +53,8 @@ export interface AcceptanceHost {
     >
   >
   stop?(invocation: string): Promise<'stopped' | 'unknown'>
+  /** Only a trusted host can bind its current case to an already journaled test effect. */
+  pendingEffect?(invocation: string): string | undefined
 }
 /** Fixed controller hosts call this boundary. There is intentionally no result/JSON import command. */
 export class DeliveryAcceptance {
@@ -116,6 +120,11 @@ export class DeliveryAcceptance {
     )
     if (pinned.digest !== digest) throw new AcceptanceError('unpinned-case-definitions')
     return record
+  }
+  assertCurrent(digest: string) {
+    const pinned = this.get(digest)
+    this.authority(pinned.plan)
+    return pinned
   }
   boundary(environment: string) {
     return new DockerAcceptanceBoundary(
@@ -218,7 +227,7 @@ export class DeliveryAcceptance {
     if (this.now() >= deadline) abort.abort()
     const watch = setInterval(() => {
       try {
-        this.authority(plan)
+        this.authority(plan, host.pendingEffect?.(invocation))
       } catch {
         abort.abort()
       }
@@ -486,8 +495,19 @@ export class DeliveryAcceptance {
       throw error
     }
   }
-  private authority(plan: AcceptancePlan) {
+  private authority(plan: AcceptancePlan, effectId?: string) {
     const state = this.budgets.lifecycle.journal.get(plan.run)
+    const effect = effectId
+      ? deliveryEffects(state).records.find((e) => e.intent.id === effectId)
+      : undefined
+    const observingEffect =
+      state.state === 'waiting-external' &&
+      effect?.status === 'pending' &&
+      effect.intent.operation === 'test.run' &&
+      effect.intent.basis === plan.plan &&
+      effect.intent.grantDigest === state.grant?.digest &&
+      effect.invocation &&
+      currentBudgetReservation(state, effect.invocation, this.budgets.clock())
     const authority = state.grant
       ? this.budgets.lifecycle.authority.inspect(state.grant.id)
       : undefined
@@ -496,7 +516,7 @@ export class DeliveryAcceptance {
       authority.digest !== state.grant?.digest ||
       !authority.grant.effects.includes('test.run') ||
       !authority.grant.effects.includes('report.write') ||
-      !['planned', 'queued', 'running'].includes(state.state)
+      (!['planned', 'queued', 'running'].includes(state.state) && !observingEffect)
     )
       throw new AcceptanceError('inactive-acceptance-authority')
     if (

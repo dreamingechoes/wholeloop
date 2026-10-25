@@ -1,4 +1,5 @@
 import { resolve } from 'node:path'
+import { BEHAVIOR_INPUT_SCHEMA } from '../acceptance/behavior-input.js'
 import { readSourceFile, SOURCE_REQUEST_SCHEMA, SourceInputError } from '../delivery/input.js'
 import { NATIVE_DELIVERY_TARGETS, REFERENCE_NATIVE_VERSIONS } from '../delivery/native-adapters.js'
 import { NATIVE_OBSERVATION_SCHEMA } from '../delivery/native-capabilities.js'
@@ -29,6 +30,7 @@ export function deliveryCommand(
       'delivery environment-backend',
       'delivery environment-start',
       'delivery environment-status',
+      'delivery acceptance-run',
       'delivery acceptance-report',
       'delivery acceptance-seal',
       'delivery acceptance-human-note',
@@ -41,6 +43,16 @@ export function deliveryCommand(
       'Use the asynchronous CLI entrypoint for environment runtime operations',
       EXIT.precondition,
     )
+  if (command === 'delivery behavior-schema') {
+    io.out(
+      JSON.stringify({
+        schema: 'wholeloop/behavior-schema@1',
+        input: BEHAVIOR_INPUT_SCHEMA,
+        executed: false,
+      }),
+    )
+    return EXIT.ok
+  }
   if (command.startsWith('delivery acceptance-'))
     return deliveryAcceptanceCommand(command, { options, positional: [] }, root, json, io)
   if (command.startsWith('delivery environment-'))

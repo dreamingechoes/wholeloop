@@ -101,6 +101,21 @@ export class AcceptanceArtifacts {
       throw new AcceptanceError('artifact-content-changed')
     return { digest, artifact }
   }
+  bytes(run: string, digest: string) {
+    const { artifact } = this.read(run, digest)
+    const bytes = Buffer.concat(
+      artifact.chunks.map((chunk) =>
+        readSourceBytes(this.budgets.lifecycle.journal.files.root, chunk.ref, CHUNK),
+      ),
+    )
+    // Validate the bytes returned by this read, not only an earlier metadata inspection.
+    if (
+      bytes.length !== artifact.bytes ||
+      createHash('sha256').update(bytes).digest('hex') !== artifact.sha256
+    )
+      throw new AcceptanceError('artifact-content-changed')
+    return bytes
+  }
   private path(run: string, digest: string) {
     if (!/^delivery-[a-f0-9]{16}$/.test(run) || !/^[a-f0-9]{64}$/.test(digest))
       throw new AcceptanceError('artifact-id')

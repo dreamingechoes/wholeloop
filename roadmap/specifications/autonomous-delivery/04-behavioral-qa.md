@@ -3,7 +3,7 @@
 > **TL;DR** — Execute the approved behavior against the actual candidate and bind evidence to its bytes. Preserve unit/suite checks and adversarial review. Machine acceptance must be independently observable and must never impersonate a person's local testing.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-14 implements pinned coverage/ownership, controller-host evidence contracts, current-candidate validation, human notes and immutable budgeted artifacts. Actual deterministic CLI/API, browser and private evaluation execution remain P6-15–P6-17. Current testability checks and semantic gates remain required foundations.
+> **Status: 🚧 partial.** P6-14 implements pinned coverage/ownership, controller-host evidence contracts, current-candidate validation, human notes and immutable budgeted artifacts. P6-15 adds actual declared CLI/API execution, complete output/response assertions, service restart/persistence, exact client-close observation and pinned-round suite reuse. Browser and private evaluation remain P6-16–P6-17. Current testability checks and semantic gates remain required foundations.
 
 ## Acceptance plan
 
@@ -38,7 +38,7 @@ Execution evidence may be referenced by multiple verifiers; do not run the suite
 
 ## API and CLI behavior
 
-Use declared native test commands or a reviewed deterministic host. Preserve argument boundaries, endpoint origin, fixture data and assertion shape. Support success and failure-path cases, persistence after restart and permission/error behavior where specified.
+The implemented [fixed behavior host](../../../docs/tutorials/delivery-behaviors.md) uses explicit behavior-input@1 definitions, phase-test recipe commands and actually observed owned service publications. Each invocation is a scoped test.run effect under its original authority and budget. Use declared native test commands or a reviewed deterministic host. Preserve argument boundaries, endpoint origin, fixture data and assertion shape. Support success and failure-path cases, persistence after restart and permission/error behavior where specified.
 
 Do not normalize away material differences such as absent versus zero, wrong exit codes, partial responses or wrong tenant. Calls to services with possible mutations need an explicitly owned test environment and effect declaration. Keep vendor integrations fixture-tested unless actual operations are observed.
 
@@ -63,11 +63,11 @@ Proposed outcomes: `passed`, `failed`, `pending-human`, `unavailable`, `interrup
 ## Acceptance and tests
 
 - [x] **QA-01:** Missing criteria coverage, wrong candidate, forged process metadata and stale artifacts refuse acceptance.
-- [ ] **QA-02:** A feature with a green unit suite but broken persistence/UI behavior fails a real behavior case.
+- [ ] **QA-02:** A feature with a green unit suite but broken persistence/UI behavior fails a real behavior case. P6-15 observes the actual API persistence failure and repair; the UI counterpart remains P6-16.
 - [ ] **QA-03:** An empty-title regression fails on the baseline and passes on the candidate with matching test identity.
 - [ ] **QA-04:** A builder cannot modify hidden acceptance inputs or grant evaluator authority; validate the actual backend boundary.
 - [ ] **QA-05:** Missing browser access, unsupported devices, timing failure and incomplete capture remain unavailable/failed, not passed.
-- [ ] **QA-06:** A repaired candidate reruns required evidence; previous success and exhausted budgets remain historical.
+- [x] **QA-06:** A repaired candidate reruns required evidence; previous success and exhausted budgets remain historical.
 - [ ] **QA-07:** Human-only criteria block automated publication even when all machine cases pass.
 - [x] **QA-08:** Artifact paths, retention, redaction and sharing reject symlink escape, oversized and credential-bearing metadata fixtures.
 

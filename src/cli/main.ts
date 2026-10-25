@@ -221,6 +221,7 @@ export async function runAsync(
           'delivery environment-backend',
           'delivery environment-start',
           'delivery environment-status',
+          'delivery acceptance-run',
           'delivery acceptance-report',
           'delivery acceptance-seal',
           'delivery acceptance-human-note',
@@ -272,6 +273,7 @@ export async function runAsync(
       return await deliveryEnvironmentRuntimeCommand(command.path, parsed, root, json, io)
     if (
       [
+        'delivery acceptance-run',
         'delivery acceptance-report',
         'delivery acceptance-seal',
         'delivery acceptance-human-note',

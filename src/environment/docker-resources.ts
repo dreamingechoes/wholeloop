@@ -8,7 +8,7 @@ import {
   dockerObjects,
   observedContainerPolicy,
 } from './docker-policy.js'
-import type { EnvironmentResource, EnvironmentResources } from './runtime.js'
+import type { EnvironmentResource, EnvironmentResources, EnvironmentRuntime } from './runtime.js'
 
 /** Every creation/start has a retained intent. A name or a successful CLI exit never establishes ownership. */
 export class DockerResources {
@@ -19,6 +19,7 @@ export class DockerResources {
     readonly current: () => void,
     readonly signal: AbortSignal,
     readonly outputBytes = 1024 * 1024,
+    readonly admit?: (record: EnvironmentRuntime, resource: EnvironmentResource) => void,
   ) {}
   labels(resource: EnvironmentResource) {
     const record = this.records.get(this.environment).record
@@ -310,6 +311,7 @@ export class DockerResources {
     this.records.update(this.environment, (record) => {
       if (record.resources.some((entry) => entry.slot === slot))
         throw new DockerEnvironmentError('resource-already-issued')
+      this.admit?.(record, resource)
       record.resources.push(resource)
     })
     return resource

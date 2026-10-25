@@ -3,11 +3,57 @@ import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileS
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, it } from 'vitest'
-import { DockerCli } from '../../../src/environment/docker-command.js'
+import {
+  DockerCli,
+  type DockerProcessObservation,
+} from '../../../src/environment/docker-command.js'
+import { DOCKER_OPERATION_WRAPPER } from '../../../src/environment/operation-wrapper.js'
 import { EnvironmentOperations, operationGroup } from '../../../src/environment/operations.js'
 import { StoreFiles } from '../../../src/state/files.js'
 
 const environment = `environment-${'a'.repeat(32)}`
+it('drains complete negative-exit output and binds the client close to the exact observed invoker', () =>
+  fixture(async (_dir, operations) => {
+    const args = ['container', 'start', '--attach', '--interactive', 'owned-fixture']
+    const registration = operations.begin(args, 10000)
+    const child = spawn(process.execPath, ['--input-type=module', '-e', DOCKER_OPERATION_WRAPPER], {
+      detached: true,
+      stdio: ['pipe', 'pipe', 'pipe'],
+    })
+    if (!child.pid) throw new Error('Missing observed wrapper PID')
+    registration.started(child.pid)
+    let bytes = 0
+    child.stdout.on('data', (chunk: Buffer) => {
+      bytes += chunk.length
+      child.stdout.pause()
+      setTimeout(() => child.stdout.resume(), 10)
+    })
+    child.stderr.resume()
+    child.stdin.end(
+      JSON.stringify({
+        operation: registration.operation,
+        nonce: registration.nonce,
+        cancel: registration.cancel,
+        outcome: registration.outcome,
+        command: process.execPath,
+        args: ['-e', "process.stdout.write('x'.repeat(220000));process.exitCode=7"],
+        input: '',
+        timeoutMs: 10000,
+      }),
+    )
+    const code = await new Promise<number | null>((resolve, reject) => {
+      child.once('error', reject)
+      child.once('close', resolve)
+    })
+    expect(code).toBe(1)
+    expect(bytes).toBe(220000)
+    expect(operations.completion(args, child.pid)).toMatchObject({
+      operation: registration.operation,
+      code: 7,
+    })
+    expect(operations.completion(args, child.pid + 1)).toBeUndefined()
+    expect(operations.completion(['container', 'start', 'different'], child.pid)).toBeUndefined()
+  }))
 async function fixture(run: (dir: string, operations: EnvironmentOperations) => Promise<void>) {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-docker-operations-')))
   try {
@@ -29,12 +75,21 @@ it('registers the actual wrapper before any command/input and retains an observe
     )
     const registration = operations.begin(['container', 'create', 'fixture'], 10000)
     const started = registration.outcome.replace(/outcome\.json$/, 'started.json')
+    const processes: DockerProcessObservation[] = []
+    const observedOutput: Buffer[] = []
     const result = await new DockerCli(binary).call(['container', 'create', started], {
       registration,
+      process: (value) => processes.push(value),
+      observe: (_stream, bytes) => observedOutput.push(Buffer.from(bytes)),
       input: 'owned non-secret input',
       timeoutMs: 10000,
     })
     expect(result.status).toBe('succeeded')
+    expect(processes).toHaveLength(1)
+    expect(processes[0]?.argv[0]).toBe(process.execPath)
+    expect(processes[0]?.code).toBe(0)
+    expect(processes[0]?.pid).toBe(JSON.parse(readFileSync(started, 'utf8')).pid)
+    expect(Buffer.concat(observedOutput).toString('utf8')).toBe(result.stdout)
     expect(JSON.parse(result.stdout)).toEqual({ input: 'owned non-secret input', registered: true })
     operations.close(registration, result)
     expect(operations.inspect()[0]?.status).toBe('stopped')

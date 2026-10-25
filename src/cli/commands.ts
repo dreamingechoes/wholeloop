@@ -8,6 +8,26 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery acceptance-run',
+    arguments: '',
+    options: [
+      '--digest <sha256>',
+      '--case <case-id>',
+      '--key <stable-key>',
+      '--environment <environment-id>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/acceptance-case-result@1',
+    summary: 'Execute pinned API or CLI assertions against an exact owned application',
+  },
+  {
+    path: 'delivery behavior-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/behavior-schema@1',
+    summary: 'Show the closed input contract for the fixed API and CLI behavior host',
+  },
+  {
     path: 'delivery acceptance-seal',
     arguments: '',
     options: ['--digest <sha256>', '--environment <environment-id>', '--store <path>'],

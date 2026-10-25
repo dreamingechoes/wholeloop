@@ -5,3 +5,5 @@
 - ⛔ `delivery-acceptance-artifacts` — retain bounded content-addressed evidence externally under finite run accounting. Scan complete bytes for recognizable credentials before chunking, verify observed chunks on reads and refuse symlink/metadata escapes. Capture and sealing authorize no sharing or TTL deletion; missing or omitted required evidence cannot become a pass.
 
 A prepared acceptance plan executes nothing. Objective behavior hosts and independent evaluators supply observations; an agent's result is a claim until the controller binds actual execution and evidence. Human-only criteria remain pending until an explicit named operator note on the exact candidate. Existing suite/gate policies and original supervised records remain unchanged.
+
+⛔ `delivery-behavior-execution` — Execute objective API/CLI cases only through the fixed declared behavior host on the exact owned application; preserve incomplete responses, unknown effects, actual process/exit facts and original suite/gate budgets. A green unit suite cannot substitute for acceptance.

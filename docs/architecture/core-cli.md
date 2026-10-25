@@ -40,6 +40,8 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery acceptance-run` | `wholeloop/acceptance-case-result@1` | Execute pinned API or CLI assertions against an exact owned application |
+| `wl delivery behavior-schema` | `wholeloop/behavior-schema@1` | Show the closed input contract for the fixed API and CLI behavior host |
 | `wl delivery acceptance-seal` | `wholeloop/acceptance-sealed@1` | Retain a current typed acceptance report as an immutable private artifact |
 | `wl delivery acceptance-schema` | `wholeloop/acceptance-schema@1` | Show closed behavioral acceptance and artifact contracts |
 | `wl delivery acceptance-plan` | `wholeloop/acceptance-plan-prepared@1` | Pin complete behavioral cases without executing tests |

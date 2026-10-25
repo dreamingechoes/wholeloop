@@ -51,7 +51,8 @@ process.stdin.on('end', () => {
   child.once('error', () => { outcome(null, null, 'launch-failed'); process.exit(1) })
   child.once('close', (code, signal) => {
     outcome(code, signal, stopping ? stopReason : 'finished')
-    if (!stopping) process.exit(code === 0 && !signal ? 0 : 1)
+    // Exit naturally after stdout/stderr drain; an immediate exit truncates buffered acceptance evidence.
+    if (!stopping) process.exitCode = code === 0 && !signal ? 0 : 1
   })
   const watch = setInterval(() => { if (existsSync(request.cancel)) stop('cancelled') }, 50)
   const timer = setTimeout(() => stop('timeout'), request.timeoutMs)

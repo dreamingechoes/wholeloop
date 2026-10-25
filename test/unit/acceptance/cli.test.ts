@@ -28,6 +28,11 @@ it('prepares and reads pinned definitions and captures budgeted bytes without Do
       expect(result.status, result.stderr || result.stdout).toBe(status)
       return JSON.parse(result.stdout)
     }
+    expect(cli(['behavior-schema'])).toMatchObject({
+      schema: 'wholeloop/behavior-schema@1',
+      input: { $id: 'wholeloop/behavior-input@1' },
+      executed: false,
+    })
     const schemas = cli(['acceptance-schema'])
     expect(schemas).toMatchObject({ schema: 'wholeloop/acceptance-schema@1', executed: false })
     expect(Object.keys(schemas.contracts)).toHaveLength(8)
@@ -89,6 +94,24 @@ it('prepares and reads pinned definitions and captures budgeted bytes without Do
           'acceptance-report',
           '--digest',
           prepared.digest,
+          '--environment',
+          `environment-${'a'.repeat(32)}`,
+          '--store',
+          acceptance.planning.sources.files.root,
+        ],
+        3,
+      ),
+    ).toMatchObject({ schema: 'wholeloop/error@1', code: 3 })
+    expect(
+      cli(
+        [
+          'acceptance-run',
+          '--digest',
+          prepared.digest,
+          '--case',
+          'find-title',
+          '--key',
+          'first',
           '--environment',
           `environment-${'a'.repeat(32)}`,
           '--store',

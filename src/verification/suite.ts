@@ -159,13 +159,19 @@ export function suiteGateResult(result: SuiteResult): GateResult {
   }
 }
 
+export type SuiteExecutor = (
+  root: string,
+  command: SuitePlan['commands'][number],
+  timeoutMs: number,
+) => ReturnType<typeof execute>
+
 /** Write-ahead intent provides at-most-once execution, including ambiguous crash recovery. */
 export async function runSuite(
   engine: FlowEngine,
   subject: string,
   run: string,
   round: number,
-  options: { refs?: string[]; timeoutMs?: number } = {},
+  options: { refs?: string[]; timeoutMs?: number; executor?: SuiteExecutor } = {},
 ) {
   const gate = gateRuns(engine.store.events())
     .find((entry) => entry.subject === subject && entry.run === run)
@@ -205,7 +211,11 @@ export async function runSuite(
   if (!result) {
     const commands: SuiteResult['commands'] = []
     for (const command of plan.commands) {
-      const completed = await execute(gate.plan.repository, command, plan.timeoutMs)
+      const completed = await (options.executor ?? execute)(
+        gate.plan.repository,
+        command,
+        plan.timeoutMs,
+      )
       commands.push(completed.receipt)
       output.push(completed.output)
       if (completed.receipt.exitCode !== 0 || completed.receipt.signal) break

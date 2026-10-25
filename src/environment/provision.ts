@@ -21,6 +21,7 @@ import {
   dockerPreflight,
 } from './docker-policy.js'
 import { publishDockerService } from './docker-proxy.js'
+import { TCP_READY } from './docker-readiness.js'
 import { DockerResources } from './docker-resources.js'
 import { inspectEnvironment } from './inspect.js'
 import { EnvironmentOperations, environmentFenced, TrackedDockerTransport } from './operations.js'
@@ -34,7 +35,6 @@ import {
 import provisionSchema from './schemas/provision-request-v1.json' with { type: 'json' }
 
 const INITIALIZE = `const fs=require('node:fs'),p=require('node:path'),crypto=require('node:crypto');const hash=b=>crypto.createHash('sha256').update(b).digest('hex');let text='';process.stdin.setEncoding('utf8');process.stdin.on('data',c=>{text+=c;if(text.length>67108864)process.exit(2)});process.stdin.on('end',()=>{const data=JSON.parse(text),observed=[];for(const root of data.roots){const base=fs.realpathSync(root.target);fs.chmodSync(base,511);const files=[];for(const file of root.files){if(!file.path||file.path.startsWith('/')||file.path.split('/').some(x=>!x||x==='.'||x==='..'||x==='.git')||file.path.includes(String.fromCharCode(92)))process.exit(3);const path=p.join(base,file.path);fs.mkdirSync(p.dirname(path),{recursive:true,mode:511});let dir=p.dirname(path);while(dir!==base){fs.chmodSync(dir,511);dir=p.dirname(dir)}fs.writeFileSync(path,Buffer.from(file.body,'base64'),{flag:'wx',mode:file.executable?511:438});fs.chmodSync(path,file.executable?511:438);const bytes=fs.readFileSync(path);files.push({path:file.path,sha256:hash(bytes),bytes:bytes.length,mode:fs.statSync(path).mode&511})}observed.push({target:root.target,mode:fs.statSync(base).mode&511,files})}console.log(JSON.stringify({initialized:true,sha256:hash(JSON.stringify(observed))}))})`
-const TCP_READY = `const net=require('node:net');let text='';process.stdin.setEncoding('utf8');process.stdin.on('data',c=>text+=c);process.stdin.on('end',()=>{const {port}=JSON.parse(text);const s=net.connect({host:'127.0.0.1',port});const t=setTimeout(()=>{s.destroy();process.exit(2)},500);s.on('connect',()=>{clearTimeout(t);s.end();console.log('ready')});s.on('error',()=>{clearTimeout(t);process.exit(1)})})`
 export interface EnvironmentProvisionRequest {
   schema: 'wholeloop/environment-provision-request@1'
   run: string

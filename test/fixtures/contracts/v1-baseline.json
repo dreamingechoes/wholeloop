@@ -317,7 +317,11 @@
     "output:wholeloop/acceptance-artifact-capture@1": "25f219348ab64dfc7d9924f9d813760f92c081143d4decd80ad3ce33c4abc26e",
     "output:wholeloop/acceptance-report@1": "094c71c41595b24721bf089195d7705b977125511c07c85bb66ecd836d3b3dd5",
     "output:wholeloop/acceptance-human-note@1": "b62bfa64446ba4b67b9b7acbcf86ac96db4612f68b56ff24da08413c92ba1452",
-    "output:wholeloop/acceptance-sealed@1": "03bbf2e672e4a45e1e3ee52604063053e8b24ad77771f3a72ae9d1ee36724a69"
+    "output:wholeloop/acceptance-sealed@1": "03bbf2e672e4a45e1e3ee52604063053e8b24ad77771f3a72ae9d1ee36724a69",
+    "schema:wholeloop/behavior-evaluation@1": "8a802368e25efaa22f54e312a305df72d58a3bdbd5a187ab8ca93a7771a62ab9",
+    "schema:wholeloop/behavior-input@1": "df655c9770effaa3e1cfa572c55df0924d9f09acaef58b7a6bb2690e92b53f13",
+    "output:wholeloop/acceptance-case-result@1": "14228abe013c500bc5e06b97937a8f2b640cbd531251aa41be06966433606cbf",
+    "output:wholeloop/behavior-schema@1": "f6ea57ce90b5c3f5dd0ac70026aa56191cbc73d261495132a518e245570477ee"
   },
   "commands": [
     {
@@ -1701,6 +1705,24 @@
         "--root <directory>",
         "--store <path>"
       ]
+    },
+    {
+      "path": "delivery acceptance-run",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-case-result@1",
+      "options": [
+        "--digest <sha256>",
+        "--case <case-id>",
+        "--key <stable-key>",
+        "--environment <environment-id>",
+        "--store <path>"
+      ]
+    },
+    {
+      "path": "delivery behavior-schema",
+      "arguments": "",
+      "schema": "wholeloop/behavior-schema@1",
+      "options": []
     }
   ],
   "exitCodes": {

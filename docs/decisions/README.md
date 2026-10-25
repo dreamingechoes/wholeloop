@@ -116,6 +116,7 @@
 | [0103](./0103-owned-docker-environments-and-isolated-publication.md) | Own Docker resources and isolate application publication | Accepted | 2026-10-25 |
 | [0104](./0104-owned-environment-lifecycle-and-private-cancellation.md) | Recover owned environment lifecycle through private cancellation | Accepted | 2026-10-25 |
 | [0105](./0105-pinned-acceptance-and-observed-evidence.md) | Pin acceptance definitions and separate observed evidence | Accepted | 2026-10-25 |
+| [0106](./0106-observe-declared-api-and-cli-behavior.md) | Observe declared API and CLI behavior in owned applications | Accepted | 2026-10-25 |
 
 ## Lifecycle
 
