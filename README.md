@@ -9,7 +9,7 @@ wholeloop supplies the process around the model: what context to load, which que
 
 ## Contents
 
-**Expanded 1.0:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [eleven implemented tasks and 23 pending implementation tasks](./roadmap/phase-6-autonomous-delivery.md). The owner accepted the scope and authorized implementation; P6-12 retains a separate Linux-host acceptance check, and current installation and usage below retain their existing supervised behavior.
+**Expanded 1.0:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [thirteen implemented tasks and 21 pending implementation tasks](./roadmap/phase-6-autonomous-delivery.md). The owner accepted the scope and authorized implementation; P6-12 retains a separate Linux-host acceptance check, and current installation and usage below retain their existing supervised behavior.
 
 - [What you can do](#what-you-can-do)
 - [Install from source](#install-from-source)
@@ -243,6 +243,7 @@ Remote integrations are **experimental · fixture-tested · service-unverified**
 | Install and run my first skill | [Getting started](./docs/getting-started.md) | [Client setup](./docs/platforms/local-onboarding.md) · [First framing](./docs/tutorials/first-framing.md) |
 | Try the core without a model | [Local core tour](./docs/tutorials/local-core.md) | [Core reference](./docs/architecture/core-cli.md) |
 | Work through a practical change | [Small-change walkthrough](./docs/tutorials/small-change.md) | [All thirteen steps](./docs/flow/README.md) |
+| Pin behavioral coverage and evidence | [Acceptance tutorial](./docs/tutorials/delivery-acceptance.md) | [Docker environments](./docs/tutorials/delivery-docker.md) · [Lifecycle](./docs/tutorials/delivery-lifecycle.md) |
 | Resolve a setup/session problem | [Troubleshooting](./docs/troubleshooting.md) | [FAQ](./docs/faq.md) |
 | Understand the design | [Concepts](./docs/concepts.md) | [Philosophy](./docs/philosophy.md) · [Architecture](./docs/architecture/README.md) |
 | Configure my team and tools | [Configuration](./docs/configuration/README.md) | [Profiles](./docs/configuration/profile.md) · [Providers](./docs/configuration/providers.md) · [Repository guidance](./docs/configuration/repo-skills.md) |

@@ -40,6 +40,13 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery acceptance-seal` | `wholeloop/acceptance-sealed@1` | Retain a current typed acceptance report as an immutable private artifact |
+| `wl delivery acceptance-schema` | `wholeloop/acceptance-schema@1` | Show closed behavioral acceptance and artifact contracts |
+| `wl delivery acceptance-plan` | `wholeloop/acceptance-plan-prepared@1` | Pin complete behavioral cases without executing tests |
+| `wl delivery acceptance-inspect` | `wholeloop/acceptance-plan-inspection@1` | Read pinned acceptance definitions without executing tests |
+| `wl delivery acceptance-report` | `wholeloop/acceptance-report@1` | Assess observed coverage against the current owned application |
+| `wl delivery acceptance-artifact` | `wholeloop/acceptance-artifact-capture@1` | Retain bounded sanitized artifacts within the current run budget |
+| `wl delivery acceptance-human-note` | `wholeloop/acceptance-human-note@1` | Record an explicit operator note for an exact human-only case |
 | `wl delivery environment-lifecycle-schema` | `wholeloop/environment-lifecycle-schema@1` | Show owned stop, reconciliation and explicit retirement contracts |
 | `wl delivery environment-stop` | `wholeloop/environment-lifecycle-receipt@1` | Stop exact owned resources and retain data and evidence |
 | `wl delivery environment-reconcile` | `wholeloop/environment-lifecycle-receipt@1` | Recover an interrupted owned stop or retirement without replaying startup |

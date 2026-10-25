@@ -8,6 +8,68 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery acceptance-seal',
+    arguments: '',
+    options: ['--digest <sha256>', '--environment <environment-id>', '--store <path>'],
+    schema: 'wholeloop/acceptance-sealed@1',
+    summary: 'Retain a current typed acceptance report as an immutable private artifact',
+  },
+  {
+    path: 'delivery acceptance-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/acceptance-schema@1',
+    summary: 'Show closed behavioral acceptance and artifact contracts',
+  },
+  {
+    path: 'delivery acceptance-plan',
+    arguments: '',
+    options: ['--file <acceptance.json>', '--root <directory>', '--store <path>'],
+    schema: 'wholeloop/acceptance-plan-prepared@1',
+    summary: 'Pin complete behavioral cases without executing tests',
+  },
+  {
+    path: 'delivery acceptance-inspect',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/acceptance-plan-inspection@1',
+    summary: 'Read pinned acceptance definitions without executing tests',
+  },
+  {
+    path: 'delivery acceptance-report',
+    arguments: '',
+    options: ['--digest <sha256>', '--environment <environment-id>', '--store <path>'],
+    schema: 'wholeloop/acceptance-report@1',
+    summary: 'Assess observed coverage against the current owned application',
+  },
+  {
+    path: 'delivery acceptance-artifact',
+    arguments: '',
+    options: [
+      '--run <delivery-id>',
+      '--file <artifact>',
+      '--media-type <type>',
+      '--root <directory>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/acceptance-artifact-capture@1',
+    summary: 'Retain bounded sanitized artifacts within the current run budget',
+  },
+  {
+    path: 'delivery acceptance-human-note',
+    arguments: '',
+    options: [
+      '--digest <sha256>',
+      '--case <case-id>',
+      '--environment <environment-id>',
+      '--file <note.json>',
+      '--root <directory>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/acceptance-human-note@1',
+    summary: 'Record an explicit operator note for an exact human-only case',
+  },
+  {
     path: 'delivery environment-lifecycle-schema',
     arguments: '',
     options: [],

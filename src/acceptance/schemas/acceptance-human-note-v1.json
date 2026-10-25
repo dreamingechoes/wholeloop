@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/acceptance-human-note@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/acceptance-human-note@1"
+    },
+    "plan": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "case": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9-]{0,63}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 44,
+          "pattern": "^environment-[a-f0-9]{32}$"
+        },
+        "recipe": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "repository": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9-]{0,63}$"
+              },
+              "head": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{40,64}$"
+              },
+              "snapshot": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": ["repository", "head", "snapshot"]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        }
+      },
+      "required": ["environment", "recipe", "runtime", "candidates"]
+    },
+    "by": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 65536
+    },
+    "at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "origin": {
+      "type": "string",
+      "const": "operator-note"
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["fixture", "host-observed"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed"]
+    }
+  },
+  "required": [
+    "schema",
+    "plan",
+    "case",
+    "sequence",
+    "bindings",
+    "by",
+    "note",
+    "at",
+    "origin",
+    "provenance",
+    "status"
+  ]
+}

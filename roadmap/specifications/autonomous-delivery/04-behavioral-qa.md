@@ -3,11 +3,11 @@
 > **TL;DR** — Execute the approved behavior against the actual candidate and bind evidence to its bytes. Preserve unit/suite checks and adversarial review. Machine acceptance must be independently observable and must never impersonate a person's local testing.
 
 > [!NOTE]
-> **Status: 📐 design.** Accepted design target for P6-14–P6-17. Current testability checks and semantic gates remain required foundations.
+> **Status: 🚧 partial.** P6-14 implements pinned coverage/ownership, controller-host evidence contracts, current-candidate validation, human notes and immutable budgeted artifacts. Actual deterministic CLI/API, browser and private evaluation execution remain P6-15–P6-17. Current testability checks and semantic gates remain required foundations.
 
 ## Acceptance plan
 
-Proposed `wholeloop/acceptance-plan@1` maps every required criterion to one or more cases. A case names initial state, inputs/actions, observable assertions, failure conditions, runner capability, data fixture, timeout and `machine|human` ownership. Missing coverage or unsupported execution prevents completion and follows the intervention policy; none mode terminates blocked rather than waiting for a person.
+Implemented `wholeloop/acceptance-plan@1` maps every required criterion to one or more cases. A case names initial state, inputs/actions, observable assertions, failure conditions, runner capability, data fixture, timeout and `machine|human` ownership. Missing coverage or unsupported execution prevents completion and follows the intervention policy; none mode terminates blocked rather than waiting for a person.
 
 Applicability is explicit and pinned before implementation. A non-UI CLI need not acquire a browser test; an applicable UI criterion cannot be relabelled inapplicable after a failed run. Human-only criteria remain pending until a person supplies their observation.
 
@@ -21,6 +21,8 @@ Applicability is explicit and pinned before implementation. A non-UI CLI need no
 | Human observation | Named person, exact candidate and actual note; never generated from machine evidence |
 
 The controller records observed process facts. An agent saying “tests passed” is self-reported evidence until matched to a real host receipt. Process exit zero alone cannot establish criterion success.
+
+The [acceptance tutorial](../../../docs/tutorials/delivery-acceptance.md) exercises inert definition pinning without a backend or account. [ADR-0105](../../../docs/decisions/0105-pinned-acceptance-and-observed-evidence.md) separates trusted host observations, current operator notes and fixture-only reports.
 
 ## Execution sequence
 
@@ -60,14 +62,14 @@ Proposed outcomes: `passed`, `failed`, `pending-human`, `unavailable`, `interrup
 
 ## Acceptance and tests
 
-- [ ] **QA-01:** Missing criteria coverage, wrong candidate, forged process metadata and stale artifacts refuse acceptance.
+- [x] **QA-01:** Missing criteria coverage, wrong candidate, forged process metadata and stale artifacts refuse acceptance.
 - [ ] **QA-02:** A feature with a green unit suite but broken persistence/UI behavior fails a real behavior case.
 - [ ] **QA-03:** An empty-title regression fails on the baseline and passes on the candidate with matching test identity.
 - [ ] **QA-04:** A builder cannot modify hidden acceptance inputs or grant evaluator authority; validate the actual backend boundary.
 - [ ] **QA-05:** Missing browser access, unsupported devices, timing failure and incomplete capture remain unavailable/failed, not passed.
 - [ ] **QA-06:** A repaired candidate reruns required evidence; previous success and exhausted budgets remain historical.
 - [ ] **QA-07:** Human-only criteria block automated publication even when all machine cases pass.
-- [ ] **QA-08:** Artifact paths, retention, redaction and sharing reject symlink escape, oversized and credential-bearing metadata fixtures.
+- [x] **QA-08:** Artifact paths, retention, redaction and sharing reject symlink escape, oversized and credential-bearing metadata fixtures.
 
 Tests include deterministic host fixtures, actual local CLI/API applications, an actual browser roundtrip and adversarial edits. Native tool/account acceptance is recorded separately by version.
 

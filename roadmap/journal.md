@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-25 · P6-14 complete — pinned acceptance and observed evidence contracts
+
+- Pin complete applicability/criterion/ownership definitions before observed builder admission. Bind case intents and trusted host observations to current private authority, source/plan/candidate/environment and finite original deadlines; import no worker JSON as process or human proof. Preserve uncertain invokers and monotonic ordering, including equal timestamps.
+- Add typed coverage reports, explicit current operator notes, historical human-testing separation and fixture-only acceptance. Retain verified content-addressed private artifacts up to twenty MiB through existing eight-MiB budget chunks, with complete-byte/per-string credential refusal, real path/byte checks, finite omissions and no sharing/TTL authority. Seal reports as budgeted immutable JSON without publication. Add seven commands, fifteen source/output identities, guide, ADR-0105 and three enforced rules; preserve prior contracts and gate policies.
+- Thirty-nine new acceptance/artifact cases and 375 focused acceptance/compatibility checks pass. Complete checks pass 2566 tests in 110 files on macOS arm64/Node 24.22.0 (299.03 seconds) and isolated Debian Linux arm64/Node 24.22.0 (75.55 seconds), plus all other checks. Exact planning/acceptance tutorials pass on macOS Node 24 and Linux Node 20/24 with ShellCheck. Preserve fixture failures and the first macOS short-deadline failure; fix the actual late-dispatch/interruption-read defect and pass the deterministic regression and final checks.
+- Candidate archive 76d5c183d7b662db13dca15af8382d56bd1301b388c7cbb05a56c8ec35b85951; copied core 7861f1ed88580bd4cc4054091b816f4490f2136fb1992172d04c74f7807e5a14. Record exact package/platform scope, update README/roadmap counts and recheck evidence-only docs/package. Commit P6-14 (52/88 complete; P6-12 host acceptance open; 21 new implementation tasks pending), then continue P6-15. These host observations are normalized fixtures, not actual behavioral/native certification. No model, hosted publication or merge occurs.
+
 ## 2026-10-25 · P6-13 complete — observed owned environment lifecycle
 
 - Add digest-bound operator lifecycle requests, immutable private control records, actual native dispatch registration and fixed cancellation channels. Never signal stored PIDs or reconstruct authority from worker/process claims. Serialize cleanup controllers and preserve ambiguous old invokers rather than inventing tracking.

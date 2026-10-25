@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-14 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 51 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 22 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 52 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 21 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -351,7 +351,7 @@ The available Linux controller container is not that proof. Actual native client
 
 ## P6-14 · Behavioral acceptance contracts and evidence
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-02, P6-04
+**Status:** ✅ · **Size:** M · **Depends on:** P6-02, P6-04
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -361,13 +361,15 @@ The available Linux controller container is not that proof. Actual native client
 
 **Acceptance criteria:**
 
-- [ ] Missing coverage, wrong candidate and self-reported process metadata cannot pass.
-- [ ] Historical human testing stays distinct from delegated acceptance.
-- [ ] Artifact bounds, redaction, retention and current-input validation are enforced.
+- [x] Missing coverage, wrong candidate and self-reported process metadata cannot pass.
+- [x] Historical human testing stays distinct from delegated acceptance.
+- [x] Artifact bounds, redaction, retention and current-input validation are enforced.
 
 **Tests** — QA-01, QA-07–QA-08 and AUTH-04: schema, tampered metadata, artifact path and legacy acceptance tables.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/04-behavioral-qa.md); verification, state, core CLI, acceptance.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/04-behavioral-qa.md); [acceptance tutorial](../docs/tutorials/delivery-acceptance.md), verification/state, core CLI, acceptance and ADR-0105.
+
+**Evidence** — Thirty-nine new acceptance/artifact cases, including compiled CLI checks, and 375 focused acceptance/compatibility checks pass. Complete checks pass 2566 tests in 110 files on macOS arm64/Node 24.22.0 (299.03 seconds) and isolated Debian Linux arm64/Node 24.22.0 (75.55 seconds), plus all remaining checks. The exact planning/acceptance tutorial passes on macOS Node 24 and Linux Node 20/24 with ShellCheck. Preserve the first macOS deadline failure; the final regression proves that intent persistence cannot extend execution, a host is not dispatched after expiry, and a stopped interruption remains readable. Host observations in this increment are normalized fixtures; actual behavior execution and private evaluation remain P6-15–P6-17.
 
 ---
 

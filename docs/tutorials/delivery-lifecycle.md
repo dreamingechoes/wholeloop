@@ -82,4 +82,4 @@ npm run eval:environments -- --retire-success
 The evaluation includes actual shutdown with retained volumes, an unrelated same-name volume collision, a deliberately killed retirement controller and a fresh compiled CLI completing retirement. It kills only its own disposable test controller. Unexpected failures retain resources for inspection. Its report records host/daemon architecture separately and executes no model/account/publication trial. See [ADR-0104](../decisions/0104-owned-environment-lifecycle-and-private-cancellation.md) for why PID signaling, guessed names and retention timers are rejected.
 
 <!-- docnav -->
-[◀ Docker application environments](delivery-docker.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Docker application environments](delivery-docker.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Behavioral acceptance and evidence ▶](delivery-acceptance.md)

@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/acceptance-plan@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/acceptance-plan@1"
+    },
+    "run": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 25,
+      "pattern": "^delivery-[a-f0-9]{16}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "plan": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            },
+            "minItems": 1,
+            "maxItems": 1000
+          },
+          "owner": {
+            "type": "string",
+            "enum": ["machine", "human"]
+          },
+          "applicability": {
+            "type": "string",
+            "enum": ["applicable", "not-applicable"]
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "initial": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "assertions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-z][a-z0-9-]{0,63}$"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "subject": {
+                  "type": "string",
+                  "enum": [
+                    "exit",
+                    "stdout",
+                    "stderr",
+                    "json",
+                    "status",
+                    "header",
+                    "state",
+                    "semantic"
+                  ]
+                },
+                "operator": {
+                  "type": "string",
+                  "enum": ["equals", "contains", "present", "absent"]
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "expected": {
+                  "type": "string",
+                  "maxLength": 65536
+                }
+              },
+              "required": ["id", "description", "subject", "operator"]
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "failureConditions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "runner": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["cli", "api", "browser", "semantic", "human"]
+              },
+              "capability": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "input": {
+                "type": "string",
+                "maxLength": 65536
+              }
+            },
+            "required": ["kind", "capability", "input"]
+          },
+          "fixture": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "sha256": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": ["ref", "sha256"]
+          },
+          "timeoutMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1800000
+          }
+        },
+        "required": [
+          "id",
+          "criteria",
+          "owner",
+          "applicability",
+          "rationale",
+          "initial",
+          "actions",
+          "assertions",
+          "failureConditions",
+          "runner",
+          "fixture",
+          "timeoutMs"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 1000
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reviewAfterMs": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 31536000000
+        },
+        "expiryAction": {
+          "type": "string",
+          "const": "retain"
+        }
+      },
+      "required": ["reviewAfterMs", "expiryAction"]
+    }
+  },
+  "required": ["schema", "run", "revision", "plan", "source", "cases", "retention"]
+}

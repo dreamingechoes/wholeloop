@@ -8,6 +8,7 @@ import { commitCheck } from './commit.js'
 import { configCommand } from './config.js'
 import { conformanceCommand } from './conformance.js'
 import { deliveryCommand } from './delivery.js'
+import { deliveryAcceptanceAsyncCommand } from './delivery-acceptance.js'
 import { deliveryEnvironmentRuntimeCommand } from './delivery-environment-runtime.js'
 import { deliveryRecoverCommand } from './delivery-recovery.js'
 import { discoveryCommand } from './discovery.js'
@@ -220,6 +221,9 @@ export async function runAsync(
           'delivery environment-backend',
           'delivery environment-start',
           'delivery environment-status',
+          'delivery acceptance-report',
+          'delivery acceptance-seal',
+          'delivery acceptance-human-note',
           'delivery environment-stop',
           'delivery environment-reconcile',
           'delivery environment-retire',
@@ -266,6 +270,14 @@ export async function runAsync(
       ].includes(command.path)
     )
       return await deliveryEnvironmentRuntimeCommand(command.path, parsed, root, json, io)
+    if (
+      [
+        'delivery acceptance-report',
+        'delivery acceptance-seal',
+        'delivery acceptance-human-note',
+      ].includes(command.path)
+    )
+      return await deliveryAcceptanceAsyncCommand(command.path, parsed, root, json, io)
     if (command.path === 'delivery recover')
       return await deliveryRecoverCommand(parsed, root, json, io)
     if (command.path === 'provider read-flags') return await flagReadCommand(parsed, root, json, io)

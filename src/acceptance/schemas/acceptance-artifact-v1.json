@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/acceptance-artifact@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/acceptance-artifact@1"
+    },
+    "run": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 25,
+      "pattern": "^delivery-[a-f0-9]{16}$"
+    },
+    "sha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 20971520
+    },
+    "mediaType": {
+      "type": "string",
+      "enum": [
+        "text/plain",
+        "application/json",
+        "image/png",
+        "image/jpeg",
+        "video/webm",
+        "application/zip",
+        "application/octet-stream"
+      ]
+    },
+    "chunks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "digest": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8388608
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": ["digest", "bytes", "ref"]
+      },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "retention": {
+      "type": "string",
+      "const": "retain"
+    },
+    "sharing": {
+      "type": "string",
+      "const": "not-authorized"
+    }
+  },
+  "required": ["schema", "run", "sha256", "bytes", "mediaType", "chunks", "retention", "sharing"]
+}

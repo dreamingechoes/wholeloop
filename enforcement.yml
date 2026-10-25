@@ -7,6 +7,12 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-acceptance-coverage
+    enforcers: [src/acceptance/contracts.ts#validateAcceptancePlan, src/acceptance/store.ts#DeliveryAcceptance, test/unit/acceptance/acceptance.test.ts]
+  - id: delivery-acceptance-observation
+    enforcers: [src/acceptance/store.ts#DeliveryAcceptance, src/acceptance/boundary.ts#DockerAcceptanceBoundary, test/unit/acceptance/acceptance.test.ts, test/unit/acceptance/cli.test.ts]
+  - id: delivery-acceptance-artifacts
+    enforcers: [src/acceptance/artifacts.ts#AcceptanceArtifacts, src/delivery/budgets.ts#DeliveryBudgets, test/unit/acceptance/acceptance.test.ts]
   - id: delivery-environment-lifecycle
     enforcers: [src/environment/lifecycle.ts#EnvironmentLifecycle, src/environment/docker-resources.ts#DockerResources, test/unit/environment/lifecycle.test.ts, test/evals/environment/run.ts, test/evals/environment/lifecycle-child.ts]
   - id: delivery-environment-private-cancellation

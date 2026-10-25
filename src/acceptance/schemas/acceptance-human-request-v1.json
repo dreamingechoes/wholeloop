@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/acceptance-human-request@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/acceptance-human-request@1"
+    },
+    "by": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 65536
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed"]
+    }
+  },
+  "required": ["schema", "by", "note", "status"]
+}

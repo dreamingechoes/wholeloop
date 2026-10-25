@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/acceptance-case-result@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/acceptance-case-result@1"
+    },
+    "plan": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "case": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9-]{0,63}$"
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9-]{0,63}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "invocation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 44,
+          "pattern": "^environment-[a-f0-9]{32}$"
+        },
+        "recipe": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "repository": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9-]{0,63}$"
+              },
+              "head": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{40,64}$"
+              },
+              "snapshot": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": ["repository", "head", "snapshot"]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        }
+      },
+      "required": ["environment", "recipe", "runtime", "candidates"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed", "unavailable", "interrupted"]
+    },
+    "origin": {
+      "type": "string",
+      "const": "controller-observation"
+    },
+    "invocationState": {
+      "type": "string",
+      "enum": ["stopped", "unknown"]
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["fixture", "host-observed"]
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": ["id", "version", "capability"]
+    },
+    "startedAt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "endedAt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "unavailable"]
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": ["id", "status", "evidence"]
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "process": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "argv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 65536
+          },
+          "minItems": 1,
+          "maxItems": 256
+        },
+        "cwd": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "startedAt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "endedAt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "signal": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        }
+      },
+      "required": ["argv", "cwd", "startedAt", "endedAt", "pid"]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    }
+  },
+  "required": [
+    "schema",
+    "plan",
+    "case",
+    "key",
+    "sequence",
+    "invocation",
+    "bindings",
+    "status",
+    "origin",
+    "invocationState",
+    "provenance",
+    "host",
+    "startedAt",
+    "endedAt",
+    "assertions",
+    "artifacts",
+    "reason"
+  ]
+}

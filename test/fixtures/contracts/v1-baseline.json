@@ -302,7 +302,22 @@
     "schema:wholeloop/environment-operation-outcome@1": "9bc94b1090f81f935ea4d1e10a0810cf2a4c4830b72df605e7b2326f0970f0d5",
     "schema:wholeloop/environment-operation-started@1": "4fce582dfcc0f098a531d4bc7c4fdf79a8e00af026596e2588f4d66204367cab",
     "schema:wholeloop/environment-operation@1": "7008060c9a74b1cee57dead86bf760bf819e59fdd6e392f72585d951b80b9714",
-    "schema:wholeloop/environment-provision-tracking@1": "1dec09db488b071de0d22aa3ae5baaa0e0a1f94a2b2a90d9f2fab0a8dc35a73e"
+    "schema:wholeloop/environment-provision-tracking@1": "1dec09db488b071de0d22aa3ae5baaa0e0a1f94a2b2a90d9f2fab0a8dc35a73e",
+    "schema:wholeloop/acceptance-artifact@1": "e8812559ed6b7a71605489a13d6109a80fc4d6fff54a99cf165d9430277b1721",
+    "schema:wholeloop/acceptance-case-intent@1": "728da0060e3cdff1bae68ab15252ad8341af57869a5f366a45496bbe970090f3",
+    "schema:wholeloop/acceptance-case-result@1": "14228abe013c500bc5e06b97937a8f2b640cbd531251aa41be06966433606cbf",
+    "schema:wholeloop/acceptance-human-note@1": "41b54a5f81f433d4f259d25141c3e6a7d87a97538c363569c9146338f997c403",
+    "schema:wholeloop/acceptance-human-request@1": "0cd3a36c545466156dc8a5c9cc70c353684a2d3c2d4f827752422addf4ad1682",
+    "schema:wholeloop/acceptance-plan-record@1": "4467080269f7bf60d815eebea334495ae277373804037d5998b8029b40775acb",
+    "schema:wholeloop/acceptance-plan@1": "65627a0783c96a3290d9d3a5604569db1f594efec0ce50459169c0623c695e7b",
+    "schema:wholeloop/acceptance-report@1": "92ce9cbd86497d1d8394ecc7adaee73642b31eb59c2334cdb76514ece70ebd5d",
+    "output:wholeloop/acceptance-schema@1": "278e48807bfcd9419518082eb5430b3685bdbf51cf45abeb7238eeef41ca6ad2",
+    "output:wholeloop/acceptance-plan-prepared@1": "b15fc2c505b3dc340cd3697d497e348a205b10bae6a0cc964fe8ef2bed9234ee",
+    "output:wholeloop/acceptance-plan-inspection@1": "6824c34dd679d45f592c731ad7446b26883ff3bf38f75d966a5fcde9d42f2afb",
+    "output:wholeloop/acceptance-artifact-capture@1": "25f219348ab64dfc7d9924f9d813760f92c081143d4decd80ad3ce33c4abc26e",
+    "output:wholeloop/acceptance-report@1": "094c71c41595b24721bf089195d7705b977125511c07c85bb66ecd836d3b3dd5",
+    "output:wholeloop/acceptance-human-note@1": "b62bfa64446ba4b67b9b7acbcf86ac96db4612f68b56ff24da08413c92ba1452",
+    "output:wholeloop/acceptance-sealed@1": "03bbf2e672e4a45e1e3ee52604063053e8b24ad77771f3a72ae9d1ee36724a69"
   },
   "commands": [
     {
@@ -1631,6 +1646,61 @@
       "arguments": "",
       "schema": "wholeloop/environment-lifecycle-receipt@1",
       "options": ["--file <lifecycle.json>", "--root <directory>", "--store <path>"]
+    },
+    {
+      "path": "delivery acceptance-seal",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-sealed@1",
+      "options": ["--digest <sha256>", "--environment <environment-id>", "--store <path>"]
+    },
+    {
+      "path": "delivery acceptance-schema",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery acceptance-plan",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-plan-prepared@1",
+      "options": ["--file <acceptance.json>", "--root <directory>", "--store <path>"]
+    },
+    {
+      "path": "delivery acceptance-inspect",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-plan-inspection@1",
+      "options": ["--digest <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery acceptance-report",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-report@1",
+      "options": ["--digest <sha256>", "--environment <environment-id>", "--store <path>"]
+    },
+    {
+      "path": "delivery acceptance-artifact",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-artifact-capture@1",
+      "options": [
+        "--run <delivery-id>",
+        "--file <artifact>",
+        "--media-type <type>",
+        "--root <directory>",
+        "--store <path>"
+      ]
+    },
+    {
+      "path": "delivery acceptance-human-note",
+      "arguments": "",
+      "schema": "wholeloop/acceptance-human-note@1",
+      "options": [
+        "--digest <sha256>",
+        "--case <case-id>",
+        "--environment <environment-id>",
+        "--file <note.json>",
+        "--root <directory>",
+        "--store <path>"
+      ]
     }
   ],
   "exitCodes": {

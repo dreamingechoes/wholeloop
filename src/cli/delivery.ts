@@ -6,6 +6,7 @@ import nativeRunSchema from '../delivery/schemas/native-run-v1.json' with { type
 import { DeliverySources } from '../delivery/source.js'
 import { WORKER_SCHEMAS } from '../delivery/worker-protocol.js'
 import type { parseArguments } from './arguments.js'
+import { deliveryAcceptanceCommand } from './delivery-acceptance.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
 import { deliveryBudgetCommand } from './delivery-budgets.js'
 import { deliveryEnvironmentCommand } from './delivery-environment.js'
@@ -28,6 +29,9 @@ export function deliveryCommand(
       'delivery environment-backend',
       'delivery environment-start',
       'delivery environment-status',
+      'delivery acceptance-report',
+      'delivery acceptance-seal',
+      'delivery acceptance-human-note',
       'delivery environment-stop',
       'delivery environment-reconcile',
       'delivery environment-retire',
@@ -37,6 +41,8 @@ export function deliveryCommand(
       'Use the asynchronous CLI entrypoint for environment runtime operations',
       EXIT.precondition,
     )
+  if (command.startsWith('delivery acceptance-'))
+    return deliveryAcceptanceCommand(command, { options, positional: [] }, root, json, io)
   if (command.startsWith('delivery environment-'))
     return deliveryEnvironmentCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery native-schema') {

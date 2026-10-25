@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/acceptance-report@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/acceptance-report@1"
+    },
+    "plan": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 44,
+          "pattern": "^environment-[a-f0-9]{32}$"
+        },
+        "recipe": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "repository": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9-]{0,63}$"
+              },
+              "head": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{40,64}$"
+              },
+              "snapshot": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": ["repository", "head", "snapshot"]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        }
+      },
+      "required": ["environment", "recipe", "runtime", "candidates"]
+    },
+    "at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed", "pending-human", "unavailable", "interrupted", "stale"]
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "owner": {
+            "type": "string",
+            "enum": ["machine", "human"]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "pending-human",
+              "unavailable",
+              "interrupted",
+              "stale",
+              "not-applicable"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          }
+        },
+        "required": ["id", "owner", "status", "evidence"]
+      },
+      "minItems": 1,
+      "maxItems": 1000
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "criterion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "cases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            },
+            "minItems": 1,
+            "maxItems": 1000
+          },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "pending-human", "unavailable", "interrupted", "stale"]
+          }
+        },
+        "required": ["criterion", "cases", "status"]
+      },
+      "minItems": 1,
+      "maxItems": 1000
+    },
+    "acceptance": {
+      "type": "string",
+      "enum": ["delegated-machine", "operator-and-machine", "fixture-only", "not-established"]
+    },
+    "publication": {
+      "type": "string",
+      "const": "not-performed"
+    }
+  },
+  "required": [
+    "schema",
+    "plan",
+    "bindings",
+    "at",
+    "status",
+    "cases",
+    "coverage",
+    "acceptance",
+    "publication"
+  ]
+}
