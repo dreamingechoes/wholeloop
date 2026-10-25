@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/browser-evaluation@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "controller",
+    "scope",
+    "checks",
+    "environments",
+    "retainedFixture",
+    "retirement",
+    "reason"
+  ],
+  "properties": {
+    "schema": {
+      "const": "wholeloop/browser-evaluation@1",
+      "type": "string"
+    },
+    "status": {
+      "enum": ["passed", "failed"],
+      "type": "string"
+    },
+    "controller": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "architecture", "node"],
+      "properties": {
+        "os": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "architecture": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "node": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "checks": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "evidence"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "evidence": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "environments": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "daemon"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^environment-[a-f0-9]{32}$"
+          },
+          "daemon": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "retainedFixture": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "retirement": {
+      "enum": ["not-requested", "observed-retired"],
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 1048576
+    }
+  }
+}

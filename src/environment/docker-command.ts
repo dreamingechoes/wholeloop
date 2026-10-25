@@ -41,20 +41,7 @@ export class DockerCli implements DockerTransport {
     readonly env: NodeJS.ProcessEnv = process.env,
   ) {}
   async call(args: string[], options: DockerCallOptions = {}): Promise<DockerResult> {
-    if (
-      this.env.DOCKER_HOST &&
-      (!this.env.DOCKER_HOST.startsWith('unix:///') || /[\r\n\0]/.test(this.env.DOCKER_HOST))
-    )
-      throw new DockerEnvironmentError('local-unix-daemon-required')
-    const env: NodeJS.ProcessEnv = { PATH: this.env.PATH, HOME: this.env.HOME ?? homedir() }
-    for (const key of [
-      'DOCKER_HOST',
-      'DOCKER_CONTEXT',
-      'DOCKER_CONFIG',
-      'DOCKER_CERT_PATH',
-      'DOCKER_TLS_VERIFY',
-    ])
-      if (this.env[key]) env[key] = this.env[key]
+    const env = dockerCliEnvironment(this.env)
     const hash = createHash('sha256')
     let output = 0
     let overflow = false
@@ -112,6 +99,23 @@ export class DockerCli implements DockerTransport {
       ...(overflow ? { failure: 'output-limit' as const } : {}),
     }
   }
+}
+export function dockerCliEnvironment(input: NodeJS.ProcessEnv = process.env) {
+  if (
+    input.DOCKER_HOST &&
+    (!input.DOCKER_HOST.startsWith('unix:///') || /[\r\n\0]/.test(input.DOCKER_HOST))
+  )
+    throw new DockerEnvironmentError('local-unix-daemon-required')
+  const env: NodeJS.ProcessEnv = { PATH: input.PATH, HOME: input.HOME ?? homedir() }
+  for (const key of [
+    'DOCKER_HOST',
+    'DOCKER_CONTEXT',
+    'DOCKER_CONFIG',
+    'DOCKER_CERT_PATH',
+    'DOCKER_TLS_VERIFY',
+  ])
+    if (input[key]) env[key] = input[key]
+  return env
 }
 export class DockerEnvironmentError extends Error {
   constructor(readonly problem: string) {

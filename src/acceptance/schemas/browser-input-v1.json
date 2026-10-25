@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/browser-input@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/browser-input@1"
+    },
+    "service": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "browser": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "service": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "reference": {
+          "type": "string",
+          "const": "playwright-mcp@0.0.83"
+        },
+        "tools": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": ["service", "reference", "tools"]
+    },
+    "grounding": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": ["file", "sha256"]
+      },
+      "minItems": 1,
+      "maxItems": 16
+    },
+    "persistence": {
+      "type": "string",
+      "enum": ["not-applicable", "backend-roundtrip"]
+    },
+    "backend": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": ["path"]
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "navigate",
+              "fill",
+              "click",
+              "press",
+              "reload",
+              "fresh",
+              "restart",
+              "check",
+              "capture"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": ["role", "name"]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "key": {
+            "type": "string",
+            "enum": [
+              "Enter",
+              "Tab",
+              "Escape",
+              "ArrowDown",
+              "ArrowUp",
+              "ArrowLeft",
+              "ArrowRight",
+              "Backspace",
+              "Delete",
+              "Home",
+              "End"
+            ]
+          },
+          "assertion": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["present", "absent"]
+          },
+          "label": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "expectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "required": ["id", "kind"]
+      },
+      "minItems": 1,
+      "maxItems": 32
+    }
+  },
+  "required": ["schema", "service", "port", "browser", "grounding", "persistence", "steps"]
+}

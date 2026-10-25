@@ -1,11 +1,15 @@
 import { resolve } from 'node:path'
 import { BEHAVIOR_INPUT_SCHEMA } from '../acceptance/behavior-input.js'
+import { BROWSER_INPUT_SCHEMA } from '../acceptance/browser-input.js'
+import { BROWSER_REFERENCE, BROWSER_REFERENCE_IMAGES } from '../acceptance/browser-reference.js'
 import { readSourceFile, SOURCE_REQUEST_SCHEMA, SourceInputError } from '../delivery/input.js'
 import { NATIVE_DELIVERY_TARGETS, REFERENCE_NATIVE_VERSIONS } from '../delivery/native-adapters.js'
 import { NATIVE_OBSERVATION_SCHEMA } from '../delivery/native-capabilities.js'
 import nativeRunSchema from '../delivery/schemas/native-run-v1.json' with { type: 'json' }
 import { DeliverySources } from '../delivery/source.js'
 import { WORKER_SCHEMAS } from '../delivery/worker-protocol.js'
+import browserReleaseSchema from '../environment/schemas/exec-release-v1.json' with { type: 'json' }
+import browserOperationSchema from '../environment/schemas/operation-v2.json' with { type: 'json' }
 import type { parseArguments } from './arguments.js'
 import { deliveryAcceptanceCommand } from './delivery-acceptance.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
@@ -43,6 +47,20 @@ export function deliveryCommand(
       'Use the asynchronous CLI entrypoint for environment runtime operations',
       EXIT.precondition,
     )
+  if (command === 'delivery browser-schema') {
+    io.out(
+      JSON.stringify({
+        schema: 'wholeloop/browser-schema@1',
+        input: BROWSER_INPUT_SCHEMA,
+        reference: BROWSER_REFERENCE,
+        images: BROWSER_REFERENCE_IMAGES,
+        operation: browserOperationSchema,
+        release: browserReleaseSchema,
+        executed: false,
+      }),
+    )
+    return EXIT.ok
+  }
   if (command === 'delivery behavior-schema') {
     io.out(
       JSON.stringify({

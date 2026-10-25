@@ -3,7 +3,7 @@
 > **TL;DR** — Execute the approved behavior against the actual candidate and bind evidence to its bytes. Preserve unit/suite checks and adversarial review. Machine acceptance must be independently observable and must never impersonate a person's local testing.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-14 implements pinned coverage/ownership, controller-host evidence contracts, current-candidate validation, human notes and immutable budgeted artifacts. P6-15 adds actual declared CLI/API execution, complete output/response assertions, service restart/persistence, exact client-close observation and pinned-round suite reuse. Browser and private evaluation remain P6-16–P6-17. Current testability checks and semantic gates remain required foundations.
+> **Status: 🚧 partial.** P6-14 implements pinned coverage/ownership, controller-host evidence contracts, current-candidate validation, human notes and immutable budgeted artifacts. P6-15 adds actual declared CLI/API execution, complete output/response assertions, service restart/persistence, exact client-close observation and pinned-round suite reuse. P6-16 adds actual private-stdio MCP browser journeys, grounded current references, bounded complete PNGs and UI/restart/fresh-context/backend persistence. Private evaluation remains P6-17. Current testability checks and semantic gates remain required foundations.
 
 ## Acceptance plan
 
@@ -50,6 +50,8 @@ Read the code and agreed criteria before planning paths; do not invent controls 
 
 Capture labelled screenshots/traces/video only when they support an assertion. A screenshot is not proof of persistence or successful backend behavior. Bound individual artifacts to 20 MiB and a run's retained artifacts to 200 MiB by default; report truncation/omission rather than silently dropping a required case. Keep private artifacts external and redact before deliberate sharing.
 
+The [browser execution guide](../../../docs/tutorials/delivery-browsers.md) defines the implemented fixed host and opt-in actual evaluator. Its private stdio channel avoids an unauthenticated control listener on the untrusted application network. Native tool/version negotiation, exact page context and objective persistence checks remain distinct from supporting captures. Direct scripting is deliberately unavailable in this reference host; a different reviewed layer would require its own capability contract.
+
 ## Independent acceptance and sensitivity
 
 Builders cannot edit pinned acceptance definitions, required check configuration, evaluator policies or hidden case inputs. The controller mounts acceptance inputs separately into an evaluator/backend and exposes only needed outcomes to the builder. A same-user shared filesystem cannot claim hidden evaluation.
@@ -63,10 +65,10 @@ Proposed outcomes: `passed`, `failed`, `pending-human`, `unavailable`, `interrup
 ## Acceptance and tests
 
 - [x] **QA-01:** Missing criteria coverage, wrong candidate, forged process metadata and stale artifacts refuse acceptance.
-- [ ] **QA-02:** A feature with a green unit suite but broken persistence/UI behavior fails a real behavior case. P6-15 observes the actual API persistence failure and repair; the UI counterpart remains P6-16.
+- [x] **QA-02:** A feature with a green unit suite but broken persistence/UI behavior fails a real behavior case. P6-15 observes actual API persistence failure and repair; P6-16 observes cosmetic UI success/capture followed by real restart/fresh-context/backend failure and a repaired roundtrip.
 - [ ] **QA-03:** An empty-title regression fails on the baseline and passes on the candidate with matching test identity.
 - [ ] **QA-04:** A builder cannot modify hidden acceptance inputs or grant evaluator authority; validate the actual backend boundary.
-- [ ] **QA-05:** Missing browser access, unsupported devices, timing failure and incomplete capture remain unavailable/failed, not passed.
+- [x] **QA-05:** Missing browser access, unsupported devices, timing failure and incomplete capture remain unavailable/failed, not passed.
 - [x] **QA-06:** A repaired candidate reruns required evidence; previous success and exhausted budgets remain historical.
 - [ ] **QA-07:** Human-only criteria block automated publication even when all machine cases pass.
 - [x] **QA-08:** Artifact paths, retention, redaction and sharing reject symlink escape, oversized and credential-bearing metadata fixtures.

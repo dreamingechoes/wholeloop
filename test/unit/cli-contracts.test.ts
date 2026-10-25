@@ -90,9 +90,13 @@ describe('public JSON contract registration', () => {
     expect(ids.length).toBeGreaterThan(0)
     expect(new Set(ids).size).toBe(ids.length)
   })
-  it.each(sourceSchemas())('versions the public schema $file at one', ({ schema: declaration }) => {
-    const schema = declaration as { $schema: string; $id: string }
-    expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema')
-    expect(schema.$id).toMatch(/^wholeloop\/[a-z][a-z0-9-]*@1$/)
-  })
+  it.each(sourceSchemas())(
+    'gives the public schema $file a positive version',
+    ({ schema: declaration }) => {
+      const schema = declaration as { $schema: string; $id: string }
+      expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema')
+      // Existing declarations stay frozen separately; additive versions must remain possible.
+      expect(schema.$id).toMatch(/^wholeloop\/[a-z][a-z0-9-]*@[1-9]\d*$/)
+    },
+  )
 })

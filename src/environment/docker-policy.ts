@@ -46,7 +46,8 @@ export function dockerObjects(value: unknown): Record<string, unknown>[] {
   return value as Record<string, unknown>[]
 }
 function strings(value: unknown): string[] {
-  if (value === null) return []
+  // OCI image configuration may omit optional Env, Entrypoint or Cmd entirely.
+  if (value === null || value === undefined) return []
   if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string'))
     throw new DockerEnvironmentError('invalid-docker-strings')
   return value as string[]

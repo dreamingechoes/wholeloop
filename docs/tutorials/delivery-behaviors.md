@@ -3,7 +3,7 @@
 > **TL;DR** — Pin objective cases, start the declared Docker application and execute each case with a stable key. Wholeloop compares complete real responses or command output; unit suites and manual acceptance remain separate evidence.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The fixed host, exact effect/candidate binding, complete output checks, restart/persistence and once-per-round suite reuse pass local automated verification and actual Docker observations. Browser and private semantic evaluation remain P6-16–P6-17. No native model or vendor account is required for this evaluator.
+> **Status: ✅ implemented.** The fixed host, exact effect/candidate binding, complete output checks, restart/persistence and once-per-round suite reuse pass local automated verification and actual Docker observations. [Browser execution](./delivery-browsers.md) is also available; private semantic evaluation remains P6-17. No native model or vendor account is required for this evaluator.
 
 ## Inspect the contract without executing anything
 
@@ -83,4 +83,4 @@ For application-specific suites, the trusted dockerSuiteExecutor function maps e
 Missing capabilities, changed identities, overflow, partial HTTP bodies, unsupported encodings, foreign redirects, revocation and deadlines cannot produce a pass. An uncertain HTTP action is not retried; its environment can be fenced and stopped while retaining data. Stopping a server does not prove whether an earlier request committed. Inspect the original effect and case records before choosing another environment or candidate. See [owned lifecycle recovery](./delivery-lifecycle.md) and [ADR-0106](../decisions/0106-observe-declared-api-and-cli-behavior.md).
 
 <!-- docnav -->
-[◀ Behavioral acceptance and evidence](delivery-acceptance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Behavioral acceptance and evidence](delivery-acceptance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Execute isolated browser acceptance ▶](delivery-browsers.md)

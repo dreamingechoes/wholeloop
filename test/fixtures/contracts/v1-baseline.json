@@ -321,7 +321,12 @@
     "schema:wholeloop/behavior-evaluation@1": "8a802368e25efaa22f54e312a305df72d58a3bdbd5a187ab8ca93a7771a62ab9",
     "schema:wholeloop/behavior-input@1": "df655c9770effaa3e1cfa572c55df0924d9f09acaef58b7a6bb2690e92b53f13",
     "output:wholeloop/acceptance-case-result@1": "14228abe013c500bc5e06b97937a8f2b640cbd531251aa41be06966433606cbf",
-    "output:wholeloop/behavior-schema@1": "f6ea57ce90b5c3f5dd0ac70026aa56191cbc73d261495132a518e245570477ee"
+    "output:wholeloop/behavior-schema@1": "f6ea57ce90b5c3f5dd0ac70026aa56191cbc73d261495132a518e245570477ee",
+    "schema:wholeloop/browser-evaluation@1": "d0720afa7ba9a3a86d4ea28d143d7bda9ec30eba413c993e93e983ef54de2b81",
+    "schema:wholeloop/browser-input@1": "ac676cc97e1eac956f46a2521e6a79312a4413dee2a9623ebf83f8a64ba5388e",
+    "output:wholeloop/browser-schema@1": "d846cf4e5946bb40ad6fcbd5c4108f756a416e39463d68d561825558031b2db3",
+    "schema:wholeloop/environment-exec-release@1": "eebe69e61ea8a0c3734d4584e2489ddb961836e6f6b282c6b82a240042a477b4",
+    "schema:wholeloop/environment-operation@2": "d54251d6afe8d5763b1365bdb1488a4a82575ffcacff1bd88996c476be0cae00"
   },
   "commands": [
     {
@@ -1722,6 +1727,12 @@
       "path": "delivery behavior-schema",
       "arguments": "",
       "schema": "wholeloop/behavior-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery browser-schema",
+      "arguments": "",
+      "schema": "wholeloop/browser-schema@1",
       "options": []
     }
   ],

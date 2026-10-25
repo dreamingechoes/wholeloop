@@ -1,0 +1,50 @@
+{
+  "id": "playwright-mcp@0.0.83",
+  "server": {
+    "name": "Playwright",
+    "version": "1.64.0-alpha-1790635538000"
+  },
+  "tools": [
+    {
+      "name": "browser_click",
+      "digest": "7bbb1e908c81699200f281ede2e59064f1e971b591307f7f38d770e9d3c10da7"
+    },
+    {
+      "name": "browser_close",
+      "digest": "6893efbf65c16916aaf585232c0645bb5b4b485e248d977c57ecb8c9ee23942e"
+    },
+    {
+      "name": "browser_find",
+      "digest": "9a3d95263be9af69da6f30d339aec2a48d34cedf415d723b5bd22b486d78f637"
+    },
+    {
+      "name": "browser_navigate",
+      "digest": "4247ed1d3565bb5ef016ac183026669d9de0e05f164674d60688b8ebf3e97aa6"
+    },
+    {
+      "name": "browser_press_key",
+      "digest": "a41b8a2fb0f25301f939802f3822dafca816ae79b27cce5c949c80457c28bd7f"
+    },
+    {
+      "name": "browser_snapshot",
+      "digest": "d52a94e78e5ab1300c409c8c9bf896fb81d51c442165bdcee0f778557bf5c38a"
+    },
+    {
+      "name": "browser_tabs",
+      "digest": "c7ce49e4679eb49838285598b8d4aed7230a881ac299a86dfb86ae22985dace6"
+    },
+    {
+      "name": "browser_take_screenshot",
+      "digest": "dd6fc12185f8b265a4062a1c5f3bd980b5678bda5f6893851915ec454472a9bc"
+    },
+    {
+      "name": "browser_type",
+      "digest": "e7170090e35c861a1bb738d40634efcfe71cb246bb7d2d2dcd8881e7992b8db8"
+    },
+    {
+      "name": "browser_wait_for",
+      "digest": "e5f70847bee19549bafcf952fff5adfec4d7026e5754ea159303df926f2dc694"
+    }
+  ],
+  "digest": "28c7df0d247c42ac70c2add07e991cf4e2cd5542df7a9028df5b3cf626cc8da8"
+}

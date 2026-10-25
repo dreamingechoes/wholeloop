@@ -11,12 +11,14 @@ import {
   type DockerTransport,
 } from './docker-command.js'
 import { EnvironmentResources } from './runtime.js'
+import execReleaseSchema from './schemas/exec-release-v1.json' with { type: 'json' }
 import fenceSchema from './schemas/fence-v1.json' with { type: 'json' }
 import cancelSchema from './schemas/operation-cancel-v1.json' with { type: 'json' }
 import closeSchema from './schemas/operation-close-v1.json' with { type: 'json' }
 import outcomeSchema from './schemas/operation-outcome-v1.json' with { type: 'json' }
 import startedSchema from './schemas/operation-started-v1.json' with { type: 'json' }
 import operationSchema from './schemas/operation-v1.json' with { type: 'json' }
+import execOperationSchema from './schemas/operation-v2.json' with { type: 'json' }
 import trackingSchema from './schemas/provision-tracking-v1.json' with { type: 'json' }
 
 export interface DockerOperationRegistration {
@@ -27,11 +29,12 @@ export interface DockerOperationRegistration {
   started(pid: number): void
 }
 export interface EnvironmentOperation {
-  schema: 'wholeloop/environment-operation@1'
+  schema: 'wholeloop/environment-operation@1' | 'wholeloop/environment-operation@2'
   id: string
   environment: string
   nonce: string
-  action: 'create' | 'start' | 'stop' | 'remove' | 'pull'
+  action: 'create' | 'start' | 'stop' | 'remove' | 'pull' | 'exec'
+  resource?: string
   command: string
   at: string
   timeoutMs: number
@@ -115,18 +118,44 @@ export class EnvironmentOperations {
     })
   }
   begin(args: string[], timeoutMs: number, cleanup = false): DockerOperationRegistration {
+    const action = this.action(args)
     const operation: EnvironmentOperation = {
-      schema: 'wholeloop/environment-operation@1',
+      schema:
+        action === 'exec'
+          ? 'wholeloop/environment-operation@2'
+          : 'wholeloop/environment-operation@1',
       id: `operation-${randomUUID()}`,
       environment: this.environment,
       nonce: randomUUID(),
-      action: this.action(args),
+      action,
+      ...(action === 'exec' ? { resource: args[3] ?? '' } : {}),
       command: contractDigest(args),
       at: new Date().toISOString(),
       timeoutMs,
       provenance: this.provenance,
     }
     this.files.locked(() => {
+      if (action === 'exec') {
+        const resources = new EnvironmentResources(this.files).get(this.environment).record
+          .resources
+        if (
+          args[0] !== 'container' ||
+          args[2] !== '--interactive' ||
+          !resources.some(
+            (resource) =>
+              resource.kind === 'container' &&
+              resource.purpose === 'service' &&
+              resource.id === operation.resource,
+          )
+        )
+          throw new DockerEnvironmentError('unowned-exec-operation')
+        if (
+          this.list().some(
+            (prior) => prior.action === 'exec' && !this.read(prior.id, 'exec-release'),
+          )
+        )
+          throw new DockerEnvironmentError('prior-exec-unresolved')
+      }
       if (cleanup && !['stop', 'remove'].includes(operation.action))
         throw new DockerEnvironmentError('invalid-cleanup-operation')
       if (['stop', 'remove'].includes(operation.action)) {
@@ -139,7 +168,7 @@ export class EnvironmentOperations {
         throw new DockerEnvironmentError('environment-fenced')
       if (this.list().length >= 1000)
         throw new DockerEnvironmentError('environment-operation-limit')
-      validateDeliveryShape(operation, operationSchema)
+      validateDeliveryShape(operation, action === 'exec' ? execOperationSchema : operationSchema)
       this.files.atomic(`${this.path(operation.id)}/request.json`, `${JSON.stringify(operation)}\n`)
     })
     return {
@@ -201,6 +230,18 @@ export class EnvironmentOperations {
       }
     })
   }
+  cancel(registration: DockerOperationRegistration) {
+    this.files.locked(() => {
+      const operation = this.get(registration.operation)
+      if (operation.nonce !== registration.nonce)
+        throw new DockerEnvironmentError('changed-operation-binding')
+      if (!this.read(operation.id, 'cancel'))
+        this.files.atomic(
+          `${this.path(operation.id)}/cancel.json`,
+          `${JSON.stringify({ schema: 'wholeloop/environment-operation-cancel@1', operation: operation.id, nonce: operation.nonce, at: new Date().toISOString() })}\n`,
+        )
+    })
+  }
   completion(args: string[], pid: number) {
     const matching = this.list().filter(
       (operation) =>
@@ -221,6 +262,44 @@ export class EnvironmentOperations {
     )
       return undefined
     return { operation: operation.id, code: Number(outcome.code), at: String(outcome.at) }
+  }
+  releaseExec(registration: DockerOperationRegistration, evidence: string) {
+    this.files.locked(() => {
+      const operation = this.get(registration.operation)
+      const started = this.read(operation.id, 'started'),
+        outcome = this.read(operation.id, 'outcome'),
+        closed = this.read(operation.id, 'client-close')
+      if (
+        operation.action !== 'exec' ||
+        operation.nonce !== registration.nonce ||
+        !started ||
+        outcome?.reason !== 'finished' ||
+        outcome.code !== 0 ||
+        outcome.signal !== undefined ||
+        closed?.status !== 'succeeded' ||
+        closed.code !== 0 ||
+        processObservation(Number(started.pid), true).status !== 'absent'
+      )
+        throw new DockerEnvironmentError('exec-invoker-unresolved')
+      const existing = this.read(operation.id, 'exec-release')
+      if (existing) return
+      const release = {
+        schema: 'wholeloop/environment-exec-release@1',
+        environment: this.environment,
+        operation: operation.id,
+        nonce: operation.nonce,
+        resource: operation.resource,
+        pid: started.pid,
+        at: new Date().toISOString(),
+        evidence,
+        provenance: this.provenance,
+      }
+      validateDeliveryShape(release, execReleaseSchema)
+      this.files.atomic(
+        `${this.path(operation.id)}/exec-release.json`,
+        `${JSON.stringify(release)}\n`,
+      )
+    })
   }
   inspect() {
     const entries = this.list().map((operation) => ({
@@ -270,7 +349,10 @@ export class EnvironmentOperations {
     const value = JSON.parse(
       readSourceFile(this.files.root, `${this.path(id)}/request.json`, 65536),
     )
-    validateDeliveryShape(value, operationSchema)
+    validateDeliveryShape(
+      value,
+      value.schema === 'wholeloop/environment-operation@2' ? execOperationSchema : operationSchema,
+    )
     if (value.id !== id || value.environment !== this.environment)
       throw new DockerEnvironmentError('changed-operation-binding')
     const files = readdirSync(this.files.path(this.path(id)))
@@ -283,6 +365,7 @@ export class EnvironmentOperations {
             'outcome.json',
             'client-close.json',
             'cancel.json',
+            ...(value.schema === 'wholeloop/environment-operation@2' ? ['exec-release.json'] : []),
           ].includes(name) && !name.endsWith('.tmp'),
       )
     )
@@ -303,6 +386,20 @@ export class EnvironmentOperations {
       outcome = this.read(id, 'outcome')
     if (outcome && (!started || outcome.pid !== started.pid))
       throw new DockerEnvironmentError('changed-operation-process')
+    const release = this.read(id, 'exec-release')
+    if (release) {
+      validateDeliveryShape(release, execReleaseSchema)
+      if (
+        value.schema !== 'wholeloop/environment-operation@2' ||
+        release.operation !== id ||
+        release.environment !== this.environment ||
+        release.nonce !== value.nonce ||
+        release.resource !== value.resource ||
+        release.pid !== started?.pid ||
+        release.provenance !== value.provenance
+      )
+        throw new DockerEnvironmentError('changed-exec-release')
+    }
     return value as EnvironmentOperation
   }
   private read(id: string, name: string): Record<string, unknown> | undefined {
@@ -317,6 +414,7 @@ export class EnvironmentOperations {
     return `delivery/environment-operations/${this.environment}/${id}`
   }
   private action(args: string[]): EnvironmentOperation['action'] {
+    if (args[0] === 'container' && args[1] === 'exec') return 'exec'
     if (args[0] === 'image' && args[1] === 'pull') return 'pull'
     if (args[1] === 'create') return 'create'
     if (args[1] === 'start') return 'start'

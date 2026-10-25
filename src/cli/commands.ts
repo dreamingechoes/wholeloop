@@ -8,6 +8,13 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery browser-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/browser-schema@1',
+    summary: 'Show grounded browser cases and the reviewed immutable MCP reference',
+  },
+  {
     path: 'delivery acceptance-run',
     arguments: '',
     options: [

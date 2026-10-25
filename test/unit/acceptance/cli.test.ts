@@ -33,6 +33,14 @@ it('prepares and reads pinned definitions and captures budgeted bytes without Do
       input: { $id: 'wholeloop/behavior-input@1' },
       executed: false,
     })
+    expect(cli(['browser-schema'])).toMatchObject({
+      schema: 'wholeloop/browser-schema@1',
+      input: { $id: 'wholeloop/browser-input@1' },
+      operation: { $id: 'wholeloop/environment-operation@2' },
+      release: { $id: 'wholeloop/environment-exec-release@1' },
+      reference: { id: 'playwright-mcp@0.0.83' },
+      executed: false,
+    })
     const schemas = cli(['acceptance-schema'])
     expect(schemas).toMatchObject({ schema: 'wholeloop/acceptance-schema@1', executed: false })
     expect(Object.keys(schemas.contracts)).toHaveLength(8)

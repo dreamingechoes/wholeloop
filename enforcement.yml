@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-browser-execution
+    enforcers: [src/acceptance/docker-browser.ts#DockerBrowserHost, src/acceptance/browser-client.ts#BrowserMcpSession, src/acceptance/browser-transport.ts#BrowserStdioTransport, src/environment/operations.ts#EnvironmentOperations, test/unit/acceptance/browser.test.ts, test/unit/acceptance/browser-client.test.ts, test/unit/environment/interactive.test.ts, test/evals/browser/run.ts]
   - id: delivery-behavior-execution
     enforcers: [src/acceptance/docker-behavior.ts#DockerBehaviorHost, src/acceptance/docker-runtime.ts#DockerBehaviorRuntime, src/acceptance/http.ts#observeHttp, src/acceptance/assertions.ts#observeAssertion, test/unit/acceptance/behavior.test.ts, test/unit/acceptance/http.test.ts, test/evals/behavior/run.ts]
   - id: delivery-acceptance-coverage

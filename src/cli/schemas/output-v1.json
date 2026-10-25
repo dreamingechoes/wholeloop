@@ -8332,6 +8332,50 @@
           "const": false
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "input", "reference", "images", "executed", "operation", "release"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/browser-schema@1"
+        },
+        "input": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "reference": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "images": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["arm64", "amd64"],
+          "properties": {
+            "arm64": {
+              "type": "string"
+            },
+            "amd64": {
+              "type": "string"
+            }
+          }
+        },
+        "executed": {
+          "type": "boolean",
+          "const": false
+        },
+        "operation": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "release": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
     }
   ],
   "$defs": {

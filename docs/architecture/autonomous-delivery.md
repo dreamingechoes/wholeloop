@@ -3,7 +3,11 @@
 > **TL;DR** — The planned runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery and persistent finite budgets and role-bound worker/context contracts are implemented. Actual native/backend workers and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
+> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery and persistent finite budgets and role-bound worker/context contracts are implemented. Dedicated native-host contracts and owned Docker API/CLI/browser execution are also implemented. Actual native-model certification and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
+
+## Observed behavior hosts
+
+Pinned acceptance cases execute objective [API/CLI](../tutorials/delivery-behaviors.md) and [browser](../tutorials/delivery-browsers.md) behavior in exact owned environments. The browser uses the official MCP SDK, fixed native tool constraints and a private registered Docker exec pipe. Fresh observed references, exact page/tab context, complete bounded PNGs and separate backend roundtrips prevent screenshots or cosmetic state from establishing persistence. Original grants, effect budgets, candidate binding and unknown-action refusal apply to every host. Independent private evaluation remains P6-17; native/model and independent host certification retain their separate scope.
 
 ## Read the proposal
 

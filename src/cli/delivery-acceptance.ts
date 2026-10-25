@@ -96,17 +96,23 @@ export async function deliveryAcceptanceAsyncCommand(
     let receipt: unknown
     let code: number = EXIT.ok
     if (command === 'delivery acceptance-run') {
+      const caseId = required(options, '--case')
+      const test = acceptance.get(digest).plan.cases.find((c) => c.id === caseId)
+      const host =
+        test?.runner.kind === 'browser'
+          ? new (await import('../acceptance/docker-browser.js')).DockerBrowserHost(
+              acceptance,
+              digest,
+              environment.environment,
+              caseId,
+            )
+          : new DockerBehaviorHost(acceptance, digest, environment.environment, caseId)
       receipt = await acceptance.executeCase(
         digest,
-        required(options, '--case'),
+        caseId,
         required(options, '--key'),
         environment,
-        new DockerBehaviorHost(
-          acceptance,
-          digest,
-          environment.environment,
-          required(options, '--case'),
-        ),
+        host,
       )
       if ((receipt as { status: string }).status !== 'passed') code = EXIT.precondition
     } else if (command === 'delivery acceptance-seal') {

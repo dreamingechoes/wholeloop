@@ -13,6 +13,7 @@ import {
   containerArguments,
   containerPolicy,
   DOCKER_REFERENCE_HELPER,
+  dockerImage,
   dockerPreflight,
   observedContainerPolicy,
 } from '../../../src/environment/docker-policy.js'
@@ -48,6 +49,7 @@ function preflightDriver(
     version?: string
     cpus?: number
     memory?: number
+    command?: unknown
     missing?: readonly string[]
   } = {},
 ) {
@@ -84,7 +86,7 @@ function preflightDriver(
             Config: {
               Env: [...image.env, 'NON_SECRET_MARKER=fixture-value'],
               Entrypoint: image.entrypoint,
-              Cmd: image.command,
+              Cmd: Object.hasOwn(overrides, 'command') ? overrides.command : image.command,
             },
           },
         ]
@@ -121,6 +123,14 @@ const values = (args: string[], key: string) =>
   args.flatMap((arg, index) => (arg === key ? [args[index + 1]] : []))
 
 describe('observed Docker preflight', () => {
+  it('accepts optional omitted OCI image commands while refusing malformed command metadata', async () => {
+    const omitted = preflightDriver({ command: undefined })
+    expect((await dockerImage(omitted.driver, DOCKER_REFERENCE_HELPER, 'arm64'))?.command).toEqual(
+      [],
+    )
+    const malformed = preflightDriver({ command: 'node' })
+    await expect(dockerImage(malformed.driver, DOCKER_REFERENCE_HELPER, 'arm64')).rejects.toThrow()
+  })
   it('keeps declarations and image configuration hashes distinct from execution or raw image environment', async () => {
     const { driver, calls } = preflightDriver()
     const result = await dockerPreflight(driver, recipe(), DOCKER_REFERENCE_HELPER)

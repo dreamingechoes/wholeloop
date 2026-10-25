@@ -3,7 +3,7 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-15 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-16 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
@@ -399,7 +399,7 @@ The available Linux controller container is not that proof. Actual native client
 
 ## P6-16 · Browser acceptance through existing tools
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-15
+**Status:** ✅ · **Size:** L · **Depends on:** P6-15
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -409,13 +409,15 @@ The available Linux controller container is not that proof. Actual native client
 
 **Acceptance criteria:**
 
-- [ ] A UI case exercises the declared interaction rather than substituting hidden state injection.
-- [ ] A screenshot alone does not establish persistence/backend success.
-- [ ] Missing native browser capabilities or timing failures remain unavailable/failed with no fabricated pass.
+- [x] A UI case exercises the declared interaction rather than substituting hidden state injection.
+- [x] A screenshot alone does not establish persistence/backend success.
+- [x] Missing native browser capabilities or timing failures remain unavailable/failed with no fabricated pass.
 
 **Tests** — QA-02, QA-05 and QA-08: real browser/application roundtrip, absent-tool, stale-URL and capture-boundary cases.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/04-behavioral-qa.md); platforms, verification, artifacts.
+
+**Evidence** — Thirty-five new browser/protocol/native-process/OCI cases and 558 focused acceptance/environment/contract checks pass. Complete checks pass 2646 tests in 116 files on macOS arm64/Node 24.22.0 (335.67 seconds) and isolated Debian Linux arm64/Node 24.22.0 (77.21 seconds), plus all remaining checks. The official SDK protocol fixture and identical inert browser-schema output pass on the Node 20.0.0 Linux minimum. Actual Docker/Chromium observations expose cosmetic UI persistence failure, observe the repaired form/restart/fresh-context/backend roundtrip, deny app-to-browser control access and reuse completed keys without action replay; exact owned resources are retired. The nine actual API/CLI observations also pass after shared-host extraction. Preserve prototype/fixture/capacity/sandbox failures and the first full run's old @1-only registration assertion; fix the enforcer to match existing positive-version compatibility. No old schema changes, model, account, publication or merge occurs. Independent private evaluation and native/host acceptance remain separate.
 
 ---
 

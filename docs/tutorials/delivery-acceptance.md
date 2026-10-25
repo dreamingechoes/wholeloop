@@ -3,7 +3,7 @@
 > **TL;DR** — Pin the agreed cases before execution, preserve human/machine ownership and inspect coverage against the exact candidate. Artifact capture and sealed reports remain private, bounded and separate from publication permission.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Closed definitions, current-input evidence validation, typed reports, explicit human notes and immutable budgeted artifacts are implemented. The [fixed CLI/API host](./delivery-behaviors.md) adds actual execution in P6-15; browser execution and private evaluation remain P6-16–P6-17. Normalized fixtures alone do not certify these capabilities.
+> **Status: ✅ implemented.** Closed definitions, current-input evidence validation, typed reports, explicit human notes and immutable budgeted artifacts are implemented. The [fixed CLI/API host](./delivery-behaviors.md) adds actual execution in P6-15; [browser execution](./delivery-browsers.md) is available through P6-16; private evaluation remains P6-17. Normalized fixtures alone do not certify these capabilities.
 
 ## Before you start
 
