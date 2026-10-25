@@ -1,6 +1,6 @@
 # Roadmap — built in vertical phases, worked in session-sized tasks
 
-> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. The owner accepted Phase 6 for 1.0 and authorized sequential implementation; P6-01–P6-09, P6-11 and P6-13–P6-18 are complete; P6-12 is implemented with Linux-host acceptance deferred, and 17 tasks await implementation.
+> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. The owner accepted Phase 6 for 1.0 and authorized sequential implementation; P6-01–P6-09, P6-11 and P6-13–P6-19 are complete; P6-12 is implemented with Linux-host acceptance deferred, and 16 tasks await implementation.
 
 ---
 
@@ -10,7 +10,7 @@ Current manual checks and owner-only actions: [manual verification](./manual-ver
 
 Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [34 Phase 6 tasks](./phase-6-autonomous-delivery.md). The owner reviewed and accepted every new task on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
 
-The roadmap now contains 88 tasks: 56 completed tasks (forty original plus P6-01–P6-09, P6-11 and P6-13–P6-18), fourteen original open tasks, P6-12 awaiting independent Linux-host acceptance after implementation, and 17 new pending implementation tasks. The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
+The roadmap now contains 88 tasks: 57 completed tasks (forty original plus P6-01–P6-09, P6-11 and P6-13–P6-19), fourteen original open tasks, P6-12 awaiting independent Linux-host acceptance after implementation, and 16 new pending implementation tasks. The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
 
 No cloud platform, marketplace, vendor API expansion or production automation is added. Local P6 implementation is authorized to proceed without waiting for unrelated native/account acceptance. Those original checks and the new capability-specific acceptance still need their stated evidence before release.
 

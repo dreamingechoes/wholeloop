@@ -33,6 +33,12 @@ export function deliveryCommand(
 ): number {
   if (
     [
+      'delivery integration-assembly-schema',
+      'delivery integration-assemble',
+      'delivery integration-assembly-status',
+      'delivery integration-assembly-reconcile',
+      'delivery integration-verify',
+      'delivery integration-report',
       'delivery private-sensitivity',
       'delivery environment-backend',
       'delivery environment-start',

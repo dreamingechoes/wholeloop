@@ -40,6 +40,12 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery integration-assembly-reconcile` | `wholeloop/integration-assembly-status@1` | Observe already-issued owned Git steps without dispatching or restoring authority |
+| `wl delivery integration-assembly-schema` | `wholeloop/integration-assembly-schema@1` | Show owned assembly and whole-milestone verification contracts |
+| `wl delivery integration-assemble` | `wholeloop/integration-assembly-status@1` | Assemble required committed parts in owned worktrees under original grants |
+| `wl delivery integration-assembly-status` | `wholeloop/integration-assembly-status@1` | Inspect retained assembly steps, conflicts and partial outcomes |
+| `wl delivery integration-verify` | `wholeloop/integration-verification@1` | Execute pinned whole-milestone cases against the complete owned assembly |
+| `wl delivery integration-report` | `wholeloop/integration-verification@1` | Reobserve whole-milestone evidence without executing acceptance cases |
 | `wl delivery integration-schema` | `wholeloop/integration-schema@1` | Show committed milestone candidate and input contracts |
 | `wl delivery integration-candidate` | `wholeloop/integration-prepared@1` | Observe and pin an exact committed milestone candidate without assembly execution |
 | `wl delivery integration-inspect` | `wholeloop/integration-inspection@1` | Compare a retained candidate with current commits, bases and protected inputs |

@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-18 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11 and P6-13–P6-19 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 56 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 17 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 57 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 16 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -471,7 +471,7 @@ The available Linux controller container is not that proof. Actual native client
 
 ## P6-19 · Assembly and whole-product verification
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-18, P6-15, P6-16, P6-17
+**Status:** ✅ · **Size:** L · **Depends on:** P6-18, P6-15, P6-16, P6-17
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -481,13 +481,15 @@ The available Linux controller container is not that proof. Actual native client
 
 **Acceptance criteria:**
 
-- [ ] Incompatible frontend/backend fixtures fail together despite independent green suites.
-- [ ] A repair preserves worker/personal files and invalidates downstream current evidence.
-- [ ] Multi-repository partial outcomes cannot become whole-feature success or trigger automatic rollback.
+- [x] Incompatible frontend/backend fixtures fail together despite independent green suites.
+- [x] A repair preserves worker/personal files and invalidates downstream current evidence.
+- [x] Multi-repository partial outcomes cannot become whole-feature success or trigger automatic rollback.
 
 **Tests** — INT-01–INT-06: actual multi-repository Git assembly/conflicts and combined local application behavior.
 
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/05-integration-and-change-impact.md); building, verification, orchestration.
+**Docs** — [Detailed contract](./specifications/autonomous-delivery/05-integration-and-change-impact.md); [owned assembly guide](../docs/tutorials/delivery-assembly.md); ADR-0110.
+
+**Verification** — Fifteen new actual Git/process/CLI/coverage regressions pass, including global cross-repository order, retained conflicts, fresh-worktree repair, zero repair budget, revocation and current public contracts. Complete checks pass 2755 tests in 123 files on macOS arm64/Node 24.22.0 (367.32 seconds) and isolated Debian Linux arm64/Node 24.22.0 (96.83 seconds), plus all remaining checks. Eight actual Docker/Git observations expose independently green incompatible components, verify the committed repair, preserve old reports and observe exact owned retirement. Node 20.0.0 Linux passes actual two-repository assembly/reconciliation and inert schema parity. Partial local Git outcomes never establish whole-feature success; hosted ordering/protection retains its separate later acceptance.
 
 ---
 

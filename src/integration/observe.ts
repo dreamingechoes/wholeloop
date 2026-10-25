@@ -17,7 +17,10 @@ import {
   integrationRequest,
 } from './contracts.js'
 
-function committed<T extends IntegrationPart | IntegrationAssembly>(plan: DeliveryPlan, item: T) {
+export function observeCommittedWorktree<T extends IntegrationPart | IntegrationAssembly>(
+  plan: DeliveryPlan,
+  item: T,
+) {
   const declared = plan.repositories.find((repo) => repo.id === item.repository)
   if (!declared) throw new IntegrationError('unknown-repository')
   if (
@@ -69,11 +72,11 @@ export function observeIntegration(
     if (repo.remote && codehostRepository(repo.root, repo.remote.name).url !== repo.remote.url)
       throw new IntegrationError('repository-remote-changed')
   }
-  const parts = input.parts.map((part) => committed(plan, part)),
+  const parts = input.parts.map((part) => observeCommittedWorktree(plan, part)),
     assemblies = input.assemblies.map((assembly) => {
       const repo = plan.repositories.find((repo) => repo.id === assembly.repository)
       if (!repo || assembly.base !== repo.base) throw new IntegrationError('assembly-base-binding')
-      const observed = committed(plan, assembly)
+      const observed = observeCommittedWorktree(plan, assembly)
       const parents = git(repo.root, ['rev-list', '--parents', '-n', '1', assembly.head])
         .trim()
         .split(/\s+/)

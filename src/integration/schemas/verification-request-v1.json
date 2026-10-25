@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/integration-verification-request@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/integration-verification-request@1"
+    },
+    "candidate": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "assembly": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "environment": {
+      "type": "string",
+      "pattern": "^environment-[a-f0-9]{32}$",
+      "maxLength": 44
+    }
+  },
+  "required": ["schema", "candidate", "assembly", "environment"]
+}

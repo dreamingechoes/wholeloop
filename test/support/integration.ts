@@ -16,7 +16,13 @@ export async function integrationFixture(
     dir: string
     paths: { contract: string; search: string; assembly: string }
   }) => Promise<void>,
-  options: { secondRepository?: boolean; remote?: boolean; retain?: boolean } = {},
+  options: {
+    secondRepository?: boolean
+    remote?: boolean
+    retain?: boolean
+    withConflict?: boolean
+    integrationRepairs?: number
+  } = {},
 ) {
   await fixture(
     async ({ planning, plan, root, dir }) => {
@@ -64,6 +70,31 @@ export async function integrationFixture(
         unit.repository = 'web'
       }
 
+      if (options.integrationRepairs !== undefined)
+        plan.budgets.integrationRepairs = options.integrationRepairs
+      if (options.withConflict) {
+        plan.work.push({
+          id: 'also',
+          repository: options.secondRepository ? 'web' : 'app',
+          role: 'contract',
+          criteria: [],
+          after: ['contract'],
+          consumes: ['search-api'],
+          produces: [
+            {
+              id: 'secondary-interface',
+              revision: 'v1',
+              sha256: 'd'.repeat(64),
+              description: 'Exercise independent conflicting contract edits.',
+            },
+          ],
+        })
+        const contractId = plan.work.find((u) => u.id === 'contract')?.produces[0]?.id
+        if (!contractId) throw new Error('Missing fixture contract')
+        const added = plan.work.find((u) => u.id === 'also')
+        if (added) added.consumes = [contractId]
+        plan.milestones[0]?.work.push('also')
+      }
       const prepared = planning.preparePlan(plan)
       const paths = {
         contract: join(dir, 'contract'),
@@ -89,6 +120,8 @@ export async function integrationFixture(
         paths.search,
         options.secondRepository ? 'HEAD' : contract,
       ])
+      if (options.withConflict)
+        writeFileSync(join(paths.search, 'app.txt'), 'Right-hand implementation.\n')
       writeFileSync(join(paths.search, 'search.txt'), 'Search returns matching titles.\n')
       git(paths.search, ['add', '.'])
       git(paths.search, [
@@ -232,6 +265,33 @@ export async function integrationFixture(
           },
         ],
         repairOwners: [{ criterion: 'search', kind: 'work', id: 'search' }],
+      }
+      if (options.withConflict) {
+        const sibling = join(dir, 'also')
+        git(searchRoot, [
+          'worktree',
+          'add',
+          '-b',
+          'wl/also',
+          sibling,
+          options.secondRepository ? 'HEAD' : contract,
+        ])
+        writeFileSync(join(sibling, 'app.txt'), 'Left-hand interface.\n')
+        git(sibling, ['add', '.'])
+        git(sibling, [
+          'commit',
+          '-m',
+          'feat: define an independent conflicting interface',
+          '-m',
+          'Preserve a real merge conflict for bounded integration repair.',
+        ])
+        request.parts.push({
+          work: 'also',
+          repository: options.secondRepository ? 'web' : 'app',
+          path: sibling,
+          ref: 'refs/heads/wl/also',
+          head: git(sibling, ['rev-parse', 'HEAD']),
+        })
       }
       if (options.secondRepository) {
         const webAssembly = join(dir, 'assembly-web')

@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-integration-assembly
+    enforcers: [src/integration/assembly.ts#IntegrationAssembly, src/integration/git-process.ts#AssemblyGitProcess, src/integration/parts.ts#observeRequiredParts, src/integration/verification.ts#IntegrationVerification, test/unit/integration/assembly.test.ts, test/unit/integration/git-process.test.ts, test/unit/integration/verification.test.ts, test/evals/assembly/run.ts]
   - id: delivery-integration-candidates
     enforcers: [src/integration/contracts.ts#integrationRequest, src/integration/contracts.ts#integrationScope, src/integration/observe.ts#observeIntegration, src/integration/store.ts#IntegrationCandidates, test/unit/integration/candidate.test.ts, test/evals/integration/run.ts]
   - id: delivery-private-acceptance

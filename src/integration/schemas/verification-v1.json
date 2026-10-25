@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/integration-verification@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/integration-verification@1"
+    },
+    "candidate": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "assembly": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "environment": {
+      "type": "string",
+      "pattern": "^environment-[a-f0-9]{32}$",
+      "maxLength": 44
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$",
+      "maxLength": 25
+    },
+    "milestone": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "maxLength": 64
+    },
+    "acceptancePlan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 44,
+          "pattern": "^environment-[a-f0-9]{32}$"
+        },
+        "recipe": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "repository": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9-]{0,63}$"
+              },
+              "head": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{40,64}$"
+              },
+              "snapshot": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": ["repository", "head", "snapshot"]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        }
+      },
+      "required": ["environment", "recipe", "runtime", "candidates"]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["criterion", "contract", "procedure"]
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "cases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "maxItems": 512
+          },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "not-established"]
+          }
+        },
+        "required": ["kind", "id", "cases", "status"]
+      },
+      "maxItems": 2048
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]{0,63}$"
+          },
+          "owner": {
+            "type": "string",
+            "enum": ["machine", "human"]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed",
+              "pending-human",
+              "unavailable",
+              "interrupted",
+              "stale",
+              "not-applicable"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          }
+        },
+        "required": ["id", "owner", "status", "evidence"]
+      },
+      "minItems": 1,
+      "maxItems": 1000
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "fixture-only", "failed", "stale", "pending-human", "unavailable"]
+    },
+    "acceptance": {
+      "type": "string",
+      "enum": ["delegated-machine", "operator-and-machine", "not-established"]
+    },
+    "wholeFeature": {
+      "type": "string",
+      "const": "not-established-by-this-receipt"
+    },
+    "publication": {
+      "type": "string",
+      "const": "not-performed"
+    },
+    "rollback": {
+      "type": "string",
+      "const": "not-performed"
+    },
+    "at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "artifact": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "repairs": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["work", "integration"]
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "criteria": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1000,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "maxLength": 64
+            }
+          },
+          "cases": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 512,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "maxLength": 64
+            }
+          },
+          "basis": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "maxLength": 64
+          }
+        },
+        "required": ["kind", "id", "criteria", "cases", "basis"]
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "candidate",
+    "assembly",
+    "environment",
+    "run",
+    "milestone",
+    "acceptancePlan",
+    "bindings",
+    "checks",
+    "cases",
+    "status",
+    "acceptance",
+    "wholeFeature",
+    "publication",
+    "rollback",
+    "at",
+    "repairs"
+  ]
+}

@@ -8,6 +8,48 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery integration-assembly-reconcile',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/integration-assembly-status@1',
+    summary: 'Observe already-issued owned Git steps without dispatching or restoring authority',
+  },
+  {
+    path: 'delivery integration-assembly-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/integration-assembly-schema@1',
+    summary: 'Show owned assembly and whole-milestone verification contracts',
+  },
+  {
+    path: 'delivery integration-assemble',
+    arguments: '',
+    options: ['--file <file>', '--root <path>', '--store <path>'],
+    schema: 'wholeloop/integration-assembly-status@1',
+    summary: 'Assemble required committed parts in owned worktrees under original grants',
+  },
+  {
+    path: 'delivery integration-assembly-status',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/integration-assembly-status@1',
+    summary: 'Inspect retained assembly steps, conflicts and partial outcomes',
+  },
+  {
+    path: 'delivery integration-verify',
+    arguments: '',
+    options: ['--file <file>', '--root <path>', '--store <path>'],
+    schema: 'wholeloop/integration-verification@1',
+    summary: 'Execute pinned whole-milestone cases against the complete owned assembly',
+  },
+  {
+    path: 'delivery integration-report',
+    arguments: '',
+    options: ['--file <file>', '--root <path>', '--store <path>'],
+    schema: 'wholeloop/integration-verification@1',
+    summary: 'Reobserve whole-milestone evidence without executing acceptance cases',
+  },
+  {
     path: 'delivery integration-schema',
     arguments: '',
     options: [],

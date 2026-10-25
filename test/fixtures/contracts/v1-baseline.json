@@ -345,7 +345,18 @@
     "schema:wholeloop/integration-candidate@1": "efb50151aeb546aafd5b385c8441d7a9cbb1615851f56074f13c69c03a069f45",
     "schema:wholeloop/integration-evaluation@1": "5e7342c2da66cc339ef64f25cf54aeba3f8ea8a96dce41a62cb6963538301344",
     "schema:wholeloop/integration-candidate-record@1": "bc5779b9f1a316e2d6c469ceece39fec95a55cc336942ecb6dfcb10ad628daf1",
-    "schema:wholeloop/integration-candidate-request@1": "ec882a070c1b021819f7c56d1dcb2b3dae160681057fa64991fb77cc9bed94b6"
+    "schema:wholeloop/integration-candidate-request@1": "ec882a070c1b021819f7c56d1dcb2b3dae160681057fa64991fb77cc9bed94b6",
+    "output:wholeloop/integration-assembly-schema@1": "4fe0da8938409555b2d91404bddf2aa94f5d8e1d9c680c3f4eeeffb6c1a0ce14",
+    "output:wholeloop/integration-assembly-status@1": "54e35d6dd6a2cf42ab9b8a9687ee1ae876b155489924744842e2f96164a39784",
+    "output:wholeloop/integration-verification@1": "7b9ce78a3d88b73e854a3a243c1bf5b50c400889473d4071caa4d0e35b77881b",
+    "schema:wholeloop/assembly-evaluation@1": "024d6c27961bd42c30aeeac615f9d732821f6031185fa825b26ea26d3d27204f",
+    "schema:wholeloop/integration-assembly-record@1": "54c6bb670f446b4ef9b377dfa9c1bfdbce1655ea95540390ef2306f988e1dcee",
+    "schema:wholeloop/integration-assembly-request@1": "f26fcf303a81942ec5091e6f2d3941f73b69e51f1768c2adc8adff2c2b5436b2",
+    "schema:wholeloop/integration-assembly-status@1": "10199a41a6469d3e6e076e358948902d00074b85f08ca8ada5c77c62a34c8afc",
+    "schema:wholeloop/integration-assembly@1": "cf341b69e867c11f84db2a2b93573c4a33398d416cb5fe5167d728fe3105d631",
+    "schema:wholeloop/integration-operation-outcome@1": "597f9828e5919f1e14d4dacc7849c844351deecd2ab5f49c4b4a31ee49066c49",
+    "schema:wholeloop/integration-verification-request@1": "b2143d18221d52a136852c8629a0272921a4fc169cde9af38ec439f579d1ddaf",
+    "schema:wholeloop/integration-verification@1": "5ecc4bf8fd4cfa5c0a62430faaa731d441ccbf2918e5960722bd80286e6a2bf1"
   },
   "commands": [
     {
@@ -1801,6 +1812,42 @@
       "arguments": "",
       "schema": "wholeloop/integration-comparison@1",
       "options": ["--before <sha256>", "--after <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery integration-assembly-reconcile",
+      "arguments": "",
+      "schema": "wholeloop/integration-assembly-status@1",
+      "options": ["--digest <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery integration-assembly-schema",
+      "arguments": "",
+      "schema": "wholeloop/integration-assembly-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery integration-assemble",
+      "arguments": "",
+      "schema": "wholeloop/integration-assembly-status@1",
+      "options": ["--file <file>", "--root <path>", "--store <path>"]
+    },
+    {
+      "path": "delivery integration-assembly-status",
+      "arguments": "",
+      "schema": "wholeloop/integration-assembly-status@1",
+      "options": ["--digest <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery integration-verify",
+      "arguments": "",
+      "schema": "wholeloop/integration-verification@1",
+      "options": ["--file <file>", "--root <path>", "--store <path>"]
+    },
+    {
+      "path": "delivery integration-report",
+      "arguments": "",
+      "schema": "wholeloop/integration-verification@1",
+      "options": ["--file <file>", "--root <path>", "--store <path>"]
     }
   ],
   "exitCodes": {

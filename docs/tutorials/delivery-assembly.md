@@ -1,0 +1,85 @@
+# Assemble and verify the complete milestone
+
+> **TL;DR** — Build a separate owned integration worktree from every required committed part, then test the actual combined application and contracts. Keep failed assemblies and reports; a repair creates a new vector under the original finite budget.
+
+> [!NOTE]
+> **Status: ✅ implemented.** P6-19 owned assembly, conflict/repair ownership, current-input verification and bounded private reports pass local automated verification and actual Docker/Git observations. Complete-runner and publication orchestration remain subsequent tasks. See [ADR-0110](../decisions/0110-owned-assembly-and-complete-milestone-verification.md).
+
+## Prerequisites and outcome
+
+Start from an accepted [delivery plan](./delivery-plan.md), an active [original authorization](./delivery-authorization.md), committed clean required part worktrees and [pinned acceptance](./delivery-acceptance.md). The grant needs workspace.create and git.commit for assembly, and test.run for actual verification, with the selected repositories and topic prefixes. The run must be queued/running and have no unresolved foreign effects. This guide does not issue a grant or publish anything.
+
+Run the source commands from the repository with Node ≥ 22, Git supporting canonical --path-format=absolute metadata and the [reference Docker prerequisites](./delivery-docker.md). The bundled CLI retains its Node 20 runtime minimum. Inspect the closed request, stored record, status, verification request and report contracts first:
+
+```bash
+set -euo pipefail
+npm run build
+node dist/wl.mjs delivery integration-assembly-schema --json
+```
+
+The schema command executes nothing and opens no store. The complete route below stops at local milestone behavioral/contract evidence. Independent review, publication checks and conditional merge keep their separate requirements.
+
+## Pin contract and combined procedure coverage
+
+Before builder admission, add objective cases to the immutable acceptance definition. Every selected criterion needs applicable coverage. For each produced contract, an applicable machine case must have fixture.sha256 equal to the approved contract SHA. A machine case must also include the exact milestone.procedure text in its actions. One genuine combined case can cover its criterion, contract and procedure; unrelated green component cases cannot replace missing mappings.
+
+Use actual assertions against your public entrypoint and seeded state. Human-only criteria retain their current explicit operator-note requirement. Unsupported or unavailable hosts remain unavailable; fixture evidence remains fixture-only. Gate-policy input files identify requirements, not passing verify/review receipts.
+
+## Create the owned assembly
+
+Create a wholeloop/integration-assembly-request@1 JSON file in your external operator directory. Supply the actual run, revision, plan, milestone, a stable key and the complete parts array used by the [candidate guide](./delivery-integration-candidates.md). Each part names work, repository, canonical registered path, topic ref and committed head. Omit repairOf for the first assembly.
+
+Set the variables to your actual operator directory, request file and external store, then run these terminal core commands:
+
+```bash
+set -euo pipefail
+node dist/wl.mjs delivery integration-assemble --file "$assembly_request_file" --root "$operator_input_dir" --store "$delivery_store" --json
+node dist/wl.mjs delivery integration-assembly-status --digest "$assembly_digest" --store "$delivery_store" --json
+```
+
+Retain digest from the returned status before inspection. The controller creates separate worktrees under the external store and topic branches under the original grant prefix. It creates worktrees first and merges in global dependency order, including cross-repository predecessors. The personal checkout, real target refs and worker files are preserved. Hooks, signing and prompts are disabled; configured controller-side Git helpers are refused. Application/test commands execute through the existing Docker hosts.
+
+Every Git mutation has its own finite effect and native process observation. An assembled status establishes the complete Git vector, with acceptance still not-established. Conflict, failed, partial, unknown and stale outcomes exit 3. Partial repositories never become whole-feature success and trigger no rollback. A nonzero command can leave files or refs behind; inspect the retained worktree and effect rather than assuming nothing changed.
+
+## Recover or repair
+
+A lost issued command is observed rather than reissued. Reconcile an already-issued operation, including after revocation or supersession, with:
+
+```bash
+set -euo pipefail
+node dist/wl.mjs delivery integration-assembly-reconcile --digest "$assembly_digest" --store "$delivery_store" --json
+```
+
+This dispatches no Git write and restores no authority. Missing completion proof stays unknown; no stored PID is signalled. Inspection and history remain available. Resuming actual work still requires current original scope and a queued/running run.
+
+For a conflict or combined behavior failure, repair the owning source part in a new committed revision through its authorized builder/controller. Keep the failed integration files. Submit a fresh assembly request with a new key, updated complete part heads and repairOf naming the preceding assembly digest. The original integration-repair counter and effect/time limits apply. The new accepted assembly fences its predecessor; no worker is automatically reset/rebased, no conflict edit is discarded and no failed Git write is blindly replayed.
+
+## Bind and run the combined environment
+
+Use the assembled repositories' returned path/ref/head vector to prepare a current [environment recipe](./delivery-environments.md). One combined recipe/environment must cover every selected repository. Pin its actual files, seed/data identities and explicit service dependencies, then [prepare a candidate](./delivery-integration-candidates.md) using those exact owned assemblies and the original acceptance definition. Start the [owned Docker environment](./delivery-docker.md) from that candidate vector.
+
+Create a wholeloop/integration-verification-request@1 file with four fields: schema, candidate, assembly and environment, using their actual digests/ID. Execute or reobserve it:
+
+```bash
+set -euo pipefail
+node dist/wl.mjs delivery integration-verify --file "$integration_verification_file" --root "$operator_input_dir" --store "$delivery_store" --json
+node dist/wl.mjs delivery integration-report --file "$integration_verification_file" --root "$operator_input_dir" --store "$delivery_store" --json
+```
+
+The first command executes required machine cases through the existing fixed hosts and retains a complete bounded report artifact. Repeating completed keys does not repeat effects. The second reobserves current evidence without executing cases. A changed part, recipe, base, assembly or environment invalidates the corresponding current result. Failed criteria return their pinned work/integration repair owner and case IDs. Relevant failed cases and their artifacts remain historical; a new assembly cannot borrow their green results.
+
+Passing returns delegated-machine or operator-and-machine milestone evidence. Fixture-only, failed, stale, pending-human and unavailable outcomes exit 3. Whole-feature completion, independent review and publication remain unestablished by this receipt. A multi-repository plan provides no atomic code-host transaction or automatic rollback.
+
+## Observe the model-free combined regression
+
+With the reference images already cached, execute:
+
+```bash
+set -euo pipefail
+npm run eval:assembly -- --retire-success
+```
+
+This opt-in evaluation creates two disposable local Git repositories and actual owned Docker services. Backend and frontend units pass separately while the combined API fails. A committed backend repair creates a new complete assembly and passes the unchanged contract/API cases. The test preserves personal targets, worker files, old failures and budgeted failed/passed artifacts, then observes exact owned resource retirement. Reports and fixtures remain in the printed external locations. No model account, external service, remote Git write, pull request or project merge is exercised. See the [integration specification](../../roadmap/specifications/autonomous-delivery/05-integration-and-change-impact.md) for later change-impact and publication boundaries.
+
+<!-- docnav -->
+[◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)

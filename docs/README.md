@@ -41,6 +41,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 | [Delivery intake](./tutorials/delivery-intake.md) | Bounded local/item/remote input, explicit maps and recoverable source identity |
 | [Delivery planning](./tutorials/delivery-plan.md) | Explicit criterion ownership, dependency contracts, initial envelopes and plan revisions |
 | [Integrated milestone candidates](./tutorials/delivery-integration-candidates.md) | Exact committed vectors, protected inputs, stale inspection and conservative comparison |
+| [Owned assembly and combined verification](./tutorials/delivery-assembly.md) | Separate integration worktrees, retained conflicts, bounded repairs and actual whole-milestone behavior |
 | [Delivery authorization](./tutorials/delivery-authorization.md) | Exact operator grants, finite deadlines, revocation and the worker trust boundary |
 | [Delivery recovery](./tutorials/delivery-recovery.md) | Independent-process history inspection and cache repair without reconstructing authority |
 | [Delivery queue](./tutorials/delivery-queue.md) | Durable work slots, dependency reasons and the boundary before actual worker dispatch |

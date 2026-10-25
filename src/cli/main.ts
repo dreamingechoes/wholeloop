@@ -9,6 +9,7 @@ import { configCommand } from './config.js'
 import { conformanceCommand } from './conformance.js'
 import { deliveryCommand } from './delivery.js'
 import { deliveryAcceptanceAsyncCommand } from './delivery-acceptance.js'
+import { deliveryAssemblyCommand } from './delivery-assembly.js'
 import { deliveryEnvironmentRuntimeCommand } from './delivery-environment-runtime.js'
 import { deliveryPrivateAsyncCommand } from './delivery-private.js'
 import { deliveryRecoverCommand } from './delivery-recovery.js'
@@ -219,6 +220,12 @@ export async function runAsync(
         command.path === 'fanout run' ||
         command.path === 'delivery recover' ||
         [
+          'delivery integration-assembly-schema',
+          'delivery integration-assemble',
+          'delivery integration-assembly-status',
+          'delivery integration-assembly-reconcile',
+          'delivery integration-verify',
+          'delivery integration-report',
           'delivery private-sensitivity',
           'delivery environment-backend',
           'delivery environment-start',
@@ -282,6 +289,17 @@ export async function runAsync(
       ].includes(command.path)
     )
       return await deliveryAcceptanceAsyncCommand(command.path, parsed, root, json, io)
+    if (
+      [
+        'delivery integration-assembly-schema',
+        'delivery integration-assemble',
+        'delivery integration-assembly-status',
+        'delivery integration-assembly-reconcile',
+        'delivery integration-verify',
+        'delivery integration-report',
+      ].includes(command.path)
+    )
+      return await deliveryAssemblyCommand(command.path, parsed, root, json, io)
     if (command.path === 'delivery private-sensitivity')
       return await deliveryPrivateAsyncCommand(parsed, root, json, io)
     if (command.path === 'delivery recover')

@@ -3,7 +3,7 @@
 > **TL;DR** — Passing isolated parts is insufficient for a multi-part feature. Pin an assembled candidate, execute its complete behavior and invalidate only evidence whose declared inputs changed. Preserve old plans and require renewed authorization when intent or authority changes.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-18 implements exact read-only committed candidate preparation, current inspection and conservative comparison. P6-19 controller assembly/combined execution and P6-29 change impact remain design targets. Existing DAG, contract-first parts, worktrees and criterion checks remain authoritative.
+> **Status: 🚧 partial.** P6-18 implements exact read-only committed candidate preparation, current inspection and conservative comparison. P6-19 implements owned assembly, retained conflicts, bounded repairs and exact combined contract/behavior execution. P6-29 change impact remains a design target. Existing DAG, contract-first parts, worktrees and criterion checks remain authoritative.
 
 ## Milestones and candidate identity
 
@@ -11,7 +11,7 @@ A milestone contains an explicit set of required parts, acceptance criteria, rep
 
 Implemented `wholeloop/integration-candidate@1` contains the plan revision, milestone ID, repository vector of source/base/topic SHAs, exact assembly commits, environment/recipe/data digests, acceptance-plan digest and required gate-policy input identities. Passing gate evidence is separate from requirement bytes. Hash a canonical representation to identify the complete candidate.
 
-The [candidate guide](../../../docs/tutorials/delivery-integration-candidates.md) explains the implemented request, actual registered Git observations and immutable external records. Supplied assembly commits remain read-only proposals: preparation grants no authority and establishes no execution, acceptance or publication. A moving base blocks until a new authorized basis exists. P6-19 owns actual controller-created assembly.
+The [candidate guide](../../../docs/tutorials/delivery-integration-candidates.md) explains the implemented request, actual registered Git observations and immutable external records. Supplied assembly commits remain read-only proposals: preparation grants no authority and establishes no execution, acceptance or publication. A moving base blocks until a new authorized basis exists. The [owned assembly guide](../../../docs/tutorials/delivery-assembly.md) covers actual controller creation, global dependency order, native effects and current whole-milestone execution.
 
 Only committed part revisions are assembled. Refuse dirty or uncommitted predecessor work rather than silently omitting it. Create a disposable integration branch/worktree through the controller; never switch the user's checkout or update the real target branch.
 
@@ -55,13 +55,15 @@ Already observed merges cannot be undone transactionally. A later failure record
 
 ## Acceptance and tests
 
-- [ ] **INT-01:** Independently passing parts with an incompatible API fail the milestone's actual combined behavior.
-- [ ] **INT-02:** Dependency waves preserve contract-first ordering; cycles and uncommitted predecessors refuse assembly.
+- [x] **INT-01:** Independently passing parts with an incompatible API fail the milestone's actual combined behavior.
+- [x] **INT-02:** Dependency waves preserve contract-first ordering; cycles and uncommitted predecessors refuse assembly.
 - [ ] **INT-03:** Changing a criterion, recipe, base or part invalidates the exact affected evidence and all dependent candidates.
 - [ ] **INT-04:** Unaffected evidence reuse requires matching complete inputs and reports its reason.
-- [ ] **INT-05:** Conflict repair preserves personal/worker files and cannot silently force-push or omit a required part.
+- [x] **INT-05:** Conflict repair preserves personal/worker files and cannot silently force-push or omit a required part.
 - [ ] **INT-06:** Two-repository partial publication/merge never yields whole-feature success or an automatic rollback.
 - [ ] **INT-07:** Source changes during execution produce an explicit revision proposal; stale workers/effects cannot use new authority.
+
+P6-18/P6-19 verify the current committed vector, part/recipe/base invalidation and preserved local partial outcomes. Requirement adoption/reuse remains P6-29; hosted partial publication/protection remains later code-host acceptance. A milestone report never establishes whole-feature/publication success.
 
 Use actual disposable Git repositories for branching/conflicts/assembly, local frontend/backend contract fixtures for behavior and generated DAG cases for invalidation. Remote ordering/protection requires its own observed code-host trial.
 

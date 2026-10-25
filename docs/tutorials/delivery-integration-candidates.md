@@ -62,4 +62,4 @@ npm run eval:integration
 This creates disposable local Git repositories and an external store, exercises a two-repository candidate, input normalization, dirty predecessors, unknown contracts, protected-input edits, a committed repair and a moving base. It retains the actual fixture, bundled evaluator and JSON report in the printed external locations. It does not need Docker, model credentials or service accounts. It executes no combined application, remote Git write, PR or merge. Continue with the [integration design](../../roadmap/specifications/autonomous-delivery/05-integration-and-change-impact.md) for the remaining assembly and change-impact work.
 
 <!-- docnav -->
-[◀ Private acceptance and regression sensitivity](delivery-private-acceptance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Private acceptance and regression sensitivity](delivery-private-acceptance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Owned assembly and combined verification ▶](delivery-assembly.md)
