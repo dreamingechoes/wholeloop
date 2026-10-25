@@ -51,7 +51,8 @@
     "eval:environments": "node scripts/check-environments.mjs",
     "eval:behaviors": "node scripts/check-behaviors.mjs",
     "eval:browsers": "node scripts/check-browsers.mjs",
-    "eval:private": "node scripts/check-private.mjs"
+    "eval:private": "node scripts/check-private.mjs",
+    "eval:integration": "node scripts/check-integration-candidates.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

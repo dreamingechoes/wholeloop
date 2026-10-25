@@ -3,13 +3,15 @@
 > **TL;DR** — Passing isolated parts is insufficient for a multi-part feature. Pin an assembled candidate, execute its complete behavior and invalidate only evidence whose declared inputs changed. Preserve old plans and require renewed authorization when intent or authority changes.
 
 > [!NOTE]
-> **Status: 📐 design.** Accepted design target for P6-18–P6-19 and P6-29. Existing DAG, contract-first parts, worktrees and criterion checks remain authoritative.
+> **Status: 🚧 partial.** P6-18 implements exact read-only committed candidate preparation, current inspection and conservative comparison. P6-19 controller assembly/combined execution and P6-29 change impact remain design targets. Existing DAG, contract-first parts, worktrees and criterion checks remain authoritative.
 
 ## Milestones and candidate identity
 
 A milestone contains an explicit set of required parts, acceptance criteria, repositories, contract revisions and integration procedures. Validate cycles, unknown dependencies, duplicated ownership and uncovered outcomes before scheduling.
 
-Proposed `wholeloop/integration-candidate@1` contains the plan revision, milestone ID, repository vector of source/base/topic SHAs, exact assembly commits, environment/recipe/data digests, acceptance-plan digest and required gate evidence. Hash a canonical representation to identify the complete candidate.
+Implemented `wholeloop/integration-candidate@1` contains the plan revision, milestone ID, repository vector of source/base/topic SHAs, exact assembly commits, environment/recipe/data digests, acceptance-plan digest and required gate-policy input identities. Passing gate evidence is separate from requirement bytes. Hash a canonical representation to identify the complete candidate.
+
+The [candidate guide](../../../docs/tutorials/delivery-integration-candidates.md) explains the implemented request, actual registered Git observations and immutable external records. Supplied assembly commits remain read-only proposals: preparation grants no authority and establishes no execution, acceptance or publication. A moving base blocks until a new authorized basis exists. P6-19 owns actual controller-created assembly.
 
 Only committed part revisions are assembled. Refuse dirty or uncommitted predecessor work rather than silently omitting it. Create a disposable integration branch/worktree through the controller; never switch the user's checkout or update the real target branch.
 

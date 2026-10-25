@@ -337,7 +337,15 @@
     "output:wholeloop/private-acceptance-schema@1": "574c4bac62f0b24ca9bd039c26164b375c48436ec730467e1689a9ee5b508436",
     "output:wholeloop/private-acceptance-prepared@1": "a874094bd95796748783350eb10fdb13a441cd266d2233ebce7eafa6206733f0",
     "output:wholeloop/private-acceptance-inspection@1": "f5f1122b98532f7c4f8f046f3ec7a82a5b462cbe86c107c6f33cb97dcb6b8388",
-    "output:wholeloop/acceptance-sensitivity@1": "59ba227777ed15dadf8318b07542c1e4aca28d8a4f8a4549f5c7011d5211ff34"
+    "output:wholeloop/acceptance-sensitivity@1": "59ba227777ed15dadf8318b07542c1e4aca28d8a4f8a4549f5c7011d5211ff34",
+    "output:wholeloop/integration-schema@1": "9fa3a44f756ebb063f7d5ccd54518f23afabca98143d970a6d73f4a6f0c0311c",
+    "output:wholeloop/integration-prepared@1": "6469b30ea51a6eea809c080ce37ce6f3b52ddcdbef65e5f561ca353818a1d0ee",
+    "output:wholeloop/integration-inspection@1": "5d5452af6a08c853d2b23587380bcc073d1f35f93fc757dea732caf37ecf4ec1",
+    "output:wholeloop/integration-comparison@1": "304fe1c708bff31c7b39dfa9916cfe142e313bbe283febbb70f92665bce36541",
+    "schema:wholeloop/integration-candidate@1": "efb50151aeb546aafd5b385c8441d7a9cbb1615851f56074f13c69c03a069f45",
+    "schema:wholeloop/integration-evaluation@1": "5e7342c2da66cc339ef64f25cf54aeba3f8ea8a96dce41a62cb6963538301344",
+    "schema:wholeloop/integration-candidate-record@1": "bc5779b9f1a316e2d6c469ceece39fec95a55cc336942ecb6dfcb10ad628daf1",
+    "schema:wholeloop/integration-candidate-request@1": "ec882a070c1b021819f7c56d1dcb2b3dae160681057fa64991fb77cc9bed94b6"
   },
   "commands": [
     {
@@ -1769,6 +1777,30 @@
       "arguments": "",
       "schema": "wholeloop/acceptance-sensitivity@1",
       "options": ["--file <file>", "--root <path>", "--store <path>"]
+    },
+    {
+      "path": "delivery integration-schema",
+      "arguments": "",
+      "schema": "wholeloop/integration-schema@1",
+      "options": []
+    },
+    {
+      "path": "delivery integration-candidate",
+      "arguments": "",
+      "schema": "wholeloop/integration-prepared@1",
+      "options": ["--file <file>", "--root <path>", "--store <path>"]
+    },
+    {
+      "path": "delivery integration-inspect",
+      "arguments": "",
+      "schema": "wholeloop/integration-inspection@1",
+      "options": ["--digest <sha256>", "--store <path>"]
+    },
+    {
+      "path": "delivery integration-compare",
+      "arguments": "",
+      "schema": "wholeloop/integration-comparison@1",
+      "options": ["--before <sha256>", "--after <sha256>", "--store <path>"]
     }
   ],
   "exitCodes": {

@@ -119,6 +119,7 @@
 | [0106](./0106-observe-declared-api-and-cli-behavior.md) | Observe declared API and CLI behavior in owned applications | Accepted | 2026-10-25 |
 | [0107](./0107-private-stdio-browser-acceptance.md) | Private stdio browser acceptance and grounded observations | Accepted | 2026-10-25 |
 | [0108](./0108-evaluator-only-inputs-and-observed-regression-sensitivity.md) | Evaluator-only inputs and observed regression sensitivity | Accepted | 2026-10-25 |
+| [0109](./0109-exact-read-only-integrated-milestone-candidates.md) | Exact read-only integrated milestone candidates | Accepted | 2026-10-25 |
 
 ## Lifecycle
 

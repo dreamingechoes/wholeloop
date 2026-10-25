@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-integration-candidates
+    enforcers: [src/integration/contracts.ts#integrationRequest, src/integration/contracts.ts#integrationScope, src/integration/observe.ts#observeIntegration, src/integration/store.ts#IntegrationCandidates, test/unit/integration/candidate.test.ts, test/evals/integration/run.ts]
   - id: delivery-private-acceptance
     enforcers: [src/acceptance/private-plan.ts#PrivateAcceptance, src/acceptance/docker-private.ts#DockerPrivateHost, src/acceptance/private-executor.ts, src/acceptance/private-seed.ts#privateSeedInput, src/acceptance/sensitivity.ts#requiredPrivateSensitivity, src/acceptance/store.ts#DeliveryAcceptance, test/unit/acceptance/private.test.ts, test/unit/acceptance/private-engine.test.ts, test/unit/acceptance/private-identity.test.ts, test/evals/private/run.ts]
   - id: delivery-browser-execution

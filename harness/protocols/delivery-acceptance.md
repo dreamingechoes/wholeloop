@@ -11,3 +11,5 @@ A prepared acceptance plan executes nothing. Objective behavior hosts and indepe
 ⛔ `delivery-browser-execution` — Execute browser cases only through the pinned private-stdio host and observed owned page context. Ground controls in selected inputs and fresh native references; require objective assertions and backend roundtrips for persistence. Screenshots and worker claims establish neither persistence nor human approval.
 
 ⛔ `delivery-behavior-execution` — Execute objective API/CLI cases only through the fixed declared behavior host on the exact owned application; preserve incomplete responses, unknown effects, actual process/exit facts and original suite/gate budgets. A green unit suite cannot substitute for acceptance.
+
+⛔ `delivery-integration-candidates` — Bind every required committed part, repository/base/assembly revision, contract and complete protected input before preparing an integrated milestone. Refuse dirty or missing predecessors and moving bases. Read-only preparation and input equality establish no assembly provenance, acceptance, execution reuse or publication authority.

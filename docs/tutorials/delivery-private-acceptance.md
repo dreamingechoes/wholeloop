@@ -114,4 +114,4 @@ npm run eval:private -- --retire-success
 The evaluator retains its report outside the repository and tests actual denied reads/writes, empty-title red/green, unavailable mutation capability, new-feature classification, native synthetic counter reporting, aggregate acceptance enforcement and stale candidates. Synthetic native counters test the reporting path; they do not certify a real mutation engine. Successful explicit retirement observes absence of exact owned resources. Failed runs retain their resources and evidence for [owned lifecycle inspection/retirement](./delivery-lifecycle.md). Keep native/model, independent Linux-host, real mutator and account acceptance separately scoped in [manual verification](../../roadmap/manual-verification.md).
 
 <!-- docnav -->
-[◀ Execute isolated browser acceptance](delivery-browsers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Execute isolated browser acceptance](delivery-browsers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Integrated milestone candidates ▶](delivery-integration-candidates.md)

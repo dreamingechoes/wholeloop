@@ -9,6 +9,8 @@
 
 Pinned acceptance cases execute objective [API/CLI](../tutorials/delivery-behaviors.md) and [browser](../tutorials/delivery-browsers.md) behavior in exact owned environments. The browser uses the official MCP SDK, fixed native tool constraints and a private registered Docker exec pipe. Fresh observed references, exact page/tab context, complete bounded PNGs and separate backend roundtrips prevent screenshots or cosmetic state from establishing persistence. Original grants, effect budgets, candidate binding and unknown-action refusal apply to every host. [Private HTTP evaluation](../tutorials/delivery-private-acceptance.md) mounts pinned inputs only into the owned verifier and requires relevant observed red/green sensitivity for applicable regression acceptance. A candidate-only pass leaves aggregate/sealed acceptance unestablished; native/model and independent host certification retain their separate scope.
 
+[Integrated milestone preparation](../tutorials/delivery-integration-candidates.md) observes the complete required committed Git vector, contracts, recipes, acceptance/data/gate-policy inputs and repair ownership. Immutable records recheck current inputs and block moving bases. Preparation performs no assembly, execution or publication and grants no reuse authority; controller-owned assembly and whole-product verification remain P6-19.
+
 ## Read the proposal
 
 The [specification index](../../roadmap/specifications/autonomous-delivery/README.md) links ten detailed chapters. The [Phase 6 roadmap](../../roadmap/phase-6-autonomous-delivery.md) tracks 34 accepted tasks with dependencies, deliverables, acceptance criteria, test cases and documentation obligations.

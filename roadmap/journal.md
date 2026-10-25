@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-10-25 · P6-18 complete — exact committed integrated milestone candidates
+
+- Derive the complete milestone/work predecessor closure and pin actual committed repository/base/topic/assembly vectors, contract revisions, acceptance/recipe/data/gate-policy inputs, guidance and repair ownership. Refuse dirty/missing/uncommitted predecessors, unknown versions, cycles, uncovered criteria and changed named bases/destinations. Keep immutable records externally, preserve personal/worker files and retain historical failures. Preparation grants no authority or passing QA; controller-owned assembly and whole-product execution remain P6-19.
+- Twenty-three actual Git/graph/CLI regressions pass; complete checks pass 2721 tests in 120 files on macOS arm64/Node 24.22.0 (348.37 seconds) and isolated Debian Linux arm64/Node 24.22.0 (76.91 seconds), plus all remaining checks. Eight actual two-repository observations pass on macOS Node 24 and Linux Node 20.0.0; inert schema output matches. No native-client/model, account or combined application certification follows from metadata/Git observations.
+- Preserve initial type and obsolete two-repository mount failures, the omitted hard-rule declaration and restricted-sandbox macOS failures (2705/2721). Correct the rule and rerun the complete suite with actual socket/process observation; do not waive tests or increase deadlines. Add four commands, eight additive source/output identities, the opt-in evaluation, practical guide, ADR-0109 and named enforcer. Archive 88c571074ccc6b935cb427608fe67998509f37327b9c3a8142fd6a6aed8aac89 and core 180b5c4684a02aeeec56d0a860c5484a1831be01d30144cdc22ba337b235a258 identify pre-evidence checks. Recheck evidence-only docs/package, commit P6-18 (56/88 complete; P6-12 host acceptance open; seventeen new implementation tasks pending) and continue P6-19. No model, account, hosted write or project merge occurs.
+
 ## 2026-10-25 · P6-17 complete — evaluator-only inputs and observed regression sensitivity
 
 - Pin private HTTP definitions before builder admission and expose only their exact public digest/counts. Build the reviewed verifier into the CLI, mount its owned input volume read-only without application/controller/credential/socket access and retain actual app IP, native process/client close, complete response, program and effect evidence. Keep same-user controller filesystems outside the privacy claim; native worker admission still requires actual containment/controller-store denial.

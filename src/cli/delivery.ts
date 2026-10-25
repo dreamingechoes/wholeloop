@@ -15,6 +15,7 @@ import { deliveryAcceptanceCommand } from './delivery-acceptance.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
 import { deliveryBudgetCommand } from './delivery-budgets.js'
 import { deliveryEnvironmentCommand } from './delivery-environment.js'
+import { deliveryIntegrationCommand } from './delivery-integration.js'
 import { deliveryJournalCommand } from './delivery-journal.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
 import { deliveryPrivateCommand } from './delivery-private.js'
@@ -49,6 +50,8 @@ export function deliveryCommand(
       'Use the asynchronous CLI entrypoint for environment runtime operations',
       EXIT.precondition,
     )
+  if (command.startsWith('delivery integration-'))
+    return deliveryIntegrationCommand(command, { options, positional: [] }, root, json, io)
   if (command.startsWith('delivery private-'))
     return deliveryPrivateCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery browser-schema') {

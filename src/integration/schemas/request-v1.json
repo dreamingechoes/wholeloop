@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/integration-candidate-request@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/integration-candidate-request@1"
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$",
+      "maxLength": 25
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "milestone": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "maxLength": 64
+    },
+    "strategy": {
+      "type": "string",
+      "const": "ordered-merge"
+    },
+    "parts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "work": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "ref": {
+            "type": "string",
+            "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9/_.-]*$",
+            "maxLength": 256
+          },
+          "head": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{40}$",
+            "maxLength": 40
+          }
+        },
+        "required": ["work", "repository", "path", "ref", "head"]
+      }
+    },
+    "assemblies": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "repository": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "ref": {
+            "type": "string",
+            "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9/_.-]*$",
+            "maxLength": 256
+          },
+          "base": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{40}$",
+            "maxLength": 40
+          },
+          "head": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{40}$",
+            "maxLength": 40
+          }
+        },
+        "required": ["repository", "path", "ref", "base", "head"]
+      }
+    },
+    "contracts": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "revision": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "maxLength": 64
+          }
+        },
+        "required": ["id", "revision", "sha256"]
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["acceptance", "recipe", "data", "gate-policy"]
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "maxLength": 64
+          },
+          "after": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 256,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "maxLength": 64
+            }
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "gate": {
+            "type": "string",
+            "enum": ["verify", "review"]
+          }
+        },
+        "required": ["id", "kind", "ref", "sha256", "after"]
+      }
+    },
+    "repairOwners": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "criterion": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["work", "integration"]
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          }
+        },
+        "required": ["criterion", "kind", "id"]
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "run",
+    "revision",
+    "plan",
+    "milestone",
+    "strategy",
+    "parts",
+    "assemblies",
+    "contracts",
+    "inputs",
+    "repairOwners"
+  ]
+}

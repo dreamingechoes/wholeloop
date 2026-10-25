@@ -40,6 +40,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery integration-schema` | `wholeloop/integration-schema@1` | Show committed milestone candidate and input contracts |
+| `wl delivery integration-candidate` | `wholeloop/integration-prepared@1` | Observe and pin an exact committed milestone candidate without assembly execution |
+| `wl delivery integration-inspect` | `wholeloop/integration-inspection@1` | Compare a retained candidate with current commits, bases and protected inputs |
+| `wl delivery integration-compare` | `wholeloop/integration-comparison@1` | Explain exact candidate input equality without authorizing evidence reuse |
 | `wl delivery private-schema` | `wholeloop/private-acceptance-schema@1` | Show private evaluator inputs and observed sensitivity contracts |
 | `wl delivery private-plan` | `wholeloop/private-acceptance-prepared@1` | Pin private evaluator inputs outside builder workspaces |
 | `wl delivery private-inspect` | `wholeloop/private-acceptance-inspection@1` | Inspect private definition identity without exposing hidden input values |

@@ -8,6 +8,35 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery integration-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/integration-schema@1',
+    summary: 'Show committed milestone candidate and input contracts',
+  },
+  {
+    path: 'delivery integration-candidate',
+    arguments: '',
+    options: ['--file <file>', '--root <path>', '--store <path>'],
+    schema: 'wholeloop/integration-prepared@1',
+    summary: 'Observe and pin an exact committed milestone candidate without assembly execution',
+  },
+  {
+    path: 'delivery integration-inspect',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/integration-inspection@1',
+    summary: 'Compare a retained candidate with current commits, bases and protected inputs',
+  },
+  {
+    path: 'delivery integration-compare',
+    arguments: '',
+    options: ['--before <sha256>', '--after <sha256>', '--store <path>'],
+    schema: 'wholeloop/integration-comparison@1',
+    summary: 'Explain exact candidate input equality without authorizing evidence reuse',
+  },
+
+  {
     path: 'delivery private-schema',
     arguments: '',
     options: [],
