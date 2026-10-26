@@ -24,6 +24,7 @@ import {
 } from './native-capabilities.js'
 import { sealNativeGitControl } from './native-workspace.js'
 import { validateDeliveryShape } from './plan.js'
+import { boundedRecoveryCall } from './read-retry.js'
 import nativeRunSchema from './schemas/native-run-v1.json' with { type: 'json' }
 import { decodeWorkerProposal } from './worker-proposal.js'
 import {
@@ -49,7 +50,8 @@ export interface NativeBoundaryHost {
     assignment: Readonly<WorkerAssignment>
     recipe: Readonly<Omit<NativeDeliveryRecipe, 'response'>>
     model: string
-  }): NativeDeliveryObservation | undefined
+    signal?: AbortSignal
+  }): NativeDeliveryObservation | undefined | Promise<NativeDeliveryObservation | undefined>
 }
 export interface NativeRunReceipt {
   schema: 'wholeloop/delivery-native-run@1'
@@ -145,11 +147,42 @@ export class NativeAssignmentHost {
     if (!selected.available) return unavailable(selected.reason)
     const recipe = selected.recipe
     const { response: _response, ...recipeMetadata } = recipe
-    const observed = options.host?.observe({
-      assignment: structuredClone(assignment),
-      recipe: structuredClone(recipeMetadata),
-      model: options.model,
-    })
+    const probe = new AbortController(),
+      cancelProbe = () => probe.abort()
+    options.signal?.addEventListener('abort', cancelProbe, { once: true })
+    if (options.signal?.aborted) probe.abort()
+    let observed: NativeDeliveryObservation | undefined
+    try {
+      if (probe.signal.aborted) return unavailable('cancelled')
+      const result = await boundedRecoveryCall(
+        async (signal) => {
+          signal.addEventListener('abort', cancelProbe, { once: true })
+          try {
+            return await options.host?.observe({
+              assignment: structuredClone(assignment),
+              recipe: structuredClone(recipeMetadata),
+              model: options.model,
+              signal: probe.signal,
+            })
+          } finally {
+            signal.removeEventListener('abort', cancelProbe)
+          }
+        },
+        Math.min(
+          10000,
+          Date.parse(assignment.deadline) - Date.parse(this.budgets.lifecycle.journal.now()),
+        ),
+      )
+      // A probe can own a native group. A lost probe cannot free its original
+      // attempt or authorize the model merely because this caller timed out.
+      if (!result.available)
+        throw new Error('Native boundary observation unresolved; original attempt retained')
+      if (probe.signal.aborted)
+        throw new Error('Native boundary observation cancelled; original attempt retained')
+      observed = result.value
+    } finally {
+      options.signal?.removeEventListener('abort', cancelProbe)
+    }
     const negotiated = negotiateNativeDelivery(assignment, recipe, options.model, observed)
     if (!negotiated.available) return unavailable(negotiated.reason)
     if (this.owner.provenance() !== negotiated.observation.provenance)

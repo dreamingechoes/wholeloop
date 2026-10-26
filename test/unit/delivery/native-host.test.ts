@@ -59,8 +59,12 @@ function assignment(role: WorkerRole = 'builder') {
     limits: { ...DEFAULT_DELIVERY_BUDGETS },
   } as Parameters<typeof createWorkerAssignment>[0])
 }
-const host: NativeBoundaryHost = {
-  observe: ({ assignment: value, recipe, model }) => ({
+const host = {
+  observe: ({
+    assignment: value,
+    recipe,
+    model,
+  }: Parameters<NativeBoundaryHost['observe']>[0]): NativeDeliveryObservation => ({
     schema: 'wholeloop/delivery-native-observation@1',
     target: recipe.target,
     version: recipe.version,

@@ -130,6 +130,7 @@
 | [0117](./0117-owned-delivery-topic-workspaces.md) | Owned delivery topic workspaces | Accepted | 2026-10-26 |
 | [0118](./0118-owned-candidate-commits-and-current-heads.md) | Owned candidate commits and current heads | Accepted | 2026-10-26 |
 | [0119](./0119-runner-owned-git-stage-bindings.md) | Runner-owned Git stage bindings | Accepted | 2026-10-26 |
+| [0120](./0120-observed-native-boundaries-and-asynchronous-admission.md) | Observed native boundaries and asynchronous admission | Accepted | 2026-10-26 |
 
 ## Lifecycle
 

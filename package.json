@@ -57,7 +57,8 @@
     "eval:delivery-fixtures": "node scripts/check-delivery-fixtures.mjs",
     "eval:delivery-browser": "node scripts/check-delivery-browser.mjs",
     "eval:decisions": "node scripts/check-decisions.mjs",
-    "eval:runner": "node scripts/check-runner.mjs"
+    "eval:runner": "node scripts/check-runner.mjs",
+    "eval:native-boundary": "node scripts/check-native-boundary.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

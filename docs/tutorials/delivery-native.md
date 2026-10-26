@@ -49,6 +49,14 @@ No command accepts arbitrary JSON as such runtime proof. Named-version help and 
 
 Reference recipes disable external/personal MCP in the worker client. Existing controller/provider source hosts remain MCP-first and retain their scopes; disabling worker-side integrations does not introduce vendor HTTP implementations. Builders receive only their allocated implementation boundary, while evaluators retain read-only implementation access. Returned broker methods remain permission ceilings, not a promise that an unavailable native tool exists.
 
+## Repeat actual model-free Codex permission controls
+
+Run npm run eval:native-boundary with Codex 0.163.0 installed. This opt-in command uses an empty client home/credential reference, public controller-selected witnesses and an owned disposable Git worktree. It checks planner, builder and verifier with both file and inline-proposal output modes (six controls), including read/write restrictions, denied private/credential references, denied network access, recognized disabled feature flags and actual owned process cancellation. It preserves an external report and verifies unchanged project snapshots. It never invokes a model or queries an account; policy-only observations remain authenticated=false.
+
+The internal CodexBoundaryHost can separately observe local client authentication through its explicit existing credential-store reference. Only status/hashes/ownership enter its private proof, and fixture authentication remains fixture-only. Async observation is finite under the original attempt; unknown or cancelled probes preserve their consumed reservations. Missing bindings cannot authorize replay. See [ADR-0120](../decisions/0120-observed-native-boundaries-and-asynchronous-admission.md).
+
+The actual macOS controls cover the reference version's three selected roles and both output modes. Linux fixture/minimum-runtime checks do not establish actual Linux client containment. Accounts, model availability and complete native application execution remain separate acceptance work. Fixed native/semantic host composition and public complete-route commands remain P6-10 technical implementation work; these controls do not close that task.
+
 ## Artifact transport for controller authors
 
 The existing files mode remains the default. A fixed controller can explicitly select output: inline-proposal when calling NativeDeliveryHost.run. That versioned worker proposal returns artifact text through the owned structured stdout channel; a read-only worker can produce a new report without a Write tool or a writable output directory. Workers may continue citing their original pinned input evidence.

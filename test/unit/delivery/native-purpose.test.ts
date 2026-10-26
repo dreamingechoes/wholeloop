@@ -50,9 +50,10 @@ async function setup(
     run: string
     grant: string
   }) => Promise<void>,
-  options: { envelope?: boolean; mode?: 'wrong' | 'malformed' | 'valid' } = {},
+  options: { envelope?: boolean; mode?: 'wrong' | 'malformed' | 'valid'; probeMs?: number } = {},
 ) {
   await fixture(async ({ plan, planning, root, dir }) => {
+    if (options.probeMs) plan.budgets.attemptMs = options.probeMs
     const content = 'Pinned decision context.\n',
       contextRoot = join(dir, 'context'),
       bin = join(dir, 'bin')
@@ -148,6 +149,61 @@ else {console.log(JSON.stringify({type:'item.completed',item:{type:'agent_messag
 }
 
 describe('owned native decision purpose attempts', () => {
+  it('awaits asynchronous runtime observation before starting the original worker', async () => {
+    await setup(async ({ purpose, claim, options }) => {
+      let observed = false
+      const receipt = await purpose.run(claim(), {
+        ...options,
+        host: {
+          observe: async (input) => {
+            await Promise.resolve()
+            observed = true
+            return await options.host?.observe(input)
+          },
+        },
+      })
+      expect(observed).toBe(true)
+      expect(receipt.status).toBe('succeeded')
+    })
+  })
+  it('bounds a hanging runtime probe and retains its consumed attempt instead of launching a model', async () => {
+    await setup(
+      async ({ purpose, claim, options, run }) => {
+        const lease = claim()
+        let aborted = false,
+          launched = false
+        await expect(
+          purpose.run(lease, {
+            ...options,
+            host: {
+              observe: ({ signal }) =>
+                new Promise((resolve) => {
+                  signal?.addEventListener(
+                    'abort',
+                    () => {
+                      aborted = true
+                      resolve(undefined)
+                    },
+                    { once: true },
+                  )
+                }),
+            },
+            process: async () => {
+              launched = true
+              throw new Error('A model must not start')
+            },
+          }),
+        ).rejects.toThrow('Native boundary observation unresolved')
+        expect(aborted).toBe(true)
+        expect(launched).toBe(false)
+        expect(deliveryAttempts(purpose.queue.lifecycle.journal.get(run)).records[0]?.state).toBe(
+          'claimed',
+        )
+        await expect(purpose.run(lease, options)).rejects.toThrow('purpose-already-invoked')
+      },
+      { probeMs: 500 },
+    )
+  })
   it('does not replay a consumed purpose after a pre-launch observer failure', async () => {
     await setup(async ({ purpose, claim, options, run }) => {
       const lease = claim()
@@ -160,7 +216,7 @@ describe('owned native decision purpose attempts', () => {
             },
           },
         }),
-      ).rejects.toThrow('Injected observer failure')
+      ).rejects.toThrow('Native boundary observation unresolved; original attempt retained')
       await expect(purpose.run(lease, options)).rejects.toThrow('purpose-already-invoked')
       expect(() => claim('challenger')).toThrow('purpose-unresolved-evaluator')
       expect(deliveryAttempts(purpose.queue.lifecycle.journal.get(run)).records[0]?.state).toBe(
