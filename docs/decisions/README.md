@@ -142,6 +142,7 @@
 | [0129](./0129-approved-definition-revision-reservation.md) | Approved definition revision reservation | Accepted | 2026-10-26 |
 | [0130](./0130-owned-pre-builder-acceptance-definitions.md) | Owned pre-builder acceptance definitions | Accepted | 2026-10-26 |
 | [0131](./0131-current-plan-authorization-stage.md) | Current plan authorization stage | Accepted | 2026-10-26 |
+| [0132](./0132-committed-contract-artifact-observation.md) | Committed contract artifact observation | Accepted | 2026-10-26 |
 
 ## Lifecycle
 

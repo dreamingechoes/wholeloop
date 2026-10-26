@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-contract-artifact-identity
+    enforcers: [src/verification/contract-artifacts.ts#observeContractArtifacts, test/unit/verification/contract-artifacts.test.ts, test/evals/runner/definitions.ts]
   - id: delivery-runner-definition-revision
     enforcers: [src/runner/definition-stages.ts#RunnerDefinitionStages, src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/store.ts#adopt, test/unit/runner/definition-stages.test.ts, test/evals/runner/definitions.ts]
   - id: delivery-runner-builder-planning

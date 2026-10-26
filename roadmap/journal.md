@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — committed contract identity
+
+- Add bounded mechanical observation of actual contract-only deliverables without inventing product criteria. Require exact declared identities/paths, regular tracked bytes, clean stable snapshots, the declared Git database and pinned-base ancestry. Retain original revisions/checksums; permit distinct interfaces sharing a file within one finite audit. Matching bytes establish neither QA nor approval. Actual contract suite/gate composition and other P6-10 work remain open; counts stay 59/88 complete. Add ADR-0132, enforcer and docs.
+- Preserve the initial 460-pass/ten-fail regression: the new fixture advances its main branch but attempts to prepare a plan with the earlier base. Pin the actual fixture base before preparing instead of weakening production checks. Final contract/plan/frozen-contract regressions pass 475 cases in 4.49 seconds, including fifteen new identity/limit/Git controls. All six complete model-free controls pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5 with identical bundle 909559f5f6587db3d4948188d4a6ae78c4bbae1aba482f97eeed64a58625601b. Lint952/types/build/docs361/harness150/Markdown360/Mermaid36 and offline package checks pass. Full repository-suite results remain those of the earlier criterion-verification increment. No existing test deadline increases; no real model/account, publication, project merge or complete-route acceptance is claimed.
+
+---
+
 ## 2026-10-26 · P6-10 continuing — current-plan authorization
 
 - Join the plan route to exact immutable authority without producing another revision. Envelope plans require independent route decisions citing their exact persisted bytes; request selection cannot mutate that identity. Exact-plan implementation grants use an actual registered core metadata operation and zero model calls. Preserve root started-stage checks, original intent/closure and paused recovery; no human approval or endpoint evidence is fabricated. Add ADR-0131, enforcers and docs. P6-10 remains open; counts stay 59/88 complete.

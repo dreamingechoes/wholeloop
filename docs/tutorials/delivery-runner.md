@@ -166,6 +166,14 @@ The private binding and consumed marker precede execution. Recovery reads the or
 
 From the source checkout, run npm run eval:runner-suites -- --retire-success to execute the separate finite Docker evaluation. It requires the existing cache-only reference images and a reachable supported Docker daemon. It creates disposable application Git topics and external stores, observes both zero and nonzero suite exits and tests fresh paused recovery after an interrupted result write. The final option explicitly retires only those disposable environments after retaining observations. The terminal prints the external report location; a failure preserves evidence and resources for inspection. No account or model is required. These observations cannot certify a complete feature or native client. This remains an internal component; public complete-route run/reconcile commands are still under implementation.
 
+## Observe contract-only deliverable identity
+
+The internal observeContractArtifacts reader checks explicitly selected files against a contract-only unit's declared IDs, revisions and SHA-256 values. It requires regular committed files, a clean unchanged candidate, the declared source Git database and ancestry from its pinned base. Ignored copies, symbolic links, unrelated repositories and matching filenames cannot substitute for those bytes. Distinct interfaces can share the same exact file within the bounded observation.
+
+The result establishes mechanical identity only. It records no product criteria, test pass, semantic QA or human approval. Contract-only suite/gate composition remains technical implementation work before these units can complete the runner verification stage. See [ADR-0132](../decisions/0132-committed-contract-artifact-observation.md).
+
+The additional npm run eval:runner-definitions control creates an actual external topic worktree, observes the declared file and rejects a changed clean commit. It uses no model or account and grants no publication authority.
+
 ## Join the suite to independent criterion verification
 
 The internal RunnerVerificationStages component selects the unit's exact approved criteria, creates a machine verification subject and pins its original round, suite selection and current committed candidate. An observed nonzero suite exit seals a blocked round before any native verifier host is created. Unknown suite output remains unknown. Only an observed passing suite can proceed to independent read-only criterion inspection and refutation under the existing gate policy.

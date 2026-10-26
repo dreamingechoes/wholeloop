@@ -3,12 +3,15 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from '
 import { join } from 'node:path'
 import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { sourceHash } from '../../../src/delivery/input.js'
 import { RunnerAcceptanceDefinitionStages } from '../../../src/runner/acceptance-definition-stages.js'
 import { RunnerDefinitionStages } from '../../../src/runner/definition-stages.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerPlanStages } from '../../../src/runner/plan-stages.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { StateStore } from '../../../src/state/store.js'
+import { observeContractArtifacts } from '../../../src/verification/contract-artifacts.js'
+import { fixture, git } from '../../support/delivery.js'
 import { runnerArtifactFixture } from '../../support/runner-artifact.js'
 import { runnerDefinitionFixture } from '../../support/runner-definition.js'
 import { runnerPlanFixture } from '../../support/runner-plan.js'
@@ -217,6 +220,51 @@ for (const withinEnvelope of [false, true]) {
     { provenance: 'host-observed', withinEnvelope },
   )
 }
+await fixture(async (f) => {
+  const body = 'Title query returns matching task IDs.\n',
+    ref = 'search-contract.txt'
+  writeFileSync(join(f.root, ref), body)
+  git(f.root, ['add', ref])
+  git(f.root, [
+    'commit',
+    '-m',
+    'test: pin the mechanical contract',
+    '-m',
+    'Observe actual declared artifact bytes without inferring QA.',
+  ])
+  for (const repo of f.plan.repositories) repo.base = git(f.root, ['rev-parse', 'HEAD'])
+  const declared = f.plan.work.find((work) => work.id === 'contract')?.produces[0]
+  assert.ok(declared)
+  declared.sha256 = sourceHash(body)
+  f.planning.preparePlan(f.plan)
+  const workspace = join(f.dir, 'contract-topic')
+  git(f.root, ['worktree', 'add', '-b', 'wl/contract-observation', workspace, 'HEAD'])
+  const observed = observeContractArtifacts(f.plan, 'contract', workspace, { 'search-api': ref })
+  assert.equal(observed.status, 'matched')
+  assert.equal(observed.contracts[0]?.sha256, sourceHash(body))
+  assert.equal(observed.qa, 'not-established')
+  assert.equal(observed.humanApproval, 'not-recorded')
+  assert.deepEqual(f.plan.work.find((work) => work.id === 'contract')?.criteria, [])
+  writeFileSync(
+    join(workspace, ref),
+    'A changed committed contract is not the declared artifact.\n',
+  )
+  git(workspace, ['add', ref])
+  git(workspace, [
+    'commit',
+    '-m',
+    'test: change the observed contract',
+    '-m',
+    'Retain exact approved bytes rather than trusting a clean candidate alone.',
+  ])
+  assert.throws(
+    () => observeContractArtifacts(f.plan, 'contract', workspace, { 'search-api': ref }),
+    /contract-checksum-mismatch/,
+  )
+  checks.push(
+    'actual external worktree contract bytes match exact declared identities while a changed clean commit refuses without invented QA or product criteria',
+  )
+})
 const report = {
   status: 'passed',
   provenance: 'fixture',

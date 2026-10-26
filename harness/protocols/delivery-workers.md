@@ -31,4 +31,6 @@ These are protocol and host obligations. Versioned schemas and role tools alone 
 
 ⛔ `delivery-runner-artifact-production`: produce definitions, builder plans and acceptance cases under original read/report authority and owned planner budgets; require exact captured bytes, pinned scopes and current candidates. Preserve existing decision profiles and original receipts. Proposals and metadata repair never grant approval, behavioral acceptance or replay permission; pin acceptance definitions before any builder admission.
 
+⛔ `delivery-contract-artifact-identity`: bind contract-only deliverables to exact declared IDs/revisions/checksums and bounded regular committed bytes in the declared Git database and base ancestry. Refuse changed candidates, decoys and symlinks. Mechanical identity establishes no QA, invented product criteria or human approval; independent suites and judgment remain required.
+
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.
