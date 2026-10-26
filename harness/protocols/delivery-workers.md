@@ -19,4 +19,6 @@ Only the controller stamps process/backend identity, exit, cancellation, output 
 
 These are protocol and host obligations. Versioned schemas and role tools alone do not prove actual native permissions or filesystem containment; those capabilities require their own observed backend/client checks.
 
+⛔ `delivery-runner-git-stages`: bind runner Git stages to their original private domain resources before native input; preserve live issued-operation fencing separately from future dispatch and never replay missing/unknown results or promote Git success into semantic QA.
+
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.

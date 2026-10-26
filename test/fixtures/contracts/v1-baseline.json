@@ -398,7 +398,8 @@
     "schema:wholeloop/delivery-commit-request@1": "69f6574f50a63a05d674a3a8b5e5056c61590f39682837896eb2b2d1c5c57c83",
     "schema:wholeloop/delivery-commit-record@1": "61f5f8a1fd0d40f4e9434326ff4bcca010db0e56f1bc2ae73492c2ee30a1f908",
     "schema:wholeloop/delivery-commit-receipt@1": "754fc3295b9eefcc11c11766867eb6254aeed3d5ad7931f50570f44f017dd94b",
-    "schema:wholeloop/delivery-commit-status@1": "ef075374765c97c41cfe01744f4513b9b538cf2e5ab8c6281bee5a5efe7f40da"
+    "schema:wholeloop/delivery-commit-status@1": "ef075374765c97c41cfe01744f4513b9b538cf2e5ab8c6281bee5a5efe7f40da",
+    "schema:wholeloop/delivery-runner-git-binding@1": "5cf3769a18a668dc537c4cd0eac70fc693917dbcb3d3c45064601a4ed065f60e"
   },
   "commands": [
     {

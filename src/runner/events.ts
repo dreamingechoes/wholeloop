@@ -227,7 +227,7 @@ export function reduceRunner(
       !payload.runtime ||
       prior?.status !== 'prepared' ||
       prior.invocation !== payload.invocation ||
-      !['queued', 'running'].includes(state.state)
+      !['queued', 'running', 'waiting-external'].includes(state.state)
     )
       throw new DeliveryJournalError('runner-stage-start-identity')
     prior.runtime = payload.runtime

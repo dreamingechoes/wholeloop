@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-runner-git-binding@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "request", "plan", "invocation", "resource", "stage", "unit", "kind"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-runner-git-binding@1"
+    },
+    "request": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "invocation": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "resource": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "stage": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["workspace", "commit"]
+    }
+  }
+}

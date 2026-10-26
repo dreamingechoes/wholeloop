@@ -12,6 +12,12 @@ import { IntegrationError } from './contracts.js'
 import outcomeSchema from './schemas/git-process-outcome-v1.json' with { type: 'json' }
 
 const WRAPPER = operationWrapper('wholeloop/integration-operation-outcome@1')
+export interface AssemblyGitControl {
+  deadline: string
+  signal: AbortSignal
+  current(): boolean
+  started?(runtime: { operation: string; pid: number }): void
+}
 export function assemblyGitEnvironment(home: string): NodeJS.ProcessEnv {
   return {
     PATH: process.env.PATH,
@@ -68,12 +74,62 @@ export class AssemblyGitProcess {
       ? (JSON.parse(readSourceFile(this.files.root, ref, 65536)) as Record<string, unknown>)
       : undefined
   }
+  /** A fresh controller writes only the original private nonce; it never signals a remembered PID. */
+  requestCancellation(): boolean {
+    const intent = this.read('intent')
+    if (!intent) return false
+    if (
+      typeof intent.nonce !== 'string' ||
+      !/^[a-f0-9-]{36}$/.test(intent.nonce) ||
+      typeof intent.operation !== 'string' ||
+      !/^assembly-operation-[a-f0-9-]{36}$/.test(intent.operation)
+    )
+      throw new IntegrationError('assembly-owner-unavailable')
+    this.files.atomic(`${this.path}/cancel.json`, JSON.stringify({ nonce: intent.nonce }))
+    return true
+  }
   async invoke(
     cwd: string,
     args: string[],
     deadline: string,
     signal: AbortSignal,
     current: () => void,
+    control?: AssemblyGitControl,
+  ) {
+    if (!control) return this.dispatch(cwd, args, deadline, signal, current)
+    const until = Math.min(Date.parse(deadline), Date.parse(control.deadline))
+    if (!Number.isFinite(until) || until <= Date.now() || !control.current())
+      throw new IntegrationError('assembly-controller-fenced')
+    const abort = new AbortController(),
+      cancel = () => abort.abort(),
+      check = () => {
+        current()
+        if (!control.current()) throw new IntegrationError('assembly-controller-fenced')
+      }
+    signal.addEventListener('abort', cancel, { once: true })
+    control.signal.addEventListener('abort', cancel, { once: true })
+    if (signal.aborted || control.signal.aborted) abort.abort()
+    try {
+      return await this.dispatch(
+        cwd,
+        args,
+        new Date(until).toISOString(),
+        abort.signal,
+        check,
+        control.started,
+      )
+    } finally {
+      signal.removeEventListener('abort', cancel)
+      control.signal.removeEventListener('abort', cancel)
+    }
+  }
+  private async dispatch(
+    cwd: string,
+    args: string[],
+    deadline: string,
+    signal: AbortSignal,
+    current: () => void,
+    started?: AssemblyGitControl['started'],
   ) {
     if (this.read('intent')) throw new IntegrationError('assembly-operation-already-dispatched')
     const nonce = randomUUID(),
@@ -119,6 +175,8 @@ export class AssemblyGitProcess {
         started: (pid) => {
           current()
           this.files.atomic(`${this.path}/started.json`, JSON.stringify({ pid, nonce, operation }))
+          started?.({ pid, operation })
+          if (started) current()
         },
       })
     } finally {

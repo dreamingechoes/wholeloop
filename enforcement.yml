@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-git-stages
+    enforcers: [src/runner/git-stages.ts#RunnerGitStages, src/runner/store.ts#RunnerStore, src/runner/events.ts#reduceRunner, src/runner/engine.ts#DeliveryRunner, src/integration/git-process.ts#AssemblyGitProcess, test/unit/runner/git-stages.test.ts, test/unit/integration/git-process.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-candidate-commits
     enforcers: [src/delivery/candidate-files.ts#candidateFiles, src/worktrees/git.ts#gitBytes, src/delivery/commits.ts#DeliveryCommits, src/delivery/commit-state.ts#validateWorkspaceCommit, src/delivery/commit-state.ts#currentWorkspaceCommit, src/delivery/workspaces.ts#DeliveryWorkspaces, test/unit/delivery/candidate-files.test.ts, test/unit/delivery/commits.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-topic-workspaces

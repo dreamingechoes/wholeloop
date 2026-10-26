@@ -4,7 +4,11 @@ import { contractDigest } from '../contracts/compatibility.js'
 import { ENVIRONMENT_SNAPSHOT_LIMITS } from '../environment/candidates.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { checkCommit } from '../git/commit.js'
-import { AssemblyGitProcess, assemblyGitArguments } from '../integration/git-process.js'
+import {
+  type AssemblyGitControl,
+  AssemblyGitProcess,
+  assemblyGitArguments,
+} from '../integration/git-process.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { git, registeredWorktrees, repository } from '../worktrees/git.js'
 import { candidateFiles, candidateIndex } from './candidate-files.js'
@@ -37,8 +41,11 @@ const ACTIVE = new Set(['queued', 'running', 'waiting-external'])
 export class DeliveryCommits {
   readonly workspaces: DeliveryWorkspaces
   readonly effects: DeliveryEffects
-  constructor(store?: string) {
-    this.workspaces = new DeliveryWorkspaces(store)
+  constructor(
+    store?: string,
+    readonly control?: AssemblyGitControl,
+  ) {
+    this.workspaces = new DeliveryWorkspaces(store, undefined, control)
     this.effects = this.workspaces.effects
   }
   private get files() {
@@ -234,6 +241,8 @@ export class DeliveryCommits {
         )
     return {
       eligible: () => {
+        if (this.control && !this.control.current())
+          throw new CandidateCommitError('controller-fenced')
         this.before(record, step)
         return {
           allowed: true,
@@ -262,6 +271,7 @@ export class DeliveryCommits {
             )
               throw new CandidateCommitError('invocation-fenced')
           },
+          this.control,
         )
       },
       observe: async (intent, invocation) => {
@@ -423,6 +433,17 @@ export class DeliveryCommits {
     )
       this.publish(record)
     return this.inspect(digest)
+  }
+  requestCancellation(digest: string) {
+    const record = this.get(digest)
+    for (const step of ['stage', 'commit'] as const) {
+      const effect = this.find(record, step)
+      if (effect?.invocation && ['pending', 'unknown'].includes(effect.status))
+        new AssemblyGitProcess(
+          this.files,
+          `delivery/commit-operations/${record.digest}/${effect.invocation}`,
+        ).requestCancellation()
+    }
   }
   inspect(digest: string) {
     const record = this.get(digest),

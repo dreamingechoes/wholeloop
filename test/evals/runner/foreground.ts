@@ -13,6 +13,7 @@ import { authorization, fixture, git } from '../../support/delivery.js'
 import { deliveryCommitFixture, prepareFixtureCommit } from '../../support/delivery-commits.js'
 import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
+import { runnerGitRouteFixture } from '../../support/runner-git.js'
 
 const core = fileURLToPath(import.meta.url)
 if (process.argv[2] === FOREGROUND_ARGUMENT) {
@@ -204,6 +205,19 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
       'actual owned staging/commit and private head recovery retain the personal branch and grant no QA authority',
     )
   })
+  const gitRoute = await runnerGitRouteFixture()
+  assert.equal(gitRoute.state, 'paused')
+  assert.equal(gitRoute.outcome, null)
+  assert.equal(gitRoute.effects, 7)
+  const actualGit = gitRoute.stages.filter((stage) => /^(workspace|commit):/.test(stage.id))
+  assert.equal(actualGit.length, 4)
+  assert.ok(
+    actualGit.every((stage) => stage.status === 'passed' && stage.provenance === 'host-observed'),
+  )
+  assert.ok(gitRoute.stages.every((stage) => stage.status === 'passed'))
+  checks.push(
+    'the actual runner drives both owned Git units and committed predecessors while fixture-only semantic stages cannot establish an endpoint',
+  )
   const report = {
     status: 'passed',
     provenance: 'fixture',

@@ -250,6 +250,20 @@ export class RunnerStore {
       return false
     }
   }
+  /** An already issued domain effect waits for observation; it does not admit another stage. */
+  live(lease: RunnerLease, observeBases = true): boolean {
+    try {
+      const request = this.get(lease.request)
+      return (
+        this.current(lease, false, observeBases) &&
+        ['queued', 'running', 'waiting-external'].includes(
+          this.lifecycle.journal.get(request.run).state,
+        )
+      )
+    } catch {
+      return false
+    }
+  }
   append(
     lease: RunnerLease,
     value: Omit<RunnerPayload, 'schema' | 'basis' | 'request' | 'controller' | 'generation'>,
@@ -259,7 +273,10 @@ export class RunnerStore {
     this.lifecycle.journal.transaction(ACTOR, (view, append) => {
       const state = view().get(request.run)
       if (!state) throw new DeliveryRunnerError('unknown-runner')
-      if (['dispatched', 'started'].includes(value.action) && !this.current(lease))
+      if (
+        (value.action === 'dispatched' && !this.current(lease)) ||
+        (value.action === 'started' && !this.live(lease))
+      )
         throw new DeliveryRunnerError('inactive-runner-lease')
       append(request.run, {
         ...value,

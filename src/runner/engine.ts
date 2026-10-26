@@ -109,7 +109,7 @@ export class DeliveryRunner {
     options.signal?.addEventListener('abort', relay, { once: true })
     if (options.signal?.aborted) relay()
     const watch = setInterval(() => {
-      if (!this.store.current(lease, true, false)) abort.abort()
+      if (!this.store.live(lease, false)) abort.abort()
     }, request.pollMs)
     const drive = async () => {
       try {
@@ -216,7 +216,10 @@ export class DeliveryRunner {
               invocation,
               deadline,
               signal: abort.signal,
-              current: () => this.store.current(lease) && this.store.record(digest).basis === basis,
+              // Domain hosts re-observe complete inputs before issue and acceptance.
+              // Their live poll must not spawn Git again every 50 milliseconds.
+              current: () =>
+                this.store.live(lease, false) && this.store.record(digest).basis === basis,
               started: (runtime) =>
                 this.store.append(
                   lease,

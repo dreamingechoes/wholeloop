@@ -118,6 +118,14 @@ Current private committed-head receipts allow later repairs while fencing old re
 
 Run npm run eval:runner for the additional disposable actual Git commit/control. These remain internal controller APIs; fixed full-route and public run/reconcile/endpoint wiring are still P6-10 technical work. See [ADR-0118](../decisions/0118-owned-candidate-commits-and-current-heads.md).
 
+## Join Git operations to their runner stages
+
+The internal RunnerGitStages handler now binds an exact root request/plan/unit/stage/invocation to its private workspace or candidate record before native input. It derives topics, reviewed committed predecessors and the candidate message in the controller. The actual Git wrapper registers before input, inherits the narrower stage deadline and observes both cancellation signals. A waiting-external original effect remains live; it cannot admit another stage. Pause, stop and revoked authority still fence execution.
+
+A fresh handler observes the same resource without another Git invocation, including a known closed workspace while paused. Missing/corrupt bindings stay unknown. Fresh stop requests address only the original private operation marker, even after revocation. Actual applied/closed Git effects establish no application QA, delegated acceptance or endpoint authority. [ADR-0119](../decisions/0119-runner-owned-git-stage-bindings.md) records the distinction.
+
+The model-free runner evaluation additionally drives two actual Git topics and their committed predecessor through the engine. All other semantic stages remain explicitly simulated; the resulting route stays paused without a certified endpoint. Fixed native model admission, full semantic host composition and public run/reconcile commands remain implementation work.
+
 ## Verification of this increment
 
 Complete checks pass 3018 tests in 143 files on macOS arm64 and isolated Debian Linux arm64 with Node 24.22.0. The exact tutorial and inert schema comparison also pass with Linux Node 20.0.0/Git 2.39.5; ShellCheck passes. Actual synthetic process tests exercise parent loss, broken-pipe draining, exact exit codes, private cancellation and preservation of an unrelated process. Twelve dedicated foreground/bootstrap cases also cover atomic claim publication, group/core/nonce binding, one-shot consumption and pre-start parent loss. The standalone evaluation includes three actual foreground controls, separate research-decision and inline-artifact assertions an independent synthetic native decision pair and a separate actual owned-topic Git control on macOS Node 24 and Linux Node 20.0.0, preserving the original run deadline. These observations cover the implemented control/recovery and foreground transport increments, while the complete-route implementation and live client acceptance remain open.

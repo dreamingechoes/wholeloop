@@ -6,6 +6,7 @@ import { ENVIRONMENT_SNAPSHOT_LIMITS } from '../environment/candidates.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { IntegrationError, type IntegrationPart } from '../integration/contracts.js'
 import {
+  type AssemblyGitControl,
   AssemblyGitProcess,
   assemblyGitArguments,
   assertAssemblyGit,
@@ -75,6 +76,7 @@ export class DeliveryWorkspaces {
   constructor(
     store?: string,
     readonly planAccepted?: (grant: string, plan: string) => boolean,
+    readonly control?: AssemblyGitControl,
   ) {
     this.effects = new DeliveryEffects(store)
   }
@@ -353,6 +355,8 @@ export class DeliveryWorkspaces {
     }
     return {
       eligible: () => {
+        if (this.control && !this.control.current())
+          throw new IntegrationError('workspace-controller-fenced')
         check()
         return {
           allowed: true,
@@ -374,6 +378,7 @@ export class DeliveryWorkspaces {
             if (current.grantDigest !== record.grantDigest || !ACTIVE.has(current.state.state))
               throw new IntegrationError('workspace-state-fenced')
           },
+          this.control,
         )
       },
       observe: async (intent, invocation) => {
@@ -503,6 +508,17 @@ export class DeliveryWorkspaces {
         await this.effects.reconcile(record.request.run, effect.intent.id, this.host(record, step))
     }
     return this.inspect(digest)
+  }
+  requestCancellation(digest: string) {
+    const record = this.get(digest)
+    for (const step of this.steps(record)) {
+      const effect = this.find(record, step)
+      if (effect?.invocation && ['pending', 'unknown'].includes(effect.status))
+        new AssemblyGitProcess(
+          this.files,
+          `delivery/workspace-operations/${record.digest}/${effect.invocation}`,
+        ).requestCancellation()
+    }
   }
   inspect(digest: string) {
     const record = this.get(digest),
