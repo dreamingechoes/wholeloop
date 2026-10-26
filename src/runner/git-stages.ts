@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
+import { candidateFiles, candidateIndex } from '../delivery/candidate-files.js'
 import { DeliveryCommits } from '../delivery/commits.js'
 import type { EffectRecord } from '../delivery/effect-events.js'
 import { readSourceFile } from '../delivery/input.js'
@@ -132,6 +133,25 @@ export class RunnerGitStages {
     )
       throw new DeliveryRunnerError('git-stage-workspace-binding')
     return record
+  }
+  candidate(request: Readonly<RunnerRequest>, unit: string) {
+    const allocation = this.workspace(request, unit),
+      binding = this.unitBinding(request, 'commit', unit),
+      committed = this.commits.inspect(binding.resource)
+    if (
+      committed.status !== 'committed' ||
+      !committed.current ||
+      !committed.receipt ||
+      committed.record.request.workspace !== allocation.digest
+    )
+      throw new DeliveryRunnerError('git-stage-candidate-not-current')
+    const files = candidateFiles(allocation.repository.path)
+    if (
+      files.digest !== committed.receipt.files ||
+      candidateIndex(allocation.repository.path) !== committed.receipt.index
+    )
+      throw new DeliveryRunnerError('git-stage-candidate-not-current')
+    return { allocation, receipt: committed.receipt }
   }
   private parts(
     request: Readonly<RunnerRequest>,

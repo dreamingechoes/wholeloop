@@ -14,6 +14,8 @@ import { ReviewSnapshots } from './snapshots.js'
 import { reviewInputs } from './state.js'
 
 export const digest = (value: string) => createHash('sha256').update(value).digest('hex')
+export const DEFAULT_REVIEW_RUBRIC =
+  'Apply each assigned lens to concrete changed behavior, repository idioms and evidence. Report actionable defects with locations; do not repair code or manufacture approval.'
 
 export function reviewRubric(engine: FlowEngine, root: string) {
   const inventory = discover(root, engine.store.files, engine.home)
@@ -27,8 +29,7 @@ export function reviewRubric(engine: FlowEngine, root: string) {
   const selected = binding.selected
   if (!selected || binding.questions.length)
     throw new Error('Resolve review.rubric before reviewing')
-  let content =
-    'Apply each assigned lens to concrete changed behavior, repository idioms and evidence. Report actionable defects with locations; do not repair code or manufacture approval.'
+  let content = DEFAULT_REVIEW_RUBRIC
   if (selected.origin !== 'harness') {
     const base = selected.origin === 'user' ? engine.home : root
     const file = canonicalPath(isAbsolute(selected.ref) ? selected.ref : join(base, selected.ref))

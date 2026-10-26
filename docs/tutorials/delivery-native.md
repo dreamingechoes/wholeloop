@@ -93,6 +93,16 @@ Paused inspection uses the exact original private key and published receipt. If 
 
 This API returns decision evidence, with fixture/stale/rejected/incomplete records still blocked or unknown. It does not produce missing definition/build/acceptance artifacts, perform behavioral QA or establish a delivery endpoint. Those domain hosts and public complete-route execution remain in progress. See [ADR-0122](../decisions/0122-owned-stage-decisions-without-semantic-promotion.md).
 
+## Owned code review and refutation
+
+The internal RunnerNativeGateHost binds each inspection/refutation to its original queue claim, pinned gate unit or recorded finding, current committed bytes/index/HEAD and original stage deadline. It uses the same registered process runner and bounded inline report transport as production. A read-only model cannot execute a suite or add a process-execution claim. Fixture-only observations remain unavailable to the legacy gate instead of becoming a passing review.
+
+The controller selects hash-pinned context after claim, binds any private audience to that actual attempt and validates the complete input pack before copying. The selected review patch/rubric must match the private round and accepted guidance. Each result is parsed only from the original journal-selected native receipt and actual captured report. Missing/corrupt descriptors and unknown owners stay held; retries do not silently buy another worker.
+
+RunnerReviewStages joins the existing round engine to the root stage with original machine-review subjects and budgets. Fresh read-only inspection validates the submitted results/votes, unchanged candidate and closed native scopes, then applies the existing strict-majority/fail-safe rules. It can seal an original lost final journal write while paused without running another model, suite, repair or round. Stop uses original private nonce channels even after revocation. Machine review never fabricates an owner approval or closes an existing product item.
+
+Complete-round model-free controls run separately from ordinary file-worker test budgets, with finite original allowances. Their actual synthetic processes and normalized host observations are controller tests, not live client/account or complete-route certification. Behavioral QA, local repair/integration/acceptance composition and public complete-route execution remain in progress. See [ADR-0123](../decisions/0123-owned-native-review-rounds-and-recovery.md).
+
 ## Authentication and private data
 
 Native clients use a fresh home/configuration environment without inherited controller tokens or runtime injection options. A real observed host may explicitly reference the client's own credential store outside repositories, the worker's roots and controller state. It never copies credentials into generated files, argv or model context, and the untrusted application environment receives none. Fixture runtime observations cannot enable this reference.

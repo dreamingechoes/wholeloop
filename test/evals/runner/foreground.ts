@@ -20,6 +20,7 @@ import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
 import { runnerDecisionFixture } from '../../support/runner-decision.js'
 import { runnerGitRouteFixture } from '../../support/runner-git.js'
+import { runnerReviewFixture } from '../../support/runner-review.js'
 import { runnerWorkerFixture } from '../../support/runner-worker.js'
 
 const core = fileURLToPath(import.meta.url)
@@ -279,6 +280,11 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
       'original independent native decision workers recover through the root stage while fixture-only judgments cannot supply acceptance',
     )
   })
+  const review = await runnerReviewFixture()
+  assert.equal(review.length, 3)
+  checks.push(
+    'full observed review rounds and strict-majority refutation recover a failed final journal write while paused; normalized host evidence stays separate from fixture-only authority and native certification',
+  )
   const report = {
     status: 'passed',
     provenance: 'fixture',
@@ -286,6 +292,7 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
     checks,
     retained,
     nativeDecisions,
+    review,
     nativeAcceptance: 'not-established',
     publication: 'not-performed',
   }

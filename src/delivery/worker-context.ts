@@ -70,6 +70,7 @@ export function workerContextForClaim(
     context: WorkerContext[]
     criteria?: string[]
     findings?: string[]
+    task?: { kind: 'gate-inspection' | 'gate-refutation'; prompt: string }
     planAccepted?: (grant: string, plan: string) => boolean
   },
 ) {
@@ -116,6 +117,13 @@ export function workerContextForClaim(
     const unit = prepared.plan.work.find((item) => item.id === lease.unit)
     if (!unit) throw new WorkerProtocolError('unit')
     const criteria = input.criteria ?? unit.criteria
+    if (
+      input.task &&
+      (input.task.kind === 'gate-refutation'
+        ? lease.role !== 'refuter'
+        : input.task.kind !== 'gate-inspection' || !['reviewer', 'verifier'].includes(lease.role))
+    )
+      throw new WorkerProtocolError('task-role')
     if (criteria.some((id) => !unit.criteria.includes(id)))
       throw new WorkerProtocolError('criteria-scope')
     const context = structuredClone(input.context)
@@ -188,6 +196,7 @@ export function workerContextForClaim(
         unit,
         criteria: prepared.plan.criteria.filter((item) => criteria.includes(item.id)),
         guidance: prepared.plan.guidance,
+        ...(input.task ? { task: input.task } : {}),
       }),
       endpoint: prepared.plan.policy.endpoint,
       intervention: prepared.plan.policy.intervention,

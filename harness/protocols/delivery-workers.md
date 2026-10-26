@@ -27,4 +27,6 @@ These are protocol and host obligations. Versioned schemas and role tools alone 
 
 ⛔ `delivery-runner-decision-stages`: bind exact named stage requirements to original private decision requests before invocation; share owned deadline/registration across planner, challenger and boundary controls. Recover only exact published receipts, preserve unknown/fixture/stale decisions and never treat machine judgment as behavioral QA, human approval or endpoint evidence.
 
+⛔ `delivery-runner-owned-review`: inspect/refute only the exact current committed candidate and pinned round, rubric and recorded findings. Require owned native receipts and actual captured report bytes; keep fixture/late/forged-suite claims blocked and leave unavailable responses uncounted under the unchanged quorum/fail-safe policy. Preserve original review budgets and consumed invocations; metadata recovery never launches models, runs suites, repairs code or records human approval.
+
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.

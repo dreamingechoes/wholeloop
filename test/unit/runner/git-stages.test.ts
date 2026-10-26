@@ -7,6 +7,19 @@ import { git } from '../../support/delivery.js'
 import { runnerGitRouteFixture, runnerGitFixture as setup } from '../../support/runner-git.js'
 
 describe('fixed owned Git stages join the original runner invocation', () => {
+  it('requires actual current committed bytes before exposing a candidate to read-only gates', async () => {
+    await setup(async ({ host, request, dispatch, observe }) => {
+      observe(await host.execute(dispatch('workspace:contract')))
+      const workspace = host.workspace(request, 'contract')
+      writeFileSync(join(workspace.repository.path, 'app.txt'), 'Exact committed candidate.\n')
+      observe(await host.execute(dispatch('commit:contract')))
+      expect(host.candidate(request, 'contract').receipt.head).toBe(
+        git(workspace.repository.path, ['rev-parse', 'HEAD']),
+      )
+      writeFileSync(join(workspace.repository.path, 'app.txt'), 'Uncommitted later edit.\n')
+      expect(() => host.candidate(request, 'contract')).toThrow('git-stage-candidate-not-current')
+    })
+  })
   it('pins a reviewed committed predecessor before preparing the next actual topic', async () => {
     await setup(async ({ host, request, digest, dispatch, observe }) => {
       observe(await host.execute(dispatch('workspace:contract')))

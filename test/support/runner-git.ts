@@ -23,7 +23,7 @@ export async function runnerGitFixture(
     dispatch(id: string): RunnerStageContext
     observe(value: RunnerStageObservation): void
   }) => Promise<void>,
-  options: { singleUnit?: boolean; guidance?: string } = {},
+  options: { singleUnit?: boolean; guidance?: string; stageBudget?: 'plan' } = {},
 ) {
   await fixture(async ({ planning, plan, root }) => {
     if (options.guidance !== undefined) {
@@ -69,7 +69,9 @@ export async function runnerGitFixture(
           plan,
           stage,
           invocation,
-          deadline: new Date(Date.now() + 15000).toISOString(),
+          deadline: new Date(
+            Date.now() + (options.stageBudget === 'plan' ? plan.budgets.attemptMs : 15000),
+          ).toISOString(),
           signal: new AbortController().signal,
           current: () => store.live(lease, false),
           started: (runtime) =>

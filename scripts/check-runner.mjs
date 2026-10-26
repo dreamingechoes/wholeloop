@@ -19,7 +19,7 @@ await build({
   target: 'node20',
   define: { __WL_HARNESS__: JSON.stringify(harnessAssets(root)) },
   banner: {
-    js: "import {createRequire} from 'node:module';const require=createRequire(import.meta.url);",
+    js: "import {createRequire as __wlRunnerRequire} from 'node:module';const require=__wlRunnerRequire(import.meta.url);",
   },
 })
 console.log(`Retained evaluation: ${destination}`)
