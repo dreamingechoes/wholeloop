@@ -94,7 +94,7 @@ export async function runnerGitFixture(
 }
 
 /** Keep the complete two-unit route in the standalone evaluation, outside file-worker time budgets. */
-export async function runnerGitRouteFixture(singleUnit = false) {
+export async function runnerGitRouteFixture(singleUnit = false, stopBeforeQa = false) {
   let observed:
     | {
         state: string
@@ -121,6 +121,21 @@ export async function runnerGitRouteFixture(singleUnit = false) {
         }),
         execute: async (context) => {
           if (['workspace', 'commit'].includes(context.stage.kind)) return host.execute(context)
+          // Ordinary unit coverage stops at the Git boundary. The separate
+          // evaluation still executes the entire two-unit semantic fixture route.
+          if (stopBeforeQa && context.stage.kind === 'verification')
+            return {
+              schema: 'wholeloop/delivery-runner-stage-observation@1',
+              request: digest,
+              plan: request.plan,
+              stage: context.stage.id,
+              invocation: context.invocation,
+              status: 'blocked',
+              invocationState: 'not-started',
+              evidence: 'f'.repeat(64),
+              provenance: 'fixture',
+              reason: 'This Git-boundary fixture supplies no behavioral QA host.',
+            }
           context.started({
             backend: 'fixture',
             instance: context.invocation,

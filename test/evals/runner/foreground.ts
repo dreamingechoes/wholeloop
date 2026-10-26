@@ -7,6 +7,7 @@ import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { decodeWorkerProposal } from '../../../src/delivery/worker-proposal.js'
 import { createWorkerAssignment } from '../../../src/delivery/worker-protocol.js'
 import { RunnerDecisionStages } from '../../../src/runner/decision-stages.js'
+import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
 import { OwnedForegroundRunner, receiveOwnedForeground } from '../../../src/runner/foreground.js'
 import { FOREGROUND_ARGUMENT } from '../../../src/runner/foreground-owner.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
@@ -19,6 +20,7 @@ import { deliveryCommitFixture, prepareFixtureCommit } from '../../support/deliv
 import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
 import { runnerDecisionFixture } from '../../support/runner-decision.js'
+import { runnerEnvironmentFixture } from '../../support/runner-environment.js'
 import { runnerGitRouteFixture } from '../../support/runner-git.js'
 import { runnerReviewFixture } from '../../support/runner-review.js'
 import { runnerWorkerFixture } from '../../support/runner-worker.js'
@@ -284,6 +286,34 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
   assert.equal(review.length, 3)
   checks.push(
     'full observed review rounds and strict-majority refutation recover a failed final journal write while paused; normalized host evidence stays separate from fixture-only authority and native certification',
+  )
+  await runnerEnvironmentFixture(
+    async ({ store, scope, context, environment, operations, driver }) => {
+      const args = ['container', 'create', 'fixture'],
+        registration = operations.begin(args, 5000)
+      await scope.run(context, environment, driver, async (selected) => {
+        assert.equal((await selected.call(['info'])).status, 'succeeded')
+        const result = await selected.call(args, { registration })
+        operations.close(registration, result)
+        assert.equal(result.status, 'succeeded')
+      })
+      const observed = scope.inspect()
+      assert.equal(observed.invocationState, 'stopped')
+      assert.equal(observed.operations.length, 1)
+      assert.equal(observed.reads?.length, 1)
+      store.lifecycle.transition(context.request.run, {
+        to: 'paused',
+        reason: 'Recover exact application operation ownership without continuing.',
+      })
+      assert.deepEqual(
+        new RunnerEnvironmentScope(new RunnerStore(store.files.root), context.invocation).inspect(),
+        observed,
+      )
+      assert.equal(operations.list().length, 1)
+      checks.push(
+        'actual synthetic Docker reads and effect wrappers retain separate original process identities and paused recovery; ownership grants no behavioral acceptance',
+      )
+    },
   )
   const report = {
     status: 'passed',

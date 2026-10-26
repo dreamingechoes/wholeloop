@@ -81,6 +81,12 @@ Fixed controller hosts use executeCase to capture actual observations under curr
 
 An interrupted case retains its intent and invocation observation. Persistence spends the original deadline; if it expires before dispatch, the host is not started. A dispatched invoker stays unknown until actual shutdown is established. Repeating that key cannot dispatch it again, and a second request cannot bypass unresolved work. Recovery must establish actual shutdown rather than infer it from age. Later failed attempts take precedence even if timestamps are equal.
 
+## Owned application operations inside a runner stage
+
+The internal RunnerEnvironmentScope joins the existing behavioral hosts to an original verification/integration/acceptance invocation. It pins the private environment/grant and candidate vector, claims each effect once, and preserves the original wrapper's actual process identity. Inert Docker queries receive separate durable owners; a finished test client cannot hide another still-running query.
+
+Pause/recovery observes original metadata without rerunning a test or resetting its allowance. Stop addresses only the original private nonce channels, even after revocation; unrelated environment operations remain untouched. Missing descriptors, damaged claims and unobserved clients stay unknown. Synthetic process controls test these boundaries without certifying a real daemon, application or account. Full domain-stage/public-route composition remains in progress. See [ADR-0124](../decisions/0124-owned-application-operation-stage-boundaries.md).
+
 ## Private artifacts and sealed reports
 
 Artifact capture requires an active private grant with report.write and remaining artifact budget. Use acceptance-artifact with --run, --file, --root and --store; --media-type is optional and defaults to application/octet-stream. It reads bounded regular bytes without following a symlink escape, rejects recognizable credential text before storage, and verifies content-addressed chunks on reads. The per-object maximum is twenty MiB; the run retains its configured total budget, two hundred MiB by default. Empty bytes remain distinct from a missing artifact.

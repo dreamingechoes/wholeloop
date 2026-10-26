@@ -85,14 +85,15 @@ describe('fixed owned Git stages join the original runner invocation', () => {
     })
   })
   it('keeps an issued real Git unit live through the engine without accepting fixture semantics', async () => {
-    const result = await runnerGitRouteFixture(true)
+    const result = await runnerGitRouteFixture(true, true)
     expect(result).toMatchObject({ state: 'paused', outcome: null, effects: 3 })
     const stages = result.stages.filter((stage) => /^(workspace|commit):/.test(stage.id))
     expect(stages).toHaveLength(2)
     expect(
       stages.every((stage) => stage.status === 'passed' && stage.provenance === 'host-observed'),
     ).toBe(true)
-    expect(result.stages.every((stage) => stage.status === 'passed')).toBe(true)
+    expect(result.stages.slice(0, -1).every((stage) => stage.status === 'passed')).toBe(true)
+    expect(result.stages.at(-1)).toMatchObject({ id: 'verification:search', status: 'blocked' })
   })
   it('executes actual workspace and candidate stages once, then observes them from a fresh controller', async () => {
     await setup(async ({ store, host, request, root, digest, dispatch, observe }) => {

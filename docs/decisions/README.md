@@ -134,6 +134,7 @@
 | [0121](./0121-owned-worker-stage-bindings-and-recovery.md) | Owned worker stage bindings and recovery | Accepted | 2026-10-26 |
 | [0122](./0122-owned-stage-decisions-without-semantic-promotion.md) | Owned stage decisions without semantic promotion | Accepted | 2026-10-26 |
 | [0123](./0123-owned-native-review-rounds-and-recovery.md) | Owned native review rounds and recovery | Accepted | 2026-10-26 |
+| [0124](./0124-owned-application-operation-stage-boundaries.md) | Owned application operation stage boundaries | Accepted | 2026-10-26 |
 
 ## Lifecycle
 
