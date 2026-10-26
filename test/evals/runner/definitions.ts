@@ -1,10 +1,14 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { RunnerAcceptanceDefinitionStages } from '../../../src/runner/acceptance-definition-stages.js'
 import { RunnerDefinitionStages } from '../../../src/runner/definition-stages.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerStore } from '../../../src/runner/store.js'
+import { StateStore } from '../../../src/state/store.js'
+import { runnerArtifactFixture } from '../../support/runner-artifact.js'
 import { runnerDefinitionFixture } from '../../support/runner-definition.js'
 
 const destination = process.argv[2]
@@ -127,6 +131,50 @@ for (const rejected of [false, true]) {
     },
   )
 }
+await runnerArtifactFixture(async (f) => {
+  const stage = new RunnerAcceptanceDefinitionStages(f.store, {
+      identity: f.context.request.host,
+      native: (process) => ({ ...f.native, process }),
+      context: () => f.input,
+    }),
+    result = await stage.execute(f.context)
+  assert.equal(result.status, 'passed', JSON.stringify(result))
+  assert.equal(result.invocationState, 'stopped')
+  assert.deepEqual(new StateStore(f.store.files.root).events(), [])
+  const record = f.store.stage(contractDigest(f.context.request), f.context.stage.id)
+  assert.ok(record)
+  const produced = await stage.artifacts.inspect(f.context.request, record)
+  assert.ok(produced.prepared)
+  const acceptance = new DeliveryAcceptance(f.store.files.root)
+  for (const test of acceptance.get(produced.prepared.digest).plan.cases)
+    assert.deepEqual(acceptance.observedResults(produced.prepared.digest, test.id), [])
+  assert.equal(
+    existsSync(f.store.files.path(`delivery/acceptance-human/${produced.prepared.digest}`)),
+    false,
+  )
+  const index = f.store.files.path(`delivery/acceptance-index/${produced.prepared.digest}.json`)
+  renameSync(index, `${index}.retained`)
+  f.store.lifecycle.transition(f.context.request.run, {
+    to: 'paused',
+    reason: 'Recover original test definitions without executing acceptance.',
+  })
+  const fresh = new RunnerAcceptanceDefinitionStages(new RunnerStore(f.store.files.root), {
+    identity: f.context.request.host,
+    native: () => {
+      throw new Error('Recovery cannot launch a test-definition producer')
+    },
+    context: () => {
+      throw new Error('Recovery cannot select test-definition context')
+    },
+  })
+  assert.deepEqual(await fresh.inspect(f.context.request, record), result)
+  assert.equal(existsSync(index), true)
+  assert.equal(new RunnerNativeScope(f.store.files, f.context.invocation).calls().length, 1)
+  assert.equal(f.store.lifecycle.journal.get(f.context.request.run).state, 'paused')
+  checks.push(
+    'observed pre-builder acceptance definitions recover lost pin metadata without tests, human approval or worker replay',
+  )
+}, 'host-observed')
 const report = {
   status: 'passed',
   provenance: 'fixture',

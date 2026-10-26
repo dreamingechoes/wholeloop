@@ -54,7 +54,7 @@ rules:
   - id: delivery-behavior-execution
     enforcers: [src/acceptance/docker-behavior.ts#DockerBehaviorHost, src/acceptance/docker-runtime.ts#DockerBehaviorRuntime, src/acceptance/http.ts#observeHttp, src/acceptance/assertions.ts#observeAssertion, test/unit/acceptance/behavior.test.ts, test/unit/acceptance/http.test.ts, test/evals/behavior/run.ts]
   - id: delivery-acceptance-coverage
-    enforcers: [src/acceptance/contracts.ts#validateAcceptancePlan, src/acceptance/store.ts#DeliveryAcceptance, test/unit/acceptance/acceptance.test.ts]
+    enforcers: [src/runner/acceptance-definition-stages.ts#RunnerAcceptanceDefinitionStages, test/unit/runner/acceptance-definition-stages.test.ts, test/evals/runner/definitions.ts, src/acceptance/contracts.ts#validateAcceptancePlan, src/acceptance/store.ts#DeliveryAcceptance, test/unit/acceptance/acceptance.test.ts]
   - id: delivery-acceptance-observation
     enforcers: [src/acceptance/store.ts#DeliveryAcceptance, src/acceptance/boundary.ts#DockerAcceptanceBoundary, test/unit/acceptance/acceptance.test.ts, test/unit/acceptance/cli.test.ts]
   - id: delivery-acceptance-artifacts

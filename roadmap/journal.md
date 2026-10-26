@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — owned pre-builder test definitions
+
+- Connect exact observed artifact production to the root acceptance-definition stage. Require original producer ownership, closed invokers and pinned complete cases bound to the exact run/revision/plan/source. Preserve existing ownership/coverage and pre-builder admission checks. Recover original lost pin metadata while paused without replay; readiness supplies no execution, acceptance or human approval. Add ADR-0130, coverage enforcers and component documentation. P6-10 stays open; counts remain 59/88 complete.
+- Preserve the initial type failure and 23-pass/one-fail run: the new test incorrectly asks the delivery projection for legacy agreements. Replace that nonexistent-field assertion with reads of the actual legacy state and acceptance result/human stores. The corrected three-file regression passes 442 cases in 33.92 seconds. All three complete definition controls pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5 with the exact bundle 46608c10fff0688eda089ee57bfc7e3557b06b8e5f3572033da8703aab9e38a6. Lint947/types/build/docs359/harness150/Markdown358/Mermaid36 and offline package checks pass. Full repository-suite results remain those of the earlier criterion-verification increment. No existing test deadline increases; no real model/account, publication, project merge or complete-route acceptance is claimed.
+
+---
+
 ## 2026-10-26 · P6-10 continuing — approved definition revisions
 
 - Join original definition production to every route-required independent delegated decision. Require explicit unattended envelope authority before production; exact-plan grants cannot derive another revision. Bind each decision to the exact original proposal and invokers. Reserve the next immutable revision only after all decisions pass; preserve original root adoption, subsequent delivery-plan approval and global budgets. Rejected, incomplete and fixture proposals leave the revision unreserved. Add ADR-0129, enforcer, component docs and a separate finite model-free evaluation. P6-10 remains open and counts stay 59/88 complete.
