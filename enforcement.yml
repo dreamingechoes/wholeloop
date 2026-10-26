@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-definition-revision
+    enforcers: [src/runner/definition-stages.ts#RunnerDefinitionStages, src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/store.ts#adopt, test/unit/runner/definition-stages.test.ts, test/evals/runner/definitions.ts]
   - id: delivery-runner-builder-planning
     enforcers: [src/runner/builder-planning-stages.ts#RunnerBuilderPlanningStages, src/runner/artifact-stages.ts#RunnerArtifactStages, src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/native-stage.ts#RunnerNativeStage, src/decisions/native-host.ts#NativeDelegatedDecisionHost, test/unit/runner/builder-planning-stages.test.ts, test/unit/runner/artifact-stages.test.ts, test/unit/runner/decision-stages.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-criterion-verification

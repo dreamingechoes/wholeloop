@@ -14,7 +14,7 @@ import { RunnerGitStages } from '../../src/runner/git-stages.js'
 import { runnerRoute } from '../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../src/runner/store.js'
 import type { StoreFiles } from '../../src/state/files.js'
-import { authorization, fixture, git } from './delivery.js'
+import { authorization, envelope, fixture, git } from './delivery.js'
 
 export async function runnerGitFixture(
   operation: (context: {
@@ -25,11 +25,13 @@ export async function runnerGitFixture(
     digest: string
     dispatch(id: string): RunnerStageContext
     observe(value: RunnerStageObservation): void
+    adopt(proposal: { revision: number; digest: string }): void
   }) => Promise<void>,
   options: {
     singleUnit?: boolean
     guidance?: string
     stageBudget?: 'plan'
+    withinEnvelope?: boolean
     definition?: boolean
     seed?: Record<string, string>
     retain?: boolean
@@ -70,10 +72,14 @@ export async function runnerGitFixture(
         plan.milestones = plan.milestones.map((milestone) => ({ ...milestone, work: ['search'] }))
       }
       options.configure?.(plan, planning.sources.files)
+      if (options.withinEnvelope) plan.envelope = planning.prepareEnvelope(envelope(plan)).digest
       const prepared = planning.preparePlan(plan),
         store = new RunnerStore(planning.sources.files.root),
         grant = store.lifecycle.authority.authorize({
           ...authorization(plan, prepared.digest),
+          ...(options.withinEnvelope
+            ? { basis: { kind: 'envelope' as const, digest: plan.envelope ?? '' } }
+            : {}),
           decisions: options.decisions ?? [],
         })
       store.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
@@ -95,6 +101,9 @@ export async function runnerGitFixture(
         root,
         digest,
         host: new RunnerGitStages(store),
+        adopt: (proposal) => {
+          store.adopt(lease, proposal)
+        },
         dispatch(id) {
           const stage = runnerRoute(plan).find((item) => item.id === id)
           if (!stage) throw new Error('Fixture needs an actual route stage')

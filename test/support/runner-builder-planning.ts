@@ -21,6 +21,9 @@ export async function runnerBuilderPlanningFixture(
   ) => Promise<void>,
   settings: {
     provenance?: 'fixture' | 'host-observed'
+    stage?: 'build-plan' | 'definition'
+    withinEnvelope?: boolean
+    mode?: 'valid' | 'incomplete' | 'decision-reject'
     delegate?: boolean
     stageBudget?: 'plan'
   } = {},
@@ -95,7 +98,9 @@ export async function runnerBuilderPlanningFixture(
     },
     provenance,
     {
-      stage: 'build-plan',
+      stage: settings.stage ?? 'build-plan',
+      ...(settings.withinEnvelope ? { withinEnvelope: true } : {}),
+      ...(settings.mode ? { mode: settings.mode } : {}),
       delegate: settings.delegate ?? true,
       ...(settings.stageBudget ? { stageBudget: settings.stageBudget } : {}),
     },

@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — approved definition revisions
+
+- Join original definition production to every route-required independent delegated decision. Require explicit unattended envelope authority before production; exact-plan grants cannot derive another revision. Bind each decision to the exact original proposal and invokers. Reserve the next immutable revision only after all decisions pass; preserve original root adoption, subsequent delivery-plan approval and global budgets. Rejected, incomplete and fixture proposals leave the revision unreserved. Add ADR-0129, enforcer, component docs and a separate finite model-free evaluation. P6-10 remains open and counts stay 59/88 complete.
+- The initial definition/builder/decision regression passes 31 cases in 36.78 seconds. The separate model-free evaluation passes both complete seven-call scenarios on macOS: interrupted reservation recovery and same-grant/deadline adoption, plus independent rejection retaining the next revision. Preserve the initial Markdown index row-column failure; correct the new ADR row to the existing four-column format. Final seven-file definition/builder/decision/artifact/store/frozen-contract regressions pass 482 cases in 69.54 seconds. Both complete model-free scenarios pass on Linux Node 20.0.0/Git 2.39.5 using the exact macOS-tested bundle a83c19c38507885de0906ccf488cf53c040fd2a025a17bce7aaf24fcaab49932. Lint945/types/build/docs358/harness150/Markdown357/Mermaid36 and offline package checks pass. No existing test deadline is extended and no test is omitted; complete repository checks remain those of the earlier criterion-verification increment. No real model/account, publication, project merge or complete-route acceptance is claimed.
+
+---
+
 ## 2026-10-26 · P6-10 continuing — owned builder-plan decisions
 
 - Join the exact observed builder-plan producer to its independent delegated judgment and challenge. Bind only producer-observed managed invokers, captured bytes, original root deadline and proposal; unrelated closed calls and old descriptors cannot qualify. Preserve private v1 readers and require explicit v2 ownership for composition. Keep human approvals, implementation and QA separate; P6-10 remains open and counts stay 59/88 complete.

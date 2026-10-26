@@ -126,6 +126,14 @@ A fresh handler observes the same resource without another Git invocation, inclu
 
 The model-free runner evaluation additionally drives two actual Git topics and their committed predecessor through the engine. All other semantic stages remain explicitly simulated; the resulting route stays paused without a certified endpoint. Fixed native model admission, full semantic host composition and public run/reconcile commands remain implementation work.
 
+## Approve a definition before reserving its revision
+
+The internal RunnerDefinitionStages component joins original definition production to every delegated framing/specification/scopes decision. It requires an explicitly unattended policy and envelope authority before starting production. An exact-plan grant cannot derive another revision. An incomplete proposal cannot start judgment, and fixture-only output cannot approve or reserve a revision.
+
+Every decision cites the same captured proposal and retains its original producer invokers, deadline and next revision. Only supported, current independent decisions allow the component to prepare that exact immutable revision. The root engine then adopts its locator through the existing envelope checks and retains the original grant and global deadline. The next plan stage still needs its own delivery-plan decision. No human approval is written. See [ADR-0129](../decisions/0129-approved-definition-revision-reservation.md).
+
+Run npm run eval:runner-definitions from the source checkout for the separate finite model-free evaluation. It launches synthetic native processes in disposable Git/store fixtures, exercises all three decisions and their challenges, interrupts revision reservation and recovers while paused without replay. It also checks that rejection leaves the next immutable revision available for correction. No account, model or remote service is required; normalized fixture observations do not establish real containment or complete-route acceptance. The final directed regression passes 482 cases; both complete definition scenarios pass on macOS Node 24 and Linux Node 20.0.0. Public complete-route execution remains under implementation.
+
 ## Approve the owned builder plan before implementation
 
 The internal RunnerBuilderPlanningStages component joins read-only proposal production with its independent delegated approve-build-plan decision. It requires an explicit none policy and the original grant's delegation. Missing delegation or supervised use returns a limitation before starting a producer; it never writes a human approval. Fixture-only production cannot buy a judgment or a builder launch.
