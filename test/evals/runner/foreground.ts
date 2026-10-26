@@ -2,9 +2,11 @@ import assert from 'node:assert/strict'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { decodeWorkerProposal } from '../../../src/delivery/worker-proposal.js'
 import { createWorkerAssignment } from '../../../src/delivery/worker-protocol.js'
+import { RunnerDecisionStages } from '../../../src/runner/decision-stages.js'
 import { OwnedForegroundRunner, receiveOwnedForeground } from '../../../src/runner/foreground.js'
 import { FOREGROUND_ARGUMENT } from '../../../src/runner/foreground-owner.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
@@ -16,6 +18,7 @@ import { authorization, fixture, git } from '../../support/delivery.js'
 import { deliveryCommitFixture, prepareFixtureCommit } from '../../support/delivery-commits.js'
 import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
+import { runnerDecisionFixture } from '../../support/runner-decision.js'
 import { runnerGitRouteFixture } from '../../support/runner-git.js'
 import { runnerWorkerFixture } from '../../support/runner-worker.js'
 
@@ -252,6 +255,30 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
       )
     },
   )
+  await runnerDecisionFixture(async ({ stages, store, context, decision, host }) => {
+    const result = await stages.execute(context, [decision], host),
+      stage = store.stage(contractDigest(context.request), context.stage.id)
+    assert.ok(stage)
+    assert.equal(result.status, 'blocked')
+    assert.equal(result.provenance, 'fixture')
+    assert.equal(result.invocationState, 'stopped')
+    assert.equal(result.decisions.length, 1)
+    assert.equal(new RunnerNativeScope(store.files, context.invocation).calls().length, 2)
+    store.lifecycle.transition(context.request.run, {
+      to: 'paused',
+      reason: 'Recover original independent decision workers without continuing.',
+    })
+    const fresh = new RunnerDecisionStages(
+      new RunnerStore(store.files.root, store.now),
+      context.request.host,
+    )
+    assert.deepEqual(await fresh.inspect(context.request, stage), result)
+    assert.equal(result.gates, 'unchanged')
+    assert.equal(result.humanApproval, 'not-recorded')
+    checks.push(
+      'original independent native decision workers recover through the root stage while fixture-only judgments cannot supply acceptance',
+    )
+  })
   const report = {
     status: 'passed',
     provenance: 'fixture',

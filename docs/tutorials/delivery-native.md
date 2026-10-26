@@ -83,6 +83,16 @@ A fresh controller reads only the journal-selected immutable receipt and validat
 
 This composition is covered with actual synthetic native processes and fixture semantics. It does not certify authenticated client/model behavior or close P6-10: fixed complete-route configuration, semantic hosts, endpoint and public run/reconcile wiring remain in progress. See [ADR-0121](../decisions/0121-owned-worker-stage-bindings-and-recovery.md).
 
+## Delegated stage decisions
+
+RunnerDecisionStages connects exact named route requirements to the existing private delegated-decision store. The trusted controller supplies original-plan artifact/evidence references and the native decision host; a worker or result-file option cannot provide authority. Requests are bound before invocation, checked for complete scope and refused if their metadata is oversized or credential-bearing. A separate consumed-invocation marker fences a lost descriptor, including before the first native group starts; it supplies no approval.
+
+Production workers, planner/challenger and their boundary controls now share RunnerNativeStage for actual registration, process scopes and deadline narrowing. An uncooperative judgment cannot extend the original root deadline. Repeating a lost call retains its original unknown request instead of launching new decision workers. Stages with no named decision requirement do not invoke a model or invent an approval.
+
+Paused inspection uses the exact original private key and published receipt. If the final key locator was lost, a published head is usable only for that same complete request. A newer unrelated judgment does not repair the old one. Decision heads keep their existing run/plan/decision scope: reuse an exact current global request where appropriate; do not silently substitute a unit judgment for a global approval.
+
+This API returns decision evidence, with fixture/stale/rejected/incomplete records still blocked or unknown. It does not produce missing definition/build/acceptance artifacts, perform behavioral QA or establish a delivery endpoint. Those domain hosts and public complete-route execution remain in progress. See [ADR-0122](../decisions/0122-owned-stage-decisions-without-semantic-promotion.md).
+
 ## Authentication and private data
 
 Native clients use a fresh home/configuration environment without inherited controller tokens or runtime injection options. A real observed host may explicitly reference the client's own credential store outside repositories, the worker's roots and controller state. It never copies credentials into generated files, argv or model context, and the untrusted application environment receives none. Fixture runtime observations cannot enable this reference.

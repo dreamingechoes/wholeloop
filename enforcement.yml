@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-decision-stages
+    enforcers: [src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/native-stage.ts#RunnerNativeStage, src/runner/route.ts#runnerDecisionRequirements, test/unit/runner/decision-stages.test.ts, test/unit/runner/worker-stages.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-worker-stages
     enforcers: [src/runner/worker-stages.ts#RunnerWorkerStages, src/delivery/native-host.ts#NativeDeliveryHost, src/delivery/native-assignment-host.ts#NativeAssignmentHost, src/delivery/queue.ts#DeliveryQueue, test/unit/runner/worker-stages.test.ts, test/unit/delivery/queue.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-native-boundary-controls

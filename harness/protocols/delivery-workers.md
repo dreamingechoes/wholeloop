@@ -25,4 +25,6 @@ These are protocol and host obligations. Versioned schemas and role tools alone 
 
 ⛔ `delivery-runner-worker-stages`: bind production stages to original queue claims, one-shot native assignments and registered control/model scopes before input. Recover only journal-selected receipts with exact context/artifact/candidate bytes and positive process closure; preserve unknown claims and fixture provenance, cancel only original private nonces and require separate QA and acceptance.
 
+⛔ `delivery-runner-decision-stages`: bind exact named stage requirements to original private decision requests before invocation; share owned deadline/registration across planner, challenger and boundary controls. Recover only exact published receipts, preserve unknown/fixture/stale decisions and never treat machine judgment as behavioral QA, human approval or endpoint evidence.
+
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.

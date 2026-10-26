@@ -14,12 +14,12 @@ import type {
   QueueReadiness,
 } from '../delivery/queue.js'
 import type { workerContextForClaim } from '../delivery/worker-context.js'
-import { workerProcess } from '../fanout/process.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerNativeScope } from './native-scope.js'
+import { RunnerNativeStage } from './native-stage.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 
@@ -197,46 +197,13 @@ export class RunnerWorkerStages {
       `${this.path(record.invocation)}/lease.json`,
       `${JSON.stringify(lease)}\n`,
     )
-    const scope = new RunnerNativeScope(this.store.files, context.invocation)
-    let registered = record.runtime !== undefined
-    const process: NativeProcessRunner = async (command, args, operation) => {
-      const remaining = Date.parse(context.deadline) - Date.now()
-      if (remaining <= 0 || context.signal.aborted || !context.current())
-        throw new DeliveryRunnerError('worker-stage-no-longer-current')
-      const result = await workerProcess(command, args, {
-        ...operation,
-        timeoutMs: Math.max(1, Math.min(operation.timeoutMs, remaining)),
-        started: (pid) => {
-          if (!registered) {
-            context.started({
-              backend: 'owned-native',
-              instance: context.invocation,
-              worker: `pid-${pid}`,
-            })
-            registered = true
-          }
-          operation.started?.(pid)
-        },
-      })
-      const ownership = (result as { ownership?: { invocationState?: string } }).ownership
-        ?.invocationState
-      return {
-        ...result,
-        ownership: {
-          invocationState:
-            ownership === 'stopped' || ownership === 'not-started' ? ownership : 'unknown',
-        },
-      }
-    }
-    await scope.run(
-      () => !context.signal.aborted && context.current(),
-      () =>
-        this.native.run(lease, selected, {
-          ...this.options.native,
-          host: this.options.boundary(process, workspace),
-          process,
-          signal: context.signal,
-        }),
+    await new RunnerNativeStage(this.store, context).run((process) =>
+      this.native.run(lease, selected, {
+        ...this.options.native,
+        host: this.options.boundary(process, workspace),
+        process,
+        signal: context.signal,
+      }),
     )
     return this.inspect(context.request, this.store.stage(pinned.digest, record.id) ?? record)
   }

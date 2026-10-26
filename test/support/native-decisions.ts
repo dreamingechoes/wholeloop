@@ -1,7 +1,7 @@
 import { chmodSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { NativeDelegatedDecisionHost } from '../../src/decisions/native-host.js'
-import type { DecisionRubric } from '../../src/decisions/policy.js'
+import type { DecisionId, DecisionRubric } from '../../src/decisions/policy.js'
 import { type DecisionRequest, DelegatedDecisions } from '../../src/decisions/store.js'
 import { sourceHash } from '../../src/delivery/input.js'
 import type { NativeBoundaryHost } from '../../src/delivery/native-host.js'
@@ -63,23 +63,25 @@ export async function nativeDecisionFixture(
   }) => Promise<void>,
   mode: Mode = 'valid',
   target = 'claude',
-  options: { retain?: boolean } = {},
+  options: { retain?: boolean; decision?: DecisionId; none?: boolean } = {},
 ) {
   await fixture(async ({ planning, plan, dir }) => {
     const files = planning.sources.files,
-      rubricText = JSON.stringify(rubric)
+      decision = options.decision ?? 'approve-spec',
+      rubricText = JSON.stringify({ ...rubric, decision })
     files.atomic('rubrics/spec.json', rubricText)
     plan.policy.delegations = [
       {
-        id: 'approve-spec',
+        id: decision,
         rubric: { ref: 'rubrics/spec.json', sha256: sourceHash(rubricText) },
         evidence: ['verification'],
         fallback: 'blocked',
       },
     ]
+    if (options.none) plan.policy.intervention = 'none'
     const prepared = planning.preparePlan(plan),
       authorizationRequest = authorization(plan, prepared.digest)
-    authorizationRequest.decisions = ['approve-spec']
+    authorizationRequest.decisions = [decision]
     const queue = new DeliveryQueue(files.root, () => at)
     const grant = queue.lifecycle.authority.authorize(authorizationRequest)
     queue.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
@@ -101,7 +103,7 @@ export async function nativeDecisionFixture(
       run: plan.run,
       revision: 1,
       plan: prepared.digest,
-      decision: 'approve-spec',
+      decision,
       artifacts: [{ ref: 'inputs/spec.json', sha256: sourceHash(artifact) }],
       evidence: [{ id: 'verification', ref: 'inputs/evidence.json', sha256: sourceHash(evidence) }],
       unknowns: [],
