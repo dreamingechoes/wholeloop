@@ -136,6 +136,7 @@
 | [0123](./0123-owned-native-review-rounds-and-recovery.md) | Owned native review rounds and recovery | Accepted | 2026-10-26 |
 | [0124](./0124-owned-application-operation-stage-boundaries.md) | Owned application operation stage boundaries | Accepted | 2026-10-26 |
 | [0125](./0125-owned-artifact-production-before-delegated-decisions.md) | Owned artifact production before delegated decisions | Accepted | 2026-10-26 |
+| [0126](./0126-owned-suite-observations-and-recovery.md) | Owned suite observations and recovery | Accepted | 2026-10-26 |
 
 ## Lifecycle
 

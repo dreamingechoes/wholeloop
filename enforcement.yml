@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-owned-suites
+    enforcers: [src/runner/suite-stages.ts#RunnerSuiteStages, src/acceptance/suite-observation.ts#observedDockerSuiteCommand, src/acceptance/docker-suite.ts#dockerSuiteExecutor, src/verification/suite.ts#runSuite, src/runner/environment-scope.ts#RunnerEnvironmentScope, test/unit/runner/suite-stages.test.ts, test/unit/acceptance/suite-observation.test.ts, test/evals/runner/suites.ts]
   - id: delivery-runner-artifact-production
     enforcers: [src/delivery/native-readonly-attempts.ts#NativeReadOnlyAttempts, src/delivery/native-purpose.ts#NativePurposeAttempts, src/runner/artifact-attempts.ts#RunnerArtifactAttempts, src/runner/artifact-stages.ts#RunnerArtifactStages, src/acceptance/store.ts#DeliveryAcceptance, test/unit/runner/artifact-attempts.test.ts, test/unit/runner/artifact-stages.test.ts, test/unit/delivery/native-purpose.test.ts, test/unit/decisions/native-host.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-owned-environments

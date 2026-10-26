@@ -11,7 +11,7 @@ import {
 import { RunnerGitStages } from '../../src/runner/git-stages.js'
 import { runnerRoute } from '../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../src/runner/store.js'
-import { authorization, fixture } from './delivery.js'
+import { authorization, fixture, git } from './delivery.js'
 
 export async function runnerGitFixture(
   operation: (context: {
@@ -28,76 +28,98 @@ export async function runnerGitFixture(
     guidance?: string
     stageBudget?: 'plan'
     definition?: boolean
+    seed?: Record<string, string>
+    retain?: boolean
   } = {},
 ) {
-  await fixture(async ({ planning, plan, root }) => {
-    if (options.definition)
-      plan.definition = { ready: false, missing: ['Confirm the original bounded definition.'] }
-    if (options.guidance !== undefined) {
-      const guidance = plan.guidance[0]
-      if (!guidance) throw new Error('Fixture guidance missing')
-      guidance.sha256 = createHash('sha256').update(options.guidance).digest('hex')
-    }
-    if (options.singleUnit) {
-      plan.work = plan.work
-        .filter((work) => work.id === 'search')
-        .map((work) => ({ ...work, after: [], consumes: [] }))
-      plan.milestones = plan.milestones.map((milestone) => ({ ...milestone, work: ['search'] }))
-    }
-    const prepared = planning.preparePlan(plan),
-      store = new RunnerStore(planning.sources.files.root),
-      grant = store.lifecycle.authority.authorize(authorization(plan, prepared.digest))
-    store.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
-    const request: RunnerRequest = {
-        schema: 'wholeloop/delivery-runner-request@1',
-        key: 'git-stages',
-        run: plan.run,
-        revision: 1,
-        plan: prepared.digest,
-        grant: grant.grant.id,
-        host: { id: 'fixture', version: '1', configuration: 'a'.repeat(64) },
-        pollMs: 50,
-      },
-      digest = store.prepare(request).digest,
-      lease = store.claim(digest, `controller-${'a'.repeat(32)}`)
-    await operation({
-      store,
-      request,
-      root,
-      digest,
-      host: new RunnerGitStages(store),
-      dispatch(id) {
-        const stage = runnerRoute(plan).find((item) => item.id === id)
-        if (!stage) throw new Error('Fixture needs an actual route stage')
-        const invocation = contractDigest({ request: digest, plan: prepared.digest, id })
-        store.append(lease, { action: 'dispatched', stage: id, invocation })
-        return {
-          request,
-          plan,
-          stage,
-          invocation,
-          deadline: new Date(
-            Date.now() + (options.stageBudget === 'plan' ? plan.budgets.attemptMs : 15000),
-          ).toISOString(),
-          signal: new AbortController().signal,
-          current: () => store.live(lease, false),
-          started: (runtime) =>
-            store.append(lease, { action: 'started', stage: id, invocation, runtime }),
-        }
-      },
-      observe(value) {
-        store.append(lease, {
-          action: 'observed',
-          stage: value.stage,
-          invocation: value.invocation,
-          status: value.status,
-          evidence: value.evidence,
-          provenance: value.provenance,
-          reason: value.reason,
-        })
-      },
-    })
-  })
+  await fixture(
+    async ({ planning, plan, root }) => {
+      if (options.seed) {
+        const names = Object.keys(options.seed)
+        if (!names.length || names.some((name) => !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(name)))
+          throw new Error('Runner fixtures seed distinct root-level files only')
+        for (const [name, body] of Object.entries(options.seed))
+          writeFileSync(join(root, name), body)
+        git(root, ['add', '--', ...names])
+        git(root, [
+          'commit',
+          '-m',
+          'test: seed declared runner commands',
+          '-m',
+          'Pin explicit disposable application inputs before preparing the delivery plan.',
+        ])
+        const head = git(root, ['rev-parse', 'HEAD'])
+        for (const repo of plan.repositories) if (repo.root === root) repo.base = head
+      }
+      if (options.definition)
+        plan.definition = { ready: false, missing: ['Confirm the original bounded definition.'] }
+      if (options.guidance !== undefined) {
+        const guidance = plan.guidance[0]
+        if (!guidance) throw new Error('Fixture guidance missing')
+        guidance.sha256 = createHash('sha256').update(options.guidance).digest('hex')
+      }
+      if (options.singleUnit) {
+        plan.work = plan.work
+          .filter((work) => work.id === 'search')
+          .map((work) => ({ ...work, after: [], consumes: [] }))
+        plan.milestones = plan.milestones.map((milestone) => ({ ...milestone, work: ['search'] }))
+      }
+      const prepared = planning.preparePlan(plan),
+        store = new RunnerStore(planning.sources.files.root),
+        grant = store.lifecycle.authority.authorize(authorization(plan, prepared.digest))
+      store.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
+      const request: RunnerRequest = {
+          schema: 'wholeloop/delivery-runner-request@1',
+          key: 'git-stages',
+          run: plan.run,
+          revision: 1,
+          plan: prepared.digest,
+          grant: grant.grant.id,
+          host: { id: 'fixture', version: '1', configuration: 'a'.repeat(64) },
+          pollMs: 50,
+        },
+        digest = store.prepare(request).digest,
+        lease = store.claim(digest, `controller-${'a'.repeat(32)}`)
+      await operation({
+        store,
+        request,
+        root,
+        digest,
+        host: new RunnerGitStages(store),
+        dispatch(id) {
+          const stage = runnerRoute(plan).find((item) => item.id === id)
+          if (!stage) throw new Error('Fixture needs an actual route stage')
+          const invocation = contractDigest({ request: digest, plan: prepared.digest, id })
+          store.append(lease, { action: 'dispatched', stage: id, invocation })
+          return {
+            request,
+            plan,
+            stage,
+            invocation,
+            deadline: new Date(
+              Date.now() + (options.stageBudget === 'plan' ? plan.budgets.attemptMs : 15000),
+            ).toISOString(),
+            signal: new AbortController().signal,
+            current: () => store.live(lease, false),
+            started: (runtime) =>
+              store.append(lease, { action: 'started', stage: id, invocation, runtime }),
+          }
+        },
+        observe(value) {
+          store.append(lease, {
+            action: 'observed',
+            stage: value.stage,
+            invocation: value.invocation,
+            status: value.status,
+            evidence: value.evidence,
+            provenance: value.provenance,
+            reason: value.reason,
+          })
+        },
+      })
+    },
+    options.retain ? { retain: true } : {},
+  )
 }
 
 /** Keep the complete two-unit route in the standalone evaluation, outside file-worker time budgets. */
