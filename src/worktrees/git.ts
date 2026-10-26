@@ -3,12 +3,16 @@ import { createHash } from 'node:crypto'
 import { canonicalPath } from '../state/paths.js'
 
 export function git(root: string, args: readonly string[], hooks?: string): string {
+  return gitBytes(root, args, hooks).toString('utf8')
+}
+/** Byte-bound Git paths must be checked before UTF-8 decoding can replace invalid names. */
+export function gitBytes(root: string, args: readonly string[], hooks?: string): Buffer {
   const response = spawnSync(
     'git',
     [...(hooks ? ['-c', `core.hooksPath=${hooks}`] : []), ...args],
     {
       cwd: root,
-      encoding: 'utf8',
+      encoding: 'buffer',
       env: { ...process.env, GIT_OPTIONAL_LOCKS: '0', GIT_TERMINAL_PROMPT: '0' },
       timeout: 30_000,
       maxBuffer: 2 * 1024 * 1024,

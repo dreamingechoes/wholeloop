@@ -106,7 +106,17 @@ The internal DeliveryWorkspaces host can prepare an external Git topic for a cod
 
 Every actual create/merge uses the existing original-grant effect journal and finite registered Git owner. Unknown outcomes retain the original operation, while occupied paths, unsafe helpers, changed predecessors and revoked authority refuse later mutation. Read-only reconcile can recover an exact retained native result without repeating checkout or resuming the run. Personal checkouts and existing worker worktrees remain intact. A dirty owned candidate may change its byte snapshot while retaining the original topic head; readiness is not QA.
 
-The source evaluation now includes an actual disposable subjectless workspace/control. This is an internal controller API, not a new public workspace/run command. Actual candidate commit and full domain-host/public endpoint wiring remain technical P6-10 work. See [ADR-0117](../decisions/0117-owned-delivery-topic-workspaces.md).
+The source evaluation now includes an actual disposable subjectless workspace/control. This is an internal controller API, not a new public workspace/run command. Candidate commit is implemented in the next section; full domain-host/public endpoint wiring remains technical P6-10 work. See [ADR-0117](../decisions/0117-owned-delivery-topic-workspaces.md).
+
+## Pin a candidate before HEAD-bound QA
+
+The internal DeliveryCommits host stages and commits an owned topic through two original-grant Git effects. The controller pins the actual candidate files independently of the gate snapshot, validates the supplied commit message and verifies the exact staged bytes, original parent, closed native invocation and resulting HEAD. The personal checkout stays untouched. Empty, deleted, binary and Unicode files remain exact; raw Git path bytes are checked before decoding.
+
+A transformed index or unknown outcome is retained without issuing another staging/commit command. This reference path refuses raw byte transformations from line-ending/encoding rules and external Git helpers. It does not rewrite project configuration. Project contents are hashed rather than copied to controller state or scanned as prose: source/type references are not credentials. Existing metadata/artifact/message guards remain active.
+
+Current private committed-head receipts allow later repairs while fencing old receipts through the original effect journal. A lost head locator can be reconstructed from its exact actual effect evidence without another Git invocation, including through a fresh paused controller. Read-only reconcile does not resume the run. A known commit remains separate from the current working-byte snapshot and establishes no actual QA, acceptance, human approval or PR readiness.
+
+Run npm run eval:runner for the additional disposable actual Git commit/control. These remain internal controller APIs; fixed full-route and public run/reconcile/endpoint wiring are still P6-10 technical work. See [ADR-0118](../decisions/0118-owned-candidate-commits-and-current-heads.md).
 
 ## Verification of this increment
 

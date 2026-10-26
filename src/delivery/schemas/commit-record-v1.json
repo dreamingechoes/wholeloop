@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "wholeloop/delivery-commit-record@1",
+  "required": [
+    "schema",
+    "digest",
+    "request",
+    "run",
+    "plan",
+    "source",
+    "grant",
+    "grantDigest",
+    "files"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-commit-record@1"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "workspace", "key", "head", "snapshot", "message"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-commit-request@1"
+        },
+        "workspace": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "maxLength": 64
+        },
+        "head": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$",
+          "maxLength": 64
+        },
+        "snapshot": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        }
+      }
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$"
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "grant": {
+      "type": "string",
+      "pattern": "^authorization-[a-f0-9]{16}$"
+    },
+    "grantDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["digest", "index", "objectFormat", "files", "bytes"],
+      "properties": {
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "index": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "objectFormat": {
+          "type": "string",
+          "enum": ["sha1", "sha256"]
+        },
+        "files": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 33554432
+        }
+      }
+    }
+  }
+}

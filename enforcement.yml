@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-candidate-commits
+    enforcers: [src/delivery/candidate-files.ts#candidateFiles, src/worktrees/git.ts#gitBytes, src/delivery/commits.ts#DeliveryCommits, src/delivery/commit-state.ts#validateWorkspaceCommit, src/delivery/commit-state.ts#currentWorkspaceCommit, src/delivery/workspaces.ts#DeliveryWorkspaces, test/unit/delivery/candidate-files.test.ts, test/unit/delivery/commits.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-topic-workspaces
     enforcers: [src/delivery/workspaces.ts#DeliveryWorkspaces, src/integration/git-process.ts#AssemblyGitProcess, src/delivery/effects.ts#DeliveryEffects, test/unit/delivery/workspaces.test.ts, test/unit/integration/assembly.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-native-purpose

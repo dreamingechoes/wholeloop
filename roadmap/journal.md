@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — exact owned candidate commits
+
+- Add independent bounded file/index observations without changing existing gate snapshots. Preserve raw Git path bytes, actual object format and empty/binary/Unicode/deletion/mode behavior. A targeted failing repro shows prose credential heuristics misclassifying a code type reference; hash project bytes without persisting them and retain existing metadata/artifact/message guards.
+- Stage and commit as separate original-grant registered Git effects. Validate actual closure, exact bytes, original parent, clean resulting candidate and host provenance before publishing immutable private receipts. Reuse the existing effect journal to fence stale head locators and recover the exact latest native result without replay, including while paused. Keep transformed/unknown staging held and preserve the personal checkout. Add ADR-0118, typed contracts, enforcer and docs; full fixed domain-host/public endpoint wiring remains technical P6-10 work.
+- Twelve initial native/file cases pass, then 28 and the expanded 31-case candidate/workspace run (25.65 seconds), including current repair, lost-locator recovery, old-head fencing, changed input, pause/revocation, message hygiene and fixture refusal. The expanded five-file candidate/gate/frozen-contract run passes 489 cases (38.63 seconds), and eight final model-free macOS controls pass. Correct the initial Markdown inline-code finding. Final complete checks pass 3044 tests in 145 files on macOS arm64/Node 24.22.0 (419.75 seconds) and isolated Debian Linux arm64/Node 24.22.0 (149.34 seconds), plus docs347/harness150/Markdown346/Mermaid36 and all remaining checks. Eight model-free controls and inert schema parity also pass with Linux Node 20.0.0/Git 2.39.5. No skips or deadline increases occur; no task/manual acceptance closes here.
+- Archive c6ecc63cbf86b6ee24508292ac84b4fff7712710ce4e384d1cfa74c603fc6677 and core e062f75d22ba5ea65ed94196e3c181d385fc647f51ce8280fa0787c5e94e4073 identify pre-evidence checks. Retain all logs outside the repository, recheck evidence-only docs/package and commit candidate pinning before continuing fixed domain-host wiring. Counts remain 59/88 complete; no model, account, publication or personal/project merge occurs.
+
 ## 2026-10-26 · P6-10 continuing — owned code-unit topic preparation
 
 - Prepare one private original-grant external topic per exact plan/code unit without legacy hierarchy or human approval fabrication. Pin complete transitive committed code predecessors, preserve cross-repository boundaries and narrowed branch prefixes and reuse existing effect/native Git ownership. Keep actual dirty candidate snapshots separate from QA, acceptance and publication.

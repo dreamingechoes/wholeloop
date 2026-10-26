@@ -10,6 +10,7 @@ import { runnerDecisionRequirements } from '../../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { assertExternal } from '../../../src/state/paths.js'
 import { authorization, fixture, git } from '../../support/delivery.js'
+import { deliveryCommitFixture, prepareFixtureCommit } from '../../support/delivery-commits.js'
 import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
 
@@ -185,6 +186,22 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
     assert.equal(workspaces.effects.inspect(request.run).length, 1)
     checks.push(
       'actual owned subjectless Git workspace creation and read-only reconciliation preserve the personal checkout',
+    )
+  })
+  await deliveryCommitFixture(async ({ commits, workspace, path, root }) => {
+    const base = git(root, ['rev-parse', 'HEAD'])
+    writeFileSync(join(path, 'app.txt'), 'Pin an actual disposable owned candidate.\n')
+    const prepared = prepareFixtureCommit(commits, workspace),
+      result = await commits.execute(prepared.digest)
+    assert.equal(result.status, 'committed')
+    assert.equal(result.receipt?.parent, base)
+    assert.equal(commits.workspaces.inspect(workspace).head, result.receipt?.head)
+    assert.equal(git(root, ['rev-parse', 'HEAD']), base)
+    assert.equal((await commits.reconcile(prepared.digest)).status, 'committed')
+    assert.equal(commits.effects.inspect(prepared.run).length, 3)
+    assert.equal(result.acceptance, 'not-established')
+    checks.push(
+      'actual owned staging/commit and private head recovery retain the personal branch and grant no QA authority',
     )
   })
   const report = {

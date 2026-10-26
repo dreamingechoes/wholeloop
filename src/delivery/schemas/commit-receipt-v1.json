@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "wholeloop/delivery-commit-receipt@1",
+  "required": [
+    "schema",
+    "digest",
+    "record",
+    "workspace",
+    "run",
+    "plan",
+    "grantDigest",
+    "parent",
+    "head",
+    "files",
+    "index",
+    "effects"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-commit-receipt@1"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "record": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "workspace": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$"
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "grantDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "parent": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$",
+      "maxLength": 64
+    },
+    "head": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$",
+      "maxLength": 64
+    },
+    "files": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "index": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "commit"],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "pattern": "^effect-[a-f0-9]{32}$"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^effect-[a-f0-9]{32}$"
+        }
+      }
+    }
+  }
+}

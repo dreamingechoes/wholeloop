@@ -13,6 +13,7 @@ import {
 import { observeCommittedWorktree } from '../integration/observe.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { ancestor, git, registeredWorktrees, repository } from '../worktrees/git.js'
+import { currentWorkspaceCommit } from './commit-state.js'
 import type { EffectRecord } from './effect-events.js'
 import { DeliveryEffects, type EffectHost } from './effects.js'
 import { readSourceFile, safeSourceText } from './input.js'
@@ -242,6 +243,11 @@ export class DeliveryWorkspaces {
     if (actual !== digest || contractDigest(binding) !== digest)
       throw new IntegrationError('changed-workspace-record')
     return value
+  }
+  allocation(digest: string): DeliveryWorkspaceRecord {
+    const record = this.get(digest)
+    this.current(record)
+    return record
   }
   private current(record: DeliveryWorkspaceRecord) {
     const current = this.authority(record.request)
@@ -511,7 +517,10 @@ export class DeliveryWorkspaces {
       const active = this.current(record)
       if (!ACTIVE.has(active.state.state)) current = false
       if (effects.length === expected && effects.every((effect) => effect?.status === 'applied')) {
-        head = effects.at(-1)?.observations.at(-1)?.resource?.revision ?? null
+        head =
+          currentWorkspaceCommit(this.effects.lifecycle, record)?.head ??
+          effects.at(-1)?.observations.at(-1)?.resource?.revision ??
+          null
         if (!head) throw new IntegrationError('workspace-unobserved-head')
         this.owned(record, head, false)
         snapshot = workspaceSnapshot(record.repository.path, ENVIRONMENT_SNAPSHOT_LIMITS).digest

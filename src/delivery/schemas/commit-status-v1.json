@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "wholeloop/delivery-commit-status@1",
+  "required": ["schema", "digest", "record", "current", "status", "acceptance", "publication"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-commit-status@1"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "digest",
+        "request",
+        "run",
+        "plan",
+        "source",
+        "grant",
+        "grantDigest",
+        "files"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-commit-record@1"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "request": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema", "workspace", "key", "head", "snapshot", "message"],
+          "properties": {
+            "schema": {
+              "type": "string",
+              "const": "wholeloop/delivery-commit-request@1"
+            },
+            "workspace": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "key": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "maxLength": 64
+            },
+            "head": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$",
+              "maxLength": 64
+            },
+            "snapshot": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16384
+            }
+          }
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "plan": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "grant": {
+          "type": "string",
+          "pattern": "^authorization-[a-f0-9]{16}$"
+        },
+        "grantDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "files": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["digest", "index", "objectFormat", "files", "bytes"],
+          "properties": {
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "index": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "objectFormat": {
+              "type": "string",
+              "enum": ["sha1", "sha256"]
+            },
+            "files": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5000
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 33554432
+            }
+          }
+        }
+      }
+    },
+    "current": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["unknown", "failed", "stale", "committed", "staged", "prepared"]
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "digest",
+        "record",
+        "workspace",
+        "run",
+        "plan",
+        "grantDigest",
+        "parent",
+        "head",
+        "files",
+        "index",
+        "effects"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-commit-receipt@1"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "record": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "workspace": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "plan": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "grantDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "parent": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$",
+          "maxLength": 64
+        },
+        "head": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$",
+          "maxLength": 64
+        },
+        "files": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "index": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["stage", "commit"],
+          "properties": {
+            "stage": {
+              "type": "string",
+              "pattern": "^effect-[a-f0-9]{32}$"
+            },
+            "commit": {
+              "type": "string",
+              "pattern": "^effect-[a-f0-9]{32}$"
+            }
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "type": "string",
+      "const": "not-established"
+    },
+    "publication": {
+      "type": "string",
+      "const": "not-performed"
+    }
+  }
+}
