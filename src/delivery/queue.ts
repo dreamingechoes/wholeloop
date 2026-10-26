@@ -144,9 +144,16 @@ export class DeliveryQueue {
       ready: false,
       reason: 'capability-unavailable',
     }),
+    selected?: { run: string; queue: string },
   ): QueueClaimResult {
     if (!/^controller-[a-f0-9]{32}$/.test(controller))
       throw new DeliveryJournalError('invalid-controller')
+    if (
+      selected &&
+      (!/^delivery-[a-f0-9]{16}$/.test(selected.run) ||
+        !/^queue-[a-f0-9]{32}$/.test(selected.queue))
+    )
+      throw new DeliveryJournalError('invalid-queue-selection')
     let assignment: QueueAssignment | null = null
     const deferred: { run: string; queue: string; reason: string }[] = []
     this.lifecycle.journal.transaction(ACTOR, (view, append) => {
@@ -155,7 +162,10 @@ export class DeliveryQueue {
         .flatMap((state) =>
           deliveryQueue(state)
             .records.filter(
-              (entry) => entry.status === 'pending' && entry.basis === state.basis.digest,
+              (entry) =>
+                entry.status === 'pending' &&
+                entry.basis === state.basis.digest &&
+                (!selected || (state.run === selected.run && entry.id === selected.queue)),
             )
             .map((entry) => ({ run: state.run, entry })),
         )

@@ -73,6 +73,16 @@ Each purpose is claimed and consumed once before launch. An interrupted observer
 
 NativeDelegatedDecisionHost obtains two independent actual process receipts and validates purpose-specific JSON claims in artifacts/decision.json. The controller supplies runtime identity; evidence/prerequisites come separately from a trusted domain observer. Neither role can impersonate human approval or promote fixture output. This internal API is tested with actual synthetic client processes, while public complete-route wiring and live client acceptance remain open. See [ADR-0116](../decisions/0116-owned-native-decision-purpose-attempts.md).
 
+## Worker stages and original-result recovery
+
+The internal RunnerWorkerStages controller connects implementation and unit-research work to an exact original queue entry and private native assignment. Its trusted host supplies selected context and a boundary factory that uses the same registered native process runner. It does not accept a public executable host or worker-authored runtime proof. Targeted queue admission retains global reservations while leaving unrelated pending work untouched.
+
+The private root intent precedes claim; the original native assignment and random output directory are consumed before any probe or model input. A failed observer, missing reply or lost private binding cannot start that claim again. An observed admission refusal records that no process started. Existing retry fencing and original budgets remain mandatory.
+
+A fresh controller reads only the journal-selected immutable receipt and validates original runtime/provenance, selected and copied inputs, captured artifacts, current candidate and actual process closure. It can recover while paused without resuming. Stop uses original private nonce channels, including after revocation. A successful worker stage establishes production of a candidate or research claim; behavioral QA, review and acceptance still follow separately.
+
+This composition is covered with actual synthetic native processes and fixture semantics. It does not certify authenticated client/model behavior or close P6-10: fixed complete-route configuration, semantic hosts, endpoint and public run/reconcile wiring remain in progress. See [ADR-0121](../decisions/0121-owned-worker-stage-bindings-and-recovery.md).
+
 ## Authentication and private data
 
 Native clients use a fresh home/configuration environment without inherited controller tokens or runtime injection options. A real observed host may explicitly reference the client's own credential store outside repositories, the worker's roots and controller state. It never copies credentials into generated files, argv or model context, and the untrusted application environment receives none. Fixture runtime observations cannot enable this reference.

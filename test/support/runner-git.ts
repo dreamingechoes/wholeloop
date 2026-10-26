@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../src/contracts/compatibility.js'
@@ -22,9 +23,14 @@ export async function runnerGitFixture(
     dispatch(id: string): RunnerStageContext
     observe(value: RunnerStageObservation): void
   }) => Promise<void>,
-  options: { singleUnit?: boolean } = {},
+  options: { singleUnit?: boolean; guidance?: string } = {},
 ) {
   await fixture(async ({ planning, plan, root }) => {
+    if (options.guidance !== undefined) {
+      const guidance = plan.guidance[0]
+      if (!guidance) throw new Error('Fixture guidance missing')
+      guidance.sha256 = createHash('sha256').update(options.guidance).digest('hex')
+    }
     if (options.singleUnit) {
       plan.work = plan.work
         .filter((work) => work.id === 'search')

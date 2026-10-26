@@ -2,18 +2,22 @@ import assert from 'node:assert/strict'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { decodeWorkerProposal } from '../../../src/delivery/worker-proposal.js'
 import { createWorkerAssignment } from '../../../src/delivery/worker-protocol.js'
 import { OwnedForegroundRunner, receiveOwnedForeground } from '../../../src/runner/foreground.js'
 import { FOREGROUND_ARGUMENT } from '../../../src/runner/foreground-owner.js'
+import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { runnerDecisionRequirements } from '../../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
+import { RunnerWorkerStages } from '../../../src/runner/worker-stages.js'
 import { assertExternal } from '../../../src/state/paths.js'
 import { authorization, fixture, git } from '../../support/delivery.js'
 import { deliveryCommitFixture, prepareFixtureCommit } from '../../support/delivery-commits.js'
 import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
 import { runnerGitRouteFixture } from '../../support/runner-git.js'
+import { runnerWorkerFixture } from '../../support/runner-worker.js'
 
 const core = fileURLToPath(import.meta.url)
 if (process.argv[2] === FOREGROUND_ARGUMENT) {
@@ -217,6 +221,36 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
   assert.ok(gitRoute.stages.every((stage) => stage.status === 'passed'))
   checks.push(
     'the actual runner drives both owned Git units and committed predecessors while fixture-only semantic stages cannot establish an endpoint',
+  )
+  await runnerWorkerFixture(
+    async ({ workers, store, request, queue, options, dispatch, digest }) => {
+      const context = dispatch('implementation:search'),
+        result = await workers.execute(context),
+        stage = store.stage(digest, context.stage.id),
+        entry = queue.inspect(request.run)[0]
+      assert.equal(result.status, 'passed')
+      assert.equal(result.provenance, 'fixture')
+      assert.equal(result.invocationState, 'stopped')
+      assert.ok(stage && entry?.attempt)
+      const lease = queue.assigned(request.run, entry.attempt)
+      assert.equal(workers.native.completed(lease), true)
+      assert.equal(workers.native.retained(lease)?.receipt?.acceptance, 'not-established')
+      store.lifecycle.transition(request.run, {
+        to: 'paused',
+        reason: 'Observe the original native completion without resuming.',
+      })
+      const fresh = new RunnerWorkerStages(
+        new RunnerStore(store.files.root),
+        new DeliveryQueue(store.files.root),
+        options,
+      )
+      assert.equal((await fresh.inspect(request, stage)).status, 'passed')
+      assert.equal(new RunnerNativeScope(store.files, context.invocation).calls().length, 1)
+      assert.equal(store.inspect(digest).outcome, null)
+      checks.push(
+        'an actual synthetic native worker joins its original root stage and recovers while paused without replay, QA or endpoint authority',
+      )
+    },
   )
   const report = {
     status: 'passed',

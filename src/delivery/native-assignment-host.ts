@@ -88,6 +88,8 @@ export interface NativeRunOptions {
   nativeStore?: string
   signal?: AbortSignal
   output?: 'files' | 'inline-proposal'
+  /** Trusted metadata registration precedes controls and model input; failure retains the claim. */
+  prepared?(input: { assignment: Readonly<WorkerAssignment>; directory: string }): void
 }
 /** Only fixed controller code supplies this ownership boundary; never model JSON. */
 export interface NativeAssignmentOwner {
@@ -126,6 +128,7 @@ export class NativeAssignmentHost {
       authority: 'not-granted',
       publication: 'not-performed',
     }
+    options.prepared?.({ assignment: structuredClone(assignment), directory: relative })
     const unavailable = (reason: NonNullable<NativeRunReceipt['reason']>) => {
       const retained = this.retain({ ...receipt, reason })
       try {

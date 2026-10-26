@@ -35,6 +35,49 @@ function register(queue: DeliveryQueue, plan: DeliveryPlan, id = 'authorization-
 }
 
 describe('durable delivery queue and current fencing', () => {
+  it('limits targeted admission and deferrals without ignoring global reservations', () =>
+    fixture(({ planning, plan }) => {
+      const queue = new DeliveryQueue(planning.sources.files.root, () => at)
+      register(queue, plan)
+      const other = structuredClone(plan)
+      other.run = 'delivery-aaaaaaaaaaaaaaaa'
+      register(queue, other, 'authorization-aaaaaaaaaaaaaaaa')
+      const foreign = queue.enqueue(other.run, { unit: 'contract', priority: 100 }),
+        target = queue.enqueue(plan.run, { unit: 'contract' }),
+        observed: string[] = []
+      const result = queue.claim(
+        owner,
+        (candidate) => {
+          observed.push(candidate.run)
+          return ready()
+        },
+        { run: plan.run, queue: target.id },
+      )
+      expect(result.assignment?.run).toBe(plan.run)
+      expect(observed).toEqual([plan.run])
+      expect(queue.inspect(other.run)[0]).toEqual(foreign)
+      expect(result.deferred).toEqual([])
+      expect(queue.claim(owner, ready, { run: other.run, queue: foreign.id })).toMatchObject({
+        assignment: null,
+        deferred: [{ run: other.run, reason: 'repository-capacity' }],
+      })
+    }))
+
+  it('refuses malformed target identities and never falls back to an unrelated pending entry', () =>
+    fixture(({ planning, plan }) => {
+      const queue = new DeliveryQueue(planning.sources.files.root, () => at)
+      register(queue, plan)
+      const target = queue.enqueue(plan.run, { unit: 'contract' }),
+        before = queue.lifecycle.journal.events()
+      expect(() => queue.claim(owner, ready, { run: 'wrong', queue: target.id })).toThrow(
+        'invalid-queue-selection',
+      )
+      expect(
+        queue.claim(owner, ready, { run: plan.run, queue: `queue-${'f'.repeat(32)}` }).assignment,
+      ).toBeNull()
+      expect(queue.lifecycle.journal.events()).toEqual(before)
+    }))
+
   it('enqueues exact idempotent slots without starting a worker or changing the grant', () =>
     fixture(({ planning, plan }) => {
       const queue = new DeliveryQueue(planning.sources.files.root, () => at)

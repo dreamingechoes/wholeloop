@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — owned worker stage composition
+
+- Connect unit production stages to exact original queue entries, one-shot native assignments/directories and registered boundary/model process scopes. Target internal claims without touching unrelated deferrals or bypassing global capacity. Reconcile journal-selected original receipts and exact context/artifact/candidate bytes while paused; cancel only original private nonces after revocation. Preserve fixture provenance and separate production from semantic QA/acceptance.
+- Preserve initial syntax/type/sandbox failures and the reproduced cross-store nested-lock timeout. Separate queue transactions from root intent locks, retaining original uncertainty instead of granting duplicate calls. Add ADR-0121, named enforcer, docs and actual synthetic process controls. The expanded four-file run passes 91 cases; the final five-file worker/native/queue/frozen-contract run passes 511 cases in 53.43 seconds. Complete-route factory/semantic/public endpoint work remains technical and P6-10 stays open; counts remain 59/88 complete. Final complete checks pass 3097 tests in 148 files on macOS arm64/Node 24.22.0 (480.14 seconds) and isolated Debian Linux arm64/Node 24.22.0 (231.24 seconds), plus docs350/harness150/Markdown349/Mermaid36 and all remaining checks. Ten model-free runner controls and inert schema parity pass on Linux Node 20.0.0/Git 2.39.5; the same ten controls pass on macOS Node 24. No skips or deadline increases occur. Actual native accounts/models and full-route acceptance remain unverified.
+
+- Archive 00eb75276c0f98ff2aeb670bb9d033eb373321ff62733ce05738fbf668ce90a6 and core 884eb3f08810b56a0b7a9bf64975d4ddd24c1f30a969aab684dbd3593b90c3b3 identify the pre-evidence candidate; the complete macOS build reproduces the copied core. Retain all red/green logs externally, recheck evidence-only docs/package and commit worker stage composition before continuing fixed semantic-host/public route wiring. No model, account, publication or project merge occurs.
+
 ## 2026-10-26 · P6-10 continuing — observed native boundary controls
 
 - Add finite asynchronous native-boundary admission without releasing an unknown original probe/attempt or launching a model. Implement a one-shot exact-recipe Codex observer with actual version/disabled-feature, filesystem, network and owned cancellation witnesses. Separate policy-only authenticated=false observations from local-client authentication evidence; retain only hashes/status/ownership, never credential/authentication output. Keep project bytes unchanged and preserve fixture provenance.

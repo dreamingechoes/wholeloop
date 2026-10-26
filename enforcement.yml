@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-worker-stages
+    enforcers: [src/runner/worker-stages.ts#RunnerWorkerStages, src/delivery/native-host.ts#NativeDeliveryHost, src/delivery/native-assignment-host.ts#NativeAssignmentHost, src/delivery/queue.ts#DeliveryQueue, test/unit/runner/worker-stages.test.ts, test/unit/delivery/queue.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-native-boundary-controls
     enforcers: [src/delivery/native-codex-boundary.ts#CodexBoundaryHost, src/delivery/native-boundary-program.ts#NATIVE_BOUNDARY_PROGRAM, src/delivery/native-assignment-host.ts#NativeAssignmentHost, src/delivery/native-adapters.ts#nativeDeliveryRecipe, test/unit/delivery/native-boundary.test.ts, test/unit/delivery/native-purpose.test.ts, test/evals/native-boundary/run.ts]
   - id: delivery-runner-git-stages
