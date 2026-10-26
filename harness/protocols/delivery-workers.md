@@ -33,4 +33,6 @@ These are protocol and host obligations. Versioned schemas and role tools alone 
 
 ⛔ `delivery-contract-artifact-identity`: bind contract-only deliverables to exact declared IDs/revisions/checksums and bounded regular committed bytes in the declared Git database and base ancestry. Refuse changed candidates, decoys and symlinks. Mechanical identity establishes no QA, invented product criteria or human approval; independent suites and judgment remain required.
 
+⛔ `delivery-runner-repair-feedback`: classify failures only from exact original closed observed QA and the current candidate. Preserve retained findings, actual nonzero suite facts and exhausted gates; stale, missing, fixture or imported claims cannot authorize correction. Fingerprints follow observed substance rather than new model/commit IDs. Feedback grants no repair dispatch or renewed budget.
+
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.

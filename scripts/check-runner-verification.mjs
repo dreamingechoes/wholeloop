@@ -30,7 +30,13 @@ console.log(`Retained evaluation: ${destination}`)
 // Scenarios have independent stores and authorities. Give each the same fresh
 // controller process too, rather than retaining previous native fixture heaps.
 const scenarios = []
-for (const scenario of ['observed-pass', 'observed-fail', 'fixture-refusal', 'contract-pass']) {
+for (const scenario of [
+  'observed-pass',
+  'observed-fail',
+  'fixture-refusal',
+  'contract-pass',
+  'observed-findings',
+]) {
   const results = join(destination, scenario)
   const code = await new Promise((resolve) => {
     const child = spawn(process.execPath, [runner, results, scenario, ...args], {
@@ -54,7 +60,7 @@ const report = {
     ? 'passed'
     : 'failed',
   scope:
-    'Four fresh model-free controllers; actual owned Docker suites and synthetic native verification only. No models, containment, independent Linux application-host or whole-feature certification.',
+    'Five fresh model-free controllers; actual owned Docker suites and synthetic native verification only. No models, containment, independent Linux application-host or whole-feature certification.',
   scenarios,
   acceptance: 'not-established',
   publication: 'not-performed',

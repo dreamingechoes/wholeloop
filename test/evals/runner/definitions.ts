@@ -5,15 +5,23 @@ import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
+import { gateRuns } from '../../../src/gates/state.js'
 import { GateWorkflow } from '../../../src/gates/workflow.js'
 import { RunnerAcceptanceDefinitionStages } from '../../../src/runner/acceptance-definition-stages.js'
 import { RunnerDefinitionStages } from '../../../src/runner/definition-stages.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerPlanStages } from '../../../src/runner/plan-stages.js'
+import {
+  knownSuiteFailure,
+  repairFailureFingerprint,
+  runnerRepairFeedback,
+} from '../../../src/runner/repair-feedback.js'
+import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { StateStore } from '../../../src/state/store.js'
 import { observeContractArtifacts } from '../../../src/verification/contract-artifacts.js'
 import { fixture, git } from '../../support/delivery.js'
+import { nativeGateFixture } from '../../support/native-gate.js'
 import { runnerArtifactFixture } from '../../support/runner-artifact.js'
 import { runnerDefinitionFixture } from '../../support/runner-definition.js'
 import { runnerPlanFixture } from '../../support/runner-plan.js'
@@ -299,6 +307,111 @@ await fixture(async (f) => {
     'actual external worktree contract bytes match exact declared identities while a changed clean commit refuses without invented QA or product criteria',
   )
 })
+const finding = {
+    unit: 'contracts/search-api',
+    id: 'one',
+    location: 'contract.txt:1',
+    text: 'Duplicate titles lose matching IDs.',
+    evidence: ['observed fixture input'],
+  },
+  originalFingerprint = repairFailureFingerprint({
+    category: 'verification-findings',
+    unit: 'contract',
+    commands: [],
+    findings: [finding],
+  })
+assert.equal(
+  originalFingerprint,
+  repairFailureFingerprint({
+    category: 'verification-findings',
+    unit: 'contract',
+    commands: [],
+    findings: [
+      { ...finding, id: 'another-model-id', text: ' Duplicate titles lose\n matching IDs. ' },
+    ],
+  }),
+)
+assert.equal(
+  knownSuiteFailure([
+    { ref: 'package.json#check', exitCode: 7, signal: '', diagnostic: 'a'.repeat(64) },
+  ]),
+  true,
+)
+assert.equal(
+  knownSuiteFailure([
+    { ref: 'package.json#check', exitCode: -1, signal: 'SIGTERM', diagnostic: 'a'.repeat(64) },
+  ]),
+  false,
+)
+checks.push(
+  'repair fingerprints retain observed substance without counting model IDs or whitespace as progress',
+)
+await nativeGateFixture(
+  async ({ store, context, engine, options }) => {
+    const abort = new AbortController(),
+      timer = setTimeout(() => abort.abort(), 120000)
+    context.signal = abort.signal
+    context.deadline = new Date(
+      Math.min(Date.parse(context.deadline), Date.now() + 120000),
+    ).toISOString()
+    try {
+      const stages = new RunnerReviewStages(store, {
+          identity: context.request.host,
+          engine: () => engine,
+          gate: options,
+        }),
+        result = await stages.execute(context),
+        record = store.stage(contractDigest(context.request), context.stage.id)
+      assert.equal(result.status, 'blocked', JSON.stringify(result))
+      assert.equal(result.provenance, 'host-observed')
+      assert.ok(record)
+      const round = gateRuns(engine.store.events()).at(-1)?.rounds.at(-1)
+      assert.ok(round)
+      const scope = new RunnerNativeScope(store.files, context.invocation),
+        calls = scope.calls().length,
+        deadline = store.budgets.inspect(context.request.run).deadline
+      assert.equal(calls, round.plan.units.length + round.plan.verifiers)
+      store.lifecycle.transition(context.request.run, {
+        to: 'paused',
+        reason: 'Read original kept findings without launching repair or judgment.',
+      })
+      const reader = new RunnerReviewStages(new RunnerStore(store.files.root), {
+          identity: context.request.host,
+          engine: () => engine,
+          gate: () => {
+            throw new Error('Feedback cannot construct a new judgment host')
+          },
+        }),
+        feedback = await runnerRepairFeedback(reader, context.request, record)
+      assert.notEqual(feedback.status, 'unavailable', JSON.stringify(feedback))
+      if (feedback.status === 'unavailable')
+        throw new Error('Original kept review finding unavailable')
+      assert.equal(
+        feedback.status,
+        round.plan.round >= round.plan.budget ? 'exhausted' : 'actionable',
+      )
+      assert.equal(feedback.category, 'review-findings')
+      assert.equal(feedback.findings.length, 1)
+      assert.deepEqual(feedback.commands, [])
+      assert.equal(feedback.repairDispatch, 'not-authorized')
+      assert.equal(
+        (await runnerRepairFeedback(reader, context.request, record)).status,
+        feedback.status,
+      )
+      assert.equal(scope.calls().length, calls)
+      assert.equal(store.budgets.inspect(context.request.run).deadline, deadline)
+      checks.push(
+        'original kept review findings classify while paused, preserving gate exhaustion, native invokers and original budget without repair dispatch',
+      )
+    } finally {
+      clearTimeout(timer)
+      abort.abort()
+    }
+  },
+  'confirmed',
+  'host-observed',
+  'plan',
+)
 const report = {
   status: 'passed',
   provenance: 'fixture',

@@ -9,6 +9,7 @@ import type { RunnerStore } from '../../src/runner/store.js'
 export type GateFixtureMode =
   | 'valid'
   | 'finding'
+  | 'confirmed'
   | 'wrong-unit'
   | 'execution'
   | 'outer-unknown'
@@ -31,7 +32,7 @@ export function gateWorkerFixture(
 const fs=require('node:fs');let text='';process.stdin.on('data',b=>text+=b);process.stdin.on('end',()=>{
 const p=JSON.parse(text),a=p.assignment,input=JSON.parse(p.inputs.find(i=>i.artifact.ref==='artifacts/gate-input.json').content),mode=${JSON.stringify(mode)};
 if(mode==='mutate')fs.writeFileSync(${JSON.stringify(join(workspace, 'app.txt'))},'Forbidden review edit.');
-const report=a.identity.role==='refuter'?{finding:input.assignment.finding,verifier:input.assignment.verifier,outcome:'refute',reason:'Normalized fixture counterexample.',evidence:['Observed fixture counterexample.']}:{unit:mode==='wrong-unit'?'another':input.assignment.id,status:'ok',evidence:['Observed fixture candidate.'],findings:(mode==='finding'||(mode==='majority'&&input.assignment.id===input.plan.units.find(unit=>!unit.failSafe)?.id))?[{id:'defect',location:'app.txt:1',text:'Normalized fixture defect.',evidence:['Observed fixture line.']}]:[]};
+const report=a.identity.role==='refuter'?{finding:input.assignment.finding,verifier:input.assignment.verifier,outcome:mode==='confirmed'?'confirm':'refute',reason:'Normalized fixture counterexample.',evidence:['Observed fixture counterexample.']}:{unit:mode==='wrong-unit'?'another':input.assignment.id,status:'ok',evidence:['Observed fixture candidate.'],findings:(mode==='finding'||(mode==='confirmed'&&input.assignment.id===input.plan.units.find(unit=>unit.id!=='suite')?.id)||(mode==='majority'&&input.assignment.id===input.plan.units.find(unit=>!unit.failSafe)?.id))?[{id:'defect',location:'app.txt:1',text:'Normalized fixture defect.',evidence:['Observed fixture line.']}]:[]};
 if(mode==='execution')report.execution={status:'passed'};
 const result={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:mode==='majority'&&a.identity.role==='refuter'&&input.assignment.verifier===input.plan.verifiers?'blocked':'complete',summary:'Synthetic review claim.',artifacts:[{ref:'artifacts/gate.json',kind:'report',text:JSON.stringify(report)}],criteria:[],findings:[],unknowns:mode==='outer-unknown'?[{question:'Unknown?',reason:'Fixture missing evidence.',owner:'Fixture Owner'}]:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(result)}}));console.log(JSON.stringify({type:'turn.completed'}));

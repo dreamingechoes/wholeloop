@@ -188,7 +188,15 @@ The internal verification gate accepts an explicit stored run/revision, contract
 
 RunnerVerificationStages obtains those paths once from its fixed controller selector before consuming a round. Recovery reads original locators from the gate and audits the complete declared identity vector without calling selectors or hosts. Changed revisions, matching replacement files, stale snapshots and unavailable fixture suites cannot pass. Existing independent verifier/refuter, ownership, budget and suite policies remain required. Downstream implementation, code review, integration and whole-feature acceptance remain separate.
 
-Run npm run eval:runner-verification -- --retire-success for the four actual Docker/synthetic-native scenarios, including contract-only lost-verdict recovery. Each scenario has its own bounded controller and disposable external store. Successful retirement targets only the exact observed fixture environment. Normalized synthetic judgments do not establish real model containment, independent Linux application-host or complete-route acceptance. See [ADR-0133](../decisions/0133-independent-contract-only-verification.md).
+Run npm run eval:runner-verification -- --retire-success for the five actual Docker/synthetic-native scenarios, including contract-only lost-verdict recovery. Each scenario has its own bounded controller and disposable external store. Successful retirement targets only the exact observed fixture environment. Normalized synthetic judgments do not establish real model containment, independent Linux application-host or complete-route acceptance. See [ADR-0133](../decisions/0133-independent-contract-only-verification.md).
+
+## Read original failure feedback before correction
+
+The internal runnerRepairFeedback boundary reads the fixed verification/review components and their original private gate binding. Known nonzero suites and retained independent findings carry their exact candidate, commit, gate, round and deadline. Stale or incomplete observations, signals and missing exits stay unavailable; an exhausted gate remains exhausted. Inspection can run while paused without selecting inputs or launching another model.
+
+Fingerprints follow observed diagnostic hashes and retained finding substance. Different model IDs, ordering or whitespace cannot manufacture progress; command/diagnostic and meaningful finding changes remain distinguishable. Raw process logs are not returned. Feedback supplies no dispatch authorization, budget renewal, repaired candidate or human approval. The actual correction, candidate succession and repeated QA loop remain technical implementation work. See [ADR-0134](../decisions/0134-original-failure-feedback-before-repair.md).
+
+The finite model-free definition controls include a retained review finding and original gate exhaustion. The actual Docker/synthetic-native evaluation now has five scenarios, including retained verification findings; its known nonzero-suite case checks feedback invalidation after a candidate edit and exact restoration without new model calls. These fixtures establish controller boundaries rather than real native-account or whole-product acceptance.
 
 ## Verification of this increment
 

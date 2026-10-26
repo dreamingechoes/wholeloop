@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import type { DockerTransport } from '../../../src/environment/docker-command.js'
@@ -9,6 +9,7 @@ import { gateRuns } from '../../../src/gates/state.js'
 import { DEFAULT_REVIEW_RUBRIC } from '../../../src/review/input.js'
 import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { runnerRepairFeedback } from '../../../src/runner/repair-feedback.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { RunnerSuiteStages } from '../../../src/runner/suite-stages.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
@@ -18,6 +19,7 @@ import { runnerSuiteFixture } from '../../support/runner-suite.js'
 const destination = process.argv[2],
   scenario = process.argv[3]
 const samples = [
+  { key: 'observed-findings', exit: 0, native: 'host-observed' },
   { key: 'contract-pass', exit: 0, native: 'host-observed' },
   { key: 'observed-pass', exit: 0, native: 'host-observed' },
   { key: 'observed-fail', exit: 7, native: 'host-observed' },
@@ -74,7 +76,7 @@ try {
         const native = gateWorkerFixture(
           store,
           engine.store.get(gateRuns(engine.store.events())[0]?.subject ?? '').repository ?? '',
-          'valid',
+          sample.key === 'observed-findings' ? 'confirmed' : 'valid',
           sample.native,
         )
         const trace = {
@@ -161,7 +163,11 @@ try {
             observed = await fresh.inspect(context.request, record)
           assert.equal(
             observed.status,
-            sample.exit === 0 && sample.native === 'host-observed' ? 'passed' : 'blocked',
+            sample.exit === 0 &&
+              sample.native === 'host-observed' &&
+              sample.key !== 'observed-findings'
+              ? 'passed'
+              : 'blocked',
             JSON.stringify(observed),
           )
           assert.equal(observed.invocationState, 'stopped')
@@ -178,6 +184,50 @@ try {
           )
           const originalGate = gateRuns(engine.store.events()).at(-1)?.rounds.at(-1)?.plan
           assert.ok(originalGate)
+          const originalDeadline = store.budgets.inspect(context.request.run).deadline,
+            feedback = await runnerRepairFeedback(fresh, context.request, record)
+          assert.equal(feedback.repairDispatch, 'not-authorized')
+          assert.equal(feedback.limits, 'unchanged')
+          if (sample.exit === 7 || sample.key === 'observed-findings') {
+            assert.notEqual(feedback.status, 'unavailable', JSON.stringify(feedback))
+            if (feedback.status === 'unavailable')
+              throw new Error('Observed nonzero suite feedback unavailable')
+            assert.equal(
+              feedback.status,
+              originalGate.round >= originalGate.budget ? 'exhausted' : 'actionable',
+            )
+            assert.equal(
+              feedback.category,
+              sample.exit === 7 ? 'suite-failure' : 'verification-findings',
+            )
+            assert.equal(feedback.origin.gate, contractDigest(originalGate))
+            assert.equal(feedback.origin.candidate, originalGate.snapshot.head)
+            assert.equal(feedback.origin.deadline, context.deadline)
+            if (sample.exit === 7)
+              assert.ok(feedback.commands.some((command) => command.exitCode === 7))
+            else {
+              assert.equal(feedback.findings.length, 1)
+              assert.deepEqual(feedback.commands, [])
+            }
+            const file = join(originalGate.repository, 'app.txt'),
+              body = readFileSync(file)
+            try {
+              writeFileSync(file, 'Deliberately stale disposable candidate.\n')
+              assert.equal(
+                (await runnerRepairFeedback(fresh, context.request, record)).status,
+                'unavailable',
+              )
+            } finally {
+              writeFileSync(file, body)
+            }
+            const restored = await runnerRepairFeedback(fresh, context.request, record)
+            assert.notEqual(restored.status, 'unavailable')
+            if (restored.status === 'unavailable')
+              throw new Error('Restored original feedback unavailable')
+            assert.equal(restored.fingerprint, feedback.fingerprint)
+          } else assert.equal(feedback.status, 'unavailable')
+          assert.equal(store.budgets.inspect(context.request.run).deadline, originalDeadline)
+          assert.equal(new RunnerNativeScope(store.files, context.invocation).calls().length, calls)
           await assert.rejects(
             new RunnerSuiteStages(store, {
               identity: context.request.host,
