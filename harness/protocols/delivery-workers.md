@@ -40,3 +40,5 @@ These are protocol and host obligations. Versioned schemas and role tools alone 
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.
 
 ⛔ `delivery-parent-worker-deadline`: parented worker reservations and assignments retain the earlier original parent, attempt, global and grant deadline. An invalid or exhausted parent window reserves no attempt; a fresh claim never renews it.
+
+⛔ `delivery-runner-one-shot-correction`: bind correction to original actionable failure and closed builder production. Fence and retry the same slot within its original deadline/restart allowance. Persist intent before claim; lost responses never authorize another claim or native invocation. Correction production leaves commit and independent QA pending.

@@ -361,6 +361,12 @@ describe('current queue context assembly', () => {
       expect(() => workerContextForClaim(queue, lease, { ...input, criteria: ['search'] })).toThrow(
         'criteria-scope',
       )
+      expect(() =>
+        workerContextForClaim(queue, lease, {
+          ...input,
+          task: { kind: 'repair', prompt: 'Repair the original observed failure.' },
+        }),
+      ).toThrow('task-role')
       elapsed = 100
       expect(() => workerContextForClaim(queue, lease, input)).toThrow('expired-attempt')
     }))
@@ -418,6 +424,22 @@ describe('current queue context assembly', () => {
       }
       const events = queue.lifecycle.journal.events()
       const result = workerContextForClaim(queue, lease, input)
+      const correction = workerContextForClaim(queue, lease, {
+        ...input,
+        task: {
+          kind: 'repair',
+          prompt: 'Correct the original observed failure without changing criteria.',
+        },
+      })
+      expect(correction.assignment.tools.workspace).toBe('write')
+      expect(JSON.parse(correction.assignment.brief).task.kind).toBe('repair')
+      expect(correction.assignment.criteria).toEqual(result.assignment.criteria)
+      expect(() =>
+        workerContextForClaim(queue, lease, {
+          ...input,
+          task: { kind: 'gate-inspection', prompt: 'Inspect.' },
+        }),
+      ).toThrow('task-role')
       expect(result).toMatchObject({
         execution: 'not-started',
         authority: 'not-granted',

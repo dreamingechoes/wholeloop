@@ -209,6 +209,29 @@ export class RunnerWorkerStages {
     return this.inspect(context.request, this.store.stage(pinned.digest, record.id) ?? record)
   }
 
+  /** Audit production before fencing its queue lease; the controller's later commit changes HEAD. */
+  productionLease(request: Readonly<RunnerRequest>, unit: string): QueueAssignment {
+    const record = this.store.stage(contractDigest(request), `implementation:${unit}`)
+    if (record?.status !== 'passed' || record.provenance !== 'host-observed')
+      throw new DeliveryRunnerError('original-production-required')
+    const binding = this.read(request, record),
+      lease = binding ? this.lease(binding) : undefined,
+      retained = lease ? this.native.retained(lease) : undefined,
+      calls = new RunnerNativeScope(this.store.files, record.invocation).inspect()
+    if (
+      !binding ||
+      !lease ||
+      lease.role !== 'builder' ||
+      !this.native.completed(lease) ||
+      !calls.length ||
+      calls.some((call) => call.observed.invocationState !== 'stopped') ||
+      Date.parse(retained?.receipt?.execution?.finishedAt ?? '') > Date.parse(binding.deadline) ||
+      !Number.isFinite(Date.parse(retained?.receipt?.execution?.finishedAt ?? ''))
+    )
+      throw new DeliveryRunnerError('original-production-not-closed')
+    return lease
+  }
+
   async inspect(
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,

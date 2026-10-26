@@ -157,7 +157,7 @@ export async function runnerRepairFeedback(
               }))
               .sort((a, b) => a.ref.localeCompare(b.ref))
           : [],
-      category = failedSuite
+      category: Parameters<typeof repairFailureFingerprint>[0]['category'] = failedSuite
         ? 'suite-failure'
         : round.plan.gate === 'review'
           ? 'review-findings'

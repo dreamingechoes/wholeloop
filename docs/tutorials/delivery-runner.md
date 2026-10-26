@@ -202,11 +202,19 @@ The finite model-free definition controls include a retained review finding and 
 
 The internal admitRunnerRepair boundary checks explicit unattended authority for the original active stage and requires actionable feedback, a live original deadline and closed invokers. It records the exact original failure once through the existing budget journal. A lost response does not add another failure, reserve a worker or renew the deadline. Expired, revoked, paused, supervised, unavailable or exhausted scopes refuse.
 
-Admission rechecks candidate identity and budget after accounting. It supplies no exclusive dispatch claim, repaired commit or progress event. The next implementation work must persist one-shot worker ownership, execute the correction and bind fresh commits and QA. See [ADR-0135](../decisions/0135-original-repair-budget-admission.md).
+Admission rechecks candidate identity and budget after accounting. It supplies no exclusive dispatch claim, repaired commit or progress event. The separate correction component now persists one-shot worker ownership; binding fresh commits and repeated QA remains implementation work. See [ADR-0135](../decisions/0135-original-repair-budget-admission.md).
 
 The exhaustion fixture explicitly configures one review round before execution; defaults remain four verify rounds and three review rounds. The actual Docker/synthetic-native evaluation now has six scenarios, including original failure admission with lost-response deduplication, unchanged worker reservations and refusal after pause or deadline extension. These remain source-checkout fixture controls, not real model or complete-route acceptance.
 
 Targeted owned-worker claims also cap their durable reservation and worker assignment at the original parent stage deadline. A later child claim cannot renew that window; invalid or expired parent bounds reserve nothing. Existing unparented queue callers retain their behavior. See [ADR-0136](../decisions/0136-parent-bounded-worker-reservations.md).
+
+## Produce one original correction
+
+The internal RunnerRepairWorkers component requires admitted original feedback and audited original builder production. It fences and requeues the same builder slot, reserves only the next generation within the original parent window and supplies the exact failure in a builder-only repair briefing. Existing restart/global limits and failure accounting remain authoritative. A new cell cannot bypass the original history.
+
+Private intent precedes claim and native work. A lost response retains that intent and reservation rather than authorizing another claim. Paused recovery observes the original successor lease, captured receipt, owned call prefix and unchanged produced bytes without selectors or another host. Missing evidence remains unavailable. Cancellation uses only original private native channels.
+
+Its result reports produced correction with commit and QA pending; it cannot mark a root verification/review stage passed. Candidate succession, repeated independent QA and complete-route acceptance remain technical work. Run npm run eval:runner-repairs from the source checkout for the finite synthetic-native controls, separate from authenticated native acceptance. See [ADR-0137](../decisions/0137-one-shot-original-correction-workers.md).
 
 ## Verification of this increment
 

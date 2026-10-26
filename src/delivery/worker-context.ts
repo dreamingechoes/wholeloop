@@ -70,7 +70,7 @@ export function workerContextForClaim(
     context: WorkerContext[]
     criteria?: string[]
     findings?: string[]
-    task?: { kind: 'gate-inspection' | 'gate-refutation'; prompt: string }
+    task?: { kind: 'gate-inspection' | 'gate-refutation' | 'repair'; prompt: string }
     planAccepted?: (grant: string, plan: string) => boolean
   },
 ) {
@@ -119,9 +119,11 @@ export function workerContextForClaim(
     const criteria = input.criteria ?? unit.criteria
     if (
       input.task &&
-      (input.task.kind === 'gate-refutation'
-        ? lease.role !== 'refuter'
-        : input.task.kind !== 'gate-inspection' || !['reviewer', 'verifier'].includes(lease.role))
+      (input.task.kind === 'repair'
+        ? lease.role !== 'builder'
+        : input.task.kind === 'gate-refutation'
+          ? lease.role !== 'refuter'
+          : input.task.kind !== 'gate-inspection' || !['reviewer', 'verifier'].includes(lease.role))
     )
       throw new WorkerProtocolError('task-role')
     if (criteria.some((id) => !unit.criteria.includes(id)))

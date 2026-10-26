@@ -18,7 +18,14 @@ export async function runnerWorkerFixture(
     },
   ) => Promise<void>,
   mode: 'complete' | 'hang' = 'complete',
+  config: {
+    unattended?: boolean
+    guidance?: string
+    stageBudget?: 'plan'
+    provenance?: 'fixture' | 'host-observed'
+  } = {},
 ) {
+  const pinnedGuidance = config.guidance ?? guidance
   await runnerGitFixture(
     async (input) => {
       const { store, host, request, dispatch, observe } = input
@@ -27,14 +34,15 @@ export async function runnerWorkerFixture(
         queue = new DeliveryQueue(store.files.root),
         bin = store.files.path('fixture-bin'),
         contextRoot = store.files.path('fixture-worker-context')
-      store.files.atomic('fixture-worker-context/artifacts/guidance.txt', guidance)
+      store.files.atomic('fixture-worker-context/artifacts/guidance.txt', pinnedGuidance)
       store.files.atomic(
         'fixture-bin/codex',
         `#!${process.execPath}
 const fs=require('node:fs');if(process.argv.includes('--version')){console.log('synthetic policy control');process.exit(0)}let text='';process.stdin.on('data',b=>text+=b);process.stdin.on('end',()=>{
 const {assignment:a}=JSON.parse(text);
 if(${JSON.stringify(mode)}==='hang'){fs.writeFileSync(${JSON.stringify(join(bin, 'ready'))},'ready');setInterval(()=>{},1000);return}
-fs.writeFileSync(${JSON.stringify(join(workspace, 'app.txt'))},'Synthetic owned implementation.\\n');
+const repair=JSON.parse(a.brief).task?.kind==='repair';
+fs.writeFileSync(${JSON.stringify(join(workspace, 'app.txt'))},repair?'Synthetic owned correction.\\n':'Synthetic owned implementation.\\n');
 const value={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic native worker claim.',artifacts:[{ref:'artifacts/report.txt',kind:'report',text:'Retained fixture report.\\n'}],criteria:[],findings:[],unknowns:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(value)}}));console.log(JSON.stringify({type:'turn.completed'}));
 });
@@ -51,7 +59,7 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
           policy: recipe.policy,
           model,
           evidence: 'f'.repeat(64),
-          provenance: 'fixture',
+          provenance: config.provenance ?? 'fixture',
           authenticated: true,
           boundary: {
             contained: true,
@@ -76,7 +84,11 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
           output: 'inline-proposal',
         },
         boundary: () => boundary,
-        admit: () => ({ ready: true, provenance: 'fixture', evidence: 'f'.repeat(64) }),
+        admit: () => ({
+          ready: true,
+          provenance: config.provenance ?? 'fixture',
+          evidence: 'f'.repeat(64),
+        }),
         context: (_context, workspace) => ({
           ...(workspace ? { workspace } : {}),
           contextRoot,
@@ -87,8 +99,8 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
               audience: 'shared',
               artifact: {
                 ref: 'artifacts/guidance.txt',
-                bytes: Buffer.byteLength(guidance),
-                sha256: hash(guidance),
+                bytes: Buffer.byteLength(pinnedGuidance),
+                sha256: hash(pinnedGuidance),
               },
             },
           ],
@@ -101,6 +113,17 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
         workers: new RunnerWorkerStages(store, queue, options),
       })
     },
-    { singleUnit: true, guidance },
+    {
+      singleUnit: true,
+      guidance: pinnedGuidance,
+      ...(config.stageBudget ? { stageBudget: config.stageBudget } : {}),
+      ...(config.unattended
+        ? {
+            configure: (plan) => {
+              plan.policy.intervention = 'none'
+            },
+          }
+        : {}),
+    },
   )
 }
