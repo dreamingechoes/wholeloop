@@ -114,6 +114,57 @@ describe('persistent delivery budgets', () => {
       })
     }))
 
+  it.each([
+    ['2026-10-24T10:00:00.050Z', '2026-10-24T10:00:00.050Z'],
+    ['2026-10-24T10:00:00.900Z', '2026-10-24T10:00:00.100Z'],
+    [undefined, '2026-10-24T10:00:00.100Z'],
+  ])('caps a child reservation at the earlier parent or attempt bound: %s', (deadline, expected) =>
+    fixture(({ planning, plan }) => {
+      const { clock, now } = clocks(),
+        store = planning.sources.files.root
+      plan.budgets.wallTimeMs = 1000
+      plan.budgets.attemptMs = 100
+      const queue = new DeliveryQueue(store, now, undefined, clock)
+      register(queue, plan)
+      const entry = queue.enqueue(plan.run, { unit: 'contract' })
+      const result = queue.claim(owner, () => ({ ready: true, ...provenance }), {
+        run: plan.run,
+        queue: entry.id,
+        ...(deadline ? { deadline } : {}),
+      })
+      expect(result.assignment).not.toBeNull()
+      const budget = new DeliveryBudgets(store, now, clock).inspect(plan.run)
+      expect(budget.reservations).toHaveLength(1)
+      expect(budget.reservations[0]?.deadline).toBe(expected)
+      expect(budget.deadline).toBe('2026-10-24T10:00:01.000Z')
+    }),
+  )
+
+  it.each([
+    ['invalid', 'invalid-parent-deadline'],
+    ['2026-10-24T10:00:01Z', 'invalid-parent-deadline'],
+    ['2026-10-24T09:59:59.999Z', 'parent-deadline'],
+    ['2026-10-24T10:00:00.000Z', 'parent-deadline'],
+  ])('refuses invalid or expired parent bounds without reserving: %s', (deadline, reason) =>
+    fixture(({ planning, plan }) => {
+      const { clock, now } = clocks(),
+        store = planning.sources.files.root
+      const queue = new DeliveryQueue(store, now, undefined, clock)
+      register(queue, plan)
+      const entry = queue.enqueue(plan.run, { unit: 'contract' })
+      expect(
+        queue.claim(owner, () => ({ ready: true, ...provenance }), {
+          run: plan.run,
+          queue: entry.id,
+          deadline,
+        }),
+      ).toMatchObject({ assignment: null, deferred: [{ reason }] })
+      expect(new DeliveryBudgets(store, now, clock).inspect(plan.run).reservations).toEqual([])
+      expect(queue.inspect(plan.run)[0]).toMatchObject({ status: 'pending' })
+      expect(queue.inspect(plan.run)[0]).not.toHaveProperty('attempt')
+    }),
+  )
+
   it('uses stricter derived-plan budgets under an initial-envelope grant', () =>
     fixture(({ planning, plan }) => {
       const { clock, now } = clocks(),

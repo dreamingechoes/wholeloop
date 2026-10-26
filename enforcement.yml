@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-parent-worker-deadline
+    enforcers: [src/delivery/budget-policy.ts#prepareBudgetAdmission, src/delivery/queue.ts#claim, src/runner/worker-stages.ts#RunnerWorkerStages, test/unit/delivery/budgets.test.ts, test/unit/runner/worker-stages.test.ts]
   - id: delivery-runner-repair-admission
     enforcers: [src/runner/repair-admission.ts#admitRunnerRepair, src/delivery/budgets.ts#failure, test/unit/runner/repair-admission.test.ts, test/evals/runner/definitions.ts, test/evals/runner/verification.ts]
   - id: delivery-runner-repair-feedback

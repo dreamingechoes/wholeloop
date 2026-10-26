@@ -144,7 +144,7 @@ export class DeliveryQueue {
       ready: false,
       reason: 'capability-unavailable',
     }),
-    selected?: { run: string; queue: string },
+    selected?: { run: string; queue: string; deadline?: string },
   ): QueueClaimResult {
     if (!/^controller-[a-f0-9]{32}$/.test(controller))
       throw new DeliveryJournalError('invalid-controller')
@@ -240,6 +240,7 @@ export class DeliveryQueue {
                     grant,
                     this.budgetClock(),
                     {
+                      ...(selected?.deadline !== undefined ? { deadline: selected.deadline } : {}),
                       id: attempt,
                       kind: 'attempt',
                       unit: entry.unit,

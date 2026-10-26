@@ -2,6 +2,7 @@ import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { findBudget } from '../../../src/delivery/budget-events.js'
 import type { NativeRunReceipt } from '../../../src/delivery/native-host.js'
 import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { deliveryAttempts } from '../../../src/delivery/reducer.js'
@@ -46,6 +47,11 @@ describe('owned native workers join the original root stage', () => {
       })
       const context = dispatch('implementation:search')
       expect((await workers.execute(context)).status).toBe('passed')
+      const entry = queue.inspect(request.run)[0]
+      const reservation = findBudget(queue.lifecycle.journal.get(request.run))?.reservations.find(
+        (item) => item.id === entry?.attempt,
+      )
+      expect(reservation?.deadline).toBe(context.deadline)
       expect(new RunnerNativeScope(store.files, context.invocation).calls()).toHaveLength(2)
     })
   })

@@ -112,6 +112,8 @@ export function budgetClockPayload(
       }
 }
 export interface BudgetProposal {
+  /** Internal parent bound; narrowing never grants additional runtime. */
+  deadline?: string
   id: string
   kind: 'attempt' | 'effect'
   unit?: string
@@ -129,7 +131,13 @@ export function prepareBudgetAdmission(
   currentLimits?: BudgetLimits,
 ) {
   const budget = effectiveBudget(state, grant, clock, currentLimits)
+  const parent = proposal.deadline === undefined ? undefined : Date.parse(proposal.deadline)
   let problem: string | null = budget.problem
+  if (parent !== undefined) {
+    if (!Number.isFinite(parent) || new Date(parent).toISOString() !== proposal.deadline)
+      problem = 'invalid-parent-deadline'
+    else if (parent <= Date.parse(clock.wall)) problem = 'parent-deadline'
+  }
   if (
     !problem &&
     proposal.kind === 'attempt' &&
@@ -184,6 +192,7 @@ export function prepareBudgetAdmission(
   }
   const deadline = new Date(
     Math.min(
+      parent !== undefined && Number.isFinite(parent) ? parent : Number.POSITIVE_INFINITY,
       Date.parse(grant.expiresAt),
       Date.parse(clock.wall) + Math.min(budget.limits.attemptMs, budget.remainingMs),
     ),

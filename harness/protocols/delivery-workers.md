@@ -38,3 +38,5 @@ These are protocol and host obligations. Versioned schemas and role tools alone 
 ⛔ `delivery-runner-repair-admission`: require explicit unattended authority, current original stage/candidate, closed invokers and the original deadline before accounting for actionable failure. Preserve exhausted gates and idempotent original failure keys. Failure admission creates neither a worker reservation nor progress, dispatch or another runtime allowance.
 
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.
+
+⛔ `delivery-parent-worker-deadline`: parented worker reservations and assignments retain the earlier original parent, attempt, global and grant deadline. An invalid or exhausted parent window reserves no attempt; a fresh claim never renews it.

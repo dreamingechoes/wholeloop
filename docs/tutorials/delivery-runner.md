@@ -206,6 +206,8 @@ Admission rechecks candidate identity and budget after accounting. It supplies n
 
 The exhaustion fixture explicitly configures one review round before execution; defaults remain four verify rounds and three review rounds. The actual Docker/synthetic-native evaluation now has six scenarios, including original failure admission with lost-response deduplication, unchanged worker reservations and refusal after pause or deadline extension. These remain source-checkout fixture controls, not real model or complete-route acceptance.
 
+Targeted owned-worker claims also cap their durable reservation and worker assignment at the original parent stage deadline. A later child claim cannot renew that window; invalid or expired parent bounds reserve nothing. Existing unparented queue callers retain their behavior. See [ADR-0136](../decisions/0136-parent-bounded-worker-reservations.md).
+
 ## Verification of this increment
 
 Complete checks for the criterion-verification candidate pass 3196 tests in 158 files on isolated Debian Linux arm64/Node 24.22.0 with the original two-worker configuration. macOS arm64/Node 24.22.0 passes 3195 tests before the final admission-only test split using VITEST_MAX_WORKERS=1; its corrected native/verification/store regression passes all 26 cases. The split preserves actual worker coverage and tests invalid-input admission in a separate current context, without changing runtime code or deadlines. Fifteen model-free runner controls and exact inert schema parity pass with Linux Node 20.0.0/Git 2.39.5. The build reproduces the same copied CLI throughout these checks.

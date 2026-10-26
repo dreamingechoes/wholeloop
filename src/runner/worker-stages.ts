@@ -184,6 +184,7 @@ export class RunnerWorkerStages {
     const claimed = this.queue.claim(binding.controller, this.options.admit, {
         run: context.request.run,
         queue: entry.id,
+        deadline: context.deadline,
       }),
       lease = claimed.assignment
     if (!lease) {

@@ -146,6 +146,7 @@
 | [0133](./0133-independent-contract-only-verification.md) | Independent contract-only verification | Accepted | 2026-10-26 |
 | [0134](./0134-original-failure-feedback-before-repair.md) | Original failure feedback before repair | Accepted | 2026-10-26 |
 | [0135](./0135-original-repair-budget-admission.md) | Original repair budget admission | Accepted | 2026-10-27 |
+| [0136](./0136-parent-bounded-worker-reservations.md) | Parent-bounded worker reservations | Accepted | 2026-10-27 |
 
 ## Lifecycle
 

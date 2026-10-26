@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-27 · P6-10 continuing — parent-bounded worker reservations
+
+- Clamp targeted owned-worker reservations and persisted assignments to the original parent window as well as existing attempt/global/grant limits. Reject malformed, noncanonical or expired parent bounds without attempts. Preserve public schemas and unparented callers. Add ADR-0136 and a protocol enforcer. Actual one-shot correction dispatch and subsequent commits/QA remain technical; P6-10 stays open and counts remain 59/88 complete.
+- Preserve the initial lint/type failure from a duplicate property introduced by the edit, and the initial four assertion failures distinguishing an absent attempt field from a present undefined property. Correct both without relaxing runtime guards. The first restricted integration run also reports seventeen inactive runner leases; the subsequent authorized Git/process regression passes all 65 budget/queue/worker tests in 49.42 seconds. A focused original-worker control separately passes; frozen declaration compatibility passes all 418 cases. Lint/types/build/docs/Markdown/Mermaid and offline package checks pass. The first harness check correctly catches the new enforcement mapping lacking a protocol rule; add its explicit rule before the final check. Full-suite and independent Linux application-host results remain unchanged; no complete-route or repair acceptance is claimed.
+
+---
+
 ## 2026-10-27 · P6-10 continuing — original repair admission
 
 - Separate original failure accounting from correction dispatch. Require exact active stage/plan/invocation, explicit unattended write/test authority, actionable current feedback and original cancellation/deadline bounds. Retain closed budget categories and SHA-256 candidate-receipt identities; journal the same original failure once and recheck scope after accounting. Actual one-shot workers, candidate succession and repeated QA remain technical; P6-10 stays open and counts remain 59/88 complete. Add ADR-0135, enforcer and docs.
