@@ -10,7 +10,7 @@ import type { RunnerRuntime, RunnerStageRecord } from './events.js'
 import { ForegroundOwner } from './foreground-owner.js'
 import { ManagedRunnerProcess } from './native-process.js'
 import { RunnerNativeScope } from './native-scope.js'
-import { DeliveryRunnerError, type RunnerStage } from './route.js'
+import { DeliveryRunnerError, type RunnerStage, runnerDecisionRequirements } from './route.js'
 import observationSchema from './schemas/stage-observation-v1.json' with { type: 'json' }
 import type { RunnerLease, RunnerRequest, RunnerStore } from './store.js'
 
@@ -608,24 +608,11 @@ export class DeliveryRunner {
   ): boolean {
     const request = this.store.get(lease.request),
       context = this.store.basis(request)
-    const required: { id: string; outcome: string }[] = []
-    if (stage.kind === 'plan' && context.authority.grant.basis.kind === 'envelope')
-      required.push({ id: 'delivery-plan', outcome: 'accept' })
-    if (context.plan.policy.intervention === 'none') {
-      if (stage.kind === 'definition')
-        required.push(
-          { id: 'frame-outcome', outcome: 'go' },
-          { id: 'approve-spec', outcome: 'accept' },
-          { id: 'approve-scopes', outcome: 'accept' },
-        )
-      if (stage.kind === 'build-plan')
-        required.push({ id: 'approve-build-plan', outcome: 'accept' })
-      if (stage.kind === 'acceptance') required.push({ id: 'acceptance', outcome: 'accept' })
-      if (stage.kind === 'plan' && context.plan.policy.endpoint === 'research-report')
-        required.push({ id: 'research-plan', outcome: 'accept' })
-      if (stage.kind === 'research' && context.plan.policy.endpoint === 'research-report')
-        required.push({ id: 'research-sources', outcome: 'accept' })
-    }
+    const required = runnerDecisionRequirements(
+      context.plan,
+      stage,
+      context.authority.grant.basis.kind,
+    )
     return required.every((requiredDecision) =>
       (value.decisions ?? []).some((digest) => {
         try {

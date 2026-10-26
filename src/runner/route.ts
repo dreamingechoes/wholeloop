@@ -1,4 +1,5 @@
 import { contractDigest } from '../contracts/compatibility.js'
+import type { DecisionId, DecisionOutcome } from '../decisions/policy.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { deliveryPlanRoute, planWaves } from '../delivery/plan.js'
 
@@ -24,6 +25,37 @@ export interface RunnerStage {
   unit?: string
   milestone?: string
   criteria: string[]
+}
+/** Required judgments follow the selected route; they never create delegated authority. */
+export function runnerDecisionRequirements(
+  plan: DeliveryPlan,
+  stage: Pick<RunnerStage, 'kind'>,
+  basis: 'plan' | 'envelope',
+): { id: DecisionId; outcome: DecisionOutcome }[] {
+  const required: { id: DecisionId; outcome: DecisionOutcome }[] = []
+  if (stage.kind === 'plan' && basis === 'envelope')
+    required.push({ id: 'delivery-plan', outcome: 'accept' })
+  if (plan.policy.intervention === 'none') {
+    if (stage.kind === 'definition') {
+      // Research defines angles and sources under its own delegated decision scope.
+      // Source acceptance remains attached to the later actual research stage.
+      if (plan.policy.endpoint === 'research-report')
+        required.push({ id: 'research-plan', outcome: 'accept' })
+      else
+        required.push(
+          { id: 'frame-outcome', outcome: 'go' },
+          { id: 'approve-spec', outcome: 'accept' },
+          { id: 'approve-scopes', outcome: 'accept' },
+        )
+    }
+    if (stage.kind === 'build-plan') required.push({ id: 'approve-build-plan', outcome: 'accept' })
+    if (stage.kind === 'acceptance') required.push({ id: 'acceptance', outcome: 'accept' })
+    if (stage.kind === 'plan' && plan.policy.endpoint === 'research-report')
+      required.push({ id: 'research-plan', outcome: 'accept' })
+    if (stage.kind === 'research' && plan.policy.endpoint === 'research-report')
+      required.push({ id: 'research-sources', outcome: 'accept' })
+  }
+  return required
 }
 export class DeliveryRunnerError extends Error {
   constructor(readonly problem: string) {

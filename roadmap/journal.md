@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — route-specific decision requirements
+
+- Reproduce an incomplete none-policy research definition incorrectly requiring product framing/spec/scope decisions despite its research-only delegation. Extract the deterministic stage requirement selector and bind initial research to research-plan while retaining research-sources at actual research, implementation judgments, envelope acceptance and current private proof checks. No authority or public v1 identity changes.
+- Add supervised/on-exception preservation, research-only private envelope/rubric preflight and minimum-runtime control coverage. Preserve the failing repro and invalid-evidence fixture failures; correct the fixture to the existing required evidence contract. Full native/domain-host/public run/reconcile integration remains technical P6-10 work; no task or manual acceptance is closed by this fix.
+
+- The failing exact research-only repro is corrected; ten route/policy cases and the earlier seventeen-case route/engine run pass. Complete checks pass 2940 tests in 139 files on macOS arm64/Node 24.22.0 (387.08 seconds) and isolated Debian Linux arm64/Node 24.22.0 (119.29 seconds), plus all remaining checks. Four model-free controls, including the new separate research-decision scope assertion, pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5; inert public schemas match. These are policy/fixture/process observations, not full native research acceptance.
+- Archive 53c3ae0e292172edae32d4887d88c53f84a8956545ef590cae3b3925d97b6dc0 and core 5d75f7fb5658265e20785747c5a89b47e16752f668438b2fefc6bf1ca22dbee3 identify pre-evidence checks. Recheck evidence-only docs/package and commit the scoped correction before continuing native/domain-host P6-10 integration. Counts remain 59/88 complete; manual acceptance remains deferred. No model, account, remote publication or project merge occurs.
+
 ## 2026-10-26 · P6-10 continuing — private owned foreground bootstrap
 
 - Publish a private installed-core/parent/lease/deadline binding before the authoritative claim, register the actual wrapper before stdin and require actual group membership plus one-shot nonce-bound consumption. Preserve unknown invocations and final pipe drain separately from dispatch release. Fresh recovery can fence/cancel only the original group and recover a prepared root after positively observed parent loss before native intent. Keep setup failures finite and none-policy noninteractive.

@@ -43,6 +43,8 @@ wl delivery decision-inspect --digest <decision-sha256> --store <external-store>
 
 Pinning copies exact bounded rubric bytes into immutable controller inputs. Preflight opens no model: scope policy-only and runtime not-observed explicitly separate declared policy from actual host readiness. Ready means the inspected policy has no listed structural blocker; it supplies no runtime capability. For none, undelegated route decisions and mandatory human acceptance are blocked with interactive disabled. Non-ready preflight/inspection exits 3; inspect still returns the retained record.
 
+The runner attaches judgments to their actual stages. Initial unattended research definition requires research-plan; research-sources judges the subsequent source work. An implementation definition retains frame-outcome/go, approve-spec and approve-scopes. An envelope additionally requires its current delivery-plan judgment at the plan stage. These requirements select existing delegated authority; they do not add permissions, replace independent private judgments or record a human approval.
+
 ## Run the complete model-free control
 
 From the source checkout, with Git installed and no service account:

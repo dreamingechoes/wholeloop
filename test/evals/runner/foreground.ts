@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { OwnedForegroundRunner, receiveOwnedForeground } from '../../../src/runner/foreground.js'
 import { FOREGROUND_ARGUMENT } from '../../../src/runner/foreground-owner.js'
+import { runnerDecisionRequirements } from '../../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { assertExternal } from '../../../src/state/paths.js'
 import { authorization, fixture } from '../../support/delivery.js'
@@ -71,6 +72,22 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
         checks.push(
           `${intervention}: actual group-bound private bootstrap and honest no-model endpoint limitation`,
         )
+        if (intervention === 'none') {
+          const research = structuredClone(plan)
+          research.policy.endpoint = 'research-report'
+          research.definition = {
+            ready: false,
+            missing: ['Select bounded independent research angles.'],
+          }
+          assert.deepEqual(
+            runnerDecisionRequirements(research, { kind: 'definition' }, 'envelope'),
+            [{ id: 'research-plan', outcome: 'accept' }],
+          )
+          assert.deepEqual(runnerDecisionRequirements(research, { kind: 'research' }, 'plan'), [
+            { id: 'research-sources', outcome: 'accept' },
+          ])
+          checks.push('initial research and later source judgments retain their own decision scope')
+        }
         if (intervention === 'supervised') {
           const deadline = store.budgets.inspect(request.run).deadline
           store.control(digest, 'resume', 'Fixture Operator')
