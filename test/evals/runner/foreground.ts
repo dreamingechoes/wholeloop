@@ -9,7 +9,8 @@ import { FOREGROUND_ARGUMENT } from '../../../src/runner/foreground-owner.js'
 import { runnerDecisionRequirements } from '../../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { assertExternal } from '../../../src/state/paths.js'
-import { authorization, fixture } from '../../support/delivery.js'
+import { authorization, fixture, git } from '../../support/delivery.js'
+import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
 
 const core = fileURLToPath(import.meta.url)
@@ -175,6 +176,17 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
     'claude',
     { retain: true },
   )
+  await deliveryWorkspaceFixture(async ({ workspaces, request, root }) => {
+    const base = git(root, ['rev-parse', 'HEAD']),
+      record = workspaces.prepare(request)
+    assert.equal((await workspaces.execute(record.digest)).status, 'ready')
+    assert.equal((await workspaces.reconcile(record.digest)).status, 'ready')
+    assert.equal(git(root, ['rev-parse', 'HEAD']), base)
+    assert.equal(workspaces.effects.inspect(request.run).length, 1)
+    checks.push(
+      'actual owned subjectless Git workspace creation and read-only reconciliation preserve the personal checkout',
+    )
+  })
   const report = {
     status: 'passed',
     provenance: 'fixture',

@@ -391,7 +391,10 @@
     "schema:wholeloop/delivery-worker-proposal@1": "461c84498bb43a0c5849199d8076b773e33e2c5b8d76937dd1f3224c8a3b2396",
     "schema:wholeloop/delivery-native-purpose@1": "d533425db4050e1727235dd5d546362f7882ee03598c3bc58d8acb39ea211b41",
     "schema:wholeloop/delegated-native-judgment@1": "fe83c7c932cf86a29b2eb2a375b369059c314a414aa354fd3612ed614e957cdc",
-    "schema:wholeloop/delegated-native-challenge@1": "63fc78e069e2bad67951fc14f8d60aef369fdf571b98f490e96931b651a522fe"
+    "schema:wholeloop/delegated-native-challenge@1": "63fc78e069e2bad67951fc14f8d60aef369fdf571b98f490e96931b651a522fe",
+    "schema:wholeloop/delivery-workspace-request@1": "64a3266669aea194067f0a75d41f3120251dc3c54c74a31bbe09dbd70c9500a3",
+    "schema:wholeloop/delivery-workspace-record@1": "36ba8fbfb061c6f2e9a6f14ed3caade7092fb15f353fe94ddb5a0299d068b185",
+    "schema:wholeloop/delivery-workspace-status@1": "8c57af91204d3963217aae53b3aaef2169db3331d3c6c5fd40a988a4a982ad10"
   },
   "commands": [
     {

@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — owned code-unit topic preparation
+
+- Prepare one private original-grant external topic per exact plan/code unit without legacy hierarchy or human approval fabrication. Pin complete transitive committed code predecessors, preserve cross-repository boundaries and narrowed branch prefixes and reuse existing effect/native Git ownership. Keep actual dirty candidate snapshots separate from QA, acceptance and publication.
+- Reconcile only original issued operations and preserve occupied paths, unknown closure and unrelated work. Recover retained exact native output without repeating checkout or resuming execution. Initial tests expose unsupported nullable schema vocabulary, the missing original queued continuation after a positive effect and an invalid missing-authority fixture; correct each without extending deadlines. Eight initial corrected cases pass; the expanded workspace/assembly run passes 20 cases in 45.66 seconds. The later bounds/private-binding and frozen-contract run passes 434 cases in 46.35 seconds. Add one further oversized private-locator refusal and the model-free actual Git control. Actual candidate commit, fixed domain-host/public run/reconcile/endpoint wiring remain technical P6-10 work; no task/manual acceptance closes here.
+
+- Final complete checks pass 3018 tests in 143 files on macOS arm64/Node 24.22.0 (410.63 seconds) and isolated Debian Linux arm64/Node 24.22.0 (134.54 seconds), plus docs346/harness150/Markdown345/Mermaid36 and all remaining checks. Seven model-free controls and inert schema parity pass with Linux Node 20.0.0/Git 2.39.5. Actual Git/process observations remain distinct from fixture model semantics and full native/account/endpoint acceptance. No skips or deadline increases occur.
+- Archive 7d5a22b91832997e690a1cd5178da6e701d7f40794d6307e3ff5d12e45820189 and core 5d0ee1c7eb861b77dca8894bb0543f27080ba17336d67642a8940f5e7646e9e0 identify pre-evidence checks. Recheck evidence-only docs/package, commit owned topic preparation and continue P6-10 candidate commit/domain-host wiring. Counts remain 59/88 complete; no model, account, hosted publication or project merge occurs.
+
 ## 2026-10-26 · P6-10 continuing — owned native decision purpose attempts
 
 - Share the existing bounded native assignment transport without changing queue admission/settlement or v1 receipts. Add original-authority planner/challenger purpose attempts without fabricated implementation units, including revision-zero envelopes. Persist binding before claim, consume private invocation once, retain unknown reservations and preserve original evaluator/deadline/hard-metering limits.

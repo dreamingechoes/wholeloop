@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-topic-workspaces
+    enforcers: [src/delivery/workspaces.ts#DeliveryWorkspaces, src/integration/git-process.ts#AssemblyGitProcess, src/delivery/effects.ts#DeliveryEffects, test/unit/delivery/workspaces.test.ts, test/unit/integration/assembly.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-native-purpose
     enforcers: [src/delivery/native-purpose.ts#NativePurposeAttempts, src/delivery/native-assignment-host.ts#NativeAssignmentHost, src/decisions/native-host.ts#NativeDelegatedDecisionHost, test/unit/delivery/native-purpose.test.ts, test/unit/decisions/native-host.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-worker-inline-artifacts

@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-workspace-status@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "digest",
+    "record",
+    "current",
+    "status",
+    "effects",
+    "acceptance",
+    "publication"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-workspace-status@1"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "digest",
+        "request",
+        "grant",
+        "grantDigest",
+        "source",
+        "repository",
+        "parts"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/delivery-workspace-record@1"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "request": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "run": {
+              "type": "string",
+              "pattern": "^delivery-[a-f0-9]{16}$",
+              "maxLength": 25
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "plan": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "maxLength": 64
+            },
+            "parts": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 256,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "work": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+                    "maxLength": 64
+                  },
+                  "repository": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+                    "maxLength": 64
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "ref": {
+                    "type": "string",
+                    "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9/_.-]*$",
+                    "maxLength": 256
+                  },
+                  "head": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{40}$",
+                    "maxLength": 40
+                  }
+                },
+                "required": ["work", "repository", "path", "ref", "head"]
+              }
+            },
+            "schema": {
+              "type": "string",
+              "const": "wholeloop/delivery-workspace-request@1"
+            },
+            "key": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,31}$",
+              "maxLength": 32
+            },
+            "unit": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "maxLength": 64
+            }
+          },
+          "required": ["schema", "run", "revision", "plan", "unit", "parts", "key"]
+        },
+        "grant": {
+          "type": "string",
+          "pattern": "^authorization-[a-f0-9]{16}$"
+        },
+        "grantDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "repository": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "repository": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "maxLength": 64
+            },
+            "root": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "commonDir": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "target": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "base": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            "branch": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          },
+          "required": ["repository", "root", "commonDir", "target", "base", "branch", "path"]
+        },
+        "parts": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 256,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "work": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+                "maxLength": 64
+              },
+              "repository": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+                "maxLength": 64
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "ref": {
+                "type": "string",
+                "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9/_.-]*$",
+                "maxLength": 256
+              },
+              "head": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$",
+                "maxLength": 40
+              },
+              "snapshot": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$",
+                "maxLength": 64
+              }
+            },
+            "required": ["work", "repository", "path", "ref", "head", "snapshot"]
+          }
+        }
+      }
+    },
+    "current": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stale", "unknown", "failed", "ready", "not-run"]
+    },
+    "head": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "snapshot": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "effects": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "string",
+        "pattern": "^effect-[a-f0-9]{32}$"
+      }
+    },
+    "acceptance": {
+      "type": "string",
+      "const": "not-established"
+    },
+    "publication": {
+      "type": "string",
+      "const": "not-performed"
+    }
+  }
+}

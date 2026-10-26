@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-workspace-request@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "run": {
+      "type": "string",
+      "pattern": "^delivery-[a-f0-9]{16}$",
+      "maxLength": 25
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "parts": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "work": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "maxLength": 64
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "ref": {
+            "type": "string",
+            "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9/_.-]*$",
+            "maxLength": 256
+          },
+          "head": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{40}$",
+            "maxLength": 40
+          }
+        },
+        "required": ["work", "repository", "path", "ref", "head"]
+      }
+    },
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-workspace-request@1"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,31}$",
+      "maxLength": 32
+    },
+    "unit": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "maxLength": 64
+    }
+  },
+  "required": ["schema", "run", "revision", "plan", "unit", "parts", "key"]
+}
