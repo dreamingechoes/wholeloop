@@ -23,9 +23,16 @@ export async function runnerGitFixture(
     dispatch(id: string): RunnerStageContext
     observe(value: RunnerStageObservation): void
   }) => Promise<void>,
-  options: { singleUnit?: boolean; guidance?: string; stageBudget?: 'plan' } = {},
+  options: {
+    singleUnit?: boolean
+    guidance?: string
+    stageBudget?: 'plan'
+    definition?: boolean
+  } = {},
 ) {
   await fixture(async ({ planning, plan, root }) => {
+    if (options.definition)
+      plan.definition = { ready: false, missing: ['Confirm the original bounded definition.'] }
     if (options.guidance !== undefined) {
       const guidance = plan.guidance[0]
       if (!guidance) throw new Error('Fixture guidance missing')

@@ -6,6 +6,7 @@ import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { decodeWorkerProposal } from '../../../src/delivery/worker-proposal.js'
 import { createWorkerAssignment } from '../../../src/delivery/worker-protocol.js'
+import { RunnerArtifactStages } from '../../../src/runner/artifact-stages.js'
 import { RunnerDecisionStages } from '../../../src/runner/decision-stages.js'
 import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
 import { OwnedForegroundRunner, receiveOwnedForeground } from '../../../src/runner/foreground.js'
@@ -19,6 +20,7 @@ import { authorization, fixture, git } from '../../support/delivery.js'
 import { deliveryCommitFixture, prepareFixtureCommit } from '../../support/delivery-commits.js'
 import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
+import { runnerArtifactFixture } from '../../support/runner-artifact.js'
 import { runnerDecisionFixture } from '../../support/runner-decision.js'
 import { runnerEnvironmentFixture } from '../../support/runner-environment.js'
 import { runnerGitRouteFixture } from '../../support/runner-git.js'
@@ -315,6 +317,49 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
       )
     },
   )
+  await runnerArtifactFixture(async (fixture) => {
+    const producer = new RunnerArtifactStages(fixture.store, {
+        identity: fixture.context.request.host,
+        native: (process) => ({ ...fixture.native, process }),
+        context: () => fixture.input,
+      }),
+      produced = await producer.execute(fixture.context),
+      record = fixture.store.stage(
+        contractDigest(fixture.context.request),
+        fixture.context.stage.id,
+      )
+    assert.equal(produced.status, 'ready')
+    assert.equal(produced.provenance, 'fixture')
+    assert.equal(produced.prepared?.kind, 'acceptance')
+    assert.equal(produced.approvals, 'not-recorded')
+    assert.equal(produced.acceptance, 'not-established')
+    assert.deepEqual(
+      fixture.store.lifecycle.authority.inspect(fixture.context.request.grant).grant.decisions,
+      [],
+    )
+    assert.ok(record)
+    fixture.store.lifecycle.transition(fixture.context.request.run, {
+      to: 'paused',
+      reason: 'Observe original artifact production without adopting or approving it.',
+    })
+    const observer = new RunnerArtifactStages(new RunnerStore(fixture.store.files.root), {
+      identity: fixture.context.request.host,
+      native: () => {
+        throw new Error('Observation cannot construct a model')
+      },
+      context: () => {
+        throw new Error('Observation cannot select new inputs')
+      },
+    })
+    assert.deepEqual(await observer.inspect(fixture.context.request, record), produced)
+    assert.equal(
+      new RunnerNativeScope(fixture.store.files, fixture.context.invocation).calls().length,
+      1,
+    )
+    checks.push(
+      'an original artifact planner produces pinned pre-builder definitions without delegated decision authority; paused observation grants neither approval nor behavioral acceptance',
+    )
+  })
   const report = {
     status: 'passed',
     provenance: 'fixture',

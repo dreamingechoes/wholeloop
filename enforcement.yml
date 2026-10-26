@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-artifact-production
+    enforcers: [src/delivery/native-readonly-attempts.ts#NativeReadOnlyAttempts, src/delivery/native-purpose.ts#NativePurposeAttempts, src/runner/artifact-attempts.ts#RunnerArtifactAttempts, src/runner/artifact-stages.ts#RunnerArtifactStages, src/acceptance/store.ts#DeliveryAcceptance, test/unit/runner/artifact-attempts.test.ts, test/unit/runner/artifact-stages.test.ts, test/unit/delivery/native-purpose.test.ts, test/unit/decisions/native-host.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-owned-environments
     enforcers: [src/runner/environment-scope.ts#RunnerEnvironmentScope, src/environment/operations.ts#EnvironmentOperations, src/runner/native-process.ts#ManagedRunnerProcess, test/unit/runner/environment-scope.test.ts, test/unit/environment/operations.test.ts, test/support/runner-environment.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-owned-review
@@ -24,7 +26,7 @@ rules:
   - id: delivery-topic-workspaces
     enforcers: [src/delivery/workspaces.ts#DeliveryWorkspaces, src/integration/git-process.ts#AssemblyGitProcess, src/delivery/effects.ts#DeliveryEffects, test/unit/delivery/workspaces.test.ts, test/unit/integration/assembly.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-native-purpose
-    enforcers: [src/delivery/native-purpose.ts#NativePurposeAttempts, src/delivery/native-assignment-host.ts#NativeAssignmentHost, src/decisions/native-host.ts#NativeDelegatedDecisionHost, test/unit/delivery/native-purpose.test.ts, test/unit/decisions/native-host.test.ts, test/evals/runner/foreground.ts]
+    enforcers: [src/delivery/native-purpose.ts#NativePurposeAttempts, src/delivery/native-readonly-attempts.ts#NativeReadOnlyAttempts, src/delivery/native-assignment-host.ts#NativeAssignmentHost, src/decisions/native-host.ts#NativeDelegatedDecisionHost, test/unit/delivery/native-purpose.test.ts, test/unit/decisions/native-host.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-worker-inline-artifacts
     enforcers: [src/delivery/worker-proposal.ts#decodeWorkerProposal, src/delivery/worker-proposal.ts#workerProposalResponseSchema, src/delivery/native-adapters.ts#nativeDeliveryRecipe, src/delivery/native-host.ts#NativeDeliveryHost, src/delivery/native-assignment-host.ts#NativeAssignmentHost, test/unit/delivery/worker-proposal.test.ts, test/unit/delivery/native-host.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-ownership

@@ -93,6 +93,16 @@ Paused inspection uses the exact original private key and published receipt. If 
 
 This API returns decision evidence, with fixture/stale/rejected/incomplete records still blocked or unknown. It does not produce missing definition/build/acceptance artifacts, perform behavioral QA or establish a delivery endpoint. Those domain hosts and public complete-route execution remain in progress. See [ADR-0122](../decisions/0122-owned-stage-decisions-without-semantic-promotion.md).
 
+## Owned definition and plan production
+
+Internal RunnerArtifactAttempts and RunnerArtifactStages produce definition/plan proposals, builder plans and complete acceptance definitions using original-budget read-only planners. They use source.read/report.write authority and the planner's unchanged no-workspace policy; they do not require permission to approve their own output or invent a unit in the approved work graph. Existing delegated-decision leases and behavior remain unchanged.
+
+The controller pins the source/plan, exact response schema, original native directory and journal-selected captured report. Delivery-plan proposals preserve the authorized scope, original endpoint policy and next-revision relationship. Builder plans bind the actual owned pre-build snapshot. Acceptance definitions preserve criterion ownership and are pinned before any builder admission. Wrong, uncertain, altered or incomplete output remains blocked or unknown; fixture output retains fixture provenance.
+
+The component returns artifact/preparation evidence with approvals: not-recorded and acceptance: not-established. Its caller must still run the required independent judgments and behavioral QA. A delivery-plan proposal does not reserve its next immutable revision before the required decisions, so rejection can still produce a corrected proposal; producing a builder plan does not create a legacy human approval. Fresh observation can repair a lost original acceptance metadata write while paused without selecting new inputs, running another model or resetting an allowance. Consumed missing locators stay unknown, and cancellation retains original private ownership after revocation.
+
+These are internal controller APIs, not a public command that imports worker JSON as completion. Research-report production, full-stage decision composition and complete public route/QA/repair/acceptance wiring remain in progress. See [ADR-0125](../decisions/0125-owned-artifact-production-before-delegated-decisions.md).
+
 ## Owned code review and refutation
 
 The internal RunnerNativeGateHost binds each inspection/refutation to its original queue claim, pinned gate unit or recorded finding, current committed bytes/index/HEAD and original stage deadline. It uses the same registered process runner and bounded inline report transport as production. A read-only model cannot execute a suite or add a process-execution claim. Fixture-only observations remain unavailable to the legacy gate instead of becoming a passing review.

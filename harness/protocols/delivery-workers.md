@@ -29,4 +29,6 @@ These are protocol and host obligations. Versioned schemas and role tools alone 
 
 ⛔ `delivery-runner-owned-review`: inspect/refute only the exact current committed candidate and pinned round, rubric and recorded findings. Require owned native receipts and actual captured report bytes; keep fixture/late/forged-suite claims blocked and leave unavailable responses uncounted under the unchanged quorum/fail-safe policy. Preserve original review budgets and consumed invocations; metadata recovery never launches models, runs suites, repairs code or records human approval.
 
+⛔ `delivery-runner-artifact-production`: produce definitions, builder plans and acceptance cases under original read/report authority and owned planner budgets; require exact captured bytes, pinned scopes and current candidates. Preserve existing decision profiles and original receipts. Proposals and metadata repair never grant approval, behavioral acceptance or replay permission; pin acceptance definitions before any builder admission.
+
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.
