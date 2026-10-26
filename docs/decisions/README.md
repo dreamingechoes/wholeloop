@@ -143,6 +143,7 @@
 | [0130](./0130-owned-pre-builder-acceptance-definitions.md) | Owned pre-builder acceptance definitions | Accepted | 2026-10-26 |
 | [0131](./0131-current-plan-authorization-stage.md) | Current plan authorization stage | Accepted | 2026-10-26 |
 | [0132](./0132-committed-contract-artifact-observation.md) | Committed contract artifact observation | Accepted | 2026-10-26 |
+| [0133](./0133-independent-contract-only-verification.md) | Independent contract-only verification | Accepted | 2026-10-26 |
 
 ## Lifecycle
 

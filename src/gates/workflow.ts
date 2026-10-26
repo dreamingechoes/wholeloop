@@ -9,6 +9,11 @@ import { knownSlot } from '../discovery/rules.js'
 import { discover } from '../discovery/tree.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { replay, type StateEvent } from '../state/events.js'
+import {
+  type ContractGateInput,
+  contractGateInput,
+  contractGateUnits,
+} from '../verification/contract-gate.js'
 import { verificationCriteria } from '../verification/contracts.js'
 import { testabilityResult, testPath } from '../verification/testability.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
@@ -35,6 +40,7 @@ export interface GateOptions {
   reason?: string
   newRun?: boolean
   criteria?: Criterion[]
+  contracts?: ContractGateInput
 }
 const latestRun = (events: readonly StateEvent[], subject: string, gate: GateKind) =>
   gateRuns(events)
@@ -142,24 +148,42 @@ export class GateWorkflow {
       JSON.stringify(recordedCriteria) !== JSON.stringify(options.criteria)
     )
       throw new Error('Recorded agreed criteria cannot be overridden by a verification invocation')
+    const contractInput =
+      options.contracts ?? (!options.newRun && first ? contractGateInput(first.units) : undefined)
+    if (contractInput && (gate !== 'verify' || item.kind !== 'review'))
+      throw new Error('Contract verification needs a standalone machine review subject')
+    const contracts = contractInput
+      ? contractGateUnits(this.engine.store.files.root, repo.path, contractInput)
+      : undefined
     let criteria = options.criteria ?? recordedCriteria
     if (gate === 'verify') {
-      const parent = item.kind === 'part' ? item.parent : item.id
-      const defined = [...events]
-        .reverse()
-        .find((entry) => entry.subject === parent && entry.type === 'slice.defined')
-      criteria ??= defined?.type === 'slice.defined' ? defined.data.definition.criteria : undefined
-      if (!criteria && item.kind !== 'review') criteria = buildCriteria(events, subject)
-      if (!criteria && first && !options.newRun)
-        criteria = first.units
-          .filter((unit) => unit.lens === 'acceptance')
-          .map((unit) => JSON.parse(unit.asks) as Criterion)
-      if (!criteria?.length)
+      if (
+        contracts &&
+        (criteria?.length ||
+          (!options.newRun && first?.units.some((unit) => unit.origin === 'agreed:criteria')))
+      )
         throw new Error(
-          'Supply agreed criteria before verification; missing criteria cannot be invented',
+          'Contract-only verification cannot replace or invent agreed product criteria',
         )
-      const problems = lintCriteria(criteria)
-      if (problems.length) throw new Error('Verification needs testable, unique agreed criteria')
+      if (!contracts) {
+        const parent = item.kind === 'part' ? item.parent : item.id
+        const defined = [...events]
+          .reverse()
+          .find((entry) => entry.subject === parent && entry.type === 'slice.defined')
+        criteria ??=
+          defined?.type === 'slice.defined' ? defined.data.definition.criteria : undefined
+        if (!criteria && item.kind !== 'review') criteria = buildCriteria(events, subject)
+        if (!criteria && first && !options.newRun)
+          criteria = first.units
+            .filter((unit) => unit.lens === 'acceptance')
+            .map((unit) => JSON.parse(unit.asks) as Criterion)
+        if (!criteria?.length)
+          throw new Error(
+            'Supply agreed criteria before verification; missing criteria cannot be invented',
+          )
+        const problems = lintCriteria(criteria)
+        if (problems.length) throw new Error('Verification needs testable, unique agreed criteria')
+      }
       lenses.units.unshift(
         {
           id: 'suite',
@@ -170,15 +194,17 @@ export class GateWorkflow {
           origin: 'builtin:suite',
           failSafe: true,
         },
-        ...criteria.map((criterion) => ({
-          id: `criteria/${criterion.id}`,
-          lens: 'acceptance',
-          asks: JSON.stringify(criterion),
-          prompt:
-            'Check this criterion verbatim against observed behavior. Ask whether each changed test could fail.',
-          origin: 'agreed:criteria',
-          failSafe: true,
-        })),
+        ...(contracts?.units ??
+          criteria?.map((criterion) => ({
+            id: `criteria/${criterion.id}`,
+            lens: 'acceptance',
+            asks: JSON.stringify(criterion),
+            prompt:
+              'Check this criterion verbatim against observed behavior. Ask whether each changed test could fail.',
+            origin: 'agreed:criteria',
+            failSafe: true,
+          })) ??
+          []),
       )
       if (paths.some(testPath))
         lenses.units.push({
@@ -200,16 +226,23 @@ export class GateWorkflow {
           origin: 'builtin:changed-tests',
           failSafe: true,
         })
-      const previousCriteria = first?.units.filter((unit) => unit.lens === 'acceptance')
+      const coverage = (unit: GatePlan['units'][number]) =>
+        unit.lens === 'acceptance' || unit.origin === 'delivery:contracts'
+      const previousCriteria = first?.units.filter(coverage)
       if (
         previousCriteria &&
         !options.newRun &&
-        JSON.stringify(previousCriteria) !==
-          JSON.stringify(lenses.units.filter((unit) => unit.lens === 'acceptance'))
+        JSON.stringify(previousCriteria) !== JSON.stringify(lenses.units.filter(coverage))
       )
-        throw new Error('Agreed verification criteria changed mid-run')
+        throw new Error(
+          contracts
+            ? 'Declared verification contracts changed mid-run'
+            : 'Agreed verification criteria changed mid-run',
+        )
     }
     const snapshot = workspaceSnapshot(repo.path)
+    if (contracts && contracts.observed.snapshot.digest !== snapshot.digest)
+      throw new Error('Contract candidate changed while planning verification')
     if (first && !options.newRun && first.snapshot.branch !== snapshot.branch)
       throw new Error('Gate branch changed between rounds; restore the pinned branch')
     return this.engine.store.transaction((currentEvents, append) => {

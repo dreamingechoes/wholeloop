@@ -4,6 +4,8 @@ import { join } from 'node:path'
 import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
+import { FlowEngine } from '../../../src/flow/engine.js'
+import { GateWorkflow } from '../../../src/gates/workflow.js'
 import { RunnerAcceptanceDefinitionStages } from '../../../src/runner/acceptance-definition-stages.js'
 import { RunnerDefinitionStages } from '../../../src/runner/definition-stages.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
@@ -245,6 +247,38 @@ await fixture(async (f) => {
   assert.equal(observed.qa, 'not-established')
   assert.equal(observed.humanApproval, 'not-recorded')
   assert.deepEqual(f.plan.work.find((work) => work.id === 'contract')?.criteria, [])
+  const engine = new FlowEngine(
+      new StateStore(f.planning.sources.files.root),
+      f.root,
+      join(f.dir, 'gate-config.yml'),
+      join(f.dir, 'gate-home'),
+    ),
+    subject = engine.store.create({
+      kind: 'review',
+      title: 'Inspect committed contracts independently',
+      owner: f.plan.owner,
+      body: 'No product criteria or human approval are invented.',
+      repository: workspace,
+    }).id,
+    gates = new GateWorkflow(engine),
+    gate = gates.plan(subject, 'verify', {
+      repo: workspace,
+      base: 'main',
+      contracts: {
+        run: f.plan.run,
+        revision: f.plan.revision,
+        unit: 'contract',
+        refs: { 'search-api': ref },
+      },
+    }).plan
+  assert.equal(gate.units.filter((unit) => unit.origin === 'delivery:contracts').length, 1)
+  assert.equal(gate.units.filter((unit) => unit.origin === 'agreed:criteria').length, 0)
+  assert.ok(gate.units.find((unit) => unit.id === 'suite')?.failSafe)
+  assert.deepEqual(gates.plan(subject, 'verify').plan, gate)
+  assert.equal(engine.store.events().filter((event) => event.type === 'verify.agreed').length, 0)
+  checks.push(
+    'independent contract requirements retain the mandatory suite and exact original locators without product criteria or another selector',
+  )
   writeFileSync(
     join(workspace, ref),
     'A changed committed contract is not the declared artifact.\n',

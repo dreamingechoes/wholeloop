@@ -23,21 +23,29 @@ export async function runnerSuiteFixture(
     selection: RunnerSuiteSelection
     driver: DockerTransport
   }) => Promise<void>,
-  options: { backend?: 'docker'; retain?: boolean; exit?: 0 | 7; guidance?: string } = {},
+  options: {
+    unit?: 'contract'
+    backend?: 'docker'
+    retain?: boolean
+    exit?: 0 | 7
+    guidance?: string
+  } = {},
 ) {
   const app =
       "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
     check = `process.stdout.write('observed suite\\n');process.exitCode=${options.exit ?? 0}\n`,
     pkg = JSON.stringify({ private: true, scripts: { check: 'node suite.cjs' } }),
+    contractBody = 'Title query returns matching task IDs.\n',
+    unit = options.unit ?? 'search',
     timeoutMs = options.backend === 'docker' ? 30000 : 5000
   await runnerGitFixture(
     async ({ store, host, request, dispatch, observe, root }) => {
-      observe(await host.execute(dispatch('workspace:search')))
-      const workspace = host.workspace(request, 'search').repository.path
+      observe(await host.execute(dispatch(`workspace:${unit}`)))
+      const workspace = host.workspace(request, unit).repository.path
       writeFileSync(join(workspace, 'app.txt'), 'Owned suite fixture candidate.\n')
-      observe(await host.execute(dispatch('commit:search')))
-      const candidate = host.candidate(request, 'search'),
-        context = dispatch('verification:search'),
+      observe(await host.execute(dispatch(`commit:${unit}`)))
+      const candidate = host.candidate(request, unit),
+        context = dispatch(`verification:${unit}`),
         engine = new FlowEngine(
           new StateStore(store.files.root),
           root,
@@ -54,13 +62,24 @@ export async function runnerSuiteFixture(
         gate = new GateWorkflow(engine).plan(subject, 'verify', {
           repo: workspace,
           base: 'main',
-          criteria: [
-            {
-              id: 'search',
-              text: 'The declared repository check completes.',
-              test: 'Observe the original declared command and exact exit.',
-            },
-          ],
+          ...(options.unit
+            ? {
+                contracts: {
+                  run: context.plan.run,
+                  revision: context.plan.revision,
+                  unit,
+                  refs: { 'search-api': 'search-contract.txt' },
+                },
+              }
+            : {
+                criteria: [
+                  {
+                    id: 'search',
+                    text: 'The declared repository check completes.',
+                    test: 'Observe the original declared command and exact exit.',
+                  },
+                ],
+              }),
         }).plan,
         acceptance = new DeliveryAcceptance(store.files.root),
         pinned = acceptance.prepare({
@@ -218,8 +237,22 @@ export async function runnerSuiteFixture(
       await run({ store, context, suite, engine, gate, selection, driver })
     },
     {
-      singleUnit: true,
-      seed: { 'package.json': pkg, 'app.cjs': app, 'suite.cjs': check },
+      singleUnit: !options.unit,
+      ...(options.unit
+        ? {
+            configure: (plan) => {
+              const declared = plan.work.find((work) => work.id === 'contract')?.produces[0]
+              if (!declared) throw new Error('Fixture declared contract missing')
+              declared.sha256 = sourceHash(contractBody)
+            },
+          }
+        : {}),
+      seed: {
+        'package.json': pkg,
+        'app.cjs': app,
+        'suite.cjs': check,
+        ...(options.unit ? { 'search-contract.txt': contractBody } : {}),
+      },
       ...(options.guidance !== undefined ? { guidance: options.guidance } : {}),
       ...(options.backend ? { stageBudget: 'plan' as const } : {}),
       ...(options.retain ? { retain: true } : {}),

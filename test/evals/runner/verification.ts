@@ -18,6 +18,7 @@ import { runnerSuiteFixture } from '../../support/runner-suite.js'
 const destination = process.argv[2],
   scenario = process.argv[3]
 const samples = [
+  { key: 'contract-pass', exit: 0, native: 'host-observed' },
   { key: 'observed-pass', exit: 0, native: 'host-observed' },
   { key: 'observed-fail', exit: 7, native: 'host-observed' },
   { key: 'fixture-refusal', exit: 0, native: 'fixture' },
@@ -103,6 +104,9 @@ try {
           engine: () => engine,
           driver: timed,
           suite: () => selection,
+          ...(sample.key === 'contract-pass'
+            ? { contracts: () => ({ 'search-api': 'search-contract.txt' }) }
+            : {}),
           gate: (process) => {
             factories++
             return native(process)
@@ -219,7 +223,13 @@ try {
           abort.abort()
         }
       },
-      { backend: 'docker', retain: true, exit: sample.exit, guidance: DEFAULT_REVIEW_RUBRIC },
+      {
+        backend: 'docker',
+        retain: true,
+        exit: sample.exit,
+        guidance: DEFAULT_REVIEW_RUBRIC,
+        ...(sample.key === 'contract-pass' ? { unit: 'contract' as const } : {}),
+      },
     )
   }
   report.status = 'passed'

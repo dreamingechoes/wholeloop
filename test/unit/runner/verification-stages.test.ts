@@ -2,7 +2,9 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { gateRuns } from '../../../src/gates/state.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { RunnerStore } from '../../../src/runner/store.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
 import { runnerSuiteFixture as setup } from '../../support/runner-suite.js'
 
@@ -132,5 +134,130 @@ describe('owned criterion verification admission', () => {
       ).resolves.toBeUndefined()
       expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
     })
+  })
+  it('requires an exact contract artifact selection before consuming a contract-only round', async () => {
+    await setup(
+      async ({ store, context, engine, selection, driver }) => {
+        const stages = new RunnerVerificationStages(store, {
+          identity: context.request.host,
+          engine: () => engine,
+          suite: () => selection,
+          driver,
+          gate: () => {
+            throw new Error('Missing selection cannot launch a verifier')
+          },
+        })
+        await expect(stages.execute(context)).rejects.toThrow(
+          'verification-stage-contract-selection-required',
+        )
+        expect(
+          existsSync(
+            store.files.path(`delivery/runner-verifications/${context.invocation}.json.consumed`),
+          ),
+        ).toBe(false)
+        expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+      },
+      { unit: 'contract' },
+    )
+  })
+  it('rejects different committed contract bytes before reserving a gate or launching a host', async () => {
+    await setup(
+      async ({ store, context, engine, selection, driver }) => {
+        const originalRuns = gateRuns(engine.store.events()).length
+        const stages = new RunnerVerificationStages(store, {
+          identity: context.request.host,
+          engine: () => engine,
+          suite: () => selection,
+          driver,
+          contracts: () => ({ 'search-api': 'app.txt' }),
+          gate: () => {
+            throw new Error('Wrong contract bytes cannot launch a verifier')
+          },
+        })
+        await expect(stages.execute(context)).rejects.toThrow('contract-checksum-mismatch')
+        expect(gateRuns(engine.store.events())).toHaveLength(originalRuns)
+        expect(
+          existsSync(
+            store.files.path(`delivery/runner-verifications/${context.invocation}.json.consumed`),
+          ),
+        ).toBe(false)
+        expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+      },
+      { unit: 'contract' },
+    )
+  })
+  it('pins real contract requirements without treating an unavailable fixture suite as QA', async () => {
+    await setup(
+      async ({ store, context, engine, selection, driver }) => {
+        const stages = new RunnerVerificationStages(store, {
+          identity: context.request.host,
+          engine: () => engine,
+          suite: () => selection,
+          driver,
+          contracts: () => ({ 'search-api': 'search-contract.txt' }),
+          gate: () => {
+            throw new Error('Fixture suite cannot launch an independent verifier')
+          },
+        })
+        expect((await stages.execute(context)).status).not.toBe('passed')
+        const record = store.stage(contractDigest(context.request), context.stage.id)
+        if (!record) throw new Error('Fixture root stage missing')
+        const latest = gateRuns(engine.store.events()).at(-1)?.rounds.at(-1)?.plan
+        expect(latest?.units.some((unit) => unit.origin === 'delivery:contracts')).toBe(true)
+        expect(latest?.units.filter((unit) => unit.origin === 'agreed:criteria')).toEqual([])
+        store.lifecycle.transition(context.request.run, {
+          to: 'paused',
+          reason: 'Inspect the original contract verification without reselecting inputs.',
+        })
+        const fresh = new RunnerVerificationStages(new RunnerStore(store.files.root), {
+          identity: context.request.host,
+          engine: () => engine,
+          driver,
+          contracts: () => {
+            throw new Error('Recovery cannot select another contract')
+          },
+          suite: () => {
+            throw new Error('Recovery cannot select another suite')
+          },
+          gate: () => {
+            throw new Error('Recovery cannot launch another verifier')
+          },
+        })
+        expect((await fresh.inspect(context.request, record)).status).not.toBe('passed')
+        expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+      },
+      { unit: 'contract' },
+    )
+  })
+  it('refuses a consumed lost contract binding before calling any selector', async () => {
+    await setup(
+      async ({ store, context, engine, driver }) => {
+        store.files.atomic(
+          `delivery/runner-verifications/${context.invocation}.json.consumed`,
+          `${context.invocation}\n`,
+        )
+        const before = gateRuns(engine.store.events()).length,
+          stages = new RunnerVerificationStages(store, {
+            identity: context.request.host,
+            engine: () => engine,
+            driver,
+            contracts: () => {
+              throw new Error('Consumed intent cannot select different contract paths')
+            },
+            suite: () => {
+              throw new Error('Consumed intent cannot select another suite')
+            },
+            gate: () => {
+              throw new Error('Consumed intent cannot launch another verifier')
+            },
+          })
+        await expect(stages.execute(context)).rejects.toThrow(
+          'verification-stage-original-unresolved',
+        )
+        expect(gateRuns(engine.store.events())).toHaveLength(before)
+        expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+      },
+      { unit: 'contract' },
+    )
   })
 })

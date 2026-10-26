@@ -4,10 +4,17 @@ import { readSourceFile, safeSourceText } from '../delivery/input.js'
 import type { NativeProcessRunner } from '../delivery/native-host.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'
 import type { FlowEngine } from '../flow/engine.js'
+import type { GatePlan } from '../gates/contracts.js'
 import { inspectGateRound } from '../gates/execution.js'
 import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { itemId, replay } from '../state/events.js'
+import {
+  type ContractGateInput,
+  contractGateInput,
+  contractGateUnits,
+  sameContractGateUnits,
+} from '../verification/contract-gate.js'
 import { suiteGateResult } from '../verification/suite.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import { RunnerEnvironmentScope } from './environment-scope.js'
@@ -41,9 +48,10 @@ export interface RunnerVerificationOptions {
   gate(process: NativeProcessRunner, workspace: string): RunnerGateOptions
   suite(request: Readonly<RunnerRequest>, workspace: string): RunnerSuiteSelection
   driver?: DockerTransport
+  contracts?(request: Readonly<RunnerRequest>, workspace: string): Record<string, string>
 }
 
-/** Join actual suite facts and independent criterion judgments without recording a human approval. */
+/** Join actual suite facts and independent requirement judgments without recording a human approval. */
 export class RunnerVerificationStages {
   constructor(
     readonly store: RunnerStore,
@@ -89,6 +97,35 @@ export class RunnerVerificationStages {
       return { id: criterion.id, text: criterion.text, test: criterion.test }
     })
   }
+  private unitsCurrent(context: ReturnType<RunnerVerificationStages['context']>, plan: GatePlan) {
+    if (context.stage.criteria.length)
+      return (
+        !plan.units.some((unit) => unit.origin === 'delivery:contracts') &&
+        contractDigest(
+          plan.units
+            .filter((unit) => unit.origin === 'agreed:criteria')
+            .map((unit) => JSON.parse(unit.asks)),
+        ) === contractDigest(this.criteria(context))
+      )
+    const input = contractGateInput(plan.units)
+    if (
+      !input ||
+      input.run !== context.prepared.plan.run ||
+      input.revision !== context.prepared.plan.revision ||
+      input.unit !== context.stage.unit ||
+      plan.units.some((unit) => unit.origin === 'agreed:criteria')
+    )
+      return false
+    const current = contractGateUnits(
+      this.store.files.root,
+      context.candidate.allocation.repository.path,
+      input,
+    )
+    return (
+      current.observed.snapshot.digest === plan.snapshot.digest &&
+      sameContractGateUnits(plan.units, current.units)
+    )
+  }
   private read(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
     const context = this.context(request, record),
       path = this.path(record.invocation)
@@ -122,11 +159,7 @@ export class RunnerVerificationStages {
       !round ||
       contractDigest(round.plan) !== binding.gate ||
       run.rounds.at(-1) !== round ||
-      contractDigest(
-        round.plan.units
-          .filter((u) => u.origin === 'agreed:criteria')
-          .map((u) => JSON.parse(u.asks)),
-      ) !== contractDigest(this.criteria(context))
+      !this.unitsCurrent(context, round.plan)
     )
       throw new DeliveryRunnerError('verification-stage-gate-binding')
     return { ...context, binding, run, round }
@@ -147,6 +180,29 @@ export class RunnerVerificationStages {
     )
       throw new DeliveryRunnerError('verification-stage-not-current')
     if (this.read(context.request, record)) return this.inspect(context.request, record)
+    // A lost private binding must fence even read-side reselection. Keep the
+    // locked recheck below too, so another owner cannot race round consumption.
+    if (existsSync(this.store.files.path(`${this.path(record.invocation)}.consumed`)))
+      throw new DeliveryRunnerError('verification-stage-original-unresolved')
+    let contracts: ContractGateInput | undefined
+    if (!pinned.stage.criteria.length) {
+      if (!this.options.contracts)
+        throw new DeliveryRunnerError('verification-stage-contract-selection-required')
+      contracts = {
+        run: pinned.prepared.plan.run,
+        revision: pinned.prepared.plan.revision,
+        unit: pinned.stage.unit as string,
+        refs: structuredClone(
+          this.options.contracts(context.request, pinned.candidate.allocation.repository.path),
+        ),
+      }
+      // Refuse missing or different committed bytes before consuming a round.
+      contractGateUnits(
+        this.store.files.root,
+        pinned.candidate.allocation.repository.path,
+        contracts,
+      )
+    }
     const slot = `delivery/runner-verification-subjects/${contractDigest({ request: pinned.digest, plan: record.basis, unit: pinned.stage.unit })}.json`,
       marker = `${this.path(record.invocation)}.consumed`,
       engine = pinned.engine
@@ -188,7 +244,7 @@ export class RunnerVerificationStages {
       selected = gates.plan(subject, 'verify', {
         repo: pinned.candidate.allocation.repository.path,
         base: declared.target,
-        criteria: this.criteria(pinned),
+        ...(contracts ? { contracts } : { criteria: this.criteria(pinned) }),
       }),
       binding: VerificationStageBinding = {
         version: 1,
@@ -352,7 +408,7 @@ export class RunnerVerificationStages {
       provenance:
         audited || (failed && suite?.provenance === 'host-observed') ? 'host-observed' : 'fixture',
       reason: passed
-        ? 'The exact current owned candidate passed its original suite and observed criterion verification round; independent review and feature acceptance remain separate.'
+        ? 'The exact current owned candidate passed its original suite and observed requirement verification round; independent review and feature acceptance remain separate.'
         : 'Retain original verification rounds, suite/native receipts and budgets; no replay, approval or endpoint is inferred.',
     }
   }
