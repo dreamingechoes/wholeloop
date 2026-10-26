@@ -165,7 +165,7 @@ describe('local distribution delivery previews', () => {
         expect(
           payload.manifest.targets.every(
             (target: { skills: number; agents: number }) =>
-              target.skills === 17 && target.agents === 8,
+              target.skills === 17 && target.agents === 9,
           ),
         ).toBe(true)
         expect(JSON.parse(cli([]).stdout).status).toBe('already-correct')

@@ -61,7 +61,7 @@ describe('canonical client artifact generation', () => {
     expect(bundledCanonical()).toEqual(source)
     const generated = generateAdapter('claude', bundledCanonical(), core, '0.0.0')
     expect(generated.manifest.skills).toHaveLength(17)
-    expect(generated.manifest.agents).toHaveLength(8)
+    expect(generated.manifest.agents).toHaveLength(9)
     expect(generated.files.get('skills/next/SKILL.md')?.content).toContain(
       `node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next`,
     )

@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
+import { harnessAssets } from './harness-assets.mjs'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 if (process.argv.length !== 2) throw new Error('The model-free runner control takes no options')
@@ -16,6 +17,7 @@ await build({
   platform: 'node',
   format: 'esm',
   target: 'node20',
+  define: { __WL_HARNESS__: JSON.stringify(harnessAssets(root)) },
   banner: {
     js: "import {createRequire} from 'node:module';const require=createRequire(import.meta.url);",
   },

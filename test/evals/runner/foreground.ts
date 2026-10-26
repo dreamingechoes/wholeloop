@@ -10,6 +10,7 @@ import { runnerDecisionRequirements } from '../../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { assertExternal } from '../../../src/state/paths.js'
 import { authorization, fixture } from '../../support/delivery.js'
+import { nativeDecisionFixture } from '../../support/native-decisions.js'
 
 const core = fileURLToPath(import.meta.url)
 if (process.argv[2] === FOREGROUND_ARGUMENT) {
@@ -43,7 +44,8 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
   assertExternal(destination)
   mkdirSync(destination, { recursive: true })
   const checks: string[] = [],
-    retained: { store: string; request: string }[] = []
+    retained: { store: string; request: string }[] = [],
+    nativeDecisions: { store: string; decision: string }[] = []
   for (const intervention of ['supervised', 'none'] as const)
     await fixture(
       async ({ planning, plan }) => {
@@ -149,12 +151,37 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
       },
       { retain: true },
     )
+  await nativeDecisionFixture(
+    async ({ host, decisions, request, purposes }) => {
+      const result = await decisions.decide(request, host)
+      assert.equal(result.record.status, 'fixture-only')
+      assert.equal(result.record.judgment.identity.role, 'planner')
+      assert.equal(result.record.challenge.identity.role, 'challenger')
+      assert.notEqual(
+        result.record.judgment.identity.invocation,
+        result.record.challenge.identity.invocation,
+      )
+      assert.equal(result.record.humanApproval, 'not-recorded')
+      assert.equal(host.current(result.record.judgment.identity, result.record.basis), true)
+      nativeDecisions.push({
+        store: purposes.queue.lifecycle.journal.files.root,
+        decision: result.digest,
+      })
+      checks.push(
+        'independent actual native fixture planner/challenger processes retain original budgets and fixture-only authority',
+      )
+    },
+    'valid',
+    'claude',
+    { retain: true },
+  )
   const report = {
     status: 'passed',
     provenance: 'fixture',
     runtime: { node: process.version, platform: process.platform, arch: process.arch },
     checks,
     retained,
+    nativeDecisions,
     nativeAcceptance: 'not-established',
     publication: 'not-performed',
   }

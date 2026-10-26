@@ -124,7 +124,7 @@ describe('Gemini extension and native overlays', () => {
   it('keeps the complete catalog within native budgets and reduces observer channels', () => {
     const rendered = generateAdapter('gemini', bundledCanonical(), core, '0.0.0')
     expect(rendered.manifest.skills).toHaveLength(17)
-    expect(rendered.manifest.agents).toHaveLength(8)
+    expect(rendered.manifest.agents).toHaveLength(9)
     for (const [path, file] of rendered.files) {
       if (path.endsWith('SKILL.md')) {
         expect(lineCount(file.content), path).toBeLessThanOrEqual(120)

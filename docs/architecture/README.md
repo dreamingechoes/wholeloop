@@ -16,7 +16,7 @@ flowchart TB
   subgraph H["Canonical harness — written once"]
     direction LR
     sk["skills/<br/>one per step"]
-    ag["agents/<br/>8 roles"]
+    ag["agents/<br/>9 roles"]
     pr["protocols/<br/>shared short rules"]
     mf["providers · lenses<br/>templates · profiles"]
     wf["workflows/<br/>gates, fan-out"]

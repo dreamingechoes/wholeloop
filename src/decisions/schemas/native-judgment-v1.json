@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delegated-native-judgment@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "outcome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16384
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,127}$",
+            "maxLength": 128
+          },
+          "missing": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "who": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": ["id", "missing", "who"]
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delegated-native-judgment@1"
+    }
+  },
+  "required": ["schema", "basis", "outcome", "rationale", "uncertainties"]
+}

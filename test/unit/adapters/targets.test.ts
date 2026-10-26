@@ -214,7 +214,7 @@ describe('additional tier-A render targets', () => {
     for (const id of ['claude', 'codex', 'opencode', 'copilot']) {
       const generated = generateAdapter(id, bundledCanonical(), core, '0.0.0')
       expect(generated.manifest.skills).toHaveLength(17)
-      expect(generated.manifest.agents).toHaveLength(8)
+      expect(generated.manifest.agents).toHaveLength(9)
       expect(generated.manifest.files.every((file) => file.sha256.length === 64)).toBe(true)
     }
   })

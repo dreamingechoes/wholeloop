@@ -200,7 +200,7 @@ describe('owned native installation and retained external history', () => {
           ).toHaveLength(17)
           expect(
             readdirSync(locations.agents).filter((name) => name.startsWith('wl-')),
-          ).toHaveLength(8)
+          ).toHaveLength(9)
         }
         expect(manageInstallation('uninstall', input(targets, scope, true)).status).toBe(
           'uninstalled',

@@ -126,6 +126,7 @@
 | [0113](./0113-owned-foreground-routes-and-native-recovery.md) | Owned foreground routes and native recovery | Accepted | 2026-10-26 |
 | [0114](./0114-private-group-bound-foreground-bootstrap.md) | Private group-bound foreground bootstrap | Accepted | 2026-10-26 |
 | [0115](./0115-bounded-inline-worker-artifact-proposals.md) | Bounded inline worker artifact proposals | Accepted | 2026-10-26 |
+| [0116](./0116-owned-native-decision-purpose-attempts.md) | Owned native decision purpose attempts | Accepted | 2026-10-26 |
 
 ## Lifecycle
 

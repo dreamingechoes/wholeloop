@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — owned native decision purpose attempts
+
+- Share the existing bounded native assignment transport without changing queue admission/settlement or v1 receipts. Add original-authority planner/challenger purpose attempts without fabricated implementation units, including revision-zero envelopes. Persist binding before claim, consume private invocation once, retain unknown reservations and preserve original evaluator/deadline/hard-metering limits.
+- Connect actual independent native process reports to delegated decisions through explicit judgment/challenge claim schemas. Derive identity in the controller, recheck private receipts and exact captured bytes and retain separate trusted evidence/prerequisites, uncertainty and fixture-only authority. Add the canonical read-only planner, ADR-0116, docs and named enforcer. Full native/domain-host/public run/reconcile wiring remains technical P6-10 work; no task/manual acceptance closes here.
+
+- The expanded native/decision/compatibility run passes 475 cases. Preserve four initial integrated fixture-clock failures and the standalone control's missing canonical-resource definition; use the original shared clock and bundle canonical resources explicitly. The first full macOS run passes 2991/2999 tests: eight failures retain the old eight-agent catalog expectation. Update only those catalog assertions/current docs to nine, preserving the historical eight-agent native-loader observation. All seven affected installation/renderer/distribution files now pass 91 cases (64.89 seconds), with unchanged deadlines. Six final model-free macOS controls pass, including an actual synthetic native decision pair with retained private record locators.
+
+- Final complete checks pass 2999 tests in 142 files on macOS arm64/Node 24.22.0 (408.89 seconds) and isolated Debian Linux arm64/Node 24.22.0 (137.15 seconds), plus docs345/harness150/Markdown344/Mermaid36 and all remaining checks. Six controls and inert schema parity pass on Linux Node 20.0.0/Git 2.39.5 as well. These observations combine actual synthetic processes and fixture-only semantics, not native-model/account or complete-route certification. No skips or deadline increases occur.
+- Archive 2b8427524d2f0210bf94e80afa06dc558774a20c1ac76b8fc79ed7b1bfcee854 and core 19d069a4715867f9499719fcac576b2c936ef55b7af9cf58b72df9c2b9119eb5 identify final pre-evidence checks. Recheck evidence-only docs/package, commit the native decision increment and continue P6-10 domain-host implementation. Counts remain 59/88 complete and manual acceptance remains deferred; no model, account, hosted publication or project merge occurs.
+
 ## 2026-10-26 · P6-10 continuing — bounded read-only worker artifact transport
 
 - Add an explicit versioned inline proposal for new reports/plans from read-only workers. Echo the complete assignment digest, derive known identity and actual UTF-8 metadata in the controller and retain unchanged v1 file validation, current authority, role/evidence scope and original artifact accounting. Preserve exact empty/whitespace/Unicode bytes; refuse unsafe/oversized/stale data before capture. Keep runtime proof and fixture provenance separate from worker claims and actual acceptance.

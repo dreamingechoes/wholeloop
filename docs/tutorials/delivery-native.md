@@ -57,6 +57,14 @@ The proposal echoes the supplied assignment digest. The core binds the original 
 
 The normalized result and captured references remain worker claims. A complete proposal supplies neither an observed test result nor a human/machine approval. There is no protocol fallback: an old file result sent to the inline decoder, or a proposal sent to file mode, is invalid. Public v1 schema/receipt commands retain their existing declarations; this is an explicitly selected controller API transport, with full terminal routing still in progress. See [ADR-0115](../decisions/0115-bounded-inline-worker-artifact-proposals.md).
 
+## Controller planning and decision workers
+
+The internal NativePurposeAttempts host now runs planner/challenger roles independently of implementation units, including revision-zero original envelopes. It shares the native assignment transport with NativeDeliveryHost; existing queue behavior and default file mode remain intact. Purpose calls explicitly use the bounded inline proposal protocol, their original private named delegation, evaluator capacity and run deadline.
+
+Each purpose is claimed and consumed once before launch. An interrupted observer, unknown owner or missing semantic response retains the original reservation; calling again does not recover permission to launch. A known completed report remains current only while original authority, repository bases, selected input bytes, private receipt and captured output bytes agree. Existing private cancellation/process ownership still governs any actual native call.
+
+NativeDelegatedDecisionHost obtains two independent actual process receipts and validates purpose-specific JSON claims in artifacts/decision.json. The controller supplies runtime identity; evidence/prerequisites come separately from a trusted domain observer. Neither role can impersonate human approval or promote fixture output. This internal API is tested with actual synthetic client processes, while public complete-route wiring and live client acceptance remain open. See [ADR-0116](../decisions/0116-owned-native-decision-purpose-attempts.md).
+
 ## Authentication and private data
 
 Native clients use a fresh home/configuration environment without inherited controller tokens or runtime injection options. A real observed host may explicitly reference the client's own credential store outside repositories, the worker's roots and controller state. It never copies credentials into generated files, argv or model context, and the untrusted application environment receives none. Fixture runtime observations cannot enable this reference.

@@ -104,7 +104,7 @@ describe('Cursor native contracts and managed overlays', () => {
     })
     const complete = generateAdapter('cursor', bundledCanonical(), core(), '0.0.0')
     expect(complete.manifest.skills).toHaveLength(17)
-    expect(complete.manifest.agents).toHaveLength(8)
+    expect(complete.manifest.agents).toHaveLength(9)
     for (const [path, file] of complete.files) {
       if (path.endsWith('SKILL.md')) expect(lineCount(file.content), path).toBeLessThanOrEqual(120)
       if (!path.startsWith('agents/')) continue

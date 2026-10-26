@@ -19,6 +19,12 @@ Choose the endpoint, intervention policy, named decision delegations and observe
 
 Learning and ramp outcomes are assessments. They do not change flags, deploy, send messages or grant a separate external effect. Acceptance records do not satisfy human-only criteria, required code-host human review or failed gates.
 
+## Native execution boundary
+
+The internal NativeDelegatedDecisionHost can now execute independent planner/challenger processes through the shared contained native transport. It passes only pinned decision inputs, retains exact basis/judgment bindings and derives identity from actual completed private purpose attempts. A bounded report contains decision claims; a separate trusted observer supplies evidence status and human-only prerequisites. Unknown outer findings/uncertainties cannot be silently omitted from a successful report.
+
+Purpose attempts consume the original evaluator budget and deadline, including under an original envelope without an invented implementation unit. They are consumed once before launch; ambiguous process closure or pre-launch controller loss holds capacity instead of replaying the call. Fixture provenance stays fixture-only. Run npm run eval:runner for a disposable synthetic process control; it uses no model/account and proves no native-model containment or actual acceptance. Fixed full-route wiring remains P6-10. See [ADR-0116](../decisions/0116-owned-native-decision-purpose-attempts.md).
+
 ## Inspect the actual contracts
 
 From this source checkout, with development Node ≥ 22:
