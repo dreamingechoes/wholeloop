@@ -2,6 +2,8 @@ import assert from 'node:assert/strict'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { decodeWorkerProposal } from '../../../src/delivery/worker-proposal.js'
+import { createWorkerAssignment } from '../../../src/delivery/worker-protocol.js'
 import { OwnedForegroundRunner, receiveOwnedForeground } from '../../../src/runner/foreground.js'
 import { FOREGROUND_ARGUMENT } from '../../../src/runner/foreground-owner.js'
 import { runnerDecisionRequirements } from '../../../src/runner/route.js'
@@ -87,6 +89,52 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
             { id: 'research-sources', outcome: 'accept' },
           ])
           checks.push('initial research and later source judgments retain their own decision scope')
+          const assigned = createWorkerAssignment({
+              identity: {
+                run: plan.run,
+                plan: prepared.digest,
+                revision: 0,
+                role: 'planner',
+                attempt: 'attempt-aaaaaaaaaaaaaaaa',
+                generation: 1,
+              },
+              grantDigest: grant.digest,
+              source: plan.source,
+              brief: 'Return one scoped fixture proposal.',
+              endpoint: plan.policy.endpoint,
+              intervention: plan.policy.intervention,
+              environment: { id: 'fixture', recipe: 'b'.repeat(64), boundary: 'c'.repeat(64) },
+              candidates: [],
+              criteria: [],
+              findings: [],
+              contracts: [],
+              context: [],
+              deadline: '2030-01-01T00:00:00.000Z',
+              limits: plan.budgets,
+            }),
+            body = 'A bounded source report with exact Unicode: Δ.\n',
+            proposed = decodeWorkerProposal(
+              Buffer.from(
+                JSON.stringify({
+                  schema: 'wholeloop/delivery-worker-proposal@1',
+                  assignment: assigned.assignment,
+                  status: 'complete',
+                  summary: 'Keep this normalized artifact as a fixture claim.',
+                  artifacts: [{ ref: 'artifacts/report.md', kind: 'report', text: body }],
+                  criteria: [],
+                  findings: [],
+                  unknowns: [],
+                }),
+              ),
+              assigned,
+            )
+          assert.equal(proposed.artifacts[0]?.bytes.toString('utf8'), body)
+          assert.equal(proposed.result.artifacts[0]?.bytes, Buffer.byteLength(body))
+          assert.equal(proposed.result.origin, 'worker-claim')
+          assert.equal(assigned.tools.workspace, 'none')
+          checks.push(
+            'read-only planner inline artifacts retain exact UTF-8 bytes and worker provenance',
+          )
         }
         if (intervention === 'supervised') {
           const deadline = store.budgets.inspect(request.run).deadline

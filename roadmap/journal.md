@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — bounded read-only worker artifact transport
+
+- Add an explicit versioned inline proposal for new reports/plans from read-only workers. Echo the complete assignment digest, derive known identity and actual UTF-8 metadata in the controller and retain unchanged v1 file validation, current authority, role/evidence scope and original artifact accounting. Preserve exact empty/whitespace/Unicode bytes; refuse unsafe/oversized/stale data before capture. Keep runtime proof and fixture provenance separate from worker claims and actual acceptance.
+- Keep file mode and its recipes as the default; explicitly selected Codex inline output roots become read-only, with existing builder workspace permissions unchanged. Add controller/protocol documentation, ADR-0115 and a named enforcer; avoid an unnecessary privileged writer service. Full native/domain-host/public run/reconcile integration remains P6-10 technical work and no task/manual acceptance closes here.
+
+- Nineteen codec cases pass; the earlier expanded native/codec run passes 59 cases. Complete checks pass 2969 tests in 140 files on macOS arm64/Node 24.22.0 (388.01 seconds) and isolated Debian Linux arm64/Node 24.22.0 (122.70 seconds), plus docs343/harness149/Markdown342/Mermaid36 and all remaining checks. Five model-free controls pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5; inert public schemas match. Actual synthetic Claude/Codex output remains fixture provenance, not live client certification. Preserve the initial Biome/type failures without skips or deadline increases.
+- Archive 0744a9e686506ceffc37fb60aea94bd5f1d6664f58b2bf30764aae0cf76e42dc and core 3d5a542b48e50d41bb69128a01546b846a398ba463abf10e358c2e7d111c325d identify pre-evidence checks. Recheck evidence-only docs/package, commit this transport increment and continue P6-10 native/domain-host wiring. Counts remain 59/88 complete; no model, account, hosted publication or project merge occurs.
+
 ## 2026-10-26 · P6-10 continuing — route-specific decision requirements
 
 - Reproduce an incomplete none-policy research definition incorrectly requiring product framing/spec/scope decisions despite its research-only delegation. Extract the deterministic stage requirement selector and bind initial research to research-plan while retaining research-sources at actual research, implementation judgments, envelope acceptance and current private proof checks. No authority or public v1 identity changes.

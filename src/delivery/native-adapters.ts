@@ -5,6 +5,7 @@ import { contractDigest } from '../contracts/compatibility.js'
 import { headlessAdapter } from '../fanout/adapters.js'
 import { generationSchema } from '../fanout/response-schema.js'
 import { safeSourceText } from './input.js'
+import { workerProposalResponseSchema } from './worker-proposal.js'
 import {
   validateWorkerAssignment,
   type WorkerAssignment,
@@ -80,6 +81,7 @@ export function nativeDeliveryRecipe(input: {
   directory: string
   workspace?: string
   model?: string
+  output?: 'files' | 'inline-proposal'
 }): NativeRecipeResult {
   validateWorkerAssignment(input.assignment)
   if (!NATIVE_DELIVERY_TARGETS.includes(input.target as NativeDeliveryTarget))
@@ -105,7 +107,12 @@ export function nativeDeliveryRecipe(input: {
     if (!input.model.trim() || input.model.startsWith('-') || /[\r\n\0]/.test(input.model))
       throw new Error('Provide one explicit bounded native model identifier')
   }
-  const schema = workerResponseSchema(input.assignment)
+  if (input.output !== undefined && !['files', 'inline-proposal'].includes(input.output))
+    throw new Error('Provide one supported native output protocol')
+  const schema =
+    input.output === 'inline-proposal'
+      ? workerProposalResponseSchema(input.assignment)
+      : workerResponseSchema(input.assignment)
   const files = new Map<string, string>()
   let args: string[]
   if (input.target === 'claude') {
@@ -142,7 +149,7 @@ export function nativeDeliveryRecipe(input: {
     const filesystem: Record<string, string> = {
       ':minimal': 'read',
       [input.directory]: 'read',
-      [join(input.directory, 'outputs')]: 'write',
+      [join(input.directory, 'outputs')]: input.output === 'inline-proposal' ? 'read' : 'write',
       [join(input.directory, 'inputs')]: 'read',
       [join(input.directory, 'response.schema.json')]: 'read',
       ...(input.workspace

@@ -49,6 +49,14 @@ No command accepts arbitrary JSON as such runtime proof. Named-version help and 
 
 Reference recipes disable external/personal MCP in the worker client. Existing controller/provider source hosts remain MCP-first and retain their scopes; disabling worker-side integrations does not introduce vendor HTTP implementations. Builders receive only their allocated implementation boundary, while evaluators retain read-only implementation access. Returned broker methods remain permission ceilings, not a promise that an unavailable native tool exists.
 
+## Artifact transport for controller authors
+
+The existing files mode remains the default. A fixed controller can explicitly select output: inline-proposal when calling NativeDeliveryHost.run. That versioned worker proposal returns artifact text through the owned structured stdout channel; a read-only worker can produce a new report without a Write tool or a writable output directory. Workers may continue citing their original pinned input evidence.
+
+The proposal echoes the supplied assignment digest. The core binds the original identity, computes actual UTF-8 hashes/sizes and validates the canonical worker claim with the same role/evidence/context rules as file mode. The complete proposal is capped at one MiB, with at most one hundred artifacts and 256 KiB of combined inline text under the original budget. Empty files, literal whitespace and Unicode stay exact. Invalid encoding, NUL, unsafe/duplicate/input references, forged metadata, stale echoes and recognizable credentials fail before capture. Native process output limits and current-grant checks remain mandatory.
+
+The normalized result and captured references remain worker claims. A complete proposal supplies neither an observed test result nor a human/machine approval. There is no protocol fallback: an old file result sent to the inline decoder, or a proposal sent to file mode, is invalid. Public v1 schema/receipt commands retain their existing declarations; this is an explicitly selected controller API transport, with full terminal routing still in progress. See [ADR-0115](../decisions/0115-bounded-inline-worker-artifact-proposals.md).
+
 ## Authentication and private data
 
 Native clients use a fresh home/configuration environment without inherited controller tokens or runtime injection options. A real observed host may explicitly reference the client's own credential store outside repositories, the worker's roots and controller state. It never copies credentials into generated files, argv or model context, and the untrusted application environment receives none. Fixture runtime observations cannot enable this reference.

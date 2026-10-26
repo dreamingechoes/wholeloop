@@ -86,6 +86,50 @@ const host: NativeBoundaryHost = {
 }
 
 describe('dedicated native delivery recipes', () => {
+  it.each(['claude', 'codex'] as const)(
+    'keeps %s file mode unchanged and binds read-only inline output explicitly',
+    (target) => {
+      const value = assignment('verifier'),
+        input = {
+          target,
+          version: target === 'claude' ? '2.1.307' : '0.163.0',
+          assignment: value,
+          directory: '/tmp/native-fixture',
+          workspace: '/tmp/workspace-fixture',
+          model: 'fixture-model',
+        },
+        legacy = nativeDeliveryRecipe(input),
+        explicit = nativeDeliveryRecipe({ ...input, output: 'files' }),
+        inline = nativeDeliveryRecipe({ ...input, output: 'inline-proposal' })
+      if (!legacy.available || !explicit.available || !inline.available)
+        throw new Error('The selected reference recipe must exist.')
+      expect(explicit.recipe.policy).toBe(legacy.recipe.policy)
+      expect(explicit.recipe.args).toEqual(legacy.recipe.args)
+      expect(explicit.recipe.files).toEqual(legacy.recipe.files)
+      expect(inline.recipe.policy).not.toBe(legacy.recipe.policy)
+      if (target === 'claude') {
+        expect(inline.recipe.args[inline.recipe.args.indexOf('--tools') + 1]).toBe('Read,Glob,Grep')
+        const schema = JSON.parse(
+          inline.recipe.args[inline.recipe.args.indexOf('--json-schema') + 1] ?? '{}',
+        )
+        expect(schema.$id).toBe('wholeloop/delivery-worker-proposal@1')
+        expect(schema.properties.assignment.const).toBe(value.assignment)
+        expect(schema.properties.artifacts.items.properties).not.toHaveProperty('sha256')
+      } else {
+        const config = inline.recipe.args.filter(
+            (_, index, args) => args[index - 1] === '--config',
+          ),
+          permissions = config.find((entry) => entry.startsWith('permissions.wholeloop='))
+        if (!permissions) throw new Error('The scoped native filesystem policy is missing.')
+        const parsed = parse(permissions)
+        expect(JSON.stringify(parsed)).toContain('"/tmp/native-fixture/outputs":"read"')
+        expect(JSON.stringify(parsed)).toContain('"/tmp/workspace-fixture":"read"')
+        expect(inline.recipe.files.get('response.schema.json')).toContain(
+          'wholeloop/delivery-worker-proposal@1',
+        )
+      }
+    },
+  )
   it('exports non-granting contracts in a fresh compiled process', () => {
     const result = spawnSync(
       process.execPath,
@@ -253,6 +297,12 @@ async function nativeFixture(
     if (mode === 'timeout') plan.budgets.attemptMs = 100
     if (mode === 'quota') plan.budgets.artifactBytes = 1
     if (mode === 'blocked') plan.policy.intervention = 'none'
+    if (mode.startsWith('inline')) {
+      plan.work = plan.work
+        .filter((work) => work.id === 'search')
+        .map((work) => ({ ...work, after: [], consumes: [] }))
+      plan.milestones = plan.milestones.map((milestone) => ({ ...milestone, work: ['search'] }))
+    }
     if (mode === 'source-only') {
       const source = planning.sources.capture(
         {
@@ -306,9 +356,11 @@ async function nativeFixture(
       plan.run,
       mode === 'source-only'
         ? { unit: 'research' }
-        : mode === 'read-only-change'
-          ? { unit: 'contract', role: 'verifier', cell: 'independent' }
-          : { unit: 'contract' },
+        : mode.startsWith('inline')
+          ? { unit: 'search', role: 'verifier', cell: 'independent' }
+          : mode === 'read-only-change'
+            ? { unit: 'contract', role: 'verifier', cell: 'independent' }
+            : { unit: 'contract' },
     )
     const lease = queue.claim('controller-0123456789abcdef0123456789abcdef', () => ({
       ready: true,
@@ -330,7 +382,7 @@ async function nativeFixture(
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');let input='';
 process.stdin.on('data',chunk=>input+=chunk);process.stdin.on('end',()=>{
 const payload=JSON.parse(input),assignment=payload.assignment,mode=${JSON.stringify(mode)};
-fs.writeFileSync(path.join(process.cwd(),'outputs','environment.json'),JSON.stringify({keys:Object.keys(process.env).sort(),home:process.env.HOME,args:process.argv.slice(2)}));
+if(!mode.startsWith('inline'))fs.writeFileSync(path.join(process.cwd(),'outputs','environment.json'),JSON.stringify({keys:Object.keys(process.env).sort(),home:process.env.HOME,args:process.argv.slice(2)}));
 if(mode==='timeout'||mode==='hang'){setInterval(()=>{},1000);return}
 if(mode==='permission'){console.error('Permission denied by native policy');process.exit(1)}
 if(mode==='model'){console.error('Model unavailable');process.exit(1)}
@@ -339,8 +391,8 @@ if(mode==='malformed'){console.log('{"schema":');return}
 if(mode==='overflow'){console.log('x'.repeat(1048577));return}
 if(mode==='changed-git'){fs.writeFileSync(${JSON.stringify(join(workspace, '.git'))},'gitdir: /missing-fixture-gitdir\\n')}
 if(mode==='read-only-change'){fs.writeFileSync(${JSON.stringify(join(workspace, 'app.txt'))},'Unexpected fixture edit.')}
-const proof='Fixture proof.\\n';fs.writeFileSync(path.join(process.cwd(),'outputs','artifacts','proof.txt'),proof);
-const result={schema:'wholeloop/delivery-worker-result@1',assignment:assignment.assignment,identity:assignment.identity,status:mode==='blocked'?'blocked':'complete',origin:'worker-claim',summary:'Observed fixture output.',artifacts:[{ref:'artifacts/proof.txt',sha256:crypto.createHash('sha256').update(proof).digest('hex'),bytes:Buffer.byteLength(proof),kind:'report'}],criteria:[],findings:[],unknowns:[]};
+const proof=mode==='inline-empty'?'':'Fixture proof.\\n';if(!mode.startsWith('inline'))fs.writeFileSync(path.join(process.cwd(),'outputs','artifacts','proof.txt'),proof);
+const result=mode.startsWith('inline')?{schema:'wholeloop/delivery-worker-proposal@1',assignment:mode==='inline-wrong-fence'?'f'.repeat(64):assignment.assignment,status:'complete',summary:'Observed fixture proposal.',artifacts:[{ref:'artifacts/proof.txt',kind:'evidence',text:proof}],criteria:[{id:'search',status:'pass',evidence:['artifacts/proof.txt']}],findings:[],unknowns:[]}:{schema:'wholeloop/delivery-worker-result@1',assignment:assignment.assignment,identity:assignment.identity,status:mode==='blocked'?'blocked':'complete',origin:'worker-claim',summary:'Observed fixture output.',artifacts:[{ref:'artifacts/proof.txt',sha256:crypto.createHash('sha256').update(proof).digest('hex'),bytes:Buffer.byteLength(proof),kind:'report'}],criteria:[],findings:[],unknowns:[]};
 if(mode==='wrong-fence')result.identity.generation++;
 if(${JSON.stringify(target)}==='codex'){console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(result)}}));console.log(JSON.stringify({type:'turn.completed'}))}
 else console.log(JSON.stringify({is_error:false,structured_output:result}));
@@ -383,6 +435,82 @@ else console.log(JSON.stringify({is_error:false,structured_output:result}));
 }
 
 describe('actual synthetic native processes', () => {
+  it.each(['claude', 'codex'])(
+    'retains exact empty %s inline artifact bytes as a claim',
+    (target) =>
+      nativeFixture(
+        async ({ queue, lease, context, options }) => {
+          const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
+            ...options,
+            output: 'inline-proposal',
+          })
+          expect(receipt.status).toBe('succeeded')
+          expect(receipt.result?.artifacts[0]).toMatchObject({ bytes: 0, sha256: hash('') })
+          const artifact = receipt.artifacts?.[0]
+          if (!artifact) throw new Error('The exact empty artifact must be retained.')
+          expect(readFileSync(queue.lifecycle.journal.files.path(artifact.ref)).length).toBe(0)
+          expect(receipt.acceptance).toBe('not-established')
+        },
+        'inline-empty',
+        target,
+      ),
+  )
+  it.each(['claude', 'codex'])(
+    'captures %s inline verifier evidence without a worker artifact file',
+    (target) =>
+      nativeFixture(
+        async ({ queue, lease, context, options }) => {
+          const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
+            ...options,
+            output: 'inline-proposal',
+          })
+          expect(receipt.status).toBe('succeeded')
+          expect(receipt.acceptance).toBe('not-established')
+          expect(receipt.execution?.provenance).toBe('fixture')
+          expect(receipt.result?.criteria).toEqual([
+            { id: 'search', status: 'pass', evidence: ['artifacts/proof.txt'] },
+          ])
+          expect(receipt.result?.artifacts[0]?.sha256).toBe(hash('Fixture proof.\n'))
+          expect(
+            existsSync(
+              queue.lifecycle.journal.files.path(
+                `${receipt.directory}/outputs/artifacts/proof.txt`,
+              ),
+            ),
+          ).toBe(false)
+          const captured = receipt.artifacts?.[0]
+          if (!captured) throw new Error('The controller must capture the exact output bytes.')
+          expect(readFileSync(queue.lifecycle.journal.files.path(captured.ref), 'utf8')).toBe(
+            'Fixture proof.\n',
+          )
+        },
+        'inline',
+        target,
+      ),
+  )
+  it.each(['claude', 'codex'])(
+    'rejects %s stale inline proposals before artifact capture',
+    (target) =>
+      nativeFixture(
+        async ({ queue, lease, context, options }) => {
+          const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
+            ...options,
+            output: 'inline-proposal',
+          })
+          expect(receipt).toMatchObject({
+            status: 'failed',
+            reason: 'invalid-output',
+            acceptance: 'not-established',
+          })
+          expect(receipt.artifacts).toBeUndefined()
+          expect(
+            new NativeDeliveryHost(queue).budgets.inspect(lease.run).counters.artifactBytes,
+          ).toBe(0)
+        },
+        'inline-wrong-fence',
+        target,
+      ),
+  )
   it.each(['claude', 'codex'])(
     'retains managed process ownership and actual output on %s',
     (target) =>

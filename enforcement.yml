@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-worker-inline-artifacts
+    enforcers: [src/delivery/worker-proposal.ts#decodeWorkerProposal, src/delivery/worker-proposal.ts#workerProposalResponseSchema, src/delivery/native-adapters.ts#nativeDeliveryRecipe, src/delivery/native-host.ts#NativeDeliveryHost, test/unit/delivery/worker-proposal.test.ts, test/unit/delivery/native-host.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-ownership
     enforcers: [src/runner/route.ts#runnerDecisionRequirements, test/unit/runner/route.test.ts, src/runner/foreground.ts#OwnedForegroundRunner, src/runner/foreground-owner.ts#ForegroundOwner, src/fanout/posix.ts#workerGroupMember, test/unit/runner/foreground.test.ts, test/evals/runner/foreground.ts, src/runner/store.ts#RunnerStore, src/runner/events.ts#reduceRunner, src/runner/engine.ts#DeliveryRunner, src/runner/native-process.ts#ManagedRunnerProcess, test/unit/runner/engine.test.ts, test/unit/runner/process-recovery.test.ts, test/unit/runner/cli.test.ts]
   - id: delivery-delegated-decisions
