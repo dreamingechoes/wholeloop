@@ -7,4 +7,6 @@
 
 - ⛔ `delivery-finite-budgets` — preserve original run/attempt deadlines, finite CI/restart/repair counters, unique artifact reservations and repeated-failure limits across recovery and revisions. Unsupported hard usage caps refuse; missing spend stays unknown and fixture observations stay fixtures. Only a new validated typed result resets no-progress; heartbeats and narration cannot. Never refund or extend a hard allowance implicitly.
 
+- ⛔ `delivery-runner-ownership` — retain original private authority, deadlines and exact stage intent before input. Resume only after positive owned closure; never replay unknown work or signal stored PIDs. Recover published result/checkpoint locators without re-execution. Fixture routes cannot establish native QA, endpoint completion or publication.
+
 The CLI supplies no actual native/backend host automatically. Inspect checkpoints, effects and writer ownership separately; local fixtures do not certify containment, actual QA or operation-specific publication/merge eligibility.

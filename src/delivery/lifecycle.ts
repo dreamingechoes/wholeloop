@@ -21,12 +21,15 @@ export class DeliveryLifecycle {
     this.authority = new DeliveryAuthority(this.journal.files.root, now)
   }
 
-  track(input: {
-    run: string
-    revision?: number
-    envelope?: string
-    grant?: string
-  }): DeliveryProjection {
+  track(
+    input: {
+      run: string
+      revision?: number
+      envelope?: string
+      grant?: string
+    },
+    after?: (state: DeliveryProjection, append: (payload: DeliveryPayload) => void) => void,
+  ): DeliveryProjection {
     this.journal.transaction(CONTROLLER, (view, append) => {
       let registration: RegistrationPayload
       let limits: BudgetLimits
@@ -109,6 +112,8 @@ export class DeliveryLifecycle {
         if (contractDigest(state.grant ?? null) !== contractDigest(observation))
           append(input.run, observation)
       }
+      const tracked = view().get(input.run)
+      if (after && tracked) after(tracked, (payload) => append(input.run, payload))
     })
     return this.journal.get(input.run)
   }

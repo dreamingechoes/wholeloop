@@ -2,6 +2,12 @@ import { randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import {
+  type RunnerFacet,
+  type RunnerPayload,
+  runnerEventSchema,
+  runnerFacetSchema,
+} from '../runner/events.js'
+import {
   type BudgetFacet,
   type BudgetPayload,
   budgetEventSchema,
@@ -54,6 +60,7 @@ export const DELIVERY_PAYLOAD_SCHEMAS = [
   effectEventSchema,
   recoveryEventSchema,
   budgetEventSchema,
+  runnerEventSchema,
 ]
 export const DELIVERY_FACET_SCHEMAS = [
   attemptsSchema,
@@ -62,6 +69,7 @@ export const DELIVERY_FACET_SCHEMAS = [
   effectFacetSchema,
   recoveryFacetSchema,
   budgetFacetSchema,
+  runnerFacetSchema,
 ]
 export const DELIVERY_STATES = [
   'planned',
@@ -160,6 +168,7 @@ export type DeliveryPayload =
   | EffectPayload
   | RecoveryPayload
   | BudgetPayload
+  | RunnerPayload
 export interface DeliveryEvent {
   schema: 'wholeloop/delivery-event@1'
   id: string
@@ -205,6 +214,7 @@ export interface DeliveryProjection {
     | EffectsFacet
     | RecoveryFacet
     | BudgetFacet
+    | RunnerFacet
   )[]
 }
 export { DeliveryJournalError }

@@ -3,7 +3,7 @@ import { existsSync, mkdirSync } from 'node:fs'
 import { isAbsolute, join, resolve } from 'node:path'
 import { bundledCanonical } from '../adapters/canonical.js'
 import { contractDigest } from '../contracts/compatibility.js'
-import { workerProcess } from '../fanout/process.js'
+import { type ProcessResult, workerProcess } from '../fanout/process.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { assertExternal, canonicalPath, inside } from '../state/paths.js'
 import { deliveryWorkerEnvironment } from './broker.js'
@@ -37,6 +37,14 @@ import {
   workerResumePack,
 } from './worker-protocol.js'
 
+/** A fixed native-process owner can preserve registration across controller loss. */
+export type NativeProcessRunner = (
+  command: string,
+  args: string[],
+  options: Parameters<typeof workerProcess>[2],
+) => Promise<
+  ProcessResult & { ownership: { invocationState: 'stopped' | 'not-started' | 'unknown' } }
+>
 export interface NativeBoundaryHost {
   observe(input: {
     assignment: Readonly<WorkerAssignment>
@@ -91,6 +99,7 @@ export class NativeDeliveryHost {
       model: string
       path: string
       host?: NativeBoundaryHost
+      process?: NativeProcessRunner
       nativeStore?: string
       signal?: AbortSignal
     },
@@ -235,7 +244,10 @@ export class NativeDeliveryHost {
     const invokedAt = this.queue.lifecycle.journal.now()
     let startedAt = invokedAt
     try {
-      const observedProcess = await workerProcess(recipe.command, recipe.args, {
+      const runProcess = options.process ?? workerProcess
+      const observedProcess: ProcessResult & {
+        ownership?: { invocationState: 'stopped' | 'not-started' | 'unknown' }
+      } = await runProcess(recipe.command, recipe.args, {
         cwd: directory,
         input,
         signal: controller.signal,
@@ -267,6 +279,15 @@ export class NativeDeliveryHost {
           }
         },
       })
+      if (observedProcess.ownership?.invocationState === 'unknown') {
+        // Lost completion never frees the original reservation, even if a wrapper exited.
+        return this.retain({
+          ...receipt,
+          status: 'failed',
+          reason: 'runtime-unobserved',
+          observation: negotiated.observation,
+        })
+      }
       const finishedAt = this.queue.lifecycle.journal.now()
       if (observedProcess.signal) receipt.signal = observedProcess.signal
       if (!runtime) {

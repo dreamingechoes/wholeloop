@@ -46,6 +46,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 | [Delegated machine decisions](./tutorials/delivery-decisions.md) | Pinned purpose-specific policy, independent machine provenance and no-prompt limitations |
 | [Delivery authorization](./tutorials/delivery-authorization.md) | Exact operator grants, finite deadlines, revocation and the worker trust boundary |
 | [Delivery recovery](./tutorials/delivery-recovery.md) | Independent-process history inspection and cache repair without reconstructing authority |
+| [Delivery runner controls](./tutorials/delivery-runner.md) | Owned route preparation, explicit controls and current foreground execution limits |
 | [Delivery queue](./tutorials/delivery-queue.md) | Durable work slots, dependency reasons and the boundary before actual worker dispatch |
 | [Docker application environments](./tutorials/delivery-docker.md) | Scoped provisioning, actual resource/readiness observations and model-free Docker evaluation |
 | [Environment stop and retirement](./tutorials/delivery-lifecycle.md) | Observed shutdown, retained data and interrupted exact-resource cleanup |

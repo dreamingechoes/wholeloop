@@ -1,4 +1,5 @@
 import { contractDigest } from '../contracts/compatibility.js'
+import { reduceRunner } from '../runner/events.js'
 import { findBudget, reduceDeliveryBudget } from './budget-events.js'
 import { reduceDeliveryCheckpoint } from './checkpoint-events.js'
 import { reduceDeliveryEffect } from './effect-events.js'
@@ -343,6 +344,9 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
           }
           break
         }
+        case 'wholeloop/delivery-runner-event@1':
+          reduceRunner(state, event, payload)
+          break
         case 'wholeloop/delivery-queue-event@1':
           reduceDeliveryQueue(state, event, payload)
           break

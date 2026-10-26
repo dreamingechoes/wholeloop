@@ -122,8 +122,8 @@
 | [0109](./0109-exact-read-only-integrated-milestone-candidates.md) | Exact read-only integrated milestone candidates | Accepted | 2026-10-25 |
 | [0110](./0110-owned-assembly-and-complete-milestone-verification.md) | Owned assembly and complete milestone verification | Accepted | 2026-10-25 |
 | [0111](./0111-original-delivery-fixtures-and-controller-owned-oracles.md) | Original delivery fixtures and controller-owned oracles | Accepted | 2026-10-25 |
-
 | [0112](./0112-private-delegation-and-independent-machine-decisions.md) | Private delegation and independent machine decisions | Accepted | 2026-10-25 |
+| [0113](./0113-owned-foreground-routes-and-native-recovery.md) | Owned foreground routes and native recovery | Accepted | 2026-10-26 |
 
 ## Lifecycle
 

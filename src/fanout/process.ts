@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { currentWorkerOwnership } from './ownership.js'
 import { terminateWorker, workerPlatform } from './posix.js'
 
 export type WorkerFailure = 'crashed' | 'timeout' | 'cancelled' | 'overflow'
@@ -8,8 +9,17 @@ export interface ProcessResult {
   code: number | null
   signal: NodeJS.Signals | null
 }
+/** Existing callers keep their policy/codec; an explicit controller may add durable ownership. */
+export function workerProcess(
+  command: string,
+  args: string[],
+  options: Parameters<typeof unmanagedWorkerProcess>[2],
+): Promise<ProcessResult> {
+  const owner = currentWorkerOwnership()
+  return owner ? owner(command, args, options) : unmanagedWorkerProcess(command, args, options)
+}
 /** Shell-free stdin input and bounded discarded diagnostics avoid leaking prompts through argv/logs. */
-export async function workerProcess(
+export async function unmanagedWorkerProcess(
   command: string,
   args: string[],
   options: {

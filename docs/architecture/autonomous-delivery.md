@@ -52,6 +52,8 @@ Use [delivery source](../tutorials/delivery-intake.md) to capture bounded local 
 
 Endpoint and intervention are independent. A research-only grant does not permit code changes, and an unattended PR run does not permit merge. The owner can delegate the supported decisions once under an exact plan or bounded request envelope; each machine decision retains its policy and evidence basis.
 
+The [runner controls](../tutorials/delivery-runner.md) now expose immutable preparation, current route/ownership inspection and explicit pause/resume/stop. The internal engine retains stage intents, private native cancellation and checkpoint recovery; fixed complete-route domain-host wiring remains P6-10 work. These controls alone execute no model and certify no endpoint.
+
 Zero intervention means no later ask-user tool, human decision wait or interactive approval prompt. The runner resolves an authorized ambiguity or returns a terminal limitation when a prerequisite cannot be met. It does not bypass native permissions or repository protections.
 
 Keep the core deterministic and the model/tool host explicit. Reuse existing hierarchy, criteria, gates, adapters and MCP-first connections. New worker containment and effect authority remain distinct from worktree separation and prompt instructions.

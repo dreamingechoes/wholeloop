@@ -14,6 +14,7 @@ import { deliveryAssemblyCommand } from './delivery-assembly.js'
 import { deliveryEnvironmentRuntimeCommand } from './delivery-environment-runtime.js'
 import { deliveryPrivateAsyncCommand } from './delivery-private.js'
 import { deliveryRecoverCommand } from './delivery-recovery.js'
+import { deliveryRunnerCommand } from './delivery-runner.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav, docsReference } from './docs.js'
 import { doctorCommand } from './doctor.js'
@@ -110,6 +111,11 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       throw new CliError(`Unexpected argument for ${command.path}`)
     if (command.path.startsWith('delivery decision-'))
       return delegatedDecisionsCommand(command.path, parsed, root, json, io)
+    if (
+      command.path.startsWith('delivery runner-') ||
+      ['delivery pause', 'delivery resume', 'delivery stop'].includes(command.path)
+    )
+      return deliveryRunnerCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('delivery '))
       return deliveryCommand(command.path, parsed, root, json, io)
     if (command.path === 'release verify') return releaseVerifyCommand(parsed, root, json, io)

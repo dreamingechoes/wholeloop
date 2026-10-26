@@ -13,6 +13,7 @@ pages:
   - { path: tutorials/delivery-plan.md, title: Delivery planning }
   - { path: tutorials/delivery-authorization.md, title: Delivery authorization }
   - { path: tutorials/delivery-decisions.md, title: Delegated machine decisions }
+  - { path: tutorials/delivery-runner.md, title: Delivery runner controls }
   - { path: tutorials/delivery-recovery.md, title: Delivery recovery }
   - { path: tutorials/delivery-queue.md, title: Delivery queue }
   - { path: tutorials/delivery-checkpoints.md, title: Delivery checkpoints }

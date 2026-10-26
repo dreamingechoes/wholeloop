@@ -249,13 +249,15 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-10 · Local delivery runner and controls
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-06, P6-07, P6-09, P6-34
+**Status:** 🔄 · **Size:** M · **Depends on:** P6-06, P6-07, P6-09, P6-34
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Run an authorized route from the terminal or CI without a required long-lived conversation.
 
 **Deliverables** — Proposed delivery enqueue/run/status/pause/resume/stop/reconcile commands over the shared state machine and decision policy.
+
+**Implementation progress** — The first increment adds immutable runner preparation, route/owner/stage inspection, pause/resume/stop controls, internal finite stage execution, original-budget continuation and private native ownership/checkpoint recovery. Fixed domain-host wiring, owned foreground entrypoint and endpoint/reconciliation commands remain open; these are technical work, not manual acceptance blockers.
 
 **Acceptance criteria:**
 

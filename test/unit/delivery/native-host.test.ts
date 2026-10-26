@@ -4,6 +4,7 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'n
 import { dirname, join, resolve } from 'node:path'
 import { parse } from 'smol-toml'
 import { describe, expect, it } from 'vitest'
+import { contractDigest } from '../../../src/contracts/compatibility.js'
 import {
   NATIVE_DELIVERY_TARGETS,
   nativeDeliveryRecipe,
@@ -17,6 +18,7 @@ import { type NativeBoundaryHost, NativeDeliveryHost } from '../../../src/delive
 import { DEFAULT_DELIVERY_BUDGETS } from '../../../src/delivery/plan.js'
 import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { createWorkerAssignment, type WorkerRole } from '../../../src/delivery/worker-protocol.js'
+import { ManagedRunnerProcess } from '../../../src/runner/native-process.js'
 import { authorization, entry, fixture, git } from '../../support/delivery.js'
 
 const at = '2026-10-24T10:00:00.000Z'
@@ -381,6 +383,53 @@ else console.log(JSON.stringify({is_error:false,structured_output:result}));
 }
 
 describe('actual synthetic native processes', () => {
+  it.each(['claude', 'codex'])(
+    'retains managed process ownership and actual output on %s',
+    (target) =>
+      nativeFixture(
+        async ({ queue, lease, context, options }) => {
+          const manager = new ManagedRunnerProcess(
+            queue.lifecycle.journal.files,
+            contractDigest({ lease, managed: true }),
+          )
+          const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
+            ...options,
+            process: (command, args, { input, ...operation }) =>
+              manager.invoke(command, args, input, { ...operation, current: () => true }),
+          })
+          expect(receipt.status).toBe('succeeded')
+          expect(manager.observe()).toMatchObject({
+            invocationState: 'stopped',
+            reason: 'finished',
+            code: 0,
+          })
+          expect(queue.inspect(lease.run).find((r) => r.attempt === lease.attempt)?.status).toBe(
+            'complete',
+          )
+        },
+        'success',
+        target,
+      ),
+  )
+  it('holds the original queue claim when the native process owner cannot establish shutdown', async () => {
+    await nativeFixture(async ({ queue, lease, context, options }) => {
+      const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
+        ...options,
+        process: async () => ({
+          status: 'cancelled',
+          stdout: '',
+          code: null,
+          signal: null,
+          ownership: { invocationState: 'unknown' },
+        }),
+      })
+      expect(receipt).toMatchObject({ status: 'failed', reason: 'runtime-unobserved' })
+      expect(queue.inspect(lease.run).find((r) => r.attempt === lease.attempt)?.status).toBe(
+        'claimed',
+      )
+    })
+  })
+
   it.each(['claude', 'codex'])(
     'runs source-only research on %s without an application workspace',
     (target) =>

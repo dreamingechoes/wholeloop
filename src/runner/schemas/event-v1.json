@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-runner-event@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-runner-event@1"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "prepared",
+        "claimed",
+        "dispatched",
+        "started",
+        "observed",
+        "released",
+        "recovered",
+        "continued",
+        "registered"
+      ]
+    },
+    "basis": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "request": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "controller": {
+      "type": "string",
+      "pattern": "^controller-[a-f0-9]{32}$"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "stage": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9:_-]{0,255}$",
+      "maxLength": 256
+    },
+    "invocation": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "instance": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "worker": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": ["backend", "instance", "worker"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed", "blocked", "pending", "unknown", "stopped", "not-started"]
+    },
+    "evidence": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["fixture", "host-observed"]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "previous": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "observation": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": ["schema", "action", "basis", "request"]
+}

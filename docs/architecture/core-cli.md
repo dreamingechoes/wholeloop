@@ -27,7 +27,7 @@ Delivery recovery-schema exposes checkpoint and effect-intent contracts. checkpo
 
 Delivery enqueue persists an authorized exact work slot; queue inspects retained entries, reasons and reservations. Both commands start no worker. Atomic claims, current generations and repository/global capacity live in the trusted controller API, with unavailable host admission by default. See the [queue tutorial](../tutorials/delivery-queue.md) and [ADR-0097](../decisions/0097-durable-queue-reservations-and-current-attempt-fences.md); actual dispatch/environment/QA evidence remains later work.
 
-Delivery state-schema exposes event and projection envelopes plus every registered closed payload/facet family. track observes a stored plan/envelope and optional private grant without starting execution. status replays authoritative delivery history; events pages it by exclusive global sequence; rebuild repairs disposable caches without reconstructing authority or changing legacy human/PR history. See the [recovery tutorial](../tutorials/delivery-recovery.md) and [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md). General worker/lock/effect reconciliation remains a later runner increment.
+Delivery state-schema exposes event and projection envelopes plus every registered closed payload/facet family. track observes a stored plan/envelope and optional private grant without starting execution. status replays authoritative delivery history; events pages it by exclusive global sequence; rebuild repairs disposable caches without reconstructing authority or changing legacy human/PR history. See the [recovery tutorial](../tutorials/delivery-recovery.md) and [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md). Runner preparation/status and pause/resume/stop controls are available in the [runner guide](../tutorials/delivery-runner.md). They preserve original authority and do not launch workers; complete foreground domain-host and endpoint wiring remains in progress.
 
 Delivery planning adds plan-schema, envelope, plan and inspect-plan. These validate and preserve proposals with explicit ownership, dependency waves, local target SHAs and immutable policy/guidance bindings, without creating items, approvals, grants or workers. Inspecting a historic revision does not require today's target to match its old base. An initial envelope bounds a derived plan structurally; independent semantic acceptance and execution authority remain separate. The [planning tutorial](../tutorials/delivery-plan.md) exercises both proposal types and fresh-process recovery; [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) explains the boundary.
 
@@ -40,6 +40,12 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl delivery runner-schema` | `wholeloop/delivery-runner-schema@1` | Show owned runner contracts and current execution limitations |
+| `wl delivery runner-prepare` | `wholeloop/delivery-runner-status@1` | Prepare a private authorized route without starting execution |
+| `wl delivery runner-status` | `wholeloop/delivery-runner-status@1` | Inspect retained controller ownership and exact stage observations |
+| `wl delivery pause` | `wholeloop/delivery-runner-status@1` | Pause dispatch without deleting owned work or renewing budgets |
+| `wl delivery resume` | `wholeloop/delivery-runner-status@1` | Resume the same run after original ownership is resolved |
+| `wl delivery stop` | `wholeloop/delivery-runner-status@1` | Request owned cancellation without asserting process termination |
 | `wl delivery decision-schema` | `wholeloop/delegated-decision-schema@1` | Show delegated decision contracts without executing a host |
 | `wl delivery decision-pin` | `wholeloop/delegated-decision-pins@1` | Pin decision-specific rubrics from an active original private grant |
 | `wl delivery decision-preflight` | `wholeloop/delegated-decision-preflight@1` | Inspect delegation scope without certifying runtime capability |

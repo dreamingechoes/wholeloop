@@ -8,6 +8,48 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'delivery runner-schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/delivery-runner-schema@1',
+    summary: 'Show owned runner contracts and current execution limitations',
+  },
+  {
+    path: 'delivery runner-prepare',
+    arguments: '',
+    options: ['--file <path>', '--root <path>', '--store <path>'],
+    schema: 'wholeloop/delivery-runner-status@1',
+    summary: 'Prepare a private authorized route without starting execution',
+  },
+  {
+    path: 'delivery runner-status',
+    arguments: '',
+    options: ['--digest <sha256>', '--store <path>'],
+    schema: 'wholeloop/delivery-runner-status@1',
+    summary: 'Inspect retained controller ownership and exact stage observations',
+  },
+  {
+    path: 'delivery pause',
+    arguments: '',
+    options: ['--digest <sha256>', '--operator <person>', '--store <path>'],
+    schema: 'wholeloop/delivery-runner-status@1',
+    summary: 'Pause dispatch without deleting owned work or renewing budgets',
+  },
+  {
+    path: 'delivery resume',
+    arguments: '',
+    options: ['--digest <sha256>', '--operator <person>', '--store <path>'],
+    schema: 'wholeloop/delivery-runner-status@1',
+    summary: 'Resume the same run after original ownership is resolved',
+  },
+  {
+    path: 'delivery stop',
+    arguments: '',
+    options: ['--digest <sha256>', '--operator <person>', '--store <path>'],
+    schema: 'wholeloop/delivery-runner-status@1',
+    summary: 'Request owned cancellation without asserting process termination',
+  },
+  {
     path: 'delivery decision-schema',
     arguments: '',
     options: [],

@@ -69,4 +69,4 @@ A numeric baseline remains unknown. None-policy can investigate within its finit
 The original source, plan/envelope, rubric, artifacts, evidence, grant and named Git bases remain current inputs. Starting a replacement judgment immediately fences the old acceptance, even if the replacement crashes. Late older judgments cannot overwrite the newer intent. Changes/revocation/expiry invalidate eligibility while history stays readable. Machine records always say actorKind machine and humanApproval not-recorded; legacy supervised decisions retain their original human semantics.
 
 <!-- docnav -->
-[◀ Delivery authorization](delivery-authorization.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)
+[◀ Delivery authorization](delivery-authorization.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery runner controls ▶](delivery-runner.md)

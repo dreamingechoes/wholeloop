@@ -3,7 +3,8 @@
 export function operationWrapper(
   outcomeSchema:
     | 'wholeloop/environment-operation-outcome@1'
-    | 'wholeloop/integration-operation-outcome@1',
+    | 'wholeloop/integration-operation-outcome@1'
+    | 'wholeloop/delivery-runner-operation-outcome@1',
 ) {
   return `
 import { spawn } from 'node:child_process'
