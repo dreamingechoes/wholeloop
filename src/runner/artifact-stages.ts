@@ -34,7 +34,8 @@ import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 
 interface ArtifactStageBinding {
-  version: 1
+  version: 1 | 2
+  calls?: string[]
   lease: RunnerArtifactLease
   directory?: string
   workspace?: { path: string; head: string; snapshot: string }
@@ -44,6 +45,8 @@ export interface RunnerArtifactResult {
   invocationState: 'stopped' | 'not-started' | 'unknown'
   provenance: 'fixture' | 'host-observed'
   evidence: string
+  deadline?: string
+  ownedCalls?: { invocation: string; evidence: string }[]
   artifact?: { ref: string; sha256: string }
   prepared?: {
     kind: 'acceptance' | 'delivery-plan' | 'build-plan'
@@ -117,9 +120,21 @@ export class RunnerArtifactStages {
     ) as ArtifactStageBinding
     if (
       Object.keys(binding).some(
-        (key) => !['version', 'lease', 'directory', 'workspace'].includes(key),
+        (key) =>
+          ![
+            'version',
+            'lease',
+            'directory',
+            'workspace',
+            ...(binding.version === 2 ? ['calls'] : []),
+          ].includes(key),
       ) ||
-      binding.version !== 1 ||
+      ![1, 2].includes(binding.version) ||
+      (binding.version === 2 &&
+        (!Array.isArray(binding.calls) ||
+          binding.calls.length > 1000 ||
+          binding.calls.some((id) => !/^[a-f0-9]{64}$/.test(id)) ||
+          new Set(binding.calls).size !== binding.calls.length)) ||
       !binding.lease?.root ||
       binding.lease.root.request !== contractDigest(request) ||
       binding.lease.root.plan !== record.basis ||
@@ -173,6 +188,13 @@ export class RunnerArtifactStages {
     )
       throw new DeliveryRunnerError('artifact-stage-not-current')
     if (this.read(context.request, record)) return this.inspect(context.request, record)
+    if (existsSync(this.store.files.path(`${this.path(record.invocation)}.consumed`)))
+      throw new DeliveryRunnerError('artifact-stage-original-unresolved')
+    if (
+      record.runtime ||
+      new RunnerNativeScope(this.store.files, context.invocation).calls().length
+    )
+      throw new DeliveryRunnerError('artifact-stage-foreign-native-work')
     let candidate: ArtifactStageBinding['workspace']
     if (context.stage.kind === 'build-plan') {
       const workspace = new RunnerGitStages(this.store).workspace(
@@ -208,12 +230,33 @@ export class RunnerArtifactStages {
     })
     const lease = attempts.claim({ ...input, brief }),
       binding: ArtifactStageBinding = {
-        version: 1,
+        version: 2,
+        calls: [],
         lease,
         ...(candidate ? { workspace: candidate } : {}),
       }
     this.store.files.atomic(this.path(record.invocation), `${JSON.stringify(binding)}\n`)
-    await new RunnerNativeStage(this.store, context).run(async (process) => {
+    // Only this producer's managed calls enter its prefix. A closed unrelated
+    // call cannot qualify as production just because it shares the root stage.
+    await new RunnerNativeStage(this.store, context, (invocation) => {
+      const original = this.read(context.request, record),
+        calls = new RunnerNativeScope(this.store.files, context.invocation).calls()
+      if (
+        !original ||
+        contractDigest(original.binding) !== contractDigest(binding) ||
+        !binding.calls ||
+        binding.calls.includes(invocation) ||
+        !calls.some((call) => call.invocation === invocation)
+      )
+        throw new DeliveryRunnerError('artifact-stage-call-binding')
+      binding.calls.push(invocation)
+      binding.calls.sort(
+        (a, b) =>
+          calls.findIndex((c) => c.invocation === a) - calls.findIndex((c) => c.invocation === b),
+      )
+      safeSourceText(JSON.stringify(binding), 2 * 1024 * 1024)
+      this.store.files.atomic(this.path(record.invocation), `${JSON.stringify(binding)}\n`)
+    }).run(async (process) => {
       const options = this.options.native(process)
       await attempts.run(lease, {
         ...options,
@@ -250,7 +293,19 @@ export class RunnerArtifactStages {
       receipt: NativeRunReceipt | undefined,
       artifact: RunnerArtifactResult['artifact'],
       prepared: RunnerArtifactResult['prepared']
-    if (selected?.binding.directory && closed) {
+    const originalCalls = selected?.binding.calls,
+      prefix =
+        selected?.binding.version === 1 ||
+        (!!originalCalls?.length &&
+          contractDigest(originalCalls) ===
+            contractDigest(calls.slice(0, originalCalls.length).map((c) => c.invocation))),
+      ownedCalls =
+        prefix && originalCalls
+          ? calls
+              .slice(0, originalCalls.length)
+              .map((call) => ({ invocation: call.invocation, evidence: call.observed.evidence }))
+          : undefined
+    if (selected?.binding.directory && closed && prefix) {
       const attempt = deliveryAttempts(this.store.lifecycle.journal.get(request.run)).records.find(
         (a) => a.id === selected.binding.lease.assignment.identity.attempt,
       )
@@ -371,6 +426,9 @@ export class RunnerArtifactStages {
         artifact: artifact ?? null,
         prepared: prepared ?? null,
       }),
+      ...(ownedCalls && selected
+        ? { ownedCalls, deadline: selected.binding.lease.root.deadline }
+        : {}),
       ...(artifact ? { artifact } : {}),
       ...(prepared ? { prepared } : {}),
       approvals: 'not-recorded',

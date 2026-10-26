@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
@@ -7,6 +7,7 @@ import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { decodeWorkerProposal } from '../../../src/delivery/worker-proposal.js'
 import { createWorkerAssignment } from '../../../src/delivery/worker-protocol.js'
 import { RunnerArtifactStages } from '../../../src/runner/artifact-stages.js'
+import { RunnerBuilderPlanningStages } from '../../../src/runner/builder-planning-stages.js'
 import { RunnerDecisionStages } from '../../../src/runner/decision-stages.js'
 import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
 import { OwnedForegroundRunner, receiveOwnedForeground } from '../../../src/runner/foreground.js'
@@ -22,6 +23,7 @@ import { deliveryCommitFixture, prepareFixtureCommit } from '../../support/deliv
 import { deliveryWorkspaceFixture } from '../../support/delivery-workspaces.js'
 import { nativeDecisionFixture } from '../../support/native-decisions.js'
 import { runnerArtifactFixture } from '../../support/runner-artifact.js'
+import { runnerBuilderPlanningFixture } from '../../support/runner-builder-planning.js'
 import { runnerDecisionFixture } from '../../support/runner-decision.js'
 import { runnerEnvironmentFixture } from '../../support/runner-environment.js'
 import { runnerGitRouteFixture } from '../../support/runner-git.js'
@@ -384,6 +386,76 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
       'criterion verification preserves original pre-dispatch cancellation and unavailable evidence without constructing a native or Docker host',
     )
   })
+  await runnerBuilderPlanningFixture(
+    async (fixture) => {
+      const abort = new AbortController(),
+        timer = setTimeout(() => abort.abort(), 60000)
+      fixture.context.signal = abort.signal
+      fixture.context.deadline = new Date(
+        Math.min(Date.parse(fixture.context.deadline), Date.now() + 60000),
+      ).toISOString()
+      try {
+        const result = await fixture.stages.execute(fixture.context)
+        assert.equal(result.status, 'passed', JSON.stringify(result))
+        assert.equal(result.invocationState, 'stopped')
+        assert.equal(result.decisions?.length, 1)
+        const decisionBinding = JSON.parse(
+          readFileSync(
+            fixture.store.files.path(
+              `delivery/runner-decisions/${fixture.context.invocation}.json`,
+            ),
+            'utf8',
+          ),
+        )
+        assert.equal(decisionBinding.version, 2)
+        assert.equal(decisionBinding.production.calls.length, 1)
+        assert.equal(decisionBinding.production.deadline, fixture.context.deadline)
+
+        assert.equal(
+          new RunnerNativeScope(fixture.store.files, fixture.context.invocation).calls().length,
+          3,
+        )
+        const record = fixture.store.stage(
+          contractDigest(fixture.context.request),
+          fixture.context.stage.id,
+        )
+        assert.ok(record)
+        fixture.store.lifecycle.transition(fixture.context.request.run, {
+          to: 'paused',
+          reason: 'Observe the exact supported builder plan without another native call.',
+        })
+        const fresh = new RunnerBuilderPlanningStages(new RunnerStore(fixture.store.files.root), {
+          production: {
+            identity: fixture.context.request.host,
+            native: () => {
+              throw new Error('Recovery cannot construct another producer')
+            },
+            context: () => {
+              throw new Error('Recovery cannot select new context')
+            },
+          },
+          decision: () => {
+            throw new Error('Recovery cannot select another decision request')
+          },
+          host: () => {
+            throw new Error('Recovery cannot construct another decision host')
+          },
+        })
+        assert.deepEqual(await fresh.inspect(fixture.context.request, record), result)
+        assert.equal(
+          new RunnerNativeScope(fixture.store.files, fixture.context.invocation).calls().length,
+          3,
+        )
+        checks.push(
+          'an exact owned builder proposal precedes independent planner/challenger approval and recovers while paused without replay; normalized model fixtures certify no native account or QA',
+        )
+      } finally {
+        clearTimeout(timer)
+        abort.abort()
+      }
+    },
+    { provenance: 'host-observed', stageBudget: 'plan' },
+  )
   const report = {
     status: 'passed',
     provenance: 'fixture',

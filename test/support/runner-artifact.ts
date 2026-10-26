@@ -1,17 +1,20 @@
 import { createHash } from 'node:crypto'
 import { chmodSync } from 'node:fs'
 import { dirname } from 'node:path'
+import { sourceHash } from '../../src/delivery/input.js'
 import type {
   NativeBoundaryHost,
   NativeRunOptions,
   NativeRunReceipt,
 } from '../../src/delivery/native-host.js'
+import type { DeliveryPlan } from '../../src/delivery/plan.js'
 import {
   RunnerArtifactAttempts,
   type RunnerArtifactInput,
   type RunnerArtifactLease,
 } from '../../src/runner/artifact-attempts.js'
 import { RunnerNativeStage } from '../../src/runner/native-stage.js'
+import type { StoreFiles } from '../../src/state/files.js'
 import { runnerGitFixture } from './runner-git.js'
 
 export async function runnerArtifactFixture(
@@ -28,6 +31,8 @@ export async function runnerArtifactFixture(
   options: {
     stage?: 'definition' | 'acceptance-definition' | 'build-plan'
     mode?: 'valid' | 'malformed' | 'wrong-basis' | 'unknown' | 'policy'
+    delegate?: boolean
+    stageBudget?: 'plan'
   } = {},
 ) {
   const guidance = 'Pinned fixture artifact-production guidance.'
@@ -51,14 +56,15 @@ export async function runnerArtifactFixture(
         'artifact-bin/codex',
         `#!${process.execPath}
 let input='';process.stdin.on('data',chunk=>input+=chunk);process.stdin.on('end',()=>{
-const a=JSON.parse(input).assignment;
+const payload=JSON.parse(input),a=payload.assignment;
 let b={};try{b=JSON.parse(a.brief)}catch{}
 const mode=${JSON.stringify(options.mode ?? 'valid')};let output={purpose:'fixture',role:a.identity.role};
 if(b.response?.$id==='wholeloop/builder-plan@1')output={schema:b.response.$id,steps:['Implement title filtering in the declared task entrypoint.'],tests:['Search seeded titles and assert exact matching task IDs.'],assumptions:[]};
 if(b.response?.$id==='wholeloop/acceptance-plan@1')output={schema:b.response.$id,run:a.identity.run,revision:b.plan.revision,plan:mode==='wrong-basis'?'f'.repeat(64):a.identity.plan,source:b.plan.source,cases:[{id:'find-title',criteria:['search'],owner:'machine',applicability:'applicable',rationale:'Exercise the exact agreed search criterion.',initial:'Two seeded tasks have distinct titles.',actions:['Search for the second task title.'],assertions:[{id:'matching-ids',description:'Return the matching task ID.',subject:'json',operator:'equals',path:'/ids',expected:'["task-2"]'}],failureConditions:['Missing or extra IDs fail the case.'],runner:{kind:'api',capability:'http.request',input:'{"method":"GET","path":"/tasks?title=Second"}'},fixture:{ref:'fixture:two-tasks',sha256:'b'.repeat(64)},timeoutMs:5000}],retention:{reviewAfterMs:86400000,expiryAction:'retain'}};
 if(b.response?.$id==='wholeloop/delivery-plan@1')output={...b.plan,revision:b.plan.revision+1,previous:mode==='wrong-basis'?'f'.repeat(64):a.identity.plan,definition:{ready:true,missing:[]}};
+if(b.response?.$id==='wholeloop/delegated-native-judgment@1'||b.response?.$id==='wholeloop/delegated-native-challenge@1'){const inner=JSON.parse(payload.inputs[0].content);output={schema:b.response.$id,basis:inner.basis,rationale:'Independently inspect the exact produced builder plan.',uncertainties:[]};if(a.identity.role==='planner')output.outcome='accept';else{output.judgment=b.judgment;output.verdict='supported'}};
 if(mode==='policy'&&output.policy)output.policy={...output.policy,endpoint:'to-merge'};
-const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic artifact production, not approval.',artifacts:[{ref:'artifacts/production.json',kind:'report',text:mode==='malformed'?'Incomplete JSON':JSON.stringify(output)}],criteria:[],findings:[],unknowns:mode==='unknown'?[{question:'Missing fact?',reason:'Unobserved fixture input.',owner:'Fixture Owner'}]:[]};
+const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic artifact production, not approval.',artifacts:[{ref:b.response?.$id?.startsWith('wholeloop/delegated-native-')?'artifacts/decision.json':'artifacts/production.json',kind:'report',text:mode==='malformed'?'Incomplete JSON':JSON.stringify(output)}],criteria:[],findings:[],unknowns:mode==='unknown'?[{question:'Missing fact?',reason:'Unobserved fixture input.',owner:'Fixture Owner'}]:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(proposal)}}));console.log(JSON.stringify({type:'turn.completed'}));
 });\n`,
       )
@@ -128,6 +134,37 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
           ),
       })
     },
-    { singleUnit: true, guidance, ...(options.stage === 'definition' ? { definition: true } : {}) },
+    {
+      singleUnit: true,
+      guidance,
+      ...(options.stage === 'definition' ? { definition: true } : {}),
+      ...(options.stageBudget ? { stageBudget: options.stageBudget } : {}),
+      ...(options.delegate
+        ? {
+            decisions: ['approve-build-plan' as const],
+            configure: (plan: DeliveryPlan, files: StoreFiles) => {
+              const rubric = JSON.stringify({
+                schema: 'wholeloop/delegated-decision-rubric@1',
+                decision: 'approve-build-plan',
+                purpose: 'Inspect the exact observed builder proposal before implementation.',
+                rules: [{ id: 'scope', text: 'Preserve the approved unit and source scope.' }],
+                outcomes: ['accept', 'reject'],
+                unknowns: { allowed: [], defaults: [] },
+                timeoutMs: 10000,
+              })
+              files.atomic('rubrics/build-plan.json', rubric)
+              plan.policy.intervention = 'none'
+              plan.policy.delegations = [
+                {
+                  id: 'approve-build-plan',
+                  rubric: { ref: 'rubrics/build-plan.json', sha256: sourceHash(rubric) },
+                  evidence: ['production'],
+                  fallback: 'blocked',
+                },
+              ]
+            },
+          }
+        : {}),
+    },
   )
 }

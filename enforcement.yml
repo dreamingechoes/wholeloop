@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-builder-planning
+    enforcers: [src/runner/builder-planning-stages.ts#RunnerBuilderPlanningStages, src/runner/artifact-stages.ts#RunnerArtifactStages, src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/native-stage.ts#RunnerNativeStage, src/decisions/native-host.ts#NativeDelegatedDecisionHost, test/unit/runner/builder-planning-stages.test.ts, test/unit/runner/artifact-stages.test.ts, test/unit/runner/decision-stages.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-criterion-verification
     enforcers: [src/runner/verification-stages.ts#RunnerVerificationStages, src/runner/store.ts#RunnerStore, src/delivery/budgets.ts#DeliveryBudgets, test/unit/runner/store.test.ts, test/unit/delivery/budgets.test.ts, src/runner/suite-stages.ts#RunnerSuiteStages, src/runner/native-gate.ts#RunnerNativeGateHost, src/gates/execution.ts#inspectGateRound, test/unit/runner/verification-stages.test.ts, test/unit/runner/native-gate.test.ts, test/unit/runner/review-stages.test.ts, test/evals/runner/verification.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-owned-suites

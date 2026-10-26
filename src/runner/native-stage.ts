@@ -1,3 +1,4 @@
+import { basename } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { NativeProcessRunner } from '../delivery/native-host.js'
 import { workerProcess } from '../fanout/process.js'
@@ -12,6 +13,7 @@ export class RunnerNativeStage {
   constructor(
     readonly store: RunnerStore,
     readonly context: RunnerStageContext,
+    readonly observed?: (invocation: string) => void,
   ) {
     this.scope = new RunnerNativeScope(store.files, context.invocation)
   }
@@ -38,8 +40,15 @@ export class RunnerNativeStage {
           options.started?.(pid)
         },
       })
-      const ownership = (result as { ownership?: { invocationState?: string } }).ownership
-        ?.invocationState
+      const observation = (
+          result as { ownership?: { invocation?: string; invocationState?: string } }
+        ).ownership,
+        ownership = observation?.invocationState
+      if (this.observed && this.scope.clients.includes(basename(command))) {
+        if (!observation?.invocation || !/^[a-f0-9]{64}$/.test(observation.invocation))
+          throw new DeliveryRunnerError('native-stage-call-observation')
+        this.observed(observation.invocation)
+      }
       return {
         ...result,
         ownership: {

@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../src/contracts/compatibility.js'
+import type { DecisionId } from '../../src/decisions/policy.js'
+import type { DeliveryPlan } from '../../src/delivery/plan.js'
 import {
   DeliveryRunner,
   type DeliveryRunnerHost,
@@ -11,6 +13,7 @@ import {
 import { RunnerGitStages } from '../../src/runner/git-stages.js'
 import { runnerRoute } from '../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../src/runner/store.js'
+import type { StoreFiles } from '../../src/state/files.js'
 import { authorization, fixture, git } from './delivery.js'
 
 export async function runnerGitFixture(
@@ -30,6 +33,8 @@ export async function runnerGitFixture(
     definition?: boolean
     seed?: Record<string, string>
     retain?: boolean
+    configure?(plan: DeliveryPlan, files: StoreFiles): void
+    decisions?: DecisionId[]
   } = {},
 ) {
   await fixture(
@@ -64,9 +69,13 @@ export async function runnerGitFixture(
           .map((work) => ({ ...work, after: [], consumes: [] }))
         plan.milestones = plan.milestones.map((milestone) => ({ ...milestone, work: ['search'] }))
       }
+      options.configure?.(plan, planning.sources.files)
       const prepared = planning.preparePlan(plan),
         store = new RunnerStore(planning.sources.files.root),
-        grant = store.lifecycle.authority.authorize(authorization(plan, prepared.digest))
+        grant = store.lifecycle.authority.authorize({
+          ...authorization(plan, prepared.digest),
+          decisions: options.decisions ?? [],
+        })
       store.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
       const request: RunnerRequest = {
           schema: 'wholeloop/delivery-runner-request@1',

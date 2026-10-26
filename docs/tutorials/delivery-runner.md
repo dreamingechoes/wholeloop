@@ -126,6 +126,14 @@ A fresh handler observes the same resource without another Git invocation, inclu
 
 The model-free runner evaluation additionally drives two actual Git topics and their committed predecessor through the engine. All other semantic stages remain explicitly simulated; the resulting route stays paused without a certified endpoint. Fixed native model admission, full semantic host composition and public run/reconcile commands remain implementation work.
 
+## Approve the owned builder plan before implementation
+
+The internal RunnerBuilderPlanningStages component joins read-only proposal production with its independent delegated approve-build-plan decision. It requires an explicit none policy and the original grant's delegation. Missing delegation or supervised use returns a limitation before starting a producer; it never writes a human approval. Fixture-only production cannot buy a judgment or a builder launch.
+
+Private version-two bindings preserve the producer's exact managed invokers, captured proposal and original deadline. Another closed call in the same root stage cannot stand in for production, and the decision must cite the exact artifact. Historical version-one artifacts remain readable without acquiring new composition authority. Fresh paused inspection reads the original published decision and closes no semantic gap through another model call. Implementation, QA and acceptance remain later stages. See [ADR-0128](../decisions/0128-owned-builder-plan-decision-composition.md).
+
+Run npm run eval:runner from the source checkout for the additional finite composition control. It uses synthetic native producer/planner/challenger processes and disposable Git/store fixtures, without a model account, remote publication or actual containment certification. It does not expose the complete public implementation runner yet. The final builder-plan persistence regression passes 441 cases, including ten admission controls that check the saved original producer proof. All sixteen complete model-free controls pass on macOS Node 24 and Linux Node 20.0.0, with exact inert schema parity; real models/accounts remain unverified.
+
 ## Execute and recover an original repository suite
 
 The internal RunnerSuiteStages component binds an explicitly selected repository suite to the current committed unit, latest verify round, pinned acceptance cases and original owned environment. The fixed Docker host observes the actual command; model output cannot provide an executor or replace its process receipt. A suite pass supplies only the suite unit. Criterion verification, adversarial review, integration and whole-feature acceptance remain separate requirements.

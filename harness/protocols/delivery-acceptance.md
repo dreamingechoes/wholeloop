@@ -22,4 +22,6 @@ A prepared acceptance plan executes nothing. Objective behavior hosts and indepe
 
 ⛔ `delivery-runner-owned-suites` — Bind explicit suite commands to pinned cases, the original verify round and current committed candidate. Require exact fixed-host output, the original registered command operation and closed root-owned invokers. Recover only matching original metadata without command replay; fixtures and unknown owners never satisfy a positive suite unit. Suite success does not establish criterion or whole-feature acceptance.
 
+⛔ `delivery-runner-builder-planning` — A builder plan needs its exact original producer prefix and independent delegated approval before implementation. Preserve proposal bytes, original deadlines and native ownership; reject unrelated calls, fixtures and descriptor loss. No human approval, QA or replay is inferred.
+
 ⛔ `delivery-runner-criterion-verification` — Verify only exact assigned criteria after the original observed suite. Audit independent verifier/refuter receipts, current candidate and closed application/native owners under the original round policy and budgets. Recover only matching metadata without host replay, fresh selection or human approval. Unknown or fixture evidence cannot establish a passed verification stage.

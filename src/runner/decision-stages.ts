@@ -8,6 +8,7 @@ import {
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
 import type { NativeProcessRunner } from '../delivery/native-host.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
+import { type RunnerArtifactResult, RunnerArtifactStages } from './artifact-stages.js'
 import type { RunnerStageContext } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerNativeScope } from './native-scope.js'
@@ -15,8 +16,15 @@ import { RunnerNativeStage } from './native-stage.js'
 import { DeliveryRunnerError, runnerDecisionRequirements, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 
+interface ProductionPrefix {
+  deadline: string
+  artifact: NonNullable<RunnerArtifactResult['artifact']>
+  prepared: NonNullable<RunnerArtifactResult['prepared']>
+  calls: { invocation: string; evidence: string }[]
+}
 interface DecisionStageBinding {
-  version: 1
+  version: 1 | 2
+  production?: ProductionPrefix
   request: string
   plan: string
   stage: string
@@ -78,8 +86,11 @@ export class RunnerDecisionStages {
   ) {
     const context = this.context(request, record)
     if (
-      Object.keys(binding).sort().join(',') !== 'invocation,plan,request,requests,stage,version' ||
-      binding.version !== 1 ||
+      Object.keys(binding).sort().join(',') !==
+        (binding.version === 2
+          ? 'invocation,plan,production,request,requests,stage,version'
+          : 'invocation,plan,request,requests,stage,version') ||
+      ![1, 2].includes(binding.version) ||
       binding.request !== context.digest ||
       binding.plan !== record.basis ||
       binding.stage !== record.id ||
@@ -89,6 +100,43 @@ export class RunnerDecisionStages {
       new Set(binding.requests.map((item) => item.decision)).size !== context.required.length
     )
       throw new DeliveryRunnerError('decision-stage-request-binding')
+    if (binding.version === 2) {
+      const production = binding.production
+      if (
+        context.stage.kind !== 'build-plan' ||
+        !production ||
+        Object.keys(production).sort().join(',') !== 'artifact,calls,deadline,prepared' ||
+        !Number.isFinite(Date.parse(production.deadline)) ||
+        new Date(production.deadline).toISOString() !== production.deadline ||
+        Object.keys(production.artifact ?? {})
+          .sort()
+          .join(',') !== 'ref,sha256' ||
+        typeof production.artifact.ref !== 'string' ||
+        !/^[a-f0-9]{64}$/.test(production.artifact.sha256) ||
+        Object.keys(production.prepared ?? {})
+          .sort()
+          .join(',') !== 'digest,disposition,kind' ||
+        production.prepared.kind !== 'build-plan' ||
+        production.prepared.disposition !== 'proposal' ||
+        !/^[a-f0-9]{64}$/.test(production.prepared.digest) ||
+        !Array.isArray(production.calls) ||
+        !production.calls.length ||
+        production.calls.length > 1000 ||
+        production.calls.some(
+          (call) =>
+            Object.keys(call).sort().join(',') !== 'evidence,invocation' ||
+            !/^[a-f0-9]{64}$/.test(call.invocation) ||
+            !/^[a-f0-9]{64}$/.test(call.evidence),
+        ) ||
+        new Set(production.calls.map((call) => call.invocation)).size !== production.calls.length ||
+        binding.requests.length !== 1 ||
+        binding.requests[0]?.decision !== 'approve-build-plan' ||
+        !binding.requests[0].artifacts.some(
+          (artifact) => contractDigest(artifact) === contractDigest(production.artifact),
+        )
+      )
+        throw new DeliveryRunnerError('decision-stage-production-binding')
+    }
     for (const selected of binding.requests) {
       validateDeliveryShape(selected, DECISION_SCHEMAS.request)
       if (
@@ -110,6 +158,65 @@ export class RunnerDecisionStages {
     ) as DecisionStageBinding
     this.validate(binding, request, record)
     return binding
+  }
+  private async production(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    originalOnly = false,
+  ) {
+    const reader = new RunnerArtifactStages(this.store, {
+        identity: this.identity,
+        native: () => {
+          throw new DeliveryRunnerError('decision-production-cannot-launch')
+        },
+        context: () => {
+          throw new DeliveryRunnerError('decision-production-cannot-select')
+        },
+      }),
+      result = await reader.inspect(request, record),
+      calls = new RunnerNativeScope(this.store.files, record.invocation).inspect()
+    if (
+      !result.deadline ||
+      !Number.isFinite(Date.parse(result.deadline)) ||
+      result.status !== 'ready' ||
+      result.provenance !== 'host-observed' ||
+      result.invocationState !== 'stopped' ||
+      !result.artifact ||
+      result.prepared?.kind !== 'build-plan' ||
+      result.prepared.disposition !== 'proposal' ||
+      !result.ownedCalls?.length ||
+      (originalOnly && calls.length !== result.ownedCalls.length) ||
+      !calls.length ||
+      calls.some((call) => !['stopped', 'not-started'].includes(call.observed.invocationState))
+    )
+      throw new DeliveryRunnerError('decision-stage-production-unavailable')
+    return {
+      deadline: result.deadline,
+      artifact: result.artifact,
+      prepared: result.prepared,
+      calls: result.ownedCalls,
+    }
+  }
+  private async originalProduction(
+    binding: DecisionStageBinding,
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+  ) {
+    if (binding.version === 1) return true
+    try {
+      const observed = await this.production(request, record),
+        original = binding.production
+      return (
+        !!original &&
+        original.deadline === observed.deadline &&
+        contractDigest(original.artifact) === contractDigest(observed.artifact) &&
+        contractDigest(original.prepared) === contractDigest(observed.prepared) &&
+        contractDigest(original.calls) ===
+          contractDigest(observed.calls.slice(0, original.calls.length))
+      )
+    } catch {
+      return false
+    }
   }
   async execute(
     context: RunnerStageContext,
@@ -140,21 +247,35 @@ export class RunnerDecisionStages {
       requests: structuredClone([...requests]).sort((a, b) => a.decision.localeCompare(b.decision)),
     }
     this.validate(binding, context.request, record)
-    const body = `${JSON.stringify(binding)}\n`
-    safeSourceText(body, 2 * 1024 * 1024)
+    safeSourceText(JSON.stringify(binding), 2 * 1024 * 1024)
     const prior = this.read(context.request, record)
     if (prior) {
-      if (contractDigest(prior) !== contractDigest(binding))
+      if (
+        contractDigest({ ...prior, version: 1, production: null }) !==
+        contractDigest({ ...binding, production: null })
+      )
         throw new DeliveryRunnerError('decision-stage-input-conflict')
       return this.inspect(context.request, record)
     }
     const consumed = `delivery/runner-decision-claims/${record.invocation}.txt`
+    if (existsSync(this.store.files.path(consumed)))
+      throw new DeliveryRunnerError('decision-stage-missing-binding')
     if (
       record.runtime ||
-      new RunnerNativeScope(this.store.files, record.invocation).calls().length ||
-      existsSync(this.store.files.path(consumed))
-    )
-      throw new DeliveryRunnerError('decision-stage-missing-binding')
+      new RunnerNativeScope(this.store.files, record.invocation).calls().length
+    ) {
+      if (context.stage.kind !== 'build-plan')
+        throw new DeliveryRunnerError('decision-stage-missing-binding')
+      binding.production = await this.production(context.request, record, true)
+      if (Date.parse(context.deadline) > Date.parse(binding.production.deadline))
+        throw new DeliveryRunnerError('decision-stage-production-deadline')
+      binding.version = 2
+      this.validate(binding, context.request, record)
+    }
+    // The composed proof changes the private version. Serializing its earlier
+    // draft would discard ownership even though validation accepted version two.
+    const body = `${JSON.stringify(binding)}\n`
+    safeSourceText(body, 2 * 1024 * 1024)
     this.store.basis(context.request)
     this.store.decisions.pin(context.request.grant)
     this.store.files.locked(() => {
@@ -164,6 +285,13 @@ export class RunnerDecisionStages {
         throw new DeliveryRunnerError('decision-stage-missing-binding')
       // This fences invocation only, never approval. Losing the descriptor must
       // not buy another decision key, even before the first native group starts.
+      if (binding.production) {
+        const current = new RunnerNativeScope(this.store.files, record.invocation)
+          .inspect()
+          .map((call) => ({ invocation: call.invocation, evidence: call.observed.evidence }))
+        if (contractDigest(current) !== contractDigest(binding.production.calls))
+          throw new DeliveryRunnerError('decision-stage-production-changed')
+      }
       this.store.files.atomic(consumed, `${contractDigest(binding)}\n`)
       this.store.files.atomic(this.path(record.invocation), body)
     })
@@ -233,7 +361,9 @@ export class RunnerDecisionStages {
         !!binding &&
         receipts.length === context.required.length &&
         receipts.every((item) => item !== undefined),
+      productionCurrent = binding ? await this.originalProduction(binding, request, record) : false,
       ready =
+        productionCurrent &&
         complete &&
         receipts.every(
           (item) =>
@@ -253,7 +383,7 @@ export class RunnerDecisionStages {
           item?.record.challenge.identity.provenance === 'fixture',
       )
     return {
-      status: !closed || !complete ? 'unknown' : ready ? 'ready' : 'blocked',
+      status: !closed || !complete || !productionCurrent ? 'unknown' : ready ? 'ready' : 'blocked',
       decisions: receipts.flatMap((item) => (item ? [item.digest] : [])),
       evidence: contractDigest({
         binding: binding ?? null,
