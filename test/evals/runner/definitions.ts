@@ -11,6 +11,7 @@ import { RunnerAcceptanceDefinitionStages } from '../../../src/runner/acceptance
 import { RunnerDefinitionStages } from '../../../src/runner/definition-stages.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerPlanStages } from '../../../src/runner/plan-stages.js'
+import { admitRunnerRepair } from '../../../src/runner/repair-admission.js'
 import {
   knownSuiteFailure,
   repairFailureFingerprint,
@@ -346,72 +347,106 @@ assert.equal(
 checks.push(
   'repair fingerprints retain observed substance without counting model IDs or whitespace as progress',
 )
-await nativeGateFixture(
-  async ({ store, context, engine, options }) => {
-    const abort = new AbortController(),
-      timer = setTimeout(() => abort.abort(), 120000)
-    context.signal = abort.signal
-    context.deadline = new Date(
-      Math.min(Date.parse(context.deadline), Date.now() + 120000),
-    ).toISOString()
-    try {
-      const stages = new RunnerReviewStages(store, {
-          identity: context.request.host,
-          engine: () => engine,
-          gate: options,
-        }),
-        result = await stages.execute(context),
-        record = store.stage(contractDigest(context.request), context.stage.id)
-      assert.equal(result.status, 'blocked', JSON.stringify(result))
-      assert.equal(result.provenance, 'host-observed')
-      assert.ok(record)
-      const round = gateRuns(engine.store.events()).at(-1)?.rounds.at(-1)
-      assert.ok(round)
-      const scope = new RunnerNativeScope(store.files, context.invocation),
-        calls = scope.calls().length,
-        deadline = store.budgets.inspect(context.request.run).deadline
-      assert.equal(calls, round.plan.units.length + round.plan.verifiers)
-      store.lifecycle.transition(context.request.run, {
-        to: 'paused',
-        reason: 'Read original kept findings without launching repair or judgment.',
-      })
-      const reader = new RunnerReviewStages(new RunnerStore(store.files.root), {
-          identity: context.request.host,
-          engine: () => engine,
-          gate: () => {
-            throw new Error('Feedback cannot construct a new judgment host')
-          },
-        }),
-        feedback = await runnerRepairFeedback(reader, context.request, record)
-      assert.notEqual(feedback.status, 'unavailable', JSON.stringify(feedback))
-      if (feedback.status === 'unavailable')
-        throw new Error('Original kept review finding unavailable')
-      assert.equal(
-        feedback.status,
-        round.plan.round >= round.plan.budget ? 'exhausted' : 'actionable',
-      )
-      assert.equal(feedback.category, 'review-findings')
-      assert.equal(feedback.findings.length, 1)
-      assert.deepEqual(feedback.commands, [])
-      assert.equal(feedback.repairDispatch, 'not-authorized')
-      assert.equal(
-        (await runnerRepairFeedback(reader, context.request, record)).status,
-        feedback.status,
-      )
-      assert.equal(scope.calls().length, calls)
-      assert.equal(store.budgets.inspect(context.request.run).deadline, deadline)
-      checks.push(
-        'original kept review findings classify while paused, preserving gate exhaustion, native invokers and original budget without repair dispatch',
-      )
-    } finally {
-      clearTimeout(timer)
-      abort.abort()
-    }
-  },
-  'confirmed',
-  'host-observed',
-  'plan',
-)
+for (const repairRounds of [1, 2]) {
+  await nativeGateFixture(
+    async ({ store, context, engine, options }) => {
+      const abort = new AbortController(),
+        timer = setTimeout(() => abort.abort(), 120000)
+      context.signal = abort.signal
+      context.deadline = new Date(
+        Math.min(Date.parse(context.deadline), Date.now() + 120000),
+      ).toISOString()
+      try {
+        if (!engine.userFile) throw new Error('Fixture explicit gate settings path missing')
+        writeFileSync(
+          engine.userFile,
+          JSON.stringify({ version: 1, gates: { review: { rounds: repairRounds } } }),
+        )
+        const stages = new RunnerReviewStages(store, {
+            identity: context.request.host,
+            engine: () => engine,
+            gate: options,
+          }),
+          result = await stages.execute(context),
+          record = store.stage(contractDigest(context.request), context.stage.id)
+        assert.equal(result.status, 'blocked', JSON.stringify(result))
+        assert.equal(result.provenance, 'host-observed')
+        const beforeAdmission = store.budgets.inspect(context.request.run),
+          admission = await admitRunnerRepair(stages, context)
+        if (repairRounds === 1) {
+          assert.equal(admission.status, 'blocked')
+          assert.equal(admission.reason, 'original-gate-budget-exhausted')
+        } else {
+          assert.equal(admission.status, 'admitted', JSON.stringify(admission))
+          if (admission.status !== 'admitted')
+            throw new Error('Original review repair admission unavailable')
+          const repeated = await admitRunnerRepair(stages, context)
+          assert.equal(repeated.status, 'admitted')
+          if (repeated.status !== 'admitted')
+            throw new Error('Repeated original admission unavailable')
+          assert.equal(repeated.failure, admission.failure)
+          assert.deepEqual(
+            store.budgets.inspect(context.request.run).reservations,
+            beforeAdmission.reservations,
+          )
+          assert.equal(
+            store.budgets.inspect(context.request.run).deadline,
+            beforeAdmission.deadline,
+          )
+        }
+        assert.equal(admission.repairDispatch, 'not-performed')
+        assert.ok(record)
+        const round = gateRuns(engine.store.events()).at(-1)?.rounds.at(-1)
+        assert.ok(round)
+        const scope = new RunnerNativeScope(store.files, context.invocation),
+          calls = scope.calls().length,
+          deadline = store.budgets.inspect(context.request.run).deadline
+        assert.equal(calls, round.plan.units.length + round.plan.verifiers)
+        store.lifecycle.transition(context.request.run, {
+          to: 'paused',
+          reason: 'Read original kept findings without launching repair or judgment.',
+        })
+        const reader = new RunnerReviewStages(new RunnerStore(store.files.root), {
+            identity: context.request.host,
+            engine: () => engine,
+            gate: () => {
+              throw new Error('Feedback cannot construct a new judgment host')
+            },
+          }),
+          feedback = await runnerRepairFeedback(reader, context.request, record)
+        assert.notEqual(feedback.status, 'unavailable', JSON.stringify(feedback))
+        if (feedback.status === 'unavailable')
+          throw new Error('Original kept review finding unavailable')
+        assert.equal(
+          feedback.status,
+          round.plan.round >= round.plan.budget ? 'exhausted' : 'actionable',
+        )
+        assert.equal(feedback.category, 'review-findings')
+        assert.equal(feedback.findings.length, 1)
+        assert.deepEqual(feedback.commands, [])
+        assert.equal(feedback.repairDispatch, 'not-authorized')
+        assert.equal(
+          (await runnerRepairFeedback(reader, context.request, record)).status,
+          feedback.status,
+        )
+        assert.equal(scope.calls().length, calls)
+        assert.equal(store.budgets.inspect(context.request.run).deadline, deadline)
+        checks.push(
+          repairRounds === 1
+            ? 'explicitly exhausted review refuses repair admission without another round or dispatch'
+            : 'unattended review repair admission records the same original failure once without workers, deadline renewal or extra reservation',
+        )
+      } finally {
+        clearTimeout(timer)
+        abort.abort()
+      }
+    },
+    'confirmed',
+    'host-observed',
+    'plan',
+    true,
+  )
+}
 const report = {
   status: 'passed',
   provenance: 'fixture',

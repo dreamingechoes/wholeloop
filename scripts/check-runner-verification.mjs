@@ -36,6 +36,7 @@ for (const scenario of [
   'fixture-refusal',
   'contract-pass',
   'observed-findings',
+  'repair-admission',
 ]) {
   const results = join(destination, scenario)
   const code = await new Promise((resolve) => {
@@ -60,7 +61,7 @@ const report = {
     ? 'passed'
     : 'failed',
   scope:
-    'Five fresh model-free controllers; actual owned Docker suites and synthetic native verification only. No models, containment, independent Linux application-host or whole-feature certification.',
+    'Six fresh model-free controllers; actual owned Docker suites and synthetic native verification only. No models, containment, independent Linux application-host or whole-feature certification.',
   scenarios,
   acceptance: 'not-established',
   publication: 'not-performed',

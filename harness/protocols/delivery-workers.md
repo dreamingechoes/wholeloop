@@ -35,4 +35,6 @@ These are protocol and host obligations. Versioned schemas and role tools alone 
 
 ⛔ `delivery-runner-repair-feedback`: classify failures only from exact original closed observed QA and the current candidate. Preserve retained findings, actual nonzero suite facts and exhausted gates; stale, missing, fixture or imported claims cannot authorize correction. Fingerprints follow observed substance rather than new model/commit IDs. Feedback grants no repair dispatch or renewed budget.
 
+⛔ `delivery-runner-repair-admission`: require explicit unattended authority, current original stage/candidate, closed invokers and the original deadline before accounting for actionable failure. Preserve exhausted gates and idempotent original failure keys. Failure admission creates neither a worker reservation nor progress, dispatch or another runtime allowance.
+
 For pinned behavioral acceptance, follow delivery-acceptance. Return proposed findings/evidence to the controller; never convert a worker claim or fixture into a current human or delegated acceptance observation.

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { findBudget } from '../../../src/delivery/budget-events.js'
 import type { DockerTransport } from '../../../src/environment/docker-command.js'
 import { EnvironmentLifecycle } from '../../../src/environment/lifecycle.js'
 import { EnvironmentResources } from '../../../src/environment/runtime.js'
@@ -9,6 +10,7 @@ import { gateRuns } from '../../../src/gates/state.js'
 import { DEFAULT_REVIEW_RUBRIC } from '../../../src/review/input.js'
 import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { admitRunnerRepair } from '../../../src/runner/repair-admission.js'
 import { runnerRepairFeedback } from '../../../src/runner/repair-feedback.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { RunnerSuiteStages } from '../../../src/runner/suite-stages.js'
@@ -19,6 +21,7 @@ import { runnerSuiteFixture } from '../../support/runner-suite.js'
 const destination = process.argv[2],
   scenario = process.argv[3]
 const samples = [
+  { key: 'repair-admission', exit: 7, native: 'host-observed' },
   { key: 'observed-findings', exit: 0, native: 'host-observed' },
   { key: 'contract-pass', exit: 0, native: 'host-observed' },
   { key: 'observed-pass', exit: 0, native: 'host-observed' },
@@ -145,11 +148,69 @@ try {
           assert.equal(factories, sample.exit === 7 ? 0 : 1)
           if (sample.exit === 7) assert.equal(calls, 0)
           else assert.ok(calls > 0)
+          let admittedFailure: string | undefined
+          if (sample.key === 'repair-admission') {
+            const original = store.budgets.inspect(context.request.run),
+              recordFailure = store.budgets.failure.bind(store.budgets)
+            let lostReply = false
+            store.budgets.failure = (run, failure) => {
+              recordFailure(run, failure)
+              lostReply = true
+              throw new Error('Fixture repair admission reply lost after journal commit')
+            }
+            try {
+              const lost = await admitRunnerRepair(stages, context)
+              assert.equal(lostReply, true)
+              assert.equal(lost.status, 'blocked')
+            } finally {
+              store.budgets.failure = recordFailure
+            }
+            const admission = await admitRunnerRepair(stages, context)
+            assert.equal(admission.status, 'admitted', JSON.stringify(admission))
+            if (admission.status !== 'admitted')
+              throw new Error('Original repair admission unavailable')
+            admittedFailure = admission.failure
+            assert.equal(admission.repairDispatch, 'not-performed')
+            const repeated = await admitRunnerRepair(stages, context)
+            assert.equal(repeated.status, 'admitted', JSON.stringify(repeated))
+            if (repeated.status !== 'admitted') throw new Error('Idempotent admission unavailable')
+            assert.equal(repeated.failure, admittedFailure)
+            assert.equal(
+              findBudget(store.lifecycle.journal.get(context.request.run))?.failures.filter(
+                (failure) => failure.key === admittedFailure,
+              ).length,
+              1,
+            )
+            assert.deepEqual(
+              store.budgets.inspect(context.request.run).reservations,
+              original.reservations,
+            )
+            assert.equal(store.budgets.inspect(context.request.run).deadline, original.deadline)
+            const deadline = context.deadline
+            try {
+              context.deadline = new Date(Date.parse(deadline) + 60000).toISOString()
+              const extended = await admitRunnerRepair(stages, context)
+              assert.equal(extended.status, 'blocked')
+              assert.equal(extended.reason, 'original-repair-deadline-cannot-extend')
+            } finally {
+              context.deadline = deadline
+            }
+            assert.equal(new RunnerNativeScope(store.files, context.invocation).calls().length, 0)
+          }
           store.lifecycle.transition(context.request.run, {
             to: 'paused',
             reason:
               'Recover the exact original verification without new native or application work.',
           })
+          if (sample.key === 'repair-admission') {
+            assert.equal((await admitRunnerRepair(stages, context)).status, 'blocked')
+            assert.equal(
+              findBudget(store.lifecycle.journal.get(context.request.run))?.failures.filter(
+                (failure) => failure.key === admittedFailure,
+              ).length,
+              1,
+            )
+          }
           const fresh = new RunnerVerificationStages(new RunnerStore(store.files.root), {
               identity: context.request.host,
               engine: () => engine,
@@ -279,6 +340,7 @@ try {
         exit: sample.exit,
         guidance: DEFAULT_REVIEW_RUBRIC,
         ...(sample.key === 'contract-pass' ? { unit: 'contract' as const } : {}),
+        ...(sample.key === 'repair-admission' ? { unattended: true } : {}),
       },
     )
   }

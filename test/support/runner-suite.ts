@@ -25,6 +25,7 @@ export async function runnerSuiteFixture(
   }) => Promise<void>,
   options: {
     unit?: 'contract'
+    unattended?: boolean
     backend?: 'docker'
     retain?: boolean
     exit?: 0 | 7
@@ -238,9 +239,11 @@ export async function runnerSuiteFixture(
     },
     {
       singleUnit: !options.unit,
-      ...(options.unit
+      ...(options.unit || options.unattended
         ? {
             configure: (plan) => {
+              if (options.unattended) plan.policy.intervention = 'none'
+              if (!options.unit) return
               const declared = plan.work.find((work) => work.id === 'contract')?.produces[0]
               if (!declared) throw new Error('Fixture declared contract missing')
               declared.sha256 = sourceHash(contractBody)

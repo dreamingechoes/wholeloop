@@ -29,6 +29,7 @@ export async function nativeGateFixture(
   mode: GateFixtureMode = 'valid',
   provenance: 'fixture' | 'host-observed' = 'fixture',
   stageBudget?: 'plan',
+  unattended = false,
 ) {
   await runnerGitFixture(
     async ({ store, host: gitHost, request, root, dispatch, observe }) => {
@@ -70,6 +71,17 @@ export async function nativeGateFixture(
           ),
       })
     },
-    { singleUnit: true, guidance: DEFAULT_REVIEW_RUBRIC, ...(stageBudget ? { stageBudget } : {}) },
+    {
+      singleUnit: true,
+      guidance: DEFAULT_REVIEW_RUBRIC,
+      ...(stageBudget ? { stageBudget } : {}),
+      ...(unattended
+        ? {
+            configure: (plan) => {
+              plan.policy.intervention = 'none'
+            },
+          }
+        : {}),
+    },
   )
 }
