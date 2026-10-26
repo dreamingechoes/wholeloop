@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — current-plan authorization
+
+- Join the plan route to exact immutable authority without producing another revision. Envelope plans require independent route decisions citing their exact persisted bytes; request selection cannot mutate that identity. Exact-plan implementation grants use an actual registered core metadata operation and zero model calls. Preserve root started-stage checks, original intent/closure and paused recovery; no human approval or endpoint evidence is fabricated. Add ADR-0131, enforcers and docs. P6-10 remains open; counts stay 59/88 complete.
+- The initial plan/decision/store/frozen-contract regression passes 447 cases in 23.11 seconds. The five complete model-free definition controls pass on macOS, including actual journal admission and recovery for both plan authority types without another revision. The broader eight-file regression passes 490 cases in 73.69 seconds. All nine final plan controls pass in 8.61 seconds, including fixture-only judgments and refusal to launder an unrelated closed native call through exact-plan metadata. All five complete controls pass on Linux Node 20.0.0/Git 2.39.5 using the exact macOS-tested bundle 0704bbe1f4b0f9b4becc4525327ef68bbe9f235ceb4c37f1ec66a1ce3a7efee7. Lint950/types/build/docs360/harness150/Markdown359/Mermaid36 and offline package checks pass. Full repository-suite results remain those of the earlier criterion-verification increment. No existing test deadline is extended; no real account/model, publication, project merge or complete-route acceptance is claimed.
+
+---
+
 ## 2026-10-26 · P6-10 continuing — owned pre-builder test definitions
 
 - Connect exact observed artifact production to the root acceptance-definition stage. Require original producer ownership, closed invokers and pinned complete cases bound to the exact run/revision/plan/source. Preserve existing ownership/coverage and pre-builder admission checks. Recover original lost pin metadata while paused without replay; readiness supplies no execution, acceptance or human approval. Add ADR-0130, coverage enforcers and component documentation. P6-10 stays open; counts remain 59/88 complete.

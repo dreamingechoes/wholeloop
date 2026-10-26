@@ -32,7 +32,7 @@ export async function runnerArtifactFixture(
   }) => Promise<void>,
   provenance: 'fixture' | 'host-observed' = 'fixture',
   options: {
-    stage?: 'definition' | 'acceptance-definition' | 'build-plan'
+    stage?: 'definition' | 'plan' | 'acceptance-definition' | 'build-plan'
     mode?:
       | 'valid'
       | 'malformed'
@@ -50,7 +50,9 @@ export async function runnerArtifactFixture(
   const decisions: DecisionId[] =
     options.stage === 'definition'
       ? ['frame-outcome', 'approve-spec', 'approve-scopes']
-      : ['approve-build-plan']
+      : options.stage === 'plan'
+        ? ['delivery-plan']
+        : ['approve-build-plan']
   await runnerGitFixture(
     async ({ store, dispatch, host: git, observe, adopt, request }) => {
       let workspace: string | undefined

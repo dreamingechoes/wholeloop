@@ -134,6 +134,14 @@ Every decision cites the same captured proposal and retains its original produce
 
 Run npm run eval:runner-definitions from the source checkout for the separate finite model-free evaluation. It launches synthetic native processes in disposable Git/store fixtures, exercises all three decisions and their challenges, interrupts revision reservation and recovers while paused without replay. It also checks that rejection leaves the next immutable revision available for correction. No account, model or remote service is required; normalized fixture observations do not establish real containment or complete-route acceptance. The final directed regression passes 482 cases; both complete definition scenarios pass on macOS Node 24 and Linux Node 20.0.0. Public complete-route execution remains under implementation.
 
+## Authorize the current plan without producing another revision
+
+The internal RunnerPlanStages adapter uses the current immutable delivery plan. Under envelope authority it requires the existing independent delivery-plan decision, citing the exact persisted plan-record bytes; request selection receives a frozen artifact identity. It preserves original native ownership and published decisions during paused recovery. A lost consumed descriptor cannot buy another judgment.
+
+An implementation plan authorized by an exact-plan grant needs no additional judgment or model. The fixed adapter records its actual in-process core metadata operation through the existing started-stage boundary. Inspection alone cannot create that record. The recorded controller PID describes the operation and is never a cancellation target. Neither route produces another revision, executes product tests or records human approval. See [ADR-0131](../decisions/0131-current-plan-authorization-stage.md).
+
+The additional npm run eval:runner-definitions controls exercise actual journal admission and paused recovery for both authority types. Normalized synthetic judgments are fixture evidence; full public route execution and actual native-account acceptance remain under implementation.
+
 ## Pin acceptance definitions before builders
 
 The internal RunnerAcceptanceDefinitionStages adapter finishes only the acceptance-definition route stage. It requires observed original production, closed owned invokers and the exact pinned case definitions for the current run, revision, source and delivery plan. Existing validation retains complete coverage, applicability and machine/human ownership. Fixture-only or unavailable production cannot establish readiness.

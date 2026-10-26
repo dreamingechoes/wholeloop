@@ -46,6 +46,7 @@ export class RunnerDecisionStages {
   constructor(
     readonly store: RunnerStore,
     readonly identity: RunnerRequest['host'],
+    readonly artifact?: { ref: string; sha256: string },
   ) {}
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation))
@@ -147,6 +148,11 @@ export class RunnerDecisionStages {
     }
     for (const selected of binding.requests) {
       validateDeliveryShape(selected, DECISION_SCHEMAS.request)
+      if (
+        this.artifact &&
+        !selected.artifacts.some((item) => contractDigest(item) === contractDigest(this.artifact))
+      )
+        throw new DeliveryRunnerError('decision-stage-required-artifact')
       if (
         selected.run !== request.run ||
         selected.grant !== request.grant ||

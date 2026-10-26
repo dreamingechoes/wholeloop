@@ -6,10 +6,12 @@ import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { RunnerAcceptanceDefinitionStages } from '../../../src/runner/acceptance-definition-stages.js'
 import { RunnerDefinitionStages } from '../../../src/runner/definition-stages.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { RunnerPlanStages } from '../../../src/runner/plan-stages.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { StateStore } from '../../../src/state/store.js'
 import { runnerArtifactFixture } from '../../support/runner-artifact.js'
 import { runnerDefinitionFixture } from '../../support/runner-definition.js'
+import { runnerPlanFixture } from '../../support/runner-plan.js'
 
 const destination = process.argv[2]
 if (!destination) throw new Error('An external report destination is required')
@@ -175,6 +177,46 @@ await runnerArtifactFixture(async (f) => {
     'observed pre-builder acceptance definitions recover lost pin metadata without tests, human approval or worker replay',
   )
 }, 'host-observed')
+for (const withinEnvelope of [false, true]) {
+  await runnerPlanFixture(
+    async (f) => {
+      const result = await f.stages.execute(f.context)
+      assert.equal(result.status, 'passed', JSON.stringify(result))
+      assert.equal(result.invocationState, 'stopped')
+      assert.equal(result.decisions?.length, withinEnvelope ? 1 : 0)
+      assert.equal(
+        new RunnerNativeScope(f.store.files, f.context.invocation).calls().length,
+        withinEnvelope ? 2 : 0,
+      )
+      assert.throws(() => f.store.planning.getPlan(f.context.request.run, 2))
+      // Exercise actual journal admission: a positive envelope alone is not a
+      // started stage. Exact-plan metadata records its genuine core operation.
+      f.observe(result)
+      const record = f.store.stage(contractDigest(f.context.request), f.context.stage.id)
+      assert.ok(record)
+      f.store.lifecycle.transition(f.context.request.run, {
+        to: 'paused',
+        reason: 'Inspect only original plan authorization without another revision.',
+      })
+      const fresh = new RunnerPlanStages(new RunnerStore(f.store.files.root), {
+        identity: f.context.request.host,
+        requests: () => {
+          throw new Error('Recovery cannot select another plan decision')
+        },
+        host: () => {
+          throw new Error('Recovery cannot launch another plan judgment')
+        },
+      })
+      assert.deepEqual(await fresh.inspect(f.context.request, record), result)
+      checks.push(
+        withinEnvelope
+          ? 'current envelope plan acceptance cites exact pinned bytes and recovers both original independent workers without another revision'
+          : 'exact-plan authority admits genuine core metadata work without model calls or another revision',
+      )
+    },
+    { provenance: 'host-observed', withinEnvelope },
+  )
+}
 const report = {
   status: 'passed',
   provenance: 'fixture',

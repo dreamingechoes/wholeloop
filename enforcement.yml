@@ -22,7 +22,7 @@ rules:
   - id: delivery-runner-owned-review
     enforcers: [src/runner/native-gate.ts#RunnerNativeGateHost, src/runner/review-stages.ts#RunnerReviewStages, src/gates/report.ts#gateReport, test/unit/gates/gates.test.ts, src/runner/git-stages.ts#RunnerGitStages, src/delivery/worker-context.ts#workerContextForClaim, test/unit/runner/native-gate.test.ts, test/unit/runner/review-stages.test.ts, test/unit/runner/git-stages.test.ts, test/support/runner-review.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-decision-stages
-    enforcers: [src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/native-stage.ts#RunnerNativeStage, src/runner/route.ts#runnerDecisionRequirements, test/unit/runner/decision-stages.test.ts, test/unit/runner/worker-stages.test.ts, test/evals/runner/foreground.ts]
+    enforcers: [src/runner/plan-stages.ts#RunnerPlanStages, test/unit/runner/plan-stages.test.ts, test/evals/runner/definitions.ts, src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/native-stage.ts#RunnerNativeStage, src/runner/route.ts#runnerDecisionRequirements, test/unit/runner/decision-stages.test.ts, test/unit/runner/worker-stages.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-worker-stages
     enforcers: [src/runner/worker-stages.ts#RunnerWorkerStages, src/delivery/native-host.ts#NativeDeliveryHost, src/delivery/native-assignment-host.ts#NativeAssignmentHost, src/delivery/queue.ts#DeliveryQueue, test/unit/runner/worker-stages.test.ts, test/unit/delivery/queue.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-native-boundary-controls
