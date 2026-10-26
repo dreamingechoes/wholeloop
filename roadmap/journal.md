@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-26 · P6-10 continuing — private owned foreground bootstrap
+
+- Publish a private installed-core/parent/lease/deadline binding before the authoritative claim, register the actual wrapper before stdin and require actual group membership plus one-shot nonce-bound consumption. Preserve unknown invocations and final pipe drain separately from dispatch release. Fresh recovery can fence/cancel only the original group and recover a prepared root after positively observed parent loss before native intent. Keep setup failures finite and none-policy noninteractive.
+- Add actual separate-process/crash/control tests and an opt-in model-free foreground evaluation. Fixed domain-host wiring and public complete-route run/reconcile/endpoint integration remain technical implementation work. Do not close P6-10 or manual/native acceptance from transport/component results.
+
+- Twelve dedicated foreground cases pass, including injected private-owner/journal/projection failures and actual separate-process loss/cancellation. The earlier expanded 82-case run and post-atomic 21-case run pass. Complete final checks pass 2935 tests in 139 files on macOS arm64/Node 24.22.0 (385.61 seconds) and isolated Debian Linux arm64/Node 24.22.0 (126.33 seconds), plus docs342/harness149/Markdown341/Mermaid36 and all other checks. The three exact standalone controls and inert public schema parity pass on Linux Node 20.0.0/Git 2.39.5; the same controls pass on macOS Node 24. Preserve initial type/patch failures; no skips or raised test deadlines occur.
+- Archive 58efb8b249b9a43f443feca3d1f2062372105fe511d8f5e5fd419f8ec8dff919 and core 62a8bdb4ded886e268e4360a894ceca26539cb2767a9a8a810a2305bf80efae8 identify pre-evidence checks. Recheck evidence-only docs/package and commit this transport/bootstrap increment. Continue P6-10 fixed domain-host and public run/reconcile/endpoint wiring; counts remain 59/88 complete and manual acceptance does not block technical work. No model, account, remote publication or project merge occurs.
+
 ## 2026-10-26 · P6-10 in progress — foreground delivery runner and explicit controls
 
 - Connect original private authority, delegated decisions, durable attempts/checkpoints and finite budgets through a local controller. Preserve old enqueue/status contracts and supervised entrypoints; return honest native/backend limitations without hidden none-policy prompts.

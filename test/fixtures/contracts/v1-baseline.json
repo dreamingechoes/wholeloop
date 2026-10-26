@@ -386,7 +386,8 @@
     "schema:wholeloop/delivery-runner-operation-outcome@1": "4c8d969d27f9b22ca4bcb544b0078739de6e62c6e973db01e02f913100b3231a",
     "schema:wholeloop/delivery-runner-request@1": "c58be580c103292cfd00664ccec9134806bebd814655ee878313f724b224eb89",
     "schema:wholeloop/delivery-runner-stage-observation@1": "154d14d52cb74e72c27ba992f87b36ccb10511a5b8c804301c7dccca102952e3",
-    "schema:wholeloop/delivery-runner-status@1": "d2acf919b8e8d86d39ed9c977c58475d82d9f8be45022272cba494772388b100"
+    "schema:wholeloop/delivery-runner-status@1": "d2acf919b8e8d86d39ed9c977c58475d82d9f8be45022272cba494772388b100",
+    "schema:wholeloop/delivery-foreground-invocation@1": "e9bcc849239a61c683e1fe7455647dbcbdd4ddbe780d84e4761f565001170b46"
   },
   "commands": [
     {

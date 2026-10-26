@@ -7,6 +7,7 @@ import type { DeliveryPlan } from '../delivery/plan.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { boundedRecoveryCall } from '../delivery/read-retry.js'
 import type { RunnerRuntime, RunnerStageRecord } from './events.js'
+import { ForegroundOwner } from './foreground-owner.js'
 import { ManagedRunnerProcess } from './native-process.js'
 import { RunnerNativeScope } from './native-scope.js'
 import { DeliveryRunnerError, type RunnerStage } from './route.js'
@@ -347,9 +348,26 @@ export class DeliveryRunner {
       controller: record.controller,
       generation: record.generation,
     }
-    if (record.owner && ['active', 'unknown'].includes(record.ownership)) {
-      const owner = new ManagedRunnerProcess(this.store.files, record.owner.invocation),
-        observation = owner.observe()
+    const foreground = new ForegroundOwner(this.store, lease)
+    let preparedForeground = false
+    try {
+      preparedForeground = foreground.read() !== undefined
+    } catch {
+      problems.push('foreground-registration-unavailable')
+    }
+    if ((record.owner || preparedForeground) && ['active', 'unknown'].includes(record.ownership)) {
+      const owner = record.owner
+        ? new ManagedRunnerProcess(this.store.files, record.owner.invocation)
+        : foreground.manager
+      if (options.cancel) {
+        try {
+          if (preparedForeground) foreground.requestCancellation()
+          else owner.requestCancellation()
+        } catch {
+          problems.push('foreground-cancellation-unavailable')
+        }
+      }
+      const observation = preparedForeground ? foreground.observe() : owner.observe()
       if (
         observation.invocationState === 'stopped' ||
         observation.invocationState === 'not-started'

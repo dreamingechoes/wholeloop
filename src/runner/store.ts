@@ -178,7 +178,11 @@ export class RunnerStore {
     return this.inspect(lease.request)
   }
 
-  claim(digest: string, controller: string): RunnerLease {
+  claim(
+    digest: string,
+    controller: string,
+    beforeCommit?: (lease: RunnerLease) => void,
+  ): RunnerLease {
     const request = this.get(digest)
     const context = this.basis(request)
     this.budgets.start(request.run)
@@ -209,6 +213,9 @@ export class RunnerStore {
           basis: context.digest,
           reason: 'A foreground controller claimed the original authorized route.',
         })
+      // Trusted owner metadata commits before the claim becomes visible. An orphan
+      // sidecar grants nothing; a published owned claim must have its original parent.
+      beforeCommit?.({ request: digest, controller, generation })
     })
     return { request: digest, controller, generation }
   }

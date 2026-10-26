@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-foreground-invocation@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "lease", "invocation", "store", "nonce", "parent", "core", "deadline"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-foreground-invocation@1"
+    },
+    "lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request", "controller", "generation"],
+      "properties": {
+        "request": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        },
+        "controller": {
+          "type": "string",
+          "pattern": "^controller-[a-f0-9]{32}$"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      }
+    },
+    "invocation": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "maxLength": 64
+    },
+    "store": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$",
+      "maxLength": 36
+    },
+    "parent": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "core": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        }
+      }
+    },
+    "deadline": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    }
+  }
+}

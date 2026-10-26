@@ -124,6 +124,7 @@
 | [0111](./0111-original-delivery-fixtures-and-controller-owned-oracles.md) | Original delivery fixtures and controller-owned oracles | Accepted | 2026-10-25 |
 | [0112](./0112-private-delegation-and-independent-machine-decisions.md) | Private delegation and independent machine decisions | Accepted | 2026-10-25 |
 | [0113](./0113-owned-foreground-routes-and-native-recovery.md) | Owned foreground routes and native recovery | Accepted | 2026-10-26 |
+| [0114](./0114-private-group-bound-foreground-bootstrap.md) | Private group-bound foreground bootstrap | Accepted | 2026-10-26 |
 
 ## Lifecycle
 

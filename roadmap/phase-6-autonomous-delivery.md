@@ -257,7 +257,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Deliverables** — Proposed delivery enqueue/run/status/pause/resume/stop/reconcile commands over the shared state machine and decision policy.
 
-**Implementation progress** — The first increment adds immutable runner preparation, route/owner/stage inspection, pause/resume/stop controls, internal finite stage execution, original-budget continuation and private native ownership/checkpoint recovery. Fixed domain-host wiring, owned foreground entrypoint and endpoint/reconciliation commands remain open; these are technical work, not manual acceptance blockers.
+**Implementation progress** — The first increment adds immutable runner preparation, route/owner/stage inspection, pause/resume/stop controls, internal finite stage execution, original-budget continuation and private native ownership/checkpoint recovery. The second increment adds the internal owned foreground transport, private group/core/nonce-bound one-shot bootstrap and exact original-parent recovery. Fixed domain-host wiring and its public foreground entrypoint/endpoint/reconciliation commands remain open; these are technical work, not manual acceptance blockers.
 
 **Acceptance criteria:**
 
