@@ -47,6 +47,45 @@ describe('private prepared foreground controller requests', () => {
       expect(store.permittedStages(prepared.digest).map((s) => s.id)).toEqual(['plan'])
     })
   })
+  it('uses one fresh journal observation per live poll and immediately sees pause or revocation', async () => {
+    await setup((store, request) => {
+      const prepared = store.prepare(request),
+        events = store.lifecycle.journal.events.bind(store.lifecycle.journal)
+      let lease = store.claim(prepared.digest, owner),
+        reads = 0
+      store.lifecycle.journal.events = () => {
+        reads++
+        return events()
+      }
+      const live = (expected: boolean) => {
+        reads = 0
+        expect(store.live(lease, false)).toBe(expected)
+        // Growing histories must be validated once per poll, without caching
+        // a projection that would conceal a later operator control.
+        expect(reads).toBe(1)
+      }
+      live(true)
+      store.lifecycle.transition(request.run, {
+        to: 'waiting-external',
+        reason: 'Observe the original issued effect without dispatching another stage.',
+      })
+      live(true)
+      expect(store.current(lease, true, false)).toBe(false)
+      store.control(prepared.digest, 'pause', 'Fixture Operator')
+      live(false)
+      store.release(lease, 'Release the observed paused fixture controller before resuming.')
+      store.control(prepared.digest, 'resume', 'Fixture Operator')
+      lease = store.claim(prepared.digest, owner)
+      live(true)
+      store.lifecycle.authority.revoke({
+        schema: 'wholeloop/delivery-revocation-request@1',
+        grant: request.grant,
+        operator: 'Fixture Operator',
+        reason: 'The next poll must observe the original grant revocation.',
+      })
+      live(false)
+    })
+  })
   it('refuses changed stable keys, revoked grants and tampered request bytes', async () => {
     await setup((store, request) => {
       const prepared = store.prepare(request)

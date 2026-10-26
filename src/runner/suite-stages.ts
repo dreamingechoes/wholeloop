@@ -270,9 +270,17 @@ export class RunnerSuiteStages {
   async inspect(
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,
+    expected?: { gate: GatePlan; selection: RunnerSuiteSelection },
   ): Promise<RunnerSuiteResult> {
     const state = this.read(request, record),
       scope = new RunnerEnvironmentScope(this.store, record.invocation).inspect()
+    if (
+      state &&
+      expected &&
+      (contractDigest(state.binding.gate) !== contractDigest(expected.gate) ||
+        contractDigest(state.binding.selection) !== contractDigest(expected.selection))
+    )
+      throw new DeliveryRunnerError('suite-stage-parent-binding')
     let result: SuiteResult | undefined,
       status: RunnerSuiteResult['status'] = 'unknown',
       provenance: RunnerSuiteResult['provenance'] = 'fixture'

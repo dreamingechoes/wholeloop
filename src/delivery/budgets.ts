@@ -238,6 +238,11 @@ export class DeliveryBudgets {
   }
 
   inspect(run: string) {
+    return this.observation(run).report
+  }
+  /** Share this fresh read within one controller check, never across polls.
+   * Replaying the same journal repeatedly delays cancellation under growing histories. */
+  observation(run: string) {
     const state = this.lifecycle.journal.get(run),
       facet = findBudget(state) ?? emptyBudget()
     const authority = state.grant ? this.lifecycle.authority.inspect(state.grant.id) : null
@@ -249,7 +254,7 @@ export class DeliveryBudgets {
         .find((entry) => entry.schema === 'wholeloop/delivery-effects@1')
         ?.records.filter((entry) => entry.intent.operation === 'git.push' && entry.invocation)
         .length ?? 0
-    return {
+    const report = {
       run,
       state: state.state,
       started: facet.startedAt !== undefined,
@@ -276,7 +281,9 @@ export class DeliveryBudgets {
       omissions: facet.omissions,
       authority: 'not-granted' as const,
     }
+    return { state, authority, report }
   }
+
   enforce(run: string) {
     const report = this.inspect(run)
     if (report.problem && report.problem !== 'inactive-authority') this.stop(run, report.problem)

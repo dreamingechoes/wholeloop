@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-criterion-verification
+    enforcers: [src/runner/verification-stages.ts#RunnerVerificationStages, src/runner/store.ts#RunnerStore, src/delivery/budgets.ts#DeliveryBudgets, test/unit/runner/store.test.ts, test/unit/delivery/budgets.test.ts, src/runner/suite-stages.ts#RunnerSuiteStages, src/runner/native-gate.ts#RunnerNativeGateHost, src/gates/execution.ts#inspectGateRound, test/unit/runner/verification-stages.test.ts, test/unit/runner/native-gate.test.ts, test/unit/runner/review-stages.test.ts, test/evals/runner/verification.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-owned-suites
     enforcers: [src/runner/suite-stages.ts#RunnerSuiteStages, src/acceptance/suite-observation.ts#observedDockerSuiteCommand, src/acceptance/docker-suite.ts#dockerSuiteExecutor, src/verification/suite.ts#runSuite, src/runner/environment-scope.ts#RunnerEnvironmentScope, test/unit/runner/suite-stages.test.ts, test/unit/acceptance/suite-observation.test.ts, test/evals/runner/suites.ts]
   - id: delivery-runner-artifact-production
@@ -60,7 +62,7 @@ rules:
   - id: delivery-environment-runtime
     enforcers: [src/environment/provision.ts#DeliveryEnvironments, src/environment/candidates.ts#captureEnvironmentCandidates, src/environment/docker-policy.ts#dockerPreflight, src/environment/docker-policy.ts#observedContainerPolicy, src/environment/docker-resources.ts#DockerResources, test/unit/environment/docker.test.ts, test/evals/environment/run.ts]
   - id: delivery-environment-observation
-    enforcers: [src/environment/runtime.ts#EnvironmentResources, src/environment/docker-resources.ts#DockerResources, src/environment/docker-proxy.ts#publishDockerService, src/environment/inspect.ts#inspectEnvironment, test/unit/environment/docker.test.ts, test/evals/environment/run.ts]
+    enforcers: [src/environment/runtime.ts#EnvironmentResources, src/environment/docker-resources.ts#DockerResources, src/environment/docker-proxy.ts#publishDockerService, src/environment/inspect.ts#inspectEnvironment, test/unit/environment/docker.test.ts, test/unit/environment/owned-snapshot.test.ts, test/evals/environment/run.ts]
   - id: delivery-environment-recipe
     enforcers: [src/environment/recipe.ts#validateEnvironmentRecipe, src/environment/recipe.ts#observeEnvironmentFiles, src/environment/recipe-store.ts#discoverEnvironment, src/environment/recipe-store.ts#EnvironmentRecipes, test/unit/environment/recipe.test.ts, test/unit/environment/environment.test.ts]
   - id: delivery-native-host

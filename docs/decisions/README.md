@@ -137,6 +137,7 @@
 | [0124](./0124-owned-application-operation-stage-boundaries.md) | Owned application operation stage boundaries | Accepted | 2026-10-26 |
 | [0125](./0125-owned-artifact-production-before-delegated-decisions.md) | Owned artifact production before delegated decisions | Accepted | 2026-10-26 |
 | [0126](./0126-owned-suite-observations-and-recovery.md) | Owned suite observations and recovery | Accepted | 2026-10-26 |
+| [0127](./0127-owned-criterion-verification-rounds.md) | Owned criterion verification rounds | Accepted | 2026-10-26 |
 
 ## Lifecycle
 

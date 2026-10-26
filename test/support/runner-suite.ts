@@ -23,7 +23,7 @@ export async function runnerSuiteFixture(
     selection: RunnerSuiteSelection
     driver: DockerTransport
   }) => Promise<void>,
-  options: { backend?: 'docker'; retain?: boolean; exit?: 0 | 7 } = {},
+  options: { backend?: 'docker'; retain?: boolean; exit?: 0 | 7; guidance?: string } = {},
 ) {
   const app =
       "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
@@ -220,6 +220,7 @@ export async function runnerSuiteFixture(
     {
       singleUnit: true,
       seed: { 'package.json': pkg, 'app.cjs': app, 'suite.cjs': check },
+      ...(options.guidance !== undefined ? { guidance: options.guidance } : {}),
       ...(options.backend ? { stageBudget: 'plan' as const } : {}),
       ...(options.retain ? { retain: true } : {}),
     },

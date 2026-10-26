@@ -88,7 +88,7 @@ describe('owned read-only gate workers preserve observed execution boundaries', 
       'host-observed',
     )
   })
-  it('uses an independent refuter only for a recorded finding and bounded verifier number', async () => {
+  it('uses an independent refuter for a recorded finding', async () => {
     await setup(
       async ({ run, gate, gates, review, store, context }) => {
         const unit = gate.units[0]
@@ -102,18 +102,40 @@ describe('owned read-only gate workers preserve observed execution boundaries', 
             verifier: 1,
             outcome: 'refute',
           })
-          await expect(host.refute(gate, 'missing', 1, review)).rejects.toThrow(
-            'native-gate-finding',
-          )
-          await expect(host.refute(gate, finding, gate.verifiers + 1, review)).rejects.toThrow(
-            'native-gate-finding',
-          )
         })
         expect(new RunnerNativeScope(store.files, context.invocation).calls()).toHaveLength(2)
       },
       'finding',
       'host-observed',
     )
+  })
+  it('refuses missing findings and out-of-range verifiers before native dispatch', async () => {
+    await setup(async ({ run, gate, gates, review, store, context }) => {
+      const unit = gate.units[0]
+      if (!unit) throw new Error('Fixture gate unit missing')
+      // Admission is independent of real worker latency. After the original
+      // deadline, a fenced refusal correctly takes precedence over bad input.
+      gates.submit(gate.subject, gate.run, gate.round, {
+        unit: unit.id,
+        status: 'ok',
+        evidence: ['Recorded fixture finding for admission checks only.'],
+        findings: [
+          {
+            id: 'defect',
+            location: 'app.txt:1',
+            text: 'Recorded fixture defect.',
+            evidence: ['Fixture line.'],
+          },
+        ],
+      })
+      await run(async (host) => {
+        await expect(host.refute(gate, 'missing', 1, review)).rejects.toThrow('native-gate-finding')
+        await expect(
+          host.refute(gate, `${unit.id}:defect`, gate.verifiers + 1, review),
+        ).rejects.toThrow('native-gate-finding')
+      })
+      expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+    })
   })
   it.each(['wrong-unit', 'execution', 'outer-unknown', 'mutate'] as const)(
     'refuses %s output without granting acceptance',

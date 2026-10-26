@@ -227,25 +227,30 @@ export class RunnerStore {
     if (!record) throw new DeliveryRunnerError('unprepared-runner')
     return record
   }
+  private currentState(lease: RunnerLease, dispatch: boolean, observeBases: boolean) {
+    const request = this.get(lease.request),
+      context = observeBases ? this.basis(request) : undefined,
+      { state, authority, report } = this.budgets.observation(request.run),
+      record = deliveryRunner(state).records.find((r) => r.request === lease.request)
+    if (
+      !authority ||
+      !record ||
+      authority.grant.id !== request.grant ||
+      authority.status !== 'active' ||
+      state.basis.digest !== (context?.digest ?? record.basis) ||
+      state.grant?.digest !== authority.digest ||
+      record.controller !== lease.controller ||
+      record.generation !== lease.generation ||
+      record.ownership !== 'active' ||
+      (dispatch && !['queued', 'running'].includes(state.state)) ||
+      report.problem
+    )
+      return undefined
+    return state
+  }
   current(lease: RunnerLease, dispatch = true, observeBases = true): boolean {
     try {
-      const request = this.get(lease.request),
-        context = observeBases
-          ? this.basis(request)
-          : { authority: this.lifecycle.authority.inspect(request.grant) },
-        state = this.lifecycle.journal.get(request.run),
-        record = this.record(lease.request)
-      return (
-        context.authority.status === 'active' &&
-        state.basis.digest ===
-          (observeBases ? (context as { digest: string }).digest : record.basis) &&
-        state.grant?.digest === context.authority.digest &&
-        record.controller === lease.controller &&
-        record.generation === lease.generation &&
-        record.ownership === 'active' &&
-        (!dispatch || ['queued', 'running'].includes(state.state)) &&
-        !this.budgets.inspect(request.run).problem
-      )
+      return !!this.currentState(lease, dispatch, observeBases)
     } catch {
       return false
     }
@@ -253,17 +258,13 @@ export class RunnerStore {
   /** An already issued domain effect waits for observation; it does not admit another stage. */
   live(lease: RunnerLease, observeBases = true): boolean {
     try {
-      const request = this.get(lease.request)
-      return (
-        this.current(lease, false, observeBases) &&
-        ['queued', 'running', 'waiting-external'].includes(
-          this.lifecycle.journal.get(request.run).state,
-        )
-      )
+      const state = this.currentState(lease, false, observeBases)
+      return !!state && ['queued', 'running', 'waiting-external'].includes(state.state)
     } catch {
       return false
     }
   }
+
   append(
     lease: RunnerLease,
     value: Omit<RunnerPayload, 'schema' | 'basis' | 'request' | 'controller' | 'generation'>,

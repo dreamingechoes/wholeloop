@@ -14,6 +14,7 @@ import { FOREGROUND_ARGUMENT } from '../../../src/runner/foreground-owner.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { runnerDecisionRequirements } from '../../../src/runner/route.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
+import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
 import { RunnerWorkerStages } from '../../../src/runner/worker-stages.js'
 import { assertExternal } from '../../../src/state/paths.js'
 import { authorization, fixture, git } from '../../support/delivery.js'
@@ -25,6 +26,7 @@ import { runnerDecisionFixture } from '../../support/runner-decision.js'
 import { runnerEnvironmentFixture } from '../../support/runner-environment.js'
 import { runnerGitRouteFixture } from '../../support/runner-git.js'
 import { runnerReviewFixture } from '../../support/runner-review.js'
+import { runnerSuiteFixture } from '../../support/runner-suite.js'
 import { runnerWorkerFixture } from '../../support/runner-worker.js'
 
 const core = fileURLToPath(import.meta.url)
@@ -358,6 +360,28 @@ if (process.argv[2] === FOREGROUND_ARGUMENT) {
     )
     checks.push(
       'an original artifact planner produces pinned pre-builder definitions without delegated decision authority; paused observation grants neither approval nor behavioral acceptance',
+    )
+  })
+  await runnerSuiteFixture(async ({ store, context, engine, selection, driver }) => {
+    const stages = new RunnerVerificationStages(store, {
+        identity: context.request.host,
+        engine: () => engine,
+        suite: () => selection,
+        driver,
+        gate: () => {
+          throw new Error('Cancelled control cannot construct a native host')
+        },
+      }),
+      record = store.stage(contractDigest(context.request), context.stage.id)
+    assert.ok(record)
+    assert.equal((await stages.inspect(context.request, record)).status, 'unknown')
+    const cancelled = new AbortController()
+    cancelled.abort()
+    context.signal = cancelled.signal
+    await assert.rejects(stages.execute(context), /verification-stage-not-current/)
+    assert.equal(new RunnerNativeScope(store.files, context.invocation).calls().length, 0)
+    checks.push(
+      'criterion verification preserves original pre-dispatch cancellation and unavailable evidence without constructing a native or Docker host',
     )
   })
   const report = {

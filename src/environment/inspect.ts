@@ -38,8 +38,7 @@ export async function inspectEnvironment(
     }
     if (info.ID !== record.daemon?.id) throw new DockerEnvironmentError('daemon-identity-changed')
     const runtime = new DockerResources(records, id, driver, () => {}, new AbortController().signal)
-    for (const resource of record.resources) {
-      const observed = await runtime.owned(resource)
+    for (const { resource, observed } of await runtime.ownedSnapshot()) {
       if (
         ['service', 'proxy'].includes(resource.purpose) &&
         (observed.State as { Running?: unknown }).Running !== true
