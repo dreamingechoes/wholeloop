@@ -115,7 +115,7 @@ export class RunnerRepairWorkers {
       failure.category !== 'failed-behavior' ||
       contractDigest(failure.findings) !== contractDigest([feedback.fingerprint]) ||
       !Array.isArray(binding.prefix) ||
-      !binding.prefix.length ||
+      (!binding.prefix.length && feedback.category !== 'suite-failure') ||
       binding.prefix.some((id) => !/^[a-f0-9]{64}$/.test(id))
     )
       throw new DeliveryRunnerError('repair-binding')
@@ -173,7 +173,7 @@ export class RunnerRepairWorkers {
         }
       if (
         selected.workspace !== workspace ||
-        !prefix.length ||
+        (!prefix.length && admission.feedback.category !== 'suite-failure') ||
         context.signal.aborted ||
         !context.current() ||
         Date.parse(context.deadline) <= Date.now()

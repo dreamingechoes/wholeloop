@@ -150,6 +150,7 @@
 | [0137](./0137-one-shot-original-correction-workers.md) | One-shot original correction workers | Accepted | 2026-10-27 |
 | [0138](./0138-unambiguous-git-worktree-runtime.md) | Unambiguous Git worktree runtime | Accepted | 2026-10-27 |
 | [0139](./0139-owned-original-correction-commits.md) | Owned original correction commits | Accepted | 2026-10-27 |
+| [0140](./0140-suite-only-correction-ownership.md) | Suite-only correction ownership | Accepted | 2026-10-27 |
 
 ## Lifecycle
 

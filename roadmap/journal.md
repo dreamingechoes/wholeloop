@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-27 · P6-10 continuing — suite-only correction
+
+- Permit an empty original native prefix only for a known observed suite failure admitted by the fixed QA reader. Preserve native-prefix ownership for retained findings and require the correction's own exact closed calls. Share the existing builder fixture components with actual suite trials; pin acceptance before builder admission. Add ADR-0140 and extend the actual verification script to seven isolated scenarios. Candidate succession/fresh QA and complete-route composition remain technical; P6-10 stays open and counts remain 59/88 complete.
+- Initial worker/verification/suite/frozen regressions pass 453 cases in 91.35 seconds. Preserve the first actual scenario failure: acceptance-defined-after-builder-admission correctly rejects the new fixture's ordering. Move its exact case definition before production instead of changing the enforcer or deadlines. The final actual Docker scenario passes exit-seven observation, zero original QA model calls, one correction, second builder generation, one failure, unchanged global window, paused recovery without selectors/replay, retained original application closure and exact observed retirement. Its report is 4a2e6df4c27ba56d255a62399fc02cdec16405cdf06e5dd67f80a3dbe1ed1903 and bundle is 0c432605207007f0dac1e2d7812fef65b4456c95e0eab5d98af142a489f470b0. The final post-ordering verification/suite/repair/frozen regression passes 436 cases in 72.76 seconds. Lint965/types/build/docs369/harness150/Markdown368/Mermaid36, smoke and offline package checks pass. This new actual scenario is observed on macOS Node 24; it does not certify a separate Linux application host or native account. Full-suite and previous minimum-runtime evidence remain unchanged. No existing test deadline increases; correction still leaves commit and QA pending.
+
+---
+
 ## 2026-10-27 · P6-10 continuing — original correction commit
 
 - Separate historical completed correction production from current working-snapshot inspection, retaining exact source ownership and receipts after a legitimate controller commit changes HEAD. Add an internal owned correction-commit adapter over existing Git effects: require the exact original unattended stage, failure-linked production, snapshot/parent and deadline; persist intent before effects. Recover original observations while paused, refuse changed bytes and retain private cancellation after revocation. A commit leaves QA and candidate-chain integration pending. Add ADR-0139, enforcer and docs. P6-10 remains open; counts stay 59/88 complete.

@@ -196,7 +196,7 @@ The internal runnerRepairFeedback boundary reads the fixed verification/review c
 
 Fingerprints follow observed diagnostic hashes and retained finding substance. Different model IDs, ordering or whitespace cannot manufacture progress; command/diagnostic and meaningful finding changes remain distinguishable. Raw process logs are not returned. Feedback supplies no dispatch authorization, budget renewal, repaired candidate or human approval. The actual correction, candidate succession and repeated QA loop remain technical implementation work. See [ADR-0134](../decisions/0134-original-failure-feedback-before-repair.md).
 
-The finite model-free definition controls include a retained review finding and original gate exhaustion. The actual Docker/synthetic-native evaluation now has six scenarios, including retained verification findings; its known nonzero-suite case checks feedback invalidation after a candidate edit and exact restoration without new model calls. These fixtures establish controller boundaries rather than real native-account or whole-product acceptance.
+The finite model-free definition controls include a retained review finding and original gate exhaustion. The actual Docker/synthetic-native evaluation now has seven scenarios, including retained verification findings; its known nonzero-suite case checks feedback invalidation after a candidate edit and exact restoration without new model calls. These fixtures establish controller boundaries rather than real native-account or whole-product acceptance.
 
 ## Admit repair within the original allowance
 
@@ -204,7 +204,7 @@ The internal admitRunnerRepair boundary checks explicit unattended authority for
 
 Admission rechecks candidate identity and budget after accounting. It supplies no exclusive dispatch claim, repaired commit or progress event. The separate correction component now persists one-shot worker ownership; binding fresh commits and repeated QA remains implementation work. See [ADR-0135](../decisions/0135-original-repair-budget-admission.md).
 
-The exhaustion fixture explicitly configures one review round before execution; defaults remain four verify rounds and three review rounds. The actual Docker/synthetic-native evaluation now has six scenarios, including original failure admission with lost-response deduplication, unchanged worker reservations and refusal after pause or deadline extension. These remain source-checkout fixture controls, not real model or complete-route acceptance.
+The exhaustion fixture explicitly configures one review round before execution; defaults remain four verify rounds and three review rounds. The actual Docker/synthetic-native evaluation now has seven scenarios, including original failure admission with lost-response deduplication, unchanged worker reservations and refusal after pause or deadline extension. These remain source-checkout fixture controls, not real model or complete-route acceptance.
 
 Targeted owned-worker claims also cap their durable reservation and worker assignment at the original parent stage deadline. A later child claim cannot renew that window; invalid or expired parent bounds reserve nothing. Existing unparented queue callers retain their behavior. See [ADR-0136](../decisions/0136-parent-bounded-worker-reservations.md).
 
@@ -221,6 +221,12 @@ Its result reports produced correction with commit and QA pending; it cannot mar
 The internal RunnerRepairCommits adapter requires current observed correction production and the exact unattended original stage. It pins the produced snapshot and parent with the existing owned staging/commit effects, retaining private intent and original deadline. Historical production remains auditable after the controller legitimately changes HEAD.
 
 Paused inspection can reconstruct a lost head locator from original applied effects without another model, selector or Git dispatch. Changed files or index refuse current completion. Original private cancellation remains available after revocation. The result is a committed checkpoint with QA and candidate-chain integration pending; it cannot pass a root gate or establish progress. The finite npm run eval:runner-repairs control now includes this commit/recovery path. See [ADR-0139](../decisions/0139-owned-original-correction-commits.md).
+
+## Correct an original suite-only failure
+
+A known nonzero suite stops verification before a reviewer is constructed. The correction adapter accepts that empty original native prefix only when the fixed reader admits an actual observed suite-failure. Other failure categories retain their native ownership requirement. One captured correction is appended without inventing a reviewer or passing QA.
+
+The actual Docker control now covers a pre-builder pinned case plan, original builder production, exit-seven suite, zero QA model calls, one correction and paused recovery without replay. Its environment is retired explicitly by exact identity. Fresh independent QA and candidate succession remain implementation work. See [ADR-0140](../decisions/0140-suite-only-correction-ownership.md).
 
 ## Verification of this increment
 

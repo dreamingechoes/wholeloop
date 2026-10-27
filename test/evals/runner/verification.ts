@@ -12,6 +12,7 @@ import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { admitRunnerRepair } from '../../../src/runner/repair-admission.js'
 import { runnerRepairFeedback } from '../../../src/runner/repair-feedback.js'
+import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { RunnerSuiteStages } from '../../../src/runner/suite-stages.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
@@ -21,6 +22,7 @@ import { runnerSuiteFixture } from '../../support/runner-suite.js'
 const destination = process.argv[2],
   scenario = process.argv[3]
 const samples = [
+  { key: 'suite-correction', exit: 7, native: 'host-observed' },
   { key: 'repair-admission', exit: 7, native: 'host-observed' },
   { key: 'observed-findings', exit: 0, native: 'host-observed' },
   { key: 'contract-pass', exit: 0, native: 'host-observed' },
@@ -66,7 +68,7 @@ const report = {
 try {
   for (const sample of samples.filter((sample) => sample.key === scenario)) {
     await runnerSuiteFixture(
-      async ({ store, context, engine, selection, driver }) => {
+      async ({ store, context, engine, selection, driver, production }) => {
         const abort = new AbortController(),
           timer = setTimeout(() => abort.abort(), 120000),
           atomic = engine.store.files.atomic.bind(engine.store.files)
@@ -148,6 +150,91 @@ try {
           assert.equal(factories, sample.exit === 7 ? 0 : 1)
           if (sample.exit === 7) assert.equal(calls, 0)
           else assert.ok(calls > 0)
+          if (sample.key === 'suite-correction') {
+            assert.ok(production, 'Original builder production must precede the failed suite')
+            const original = store.budgets.inspect(context.request.run),
+              repair = new RunnerRepairWorkers(store, production.queue, production.options),
+              corrected = await repair.execute(stages, context)
+            assert.equal(corrected.status, 'produced', JSON.stringify(corrected))
+            assert.equal(corrected.qa, 'pending')
+            assert.equal(corrected.commit, 'pending')
+            const binding = JSON.parse(
+              readFileSync(
+                store.files.path(`delivery/runner-repairs/${context.invocation}/binding.json`),
+                'utf8',
+              ),
+            )
+            assert.deepEqual(binding.prefix, [])
+            assert.equal(binding.admission.feedback.category, 'suite-failure')
+            assert.ok(
+              binding.admission.feedback.commands.some(
+                (command: { exitCode: number }) => command.exitCode === 7,
+              ),
+            )
+            const entries = production.queue
+              .inspect(context.request.run)
+              .filter((entry) => entry.role === 'builder')
+            assert.equal(entries.length, 1)
+            assert.equal(entries[0]?.generation, 2)
+            assert.equal(entries[0]?.status, 'complete')
+            assert.equal(new RunnerNativeScope(store.files, context.invocation).calls().length, 1)
+            const budget = store.budgets.inspect(context.request.run)
+            assert.equal(budget.deadline, original.deadline)
+            assert.equal(budget.reservations.length, original.reservations.length + 1)
+            assert.equal(
+              findBudget(store.lifecycle.journal.get(context.request.run))?.failures.length,
+              1,
+            )
+            assert.equal(
+              store.stage(contractDigest(context.request), context.stage.id)?.status,
+              'running',
+            )
+            assert.deepEqual(
+              new RunnerEnvironmentScope(store, context.invocation).inspect(),
+              originalEnvironment,
+            )
+            store.lifecycle.transition(context.request.run, {
+              to: 'paused',
+              reason: 'Inspect only original suite-failure correction.',
+            })
+            production.options.context = () => {
+              throw new Error('No repair input reselection while paused')
+            }
+            production.options.boundary = () => {
+              throw new Error('No new correction host while paused')
+            }
+            const fresh = new RunnerRepairWorkers(store, production.queue, production.options)
+            assert.deepEqual(await fresh.inspect(context.request, context.invocation), corrected)
+            assert.deepEqual(await fresh.execute(stages, context), corrected)
+            assert.equal(new RunnerNativeScope(store.files, context.invocation).calls().length, 1)
+            const item = {
+              exit: sample.exit,
+              native: sample.native,
+              status: 'blocked',
+              calls: 1,
+              evidence: 'evidence' in corrected ? String(corrected.evidence) : '',
+              store: store.files.root,
+              environment: selection.environment,
+              retirement: 'not-requested',
+            }
+            if (process.argv.includes('--retire-success')) {
+              const resources = new EnvironmentResources(store.files),
+                retired = await new EnvironmentLifecycle(store.files, driver).execute({
+                  schema: 'wholeloop/environment-lifecycle-request@1',
+                  id: 'owned-verification-evaluation-retire',
+                  environment: selection.environment,
+                  expected: resources.get(selection.environment).digest,
+                  action: 'retire',
+                  reason:
+                    'Retire only the exact original suite-failure environment after correction observations.',
+                })
+              assert.equal(retired.state, 'retired', JSON.stringify(retired))
+              item.retirement = 'observed-retired'
+            }
+            report.checks.push(item)
+            console.log('Observed suite-only correction with zero original QA model calls')
+            return
+          }
           let admittedFailure: string | undefined
           if (sample.key === 'repair-admission') {
             const original = store.budgets.inspect(context.request.run),
@@ -340,7 +427,10 @@ try {
         exit: sample.exit,
         guidance: DEFAULT_REVIEW_RUBRIC,
         ...(sample.key === 'contract-pass' ? { unit: 'contract' as const } : {}),
-        ...(sample.key === 'repair-admission' ? { unattended: true } : {}),
+        ...(['repair-admission', 'suite-correction'].includes(sample.key)
+          ? { unattended: true }
+          : {}),
+        ...(sample.key === 'suite-correction' ? { production: true } : {}),
       },
     )
   }

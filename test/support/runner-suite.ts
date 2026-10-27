@@ -8,10 +8,12 @@ import { DeliveryEnvironments } from '../../src/environment/provision.js'
 import { EnvironmentResources } from '../../src/environment/runtime.js'
 import { FlowEngine } from '../../src/flow/engine.js'
 import { GateWorkflow } from '../../src/gates/workflow.js'
+import { DEFAULT_REVIEW_RUBRIC } from '../../src/review/input.js'
 import { type RunnerSuiteSelection, RunnerSuiteStages } from '../../src/runner/suite-stages.js'
 import { StateStore } from '../../src/state/store.js'
 import { environmentRecipe } from './environment.js'
 import { runnerGitFixture } from './runner-git.js'
+import { runnerWorkerComponents } from './runner-worker.js'
 
 export async function runnerSuiteFixture(
   run: (input: {
@@ -22,6 +24,7 @@ export async function runnerSuiteFixture(
     gate: Parameters<RunnerSuiteStages['execute']>[1]
     selection: RunnerSuiteSelection
     driver: DockerTransport
+    production?: ReturnType<typeof runnerWorkerComponents>
   }) => Promise<void>,
   options: {
     unit?: 'contract'
@@ -30,8 +33,11 @@ export async function runnerSuiteFixture(
     retain?: boolean
     exit?: 0 | 7
     guidance?: string
+    production?: boolean
   } = {},
 ) {
+  if (options.production && options.unit)
+    throw new Error('Production fixture requires its search unit')
   const app =
       "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
     check = `process.stdout.write('observed suite\\n');process.exitCode=${options.exit ?? 0}\n`,
@@ -40,10 +46,64 @@ export async function runnerSuiteFixture(
     unit = options.unit ?? 'search',
     timeoutMs = options.backend === 'docker' ? 30000 : 5000
   await runnerGitFixture(
-    async ({ store, host, request, dispatch, observe, root }) => {
+    async (input) => {
+      const { store, host, request, dispatch, observe, root } = input
       observe(await host.execute(dispatch(`workspace:${unit}`)))
       const workspace = host.workspace(request, unit).repository.path
-      writeFileSync(join(workspace, 'app.txt'), 'Owned suite fixture candidate.\n')
+      const acceptance = new DeliveryAcceptance(store.files.root),
+        pinned = acceptance.prepare({
+          schema: 'wholeloop/acceptance-plan@1',
+          run: request.run,
+          revision: request.revision,
+          plan: request.plan,
+          source: store.basis(request).plan.source,
+          cases: [
+            {
+              id: 'suite',
+              criteria: ['search'],
+              owner: 'machine',
+              applicability: 'applicable',
+              rationale: 'This case records repository-suite facts only.',
+              initial: 'The owned candidate contains its declared check.',
+              actions: ['Run the declared project suite.'],
+              assertions: [
+                {
+                  id: 'exit',
+                  description: 'The declared command exits zero.',
+                  subject: 'exit',
+                  operator: 'equals',
+                  expected: '0',
+                },
+              ],
+              failureConditions: ['A nonzero exit fails the repository suite.'],
+              runner: {
+                kind: 'cli',
+                capability: 'process.exec',
+                input: JSON.stringify({
+                  schema: 'wholeloop/behavior-input@1',
+                  kind: 'cli',
+                  service: 'web',
+                  command: 'suite',
+                }),
+              },
+              fixture: { ref: 'fixture:declared-suite', sha256: sourceHash(check) },
+              timeoutMs,
+            },
+          ],
+          retention: { reviewAfterMs: 86400000, expiryAction: 'retain' },
+        })
+      const production = options.production
+        ? runnerWorkerComponents(input, 'complete', {
+            guidance: options.guidance ?? DEFAULT_REVIEW_RUBRIC,
+            provenance: 'host-observed',
+          })
+        : undefined
+      if (production) {
+        const observed = await production.workers.execute(dispatch('implementation:search'))
+        if (observed.status !== 'passed')
+          throw new Error(`Suite fixture production unavailable: ${JSON.stringify(observed)}`)
+        observe(observed)
+      } else writeFileSync(join(workspace, 'app.txt'), 'Owned suite fixture candidate.\n')
       observe(await host.execute(dispatch(`commit:${unit}`)))
       const candidate = host.candidate(request, unit),
         context = dispatch(`verification:${unit}`),
@@ -82,48 +142,6 @@ export async function runnerSuiteFixture(
                 ],
               }),
         }).plan,
-        acceptance = new DeliveryAcceptance(store.files.root),
-        pinned = acceptance.prepare({
-          schema: 'wholeloop/acceptance-plan@1',
-          run: request.run,
-          revision: request.revision,
-          plan: request.plan,
-          source: context.plan.source,
-          cases: [
-            {
-              id: 'suite',
-              criteria: ['search'],
-              owner: 'machine',
-              applicability: 'applicable',
-              rationale: 'This case records repository-suite facts only.',
-              initial: 'The owned candidate contains its declared check.',
-              actions: ['Run the declared project suite.'],
-              assertions: [
-                {
-                  id: 'exit',
-                  description: 'The declared command exits zero.',
-                  subject: 'exit',
-                  operator: 'equals',
-                  expected: '0',
-                },
-              ],
-              failureConditions: ['A nonzero exit fails the repository suite.'],
-              runner: {
-                kind: 'cli',
-                capability: 'process.exec',
-                input: JSON.stringify({
-                  schema: 'wholeloop/behavior-input@1',
-                  kind: 'cli',
-                  service: 'web',
-                  command: 'suite',
-                }),
-              },
-              fixture: { ref: 'fixture:declared-suite', sha256: sourceHash(check) },
-              timeoutMs,
-            },
-          ],
-          retention: { reviewAfterMs: 86400000, expiryAction: 'retain' },
-        }),
         declaredEnvironment = `environment-${'a'.repeat(32)}`,
         authority = store.lifecycle.authority.inspect(request.grant)
       let environment = declaredEnvironment
@@ -235,7 +253,16 @@ export async function runnerSuiteFixture(
           mapping: { 'package.json#check': 'suite' },
         },
         suite = new RunnerSuiteStages(store, { identity: request.host, engine: () => engine })
-      await run({ store, context, suite, engine, gate, selection, driver })
+      await run({
+        store,
+        context,
+        suite,
+        engine,
+        gate,
+        selection,
+        driver,
+        ...(production ? { production } : {}),
+      })
     },
     {
       singleUnit: !options.unit,
@@ -256,7 +283,9 @@ export async function runnerSuiteFixture(
         'suite.cjs': check,
         ...(options.unit ? { 'search-contract.txt': contractBody } : {}),
       },
-      ...(options.guidance !== undefined ? { guidance: options.guidance } : {}),
+      ...(options.guidance !== undefined || options.production
+        ? { guidance: options.guidance ?? DEFAULT_REVIEW_RUBRIC }
+        : {}),
       ...(options.backend ? { stageBudget: 'plan' as const } : {}),
       ...(options.retain ? { retain: true } : {}),
     },

@@ -12,7 +12,7 @@ rules:
   - id: git-worktree-runtime
     enforcers: [src/diagnostics/doctor.ts#doctor, src/worktrees/git.ts#registeredWorktrees, src/worktrees/git.ts#repository, test/unit/diagnostics/doctor.test.ts, test/unit/worktrees/git.test.ts]
   - id: delivery-runner-one-shot-correction
-    enforcers: [src/runner/repair-workers.ts#RunnerRepairWorkers, src/runner/worker-stages.ts#productionLease, src/delivery/worker-context.ts#workerContextForClaim, test/unit/runner/repair-workers.test.ts, test/unit/delivery/worker-protocol.test.ts, test/evals/runner/repairs.ts]
+    enforcers: [src/runner/repair-workers.ts#RunnerRepairWorkers, src/runner/worker-stages.ts#productionLease, src/delivery/worker-context.ts#workerContextForClaim, test/unit/runner/repair-workers.test.ts, test/unit/delivery/worker-protocol.test.ts, test/evals/runner/repairs.ts, test/evals/runner/verification.ts]
   - id: delivery-parent-worker-deadline
     enforcers: [src/delivery/budget-policy.ts#prepareBudgetAdmission, src/delivery/queue.ts#claim, src/runner/worker-stages.ts#RunnerWorkerStages, test/unit/delivery/budgets.test.ts, test/unit/runner/worker-stages.test.ts]
   - id: delivery-runner-repair-admission
