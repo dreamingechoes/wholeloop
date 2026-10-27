@@ -238,6 +238,10 @@ The internal candidate reader can explicitly use the fixed correction checkpoint
 
 This is read-only candidate selection with QA still pending. Locked, changed, unrelated or ambiguous heads refuse. Fresh gate continuation, longer correction chains and public route composition remain technical work. See [ADR-0142](../decisions/0142-explicit-original-correction-successors.md).
 
+## Retain correction history during later QA
+
+Historical correction production keeps its exact original closed native-call prefix after later owned calls append. Those later calls are not attributed to the producer or treated as approved QA. Strict production inspection still checks the complete scope, while the original commit checkpoint and exact successor can remain inspectable. Future gate continuation must audit its own new calls before passing. See [ADR-0143](../decisions/0143-original-correction-calls-across-later-qa.md).
+
 ## Verification of this increment
 
 Complete checks for the criterion-verification candidate pass 3196 tests in 158 files on isolated Debian Linux arm64/Node 24.22.0 with the original two-worker configuration. macOS arm64/Node 24.22.0 passes 3195 tests before the final admission-only test split using VITEST_MAX_WORKERS=1; its corrected native/verification/store regression passes all 26 cases. The split preserves actual worker coverage and tests invalid-input admission in a separate current context, without changing runtime code or deadlines. Fifteen model-free runner controls and exact inert schema parity pass with Linux Node 20.0.0/Git 2.39.5. The build reproduces the same copied CLI throughout these checks.

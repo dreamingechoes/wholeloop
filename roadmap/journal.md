@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-27 · P6-10 continuing — original correction prefix during later work
+
+- Keep strict production inspection over the complete original scope, while historical production attests only its exact bound closed prefix. Validate the whole manifest, retain original call order/closure and source digest, and do not attribute appended work to the producer or declare its QA complete. Current file/commit validation remains separate. Add ADR-0143 and enforcer. Fresh gate continuation and longer chains remain technical; P6-10 stays open and counts remain 59/88 complete.
+- Native-scope/root Git/repair/frozen regressions pass 434 cases in 53.86 seconds. All four complete synthetic controls pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5 with bundle 1072fafec8c0e7c4205016117b30aca90e735b472c50efa91022c04567df943b. A later bounded owned read-only version control appends one call: the original historical production object remains identical, strict production inspection refuses attribution of the expanded scope, and the exact committed successor/paused checkpoint remain inspectable with QA pending and original cancellation available. Lint965/types/build/docs372/harness150/Markdown371/Mermaid36, smoke and offline package checks pass. No test deadline increases; full-suite, application-host, native-account and fresh product-QA acceptance remain unchanged.
+
+---
+
 ## 2026-10-27 · P6-10 continuing — explicit original correction successor
 
 - Select a first correction only through the fixed original checkpoint in the same store. Let current owned effects choose its record, reopen original production/closure and the historical initial parent, then require direct lineage and current owned branch/lock/files/index with stable snapshot and receipt rechecks. Keep ordinary initial selection unchanged and mutate no gate, pointer, budget or progress. Add ADR-0142 and enforcer. Longer chains, fresh QA and public route composition remain technical; P6-10 stays open and counts remain 59/88 complete.

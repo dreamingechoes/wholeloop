@@ -237,7 +237,11 @@ export class RunnerRepairWorkers {
       return result('unknown', 'retain-original-repair-intent-without-replay')
     }
   }
-  private retainedProduction(request: Readonly<RunnerRequest>, invocation: string) {
+  private retainedProduction(
+    request: Readonly<RunnerRequest>,
+    invocation: string,
+    historical = false,
+  ) {
     const binding = this.read(request, invocation)
     if (!binding) throw new DeliveryRunnerError('original-repair-intent-missing')
     const lease = this.lease(binding)
@@ -246,7 +250,13 @@ export class RunnerRepairWorkers {
       owned = existsSync(this.store.files.path(callsPath))
         ? (JSON.parse(readSourceFile(this.store.files.root, callsPath, 65536)) as string[])
         : [],
-      calls = new RunnerNativeScope(this.store.files, invocation).inspect(),
+      observed = new RunnerNativeScope(this.store.files, invocation).inspect(),
+      // Later QA owns its calls; history attests only the original bound prefix.
+      // Strict production inspection still checks the complete scope.
+      calls =
+        historical && Array.isArray(owned)
+          ? observed.slice(0, binding.prefix.length + owned.length)
+          : observed,
       retained = this.native.retained(lease),
       prior = deliveryAttempts(this.queue.lifecycle.journal.get(request.run)).records.find(
         (item) => item.id === binding.prior.attempt,
@@ -286,7 +296,7 @@ export class RunnerRepairWorkers {
   }
   /** Historical production remains auditable after a controller-owned commit changes HEAD. */
   production(request: Readonly<RunnerRequest>, invocation: string) {
-    return this.completedProduction(this.retainedProduction(request, invocation))
+    return this.completedProduction(this.retainedProduction(request, invocation, true))
   }
   async inspect(request: Readonly<RunnerRequest>, invocation: string) {
     try {

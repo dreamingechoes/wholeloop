@@ -5,6 +5,7 @@ import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { findBudget } from '../../../src/delivery/budget-events.js'
 import { deliveryAttempts } from '../../../src/delivery/reducer.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { RunnerNativeStage } from '../../../src/runner/native-stage.js'
 import { RunnerRepairCommits } from '../../../src/runner/repair-commits.js'
 import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
 import { git as gitRead } from '../../../src/worktrees/git.js'
@@ -184,6 +185,34 @@ for (const mode of ['complete', 'lost-claim'] as const) {
         writeFileSync(path, bytes)
         assert.equal((await commits.inspect(request, context.invocation)).status, 'committed')
         assert.deepEqual(host.candidate(request, 'search', commits).receipt, committed.receipt)
+        const originalProduction = recovered.production(request, context.invocation)
+        store.lifecycle.transition(request.run, {
+          to: 'queued',
+          reason: 'Observe a later owned read-only control without rewriting production.',
+        })
+        const later = await new RunnerNativeStage(store, context).run((process) =>
+          process('codex', ['--version'], {
+            cwd: store.files.root,
+            input: '',
+            timeoutMs: 3000,
+            signal: context.signal,
+            env: { PATH: options.native.path },
+          }),
+        )
+        assert.equal(later.code, 0)
+        assert.equal(later.ownership.invocationState, 'stopped')
+        assert.equal(scope.calls().length, calls + 2)
+        assert.deepEqual(recovered.production(request, context.invocation), originalProduction)
+        assert.equal((await recovered.inspect(request, context.invocation)).status, 'unknown')
+        assert.deepEqual(host.candidate(request, 'search', commits).receipt, committed.receipt)
+        store.lifecycle.transition(request.run, {
+          to: 'paused',
+          reason: 'Retain the original correction after a later owned control.',
+        })
+        assert.equal((await commits.inspect(request, context.invocation)).status, 'committed')
+        checks.push(
+          'original correction history preserves its exact closed call prefix across a later owned read-only control without treating that control as production or QA',
+        )
         store.lifecycle.authority.revoke({
           schema: 'wholeloop/delivery-revocation-request@1',
           grant: request.grant,

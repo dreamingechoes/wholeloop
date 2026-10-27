@@ -48,3 +48,5 @@ For pinned behavioral acceptance, follow delivery-acceptance. Return proposed fi
 ⛔ `delivery-owned-commit-history`: audit historical receipts only against exact original owned closed Git effects and active original basis. Historical validity never makes a superseded receipt current, publishes another head locator or grants dispatch, QA or progress.
 
 ⛔ `delivery-original-correction-successor`: select a correction only through its fixed original checkpoint, current owned Git effects, exact initial parent and stable owned files/index. Reject locked, changed, unrelated or ambiguous heads. Explicit successor selection changes no gate verdict, progress or default candidate behavior.
+
+⛔ `delivery-original-correction-prefix`: historical production attests only its exact original closed call prefix. Later calls never become producer evidence or QA approval. Preserve strict complete-scope production inspection and independently audit later gate calls before any passing verdict.
