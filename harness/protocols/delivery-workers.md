@@ -42,3 +42,5 @@ For pinned behavioral acceptance, follow delivery-acceptance. Return proposed fi
 ⛔ `delivery-parent-worker-deadline`: parented worker reservations and assignments retain the earlier original parent, attempt, global and grant deadline. An invalid or exhausted parent window reserves no attempt; a fresh claim never renews it.
 
 ⛔ `delivery-runner-one-shot-correction`: bind correction to original actionable failure and closed builder production. Fence and retry the same slot within its original deadline/restart allowance. Persist intent before claim; lost responses never authorize another claim or native invocation. Correction production leaves commit and independent QA pending.
+
+⛔ `delivery-runner-correction-commit`: pin only exact original correction bytes and parent through owned Git effects within the original window. Persist intent before dispatch; recover original observations without replay. A commit leaves candidate succession and independent QA pending, and revoked authority must not block original private cancellation.

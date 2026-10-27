@@ -214,7 +214,13 @@ The internal RunnerRepairWorkers component requires admitted original feedback a
 
 Private intent precedes claim and native work. A lost response retains that intent and reservation rather than authorizing another claim. Paused recovery observes the original successor lease, captured receipt, owned call prefix and unchanged produced bytes without selectors or another host. Missing evidence remains unavailable. Cancellation uses only original private native channels.
 
-Its result reports produced correction with commit and QA pending; it cannot mark a root verification/review stage passed. Candidate succession, repeated independent QA and complete-route acceptance remain technical work. Run npm run eval:runner-repairs from the source checkout for the finite synthetic-native controls, separate from authenticated native acceptance. See [ADR-0137](../decisions/0137-one-shot-original-correction-workers.md).
+Its result reports produced correction with commit and QA pending; it cannot mark a root verification/review stage passed. The separate correction-commit adapter pins exact original correction bytes and parent through owned Git effects. Candidate succession, repeated independent QA and complete-route acceptance remain technical work. Run npm run eval:runner-repairs from the source checkout for the finite synthetic-native controls, separate from authenticated native acceptance. See [ADR-0137](../decisions/0137-one-shot-original-correction-workers.md).
+
+## Pin the original correction commit
+
+The internal RunnerRepairCommits adapter requires current observed correction production and the exact unattended original stage. It pins the produced snapshot and parent with the existing owned staging/commit effects, retaining private intent and original deadline. Historical production remains auditable after the controller legitimately changes HEAD.
+
+Paused inspection can reconstruct a lost head locator from original applied effects without another model, selector or Git dispatch. Changed files or index refuse current completion. Original private cancellation remains available after revocation. The result is a committed checkpoint with QA and candidate-chain integration pending; it cannot pass a root gate or establish progress. The finite npm run eval:runner-repairs control now includes this commit/recovery path. See [ADR-0139](../decisions/0139-owned-original-correction-commits.md).
 
 ## Verification of this increment
 

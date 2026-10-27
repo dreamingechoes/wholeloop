@@ -1,16 +1,19 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { findBudget } from '../../../src/delivery/budget-events.js'
 import { deliveryAttempts } from '../../../src/delivery/reducer.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { RunnerRepairCommits } from '../../../src/runner/repair-commits.js'
 import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
+import { git as gitRead } from '../../../src/worktrees/git.js'
 import { runnerRepairFixture } from '../../support/runner-repair.js'
 
 const destination = process.argv[2]
 if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
+const workspaceHead = (workspace: string) => gitRead(workspace, ['rev-parse', 'HEAD']).trim()
 for (const mode of ['complete', 'lost-claim'] as const) {
   await runnerRepairFixture(async ({ store, queue, options, request, reader, context, host }) => {
     const abort = new AbortController(),
@@ -90,6 +93,87 @@ for (const mode of ['complete', 'lost-claim'] as const) {
       }
       assert.equal(scope.calls().length, calls + (mode === 'complete' ? 1 : 0))
       assert.equal(claims, mode === 'lost-claim' ? 1 : 0)
+      if (mode === 'complete') {
+        store.lifecycle.transition(request.run, {
+          to: 'queued',
+          reason: 'Commit only the original retained correction.',
+        })
+        const commits = new RunnerRepairCommits(recovered),
+          committed = await commits.execute(context)
+        assert.equal(committed.status, 'committed', JSON.stringify(committed))
+        assert.equal(committed.qa, 'pending')
+        assert.equal(committed.candidateChain, 'pending')
+        if (!('receipt' in committed)) throw new Error('Original correction receipt required')
+        assert.equal(
+          committed.receipt.parent,
+          JSON.parse(
+            JSON.parse(
+              recovered.native.binding(queue.assigned(request.run, entries[0]?.attempt ?? ''))
+                ?.assignment.brief ?? '{}',
+            ).task.prompt,
+          ).feedback.origin.candidate,
+        )
+        assert.equal(
+          committed.receipt.head,
+          workspaceHead(host.workspace(request, 'search').repository.path),
+        )
+        assert.equal(store.stage(contractDigest(request), context.stage.id)?.status, 'running')
+        assert.equal(scope.calls().length, calls + 1)
+        const effects = commits.commits.effects
+          .inspect(request.run)
+          .filter((effect) =>
+            effect.intent.key.startsWith(`candidate-${committed.receipt.record}-`),
+          )
+        assert.equal(effects.length, 2)
+        assert.ok(
+          effects.every(
+            (effect) =>
+              effect.status === 'applied' &&
+              effect.observations.at(-1)?.invocationState === 'stopped',
+          ),
+        )
+        const headPath = store.files.path(
+          `delivery/workspace-heads/${committed.receipt.workspace}.txt`,
+        )
+        renameSync(headPath, `${headPath}.lost`)
+        store.lifecycle.transition(request.run, {
+          to: 'paused',
+          reason: 'Recover the original correction commit without new Git dispatch.',
+        })
+        const restored = await new RunnerRepairCommits(recovered).inspect(
+          request,
+          context.invocation,
+        )
+        assert.equal(restored.status, 'committed', JSON.stringify(restored))
+        if (!('receipt' in restored))
+          throw new Error('Recovered original correction receipt required')
+        assert.deepEqual(restored.receipt, committed.receipt)
+        assert.equal(
+          commits.commits.effects
+            .inspect(request.run)
+            .filter((effect) =>
+              effect.intent.key.startsWith(`candidate-${committed.receipt.record}-`),
+            ).length,
+          2,
+        )
+        const path = join(host.workspace(request, 'search').repository.path, 'app.txt'),
+          bytes = readFileSync(path)
+        writeFileSync(path, 'Changed after correction commit.\n')
+        assert.equal((await commits.inspect(request, context.invocation)).status, 'blocked')
+        writeFileSync(path, bytes)
+        assert.equal((await commits.inspect(request, context.invocation)).status, 'committed')
+        store.lifecycle.authority.revoke({
+          schema: 'wholeloop/delivery-revocation-request@1',
+          grant: request.grant,
+          operator: 'Fixture Operator',
+          reason: 'Keep original private cancellation available.',
+        })
+        recovered.stop(request, context.invocation)
+        commits.stop(request, context.invocation)
+        checks.push(
+          'original correction commit preserves exact bytes and parent, recovers a lost locator while paused and leaves independent QA pending',
+        )
+      }
       checks.push(
         mode === 'complete'
           ? 'one original bounded correction preserves failure, generation, pending commit/QA and paused recovery without replay'

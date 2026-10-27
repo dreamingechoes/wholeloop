@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-27 · P6-10 continuing — original correction commit
+
+- Separate historical completed correction production from current working-snapshot inspection, retaining exact source ownership and receipts after a legitimate controller commit changes HEAD. Add an internal owned correction-commit adapter over existing Git effects: require the exact original unattended stage, failure-linked production, snapshot/parent and deadline; persist intent before effects. Recover original observations while paused, refuse changed bytes and retain private cancellation after revocation. A commit leaves QA and candidate-chain integration pending. Add ADR-0139, enforcer and docs. P6-10 remains open; counts stay 59/88 complete.
+- Worker/ordinary-commit/root-Git/frozen-contract regressions pass 458 cases in 83.31 seconds. Preserve the initial type failure narrowing the new commit result; keep literal status types rather than casting unknown receipts. The first complete macOS evaluation passes all three controls, including exact parent/bytes, two closed owned Git effects, lost-locator paused recovery without another effect, edit refusal/restoration and original cancellation after revocation. All three final dispatch controls and exact CLI schema parity pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5 with bundle 90c35e217d7e068d738ecb1f4d2bd95534114be9f2ad7a7578bc222d42ef9188. The final added foreign-host cancellation refusal is separately covered by 420 focused/frozen controls in 19.59 seconds; the complete controls precede only that independent extra guard, which they do not exercise. Lint965/types/build/docs368/harness150/Markdown367/Mermaid36, smoke and offline package checks pass. The final build reproduces copied CLI 2e46b7cb80ba6c0bf994340b031e0b075196afd1e19a00991d3e9f7fb7f19bff. Full-suite, application-host and authenticated-native acceptance remain unchanged. No existing deadline increases.
+- Next audit suite-only failures with no original model-call prefix, then compose candidate succession and fresh independent QA; these remain technical work rather than manual acceptance blockers.
+
+---
+
 ## 2026-10-27 · P6-10 continuing — actual Git runtime minimum
 
 - Correct the README/getting-started/doctor mismatch already visible in older manual evidence: require Git 2.36, whose NUL-delimited worktree listing avoids ambiguous ownership. Preserve the strict parser instead of substituting unsafe legacy lines. Resolve common-directory output from the actual Git cwd without the unnecessary path-format flag. Add ADR-0138, enforcer and actual primary/nested/linked Unicode/space/newline coverage. P6-10 and route composition remain open; counts stay 59/88 complete.

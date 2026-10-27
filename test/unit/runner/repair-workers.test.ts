@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { RunnerRepairCommits } from '../../../src/runner/repair-commits.js'
 import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
 import { runnerWorkerFixture as setup } from '../../support/runner-worker.js'
@@ -27,6 +28,14 @@ describe('original correction workers', () => {
         qa: 'pending',
       })
       expect(queue.inspect(request.run)).toEqual([])
+      expect(await new RunnerRepairCommits(repair).execute(context)).toMatchObject({
+        status: 'blocked',
+        qa: 'pending',
+        candidateChain: 'pending',
+      })
+      expect(() => repair.production(request, context.invocation)).toThrow(
+        'original-repair-intent-missing',
+      )
       expect(await repair.inspect(request, context.invocation)).toMatchObject({ status: 'unknown' })
       store.lifecycle.authority.revoke({
         schema: 'wholeloop/delivery-revocation-request@1',
@@ -35,6 +44,13 @@ describe('original correction workers', () => {
         reason: 'Retain original cancellation ownership.',
       })
       expect(() => repair.stop(request, context.invocation)).not.toThrow()
+      const foreign = new RunnerRepairWorkers(store, queue, {
+        ...options,
+        identity: { ...request.host, id: 'different-host' },
+      })
+      expect(() => new RunnerRepairCommits(foreign).stop(request, context.invocation)).toThrow(
+        'original-repair-commit-owner-required',
+      )
       expect(() => repair.stop(request, 'f'.repeat(64))).toThrow('original-repair-owner-required')
     })
   })

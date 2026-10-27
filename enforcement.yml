@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-runner-correction-commit
+    enforcers: [src/runner/repair-commits.ts#RunnerRepairCommits, src/runner/repair-workers.ts#production, src/delivery/commits.ts#DeliveryCommits, test/unit/runner/repair-workers.test.ts, test/unit/delivery/commits.test.ts, test/evals/runner/repairs.ts]
   - id: git-worktree-runtime
     enforcers: [src/diagnostics/doctor.ts#doctor, src/worktrees/git.ts#registeredWorktrees, src/worktrees/git.ts#repository, test/unit/diagnostics/doctor.test.ts, test/unit/worktrees/git.test.ts]
   - id: delivery-runner-one-shot-correction

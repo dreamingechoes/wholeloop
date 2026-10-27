@@ -237,53 +237,81 @@ export class RunnerRepairWorkers {
       return result('unknown', 'retain-original-repair-intent-without-replay')
     }
   }
+  private retainedProduction(request: Readonly<RunnerRequest>, invocation: string) {
+    const binding = this.read(request, invocation)
+    if (!binding) throw new DeliveryRunnerError('original-repair-intent-missing')
+    const lease = this.lease(binding)
+    if (!lease) throw new DeliveryRunnerError('original-repair-lease-missing-no-reclaim')
+    const callsPath = `${this.path(invocation)}/calls.json`,
+      owned = existsSync(this.store.files.path(callsPath))
+        ? (JSON.parse(readSourceFile(this.store.files.root, callsPath, 65536)) as string[])
+        : [],
+      calls = new RunnerNativeScope(this.store.files, invocation).inspect(),
+      retained = this.native.retained(lease),
+      prior = deliveryAttempts(this.queue.lifecycle.journal.get(request.run)).records.find(
+        (item) => item.id === binding.prior.attempt,
+      )
+    if (
+      !Array.isArray(owned) ||
+      !owned.length ||
+      contractDigest(calls.map((call) => call.invocation)) !==
+        contractDigest([...binding.prefix, ...owned]) ||
+      calls.some((call) => call.observed.invocationState !== 'stopped') ||
+      contractDigest(JSON.parse(retained?.binding.assignment.brief ?? '{}').task ?? null) !==
+        contractDigest(repairTask(binding.admission.feedback)) ||
+      prior?.state !== 'fenced' ||
+      !retained?.receipt ||
+      Date.parse(retained.binding.assignment.deadline) > Date.parse(binding.deadline)
+    )
+      throw new DeliveryRunnerError('original-repair-observation-incomplete')
+    return {
+      binding,
+      lease,
+      calls,
+      receipt: retained.receipt,
+      provenance: retained.binding.provenance,
+    }
+  }
+  private completedProduction(source: ReturnType<RunnerRepairWorkers['retainedProduction']>) {
+    const { binding, lease, receipt } = source
+    if (
+      !this.native.completed(lease) ||
+      !receipt.candidate ||
+      receipt.status !== 'succeeded' ||
+      !Number.isFinite(Date.parse(receipt.execution?.finishedAt ?? '')) ||
+      Date.parse(receipt.execution?.finishedAt ?? '') > Date.parse(binding.deadline)
+    )
+      throw new DeliveryRunnerError('original-repair-production-incomplete')
+    return source
+  }
+  /** Historical production remains auditable after a controller-owned commit changes HEAD. */
+  production(request: Readonly<RunnerRequest>, invocation: string) {
+    return this.completedProduction(this.retainedProduction(request, invocation))
+  }
   async inspect(request: Readonly<RunnerRequest>, invocation: string) {
     try {
-      const binding = this.read(request, invocation)
-      if (!binding) return result('unknown', 'original-repair-intent-missing')
-      const lease = this.lease(binding)
-      if (!lease) return result('unknown', 'original-repair-lease-missing-no-reclaim')
-      const callsPath = `${this.path(invocation)}/calls.json`,
-        owned = existsSync(this.store.files.path(callsPath))
-          ? (JSON.parse(readSourceFile(this.store.files.root, callsPath, 65536)) as string[])
-          : [],
-        calls = new RunnerNativeScope(this.store.files, invocation).inspect(),
-        retained = this.native.retained(lease),
-        prior = deliveryAttempts(this.queue.lifecycle.journal.get(request.run)).records.find(
-          (item) => item.id === binding.prior.attempt,
-        )
-      if (
-        !Array.isArray(owned) ||
-        !owned.length ||
-        contractDigest(calls.map((call) => call.invocation)) !==
-          contractDigest([...binding.prefix, ...owned]) ||
-        calls.some((call) => call.observed.invocationState !== 'stopped') ||
-        contractDigest(JSON.parse(retained?.binding.assignment.brief ?? '{}').task ?? null) !==
-          contractDigest(repairTask(binding.admission.feedback)) ||
-        prior?.state !== 'fenced' ||
-        !retained?.receipt ||
-        Date.parse(retained.binding.assignment.deadline) > Date.parse(binding.deadline)
-      )
-        return result('unknown', 'original-repair-observation-incomplete')
+      const retained = this.retainedProduction(request, invocation)
       if (retained.receipt.status !== 'succeeded')
         return result('failed', 'original-repair-did-not-complete')
-      const snapshot = workspaceSnapshot(binding.workspace),
-        receipt = retained.receipt
+      const source = this.completedProduction(retained),
+        { binding, lease, receipt, calls } = source,
+        snapshot = workspaceSnapshot(binding.workspace)
       if (
-        !this.native.completed(lease) ||
-        !receipt.candidate ||
-        snapshot.head !== receipt.candidate.head ||
-        snapshot.digest !== receipt.candidate.snapshot ||
-        !Number.isFinite(Date.parse(receipt.execution?.finishedAt ?? '')) ||
-        Date.parse(receipt.execution?.finishedAt ?? '') > Date.parse(binding.deadline)
+        snapshot.head !== receipt.candidate?.head ||
+        snapshot.digest !== receipt.candidate.snapshot
       )
         return result('blocked', 'original-repair-production-not-current')
       return {
         ...result('produced', 'original-correction-produced-commit-and-independent-qa-pending'),
         evidence: contractDigest({ binding, lease, receipt, calls, snapshot }),
-        provenance: retained.binding.provenance,
+        provenance: source.provenance,
       }
-    } catch {
+    } catch (error) {
+      if (
+        error instanceof DeliveryRunnerError &&
+        error.problem === 'original-repair-production-incomplete'
+      )
+        return result('blocked', 'original-repair-production-not-current')
       return result('unknown', 'original-repair-observation-unavailable')
     }
   }
