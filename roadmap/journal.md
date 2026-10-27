@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-27 · P6-10 continuing — actual Git runtime minimum
+
+- Correct the README/getting-started/doctor mismatch already visible in older manual evidence: require Git 2.36, whose NUL-delimited worktree listing avoids ambiguous ownership. Preserve the strict parser instead of substituting unsafe legacy lines. Resolve common-directory output from the actual Git cwd without the unnecessary path-format flag. Add ADR-0138, enforcer and actual primary/nested/linked Unicode/space/newline coverage. P6-10 and route composition remain open; counts stay 59/88 complete.
+- Doctor/workspace/owned-Git/frozen-contract regressions pass 464 cases in 40.13 seconds. The initial external macOS control incorrectly expects the noncanonical temporary symlink path; correct only its fixture with realpath and give it a unique diagnostic store. The same final control passes on macOS Node 24.22.0/Git 2.49.0 and Linux Node 20.0.0/Git 2.39.5, including actual NUL-delimited newline ownership. With actual Git 2.30.2 it instead observes correct shared-directory identity, refuses the unsupported listing and verifies the built doctor's explicit failure. Bundle 658ab656f50efb6950557d911050e5b9de7223a8be3f8ab05419b183a3f1dd16 and CLI 88ea3655d62d21c869714bf443b387c58db4f5b6db5595ee1520edff96d18f6d are pinned. Lint964/types/build/docs367/harness150/Markdown366/Mermaid36, smoke and offline package checks pass. Actual execution on Git 2.36.0 itself is not claimed; its documented feature boundary is separate from these runtime observations. No test deadline increases or legacy ownership fallback; full-suite/application-host/native-account acceptance remains unchanged.
+
+---
+
 ## 2026-10-27 · P6-10 continuing — one-shot original correction
 
 - Add internal correction production after fixed original failure admission and historical closed builder audit. Persist intent before fencing/requeueing the same slot, preserve the next generation and original parent/restart/global bounds, bind the captured builder-only briefing and native prefix, and recover without another selector, claim or model. Correction output leaves commit and independent QA pending. Add ADR-0137, protocol/enforcer, focused controls and a separate finite process evaluation. P6-10 remains open; counts stay 59/88 complete.

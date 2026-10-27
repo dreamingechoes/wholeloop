@@ -40,7 +40,7 @@ You do not have to frame an initiative before reviewing code. Standalone steps r
 
 ## Install from source
 
-You need **Node.js 22 or newer and npm to build**, Git 2.30 or newer, and an installed coding client for model-backed use. The checked development versions are Node 22.23.1 and 24.22.0; prefer one of those over an early minor release of a supported major. The bundled core supports Node 20 or newer; native clients have their own requirements. Access is required while this repository is private.
+You need **Node.js 22 or newer and npm to build**, Git 2.36 or newer, and an installed coding client for model-backed use. The checked development versions are Node 22.23.1 and 24.22.0; prefer one of those over an early minor release of a supported major. The bundled core supports Node 20 or newer; native clients have their own requirements. Access is required while this repository is private. The Git minimum preserves unambiguous worktree ownership, including paths containing newlines; see [ADR-0138](docs/decisions/0138-unambiguous-git-worktree-runtime.md).
 
 ### 1. Build
 

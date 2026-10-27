@@ -120,7 +120,7 @@ describe('observed local diagnostics without activation or authentication', () =
         })
       }),
   )
-  it.each(['1.9.0', '2.29.9'])(
+  it.each(['1.9.0', '2.29.9', '2.30.2', '2.35.9'])(
     'rejects old Git %s independently from available clients',
     (version) =>
       fixture((context) => {
@@ -135,6 +135,24 @@ describe('observed local diagnostics without activation or authentication', () =
             .filter((check) => check.id.startsWith('cli.'))
             .every((check) => check.status === 'pass'),
         ).toBe(true)
+      }),
+  )
+  it.each(['2.36.0', '2.39.5', '3.0.0'])(
+    'accepts the declared Git feature boundary %s without certifying a workflow',
+    (version) =>
+      fixture((context) => {
+        const result = doctor({
+          ...input(context),
+          probe: (binary) =>
+            binary === 'git' ? { status: 'observed', version } : observed(binary),
+        })
+        expect(result.checks.find((check) => check.id === 'git')).toMatchObject({
+          status: 'pass',
+          version,
+        })
+        expect(result.checks.find((check) => check.id === 'git')?.summary).toContain(
+          'NUL-delimited',
+        )
       }),
   )
   it('actually writes/renames and cleans only its own probe while preserving existing state', () =>

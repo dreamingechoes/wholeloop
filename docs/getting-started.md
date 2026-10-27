@@ -31,7 +31,7 @@ The core manages state and deterministic rules. Skills in your coding client per
 
 ## Build the source checkout
 
-Development requires Node 22 or newer and npm. Node 22.23.1 and 24.22.0 are checked development versions; use one of those rather than an early minor that cannot satisfy the installed tools' engine requirements. The built bundle supports Node 20 or newer. Use Git 2.30 or newer; individual coding clients have their own requirements.
+Development requires Node 22 or newer and npm. Node 22.23.1 and 24.22.0 are checked development versions; use one of those rather than an early minor that cannot satisfy the installed tools' engine requirements. The built bundle supports Node 20 or newer. Use Git 2.36 or newer; individual coding clients have their own requirements. The Git minimum preserves unambiguous worktree ownership, including paths containing newlines; see [ADR-0138](decisions/0138-unambiguous-git-worktree-runtime.md).
 
 ```bash
 git clone https://github.com/dreamingechoes/wholeloop.git

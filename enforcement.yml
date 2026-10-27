@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: git-worktree-runtime
+    enforcers: [src/diagnostics/doctor.ts#doctor, src/worktrees/git.ts#registeredWorktrees, src/worktrees/git.ts#repository, test/unit/diagnostics/doctor.test.ts, test/unit/worktrees/git.test.ts]
   - id: delivery-runner-one-shot-correction
     enforcers: [src/runner/repair-workers.ts#RunnerRepairWorkers, src/runner/worker-stages.ts#productionLease, src/delivery/worker-context.ts#workerContextForClaim, test/unit/runner/repair-workers.test.ts, test/unit/delivery/worker-protocol.test.ts, test/evals/runner/repairs.ts]
   - id: delivery-parent-worker-deadline

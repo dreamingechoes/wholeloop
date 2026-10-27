@@ -148,6 +148,7 @@
 | [0135](./0135-original-repair-budget-admission.md) | Original repair budget admission | Accepted | 2026-10-27 |
 | [0136](./0136-parent-bounded-worker-reservations.md) | Parent-bounded worker reservations | Accepted | 2026-10-27 |
 | [0137](./0137-one-shot-original-correction-workers.md) | One-shot original correction workers | Accepted | 2026-10-27 |
+| [0138](./0138-unambiguous-git-worktree-runtime.md) | Unambiguous Git worktree runtime | Accepted | 2026-10-27 |
 
 ## Lifecycle
 

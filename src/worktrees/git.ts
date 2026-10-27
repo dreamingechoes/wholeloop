@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
+import { resolve } from 'node:path'
 import { canonicalPath } from '../state/paths.js'
 
 export function git(root: string, args: readonly string[], hooks?: string): string {
@@ -37,8 +38,10 @@ export function ancestor(root: string, head: string, base: string): boolean {
 }
 export function repository(root: string) {
   const path = canonicalPath(git(root, ['rev-parse', '--show-toplevel']).trim())
+  // Git returns a path relative to the command's cwd in a primary checkout.
+  // Resolve there explicitly instead of treating output as relative to this process.
   const commonDir = canonicalPath(
-    git(root, ['rev-parse', '--path-format=absolute', '--git-common-dir']).trim(),
+    resolve(root, git(root, ['rev-parse', '--git-common-dir']).trim()),
   )
   return { path, commonDir, key: createHash('sha256').update(commonDir).digest('hex').slice(0, 16) }
 }

@@ -233,12 +233,12 @@ export function doctor(options: DoctorOptions) {
   const git = probe('git')
   const parts = git.version?.split('.').map(Number) ?? []
   const gitUsable =
-    git.status === 'observed' && ((parts[0] ?? 0) > 2 || (parts[0] === 2 && (parts[1] ?? 0) >= 30))
+    git.status === 'observed' && ((parts[0] ?? 0) > 2 || (parts[0] === 2 && (parts[1] ?? 0) >= 36))
   checks.push({
     id: 'git',
     status: gitUsable ? 'pass' : 'fail',
     summary:
-      'Git 2.30 or newer is required; actual workflow/platform compatibility still needs verification.',
+      'Git 2.36 or newer is required for unambiguous NUL-delimited worktree ownership; actual workflow/platform compatibility still needs verification.',
     ...(git.version ? { version: git.version } : {}),
     ...(git.reason ? { reason: git.reason } : {}),
     ...(!gitUsable
