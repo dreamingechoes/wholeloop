@@ -10,6 +10,7 @@ import type { IntegrationPart } from '../integration/contracts.js'
 import type { AssemblyGitControl } from '../integration/git-process.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
+import { RunnerRepairCommits } from './repair-commits.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import bindingSchema from './schemas/git-binding-v1.json' with { type: 'json' }
 import type { RunnerRequest, RunnerStore } from './store.js'
@@ -134,7 +135,7 @@ export class RunnerGitStages {
       throw new DeliveryRunnerError('git-stage-workspace-binding')
     return record
   }
-  candidate(request: Readonly<RunnerRequest>, unit: string) {
+  candidate(request: Readonly<RunnerRequest>, unit: string, correction?: RunnerRepairCommits) {
     const allocation = this.workspace(request, unit),
       binding = this.unitBinding(request, 'commit', unit),
       committed = this.commits.inspect(binding.resource)
@@ -143,8 +144,14 @@ export class RunnerGitStages {
       !committed.current ||
       !committed.receipt ||
       committed.record.request.workspace !== allocation.digest
-    )
-      throw new DeliveryRunnerError('git-stage-candidate-not-current')
+    ) {
+      if (
+        !(correction instanceof RunnerRepairCommits) ||
+        correction.store.files.root !== this.store.files.root
+      )
+        throw new DeliveryRunnerError('git-stage-candidate-not-current')
+      return correction.candidate(request, unit, binding.resource)
+    }
     const files = candidateFiles(allocation.repository.path)
     if (
       files.digest !== committed.receipt.files ||

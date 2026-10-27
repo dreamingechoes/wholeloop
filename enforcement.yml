@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-original-correction-successor
+    enforcers: [src/runner/git-stages.ts#candidate, src/runner/repair-commits.ts#candidate, src/delivery/commit-state.ts#validateHistoricalWorkspaceCommit, test/evals/runner/repairs.ts, test/unit/runner/git-stages.test.ts]
   - id: delivery-owned-commit-history
     enforcers: [src/delivery/commit-state.ts#validateHistoricalWorkspaceCommit, src/delivery/commit-state.ts#validateWorkspaceCommit, src/delivery/commit-state.ts#currentWorkspaceCommit, test/unit/delivery/commits.test.ts]
   - id: delivery-runner-correction-commit

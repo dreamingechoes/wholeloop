@@ -1,6 +1,11 @@
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { candidateFiles, candidateIndex } from '../delivery/candidate-files.js'
+import {
+  currentWorkspaceCommit,
+  readCommitReceipt,
+  validateHistoricalWorkspaceCommit,
+} from '../delivery/commit-state.js'
 import { DeliveryCommits } from '../delivery/commits.js'
 import { readSourceFile } from '../delivery/input.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
@@ -194,6 +199,66 @@ export class RunnerRepairCommits {
     } catch {
       return result('unknown', 'original-correction-commit-observation-unavailable')
     }
+  }
+  /** Select only a current first correction anchored to the original root commit. */
+  candidate(request: Readonly<RunnerRequest>, unit: string, original: string) {
+    const allocation = this.workers.workers.git.workspace(request, unit),
+      lifecycle = this.commits.effects.lifecycle,
+      current = currentWorkspaceCommit(lifecycle, allocation)
+    if (!current) throw new DeliveryRunnerError('original-correction-head-required')
+    const stages = this.store
+      .record(contractDigest(request))
+      .stages.filter(
+        (stage) =>
+          stage.basis === allocation.request.plan &&
+          ['review', 'verification'].some((kind) => stage.id === `${kind}:${unit}`),
+      )
+    let selected: ReturnType<RunnerRepairCommits['read']>
+    for (const stage of stages) {
+      const path = this.path(stage.invocation)
+      if (!existsSync(this.store.files.path(path))) continue
+      // The effect journal chooses the actual head. File order and timestamps choose nothing.
+      const hint = JSON.parse(
+        readSourceFile(this.store.files.root, path, 65536),
+      ) as RepairCommitBinding
+      if (hint.resource !== current.record) continue
+      const retained = this.read(request, stage.invocation)
+      if (!retained || selected) throw new DeliveryRunnerError('ambiguous-original-correction-head')
+      selected = retained
+    }
+    if (!selected) throw new DeliveryRunnerError('original-correction-head-binding-required')
+    const parent = readCommitReceipt(
+      lifecycle,
+      selected.production.binding.admission.feedback.origin.commit,
+    )
+    validateHistoricalWorkspaceCommit(lifecycle, allocation, parent)
+    if (
+      parent.record !== original ||
+      parent.head !== current.parent ||
+      parent.workspace !== allocation.digest ||
+      selected.record.digest !== current.record ||
+      selected.production.binding.prior.unit !== unit
+    )
+      throw new DeliveryRunnerError('original-correction-parent-binding')
+    const observed = this.commits.inspect(current.record)
+    if (
+      observed.status !== 'committed' ||
+      !observed.current ||
+      observed.receipt?.digest !== current.digest
+    )
+      throw new DeliveryRunnerError('original-correction-head-not-current')
+    const snapshot = workspaceSnapshot(allocation.repository.path),
+      files = candidateFiles(allocation.repository.path)
+    if (
+      snapshot.head !== current.head ||
+      snapshot.branch !== allocation.repository.branch ||
+      files.digest !== current.files ||
+      candidateIndex(allocation.repository.path) !== current.index ||
+      workspaceSnapshot(allocation.repository.path).digest !== snapshot.digest ||
+      currentWorkspaceCommit(lifecycle, allocation)?.digest !== current.digest
+    )
+      throw new DeliveryRunnerError('original-correction-head-not-current')
+    return { allocation, receipt: current }
   }
   stop(request: Readonly<RunnerRequest>, invocation: string) {
     // Original private Git cancellation survives revoked workspace admission.

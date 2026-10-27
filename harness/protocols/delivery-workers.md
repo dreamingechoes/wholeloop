@@ -46,3 +46,5 @@ For pinned behavioral acceptance, follow delivery-acceptance. Return proposed fi
 ⛔ `delivery-runner-correction-commit`: pin only exact original correction bytes and parent through owned Git effects within the original window. Persist intent before dispatch; recover original observations without replay. A commit leaves candidate succession and independent QA pending, and revoked authority must not block original private cancellation.
 
 ⛔ `delivery-owned-commit-history`: audit historical receipts only against exact original owned closed Git effects and active original basis. Historical validity never makes a superseded receipt current, publishes another head locator or grants dispatch, QA or progress.
+
+⛔ `delivery-original-correction-successor`: select a correction only through its fixed original checkpoint, current owned Git effects, exact initial parent and stable owned files/index. Reject locked, changed, unrelated or ambiguous heads. Explicit successor selection changes no gate verdict, progress or default candidate behavior.

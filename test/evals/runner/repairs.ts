@@ -118,6 +118,23 @@ for (const mode of ['complete', 'lost-claim'] as const) {
           workspaceHead(host.workspace(request, 'search').repository.path),
         )
         assert.equal(store.stage(contractDigest(request), context.stage.id)?.status, 'running')
+        assert.throws(() => host.candidate(request, 'search'), /git-stage-candidate-not-current/)
+        assert.deepEqual(host.candidate(request, 'search', commits).receipt, committed.receipt)
+        const allocation = host.workspace(request, 'search')
+        gitRead(allocation.repository.root, ['worktree', 'lock', allocation.repository.path])
+        try {
+          assert.throws(
+            () => host.candidate(request, 'search', commits),
+            /original-correction-head-not-current/,
+          )
+        } finally {
+          gitRead(allocation.repository.root, ['worktree', 'unlock', allocation.repository.path])
+        }
+        assert.deepEqual(host.candidate(request, 'search', commits).receipt, committed.receipt)
+        assert.throws(
+          () => commits.candidate(request, 'search', 'f'.repeat(64)),
+          /original-correction-parent-binding/,
+        )
         assert.equal(scope.calls().length, calls + 1)
         const effects = commits.commits.effects
           .inspect(request.run)
@@ -159,9 +176,14 @@ for (const mode of ['complete', 'lost-claim'] as const) {
         const path = join(host.workspace(request, 'search').repository.path, 'app.txt'),
           bytes = readFileSync(path)
         writeFileSync(path, 'Changed after correction commit.\n')
+        assert.throws(
+          () => host.candidate(request, 'search', commits),
+          /original-correction-head-not-current/,
+        )
         assert.equal((await commits.inspect(request, context.invocation)).status, 'blocked')
         writeFileSync(path, bytes)
         assert.equal((await commits.inspect(request, context.invocation)).status, 'committed')
+        assert.deepEqual(host.candidate(request, 'search', commits).receipt, committed.receipt)
         store.lifecycle.authority.revoke({
           schema: 'wholeloop/delivery-revocation-request@1',
           grant: request.grant,
@@ -171,7 +193,7 @@ for (const mode of ['complete', 'lost-claim'] as const) {
         recovered.stop(request, context.invocation)
         commits.stop(request, context.invocation)
         checks.push(
-          'original correction commit preserves exact bytes and parent, recovers a lost locator while paused and leaves independent QA pending',
+          'original correction commit and explicit successor retain the original parent, refuse unrelated or changed heads and recover a lost locator while paused with QA pending',
         )
       }
       checks.push(

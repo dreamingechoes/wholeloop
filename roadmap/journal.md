@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-27 · P6-10 continuing — explicit original correction successor
+
+- Select a first correction only through the fixed original checkpoint in the same store. Let current owned effects choose its record, reopen original production/closure and the historical initial parent, then require direct lineage and current owned branch/lock/files/index with stable snapshot and receipt rechecks. Keep ordinary initial selection unchanged and mutate no gate, pointer, budget or progress. Add ADR-0142 and enforcer. Longer chains, fresh QA and public route composition remain technical; P6-10 stays open and counts remain 59/88 complete.
+- Root Git/repair/commit/frozen regressions pass 441 cases in 42.98 seconds. All three complete synthetic controls pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5 with bundle 93b59afcc89af47b16d8619adec9c99b807c769958b56e487acba8b5912ce880. Explicit selection returns the exact correction receipt while default selection remains refused; unrelated original records, locked worktrees and changed bytes refuse, then exact restoration and paused locator recovery preserve the same receipt and native call count. Lint965/types/build/docs371/harness150/Markdown370/Mermaid36, smoke and offline package checks pass. The final protocol-aware CLI is 51bd7245deaab5e7058d9a14d5a8c2dce592c9f13a3c054a81a348093ecd4985; separately compare its exact inert schema on macOS and Linux Node 20 rather than pretending it retains the earlier pre-protocol CLI bytes. No test deadline increases; full-suite, application-host, authenticated-native and whole-route acceptance remain unchanged.
+
+---
+
 ## 2026-10-27 · P6-10 continuing — historical owned commit receipts
 
 - Add a separate internal historical audit over the existing exact receipt/record/workspace/authority/native-effect validation. Omit only latest/unrelated-outstanding-effect conditions for history; preserve all strict current-head checks. Audit changes no journal, pointer, budget or QA state. Add ADR-0141 and enforcer. Candidate-chain selection and fresh QA remain technical; P6-10 stays open and counts remain 59/88 complete.
