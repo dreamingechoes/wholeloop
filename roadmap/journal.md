@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-27 · P6-10 continuing — historical owned commit receipts
+
+- Add a separate internal historical audit over the existing exact receipt/record/workspace/authority/native-effect validation. Omit only latest/unrelated-outstanding-effect conditions for history; preserve all strict current-head checks. Audit changes no journal, pointer, budget or QA state. Add ADR-0141 and enforcer. Candidate-chain selection and fresh QA remain technical; P6-10 stays open and counts remain 59/88 complete.
+- Commit/root Git/repair/frozen regressions pass 441 cases in 41.81 seconds. The final focused actual two-commit control passes after replacing unnecessary type assertions with stable narrowed receipt variables (6.15 seconds). The same independent bundle fb96ea227a481b12904c84815c4405d86bad5f2828af97dc79cd302866f1841f passes on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5: audit the old receipt, keep it fenced as current, retain the latest receipt, reject a forged head with a recomputed checksum and preserve the journal exactly. Preserve the interrupted docs edit caused by referencing the previous file's text, then read the intended tutorial before insertion. Lint965/types/build/docs370/harness150/Markdown369/Mermaid36, smoke and offline package checks pass. No test deadline increases; full-suite/application-host/native-account acceptance remains unchanged.
+
+---
+
 ## 2026-10-27 · P6-10 continuing — suite-only correction
 
 - Permit an empty original native prefix only for a known observed suite failure admitted by the fixed QA reader. Preserve native-prefix ownership for retained findings and require the correction's own exact closed calls. Share the existing builder fixture components with actual suite trials; pin acceptance before builder admission. Add ADR-0140 and extend the actual verification script to seven isolated scenarios. Candidate succession/fresh QA and complete-route composition remain technical; P6-10 stays open and counts remain 59/88 complete.

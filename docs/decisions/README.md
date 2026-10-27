@@ -151,6 +151,7 @@
 | [0138](./0138-unambiguous-git-worktree-runtime.md) | Unambiguous Git worktree runtime | Accepted | 2026-10-27 |
 | [0139](./0139-owned-original-correction-commits.md) | Owned original correction commits | Accepted | 2026-10-27 |
 | [0140](./0140-suite-only-correction-ownership.md) | Suite-only correction ownership | Accepted | 2026-10-27 |
+| [0141](./0141-historical-owned-commit-receipts.md) | Historical owned commit receipts | Accepted | 2026-10-27 |
 
 ## Lifecycle
 

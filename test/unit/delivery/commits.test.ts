@@ -1,8 +1,13 @@
 import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { candidateIndex } from '../../../src/delivery/candidate-files.js'
-import { workspaceCommitPath } from '../../../src/delivery/commit-state.js'
+import {
+  validateHistoricalWorkspaceCommit,
+  validateWorkspaceCommit,
+  workspaceCommitPath,
+} from '../../../src/delivery/commit-state.js'
 import { DeliveryCommits } from '../../../src/delivery/commits.js'
 import { git } from '../../support/delivery.js'
 import {
@@ -204,6 +209,29 @@ describe('owned candidate staging and topic commits', () => {
       const result = await commits.execute(second.digest)
       expect(result).toMatchObject({ status: 'committed', current: true })
       expect(commits.inspect(first.digest)).toMatchObject({ status: 'stale', current: false })
+      const priorReceipt = firstResult.receipt,
+        currentReceipt = result.receipt
+      if (!priorReceipt || !currentReceipt) throw new Error('Actual original receipts required')
+      const lifecycle = commits.effects.lifecycle,
+        allocation = commits.workspaces.allocation(workspace),
+        events = lifecycle.journal.events()
+      expect(() =>
+        validateHistoricalWorkspaceCommit(lifecycle, allocation, priorReceipt),
+      ).not.toThrow()
+      expect(() => validateWorkspaceCommit(lifecycle, allocation, priorReceipt)).toThrow(
+        'head-receipt-binding',
+      )
+      expect(() => validateWorkspaceCommit(lifecycle, allocation, currentReceipt)).not.toThrow()
+      const { schema: _schema, digest: _digest, ...original } = priorReceipt,
+        forged = { ...original, head: 'f'.repeat(40) }
+      expect(() =>
+        validateHistoricalWorkspaceCommit(lifecycle, allocation, {
+          schema: priorReceipt.schema,
+          digest: contractDigest(forged),
+          ...forged,
+        }),
+      ).toThrow('head-native-evidence')
+      expect(lifecycle.journal.events()).toEqual(events)
       await expect(commits.reconcile(first.digest)).rejects.toThrow('unpublished-or-superseded')
       expect(commits.workspaces.inspect(workspace).head).toBe(result.receipt?.head)
       const files = commits.effects.lifecycle.journal.files,

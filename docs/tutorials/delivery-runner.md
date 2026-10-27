@@ -228,6 +228,10 @@ A known nonzero suite stops verification before a reviewer is constructed. The c
 
 The actual Docker control now covers a pre-builder pinned case plan, original builder production, exit-seven suite, zero QA model calls, one correction and paused recovery without replay. Its environment is retired explicitly by exact identity. Fresh independent QA and candidate succession remain implementation work. See [ADR-0140](../decisions/0140-suite-only-correction-ownership.md).
 
+## Audit the previous committed parent
+
+The internal historical receipt validator checks original owned files, record, grant and closed staging/commit effects after HEAD advances. It changes no journal or head pointer. Current-head validation still rejects the superseded receipt; a matching checksum alone cannot replace native evidence. This supplies a parent-audit primitive for upcoming candidate succession, leaving current-candidate selection and fresh QA unchanged. See [ADR-0141](../decisions/0141-historical-owned-commit-receipts.md).
+
 ## Verification of this increment
 
 Complete checks for the criterion-verification candidate pass 3196 tests in 158 files on isolated Debian Linux arm64/Node 24.22.0 with the original two-worker configuration. macOS arm64/Node 24.22.0 passes 3195 tests before the final admission-only test split using VITEST_MAX_WORKERS=1; its corrected native/verification/store regression passes all 26 cases. The split preserves actual worker coverage and tests invalid-input admission in a separate current context, without changing runtime code or deadlines. Fifteen model-free runner controls and exact inert schema parity pass with Linux Node 20.0.0/Git 2.39.5. The build reproduces the same copied CLI throughout these checks.

@@ -112,6 +112,22 @@ export function validateWorkspaceCommit(
   workspace: DeliveryWorkspaceRecord,
   receipt: CandidateCommitReceipt,
 ): void {
+  validateOwnedWorkspaceCommit(lifecycle, workspace, receipt, true)
+}
+/** Audit original closed effects without making a superseded receipt current again. */
+export function validateHistoricalWorkspaceCommit(
+  lifecycle: DeliveryLifecycle,
+  workspace: DeliveryWorkspaceRecord,
+  receipt: CandidateCommitReceipt,
+): void {
+  validateOwnedWorkspaceCommit(lifecycle, workspace, receipt, false)
+}
+function validateOwnedWorkspaceCommit(
+  lifecycle: DeliveryLifecycle,
+  workspace: DeliveryWorkspaceRecord,
+  receipt: CandidateCommitReceipt,
+  current: boolean,
+): void {
   validateDeliveryShape(receipt, receiptSchema)
   const { schema: _schema, digest: actual, ...binding } = receipt
   if (actual !== contractDigest(binding)) throw new CandidateCommitError('receipt-binding')
@@ -122,8 +138,9 @@ export function validateWorkspaceCommit(
       .sort((a, b) => b.sequence - a.sequence)[0],
     authority = lifecycle.authority.inspect(workspace.grant)
   if (
-    !latest ||
-    records.some((effect) => ['prepared', 'pending', 'unknown'].includes(effect.status))
+    current &&
+    (!latest ||
+      records.some((effect) => ['prepared', 'pending', 'unknown'].includes(effect.status)))
   )
     throw new CandidateCommitError('unresolved-original-effect')
   if (
@@ -136,7 +153,7 @@ export function validateWorkspaceCommit(
     throw new CandidateCommitError('inactive-head-authority')
   const record = readCandidateCommit(lifecycle, receipt.record)
   if (
-    receipt.effects.commit !== latest.intent.id ||
+    (current && receipt.effects.commit !== latest?.intent.id) ||
     receipt.workspace !== workspace.digest ||
     receipt.run !== workspace.request.run ||
     receipt.plan !== workspace.request.plan ||
