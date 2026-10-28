@@ -3,7 +3,7 @@ import { FlowEngine } from '../../src/flow/engine.js'
 import { DEFAULT_REVIEW_RUBRIC } from '../../src/review/input.js'
 import { RunnerReviewStages } from '../../src/runner/review-stages.js'
 import { StateStore } from '../../src/state/store.js'
-import { gateWorkerFixture } from './gate-worker.js'
+import { type GateFixtureMode, gateWorkerFixture } from './gate-worker.js'
 import { runnerWorkerFixture } from './runner-worker.js'
 
 export async function runnerRepairFixture(
@@ -13,6 +13,7 @@ export async function runnerRepairFixture(
       context: ReturnType<Parameters<Parameters<typeof runnerWorkerFixture>[0]>[0]['dispatch']>
     },
   ) => Promise<void>,
+  mode: GateFixtureMode = 'confirmed',
 ) {
   await runnerWorkerFixture(
     async (input) => {
@@ -34,7 +35,7 @@ export async function runnerRepairFixture(
           userFile,
           store.files.path('fixture-home'),
         ),
-        options = gateWorkerFixture(store, workspace, 'confirmed', 'host-observed'),
+        options = gateWorkerFixture(store, workspace, mode, 'host-observed'),
         reader = new RunnerReviewStages(store, {
           identity: request.host,
           engine: () => engine,

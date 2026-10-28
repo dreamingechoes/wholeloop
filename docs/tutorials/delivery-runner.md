@@ -248,5 +248,11 @@ Complete checks for the criterion-verification candidate pass 3196 tests in 158 
 
 The separate actual Docker/synthetic-native evaluation observes exact paused verdict recovery, exit-seven refusal before native host construction and fixture-only verifier refusal, retiring all three trial environments. These checks establish the implemented control, ownership and component boundaries. They do not establish authenticated native model containment, independent Linux application-host acceptance or the complete implementation route; P6-10 remains under implementation.
 
+## Review the first original correction
+
+The internal review adapter can advance from its retained failed round through the fixed original correction checkpoint. It requires a current direct successor and positive original native closure, then plans the next round in the same run and unchanged allowance. Exhausted, extended or unrelated runs and expanded deadlines refuse. The new workers independently inspect the corrected HEAD; a correction receipt alone supplies no QA verdict.
+
+A lost planning response reopens the exact next round without planning again. A separate dispatch marker prevents native replay. Paused recovery can restore the active locator and recover a lost final verdict from already submitted original outputs without a host factory. Missing original work remains unknown. This does not observe the root stage as complete or create human approval. Run npm run eval:runner-review for the finite synthetic process control. See [ADR-0144](../decisions/0144-original-review-continuation-after-correction.md). Repeated corrections, fresh behavioral verification and complete-route/public execution remain technical work.
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)

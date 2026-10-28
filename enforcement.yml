@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-original-review-continuation
+    enforcers: [src/runner/review-stages.ts#advance, src/runner/review-stages.ts#inspect, src/runner/native-gate.ts#RunnerNativeGateHost, src/gates/workflow.ts#plan, test/unit/runner/review-stages.test.ts, test/evals/runner/review-continuation.ts]
   - id: delivery-original-correction-prefix
     enforcers: [src/runner/repair-workers.ts#production, src/runner/repair-workers.ts#inspect, src/runner/native-scope.ts#inspect, test/evals/runner/repairs.ts, test/unit/runner/native-scope.test.ts]
   - id: delivery-original-correction-successor

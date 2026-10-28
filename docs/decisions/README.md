@@ -154,6 +154,7 @@
 | [0141](./0141-historical-owned-commit-receipts.md) | Historical owned commit receipts | Accepted | 2026-10-27 |
 | [0142](./0142-explicit-original-correction-successors.md) | Explicit original correction successors | Accepted | 2026-10-27 |
 | [0143](./0143-original-correction-calls-across-later-qa.md) | Original correction calls across later QA | Accepted | 2026-10-27 |
+| [0144](./0144-original-review-continuation-after-correction.md) | Original review continuation after correction | Accepted | 2026-10-28 |
 
 ## Lifecycle
 

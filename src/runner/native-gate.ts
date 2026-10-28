@@ -24,6 +24,7 @@ import { prepareReviewInput } from '../review/input.js'
 import type { RunnerStageContext } from './engine.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerNativeScope } from './native-scope.js'
+import type { RunnerRepairCommits } from './repair-commits.js'
 import { DeliveryRunnerError } from './route.js'
 import type { RunnerStore } from './store.js'
 
@@ -71,6 +72,7 @@ export class RunnerNativeGateHost implements GateHost {
     readonly plan: GatePlan,
     readonly options: RunnerGateOptions | undefined,
     readonly readOnly = false,
+    readonly correction?: RunnerRepairCommits,
   ) {
     this.queue = new DeliveryQueue(store.files.root, store.now, undefined, store.budgets.clock)
     this.native = new NativeDeliveryHost(this.queue)
@@ -86,6 +88,7 @@ export class RunnerNativeGateHost implements GateHost {
     const workspace = new RunnerGitStages(store).candidate(
       context.request,
       context.stage.unit,
+      correction,
     ).allocation
     if (workspace.repository.path !== plan.repository)
       throw new DeliveryRunnerError('native-gate-workspace')
@@ -110,6 +113,7 @@ export class RunnerNativeGateHost implements GateHost {
     const candidate = new RunnerGitStages(this.store).candidate(
       this.context.request,
       this.context.stage.unit as string,
+      this.correction,
     )
     if (
       candidate.receipt.head !== plan.snapshot.head ||
@@ -183,6 +187,7 @@ export class RunnerNativeGateHost implements GateHost {
       const claimed = this.queue.claim(controller, options.admit, {
         run: this.context.request.run,
         queue: entry.id,
+        deadline: this.context.deadline,
       }).assignment
       if (!claimed) throw new DeliveryRunnerError('native-gate-admission-unavailable')
       binding = {

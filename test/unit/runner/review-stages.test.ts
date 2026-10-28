@@ -20,6 +20,7 @@ describe('review stage admission and recovery do not invent native work', () => 
           context.signal = abort.signal
         } else context.plan = { ...context.plan, owner: 'Another Owner' }
         await expect(stages.execute(context)).rejects.toThrow('review-stage-not-current')
+        await expect(stages.advance(context)).rejects.toThrow('review-continuation-not-current')
         expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
       })
     },
@@ -39,6 +40,7 @@ describe('review stage admission and recovery do not invent native work', () => 
       )
       expect((await stages.inspect(context.request, record)).status).toBe('unknown')
       await expect(stages.execute(context)).rejects.toThrow('review-stage-original-unresolved')
+      await expect(stages.advance(context)).rejects.toThrow('review-continuation-not-current')
       expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
     })
   })

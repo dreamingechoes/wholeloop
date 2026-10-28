@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-28 · P6-10 continuing — independent review of the first correction
+
+- Advance the fixed original correction through the next independent review round of the same subject/run and unchanged allowance. Persist intent before planning and a separate one-shot dispatch marker; reopen lost planning responses and recover exact original submitted verdicts/locators while paused without a native factory. Pass the fixed successor checkpoint through native admission/observation and cap reviewer/refuter reservations at the retained parent deadline. Expose only safe controller audit categories. Add ADR-0144, finite evaluation and enforcement. P6-10 remains open; counts stay 59/88 complete. Longer chains, fresh behavioral verification and public complete-route composition remain technical work.
+- Preserve the initial native-host rejection of the stale initial commit; explicitly thread the fixed checkpoint rather than weakening candidate validation. The first parallel regression records two unchanged 30-second timeouts; the complete serial repetition passes all 434 cases in 222.13 seconds. Earlier complete macOS/Linux trials retain unknown recovery results; add safe audit diagnostics and preserve their evidence without extending deadlines or dropping assertions. The final macOS Node 24 control passes all four checks, including original-round recovery and unchanged global budget/failure/root-stage state. All four final controls also pass on Linux Node 20.0.0/Git 2.39.5 using the identical bundle 281b5113da73f1333f0bbf3fbbf58c146810a2ae2fe7b2301991a02be04d16b0. Lint/types/build/docs/harness/Markdown/Mermaid, smoke and offline package checks pass. Do not promote the earlier unknown results to acceptance. Full-suite, independent application-host, authenticated-model and full-route acceptance remain unchanged.
+
+---
+
 ## 2026-10-27 · P6-10 continuing — original correction prefix during later work
 
 - Keep strict production inspection over the complete original scope, while historical production attests only its exact bound closed prefix. Validate the whole manifest, retain original call order/closure and source digest, and do not attribute appended work to the producer or declare its QA complete. Current file/commit validation remains separate. Add ADR-0143 and enforcer. Fresh gate continuation and longer chains remain technical; P6-10 stays open and counts remain 59/88 complete.
