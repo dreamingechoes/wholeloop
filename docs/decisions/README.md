@@ -157,6 +157,7 @@
 | [0144](./0144-original-review-continuation-after-correction.md) | Original review continuation after correction | Accepted | 2026-10-28 |
 | [0145](./0145-distinct-owned-environment-phases.md) | Distinct owned environment phases | Accepted | 2026-10-28 |
 | [0146](./0146-original-correction-suite-phases.md) | Original correction suite phases | Accepted | 2026-10-28 |
+| [0147](./0147-original-verification-continuation.md) | Original verification continuation | Accepted | 2026-10-28 |
 
 ## Lifecycle
 

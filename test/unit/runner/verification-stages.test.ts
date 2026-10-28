@@ -28,6 +28,9 @@ describe('owned criterion verification admission', () => {
           context.signal = abort.signal
         } else context.plan = { ...context.plan, owner: 'Different Owner' }
         await expect(stages.execute(context)).rejects.toThrow('verification-stage-not-current')
+        await expect(stages.advance(context)).rejects.toThrow(
+          'verification-continuation-not-current',
+        )
         expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
       })
     },

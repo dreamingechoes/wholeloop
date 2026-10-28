@@ -266,5 +266,11 @@ The internal suite executor can bind a separate phase to the exact digest of the
 
 Earlier suite and environment locators remain intact. Paused inspection recovers only this phase's actual Docker observations without another command. A repeated nonzero exit remains a known failure; independent requirement judgments, full verification continuation and whole-route execution remain technical work. Run npm run eval:runner-suite-continuation -- --retire-success for the actual Docker control and explicit retirement of its exact environments. This control requires the cached reference helper and is distinct from authenticated native or independent Linux application-host acceptance. See [ADR-0146](../decisions/0146-original-correction-suite-phases.md).
 
+## Continue original verification after correction
+
+The internal verification adapter can advance one direct correction through a fresh suite and independent requirement judgments. It validates an already prepared captured environment and unchanged case/command selection before planning, then retains the same run, immediate next round, unchanged allowance and narrower original deadline. A nonzero suite stops before any model; a passing suite permits independent read-only inspection/refutation.
+
+Original intent and dispatch ownership prevent replay. Paused recovery can restore a lost active locator and final verdict using exact captured suite/native outputs without another selector or host. Earlier ownership stays intact; the runner still owns root-stage completion. Run npm run eval:runner-verification-continuation -- --retire-success for the finite actual Docker/synthetic-verifier composition and exact cleanup. Its unchanged pre-builder script observes actual corrected bytes; native/model, independent Linux application-host and complete product acceptance remain unestablished. See [ADR-0147](../decisions/0147-original-verification-continuation.md). Repeated corrections and public complete-route execution remain technical work.
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)
