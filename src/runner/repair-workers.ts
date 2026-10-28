@@ -121,7 +121,7 @@ export class RunnerRepairWorkers {
       throw new DeliveryRunnerError('repair-binding')
     return binding
   }
-  private lease(binding: RepairBinding): QueueAssignment | undefined {
+  private lease(binding: RepairBinding, historical = false): QueueAssignment | undefined {
     const path = `${this.path(binding.invocation)}/lease.json`
     if (!existsSync(this.store.files.path(path))) return undefined
     const lease = JSON.parse(readSourceFile(this.store.files.root, path, 65536)) as QueueAssignment
@@ -136,7 +136,8 @@ export class RunnerRepairWorkers {
       lease.plan !== binding.plan ||
       lease.run !== binding.prior.run ||
       lease.grant !== binding.prior.grant ||
-      contractDigest(this.queue.assigned(lease.run, lease.attempt)) !== contractDigest(lease)
+      (!historical &&
+        contractDigest(this.queue.assigned(lease.run, lease.attempt)) !== contractDigest(lease))
     )
       throw new DeliveryRunnerError('repair-lease')
     return lease
@@ -244,7 +245,9 @@ export class RunnerRepairWorkers {
   ) {
     const binding = this.read(request, invocation)
     if (!binding) throw new DeliveryRunnerError('original-repair-intent-missing')
-    const lease = this.lease(binding)
+    // Historical locators are not proof: the fixed host audits the original
+    // settled journal prefix before any production value can escape.
+    const lease = this.lease(binding, historical)
     if (!lease) throw new DeliveryRunnerError('original-repair-lease-missing-no-reclaim')
     const callsPath = `${this.path(invocation)}/calls.json`,
       owned = existsSync(this.store.files.path(callsPath))
@@ -257,7 +260,8 @@ export class RunnerRepairWorkers {
         historical && Array.isArray(owned)
           ? observed.slice(0, binding.prefix.length + owned.length)
           : observed,
-      retained = this.native.retained(lease),
+      completion = historical ? this.native.historical(lease) : undefined,
+      retained = historical ? completion : this.native.retained(lease),
       prior = deliveryAttempts(this.queue.lifecycle.journal.get(request.run)).records.find(
         (item) => item.id === binding.prior.attempt,
       )
@@ -280,19 +284,21 @@ export class RunnerRepairWorkers {
       calls,
       receipt: retained.receipt,
       provenance: retained.binding.provenance,
+      completion,
     }
   }
   private completedProduction(source: ReturnType<RunnerRepairWorkers['retainedProduction']>) {
     const { binding, lease, receipt } = source
     if (
-      !this.native.completed(lease) ||
+      (!source.completion && !this.native.completed(lease)) ||
       !receipt.candidate ||
       receipt.status !== 'succeeded' ||
       !Number.isFinite(Date.parse(receipt.execution?.finishedAt ?? '')) ||
       Date.parse(receipt.execution?.finishedAt ?? '') > Date.parse(binding.deadline)
     )
       throw new DeliveryRunnerError('original-repair-production-incomplete')
-    return source
+    // Keep the original five-field proof stable for existing commit bindings.
+    return { binding, lease, calls: source.calls, receipt, provenance: source.provenance }
   }
   /** Historical production remains auditable after a controller-owned commit changes HEAD. */
   production(request: Readonly<RunnerRequest>, invocation: string) {

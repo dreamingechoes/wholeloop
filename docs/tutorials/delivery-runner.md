@@ -278,5 +278,11 @@ Feedback and repair admission can reopen the current fixed correction checkpoint
 
 Only a new host-observed behavior, resolved finding or accepted candidate resets repair repetition. Another artifact, bookkeeping event, repeated progress fact or interleaved finding cannot hide it. The guard records exhaustion atomically, with no new worker/reservation or human prompt. Lost negative verdict metadata can be reconstructed from exact failed-suite observations without another command or positive model claim. Run npm run eval:runner-verification-continuation -- --repeated-failure --retire-success for the actual two-failure control. See [ADR-0148](../decisions/0148-observed-repair-progress-across-candidates.md). Dispatching later correction generations and complete-route composition remain technical work.
 
+## Audit a producer after its slot advances
+
+The internal native host can audit the exact original successful settlement even after its queue slot is fenced or reused. It replays that authoritative journal prefix and verifies the original assignment/runtime, receipt and input/output hashes. Current completion still requires the current lease; historical transport facts never grant a new dispatch or positive QA.
+
+Correction history keeps its original closed native-call prefix and the same five-field production object, preserving earlier version-one commit digests. Missing or changed source/captured bytes refuse. Paused inspection selects no inputs or hosts. Run npm run eval:runner-native-history for a finite synthetic-process control that reserves and stops a later generation without launching it. See [ADR-0149](../decisions/0149-historical-native-completion-after-fencing.md). Actual later-correction dispatch, longer candidate chains and public route composition remain technical work.
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)

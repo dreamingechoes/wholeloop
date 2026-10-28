@@ -543,6 +543,64 @@ describe('actual synthetic native processes', () => {
         target,
       ),
   )
+  it.each(['claude', 'codex'] as const)(
+    'audits original %s completion after fencing without reviving its lease',
+    (target) =>
+      nativeFixture(
+        async ({ queue, lease, context, options }) => {
+          const native = new NativeDeliveryHost(queue),
+            manager = new ManagedRunnerProcess(
+              queue.lifecycle.journal.files,
+              contractDigest({ lease, history: true }),
+            ),
+            receipt = await native.run(lease, context, {
+              ...options,
+              process: (command, args, { input, ...operation }) =>
+                manager.invoke(command, args, input, { ...operation, current: () => true }),
+            })
+          expect(receipt.status).toBe('succeeded')
+          expect(native.completed(lease)).toBe(true)
+          const original = native.historical(lease)
+          expect(original?.receipt).toEqual(receipt)
+          if (!original) throw new Error('Original completed transport proof missing')
+          queue.fence(lease)
+          queue.requeue(lease, contractDigest(receipt))
+          const next = queue.claim(
+            `controller-${'b'.repeat(32)}`,
+            () => ({ ready: true, provenance: 'fixture', evidence: 'f'.repeat(64) }),
+            { run: lease.run, queue: lease.queue },
+          ).assignment
+          expect(next?.generation).toBe(lease.generation + 1)
+          expect(native.completed(lease)).toBe(false)
+          expect(native.historical(lease)).toEqual(original)
+          expect(() =>
+            queue.start(lease, { backend: 'fixture', instance: 'old-history', worker: 'original' }),
+          ).toThrow('stale-queue-lease')
+          expect(
+            native.historical({ ...lease, controller: `controller-${'e'.repeat(32)}` }),
+          ).toBeUndefined()
+          const artifact = receipt.artifacts?.[0]
+          if (!artifact) throw new Error('Original captured artifact missing')
+          const path = queue.lifecycle.journal.files.path(artifact.ref),
+            bytes = readFileSync(path)
+          writeFileSync(path, 'Changed original captured output.')
+          expect(native.historical(lease)).toBeUndefined()
+          writeFileSync(path, bytes)
+          expect(native.historical(lease)).toEqual(original)
+          queue.lifecycle.authority.revoke({
+            schema: 'wholeloop/delivery-revocation-request@1',
+            grant: lease.grant,
+            operator: 'Fixture Operator',
+            reason: 'Historical transport proof grants no new dispatch.',
+          })
+          const before = queue.lifecycle.journal.events()
+          expect(native.historical(lease)).toEqual(original)
+          expect(queue.lifecycle.journal.events()).toEqual(before)
+        },
+        'success',
+        target,
+      ),
+  )
   it('holds the original queue claim when the native process owner cannot establish shutdown', async () => {
     await nativeFixture(async ({ queue, lease, context, options }) => {
       const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
