@@ -272,5 +272,11 @@ The internal verification adapter can advance one direct correction through a fr
 
 Original intent and dispatch ownership prevent replay. Paused recovery can restore a lost active locator and final verdict using exact captured suite/native outputs without another selector or host. Earlier ownership stays intact; the runner still owns root-stage completion. Run npm run eval:runner-verification-continuation -- --retire-success for the finite actual Docker/synthetic-verifier composition and exact cleanup. Its unchanged pre-builder script observes actual corrected bytes; native/model, independent Linux application-host and complete product acceptance remain unestablished. See [ADR-0147](../decisions/0147-original-verification-continuation.md). Repeated corrections and public complete-route execution remain technical work.
 
+## Stop repeated failure across corrected candidates
+
+Feedback and repair admission can reopen the current fixed correction checkpoint. Their failure records retain the exact candidate and observation. A separate runner guard counts the same observed failure across different commit digests using the original no-progress limit; the generic budget report retains its existing candidate-specific signature.
+
+Only a new host-observed behavior, resolved finding or accepted candidate resets repair repetition. Another artifact, bookkeeping event, repeated progress fact or interleaved finding cannot hide it. The guard records exhaustion atomically, with no new worker/reservation or human prompt. Lost negative verdict metadata can be reconstructed from exact failed-suite observations without another command or positive model claim. Run npm run eval:runner-verification-continuation -- --repeated-failure --retire-success for the actual two-failure control. See [ADR-0148](../decisions/0148-observed-repair-progress-across-candidates.md). Dispatching later correction generations and complete-route composition remain technical work.
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)

@@ -617,53 +617,73 @@ export class RunnerVerificationStages {
           this.options.correction,
         )
       try {
-        if (suite.status !== 'passed' || !suite.result)
-          throw new DeliveryRunnerError('verification-stage-suite-not-passed')
-        const actualSuite = state.round.results.find((r) => r.unit === 'suite')
-        if (contractDigest(actualSuite ?? null) !== contractDigest(suiteGateResult(suite.result)))
-          throw new DeliveryRunnerError('verification-stage-suite-binding')
-        proofs.push(suite.evidence)
-        for (const unit of state.round.plan.units) {
-          if (unit.id === 'suite') continue
-          const result = state.round.results.find((item) => item.unit === unit.id)
-          if (!result) throw new DeliveryRunnerError('verification-stage-missing-result')
-          const proof = reader.observe(state.round.plan, 'verifier', unit)
-          if (contractDigest(proof.value) !== contractDigest(result))
-            throw new DeliveryRunnerError('verification-stage-result-binding')
-          proofs.push(proof.evidence)
+        if (suite.status === 'failed' && suite.result) {
+          const actual = state.round.results.find((result) => result.unit === 'suite')
+          if (contractDigest(actual ?? null) !== contractDigest(suiteGateResult(suite.result)))
+            throw new DeliveryRunnerError('verification-stage-suite-binding')
+          // A known actual failure needs no positive model judgment. Seal only
+          // its original negative verdict, never replay the command to recover metadata.
+          const verdict = new GateWorkflow(state.engine).verdict(state.binding.subject, 'verify')
+          if (
+            verdict.run !== state.binding.run ||
+            verdict.round !== state.binding.round ||
+            !verdict.current ||
+            verdict.verdict === 'PASS'
+          )
+            throw new DeliveryRunnerError('verification-stage-negative-verdict-binding')
+          proofs.push(suite.evidence)
+          audited = true
+          failed = true
+          report = { observed: state.round.plan.snapshot.digest, report: verdict.report }
+        } else {
+          if (suite.status !== 'passed' || !suite.result)
+            throw new DeliveryRunnerError('verification-stage-suite-not-passed')
+          const actualSuite = state.round.results.find((r) => r.unit === 'suite')
+          if (contractDigest(actualSuite ?? null) !== contractDigest(suiteGateResult(suite.result)))
+            throw new DeliveryRunnerError('verification-stage-suite-binding')
+          proofs.push(suite.evidence)
+          for (const unit of state.round.plan.units) {
+            if (unit.id === 'suite') continue
+            const result = state.round.results.find((item) => item.unit === unit.id)
+            if (!result) throw new DeliveryRunnerError('verification-stage-missing-result')
+            const proof = reader.observe(state.round.plan, 'verifier', unit)
+            if (contractDigest(proof.value) !== contractDigest(result))
+              throw new DeliveryRunnerError('verification-stage-result-binding')
+            proofs.push(proof.evidence)
+          }
+          // Audit submitted votes, then let the existing strict-majority policy
+          // decide. An unavailable third refuter is not a fabricated negative vote.
+          for (const vote of state.round.votes) {
+            const source = state.round.results
+              .flatMap((result) =>
+                result.findings.map((finding) => ({
+                  id: `${result.unit}:${finding.id}`,
+                  unit: result.unit,
+                  finding,
+                })),
+              )
+              .find((item) => item.id === vote.finding)
+            if (!source || vote.verifier < 1 || vote.verifier > state.round.plan.verifiers)
+              throw new DeliveryRunnerError('verification-stage-vote-scope')
+            const observed = reader.observe(state.round.plan, 'refuter', {
+              finding: vote.finding,
+              verifier: vote.verifier,
+              source,
+            })
+            if (contractDigest(observed.value) !== contractDigest(vote))
+              throw new DeliveryRunnerError('verification-stage-vote-binding')
+            proofs.push(observed.evidence)
+          }
+          // A lost final metadata write may seal only already-observed exact work;
+          // inspection never invokes a model, suite, repair or new gate round.
+          const verdict = new GateWorkflow(state.engine).verdict(state.binding.subject, 'verify')
+          if (verdict.run !== state.binding.run || verdict.round !== state.binding.round)
+            throw new DeliveryRunnerError('verification-stage-verdict-binding')
+          audited = true
+          report = { observed: state.round.plan.snapshot.digest, report: verdict.report }
+          passed = verdict.current && verdict.verdict === 'PASS' && !!calls.length
+          failed = verdict.verdict !== 'PASS'
         }
-        // Audit submitted votes, then let the existing strict-majority policy
-        // decide. An unavailable third refuter is not a fabricated negative vote.
-        for (const vote of state.round.votes) {
-          const source = state.round.results
-            .flatMap((result) =>
-              result.findings.map((finding) => ({
-                id: `${result.unit}:${finding.id}`,
-                unit: result.unit,
-                finding,
-              })),
-            )
-            .find((item) => item.id === vote.finding)
-          if (!source || vote.verifier < 1 || vote.verifier > state.round.plan.verifiers)
-            throw new DeliveryRunnerError('verification-stage-vote-scope')
-          const observed = reader.observe(state.round.plan, 'refuter', {
-            finding: vote.finding,
-            verifier: vote.verifier,
-            source,
-          })
-          if (contractDigest(observed.value) !== contractDigest(vote))
-            throw new DeliveryRunnerError('verification-stage-vote-binding')
-          proofs.push(observed.evidence)
-        }
-        // A lost final metadata write may seal only already-observed exact work;
-        // inspection never invokes a model, suite, repair or new gate round.
-        const verdict = new GateWorkflow(state.engine).verdict(state.binding.subject, 'verify')
-        if (verdict.run !== state.binding.run || verdict.round !== state.binding.round)
-          throw new DeliveryRunnerError('verification-stage-verdict-binding')
-        audited = true
-        report = { observed: state.round.plan.snapshot.digest, report: verdict.report }
-        passed = verdict.current && verdict.verdict === 'PASS' && !!calls.length
-        failed = verdict.verdict !== 'PASS'
       } catch (error) {
         // Raw worker errors may contain credentials; retain only fixed controller categories.
         problem =

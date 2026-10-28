@@ -4,6 +4,7 @@ import type { RunnerStageContext } from './engine.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerNativeScope } from './native-scope.js'
 import { runnerRepairFeedback } from './repair-feedback.js'
+import { exhaustRepeatedRunnerRepair } from './repair-progress.js'
 import { RunnerReviewStages } from './review-stages.js'
 import { runnerRoute } from './route.js'
 import { RunnerVerificationStages } from './verification-stages.js'
@@ -72,8 +73,22 @@ export async function admitRunnerRepair(reader: Reader, context: RunnerStageCont
     // It is not an attempt, progress event, renewed deadline or dispatch claim.
     const budget = store.budgets.failure(context.request.run, failure)
     if (budget.problem) return blocked(budget.problem)
+    if (
+      exhaustRepeatedRunnerRepair(store, {
+        run: context.request.run,
+        role: context.stage.kind,
+        fingerprint: feedback.fingerprint,
+        limit: budget.limits?.noProgress ?? basis.plan.budgets.noProgress,
+        evidence: feedback.origin.observation,
+      })
+    )
+      return blocked('repeated-repair-no-progress')
     if (!current()) return blocked('original-repair-window-unavailable')
-    const candidate = new RunnerGitStages(store).candidate(context.request, feedback.origin.unit),
+    const candidate = new RunnerGitStages(store).candidate(
+        context.request,
+        feedback.origin.unit,
+        reader.options.correction,
+      ),
       calls = new RunnerNativeScope(store.files, record.invocation).inspect()
     if (
       candidate.receipt.digest !== feedback.origin.commit ||

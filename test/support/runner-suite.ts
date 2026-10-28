@@ -35,6 +35,7 @@ export async function runnerSuiteFixture(
     guidance?: string
     production?: boolean
     repairSensitive?: boolean
+    noProgress?: number
   } = {},
 ) {
   if (options.production && options.unit)
@@ -269,10 +270,11 @@ export async function runnerSuiteFixture(
     },
     {
       singleUnit: !options.unit,
-      ...(options.unit || options.unattended
+      ...(options.unit || options.unattended || options.noProgress !== undefined
         ? {
             configure: (plan) => {
               if (options.unattended) plan.policy.intervention = 'none'
+              if (options.noProgress !== undefined) plan.budgets.noProgress = options.noProgress
               if (!options.unit) return
               const declared = plan.work.find((work) => work.id === 'contract')?.produces[0]
               if (!declared) throw new Error('Fixture declared contract missing')

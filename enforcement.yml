@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-observed-repair-progress
+    enforcers: [src/runner/repair-progress.ts#runnerRepairStreak, src/runner/repair-progress.ts#exhaustRepeatedRunnerRepair, src/runner/repair-admission.ts#admitRunnerRepair, src/runner/repair-feedback.ts#runnerRepairFeedback, src/runner/verification-stages.ts#inspect, test/unit/runner/repair-progress.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-original-verification-continuation
     enforcers: [src/runner/verification-stages.ts#advance, src/runner/verification-stages.ts#phaseSelection, src/runner/verification-stages.ts#inspect, src/runner/native-gate.ts#RunnerNativeGateHost, test/unit/runner/verification-stages.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-original-correction-suite-phase

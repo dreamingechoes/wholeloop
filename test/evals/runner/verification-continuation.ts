@@ -10,7 +10,10 @@ import { workspaceSnapshot } from '../../../src/gates/snapshot.js'
 import { gateRuns } from '../../../src/gates/state.js'
 import { GateWorkflow } from '../../../src/gates/workflow.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { admitRunnerRepair } from '../../../src/runner/repair-admission.js'
 import { RunnerRepairCommits } from '../../../src/runner/repair-commits.js'
+import { runnerRepairFeedback } from '../../../src/runner/repair-feedback.js'
+import { runnerRepairStreak } from '../../../src/runner/repair-progress.js'
 import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
 import { gateWorkerFixture } from '../../support/gate-worker.js'
@@ -18,7 +21,8 @@ import { runnerSuiteFixture } from '../../support/runner-suite.js'
 
 const destination = process.argv[2]
 if (!destination) throw new Error('Supply an external report directory')
-const checks: string[] = []
+const checks: string[] = [],
+  repeated = process.argv.includes('--repeated-failure')
 await runnerSuiteFixture(
   async ({ store, context, engine, selection, driver, production, gate: initial }) => {
     assert.ok(production)
@@ -128,9 +132,13 @@ await runnerSuiteFixture(
         engine.store.files.atomic = atomic
       }
       assert.equal(lostVerdict, true)
-      console.log('Corrected candidate passed its actual suite and independent synthetic judgments')
+      console.log(
+        repeated
+          ? 'The corrected candidate retains its known observed suite failure'
+          : 'Corrected candidate passed its actual suite and independent synthetic judgments',
+      )
       const calls = scope.calls().length
-      assert.ok(calls > beforeCalls)
+      assert.equal(repeated ? calls === beforeCalls : calls > beforeCalls, true)
       store.lifecycle.transition(context.request.run, {
         to: 'paused',
         reason: 'Recover exact continued verification without any new host.',
@@ -147,13 +155,13 @@ await runnerSuiteFixture(
         observation = await recovered.advance(context)
       mkdirSync(destination, { recursive: true })
       writeFileSync(join(destination, 'recovery.json'), `${JSON.stringify(observation, null, 2)}\n`)
-      assert.equal(observation.status, 'passed', JSON.stringify(observation))
+      assert.equal(observation.status, repeated ? 'blocked' : 'passed', JSON.stringify(observation))
       assert.equal(observation.provenance, 'host-observed')
       const run = gateRuns(engine.store.events()).find((run) => run.run === first.run),
         budget = findBudget(store.lifecycle.journal.get(context.request.run))
       assert.equal(run?.rounds.length, 2)
       assert.equal(run?.budget, first.budget)
-      assert.equal(run?.rounds[1]?.decision?.report.verdict, 'PASS')
+      assert.equal(run?.rounds[1]?.decision?.report.verdict === 'PASS', !repeated)
       assert.equal(run?.rounds[1]?.plan.snapshot.head, committed.receipt.head)
       assert.equal(scope.calls().length, calls)
       assert.equal(budget?.deadline, before?.deadline)
@@ -162,15 +170,66 @@ await runnerSuiteFixture(
         store.stage(contractDigest(context.request), context.stage.id)?.status,
         'running',
       )
-      checks.push(
-        'the original failed verify run receives a fresh actual suite and independent synthetic judgments over the exact correction without renewing its allowance or narrower deadline',
-      )
-      checks.push(
-        'lost planning response, verdict and active locator recover while paused without model, command or selector replay',
-      )
-      checks.push(
-        'global failure/deadline history and root-stage completion remain separate from the observed gate verdict',
-      )
+      if (repeated) {
+        const firstFingerprint = repair.production(context.request, context.invocation).binding
+            .admission.feedback.fingerprint,
+          feedback = await runnerRepairFeedback(
+            recovered,
+            context.request,
+            store.stage(contractDigest(context.request), context.stage.id) ??
+              (() => {
+                throw new Error('Original stage missing')
+              })(),
+          )
+        assert.equal(feedback.status, 'actionable', JSON.stringify(feedback))
+        if (feedback.status !== 'actionable') throw new Error('Current original feedback required')
+        assert.equal(feedback.fingerprint, firstFingerprint)
+        assert.equal(feedback.origin.commit, committed.receipt.digest)
+        assert.equal(feedback.origin.round, 2)
+        store.lifecycle.transition(context.request.run, {
+          to: 'queued',
+          reason: 'Account for the exact repeated failure without another correction.',
+        })
+        const reservations = store.budgets.inspect(context.request.run).reservations.length,
+          admission = await admitRunnerRepair(recovered, context)
+        assert.equal(admission.status, 'blocked', JSON.stringify(admission))
+        if (admission.status !== 'blocked') throw new Error('Repeated failure must stop')
+        assert.equal(admission.reason, 'repeated-repair-no-progress')
+        assert.equal(store.lifecycle.journal.get(context.request.run).state, 'exhausted')
+        assert.equal(
+          runnerRepairStreak(
+            store.lifecycle.journal.events(),
+            context.request.run,
+            'verification',
+            feedback.fingerprint,
+          ),
+          2,
+        )
+        assert.equal(store.budgets.inspect(context.request.run).noProgress.streak, 1)
+        assert.equal((await admitRunnerRepair(recovered, context)).status, 'blocked')
+        assert.equal(
+          findBudget(store.lifecycle.journal.get(context.request.run))?.failures.length,
+          2,
+        )
+        assert.equal(store.budgets.inspect(context.request.run).reservations.length, reservations)
+        assert.equal(scope.calls().length, calls)
+        checks.push(
+          'current corrected-head feedback retains its original failure fingerprint and exact second-round receipt',
+        )
+        checks.push(
+          'the original two-failure limit exhausts the route across changed commit digests without another reservation, worker or duplicate failure',
+        )
+      } else {
+        checks.push(
+          'the original failed verify run receives a fresh actual suite and independent synthetic judgments over the exact correction without renewing its allowance or narrower deadline',
+        )
+        checks.push(
+          'lost planning response, verdict and active locator recover while paused without model, command or selector replay',
+        )
+        checks.push(
+          'global failure/deadline history and root-stage completion remain separate from the observed gate verdict',
+        )
+      }
       if (process.argv.includes('--retire-success')) {
         for (const id of [selection.environment, environment]) {
           const retired = await new EnvironmentLifecycle(store.files, driver).execute({
@@ -189,7 +248,14 @@ await runnerSuiteFixture(
       clearTimeout(timer)
     }
   },
-  { backend: 'docker', production: true, unattended: true, repairSensitive: true, retain: true },
+  {
+    backend: 'docker',
+    production: true,
+    unattended: true,
+    repairSensitive: !repeated,
+    ...(repeated ? { exit: 7, noProgress: 2 } : {}),
+    retain: true,
+  },
 )
 const report = {
   status: 'passed',

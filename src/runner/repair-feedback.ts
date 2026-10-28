@@ -115,7 +115,11 @@ export async function runnerRepairFeedback(
       workspaceSnapshot(binding.workspace).digest !== round.plan.snapshot.digest
     )
       return unavailable()
-    const candidate = new RunnerGitStages(reader.store).candidate(request, binding.unit)
+    const candidate = new RunnerGitStages(reader.store).candidate(
+      request,
+      binding.unit,
+      reader.options.correction,
+    )
     if (candidate.receipt.head !== round.plan.snapshot.head) return unavailable()
     const report = round.decision.report,
       failedSuite = round.results.some(
