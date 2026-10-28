@@ -254,5 +254,11 @@ The internal review adapter can advance from its retained failed round through t
 
 A lost planning response reopens the exact next round without planning again. A separate dispatch marker prevents native replay. Paused recovery can restore the active locator and recover a lost final verdict from already submitted original outputs without a host factory. Missing original work remains unknown. This does not observe the root stage as complete or create human approval. Run npm run eval:runner-review for the finite synthetic process control. See [ADR-0144](../decisions/0144-original-review-continuation-after-correction.md). Repeated corrections, fresh behavioral verification and complete-route/public execution remain technical work.
 
+## Keep environment ownership separate across phases
+
+The internal environment scope accepts an explicit digest namespace for later phases of the same root invocation. Each phase retains its own exact private environment/operation/read owners. The original version-one locator stays intact; later phases use version-two metadata and distinct native read identities. Reopening a consumed phase never authorizes another command.
+
+Inspection remains specific to one original scope. Root suite/verification cancellation addresses all known original phases through private channels, including after revocation. A missing or malformed locator reports unresolved cancellation after attempting other known scopes; it cannot authorize replay or imply that application work stopped. This ownership layer does not select another environment or run fresh behavioral QA. Run npm run eval:runner-environment-phases for the synthetic process control. See [ADR-0145](../decisions/0145-distinct-owned-environment-phases.md).
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)

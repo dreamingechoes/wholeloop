@@ -427,6 +427,6 @@ export class RunnerSuiteStages {
         )
     )
       throw new DeliveryRunnerError('suite-stage-binding')
-    if (!signal.aborted) new RunnerEnvironmentScope(this.store, record.invocation).cancel()
+    if (!signal.aborted) new RunnerEnvironmentScope(this.store, record.invocation).cancelAll()
   }
 }

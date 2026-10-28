@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-28 · P6-10 continuing — distinct original environment phases
+
+- Keep original version-one environment ownership intact; add exact version-two digest-namespaced phases with separate inert-read identities and operation claims. Preserve consumption markers, root authority/deadline checks and scope-specific observations. Root suite/verification stop cancels known original phases through private channels after revocation, and attempts other cancellations before reporting partial locator loss. No aggregate positive QA verdict or fresh suite is inferred. Add ADR-0145, enforcement and finite process control. P6-10 remains open and counts stay 59/88 complete; fresh suite/verification and complete-route composition remain technical work.
+- Environment/suite/verification/frozen regressions pass all 450 cases in 164.55 seconds. All three synthetic-client controls pass on macOS Node 24 and Linux Node 20.0.0/Git 2.39.5 with identical bundle df4d0ab5d421e108110707cf92731f8f7cd4069e5ca77eb32d9f29a00d74bfff: preserve the original observation, refuse repeated phase dispatch, retain private cancellation despite revocation/one lost locator, then restore exact metadata without another command. These are actual client ownership controls over normalized environment records, not actual Docker/application-boundary, independent Linux application-host or authenticated-model acceptance. Lint969/types/build/docs374/harness150/Markdown373/Mermaid36, smoke and offline package checks pass. No deadline increases or omitted cases; full-suite and full-route acceptance remain unchanged.
+
+---
+
 ## 2026-10-28 · P6-10 continuing — independent review of the first correction
 
 - Advance the fixed original correction through the next independent review round of the same subject/run and unchanged allowance. Persist intent before planning and a separate one-shot dispatch marker; reopen lost planning responses and recover exact original submitted verdicts/locators while paused without a native factory. Pass the fixed successor checkpoint through native admission/observation and cap reviewer/refuter reservations at the retained parent deadline. Expose only safe controller audit categories. Add ADR-0144, finite evaluation and enforcement. P6-10 remains open; counts stay 59/88 complete. Longer chains, fresh behavioral verification and public complete-route composition remain technical work.

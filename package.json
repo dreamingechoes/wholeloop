@@ -59,6 +59,7 @@
     "eval:decisions": "node scripts/check-decisions.mjs",
     "eval:runner-verification": "node scripts/check-runner-verification.mjs",
     "eval:runner-suites": "node scripts/check-runner-suites.mjs",
+    "eval:runner-environment-phases": "node scripts/check-runner-environment-phases.mjs",
     "eval:runner-review": "node scripts/check-runner-review.mjs",
     "eval:runner-repairs": "node scripts/check-runner-repairs.mjs",
     "eval:runner-definitions": "node scripts/check-runner-definitions.mjs",

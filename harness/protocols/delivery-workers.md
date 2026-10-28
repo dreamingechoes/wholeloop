@@ -49,6 +49,8 @@ For pinned behavioral acceptance, follow delivery-acceptance. Return proposed fi
 
 ⛔ `delivery-original-correction-successor`: select a correction only through its fixed original checkpoint, current owned Git effects, exact initial parent and stable owned files/index. Reject locked, changed, unrelated or ambiguous heads. Explicit successor selection changes no gate verdict, progress or default candidate behavior.
 
+⛔ `delivery-original-environment-phases`: keep each phase's original environment/read/effect ownership separate. Never overwrite earlier locators or reuse read identities. Root stop cancels known private phases even after revocation; partial loss stays unresolved and never authorizes replay or an aggregate QA verdict.
+
 ⛔ `delivery-original-review-continuation`: review a corrected HEAD only through its fixed original checkpoint and the next round of the same unchanged gate allowance. Persist intent and one-shot dispatch ownership; recover original metadata without models or renewed deadlines. Missing ownership evidence stays unresolved.
 
 ⛔ `delivery-original-correction-prefix`: historical production attests only its exact original closed call prefix. Later calls never become producer evidence or QA approval. Preserve strict complete-scope production inspection and independently audit later gate calls before any passing verdict.

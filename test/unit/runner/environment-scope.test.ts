@@ -22,6 +22,65 @@ describe('root-owned environment operations retain their original private invoke
       )
     })
   })
+  it('keeps separate phase owners and original observations without overwriting or replay', async () => {
+    await setup(async ({ store, scope, context, environment, driver }) => {
+      await scope.run(context, environment, driver, (selected) => selected.call(['info']))
+      const original = scope.inspect(),
+        phase = contractDigest({ gate: 'verify', round: 2 }),
+        later = new RunnerEnvironmentScope(store, context.invocation, phase)
+      await later.run(context, environment, driver, (selected) => selected.call(['info']))
+      const observed = later.inspect()
+      expect(observed.invocationState).toBe('stopped')
+      expect(observed.reads[0]?.invocation).not.toBe(original.reads[0]?.invocation)
+      expect(scope.inspect()).toEqual(original)
+      expect(
+        new RunnerEnvironmentScope(
+          new RunnerStore(store.files.root),
+          context.invocation,
+          phase,
+        ).inspect(),
+      ).toEqual(observed)
+      await expect(later.run(context, environment, driver, async () => undefined)).rejects.toThrow(
+        'environment-stage-original-unresolved',
+      )
+      expect(() => new RunnerEnvironmentScope(store, context.invocation, '../another')).toThrow(
+        'environment-stage-invocation',
+      )
+      store.lifecycle.authority.revoke({
+        schema: 'wholeloop/delivery-revocation-request@1',
+        grant: context.request.grant,
+        operator: 'Fixture Operator',
+        reason: 'Retain all original phase cancellation channels.',
+      })
+      scope.cancelAll()
+      expect(scope.inspect()).toEqual(original)
+      expect(later.inspect()).toEqual(observed)
+    })
+  })
+  it('cancels other original phase effects even when one private locator is lost', async () => {
+    await setup(async ({ store, scope, context, environment, operations, driver }) => {
+      const phases = ['first', 'second'].map(
+          (name) => new RunnerEnvironmentScope(store, context.invocation, contractDigest(name)),
+        ),
+        owned = []
+      for (const [index, phase] of phases.entries()) {
+        const args = ['container', 'create', `phase-${index}`],
+          registration = operations.begin(args, 5000)
+        await phase.run(context, environment, driver, async (selected) => {
+          operations.close(registration, await selected.call(args, { registration }))
+        })
+        owned.push(registration)
+      }
+      const first = store.files.path(
+        `delivery/runner-environments/${context.invocation}/${phases[0]?.phase}.json`,
+      )
+      renameSync(first, `${first}.lost`)
+      expect(() => scope.cancelAll()).toThrow('environment-stage-cancellation-unresolved')
+      expect(existsSync(owned[0]?.cancel ?? '')).toBe(false)
+      expect(existsSync(owned[1]?.cancel ?? '')).toBe(true)
+      expect(() => phases[1]?.cancelAll()).toThrow('environment-stage-root-scope-required')
+    })
+  })
   it('holds a live inert read and cancels only its original private group from a fresh controller', async () => {
     await setup(async ({ store, scope, context, environment, driver, ready, operations }) => {
       const pending = scope.run(context, environment, driver, (selected) =>

@@ -439,7 +439,7 @@ export class RunnerVerificationStages {
             this.store.files.path(`delivery/runner-environments/${record.invocation}.json`),
           )
         )
-          new RunnerEnvironmentScope(this.store, record.invocation).cancel()
+          new RunnerEnvironmentScope(this.store, record.invocation).cancelAll()
       } finally {
         new RunnerNativeScope(this.store.files, record.invocation).requestCancellation()
       }

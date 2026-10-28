@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-original-environment-phases
+    enforcers: [src/runner/environment-scope.ts#RunnerEnvironmentScope, src/runner/environment-scope.ts#cancelAll, src/runner/suite-stages.ts#stop, src/runner/verification-stages.ts#stop, test/unit/runner/environment-scope.test.ts, test/evals/runner/environment-phases.ts]
   - id: delivery-original-review-continuation
     enforcers: [src/runner/review-stages.ts#advance, src/runner/review-stages.ts#inspect, src/runner/native-gate.ts#RunnerNativeGateHost, src/gates/workflow.ts#plan, test/unit/runner/review-stages.test.ts, test/evals/runner/review-continuation.ts]
   - id: delivery-original-correction-prefix

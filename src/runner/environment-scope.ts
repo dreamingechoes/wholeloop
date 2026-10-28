@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
 import type { DockerCallOptions, DockerTransport } from '../environment/docker-command.js'
@@ -11,7 +11,8 @@ import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerStore } from './store.js'
 
 interface EnvironmentStageBinding {
-  version: 1
+  version: 1 | 2
+  phase?: string
   request: string
   plan: string
   stage: string
@@ -29,12 +30,18 @@ export class RunnerEnvironmentScope {
   constructor(
     readonly store: RunnerStore,
     readonly invocation: string,
+    readonly phase?: string,
   ) {
-    if (!/^[a-f0-9]{64}$/.test(invocation))
+    if (
+      !/^[a-f0-9]{64}$/.test(invocation) ||
+      (phase !== undefined && !/^[a-f0-9]{64}$/.test(phase))
+    )
       throw new DeliveryRunnerError('environment-stage-invocation')
   }
   private get path() {
-    return `delivery/runner-environments/${this.invocation}.json`
+    return this.phase
+      ? `delivery/runner-environments/${this.invocation}/${this.phase}.json`
+      : `delivery/runner-environments/${this.invocation}.json`
   }
   private identity(environment: string) {
     const { record } = new EnvironmentResources(this.store.files).get(environment)
@@ -58,8 +65,11 @@ export class RunnerEnvironmentScope {
     ) as EnvironmentStageBinding
     if (
       Object.keys(binding).sort().join(',') !==
-        'deadline,environment,identity,invocation,operations,plan,provenance,reads,request,stage,version' ||
-      binding.version !== 1 ||
+        (this.phase
+          ? 'deadline,environment,identity,invocation,operations,phase,plan,provenance,reads,request,stage,version'
+          : 'deadline,environment,identity,invocation,operations,plan,provenance,reads,request,stage,version') ||
+      binding.version !== (this.phase ? 2 : 1) ||
+      binding.phase !== this.phase ||
       binding.invocation !== this.invocation ||
       !Array.isArray(binding.operations) ||
       !Array.isArray(binding.reads) ||
@@ -118,6 +128,7 @@ export class RunnerEnvironmentScope {
         contractDigest(claim) !==
         contractDigest({
           invocation: this.invocation,
+          ...(this.phase ? { phase: this.phase } : {}),
           environment: binding.environment,
           operation: original,
         })
@@ -161,7 +172,8 @@ export class RunnerEnvironmentScope {
     )
       throw new DeliveryRunnerError('environment-stage-not-current')
     const binding: EnvironmentStageBinding = {
-      version: 1,
+      version: this.phase ? 2 : 1,
+      ...(this.phase ? { phase: this.phase } : {}),
       request,
       plan: basis.digest,
       stage: context.stage.id,
@@ -239,7 +251,7 @@ export class RunnerEnvironmentScope {
               throw new DeliveryRunnerError('environment-stage-operation-already-issued')
             this.store.files.atomic(
               claim,
-              `${JSON.stringify({ invocation: this.invocation, environment, operation: original })}\n`,
+              `${JSON.stringify({ invocation: this.invocation, ...(this.phase ? { phase: this.phase } : {}), environment, operation: original })}\n`,
             )
             retained.binding.operations.push({
               id: original.id,
@@ -316,6 +328,7 @@ export class RunnerEnvironmentScope {
               throw new DeliveryRunnerError('environment-stage-read-capacity')
             const invocation = contractDigest({
               stage: this.invocation,
+              ...(this.phase ? { phase: this.phase } : {}),
               read: retained.binding.reads.length,
               args,
             })
@@ -394,6 +407,43 @@ export class RunnerEnvironmentScope {
       reads,
       provenance: retained.binding.provenance,
     }
+  }
+  /** Cancellation covers all persisted owners; it grants no aggregate QA verdict. */
+  cancelAll() {
+    if (this.phase) throw new DeliveryRunnerError('environment-stage-root-scope-required')
+    const scopes: RunnerEnvironmentScope[] = [],
+      errors: unknown[] = [],
+      directory = this.store.files.path(`delivery/runner-environments/${this.invocation}`)
+    if (
+      existsSync(this.store.files.path(this.path)) ||
+      existsSync(this.store.files.path(`${this.path}.consumed`))
+    )
+      scopes.push(this)
+    if (existsSync(directory)) {
+      const names = readdirSync(directory).sort(),
+        phases = new Set<string>()
+      if (names.length > 2000) errors.push('capacity')
+      for (const name of names.slice(0, 2000)) {
+        const match = /^([a-f0-9]{64})\.json(?:\.consumed)?$/.exec(name)
+        if (!match?.[1]) {
+          errors.push('entry')
+          continue
+        }
+        phases.add(match[1])
+      }
+      for (const phase of [...phases].sort())
+        scopes.push(new RunnerEnvironmentScope(this.store, this.invocation, phase))
+    }
+    if (!scopes.length) throw new DeliveryRunnerError('environment-stage-original-unresolved')
+    // A lost locator must not prevent cancellation of other known private owners.
+    for (const scope of scopes) {
+      try {
+        scope.cancel()
+      } catch (error) {
+        errors.push(error)
+      }
+    }
+    if (errors.length) throw new DeliveryRunnerError('environment-stage-cancellation-unresolved')
   }
   cancel() {
     const retained = this.read()
