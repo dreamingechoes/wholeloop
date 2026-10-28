@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-29 · P6-10 continuing — review of a verified corrected candidate
+
+- Separate current candidate lineage from current-stage continuation ownership. Keep the fixed earlier-stage checkpoint for exact current HEAD selection; use its correction namespace only when its workers own the current invocation. Preserve every existing producer/failure/run/round admission check, original native scopes and global budget. Add ADR-0152, enforcement, tutorial and an actual Docker/synthetic-worker review-after-verification control. P6-10 remains open; counts stay 59/88 complete. Further cross-stage repairs/reverification, feature readiness and complete-route/public execution remain technical work.
+- Prepare and typecheck the change in an isolated copy while the previous candidate's full macOS checks run against frozen files. Apply only its five-file patch after commit 1ef6b83. All 440 directed review/verification/suite/frozen regressions pass on macOS Node 24 in 120.17 seconds. All six extended actual Docker/synthetic-worker controls pass in the isolated copy with bundle bf100bdd247f92073a7e0730b39cc33f39d284b2bbcad8dd8629eafbe1a93036: preserve the two failures and original third-round verification recovery, record that exact verification stage, independently review its corrected HEAD, retain both native scopes and global deadline, recover while paused without a factory, then observe retirement of all three environments. The isolated copy selects Node 25.5.0 rather than the project's Node 24; retain that actual runtime instead of relabeling it. All 587 implementation source files match the applied implementation. Lint978/types/build/docs381/harness150/Markdown380/Mermaid36, smoke and offline packaging pass. This increment uses directed/component checks; the complete repository checks were not repeated after the immediately preceding full milestone. The previous complete 3317-test macOS/Linux evidence remains at commit 1ef6b83, not an unexecuted whole-suite claim for this increment.
+
+---
+
 ## 2026-10-28 · P6-10 continuing — repeated original QA continuations
 
 - Namespace later review/verification intents by their fixed predecessor checkpoint without changing original flat locators or intent schemas. Resolve each suite's exact predecessor from authoritative correction feedback and audit its own closed environment phase, unchanged cases/commands/timeout and original allowance/deadline. Add ADR-0151, enforcement and finite two-correction/three-round review and actual Docker verification controls. P6-10 remains open; counts stay 59/88 complete. Cross-stage readiness, behavioral verification after review-triggered repairs and public complete-route composition remain technical work.

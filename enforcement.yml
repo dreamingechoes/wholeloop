@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-stage-candidate-lineage
+    enforcers: [src/runner/review-stages.ts#context, src/runner/review-stages.ts#continuationPath, src/runner/verification-stages.ts#context, src/runner/verification-stages.ts#continuationPath, src/runner/git-stages.ts#candidate, test/unit/runner/review-stages.test.ts, test/unit/runner/verification-stages.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-original-repeated-qa
     enforcers: [src/runner/review-stages.ts#continuationPath, src/runner/verification-stages.ts#continuationPath, src/runner/suite-stages.ts#originalPhase, src/runner/native-process.ts#observeAll, src/runner/native-scope.ts#inspect, src/environment/operations.ts#operationGroups, test/unit/runner/native-process.test.ts, src/delivery/journal.ts#snapshot, src/delivery/input.ts#readSourceBytes, src/acceptance/store.ts#authority, src/acceptance/docker-effect.ts#DockerObservedHost, test/unit/delivery/source.test.ts, test/unit/delivery/journal.test.ts, test/unit/runner/store.test.ts, test/evals/runner/repeated-review.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-owned-correction-successors

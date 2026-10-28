@@ -381,7 +381,8 @@ export class RunnerVerificationStages {
   }
   private continuationPath(invocation: string) {
     this.path(invocation)
-    const scope = this.options.correction?.workers.checkpointScope(invocation)
+    const workers = this.options.correction?.workers,
+      scope = workers?.owns(invocation) ? workers.checkpointScope(invocation) : undefined
     return scope
       ? `delivery/runner-verification-continuations/${invocation}/after/${scope}.json`
       : `delivery/runner-verification-continuations/${invocation}.json`

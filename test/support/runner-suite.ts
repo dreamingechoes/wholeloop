@@ -18,6 +18,8 @@ import { runnerWorkerComponents } from './runner-worker.js'
 export async function runnerSuiteFixture(
   run: (input: {
     store: Parameters<Parameters<typeof runnerGitFixture>[0]>[0]['store']
+    dispatch: Parameters<Parameters<typeof runnerGitFixture>[0]>[0]['dispatch']
+    observe: Parameters<Parameters<typeof runnerGitFixture>[0]>[0]['observe']
     context: Parameters<RunnerSuiteStages['execute']>[0]
     suite: RunnerSuiteStages
     engine: FlowEngine
@@ -262,6 +264,8 @@ export async function runnerSuiteFixture(
         suite = new RunnerSuiteStages(store, { identity: request.host, engine: () => engine })
       await run({
         store,
+        dispatch,
+        observe,
         context,
         suite,
         engine,

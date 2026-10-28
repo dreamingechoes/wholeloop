@@ -300,5 +300,13 @@ Run npm run eval:runner-verification-continuation -- --repeat-verification --ret
 
 These internal controls do not certify authenticated models, independent Linux application hosts or the public complete implementation route. Review-triggered repair still needs fresh behavioral verification before cross-stage delivery readiness can pass.
 
+## Review a verified corrected candidate
+
+A following review can inspect the exact corrected candidate that passed verification, including later correction generations. Keep its fixed checkpoint for current commit lineage, but derive any correction continuation only when that checkpoint owns the current invocation. A verification checkpoint cannot supply a review continuation, verdict or native scope. The same distinction applies to verification readers; existing current-candidate and original-failure checks remain required.
+
+Run npm run eval:runner-verification-continuation -- --review-after-verification --retire-success for the finite actual Docker/synthetic-worker composition. It runs the original failed suite, two corrections and the passing third verification, records that exact verification stage and independently reviews the same committed head in the following stage. The new review declares its own original finite window before execution while preserving the global delivery deadline. Paused recovery launches neither reviewers nor old verification work; all three exact environments retire through their original ownership.
+
+This connects candidate consumption across stages. Further review-triggered repairs, fresh behavioral verification after those repairs, feature readiness and public complete-route execution remain technical work. The fixture control supplies no authenticated model, independent Linux application-host, human approval or feature endpoint acceptance. See [ADR-0152](../decisions/0152-candidate-lineage-and-stage-continuations.md).
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)

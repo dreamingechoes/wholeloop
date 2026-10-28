@@ -16,6 +16,7 @@ import { RunnerRepairCommits } from '../../../src/runner/repair-commits.js'
 import { runnerRepairFeedback } from '../../../src/runner/repair-feedback.js'
 import { runnerRepairStreak } from '../../../src/runner/repair-progress.js'
 import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
+import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
 import { gateWorkerFixture } from '../../support/gate-worker.js'
 import { runnerSuiteFixture } from '../../support/runner-suite.js'
@@ -25,11 +26,22 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = [],
   extraEnvironments: string[] = [],
   retiredEnvironments = new Set<string>(),
-  repeatVerification = process.argv.includes('--repeat-verification'),
+  reviewAfterVerification = process.argv.includes('--review-after-verification'),
+  repeatVerification = process.argv.includes('--repeat-verification') || reviewAfterVerification,
   secondCorrection = process.argv.includes('--second-correction') || repeatVerification,
   repeated = process.argv.includes('--repeated-failure') || secondCorrection
 await runnerSuiteFixture(
-  async ({ store, context, engine, selection, driver, production, gate: initial }) => {
+  async ({
+    store,
+    context,
+    engine,
+    selection,
+    driver,
+    production,
+    dispatch,
+    observe,
+    gate: initial,
+  }) => {
     assert.ok(production)
     console.log(`Retained original store: ${store.files.root}`)
     // The deeper three-round composition declares its finite window before any QA.
@@ -360,6 +372,71 @@ await runnerSuiteFixture(
               store.stage(contractDigest(context.request), context.stage.id)?.status,
               'running',
             )
+            if (reviewAfterVerification) {
+              store.lifecycle.transition(context.request.run, {
+                to: 'queued',
+                reason: 'Continue the next original stage after exact verification recovery.',
+              })
+              observe(observedThird)
+              const reviewContext = dispatch('review:search'),
+                reviewAbort = new AbortController(),
+                reviewTimer = setTimeout(() => reviewAbort.abort(), 240000)
+              reviewContext.signal = reviewAbort.signal
+              reviewContext.deadline = new Date(
+                Math.min(Date.parse(reviewContext.deadline), Date.now() + 240000),
+              ).toISOString()
+              try {
+                const reader = new RunnerReviewStages(store, {
+                    identity: context.request.host,
+                    engine: original.options.engine,
+                    gate: gateWorkerFixture(store, initial.repository, 'valid', 'host-observed'),
+                    correction: nextCommits,
+                  }),
+                  reviewed = await reader.execute(reviewContext)
+                assert.equal(reviewed.status, 'passed', JSON.stringify(reviewed))
+                assert.equal(reviewed.provenance, 'host-observed')
+                const reviewScope = new RunnerNativeScope(store.files, reviewContext.invocation),
+                  reviewCalls = reviewScope.calls().length
+                assert.ok(reviewCalls > 0)
+                assert.equal(scope.calls().length, nativeCalls)
+                assert.equal(
+                  store.stage(contractDigest(context.request), context.stage.id)?.status,
+                  'passed',
+                )
+                assert.equal(
+                  new RunnerGitStages(store).candidate(context.request, 'search', nextCommits)
+                    .receipt.digest,
+                  pinned.receipt.digest,
+                )
+                store.lifecycle.transition(context.request.run, {
+                  to: 'paused',
+                  reason: 'Recover the original review of the verified corrected candidate.',
+                })
+                reader.options.gate = () => {
+                  throw new Error('Recovery cannot launch a reviewer')
+                }
+                const reviewRecord = store.stage(
+                  contractDigest(context.request),
+                  reviewContext.stage.id,
+                )
+                assert.ok(reviewRecord)
+                assert.deepEqual(
+                  await new RunnerReviewStages(store, reader.options).inspect(
+                    context.request,
+                    reviewRecord,
+                  ),
+                  reviewed,
+                )
+                assert.equal(reviewScope.calls().length, reviewCalls)
+                assert.equal(scope.calls().length, nativeCalls)
+                assert.equal(store.budgets.inspect(context.request.run).deadline, before?.deadline)
+                checks.push(
+                  'the next independent review consumes the exact verified correction through its original checkpoint without borrowing another stage continuation or replaying either scope',
+                )
+              } finally {
+                clearTimeout(reviewTimer)
+              }
+            }
             checks.push(
               'two corrections reach a third original verification round with an actual passing unchanged suite and independent synthetic judgments',
             )
