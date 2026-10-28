@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-28 · P6-10 continuing — actual suite on the first correction
+
+- Execute a separate suite phase only for the exact next original verify plan and fixed direct correction. Reopen original scope closure and producer failure/run/round; retain the narrower suite/producer deadline, unchanged gate allowance, pinned cases and command mapping, and require a distinct environment captured from the corrected HEAD. Preserve version-one metadata, recover exact phase facts while paused and never promote a repeated failure into passing QA. Add ADR-0146, enforcement and finite actual Docker evaluation. P6-10 remains open; counts stay 59/88 complete. Full independent verification continuation and public route composition remain technical work.
+- Initial three-file regressions pass 442 cases in 69.03 seconds; final fixed-producer/window regressions pass the same 442 in 69.80 seconds. The initial actual Docker composition passes; the second adds three pre-dispatch refusals. The final composition additionally narrows correction by one second and refuses regaining that broader original controller window. All four final checks pass on macOS Node 24 with bundle 00556afe1d74ff745c81a201f0fde43a2d211a79d5bfed6d260d980ceebdd111: two actual candidate-bound environments, unchanged original round allowance/metadata/global deadline, repeated observed exit seven, paused recovery without command/model replay and exact observed retirement of both environments. Lint971/types/build/docs375/harness150/Markdown374/Mermaid36, smoke and offline package checks pass. Actual Docker evidence is macOS only; no independent Linux application host, authenticated model, complete-route or current full-suite acceptance is inferred. Existing test deadlines remain unchanged.
+
+---
+
 ## 2026-10-28 · P6-10 continuing — distinct original environment phases
 
 - Keep original version-one environment ownership intact; add exact version-two digest-namespaced phases with separate inert-read identities and operation claims. Preserve consumption markers, root authority/deadline checks and scope-specific observations. Root suite/verification stop cancels known original phases through private channels after revocation, and attempts other cancellations before reporting partial locator loss. No aggregate positive QA verdict or fresh suite is inferred. Add ADR-0145, enforcement and finite process control. P6-10 remains open and counts stay 59/88 complete; fresh suite/verification and complete-route composition remain technical work.

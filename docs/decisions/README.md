@@ -156,6 +156,7 @@
 | [0143](./0143-original-correction-calls-across-later-qa.md) | Original correction calls across later QA | Accepted | 2026-10-27 |
 | [0144](./0144-original-review-continuation-after-correction.md) | Original review continuation after correction | Accepted | 2026-10-28 |
 | [0145](./0145-distinct-owned-environment-phases.md) | Distinct owned environment phases | Accepted | 2026-10-28 |
+| [0146](./0146-original-correction-suite-phases.md) | Original correction suite phases | Accepted | 2026-10-28 |
 
 ## Lifecycle
 

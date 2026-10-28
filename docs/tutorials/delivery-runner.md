@@ -260,5 +260,11 @@ The internal environment scope accepts an explicit digest namespace for later ph
 
 Inspection remains specific to one original scope. Root suite/verification cancellation addresses all known original phases through private channels, including after revocation. A missing or malformed locator reports unresolved cancellation after attempting other known scopes; it cannot authorize replay or imply that application work stopped. This ownership layer does not select another environment or run fresh behavioral QA. Run npm run eval:runner-environment-phases for the synthetic process control. See [ADR-0145](../decisions/0145-distinct-owned-environment-phases.md).
 
+## Execute a suite on the first correction
+
+The internal suite executor can bind a separate phase to the exact digest of the next already planned verify round. It reopens the original nonpassing round and suite ownership, selects the fixed direct correction and requires a distinct environment captured from that HEAD. Acceptance cases, command references, timeout, mapping and allowance remain pinned. Retain the narrower original suite/correction deadline; a later phase cannot regain the broader controller window. The executor does not plan a gate or approve the correction.
+
+Earlier suite and environment locators remain intact. Paused inspection recovers only this phase's actual Docker observations without another command. A repeated nonzero exit remains a known failure; independent requirement judgments, full verification continuation and whole-route execution remain technical work. Run npm run eval:runner-suite-continuation -- --retire-success for the actual Docker control and explicit retirement of its exact environments. This control requires the cached reference helper and is distinct from authenticated native or independent Linux application-host acceptance. See [ADR-0146](../decisions/0146-original-correction-suite-phases.md).
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)

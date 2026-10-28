@@ -36,6 +36,26 @@ describe('owned suite admission never promotes declarations into observed QA', (
       ).rejects.toThrow()
     })
   })
+  it.each(['wrong-digest', 'first-round'] as const)(
+    'refuses %s as a new suite phase before a backend call',
+    async (mode) => {
+      await setup(async ({ store, context, suite, gate, selection }) => {
+        const phase = mode === 'wrong-digest' ? 'f'.repeat(64) : contractDigest(gate),
+          next = new RunnerSuiteStages(store, { ...suite.options, phase })
+        await expect(
+          next.execute(context, gate, selection, {
+            provenance: 'fixture',
+            call: async () => {
+              throw new Error('No backend dispatch')
+            },
+          }),
+        ).rejects.toThrow('suite-stage-phase-binding')
+        expect(
+          store.files.read(`delivery/runner-suites/${context.invocation}/${phase}.json`),
+        ).toBeUndefined()
+      })
+    },
+  )
   it('leaves a lost consumed suite binding unknown without invoking a backend', async () => {
     await setup(async ({ store, context, suite, gate, selection }) => {
       store.files.atomic(

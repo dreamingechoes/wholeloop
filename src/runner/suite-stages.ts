@@ -18,6 +18,7 @@ import type { RunnerStageContext } from './engine.js'
 import { RunnerEnvironmentScope } from './environment-scope.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerGitStages } from './git-stages.js'
+import { RunnerRepairCommits } from './repair-commits.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 
@@ -29,7 +30,8 @@ export interface RunnerSuiteSelection {
   mapping: Record<string, string>
 }
 interface SuiteStageBinding {
-  version: 1
+  version: 1 | 2
+  phase?: string
   request: string
   plan: string
   stage: string
@@ -49,6 +51,8 @@ export interface RunnerSuiteResult {
   problem?: string
 }
 export interface RunnerSuiteOptions {
+  phase?: string
+  correction?: RunnerRepairCommits
   identity: RunnerRequest['host']
   engine(request: Readonly<RunnerRequest>, workspace: string): FlowEngine
 }
@@ -58,10 +62,15 @@ export class RunnerSuiteStages {
   constructor(
     readonly store: RunnerStore,
     readonly options: RunnerSuiteOptions,
-  ) {}
+  ) {
+    if (options.phase !== undefined && !/^[a-f0-9]{64}$/.test(options.phase))
+      throw new DeliveryRunnerError('suite-stage-phase')
+  }
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation)) throw new DeliveryRunnerError('suite-stage-invocation')
-    return `delivery/runner-suites/${invocation}.json`
+    return this.options.phase
+      ? `delivery/runner-suites/${invocation}/${this.options.phase}.json`
+      : `delivery/runner-suites/${invocation}.json`
   }
   private context(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
     const digest = contractDigest(request),
@@ -83,7 +92,11 @@ export class RunnerSuiteStages {
       !stage.unit
     )
       throw new DeliveryRunnerError('suite-stage-binding')
-    const candidate = new RunnerGitStages(this.store).candidate(request, stage.unit),
+    const candidate = new RunnerGitStages(this.store).candidate(
+        request,
+        stage.unit,
+        this.options.correction,
+      ),
       engine = this.options.engine(request, candidate.allocation.repository.path)
     if (engine.store.files.root !== this.store.files.root)
       throw new DeliveryRunnerError('suite-stage-store')
@@ -97,8 +110,11 @@ export class RunnerSuiteStages {
     const context = this.context(request, record)
     if (
       Object.keys(binding).sort().join(',') !==
-        'deadline,gate,invocation,plan,request,selection,stage,suite,version' ||
-      binding.version !== 1 ||
+        (this.options.phase
+          ? 'deadline,gate,invocation,phase,plan,request,selection,stage,suite,version'
+          : 'deadline,gate,invocation,plan,request,selection,stage,suite,version') ||
+      binding.version !== (this.options.phase ? 2 : 1) ||
+      binding.phase !== this.options.phase ||
       binding.request !== contractDigest(request) ||
       binding.plan !== record.basis ||
       binding.stage !== record.id ||
@@ -108,6 +124,7 @@ export class RunnerSuiteStages {
     )
       throw new DeliveryRunnerError('suite-stage-resource-binding')
     validateGatePlan(binding.gate)
+    if (this.options.phase) this.originalPhase(binding, request, record, context)
     const round = gateRuns(context.engine.store.events())
       .find((r) => r.run === binding.gate.run)
       ?.rounds.at(-1)
@@ -152,6 +169,67 @@ export class RunnerSuiteStages {
       throw new DeliveryRunnerError('suite-stage-input-binding')
     return { ...context, round, acceptance, pinned, environment }
   }
+  private originalPhase(
+    binding: SuiteStageBinding,
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    context: ReturnType<RunnerSuiteStages['context']>,
+  ) {
+    if (binding.phase !== contractDigest(binding.gate) || binding.gate.round < 2)
+      throw new DeliveryRunnerError('suite-stage-phase-binding')
+    if (!(this.options.correction instanceof RunnerRepairCommits))
+      throw new DeliveryRunnerError('suite-stage-fixed-correction-required')
+    const producer = this.options.correction.workers.production(request, record.invocation),
+      original = JSON.parse(
+        readSourceFile(
+          this.store.files.root,
+          `delivery/runner-suites/${record.invocation}.json`,
+          512 * 1024,
+        ),
+      ) as SuiteStageBinding,
+      run = gateRuns(context.engine.store.events()).find((run) => run.run === binding.gate.run),
+      previous = run?.rounds.find((round) => round.plan.round === original.gate.round),
+      scope = new RunnerEnvironmentScope(this.store, record.invocation).inspect(),
+      selection = (value: RunnerSuiteSelection) => ({
+        acceptance: value.acceptance,
+        refs: value.refs,
+        timeoutMs: value.timeoutMs,
+        mapping: value.mapping,
+      })
+    validateGatePlan(original.gate)
+    if (
+      Object.keys(original).sort().join(',') !==
+        'deadline,gate,invocation,plan,request,selection,stage,suite,version' ||
+      original.version !== 1 ||
+      original.request !== contractDigest(request) ||
+      original.plan !== record.basis ||
+      original.stage !== record.id ||
+      original.invocation !== record.invocation ||
+      !Number.isFinite(Date.parse(original.deadline)) ||
+      new Date(original.deadline).toISOString() !== original.deadline ||
+      Date.parse(binding.deadline) > Date.parse(original.deadline) ||
+      Date.parse(binding.deadline) > Date.parse(producer.binding.deadline) ||
+      producer.binding.admission.feedback.origin.gate !== contractDigest(original.gate) ||
+      producer.binding.admission.feedback.origin.run !== original.gate.run ||
+      producer.binding.admission.feedback.origin.round !== original.gate.round ||
+      original.gate.run !== binding.gate.run ||
+      original.gate.subject !== binding.gate.subject ||
+      original.gate.round + 1 !== binding.gate.round ||
+      original.gate.repository !== binding.gate.repository ||
+      !previous?.decision ||
+      ['PASS', 'EXHAUSTED'].includes(previous.decision.report.verdict) ||
+      contractDigest(previous.plan) !== contractDigest(original.gate) ||
+      run?.budget !== original.gate.budget ||
+      binding.gate.budget !== original.gate.budget ||
+      context.candidate.receipt.parent !== original.gate.snapshot.head ||
+      original.selection.environment === binding.selection.environment ||
+      contractDigest(selection(original.selection)) !==
+        contractDigest(selection(binding.selection)) ||
+      scope.invocationState !== 'stopped' ||
+      scope.provenance !== 'host-observed'
+    )
+      throw new DeliveryRunnerError('suite-stage-original-phase-binding')
+  }
   private read(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
     const path = this.path(record.invocation)
     if (!existsSync(this.store.files.path(path))) return undefined
@@ -184,7 +262,8 @@ export class RunnerSuiteStages {
     if (gate.gate !== 'verify' || gate.repository !== pinned.candidate.allocation.repository.path)
       throw new DeliveryRunnerError('suite-stage-gate-binding')
     const binding: SuiteStageBinding = {
-      version: 1,
+      version: this.options.phase ? 2 : 1,
+      ...(this.options.phase ? { phase: this.options.phase } : {}),
       request,
       plan: record.basis,
       stage: record.id,
@@ -219,7 +298,7 @@ export class RunnerSuiteStages {
       this.store.files.atomic(`${this.path(record.invocation)}.consumed`, `${record.invocation}\n`)
       this.store.files.atomic(this.path(record.invocation), `${JSON.stringify(binding)}\n`)
     })
-    const scope = new RunnerEnvironmentScope(this.store, record.invocation),
+    const scope = new RunnerEnvironmentScope(this.store, record.invocation, this.options.phase),
       acceptance = new DeliveryAcceptance(this.store.files.root)
     let problem: string | undefined
     try {
@@ -273,7 +352,11 @@ export class RunnerSuiteStages {
     expected?: { gate: GatePlan; selection: RunnerSuiteSelection },
   ): Promise<RunnerSuiteResult> {
     const state = this.read(request, record),
-      scope = new RunnerEnvironmentScope(this.store, record.invocation).inspect()
+      scope = new RunnerEnvironmentScope(
+        this.store,
+        record.invocation,
+        this.options.phase,
+      ).inspect()
     if (
       state &&
       expected &&
