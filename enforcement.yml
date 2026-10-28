@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-current-unit-qa-readiness
+    enforcers: [src/runner/unit-readiness.ts#RunnerUnitReadiness, src/runner/unit-readiness.ts#inspect, src/runner/review-stages.ts#inspect, src/runner/verification-stages.ts#inspect, test/unit/runner/unit-readiness.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-stage-candidate-lineage
     enforcers: [src/runner/review-stages.ts#context, src/runner/review-stages.ts#continuationPath, src/runner/verification-stages.ts#context, src/runner/verification-stages.ts#continuationPath, src/runner/git-stages.ts#candidate, test/unit/runner/review-stages.test.ts, test/unit/runner/verification-stages.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-original-repeated-qa

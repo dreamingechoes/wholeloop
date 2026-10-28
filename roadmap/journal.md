@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-29 · P6-10 continuing — current joint unit QA readiness
+
+- Join fixed verification/review readers from the same store/identity. Require original completed unit stages, actual passing closed host observations and the same current owned head; recheck bytes, root records and basis after inspection. Refuse unsupported passing flags and changed candidates without a suite/model selector, progress or feature acceptance. Add ADR-0153, enforcement and the unit-readiness control over actual corrected QA/review. P6-10 remains open and counts stay 59/88 complete. Readiness consumption by remaining stages, review-triggered repairs/reverification and public whole-route composition remain technical work.
+- The initial four-file regression passes 434 cases and rejects the new unsupported-flags fixture before readiness: the existing root reducer requires an original runtime. Preserve that failure; execute an actual owned synthetic version control for each stage, then retain the unsupported passing flag without any QA report. Keep the original reducer and all assertions, and require those exact non-QA clients closed. The corrected three-case fixture passes in 10.78 seconds; the complete four-file readiness/review/verification/frozen regression then passes all 435 cases in 84.66 seconds. All eight actual Docker/synthetic-worker controls pass on macOS Node 24.22.0 with bundle a1db369da36468fa42a38819e6663d87c4ca6d2852c1c98855128f77cb07de30: exact current readiness, changed-byte refusal despite both flags remaining passed, identical restoration and paused proof, two retained failures/global deadline and unchanged native call counts. All three exact environments are observed retired. Lint980/types/build/docs382/harness150/Markdown381/Mermaid36, smoke and offline package checks pass. No assertion, original case or deadline is relaxed; this increment uses the named component checks. The preceding complete macOS/Linux milestone remains at 1ef6b83; do not infer a later complete check from component evidence.
+
+---
+
 ## 2026-10-29 · P6-10 continuing — review of a verified corrected candidate
 
 - Separate current candidate lineage from current-stage continuation ownership. Keep the fixed earlier-stage checkpoint for exact current HEAD selection; use its correction namespace only when its workers own the current invocation. Preserve every existing producer/failure/run/round admission check, original native scopes and global budget. Add ADR-0152, enforcement, tutorial and an actual Docker/synthetic-worker review-after-verification control. P6-10 remains open; counts stay 59/88 complete. Further cross-stage repairs/reverification, feature readiness and complete-route/public execution remain technical work.

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, renameSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { findBudget } from '../../../src/delivery/budget-events.js'
@@ -17,6 +17,10 @@ import { runnerRepairFeedback } from '../../../src/runner/repair-feedback.js'
 import { runnerRepairStreak } from '../../../src/runner/repair-progress.js'
 import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
+import {
+  RunnerUnitReadiness,
+  type RunnerUnitReadinessResult,
+} from '../../../src/runner/unit-readiness.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
 import { gateWorkerFixture } from '../../support/gate-worker.js'
 import { runnerSuiteFixture } from '../../support/runner-suite.js'
@@ -26,7 +30,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = [],
   extraEnvironments: string[] = [],
   retiredEnvironments = new Set<string>(),
-  reviewAfterVerification = process.argv.includes('--review-after-verification'),
+  unitReadiness = process.argv.includes('--unit-readiness'),
+  reviewAfterVerification = process.argv.includes('--review-after-verification') || unitReadiness,
   repeatVerification = process.argv.includes('--repeat-verification') || reviewAfterVerification,
   secondCorrection = process.argv.includes('--second-correction') || repeatVerification,
   repeated = process.argv.includes('--repeated-failure') || secondCorrection
@@ -398,6 +403,39 @@ await runnerSuiteFixture(
                 const reviewScope = new RunnerNativeScope(store.files, reviewContext.invocation),
                   reviewCalls = reviewScope.calls().length
                 assert.ok(reviewCalls > 0)
+                const readiness = unitReadiness ? new RunnerUnitReadiness(third, reader) : undefined
+                let ready: RunnerUnitReadinessResult | undefined
+                if (readiness) {
+                  observe(reviewed)
+                  ready = await readiness.inspect(context.request, 'search')
+                  assert.equal(ready.status, 'ready', JSON.stringify(ready))
+                  assert.equal(ready.provenance, 'host-observed')
+                  assert.equal(ready.candidate?.commit, pinned.receipt.digest)
+                  assert.equal(ready.candidate?.head, pinned.receipt.head)
+                  const file = join(initial.repository, 'app.txt'),
+                    bytes = readFileSync(file)
+                  try {
+                    writeFileSync(file, 'Changed after both stages passed.\n')
+                    assert.equal(
+                      (await readiness.inspect(context.request, 'search')).status,
+                      'unknown',
+                    )
+                    assert.equal(
+                      store.stage(contractDigest(context.request), context.stage.id)?.status,
+                      'passed',
+                    )
+                    assert.equal(
+                      store.stage(contractDigest(context.request), reviewContext.stage.id)?.status,
+                      'passed',
+                    )
+                  } finally {
+                    writeFileSync(file, bytes)
+                  }
+                  assert.deepEqual(await readiness.inspect(context.request, 'search'), ready)
+                  checks.push(
+                    'joint unit readiness reopens both observed gates at the same current corrected head and refuses changed bytes despite passing root-stage flags',
+                  )
+                }
                 assert.equal(scope.calls().length, nativeCalls)
                 assert.equal(
                   store.stage(contractDigest(context.request), context.stage.id)?.status,
@@ -427,6 +465,16 @@ await runnerSuiteFixture(
                   ),
                   reviewed,
                 )
+                if (readiness) {
+                  assert.deepEqual(await readiness.inspect(context.request, 'search'), ready)
+                  assert.equal(
+                    findBudget(store.lifecycle.journal.get(context.request.run))?.failures.length,
+                    2,
+                  )
+                  checks.push(
+                    'paused joint readiness preserves exact original evidence and failure/deadline history without a selector, command, native call or feature acceptance',
+                  )
+                }
                 assert.equal(reviewScope.calls().length, reviewCalls)
                 assert.equal(scope.calls().length, nativeCalls)
                 assert.equal(store.budgets.inspect(context.request.run).deadline, before?.deadline)

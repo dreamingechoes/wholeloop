@@ -17,11 +17,12 @@ if (
         '--second-correction',
         '--repeat-verification',
         '--review-after-verification',
+        '--unit-readiness',
       ].includes(arg),
   )
 )
   throw new Error(
-    'Supported options: --retire-success, --repeated-failure, --second-correction, --repeat-verification, --review-after-verification',
+    'Supported options: --retire-success, --repeated-failure, --second-correction, --repeat-verification, --review-after-verification, --unit-readiness',
   )
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-verification-continuation-')),

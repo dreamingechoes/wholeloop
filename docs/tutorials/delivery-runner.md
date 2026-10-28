@@ -308,5 +308,13 @@ Run npm run eval:runner-verification-continuation -- --review-after-verification
 
 This connects candidate consumption across stages. Further review-triggered repairs, fresh behavioral verification after those repairs, feature readiness and public complete-route execution remain technical work. The fixture control supplies no authenticated model, independent Linux application-host, human approval or feature endpoint acceptance. See [ADR-0152](../decisions/0152-candidate-lineage-and-stage-continuations.md).
 
+## Inspect joint unit QA readiness
+
+The internal RunnerUnitReadiness reader joins fixed verification and review readers in the same store and host identity. It requires their original stages to be completed, reopens actual captured QA at the current owned candidate and rechecks the commit, bytes, root records and plan after inspection. Passing root flags without captured reports cannot qualify. A changed workspace remains unavailable even if both stage flags still say passed.
+
+Run npm run eval:runner-verification-continuation -- --unit-readiness --retire-success for the actual Docker/synthetic-worker control. It extends the three-round verification and following review with current readiness, a changed-byte refusal, exact restoration and paused observation without another execution factory. The original failure/global-deadline history and both native scopes remain unchanged; all three exact environments retire.
+
+A ready result names the exact unit commit and original QA evidence. It neither completes the delivery nor supplies feature acceptance. Readiness integration with remaining domain stages, fresh behavioral verification after review repairs and public complete-route execution remain technical work. See [ADR-0153](../decisions/0153-current-joint-unit-qa-readiness.md).
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)
