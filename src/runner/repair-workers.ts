@@ -11,6 +11,7 @@ import { RunnerGitStages } from './git-stages.js'
 import { RunnerNativeScope } from './native-scope.js'
 import { RunnerNativeStage } from './native-stage.js'
 import { admitRunnerRepair } from './repair-admission.js'
+import { RunnerRepairCommits } from './repair-commits.js'
 import { repairFailureFingerprint } from './repair-feedback.js'
 import type { RunnerReviewStages } from './review-stages.js'
 import { DeliveryRunnerError } from './route.js'
@@ -18,9 +19,16 @@ import type { RunnerRequest, RunnerStore } from './store.js'
 import type { RunnerVerificationStages } from './verification-stages.js'
 import { type RunnerWorkerOptions, RunnerWorkerStages } from './worker-stages.js'
 
+interface RepairPredecessor {
+  checkpoint: RunnerRepairCommits
+  request: string
+  invocation: string
+  receipt: string
+}
 type Admission = Extract<Awaited<ReturnType<typeof admitRunnerRepair>>, { status: 'admitted' }>
 interface RepairBinding {
-  version: 1
+  version: 1 | 2
+  after?: string
   request: string
   plan: string
   stage: string
@@ -56,13 +64,56 @@ export class RunnerRepairWorkers {
     readonly store: RunnerStore,
     readonly queue: DeliveryQueue,
     readonly options: RunnerWorkerOptions,
+    private readonly predecessorScope?: RepairPredecessor,
   ) {
+    if (
+      predecessorScope &&
+      (!(predecessorScope.checkpoint instanceof RunnerRepairCommits) ||
+        predecessorScope.checkpoint.store.files.root !== store.files.root ||
+        ![predecessorScope.request, predecessorScope.invocation, predecessorScope.receipt].every(
+          (value) => /^[a-f0-9]{64}$/.test(value),
+        ))
+    )
+      throw new DeliveryRunnerError('repair-predecessor-scope')
     this.workers = new RunnerWorkerStages(store, queue, options)
     this.native = this.workers.native
   }
+  /** Bind a recorded predecessor; actual history is audited on read/dispatch, not cancellation. */
+  static after(
+    checkpoint: RunnerRepairCommits,
+    request: Readonly<RunnerRequest>,
+    invocation: string,
+    receipt: string,
+  ) {
+    if (!(checkpoint instanceof RunnerRepairCommits))
+      throw new DeliveryRunnerError('fixed-repair-checkpoint-required')
+    return new RunnerRepairWorkers(
+      checkpoint.store,
+      checkpoint.workers.queue,
+      checkpoint.workers.options,
+      { checkpoint, request: contractDigest(request), invocation, receipt },
+    )
+  }
+  owns(invocation: string) {
+    return !this.predecessorScope || this.predecessorScope.invocation === invocation
+  }
+  checkpointScope(invocation: string) {
+    if (!this.owns(invocation)) throw new DeliveryRunnerError('repair-predecessor-invocation')
+    return this.predecessorScope?.receipt
+  }
+  predecessor(request: Readonly<RunnerRequest>, invocation: string) {
+    const scope = this.predecessorScope
+    if (!scope) return undefined
+    if (scope.request !== contractDigest(request) || scope.invocation !== invocation)
+      throw new DeliveryRunnerError('repair-predecessor-binding')
+    return { ...scope, observed: scope.checkpoint.historical(request, invocation, scope.receipt) }
+  }
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation)) throw new DeliveryRunnerError('repair-invocation')
-    return `delivery/runner-repairs/${invocation}`
+    const scope = this.checkpointScope(invocation)
+    return scope
+      ? `delivery/runner-repairs/${invocation}/after/${scope}`
+      : `delivery/runner-repairs/${invocation}`
   }
   private read(request: Readonly<RunnerRequest>, invocation: string) {
     const path = `${this.path(invocation)}/binding.json`
@@ -77,8 +128,11 @@ export class RunnerRepairWorkers {
       )
     if (
       Object.keys(binding).sort().join(',') !==
-        'admission,controller,deadline,invocation,plan,prefix,prior,request,stage,version,workspace' ||
-      binding.version !== 1 ||
+        (this.predecessorScope
+          ? 'admission,after,controller,deadline,invocation,plan,prefix,prior,request,stage,version,workspace'
+          : 'admission,controller,deadline,invocation,plan,prefix,prior,request,stage,version,workspace') ||
+      binding.version !== (this.predecessorScope ? 2 : 1) ||
+      binding.after !== this.predecessorScope?.receipt ||
       binding.request !== contractDigest(request) ||
       binding.invocation !== invocation ||
       record?.invocation !== invocation ||
@@ -119,6 +173,16 @@ export class RunnerRepairWorkers {
       binding.prefix.some((id) => !/^[a-f0-9]{64}$/.test(id))
     )
       throw new DeliveryRunnerError('repair-binding')
+    const parent = this.predecessor(request, invocation)
+    if (
+      parent &&
+      (contractDigest(parent.observed.production.lease) !== contractDigest(binding.prior) ||
+        parent.observed.receipt.digest !== binding.after ||
+        parent.observed.receipt.head !== feedback.origin.candidate ||
+        parent.observed.receipt.digest !== feedback.origin.commit ||
+        Date.parse(binding.deadline) > Date.parse(parent.observed.production.binding.deadline))
+    )
+      throw new DeliveryRunnerError('repair-predecessor-production-binding')
     return binding
   }
   private lease(binding: RepairBinding, historical = false): QueueAssignment | undefined {
@@ -153,14 +217,30 @@ export class RunnerRepairWorkers {
         return this.inspect(context.request, context.invocation)
       const admission = await admitRunnerRepair(reader, context)
       if (admission.status !== 'admitted') return result('blocked', admission.reason)
-      const prior = this.workers.productionLease(context.request, admission.feedback.origin.unit),
-        workspace = new RunnerGitStages(this.store).candidate(context.request, prior.unit)
-          .allocation.repository.path,
+      const parent = this.predecessor(context.request, context.invocation)
+      if (
+        parent &&
+        (!(reader.options.correction instanceof RunnerRepairCommits) ||
+          reader.options.correction.store.files.root !== this.store.files.root ||
+          parent.observed.receipt.digest !== admission.feedback.origin.commit ||
+          Date.parse(context.deadline) > Date.parse(parent.observed.production.binding.deadline) ||
+          !this.native.completed(parent.observed.production.lease))
+      )
+        return result('blocked', 'current-original-repair-predecessor-required')
+      const prior =
+          parent?.observed.production.lease ??
+          this.workers.productionLease(context.request, admission.feedback.origin.unit),
+        workspace = new RunnerGitStages(this.store).candidate(
+          context.request,
+          prior.unit,
+          parent?.checkpoint,
+        ).allocation.repository.path,
         selected = this.options.context(context, workspace),
         scope = new RunnerNativeScope(this.store.files, context.invocation),
         prefix = scope.calls().map((call) => call.invocation),
         binding: RepairBinding = {
-          version: 1,
+          version: parent ? 2 : 1,
+          ...(parent ? { after: parent.receipt } : {}),
           request: contractDigest(context.request),
           plan: contractDigest(context.plan),
           stage: context.stage.id,

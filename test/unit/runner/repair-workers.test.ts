@@ -18,6 +18,18 @@ describe('original correction workers', () => {
           },
         }),
         repair = new RunnerRepairWorkers(store, queue, options)
+      const checkpoint = new RunnerRepairCommits(repair),
+        later = RunnerRepairWorkers.after(checkpoint, request, context.invocation, 'f'.repeat(64))
+      expect(later.checkpointScope(context.invocation)).toBe('f'.repeat(64))
+      expect(later.owns('e'.repeat(64))).toBe(false)
+      expect(() => later.checkpointScope('e'.repeat(64))).toThrow('repair-predecessor-invocation')
+      expect(() =>
+        RunnerRepairWorkers.after(checkpoint, request, context.invocation, '../other'),
+      ).toThrow('repair-predecessor-scope')
+      expect(await later.execute(reader, context)).toMatchObject({
+        status: 'blocked',
+        reason: 'explicit-unattended-repair-authority-required',
+      })
       options.context = () => {
         throw new Error('Cannot select correction inputs')
       }

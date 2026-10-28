@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-28 · P6-10 continuing — later correction production and lineage
+
+- Bind later workers to fixed recorded predecessors and separate version-two namespaces, preserving version-one paths/proofs. Require exact current feedback, predecessor production/lease and the narrower original window; fence/requeue the same slot under existing restart/no-progress limits. Namespace later commits and audit explicit historical parent checkpoints back to the initial root before selecting the current head. Equivalent fixed checkpoint instances can recover the same parent; object identity grants no durable authority. Preserve paused/cancellation paths without selectors or replay. Add ADR-0150, enforcement and a second-correction evaluation mode. P6-10 remains open; counts stay 59/88 complete. The later commit still needs fresh independent QA; repeated gate and complete-route composition remain technical work.
+- Repair/root-Git/commit/frozen regressions pass 441 cases in 88.97 seconds. The updated factory-refusal case separately passes in 3.43 seconds; its one filtered unchanged neighbor was already covered by the complete regression. All three actual Docker/synthetic-worker controls pass on macOS Node 24 using bundle 5e166b6e9b13611af9a3df4ac4ecf426c22fcfd010c1adb351cfc4f09d5b54e0: account for the second known failure under the original limit of three, dispatch generation three once, preserve original production, commit distinct bytes with exact predecessor lineage, refuse the older selector, and recover the new checkpoint while paused with QA pending and no worker replay. Both exact environments are observed retired. Lint977/types/build/docs379/harness150/Markdown378/Mermaid36, smoke and offline package checks pass. Existing test deadlines remain unchanged; later-QA, current full-suite, independent Linux application-host and authenticated-model acceptance are not inferred.
+
+---
+
 ## 2026-10-28 · P6-10 continuing — historical native production after fencing
 
 - Add a separate exact-settlement historical native audit over the complete validated ledger and original successful prefix. Share assignment/receipt/input/output validation with current inspection; keep current-slot checks and an end-of-audit current-assignment recheck. Let original correction history consume that fixed proof while retaining original call-prefix closure/deadline and the unchanged outward five-field object. Do not revive leases, grant dispatch or infer semantic QA. Add ADR-0149, enforcement and finite process evaluation. P6-10 remains open; counts stay 59/88 complete. Actual later correction dispatch and longer candidate/QA chains remain technical work.

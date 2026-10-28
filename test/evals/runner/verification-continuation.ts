@@ -9,6 +9,7 @@ import { EnvironmentResources } from '../../../src/environment/runtime.js'
 import { workspaceSnapshot } from '../../../src/gates/snapshot.js'
 import { gateRuns } from '../../../src/gates/state.js'
 import { GateWorkflow } from '../../../src/gates/workflow.js'
+import { RunnerGitStages } from '../../../src/runner/git-stages.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { admitRunnerRepair } from '../../../src/runner/repair-admission.js'
 import { RunnerRepairCommits } from '../../../src/runner/repair-commits.js'
@@ -22,7 +23,8 @@ import { runnerSuiteFixture } from '../../support/runner-suite.js'
 const destination = process.argv[2]
 if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = [],
-  repeated = process.argv.includes('--repeated-failure')
+  secondCorrection = process.argv.includes('--second-correction'),
+  repeated = process.argv.includes('--repeated-failure') || secondCorrection
 await runnerSuiteFixture(
   async ({ store, context, engine, selection, driver, production, gate: initial }) => {
     assert.ok(production)
@@ -190,35 +192,118 @@ await runnerSuiteFixture(
           to: 'queued',
           reason: 'Account for the exact repeated failure without another correction.',
         })
-        const reservations = store.budgets.inspect(context.request.run).reservations.length,
-          admission = await admitRunnerRepair(recovered, context)
-        assert.equal(admission.status, 'blocked', JSON.stringify(admission))
-        if (admission.status !== 'blocked') throw new Error('Repeated failure must stop')
-        assert.equal(admission.reason, 'repeated-repair-no-progress')
-        assert.equal(store.lifecycle.journal.get(context.request.run).state, 'exhausted')
-        assert.equal(
-          runnerRepairStreak(
-            store.lifecycle.journal.events(),
-            context.request.run,
-            'verification',
-            feedback.fingerprint,
-          ),
-          2,
-        )
-        assert.equal(store.budgets.inspect(context.request.run).noProgress.streak, 1)
-        assert.equal((await admitRunnerRepair(recovered, context)).status, 'blocked')
-        assert.equal(
-          findBudget(store.lifecycle.journal.get(context.request.run))?.failures.length,
-          2,
-        )
-        assert.equal(store.budgets.inspect(context.request.run).reservations.length, reservations)
-        assert.equal(scope.calls().length, calls)
-        checks.push(
-          'current corrected-head feedback retains its original failure fingerprint and exact second-round receipt',
-        )
-        checks.push(
-          'the original two-failure limit exhausts the route across changed commit digests without another reservation, worker or duplicate failure',
-        )
+        if (secondCorrection) {
+          const reservations = store.budgets.inspect(context.request.run).reservations.length,
+            parentProduction = repair.production(context.request, context.invocation),
+            parent = new RunnerRepairCommits(repair),
+            next = RunnerRepairWorkers.after(
+              parent,
+              context.request,
+              context.invocation,
+              committed.receipt.digest,
+            ),
+            produced = await next.execute(recovered, context)
+          assert.equal(produced.status, 'produced', JSON.stringify(produced))
+          assert.equal(produced.commit, 'pending')
+          assert.equal(produced.qa, 'pending')
+          const production = next.production(context.request, context.invocation)
+          assert.equal(production.lease.generation, 3)
+          assert.equal(production.binding.version, 2)
+          assert.equal(production.binding.after, committed.receipt.digest)
+          assert.equal(
+            store.budgets.inspect(context.request.run).reservations.length,
+            reservations + 1,
+          )
+          assert.equal(scope.calls().length, calls + 1)
+          assert.deepEqual(repair.production(context.request, context.invocation), parentProduction)
+          const nextCommits = new RunnerRepairCommits(next),
+            pinned = await nextCommits.execute(context)
+          assert.equal(pinned.status, 'committed', JSON.stringify(pinned))
+          if (!('receipt' in pinned)) throw new Error('Second correction commit required')
+          assert.equal(pinned.receipt.parent, committed.receipt.head)
+          assert.notEqual(pinned.receipt.head, committed.receipt.head)
+          assert.equal(pinned.qa, 'pending')
+          assert.deepEqual(
+            new RunnerGitStages(store).candidate(context.request, 'search', nextCommits).receipt,
+            pinned.receipt,
+          )
+          assert.throws(
+            () => new RunnerGitStages(store).candidate(context.request, 'search', commits),
+            /original-correction-head-binding-required/,
+          )
+          assert.equal(
+            parent.historical(context.request, context.invocation, committed.receipt.digest).receipt
+              .digest,
+            committed.receipt.digest,
+          )
+          store.lifecycle.transition(context.request.run, {
+            to: 'paused',
+            reason: 'Inspect only the exact later correction commit and original parent.',
+          })
+          next.options.context = () => {
+            throw new Error('Later correction recovery cannot select inputs')
+          }
+          next.options.boundary = () => {
+            throw new Error('Later correction recovery cannot construct a host')
+          }
+          const freshNext = RunnerRepairWorkers.after(
+              new RunnerRepairCommits(repair),
+              context.request,
+              context.invocation,
+              committed.receipt.digest,
+            ),
+            restored = await new RunnerRepairCommits(freshNext).inspect(
+              context.request,
+              context.invocation,
+            )
+          assert.equal(restored.status, 'committed', JSON.stringify(restored))
+          if (!('receipt' in restored))
+            throw new Error('Retained later correction receipt required')
+          assert.deepEqual(restored.receipt, pinned.receipt)
+          assert.equal((await freshNext.execute(recovered, context)).status, 'blocked')
+          assert.equal(scope.calls().length, calls + 1)
+          assert.equal(
+            findBudget(store.lifecycle.journal.get(context.request.run))?.failures.length,
+            2,
+          )
+          assert.equal(store.budgets.inspect(context.request.run).deadline, before?.deadline)
+          checks.push(
+            'one later correction reuses the original builder slot at generation three and preserves exact original history without another deadline',
+          )
+          checks.push(
+            'the distinct second commit follows its original predecessor, selects only its fully audited lineage and recovers while paused with QA pending and no worker replay',
+          )
+        } else {
+          const reservations = store.budgets.inspect(context.request.run).reservations.length,
+            admission = await admitRunnerRepair(recovered, context)
+          assert.equal(admission.status, 'blocked', JSON.stringify(admission))
+          if (admission.status !== 'blocked') throw new Error('Repeated failure must stop')
+          assert.equal(admission.reason, 'repeated-repair-no-progress')
+          assert.equal(store.lifecycle.journal.get(context.request.run).state, 'exhausted')
+          assert.equal(
+            runnerRepairStreak(
+              store.lifecycle.journal.events(),
+              context.request.run,
+              'verification',
+              feedback.fingerprint,
+            ),
+            2,
+          )
+          assert.equal(store.budgets.inspect(context.request.run).noProgress.streak, 1)
+          assert.equal((await admitRunnerRepair(recovered, context)).status, 'blocked')
+          assert.equal(
+            findBudget(store.lifecycle.journal.get(context.request.run))?.failures.length,
+            2,
+          )
+          assert.equal(store.budgets.inspect(context.request.run).reservations.length, reservations)
+          assert.equal(scope.calls().length, calls)
+          checks.push(
+            'current corrected-head feedback retains its original failure fingerprint and exact second-round receipt',
+          )
+          checks.push(
+            'the original two-failure limit exhausts the route across changed commit digests without another reservation, worker or duplicate failure',
+          )
+        }
       } else {
         checks.push(
           'the original failed verify run receives a fresh actual suite and independent synthetic judgments over the exact correction without renewing its allowance or narrower deadline',
@@ -253,7 +338,7 @@ await runnerSuiteFixture(
     production: true,
     unattended: true,
     repairSensitive: !repeated,
-    ...(repeated ? { exit: 7, noProgress: 2 } : {}),
+    ...(repeated ? { exit: 7, noProgress: secondCorrection ? 3 : 2 } : {}),
     retain: true,
   },
 )

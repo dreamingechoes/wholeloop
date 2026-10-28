@@ -284,5 +284,11 @@ The internal native host can audit the exact original successful settlement even
 
 Correction history keeps its original closed native-call prefix and the same five-field production object, preserving earlier version-one commit digests. Missing or changed source/captured bytes refuse. Paused inspection selects no inputs or hosts. Run npm run eval:runner-native-history for a finite synthetic-process control that reserves and stops a later generation without launching it. See [ADR-0149](../decisions/0149-historical-native-completion-after-fencing.md). Actual later-correction dispatch, longer candidate chains and public route composition remain technical work.
 
+## Produce and pin a later correction
+
+The internal correction factory can bind a later worker to a known fixed predecessor receipt. It reopens that predecessor and current failure, keeps the narrower deadline and original restart/no-progress limits, and retries the same builder slot. Separate worker/commit namespaces preserve earlier receipts and production digests. A different fixed instance of the same recorded checkpoint can recover it after a process restart.
+
+Current candidate selection audits every explicit predecessor back to the initial root commit, then checks current effects, owned branch and exact files/index. An older checkpoint cannot select the newer head. Paused recovery uses original captures without another selector, host or worker. Run npm run eval:runner-verification-continuation -- --second-correction --retire-success for the actual generation-three/commit/lineage control and exact environment cleanup. See [ADR-0150](../decisions/0150-owned-correction-successors.md). The new commit still needs fresh independent QA; repeated gate continuation and complete-route/public execution remain technical work.
+
 <!-- docnav -->
 [◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)

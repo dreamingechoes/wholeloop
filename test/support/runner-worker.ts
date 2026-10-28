@@ -33,8 +33,8 @@ export function runnerWorkerComponents(
 const fs=require('node:fs');if(process.argv.includes('--version')){console.log('synthetic policy control');process.exit(0)}let text='';process.stdin.on('data',b=>text+=b);process.stdin.on('end',()=>{
 const {assignment:a}=JSON.parse(text);
 if(${JSON.stringify(mode)}==='hang'){fs.writeFileSync(${JSON.stringify(join(bin, 'ready'))},'ready');setInterval(()=>{},1000);return}
-const repair=JSON.parse(a.brief).task?.kind==='repair';
-fs.writeFileSync(${JSON.stringify(join(workspace, 'app.txt'))},repair?'Synthetic owned correction.\\n':'Synthetic owned implementation.\\n');
+const repair=JSON.parse(a.brief).task?.kind==='repair',correction=a.identity.generation>=3?'Synthetic owned second correction.\\n':'Synthetic owned correction.\\n';
+fs.writeFileSync(${JSON.stringify(join(workspace, 'app.txt'))},repair?correction:'Synthetic owned implementation.\\n');
 const value={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic native worker claim.',artifacts:[{ref:'artifacts/report.txt',kind:'report',text:'Retained fixture report.\\n'}],criteria:[],findings:[],unknowns:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(value)}}));console.log(JSON.stringify({type:'turn.completed'}));
 });

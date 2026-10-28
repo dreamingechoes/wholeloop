@@ -50,7 +50,10 @@ export class RunnerRepairCommits {
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation))
       throw new DeliveryRunnerError('repair-commit-invocation')
-    return `delivery/runner-repair-commits/${invocation}.json`
+    const scope = this.workers.checkpointScope(invocation)
+    return scope
+      ? `delivery/runner-repair-commits/${invocation}/after/${scope}.json`
+      : `delivery/runner-repair-commits/${invocation}.json`
   }
   private read(request: Readonly<RunnerRequest>, invocation: string) {
     const path = this.path(invocation)
@@ -200,7 +203,50 @@ export class RunnerRepairCommits {
       return result('unknown', 'original-correction-commit-observation-unavailable')
     }
   }
-  /** Select only a current first correction anchored to the original root commit. */
+  /** Reopen a known checkpoint without making an earlier commit current again. */
+  historical(request: Readonly<RunnerRequest>, invocation: string, digest: string) {
+    const retained = this.read(request, invocation)
+    if (!retained) throw new DeliveryRunnerError('original-correction-checkpoint-required')
+    const allocation = this.workers.workers.git.workspace(
+        request,
+        retained.production.binding.prior.unit,
+      ),
+      receipt = readCommitReceipt(this.commits.effects.lifecycle, digest)
+    validateHistoricalWorkspaceCommit(this.commits.effects.lifecycle, allocation, receipt)
+    if (
+      receipt.record !== retained.record.digest ||
+      receipt.workspace !== allocation.digest ||
+      receipt.parent !== retained.production.binding.admission.feedback.origin.candidate
+    )
+      throw new DeliveryRunnerError('original-correction-historical-binding')
+    return { ...retained, allocation, receipt }
+  }
+  private rootRecord(
+    request: Readonly<RunnerRequest>,
+    invocation: string,
+    digest: string,
+    seen = new Set<string>(),
+  ): string {
+    if (seen.has(digest)) throw new DeliveryRunnerError('original-correction-chain-cycle')
+    seen.add(digest)
+    const own = this.historical(request, invocation, digest),
+      parent = readCommitReceipt(
+        this.commits.effects.lifecycle,
+        own.production.binding.admission.feedback.origin.commit,
+      ),
+      previous = this.workers.predecessor(request, invocation)
+    validateHistoricalWorkspaceCommit(this.commits.effects.lifecycle, own.allocation, parent)
+    if (
+      own.receipt.parent !== parent.head ||
+      own.receipt.workspace !== parent.workspace ||
+      (previous && previous.receipt !== parent.digest)
+    )
+      throw new DeliveryRunnerError('original-correction-parent-binding')
+    return previous
+      ? previous.checkpoint.rootRecord(request, invocation, parent.digest, seen)
+      : parent.record
+  }
+  /** Select only an audited correction chain anchored to the original root commit. */
   candidate(request: Readonly<RunnerRequest>, unit: string, original: string) {
     const allocation = this.workers.workers.git.workspace(request, unit),
       lifecycle = this.commits.effects.lifecycle,
@@ -215,6 +261,7 @@ export class RunnerRepairCommits {
       )
     let selected: ReturnType<RunnerRepairCommits['read']>
     for (const stage of stages) {
+      if (!this.workers.owns(stage.invocation)) continue
       const path = this.path(stage.invocation)
       if (!existsSync(this.store.files.path(path))) continue
       // The effect journal chooses the actual head. File order and timestamps choose nothing.
@@ -233,7 +280,7 @@ export class RunnerRepairCommits {
     )
     validateHistoricalWorkspaceCommit(lifecycle, allocation, parent)
     if (
-      parent.record !== original ||
+      this.rootRecord(request, selected.binding.invocation, current.digest) !== original ||
       parent.head !== current.parent ||
       parent.workspace !== allocation.digest ||
       selected.record.digest !== current.record ||

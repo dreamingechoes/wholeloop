@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-owned-correction-successors
+    enforcers: [src/runner/repair-workers.ts#after, src/runner/repair-workers.ts#execute, src/runner/repair-commits.ts#historical, src/runner/repair-commits.ts#candidate, test/unit/runner/repair-workers.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-historical-native-completion
     enforcers: [src/delivery/native-host.ts#historical, src/delivery/native-host.ts#completed, src/runner/repair-workers.ts#production, src/runner/repair-workers.ts#inspect, test/unit/delivery/native-host.test.ts, test/evals/runner/native-history.ts]
   - id: delivery-observed-repair-progress

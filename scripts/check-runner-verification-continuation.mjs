@@ -8,8 +8,12 @@ import { harnessAssets } from './harness-assets.mjs'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const args = process.argv.slice(2)
-if (args.some((arg) => !['--retire-success', '--repeated-failure'].includes(arg)))
-  throw new Error('Supported options: --retire-success, --repeated-failure')
+if (
+  args.some(
+    (arg) => !['--retire-success', '--repeated-failure', '--second-correction'].includes(arg),
+  )
+)
+  throw new Error('Supported options: --retire-success, --repeated-failure, --second-correction')
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-verification-continuation-')),
   ),
