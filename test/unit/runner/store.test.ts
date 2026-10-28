@@ -50,12 +50,12 @@ describe('private prepared foreground controller requests', () => {
   it('uses one fresh journal observation per live poll and immediately sees pause or revocation', async () => {
     await setup((store, request) => {
       const prepared = store.prepare(request),
-        events = store.lifecycle.journal.events.bind(store.lifecycle.journal)
+        snapshot = store.lifecycle.journal.snapshot.bind(store.lifecycle.journal)
       let lease = store.claim(prepared.digest, owner),
         reads = 0
-      store.lifecycle.journal.events = () => {
+      store.lifecycle.journal.snapshot = () => {
         reads++
-        return events()
+        return snapshot()
       }
       const live = (expected: boolean) => {
         reads = 0

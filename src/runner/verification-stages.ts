@@ -381,7 +381,10 @@ export class RunnerVerificationStages {
   }
   private continuationPath(invocation: string) {
     this.path(invocation)
-    return `delivery/runner-verification-continuations/${invocation}.json`
+    const scope = this.options.correction?.workers.checkpointScope(invocation)
+    return scope
+      ? `delivery/runner-verification-continuations/${invocation}/after/${scope}.json`
+      : `delivery/runner-verification-continuations/${invocation}.json`
   }
   private continuation(
     request: Readonly<RunnerRequest>,
@@ -589,7 +592,7 @@ export class RunnerVerificationStages {
     let passed = false,
       failed = false,
       audited = false,
-      problem: string | undefined,
+      problem: string | undefined = suite?.problem,
       report = state?.round.decision
     if (state && ownedClosed && suite?.provenance === 'host-observed') {
       failed =

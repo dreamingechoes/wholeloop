@@ -16,6 +16,7 @@ import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { run } from '../../../src/cli/main.js'
 import {
+  readSourceBytes,
   readSourceFile,
   SOURCE_LIMIT,
   type SourceObservation,
@@ -188,6 +189,22 @@ describe('revision-bound delivery source intake (AUTH-01–AUTH-03)', () => {
       expect(() => sources.capture({ ...inline(), body: 'é'.repeat(SOURCE_LIMIT) }, root)).toThrow(
         'oversized',
       )
+    }))
+
+  it('reads complete small binary inputs without retaining their entire upper quota', () =>
+    fixture(({ root }) => {
+      const expected = Buffer.from([0, 255, 128, 42]),
+        path = join(root, 'small.bin')
+      writeFileSync(path, expected)
+      const observed = readSourceBytes(root, 'small.bin', 8 * 1024 * 1024)
+      expect(observed).toEqual(expected)
+      expect(observed.buffer.byteLength).toBeLessThan(65536)
+      expect(() => readSourceBytes(root, 'small.bin', expected.length - 1)).toThrow('oversized')
+      expect(readSourceBytes(root, 'small.bin', expected.length)).toEqual(expected)
+      writeFileSync(path, Buffer.alloc(0))
+      expect(readSourceBytes(root, 'small.bin', 0)).toEqual(Buffer.alloc(0))
+      for (const limit of [-1, Number.NaN, Number.POSITIVE_INFINITY, 1.5])
+        expect(() => readSourceBytes(root, 'small.bin', limit)).toThrow('unsafe-file')
     }))
 
   it.each(

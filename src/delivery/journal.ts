@@ -1,8 +1,8 @@
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { StoreFiles } from '../state/files.js'
-import { storePath } from '../state/paths.js'
+import { canonicalPath, storePath } from '../state/paths.js'
 import {
   type DeliveryActor,
   type DeliveryEvent,
@@ -26,17 +26,26 @@ export class DeliveryJournal {
     this.files = new StoreFiles(store)
   }
 
-  events(): DeliveryEvent[] {
+  /** One fresh read/replay per observation; never reuse authority across calls. */
+  snapshot() {
     const directory = this.ownedPath('delivery/journal')
-    if (!existsSync(directory)) return []
-    const events: DeliveryEvent[] = []
+    if (!existsSync(directory))
+      return { events: [] as DeliveryEvent[], states: new Map<string, DeliveryProjection>() }
+    const original = statSync(directory),
+      events: DeliveryEvent[] = []
+    if (!original.isDirectory()) throw new DeliveryJournalError('unreadable-journal-segment')
     for (const name of readdirSync(directory).sort()) {
       if (!/^\d{16}\.ndjson$/.test(name)) {
         if (name.endsWith('.ndjson')) throw new DeliveryJournalError('unknown-journal-segment')
         continue
       }
       let raw: string
-      this.ownedPath(`delivery/journal/${name}`)
+      // Segments are plain leaves in one already checked external directory.
+      // Keep exact alias refusal per leaf without rechecking every common
+      // ancestor thousands of times; reobserve directory ownership before return.
+      const selected = resolve(directory, name)
+      if (canonicalPath(selected) !== selected)
+        throw new DeliveryJournalError('aliased-journal-path')
       try {
         raw = readSourceFile(this.files.root, `delivery/journal/${name}`, 8 * 1024 * 1024)
       } catch {
@@ -59,16 +68,21 @@ export class DeliveryJournal {
         events.push(value)
       }
     }
-    replayDelivery(events)
-    return events
+    const current = statSync(this.ownedPath('delivery/journal'))
+    if (current.dev !== original.dev || current.ino !== original.ino || !current.isDirectory())
+      throw new DeliveryJournalError('changed-journal-directory')
+    return { events, states: replayDelivery(events) }
   }
 
+  events(): DeliveryEvent[] {
+    return this.snapshot().events
+  }
   list(): DeliveryProjection[] {
-    return [...replayDelivery(this.events()).values()]
+    return [...this.snapshot().states.values()]
   }
   get(run: string): DeliveryProjection {
     this.run(run)
-    const state = replayDelivery(this.events()).get(run)
+    const state = this.snapshot().states.get(run)
     if (!state) throw new DeliveryJournalError('unknown-run')
     return state
   }
@@ -81,9 +95,10 @@ export class DeliveryJournal {
     ) => T,
   ): T {
     return this.files.locked(() => {
-      const events = this.events(),
+      const observed = this.snapshot(),
+        events = observed.events,
         original = events.length
-      let states = replayDelivery(events)
+      let states = observed.states
       const ts = this.now()
       const result = operation(
         () => new Map([...states].map(([run, state]) => [run, structuredClone(state)])),

@@ -13,6 +13,7 @@ export interface RunnerWorkerFixtureConfig {
   unattended?: boolean
   guidance?: string
   stageBudget?: 'plan'
+  noProgress?: number
   provenance?: 'fixture' | 'host-observed'
 }
 export function runnerWorkerComponents(
@@ -117,10 +118,11 @@ export async function runnerWorkerFixture(
       singleUnit: true,
       guidance: pinnedGuidance,
       ...(config.stageBudget ? { stageBudget: config.stageBudget } : {}),
-      ...(config.unattended
+      ...(config.unattended || config.noProgress !== undefined
         ? {
             configure: (plan) => {
-              plan.policy.intervention = 'none'
+              if (config.unattended) plan.policy.intervention = 'none'
+              if (config.noProgress !== undefined) plan.budgets.noProgress = config.noProgress
             },
           }
         : {}),

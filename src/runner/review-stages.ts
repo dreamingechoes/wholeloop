@@ -247,7 +247,10 @@ export class RunnerReviewStages {
   }
   private continuationPath(invocation: string) {
     this.path(invocation)
-    return `delivery/runner-review-continuations/${invocation}.json`
+    const scope = this.options.correction?.workers.checkpointScope(invocation)
+    return scope
+      ? `delivery/runner-review-continuations/${invocation}/after/${scope}.json`
+      : `delivery/runner-review-continuations/${invocation}.json`
   }
   private continuation(
     request: Readonly<RunnerRequest>,

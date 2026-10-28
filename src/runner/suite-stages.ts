@@ -180,16 +180,32 @@ export class RunnerSuiteStages {
     if (!(this.options.correction instanceof RunnerRepairCommits))
       throw new DeliveryRunnerError('suite-stage-fixed-correction-required')
     const producer = this.options.correction.workers.production(request, record.invocation),
-      original = JSON.parse(
+      root = JSON.parse(
         readSourceFile(
           this.store.files.root,
           `delivery/runner-suites/${record.invocation}.json`,
           512 * 1024,
         ),
       ) as SuiteStageBinding,
+      origin = producer.binding.admission.feedback.origin,
+      // Feedback fixes the predecessor; directory order cannot select a QA round.
+      original =
+        contractDigest(root.gate) === origin.gate
+          ? root
+          : (JSON.parse(
+              readSourceFile(
+                this.store.files.root,
+                `delivery/runner-suites/${record.invocation}/${origin.gate}.json`,
+                512 * 1024,
+              ),
+            ) as SuiteStageBinding),
       run = gateRuns(context.engine.store.events()).find((run) => run.run === binding.gate.run),
       previous = run?.rounds.find((round) => round.plan.round === original.gate.round),
-      scope = new RunnerEnvironmentScope(this.store, record.invocation).inspect(),
+      scope = new RunnerEnvironmentScope(
+        this.store,
+        record.invocation,
+        original.version === 2 ? original.phase : undefined,
+      ).inspect(),
       selection = (value: RunnerSuiteSelection) => ({
         acceptance: value.acceptance,
         refs: value.refs,
@@ -199,8 +215,11 @@ export class RunnerSuiteStages {
     validateGatePlan(original.gate)
     if (
       Object.keys(original).sort().join(',') !==
-        'deadline,gate,invocation,plan,request,selection,stage,suite,version' ||
-      original.version !== 1 ||
+        (original.version === 2
+          ? 'deadline,gate,invocation,phase,plan,request,selection,stage,suite,version'
+          : 'deadline,gate,invocation,plan,request,selection,stage,suite,version') ||
+      ![1, 2].includes(original.version) ||
+      (original.version === 2 && original.phase !== origin.gate) ||
       original.request !== contractDigest(request) ||
       original.plan !== record.basis ||
       original.stage !== record.id ||
@@ -366,7 +385,8 @@ export class RunnerSuiteStages {
       throw new DeliveryRunnerError('suite-stage-parent-binding')
     let result: SuiteResult | undefined,
       status: RunnerSuiteResult['status'] = 'unknown',
-      provenance: RunnerSuiteResult['provenance'] = 'fixture'
+      provenance: RunnerSuiteResult['provenance'] = 'fixture',
+      problem: string | undefined
     const proofs: string[] = []
     if (state && scope.invocationState === 'stopped' && scope.provenance === 'host-observed') {
       const { binding, engine, acceptance } = state,
@@ -474,8 +494,12 @@ export class RunnerSuiteStages {
           )
         provenance = 'host-observed'
         status = result.status === 'passed' ? 'passed' : 'failed'
-      } catch {
-        /* Missing, fixture or conflicting records stay unavailable. */
+      } catch (error) {
+        // Keep safe audit categories available without exposing process output.
+        problem =
+          error instanceof AcceptanceError || error instanceof DeliveryRunnerError
+            ? error.problem
+            : 'suite-stage-audit-unavailable'
       }
     }
     return {
@@ -490,6 +514,7 @@ export class RunnerSuiteStages {
       }),
       ...(result ? { result } : {}),
       acceptance: 'not-established',
+      ...(problem ? { problem } : {}),
     }
   }
   async stop(

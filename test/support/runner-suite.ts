@@ -35,6 +35,7 @@ export async function runnerSuiteFixture(
     guidance?: string
     production?: boolean
     repairSensitive?: boolean
+    secondRepairSensitive?: boolean
     noProgress?: number
   } = {},
 ) {
@@ -42,9 +43,11 @@ export async function runnerSuiteFixture(
     throw new Error('Production fixture requires its search unit')
   const app =
       "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
-    check = options.repairSensitive
-      ? `const fs=require('node:fs');process.exitCode=fs.readFileSync('app.txt','utf8')==='Synthetic owned correction.\\n'?0:7\n`
-      : `process.stdout.write('observed suite\\n');process.exitCode=${options.exit ?? 0}\n`,
+    check = options.secondRepairSensitive
+      ? `const fs=require('node:fs');process.exitCode=fs.readFileSync('app.txt','utf8')==='Synthetic owned second correction.\\n'?0:7\n`
+      : options.repairSensitive
+        ? `const fs=require('node:fs');process.exitCode=fs.readFileSync('app.txt','utf8')==='Synthetic owned correction.\\n'?0:7\n`
+        : `process.stdout.write('observed suite\\n');process.exitCode=${options.exit ?? 0}\n`,
     pkg = JSON.stringify({ private: true, scripts: { check: 'node suite.cjs' } }),
     contractBody = 'Title query returns matching task IDs.\n',
     unit = options.unit ?? 'search',

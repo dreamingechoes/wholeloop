@@ -23,17 +23,22 @@ import { runnerSuiteFixture } from '../../support/runner-suite.js'
 const destination = process.argv[2]
 if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = [],
-  secondCorrection = process.argv.includes('--second-correction'),
+  extraEnvironments: string[] = [],
+  retiredEnvironments = new Set<string>(),
+  repeatVerification = process.argv.includes('--repeat-verification'),
+  secondCorrection = process.argv.includes('--second-correction') || repeatVerification,
   repeated = process.argv.includes('--repeated-failure') || secondCorrection
 await runnerSuiteFixture(
   async ({ store, context, engine, selection, driver, production, gate: initial }) => {
     assert.ok(production)
     console.log(`Retained original store: ${store.files.root}`)
-    const abort = new AbortController(),
-      timer = setTimeout(() => abort.abort(), 240000)
+    // The deeper three-round composition declares its finite window before any QA.
+    const window = repeatVerification ? 360000 : 240000,
+      abort = new AbortController(),
+      timer = setTimeout(() => abort.abort(), window)
     context.signal = abort.signal
     context.deadline = new Date(
-      Math.min(Date.parse(context.deadline), Date.now() + 240000),
+      Math.min(Date.parse(context.deadline), Date.now() + window),
     ).toISOString()
     try {
       const options = gateWorkerFixture(store, initial.repository, 'valid', 'host-observed'),
@@ -126,10 +131,15 @@ await runnerSuiteFixture(
         return atomic(path, body)
       }
       try {
-        await assert.rejects(
-          () => continued.advance(context),
-          /Lose the original continued verification verdict/,
-        )
+        await assert.rejects(async () => {
+          const observed = await continued.advance(context)
+          mkdirSync(destination, { recursive: true })
+          writeFileSync(
+            join(destination, 'unexpected-continuation.json'),
+            `${JSON.stringify(observed, null, 2)}\n`,
+          )
+          return observed
+        }, /Lose the original continued verification verdict/)
       } finally {
         engine.store.files.atomic = atomic
       }
@@ -267,6 +277,96 @@ await runnerSuiteFixture(
             2,
           )
           assert.equal(store.budgets.inspect(context.request.run).deadline, before?.deadline)
+          if (repeatVerification) {
+            // The original reservation permits two live environments. Preserve its
+            // evidence but release the oldest resources before preparing another.
+            const retiredOriginal = await new EnvironmentLifecycle(store.files, driver).execute({
+              schema: 'wholeloop/environment-lifecycle-request@1',
+              id: `verify-continuation-${selection.environment}`,
+              environment: selection.environment,
+              expected: resources.get(selection.environment).digest,
+              action: 'retire',
+              reason: 'Release the exact oldest environment under the original capacity limit.',
+            })
+            assert.equal(retiredOriginal.state, 'retired', JSON.stringify(retiredOriginal))
+            retiredEnvironments.add(selection.environment)
+            store.lifecycle.transition(context.request.run, {
+              to: 'queued',
+              reason: 'Verify the exact second correction under the original route.',
+            })
+            const thirdEnvironment = await environments.provision({
+              schema: 'wholeloop/environment-provision-request@1',
+              run: context.request.run,
+              recipe: firstEnvironment.recipe,
+              key: 'verification-third-round',
+              helperImage: firstEnvironment.helperImage,
+              workspaces: [
+                {
+                  repository: 'app',
+                  path: initial.repository,
+                  head: pinned.receipt.head,
+                  snapshot: workspaceSnapshot(initial.repository).digest,
+                },
+              ],
+            })
+            assert.equal(thirdEnvironment.status, 'ready', JSON.stringify(thirdEnvironment))
+            assert.ok(thirdEnvironment.environment)
+            const thirdId = thirdEnvironment.environment.record.id
+            extraEnvironments.push(thirdId)
+            store.lifecycle.transition(context.request.run, {
+              to: 'queued',
+              reason: 'Continue the same gate after third-environment readiness.',
+            })
+            const third = new RunnerVerificationStages(store, {
+                ...original.options,
+                correction: nextCommits,
+                suite: () => ({ ...selection, environment: thirdId }),
+              }),
+              observedThird = await third.advance(context)
+            assert.equal(observedThird.status, 'passed', JSON.stringify(observedThird))
+            assert.equal(observedThird.provenance, 'host-observed')
+            const last = gateRuns(engine.store.events()).find((run) => run.run === first.run)
+            assert.equal(last?.rounds.length, 3)
+            assert.equal(last?.budget, first.budget)
+            assert.equal(last?.rounds[2]?.plan.snapshot.head, pinned.receipt.head)
+            assert.equal(last?.rounds[2]?.decision?.report.verdict, 'PASS')
+            const nativeCalls = scope.calls().length
+            store.lifecycle.transition(context.request.run, {
+              to: 'paused',
+              reason: 'Recover only the exact third-round verification metadata.',
+            })
+            third.options.suite = () => {
+              throw new Error('Third-round recovery cannot select another environment')
+            }
+            third.options.gate = () => {
+              throw new Error('Third-round recovery cannot construct a host')
+            }
+            renameSync(pointer, `${pointer}.third-lost`)
+            const thirdRecovered = await new RunnerVerificationStages(store, third.options).advance(
+              context,
+            )
+            assert.deepEqual(thirdRecovered, observedThird)
+            assert.equal(scope.calls().length, nativeCalls)
+            assert.equal(
+              gateRuns(engine.store.events()).find((run) => run.run === first.run)?.rounds.length,
+              3,
+            )
+            assert.equal(store.budgets.inspect(context.request.run).deadline, before?.deadline)
+            assert.equal(
+              findBudget(store.lifecycle.journal.get(context.request.run))?.failures.length,
+              2,
+            )
+            assert.equal(
+              store.stage(contractDigest(context.request), context.stage.id)?.status,
+              'running',
+            )
+            checks.push(
+              'two corrections reach a third original verification round with an actual passing unchanged suite and independent synthetic judgments',
+            )
+            checks.push(
+              'third-round locator recovery retains all earlier rounds, original allowance/deadline and failure history without replay or root-stage completion',
+            )
+          }
           checks.push(
             'one later correction reuses the original builder slot at generation three and preserves exact original history without another deadline',
           )
@@ -316,7 +416,11 @@ await runnerSuiteFixture(
         )
       }
       if (process.argv.includes('--retire-success')) {
-        for (const id of [selection.environment, environment]) {
+        for (const id of [selection.environment, environment, ...extraEnvironments]) {
+          if (retiredEnvironments.has(id)) {
+            assert.equal(resources.get(id).record.state, 'retired')
+            continue
+          }
           const retired = await new EnvironmentLifecycle(store.files, driver).execute({
             schema: 'wholeloop/environment-lifecycle-request@1',
             id: `verify-continuation-${id}`,
@@ -327,7 +431,9 @@ await runnerSuiteFixture(
           })
           assert.equal(retired.state, 'retired', JSON.stringify(retired))
         }
-        checks.push('both exact observed environments retire without broad cleanup')
+        checks.push(
+          `${2 + extraEnvironments.length} exact observed environments retire without broad cleanup`,
+        )
       }
     } finally {
       clearTimeout(timer)
@@ -338,6 +444,7 @@ await runnerSuiteFixture(
     production: true,
     unattended: true,
     repairSensitive: !repeated,
+    secondRepairSensitive: repeatVerification,
     ...(repeated ? { exit: 7, noProgress: secondCorrection ? 3 : 2 } : {}),
     retain: true,
   },

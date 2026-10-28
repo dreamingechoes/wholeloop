@@ -49,6 +49,8 @@ For pinned behavioral acceptance, follow delivery-acceptance. Return proposed fi
 
 ⛔ `delivery-original-correction-successor`: select a correction only through its fixed original checkpoint, current owned Git effects, exact initial parent and stable owned files/index. Reject locked, changed, unrelated or ambiguous heads. Explicit successor selection changes no gate verdict, progress or default candidate behavior.
 
+⛔ `delivery-original-repeated-qa`: namespace each continuation by its fixed predecessor checkpoint; select the exact observed predecessor suite and closed environment. Keep immediate rounds, pinned cases, original allowance/deadline and earlier ownership. Recover original results without replay; no round completes the root stage by itself.
+
 ⛔ `delivery-owned-correction-successors`: bind later workers and commits to exact fixed predecessor checkpoints in separate namespaces. Reuse the same builder slot and original limits; audit full lineage back to the root before current selection. Preserve earlier proofs and paused recovery without replay; commits alone never pass QA.
 
 ⛔ `delivery-historical-native-completion`: audit a fenced producer only through its exact original settled journal prefix and captured assignment/input/output bytes. Preserve current lease checks and original production digests. Historical completion grants no dispatch, current candidate readiness or semantic QA; never choose the newest receipt.

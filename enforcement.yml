@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-original-repeated-qa
+    enforcers: [src/runner/review-stages.ts#continuationPath, src/runner/verification-stages.ts#continuationPath, src/runner/suite-stages.ts#originalPhase, src/runner/native-process.ts#observeAll, src/runner/native-scope.ts#inspect, src/environment/operations.ts#operationGroups, test/unit/runner/native-process.test.ts, src/delivery/journal.ts#snapshot, src/delivery/input.ts#readSourceBytes, src/acceptance/store.ts#authority, src/acceptance/docker-effect.ts#DockerObservedHost, test/unit/delivery/source.test.ts, test/unit/delivery/journal.test.ts, test/unit/runner/store.test.ts, test/evals/runner/repeated-review.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-owned-correction-successors
     enforcers: [src/runner/repair-workers.ts#after, src/runner/repair-workers.ts#execute, src/runner/repair-commits.ts#historical, src/runner/repair-commits.ts#candidate, test/unit/runner/repair-workers.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-historical-native-completion

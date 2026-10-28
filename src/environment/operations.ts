@@ -278,7 +278,7 @@ export class EnvironmentOperations {
         outcome.signal !== undefined ||
         closed?.status !== 'succeeded' ||
         closed.code !== 0 ||
-        processObservation(Number(started.pid), true).status !== 'absent'
+        operationGroup(Number(started.pid)).status !== 'absent'
       )
         throw new DockerEnvironmentError('exec-invoker-unresolved')
       const existing = this.read(operation.id, 'exec-release')
@@ -438,7 +438,7 @@ function processTable(): { pid: number; group: number }[] | undefined {
     return { pid: Number(pid), group: Number(group) }
   })
 }
-function processObservation(pid: number, group: boolean, table = processTable()) {
+function processObservation(pid: number, group: boolean, table: ReturnType<typeof processTable>) {
   if (!Number.isSafeInteger(pid) || pid < 1)
     throw new DockerEnvironmentError('invalid-operation-pid')
   if (!table) return { status: 'unknown' as const, evidence: contractDigest({ available: false }) }
@@ -451,10 +451,18 @@ function processObservation(pid: number, group: boolean, table = processTable())
   }
 }
 export function operationGroup(pid: number) {
-  return processObservation(pid, true)
+  return processObservation(pid, true, processTable())
+}
+/** One fresh table for a bounded ownership observation, never a cached grant to signal. */
+export function operationGroups(pids: readonly number[]) {
+  if (pids.length > 1000 || pids.some((pid) => !Number.isSafeInteger(pid) || pid < 1))
+    throw new DockerEnvironmentError('invalid-operation-pid')
+  if (!pids.length) return new Map<number, ReturnType<typeof operationGroup>>()
+  const table = processTable()
+  return new Map(pids.map((pid) => [pid, processObservation(pid, true, table)]))
 }
 export function processPresence(pid: number) {
-  return processObservation(pid, false).status
+  return processObservation(pid, false, processTable()).status
 }
 export class TrackedDockerTransport implements DockerTransport {
   readonly provenance: DockerTransport['provenance']

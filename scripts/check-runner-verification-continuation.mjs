@@ -10,10 +10,18 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const args = process.argv.slice(2)
 if (
   args.some(
-    (arg) => !['--retire-success', '--repeated-failure', '--second-correction'].includes(arg),
+    (arg) =>
+      ![
+        '--retire-success',
+        '--repeated-failure',
+        '--second-correction',
+        '--repeat-verification',
+      ].includes(arg),
   )
 )
-  throw new Error('Supported options: --retire-success, --repeated-failure, --second-correction')
+  throw new Error(
+    'Supported options: --retire-success, --repeated-failure, --second-correction, --repeat-verification',
+  )
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-verification-continuation-')),
   ),

@@ -125,10 +125,16 @@ export class RunnerNativeScope {
     }
   }
   inspect() {
-    return this.calls().map((call) => ({
-      ...call,
-      observed: new ManagedRunnerProcess(this.files, call.invocation).observe(),
-    }))
+    const calls = this.calls(),
+      observations = ManagedRunnerProcess.observeAll(
+        this.files,
+        calls.map((call) => call.invocation),
+      )
+    return calls.map((call, index) => {
+      const observed = observations[index]
+      if (!observed) throw new DeliveryRunnerError('native-scope-observation-unavailable')
+      return { ...call, observed }
+    })
   }
   requestCancellation() {
     for (const call of this.calls()) {

@@ -3,7 +3,7 @@ import { existsSync, mkdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
-import { operationGroup } from '../environment/operations.js'
+import { type operationGroup, operationGroups } from '../environment/operations.js'
 import { operationWrapper } from '../fanout/operation-wrapper.js'
 import { type ProcessResult, unmanagedWorkerProcess } from '../fanout/process.js'
 import type { StoreFiles } from '../state/files.js'
@@ -183,10 +183,50 @@ export class ManagedRunnerProcess {
     // This file is only a request. The original live wrapper checks it and owns any signal it sends.
     this.files.atomic(`${this.relative}/cancel.json`, JSON.stringify({ nonce: intent.nonce }))
   }
+  static observeAll(
+    files: StoreFiles,
+    invocations: readonly string[],
+  ): ManagedProcessObservation[] {
+    if (invocations.length > 1000) throw new DeliveryRunnerError('native-observation-limit')
+    const selected = invocations.map((invocation) => {
+        const manager = new ManagedRunnerProcess(files, invocation)
+        return {
+          manager,
+          input: {
+            intent: manager.read('intent'),
+            started: manager.read('started'),
+            outcome: manager.read('outcome'),
+          },
+        }
+      }),
+      // Read all exact registrations before observing process groups together.
+      // A failed table remains unknown for every member; no per-member retry
+      // may turn an unavailable common observation into a positive closure.
+      groups = operationGroups(
+        selected.flatMap(({ input }) =>
+          Number.isSafeInteger(input.started?.pid) && Number(input.started?.pid) > 0
+            ? [Number(input.started?.pid)]
+            : [],
+        ),
+      )
+    return selected.map(({ manager, input }) =>
+      manager.observation(input, groups.get(Number(input.started?.pid))),
+    )
+  }
   observe(): ManagedProcessObservation {
-    const intent = this.read('intent'),
-      started = this.read('started'),
-      outcome = this.read('outcome')
+    const observed = ManagedRunnerProcess.observeAll(this.files, [this.invocation])[0]
+    if (!observed) throw new DeliveryRunnerError('native-observation-unavailable')
+    return observed
+  }
+  private observation(
+    input: {
+      intent: Record<string, unknown> | undefined
+      started: Record<string, unknown> | undefined
+      outcome: Record<string, unknown> | undefined
+    },
+    group: ReturnType<typeof operationGroup> | undefined,
+  ): ManagedProcessObservation {
+    const { intent, started, outcome } = input
     const unknown = (reason: string): ManagedProcessObservation => ({
       invocation: this.invocation,
       invocationState: 'unknown',
@@ -204,8 +244,7 @@ export class ManagedRunnerProcess {
       Number(started.pid) < 1
     )
       return unknown('original-native-registration-unavailable')
-    const group = operationGroup(Number(started.pid))
-    if (group.status !== 'absent') return unknown('original-native-group-not-confirmed-absent')
+    if (group?.status !== 'absent') return unknown('original-native-group-not-confirmed-absent')
     if (!outcome)
       return {
         invocation: this.invocation,

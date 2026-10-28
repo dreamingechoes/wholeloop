@@ -7,12 +7,20 @@ import { build } from 'esbuild'
 import { harnessAssets } from './harness-assets.mjs'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
-if (process.argv.length !== 2)
-  throw new Error('The model-free review continuation control takes no options')
+const args = process.argv.slice(2)
+if (args.some((arg) => arg !== '--repeat-review'))
+  throw new Error('The model-free review control supports only --repeat-review')
 const destination = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-runner-review-'))),
   runner = join(destination, 'runner.mjs')
 await build({
-  entryPoints: [join(root, 'test/evals/runner/review-continuation.ts')],
+  entryPoints: [
+    join(
+      root,
+      args.includes('--repeat-review')
+        ? 'test/evals/runner/repeated-review.ts'
+        : 'test/evals/runner/review-continuation.ts',
+    ),
+  ],
   outfile: runner,
   bundle: true,
   platform: 'node',

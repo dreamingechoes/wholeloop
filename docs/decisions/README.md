@@ -161,6 +161,7 @@
 | [0148](./0148-observed-repair-progress-across-candidates.md) | Observed repair progress across candidates | Accepted | 2026-10-28 |
 | [0149](./0149-historical-native-completion-after-fencing.md) | Historical native completion after fencing | Accepted | 2026-10-28 |
 | [0150](./0150-owned-correction-successors.md) | Owned correction successors | Accepted | 2026-10-28 |
+| [0151](./0151-original-repeated-qa-continuations.md) | Original repeated QA continuations | Accepted | 2026-10-28 |
 
 ## Lifecycle
 

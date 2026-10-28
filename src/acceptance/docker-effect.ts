@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import { currentBudgetReservation } from '../delivery/budget-policy.js'
+import { deliveryEffects } from '../delivery/effect-events.js'
 import { DeliveryEffects } from '../delivery/effects.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'
 import { EnvironmentLifecycle } from '../environment/lifecycle.js'
@@ -122,7 +123,8 @@ export abstract class DockerObservedHost implements AcceptanceHost {
         !authority.grant.effects.includes('report.write') ||
         latest.state !== 'waiting-external' ||
         !effectInvocation ||
-        effects.get(plan.run, prepared.intent.id).invocation !== effectInvocation ||
+        deliveryEffects(latest).records.find((effect) => effect.intent.id === prepared.intent.id)
+          ?.invocation !== effectInvocation ||
         !currentBudgetReservation(latest, effectInvocation, effects.budgetClock())
       )
         throw new AcceptanceError('behavior-authority-or-deadline')

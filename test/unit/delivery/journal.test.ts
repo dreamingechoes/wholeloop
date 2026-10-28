@@ -1,5 +1,14 @@
 import { spawnSync } from 'node:child_process'
-import { existsSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { join, resolve } from 'node:path'
 import { buildSync } from 'esbuild'
 import { describe, expect, it } from 'vitest'
@@ -218,6 +227,66 @@ describe('versioned delivery reducers and immutable event identities (RUN-02, AU
 })
 
 describe('external journal segments, projections and explicit recovery', () => {
+  it.each(['segment', 'directory', 'repository'] as const)(
+    'rechecks %s ownership after a previous successful flat journal observation',
+    (kind) =>
+      fixture(({ plan, planning }) => {
+        const prepared = planning.preparePlan(plan),
+          lifecycle = new DeliveryLifecycle(planning.sources.files.root, () => at),
+          issued = lifecycle.authority.authorize(authorization(plan, prepared.digest)),
+          original = lifecycle.track({ run: plan.run, revision: 1, grant: issued.grant.id }),
+          journal = lifecycle.journal,
+          directory = journal.files.path('delivery/journal')
+        expect(journal.get(plan.run)).toEqual(original)
+        if (kind === 'segment') {
+          const name = readdirSync(directory).sort()[0]
+          if (!name) throw new Error('Original segment required')
+          const path = join(directory, name),
+            retained = join(directory, 'retained-original')
+          renameSync(path, retained)
+          symlinkSync(retained, path)
+        } else if (kind === 'directory') {
+          const retained = `${directory}-retained`
+          renameSync(directory, retained)
+          symlinkSync(retained, directory)
+        } else mkdirSync(join(journal.files.root, '.git'))
+        expect(() => journal.snapshot()).toThrow(
+          kind === 'repository' ? 'outside git repositories' : 'aliased-journal-path',
+        )
+      }),
+  )
+  it('never reuses a caller-mutated observation or conceals later journal damage', () =>
+    fixture(({ plan, planning }) => {
+      const prepared = planning.preparePlan(plan),
+        lifecycle = new DeliveryLifecycle(planning.sources.files.root, () => at),
+        issued = lifecycle.authority.authorize(authorization(plan, prepared.digest)),
+        original = lifecycle.track({ run: plan.run, revision: 1, grant: issued.grant.id }),
+        journal = lifecycle.journal,
+        observed = journal.snapshot(),
+        state = observed.states.get(plan.run)
+      expect(state).toEqual(original)
+      if (!state) throw new Error('Original journal observation required')
+      state.state = 'completed'
+      observed.events.length = 0
+      observed.states.clear()
+      expect(journal.get(plan.run)).toEqual(original)
+      lifecycle.transition(plan.run, {
+        to: 'queued',
+        reason: 'Observe a later authorized transition.',
+      })
+      expect(journal.snapshot().states.get(plan.run)?.state).toBe('queued')
+      const directory = journal.files.path('delivery/journal'),
+        segment = readdirSync(directory).sort()[0]
+      if (!segment) throw new Error('Original immutable segment required')
+      writeFileSync(join(directory, segment), '{}\n')
+      for (const read of [
+        () => journal.snapshot(),
+        () => journal.events(),
+        () => journal.list(),
+        () => journal.get(plan.run),
+      ])
+        expect(read).toThrow()
+    }))
   it('tracks plans and grant observations idempotently without changing authority or legacy events', () =>
     fixture(({ plan, planning, state }) => {
       const prepared = planning.preparePlan(plan)

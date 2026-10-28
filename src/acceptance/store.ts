@@ -527,7 +527,8 @@ export class DeliveryAcceptance {
     }
   }
   private authority(plan: AcceptancePlan, effectId?: string) {
-    const state = this.budgets.lifecycle.journal.get(plan.run)
+    // One fresh authority/budget observation per check; never retain it across polls.
+    const { state, authority, report } = this.budgets.observation(plan.run)
     const effect = effectId
       ? deliveryEffects(state).records.find((e) => e.intent.id === effectId)
       : undefined
@@ -539,9 +540,6 @@ export class DeliveryAcceptance {
       effect.intent.grantDigest === state.grant?.digest &&
       effect.invocation &&
       currentBudgetReservation(state, effect.invocation, this.budgets.clock())
-    const authority = state.grant
-      ? this.budgets.lifecycle.authority.inspect(state.grant.id)
-      : undefined
     if (
       authority?.status !== 'active' ||
       authority.digest !== state.grant?.digest ||
@@ -566,7 +564,7 @@ export class DeliveryAcceptance {
           )
     )
       throw new AcceptanceError('unaccepted-delivery-plan')
-    if (this.budgets.inspect(plan.run).problem) throw new AcceptanceError('acceptance-budget')
+    if (report.problem) throw new AcceptanceError('acceptance-budget')
   }
   private validateResult(result: AcceptanceCaseResult, test: AcceptanceCase, plan: AcceptancePlan) {
     if (

@@ -14,6 +14,7 @@ export async function runnerRepairFixture(
     },
   ) => Promise<void>,
   mode: GateFixtureMode = 'confirmed',
+  rounds = 2,
 ) {
   await runnerWorkerFixture(
     async (input) => {
@@ -28,7 +29,7 @@ export async function runnerRepairFixture(
       observe(committed)
       const workspace = host.workspace(request, 'search').repository.path,
         userFile = store.files.path('fixture-review-settings.json')
-      writeFileSync(userFile, JSON.stringify({ version: 1, gates: { review: { rounds: 2 } } }))
+      writeFileSync(userFile, JSON.stringify({ version: 1, gates: { review: { rounds } } }))
       const engine = new FlowEngine(
           new StateStore(store.files.root),
           root,
@@ -54,6 +55,7 @@ export async function runnerRepairFixture(
       provenance: 'host-observed',
       guidance: DEFAULT_REVIEW_RUBRIC,
       stageBudget: 'plan',
+      ...(rounds > 2 ? { noProgress: rounds } : {}),
     },
   )
 }

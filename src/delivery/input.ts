@@ -155,6 +155,7 @@ export function readSourceFile(root: string, file: string, limit = SOURCE_LIMIT)
 export function readSourceBytes(root: string, file: string, limit = SOURCE_LIMIT): Buffer {
   let fd: number | undefined
   try {
+    if (!Number.isSafeInteger(limit) || limit < 0) throw new SourceInputError('unsafe-file')
     const boundary = realpathSync(root)
     const selected = resolve(boundary, file)
     // An absolute selection may use an OS alias such as /var for /private/var.
@@ -164,7 +165,9 @@ export function readSourceBytes(root: string, file: string, limit = SOURCE_LIMIT
     const before = fstatSync(fd)
     if (!before.isFile()) throw new SourceInputError('unsafe-file')
     if (before.size > limit) throw new SourceInputError('oversized')
-    const bytes = Buffer.alloc(limit + 1)
+    // A quota is an upper bound, not the allocation size for every tiny journal
+    // segment. Retain one extra byte to detect growth, then recheck the descriptor.
+    const bytes = Buffer.alloc(Math.min(limit, before.size) + 1)
     let length = 0
     while (length <= limit) {
       const read = readSync(fd, bytes, length, bytes.length - length, null)
@@ -173,9 +176,11 @@ export function readSourceBytes(root: string, file: string, limit = SOURCE_LIMIT
     }
     if (length > limit) throw new SourceInputError('oversized')
     const after = fstatSync(fd)
+    if (after.size > limit) throw new SourceInputError('oversized')
     const current = statSync(selected)
     // Refuse a file changed while reading; no mixed revision should become authoritative.
     if (
+      length !== before.size ||
       before.size !== after.size ||
       before.mtimeMs !== after.mtimeMs ||
       before.ctimeMs !== after.ctimeMs ||
