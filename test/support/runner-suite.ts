@@ -39,6 +39,7 @@ export async function runnerSuiteFixture(
     repairSensitive?: boolean
     secondRepairSensitive?: boolean
     noProgress?: number
+    successor?: boolean
   } = {},
 ) {
   if (options.production && options.unit)
@@ -277,11 +278,36 @@ export async function runnerSuiteFixture(
     },
     {
       singleUnit: !options.unit,
-      ...(options.unit || options.unattended || options.noProgress !== undefined
+      ...(options.unit ||
+      options.unattended ||
+      options.noProgress !== undefined ||
+      options.successor
         ? {
             configure: (plan) => {
               if (options.unattended) plan.policy.intervention = 'none'
               if (options.noProgress !== undefined) plan.budgets.noProgress = options.noProgress
+              if (options.successor) {
+                const first = plan.work.find((work) => work.id === 'search')
+                if (!first) throw new Error('Fixture predecessor missing')
+                plan.work.push({
+                  ...first,
+                  id: 'followup',
+                  role: 'contract',
+                  criteria: [],
+                  after: ['search'],
+                  consumes: [],
+                  produces: [
+                    {
+                      id: 'followup-contract',
+                      revision: 'v1',
+                      sha256: sourceHash('Declared successor contract.\n'),
+                      description:
+                        'An unproduced fixture contract; only predecessor incorporation is exercised.',
+                    },
+                  ],
+                })
+                for (const milestone of plan.milestones) milestone.work.push('followup')
+              }
               if (!options.unit) return
               const declared = plan.work.find((work) => work.id === 'contract')?.produces[0]
               if (!declared) throw new Error('Fixture declared contract missing')

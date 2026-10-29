@@ -165,6 +165,7 @@
 | [0152](./0152-candidate-lineage-and-stage-continuations.md) | Candidate lineage and stage continuations | Accepted | 2026-10-29 |
 | [0153](./0153-current-joint-unit-qa-readiness.md) | Current joint unit QA readiness | Accepted | 2026-10-29 |
 | [0154](./0154-recorded-correction-checkpoint-reconstruction.md) | Recorded correction checkpoint reconstruction | Accepted | 2026-10-29 |
+| [0155](./0155-qa-ready-predecessor-incorporation.md) | QA-ready predecessor incorporation | Accepted | 2026-10-29 |
 | [0156](./0156-original-runner-controls-for-assembly.md) | Original runner controls for assembly | Accepted | 2026-10-29 |
 | [0157](./0157-complete-current-unit-vectors-before-assembly.md) | Complete current unit vectors before assembly | Accepted | 2026-10-29 |
 | [0158](./0158-current-unit-qa-and-owned-assembly.md) | Current unit QA and owned assembly | Accepted | 2026-10-29 |

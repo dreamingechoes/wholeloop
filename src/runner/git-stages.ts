@@ -14,6 +14,7 @@ import { RunnerRepairCommits } from './repair-commits.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import bindingSchema from './schemas/git-binding-v1.json' with { type: 'json' }
 import type { RunnerRequest, RunnerStore } from './store.js'
+import { RunnerUnitReadiness } from './unit-readiness.js'
 
 export interface RunnerGitBinding {
   schema: 'wholeloop/delivery-runner-git-binding@1'
@@ -32,7 +33,20 @@ const MESSAGE =
 export class RunnerGitStages {
   readonly workspaces: DeliveryWorkspaces
   readonly commits: DeliveryCommits
-  constructor(readonly store: RunnerStore) {
+  private readonly readiness?: ReadonlyMap<string, RunnerUnitReadiness>
+  constructor(
+    readonly store: RunnerStore,
+    readiness?: ReadonlyMap<string, RunnerUnitReadiness>,
+  ) {
+    if (readiness) {
+      this.readiness = new Map(readiness)
+      for (const reader of this.readiness.values())
+        if (
+          !(reader instanceof RunnerUnitReadiness) ||
+          reader.store.files.root !== store.files.root
+        )
+          throw new DeliveryRunnerError('git-stage-fixed-readiness-required')
+    }
     this.workspaces = new DeliveryWorkspaces(store.files.root)
     this.commits = new DeliveryCommits(store.files.root)
   }
@@ -160,11 +174,11 @@ export class RunnerGitStages {
       throw new DeliveryRunnerError('git-stage-candidate-not-current')
     return { allocation, receipt: committed.receipt }
   }
-  private parts(
+  private async parts(
     request: Readonly<RunnerRequest>,
     plan: DeliveryPlan,
     unit: string,
-  ): IntegrationPart[] {
+  ): Promise<IntegrationPart[]> {
     const needed = new Set<string>(),
       visit = (id: string) => {
         for (const before of plan.work.find((work) => work.id === id)?.after ?? []) {
@@ -174,9 +188,51 @@ export class RunnerGitStages {
         }
       }
     visit(unit)
-    return plan.work
-      .filter((work) => needed.has(work.id) && work.role !== 'research')
-      .map((work) => {
+    const parts: IntegrationPart[] = [],
+      recheck: (() => void)[] = []
+    for (const work of plan.work.filter(
+      (work) => needed.has(work.id) && work.role !== 'research',
+    )) {
+      if (this.readiness) {
+        const reader = this.readiness.get(work.id)
+        if (!reader) throw new DeliveryRunnerError('git-stage-predecessor-readiness-required')
+        const ready = await reader.inspect(request, work.id),
+          correction = reader.review.options.correction ?? reader.verification.options.correction,
+          current = () => {
+            const candidate = this.candidate(request, work.id, correction)
+            return {
+              commit: candidate.receipt.digest,
+              head: candidate.receipt.head,
+              workspace: candidate.allocation.digest,
+            }
+          }
+        if (
+          ready.status !== 'ready' ||
+          ready.provenance !== 'host-observed' ||
+          contractDigest(ready.candidate) !== contractDigest(current())
+        )
+          throw new DeliveryRunnerError('git-stage-predecessor-qa-not-current')
+        const records = () =>
+            ['verification', 'review'].map((kind) =>
+              this.store.stage(contractDigest(request), `${kind}:${work.id}`),
+            ),
+          original = contractDigest(records()),
+          candidate = this.candidate(request, work.id, correction)
+        recheck.push(() => {
+          if (
+            contractDigest(current()) !== contractDigest(ready.candidate) ||
+            contractDigest(records()) !== original
+          )
+            throw new DeliveryRunnerError('git-stage-predecessor-qa-changed')
+        })
+        parts.push({
+          work: work.id,
+          repository: candidate.allocation.repository.repository,
+          path: candidate.allocation.repository.path,
+          ref: `refs/heads/${candidate.allocation.repository.branch}`,
+          head: candidate.receipt.head,
+        })
+      } else {
         const reviewed = this.store.stage(contractDigest(request), `review:${work.id}`),
           allocation = this.workspace(request, work.id),
           binding = this.unitBinding(request, 'commit', work.id),
@@ -189,14 +245,19 @@ export class RunnerGitStages {
           committed.record.request.workspace !== allocation.digest
         )
           throw new DeliveryRunnerError('git-stage-unreviewed-predecessor')
-        return {
+        parts.push({
           work: work.id,
           repository: allocation.repository.repository,
           path: allocation.repository.path,
           ref: `refs/heads/${allocation.repository.branch}`,
           head: committed.receipt.head,
-        }
-      })
+        })
+      }
+    }
+    // Later readers await original metadata. Recheck every earlier selected
+    // predecessor after those awaits before preparing any downstream resource.
+    for (const check of recheck) check()
+    return parts
   }
   async execute(context: RunnerStageContext): Promise<RunnerStageObservation> {
     const request = contractDigest(context.request),
@@ -242,6 +303,15 @@ export class RunnerGitStages {
         resource: '',
       }
     if (binding.kind === 'workspace') {
+      const parts = await this.parts(context.request, pinned.plan, unit)
+      if (
+        context.signal.aborted ||
+        Date.parse(context.deadline) <= Date.now() ||
+        !context.current() ||
+        this.store.stage(request, record.id)?.invocation !== context.invocation ||
+        !['prepared', 'running'].includes(this.store.stage(request, record.id)?.status ?? '')
+      )
+        throw new DeliveryRunnerError('git-stage-not-current')
       const allocation = workspaces.prepare({
         schema: 'wholeloop/delivery-workspace-request@1',
         run: context.request.run,
@@ -249,7 +319,7 @@ export class RunnerGitStages {
         plan: record.basis,
         unit,
         key: `runner-${contractDigest({ request, plan: record.basis, unit }).slice(0, 25)}`,
-        parts: this.parts(context.request, pinned.plan, unit),
+        parts,
       })
       binding.resource = allocation.digest
       this.write(binding)

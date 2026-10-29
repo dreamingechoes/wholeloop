@@ -42,7 +42,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = [],
   extraEnvironments: string[] = [],
   retiredEnvironments = new Set<string>(),
-  reopenCheckpoint = process.argv.includes('--reopen-checkpoint'),
+  predecessorReadiness = process.argv.includes('--predecessor-readiness'),
+  reopenCheckpoint = process.argv.includes('--reopen-checkpoint') || predecessorReadiness,
   unitReadiness = process.argv.includes('--unit-readiness') || reopenCheckpoint,
   reviewAfterVerification = process.argv.includes('--review-after-verification') || unitReadiness,
   repeatVerification = process.argv.includes('--repeat-verification') || reviewAfterVerification,
@@ -584,6 +585,53 @@ await runnerSuiteFixture(
                   checks.push(
                     'paused joint readiness preserves exact original evidence and failure/deadline history without a selector, command, native call or feature acceptance',
                   )
+                  if (predecessorReadiness) {
+                    const downstream = new RunnerGitStages(store, new Map([['search', readiness]]))
+                    store.lifecycle.transition(context.request.run, {
+                      to: 'queued',
+                      reason:
+                        'Incorporate the exact QA-ready predecessor into its declared successor.',
+                    })
+                    const successor = dispatch('workspace:followup'),
+                      file = join(initial.repository, 'app.txt'),
+                      bytes = readFileSync(file),
+                      before = contractDigest(store.lifecycle.journal.events())
+                    try {
+                      writeFileSync(file, 'Changed before downstream incorporation.\n')
+                      await assert.rejects(
+                        () => downstream.execute(successor),
+                        /git-stage-predecessor-qa-not-current/,
+                      )
+                      assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+                    } finally {
+                      writeFileSync(file, bytes)
+                    }
+                    const prepared = await downstream.execute(successor)
+                    assert.equal(prepared.status, 'passed', JSON.stringify(prepared))
+                    observe(prepared)
+                    const allocation = downstream.workspace(context.request, 'followup')
+                    assert.equal(allocation.parts.length, 1)
+                    assert.equal(allocation.parts[0]?.head, pinned.receipt.head)
+                    assert.deepEqual(
+                      readFileSync(join(allocation.repository.path, 'app.txt')),
+                      bytes,
+                    )
+                    store.lifecycle.transition(context.request.run, {
+                      to: 'paused',
+                      reason: 'Inspect the original downstream incorporation without replay.',
+                    })
+                    const record = store.stage(contractDigest(context.request), successor.stage.id)
+                    assert.ok(record)
+                    const journal = contractDigest(store.lifecycle.journal.events())
+                    assert.equal(
+                      (await new RunnerGitStages(store).inspect(context.request, record)).status,
+                      'passed',
+                    )
+                    assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
+                    checks.push(
+                      'a declared downstream workspace refuses changed predecessor bytes, then incorporates the exact current QA-ready corrected commit and recovers while paused without replay',
+                    )
+                  }
                 }
                 assert.equal(reviewScope.calls().length, reviewCalls)
                 assert.equal(scope.calls().length, nativeCalls)
@@ -682,6 +730,7 @@ await runnerSuiteFixture(
     secondRepairSensitive: repeatVerification,
     ...(repeated ? { exit: 7, noProgress: secondCorrection ? 3 : 2 } : {}),
     retain: true,
+    ...(predecessorReadiness ? { successor: true } : {}),
   },
 )
 const report = {

@@ -318,6 +318,10 @@ Fresh controllers can reconstruct the current correction chain from its authorit
 
 Run npm run eval:runner-verification-continuation -- --reopen-checkpoint --retire-success to extend that control with fresh controller objects, identical paused readiness, locator alias/ambiguity refusal and exact restoration without journal changes. This is an opt-in actual Docker/synthetic-process evaluation, separate from native-model and whole-route acceptance.
 
+A fixed Git stage adapter can now take an explicit per-unit map of joint-QA readers. In that configured path, every transitive code predecessor needs its own current observed verification/review proof. The downstream topic incorporates the exact corrected commit; changed bytes, unavailable QA or a missing reader refuse before workspace preparation. Controller bounds and all selected predecessor proofs are rechecked after asynchronous inspection. The older unconfigured adapter retains its initial-commit behavior; complete-route composition must explicitly configure the readers. See [ADR-0155](../decisions/0155-qa-ready-predecessor-incorporation.md).
+
+Run npm run eval:runner-verification-continuation -- --predecessor-readiness --retire-success for the opt-in actual Docker/synthetic-process control. It adds a successor contract unit to the original plan, refuses changed predecessor bytes, incorporates the restored QA-ready corrected head and recovers the resulting workspace while paused. The successor contract is not produced and the full delivery is not completed by this control.
+
 A ready result names the exact unit commit and original QA evidence. It neither completes the delivery nor supplies feature acceptance. Readiness integration with remaining domain stages, fresh behavioral verification after review repairs and public complete-route execution remain technical work. See [ADR-0153](../decisions/0153-current-joint-unit-qa-readiness.md).
 
 <!-- docnav -->

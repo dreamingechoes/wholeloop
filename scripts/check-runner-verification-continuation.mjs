@@ -19,11 +19,12 @@ if (
         '--review-after-verification',
         '--unit-readiness',
         '--reopen-checkpoint',
+        '--predecessor-readiness',
       ].includes(arg),
   )
 )
   throw new Error(
-    'Supported options: --retire-success, --repeated-failure, --second-correction, --repeat-verification, --review-after-verification, --unit-readiness, --reopen-checkpoint',
+    'Supported options: --retire-success, --repeated-failure, --second-correction, --repeat-verification, --review-after-verification, --unit-readiness, --reopen-checkpoint, --predecessor-readiness',
   )
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-verification-continuation-')),

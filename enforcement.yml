@@ -13,6 +13,8 @@ rules:
     enforcers: [src/runner/milestone-readiness.ts#RunnerMilestoneReadiness, src/runner/milestone-readiness.ts#inspect, src/integration/contracts.ts#integrationScope, test/unit/runner/milestone-readiness.test.ts]
   - id: delivery-original-assembly-control
     enforcers: [src/integration/assembly.ts#controller, src/integration/assembly.ts#host, src/integration/assembly.ts#requestCancellation, src/integration/git-process.ts#invoke, test/unit/integration/assembly.test.ts, test/unit/integration/git-process.test.ts]
+  - id: delivery-qa-ready-predecessors
+    enforcers: [src/runner/git-stages.ts#parts, src/runner/git-stages.ts#execute, src/runner/unit-readiness.ts#inspect, test/unit/runner/predecessor-readiness.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-recorded-correction-checkpoints
     enforcers: [src/runner/repair-commits.ts#reopen, src/runner/repair-commits.ts#historical, src/runner/git-stages.ts#candidate, test/unit/runner/repair-checkpoints.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-current-unit-qa-readiness
