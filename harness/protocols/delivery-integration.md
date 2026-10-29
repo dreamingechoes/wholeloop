@@ -1,5 +1,7 @@
 # Delivery integration
 
+⛔ `delivery-whole-feature-product-readiness`: before exposing feature acceptance inputs, reopen every current original integration verdict and require one tested assembly whose declared milestone closure covers all work, criteria and milestones. Every procedure must have passing evidence in that same product report under the same pre-builder definition. Recheck all products after asynchronous inspection; independent green products, partial vectors or changed proof expose no input. Readiness grants no acceptance, publication, replay or new milestone.
+
 ⛔ `delivery-current-assembly-qa`: before exposing a combined candidate for product QA, reopen the complete original observed unit-QA vector and require its exact owned assembly, matching run/plan/source/grant/milestone and positively closed Git effects. Recheck the unit vector, assembly and basis after asynchronous observation; missing, changed or partial evidence yields no candidates.
 
 Assembly readiness is an input to whole-product verification. It grants no integration verdict, feature acceptance, root completion or publication. Inspection may reconcile original metadata but never issues checkout, merge, a suite or a worker. Keep paused recovery separate from dispatch authority.

@@ -141,5 +141,11 @@ Run npm run eval:runner-assembly-readiness -- --product-qa-browser --retire-succ
 
 The optional interactive capability is controller-internal. It does not expose a network control endpoint or grant fixture transports a native fallback. Cancellation addresses the original exec nonce after revocation; lost ownership stays unknown rather than starting another client. See [ADR-0164](../decisions/0164-owned-browser-product-verification.md).
 
+## Require one whole product before feature acceptance
+
+The internal feature reader now requires every current original integration stage and one declared milestone whose dependency closure covers all work, criteria and milestones. That milestone's passing product report must also contain passing cases for every declared procedure. Separate green terminal products without an integration join stay blocked. The reader exposes exact candidate, assembly, pre-builder acceptance plan and report identities only after rechecking the complete product vector; ready still grants no feature acceptance or publication.
+
+After a successful disposable runner product-QA trial, run npm run eval:runner-feature-readiness -- /path/to/retained/fixture/state using its printed store path. This developer control reopens actual earlier evidence without models, Docker calls or new attempts. It substitutes the report locator and separately removes the original consumption binding during asynchronous inspection, requires refusal, restores the original bytes and checks identical readiness and journal. Use a disposable fixture: the fault injection retains report.json.feature-readiness-original beside its original report locator for recovery. It does not certify authenticated models or hosted effects. See [ADR-0165](../decisions/0165-current-whole-feature-product-input.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

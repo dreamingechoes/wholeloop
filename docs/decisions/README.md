@@ -175,6 +175,7 @@
 | [0162](./0162-owned-root-product-verification.md) | Owned root product verification | Accepted | 2026-10-29 |
 | [0163](./0163-owned-private-product-verification.md) | Owned private product verification | Accepted | 2026-10-29 |
 | [0164](./0164-owned-browser-product-verification.md) | Owned browser product verification | Accepted | 2026-10-29 |
+| [0165](./0165-current-whole-feature-product-input.md) | Current whole-feature product input | Accepted | 2026-10-29 |
 
 ## Lifecycle
 
