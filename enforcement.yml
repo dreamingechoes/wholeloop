@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-original-docker-assertions
+    enforcers: [src/acceptance/case-observation.ts#observedDockerAcceptanceCase, src/acceptance/docker-effect.ts#execute, src/acceptance/store.ts#observedCase, test/unit/acceptance/case-observation.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-current-assembly-qa
     enforcers: [src/runner/assembly-readiness.ts#RunnerAssemblyReadiness, src/runner/assembly-readiness.ts#inspect, src/runner/milestone-readiness.ts#inspect, src/integration/assembly.ts#inspect, test/unit/runner/assembly-readiness.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-complete-unit-qa-vector

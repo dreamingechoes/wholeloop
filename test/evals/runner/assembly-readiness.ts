@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { observedDockerAcceptanceCase } from '../../../src/acceptance/case-observation.js'
+import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { EnvironmentLifecycle } from '../../../src/environment/lifecycle.js'
 import { EnvironmentResources } from '../../../src/environment/runtime.js'
@@ -50,6 +52,40 @@ await runnerSuiteFixture(
       clearTimeout(verifyTimer)
     }
     console.log('Original actual suite and independent verification passed')
+    const acceptance = new DeliveryAcceptance(store.files.root),
+      cases = acceptance.observedResults(selection.acceptance, 'suite')
+    assert.equal(cases.length, 1)
+    const original = cases[0]
+    assert.ok(original)
+    const observedCase = () =>
+        observedDockerAcceptanceCase(acceptance, selection.acceptance, 'suite', original.key),
+      caseProof = observedCase(),
+      casePath = store.files.path(
+        `delivery/acceptance-cases/${selection.acceptance}/suite/${original.key}/result.json`,
+      ),
+      caseBytes = readFileSync(casePath),
+      caseJournal = contractDigest(store.lifecycle.journal.events())
+    assert.equal(caseProof.result.provenance, 'host-observed')
+    assert.equal(caseProof.nativeOwnership, 'not-established')
+    assert.equal(caseProof.currentAcceptance, 'not-established')
+    try {
+      writeFileSync(
+        casePath,
+        JSON.stringify({
+          ...original,
+          status: 'failed',
+          assertions: original.assertions.map((assertion) => ({ ...assertion, status: 'failed' })),
+        }),
+      )
+      assert.throws(observedCase, /original-docker-case-observation-mismatch/)
+    } finally {
+      writeFileSync(casePath, caseBytes)
+    }
+    assert.deepEqual(observedCase(), caseProof)
+    assert.equal(contractDigest(store.lifecycle.journal.events()), caseJournal)
+    checks.push(
+      'exact original assertion/capture artifacts reopen through their recorded Docker effect; changed case claims refuse and restoration preserves proof without replay or native/current acceptance',
+    )
     const reviewContext = dispatch('review:search'),
       reviewAbort = new AbortController(),
       reviewTimer = setTimeout(() => reviewAbort.abort(), 120000)

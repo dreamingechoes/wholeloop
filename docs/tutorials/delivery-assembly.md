@@ -99,5 +99,11 @@ The internal assembly-readiness reader requires the complete current observed un
 
 Run npm run eval:runner-assembly-readiness -- --retire-success for the opt-in actual Docker/synthetic-worker control. It executes one declared application suite and independent verification/review, assembles the exact unit vector through bounded owned Git operations, refuses changed assembled bytes and recovers identical evidence after restoration and paused fresh-object inspection. No account, authenticated model or publication is used. The exact original environment retires. Readiness still leaves the root integration stage running and whole-product QA and acceptance pending. See [ADR-0158](../decisions/0158-current-unit-qa-and-owned-assembly.md).
 
+## Original assertion evidence during recovery
+
+The internal fixed-host case observer reopens an exact acceptance-plan/case/key receipt against its original journaled Docker test effect. It checks actual artifact bytes, capture identities, assertion outcomes, provenance and original environment/candidate bindings. Stored passing flags or copied host labels cannot replace that proof. The assembly-readiness evaluation also exercises a changed-case refusal and identical restoration without replay.
+
+This is historical assertion evidence. Its result explicitly leaves native ownership and current acceptance unestablished; the controller must still audit the original process scope, deadlines and exact current assembled candidate before approving whole-product QA. See [ADR-0159](../decisions/0159-original-docker-assertion-observations.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

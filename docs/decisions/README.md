@@ -169,6 +169,7 @@
 | [0156](./0156-original-runner-controls-for-assembly.md) | Original runner controls for assembly | Accepted | 2026-10-29 |
 | [0157](./0157-complete-current-unit-vectors-before-assembly.md) | Complete current unit vectors before assembly | Accepted | 2026-10-29 |
 | [0158](./0158-current-unit-qa-and-owned-assembly.md) | Current unit QA and owned assembly | Accepted | 2026-10-29 |
+| [0159](./0159-original-docker-assertion-observations.md) | Original Docker assertion observations | Accepted | 2026-10-29 |
 
 ## Lifecycle
 
