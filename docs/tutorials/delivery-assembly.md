@@ -81,5 +81,11 @@ npm run eval:assembly -- --retire-success
 
 This opt-in evaluation creates two disposable local Git repositories and actual owned Docker services. Backend and frontend units pass separately while the combined API fails. A committed backend repair creates a new complete assembly and passes the unchanged contract/API cases. The test preserves personal targets, worker files, old failures and budgeted failed/passed artifacts, then observes exact owned resource retirement. Reports and fixtures remain in the printed external locations. No model account, external service, remote Git write, pull request or project merge is exercised. See the [integration specification](../../roadmap/specifications/autonomous-delivery/05-integration-and-change-impact.md) for later change-impact and publication boundaries.
 
+## Foreground runner ownership
+
+The internal assembly adapter can accept the same fixed controller control used by owned Git stages. Every original wrapper receives the narrower deadline, combined cancellation signals and current-ownership watcher; its actual operation is registered before input. Cancelled, expired or fenced controllers cannot prepare a resource or admit another effect. A fresh controller can request cancellation of the exact original pending operation by its retained nonce, including after revocation; no stored PID is signalled.
+
+Original reconciliation and paused inspection remain available without dispatch authority and do not replay checkout or merge. The unconfigured domain API and existing schemas remain unchanged. This control is a prerequisite for runner composition; it does not establish an executed complete route or whole-product acceptance. See [ADR-0156](../decisions/0156-original-runner-controls-for-assembly.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

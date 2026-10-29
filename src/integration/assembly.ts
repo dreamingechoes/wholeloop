@@ -12,7 +12,12 @@ import type { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { ancestor, git, registeredWorktrees, repository } from '../worktrees/git.js'
 import { IntegrationError, type IntegrationPart, integrationScope } from './contracts.js'
-import { AssemblyGitProcess, assemblyGitArguments, assertAssemblyGit } from './git-process.js'
+import {
+  type AssemblyGitControl,
+  AssemblyGitProcess,
+  assemblyGitArguments,
+  assertAssemblyGit,
+} from './git-process.js'
 import { observeRequiredParts } from './parts.js'
 import recordSchema from './schemas/assembly-record-v1.json' with { type: 'json' }
 import requestSchema from './schemas/assembly-request-v1.json' with { type: 'json' }
@@ -68,9 +73,20 @@ export class IntegrationAssembly {
   constructor(
     store?: string,
     readonly planAccepted?: (grant: string, plan: string) => boolean,
+    readonly control?: AssemblyGitControl,
   ) {
     this.effects = new DeliveryEffects(store)
     this.files = this.effects.lifecycle.journal.files
+  }
+  private controller() {
+    if (
+      this.control &&
+      (this.control.signal.aborted ||
+        !Number.isFinite(Date.parse(this.control.deadline)) ||
+        Date.parse(this.control.deadline) <= Date.now() ||
+        !this.control.current())
+    )
+      throw new IntegrationError('assembly-controller-fenced')
   }
   private authority(request: AssemblyRequest, observeGit = true) {
     const state = this.effects.lifecycle.journal.get(request.run),
@@ -103,6 +119,7 @@ export class IntegrationAssembly {
     return { state, plan: prepared.plan, grant: observed.grant, grantDigest: observed.digest }
   }
   prepare(value: unknown): AssemblyRecord {
+    this.controller()
     acceptanceShape(value, requestSchema)
     const request = structuredClone(value) as AssemblyRequest,
       { plan, grant, grantDigest } = this.authority(request),
@@ -303,6 +320,7 @@ export class IntegrationAssembly {
     }
     return {
       eligible: () => {
+        this.controller()
         check()
         return {
           allowed: true,
@@ -317,15 +335,22 @@ export class IntegrationAssembly {
         await new AssemblyGitProcess(
           this.files,
           `delivery/assemblies/${record.digest}/operations/${invocation}`,
-        ).invoke(cwd, args, effect.deadline ?? '', signal, () => {
-          // A create command changes its own precondition; live authority/input checks remain valid throughout it.
-          this.latest(record)
-          const { state, grant, grantDigest } = this.authority(record.assembly.request, false)
-          if (grant.id !== record.assembly.grant || grantDigest !== record.assembly.grantDigest)
-            throw new IntegrationError('changed-assembly-grant')
-          if (!['queued', 'running', 'waiting-external'].includes(state.state))
-            throw new IntegrationError('assembly-state-fenced')
-        })
+        ).invoke(
+          cwd,
+          args,
+          effect.deadline ?? '',
+          signal,
+          () => {
+            // A create command changes its own precondition; live authority/input checks remain valid throughout it.
+            this.latest(record)
+            const { state, grant, grantDigest } = this.authority(record.assembly.request, false)
+            if (grant.id !== record.assembly.grant || grantDigest !== record.assembly.grantDigest)
+              throw new IntegrationError('changed-assembly-grant')
+            if (!['queued', 'running', 'waiting-external'].includes(state.state))
+              throw new IntegrationError('assembly-state-fenced')
+          },
+          this.control,
+        )
       },
       observe: async (intent, invocation) => {
         const observed = new AssemblyGitProcess(
@@ -393,6 +418,7 @@ export class IntegrationAssembly {
     }
   }
   async execute(digest: string) {
+    this.controller()
     const record = this.get(digest),
       request = record.assembly.request
     this.current(record)
@@ -422,6 +448,7 @@ export class IntegrationAssembly {
       if (effect && ['pending', 'unknown'].includes(effect.status))
         effect = await this.effects.reconcile(request.run, effect.intent.id, host)
       else {
+        this.controller()
         if (
           this.effects.inspect(request.run).some((e) => ['pending', 'unknown'].includes(e.status))
         )
@@ -470,6 +497,17 @@ export class IntegrationAssembly {
       if (observed.status === 'unknown' || observed.status === 'pending') break
     }
     return this.inspect(digest)
+  }
+  requestCancellation(digest: string) {
+    const record = this.get(digest)
+    for (const step of this.steps(record)) {
+      const effect = this.find(record, step)
+      if (effect?.invocation && ['pending', 'unknown'].includes(effect.status))
+        new AssemblyGitProcess(
+          this.files,
+          `delivery/assemblies/${record.digest}/operations/${effect.invocation}`,
+        ).requestCancellation()
+    }
   }
   inspect(digest: string) {
     const record = this.get(digest),

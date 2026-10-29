@@ -57,6 +57,93 @@ it('creates and commits the complete ordered assembly without changing personal 
     expect((await assembly.execute(record.digest)).status).toBe('assembled')
     expect(assembly.effects.inspect(record.assembly.request.run)).toHaveLength(3)
   }))
+it.each(['expired', 'cancelled', 'fenced'] as const)(
+  'refuses %s runner control before assembly preparation or effects',
+  (mode) =>
+    assemblyFixture(async ({ assembly, record }) => {
+      const abort = new AbortController()
+      if (mode === 'cancelled') abort.abort()
+      const controlled = new IntegrationAssembly(assembly.files.root, undefined, {
+        deadline: new Date(Date.now() + (mode === 'expired' ? -1 : 15000)).toISOString(),
+        signal: abort.signal,
+        current: () => mode !== 'fenced',
+      })
+      expect(() => controlled.prepare(record.assembly.request)).toThrow(
+        'assembly-controller-fenced',
+      )
+      await expect(controlled.execute(record.digest)).rejects.toThrow('assembly-controller-fenced')
+      expect(assembly.effects.inspect(record.assembly.request.run)).toHaveLength(0)
+    }),
+)
+it('pins original runner bounds on every assembly wrapper and preserves paused recovery', () =>
+  assemblyFixture(async ({ assembly, record }) => {
+    const deadline = new Date(Date.now() + 15000).toISOString(),
+      started: { operation: string; pid: number }[] = [],
+      controlled = new IntegrationAssembly(assembly.files.root, undefined, {
+        deadline,
+        signal: new AbortController().signal,
+        current: () => true,
+        started: (runtime) => {
+          const effect = assembly.effects
+            .inspect(record.assembly.request.run)
+            .find((effect) => effect.invocation && effect.status === 'pending')
+          if (!effect?.invocation) throw new Error('Original assembly invocation missing')
+          const path = `delivery/assemblies/${record.digest}/operations/${effect.invocation}`,
+            intent = JSON.parse(readFileSync(assembly.files.path(`${path}/intent.json`), 'utf8')),
+            registration = JSON.parse(
+              readFileSync(assembly.files.path(`${path}/started.json`), 'utf8'),
+            )
+          expect(intent.deadline).toBe(deadline)
+          expect(registration.pid).toBe(runtime.pid)
+          expect(registration.operation).toBe(runtime.operation)
+          started.push(runtime)
+        },
+      })
+    expect((await controlled.execute(record.digest)).status).toBe('assembled')
+    expect(started).toHaveLength(3)
+    assembly.effects.lifecycle.transition(record.assembly.request.run, {
+      to: 'paused',
+      reason: 'Read original controlled assembly without replay.',
+    })
+    expect(
+      (await new IntegrationAssembly(assembly.files.root).reconcile(record.digest)).status,
+    ).toBe('assembled')
+    expect(started).toHaveLength(3)
+    expect(assembly.effects.inspect(record.assembly.request.run)).toHaveLength(3)
+  }))
+it('cancels the exact original assembly nonce from a fresh controller after revocation', () =>
+  assemblyFixture(async ({ assembly, record }) => {
+    const controlled = new IntegrationAssembly(assembly.files.root, undefined, {
+      deadline: new Date(Date.now() + 15000).toISOString(),
+      signal: new AbortController().signal,
+      current: () => true,
+      started: () => {
+        assembly.effects.lifecycle.authority.revoke({
+          schema: 'wholeloop/delivery-revocation-request@1',
+          grant: record.assembly.grant,
+          operator: 'Fixture Operator',
+          reason: 'Revoke after original assembly registration.',
+        })
+      },
+    })
+    // The effect layer retains the issued owner instead of converting a lost
+    // invocation result into an exception or permission to replay the merge.
+    expect(await controlled.execute(record.digest)).toMatchObject({
+      status: 'stale',
+      repositories: [{ status: 'unknown' }],
+    })
+    const effects = assembly.effects.inspect(record.assembly.request.run),
+      invocation = effects[0]?.invocation
+    expect(effects).toHaveLength(1)
+    if (!invocation) throw new Error('Original issued assembly missing')
+    const path = `delivery/assemblies/${record.digest}/operations/${invocation}`,
+      intent = JSON.parse(readFileSync(assembly.files.path(`${path}/intent.json`), 'utf8'))
+    new IntegrationAssembly(assembly.files.root).requestCancellation(record.digest)
+    expect(JSON.parse(readFileSync(assembly.files.path(`${path}/cancel.json`), 'utf8'))).toEqual({
+      nonce: intent.nonce,
+    })
+    expect(assembly.effects.inspect(record.assembly.request.run)).toHaveLength(1)
+  }))
 it('keeps two repository assembly separate from whole-feature acceptance and publication', () =>
   assemblyFixture(
     async ({ assembly, record }) => {
