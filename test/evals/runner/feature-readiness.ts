@@ -7,6 +7,7 @@ import { RunnerAcceptanceStages } from '../../../src/runner/acceptance-stages.js
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
 import { RunnerFeatureReadiness } from '../../../src/runner/feature-readiness.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
+import { RunnerHandoffStages } from '../../../src/runner/handoff-stages.js'
 import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.js'
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
@@ -126,7 +127,7 @@ console.log(
   }),
 )
 
-if (process.argv.includes('--acceptance')) {
+if (process.argv.includes('--acceptance') || process.argv.includes('--handoff')) {
   const stage = store.stage(binding.request, 'acceptance')
   assert.ok(stage)
   const adapter = new RunnerAcceptanceStages(store, feature, {
@@ -167,6 +168,52 @@ if (process.argv.includes('--acceptance')) {
       freshController: 'observed',
       lostInput: 'refused',
       sameEvidenceForeignCandidate: 'refused',
+      restoration: 'identical',
+      journal: 'unchanged',
+      replay: 'not-performed',
+    }),
+  )
+}
+
+if (process.argv.includes('--handoff')) {
+  const stage = store.stage(binding.request, 'handoff')
+  assert.ok(stage)
+  const adapter = new RunnerHandoffStages(
+      store,
+      new RunnerAcceptanceStages(store, feature, {
+        identity: request.host,
+        requests: deny,
+        host: deny,
+      }),
+    ),
+    observed = await adapter.inspect(request, stage),
+    endpoint = await adapter.endpoint(request, plan, new AbortController().signal)
+  assert.equal(observed.status, 'passed', JSON.stringify(observed))
+  assert.equal(observed.evidence, stage.evidence)
+  assert.equal(endpoint.current, true)
+  assert.equal(endpoint.outcome, 'code-ready')
+  const path = store.files.path(`delivery/runner-handoffs/${stage.invocation}/binding.json`),
+    retained = `${path}.metadata-original`
+  assert.equal(existsSync(retained), false)
+  try {
+    renameSync(path, retained)
+    assert.equal((await adapter.inspect(request, stage)).status, 'unknown')
+    assert.equal(
+      (await adapter.endpoint(request, plan, new AbortController().signal)).current,
+      false,
+    )
+  } finally {
+    if (existsSync(retained)) renameSync(retained, path)
+  }
+  assert.deepEqual(await adapter.inspect(request, stage), observed)
+  assert.deepEqual(await adapter.endpoint(request, plan, new AbortController().signal), endpoint)
+  assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+  console.log(
+    JSON.stringify({
+      localEndpoint: 'code-ready',
+      evidence: endpoint.evidence,
+      freshController: 'observed',
+      lostReport: 'refused',
       restoration: 'identical',
       journal: 'unchanged',
       replay: 'not-performed',

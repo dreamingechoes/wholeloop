@@ -149,6 +149,17 @@ export class RunnerAcceptanceStages {
       throw new DeliveryRunnerError('acceptance-stage-original-input-unavailable')
     return binding
   }
+  /** Original input identity is separate from the current acceptance verdict. */
+  originalInput(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    const binding = this.read(request, record)
+    if (!binding) return undefined
+    return {
+      product: structuredClone(binding.product),
+      artifact: { ...binding.artifact },
+      deadline: binding.deadline,
+      evidence: contractDigest(binding),
+    }
+  }
   async execute(input: RunnerStageContext): Promise<RunnerStageObservation> {
     const context = Object.freeze({
         ...input,

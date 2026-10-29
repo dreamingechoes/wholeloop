@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-owned-local-handoff
+    enforcers: [src/runner/handoff-stages.ts#RunnerHandoffStages, src/runner/handoff-stages.ts#proof, src/runner/handoff-stages.ts#read, src/runner/handoff-stages.ts#execute, src/runner/handoff-stages.ts#inspect, src/runner/handoff-stages.ts#endpoint, src/runner/handoff-stages.ts#stop, src/runner/acceptance-stages.ts#originalInput, test/unit/runner/handoff-stages.test.ts, test/evals/runner/assembly-readiness.ts, test/evals/runner/feature-readiness.ts]
   - id: delivery-owned-feature-acceptance
     enforcers: [src/runner/acceptance-stages.ts#RunnerAcceptanceStages, src/runner/acceptance-stages.ts#context, src/runner/acceptance-stages.ts#read, src/runner/acceptance-stages.ts#execute, src/runner/acceptance-stages.ts#inspect, src/runner/acceptance-stages.ts#stop, src/runner/decision-stages.ts#execute, src/runner/decision-stages.ts#inspect, test/unit/runner/acceptance-stages.test.ts, test/evals/runner/assembly-readiness.ts, test/evals/runner/feature-readiness.ts]
   - id: delivery-whole-feature-product-readiness

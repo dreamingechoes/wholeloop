@@ -20,6 +20,7 @@ import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.
 import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
 import { RunnerFeatureReadiness } from '../../../src/runner/feature-readiness.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
+import { RunnerHandoffStages } from '../../../src/runner/handoff-stages.js'
 import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.js'
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
@@ -37,7 +38,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   acceptanceReject = process.argv.includes('--acceptance-reject'),
-  acceptanceStage = acceptanceReject || process.argv.includes('--acceptance'),
+  localHandoff = process.argv.includes('--handoff'),
+  acceptanceStage = localHandoff || acceptanceReject || process.argv.includes('--acceptance'),
   productQaApi = process.argv.includes('--product-qa-api'),
   browserMismatch = process.argv.includes('--product-qa-browser-failure'),
   productQaBrowser = browserMismatch || process.argv.includes('--product-qa-browser'),
@@ -510,6 +512,83 @@ await runnerSuiteFixture(
           'a lost consumed acceptance input remains unknown; exact restoration recovers identical original decisions and native owners without selecting judgment or changing the journal',
         )
         console.log(`Original feature acceptance observed: ${accepted.status}`)
+        if (localHandoff) {
+          const handoffContext = dispatch('handoff')
+          handoffContext.deadline = new Date(
+            Math.min(Date.parse(handoffContext.deadline), Date.now() + 120000),
+          ).toISOString()
+          const handoff = new RunnerHandoffStages(store, acceptance),
+            delivered = await handoff.execute(handoffContext)
+          assert.equal(delivered.status, 'passed', JSON.stringify(delivered))
+          assert.equal(delivered.invocationState, 'stopped')
+          assert.equal(delivered.provenance, 'host-observed')
+          observe(delivered)
+          const endpoint = await handoff.endpoint(
+              request,
+              context.plan,
+              new AbortController().signal,
+            ),
+            before = contractDigest(store.lifecycle.journal.events()),
+            record = store.stage(digest, 'handoff'),
+            path = store.files.path(
+              `delivery/runner-handoffs/${handoffContext.invocation}/binding.json`,
+            ),
+            retained = `${path}.observed-original`
+          assert.ok(record)
+          assert.equal(endpoint.current, true)
+          assert.equal(endpoint.outcome, 'code-ready')
+          assert.equal(endpoint.provenance, 'host-observed')
+          assert.deepEqual(
+            new RunnerNativeScope(store.files, handoffContext.invocation).calls(),
+            [],
+          )
+          assert.equal(existsSync(retained), false)
+          try {
+            renameSync(path, retained)
+            assert.equal((await handoff.inspect(request, record)).status, 'unknown')
+            assert.equal(
+              (await handoff.endpoint(request, context.plan, new AbortController().signal)).current,
+              false,
+            )
+          } finally {
+            renameSync(retained, path)
+          }
+          assert.deepEqual(await handoff.inspect(request, record), delivered)
+          assert.deepEqual(
+            await handoff.endpoint(request, context.plan, new AbortController().signal),
+            endpoint,
+          )
+          const changed = join(assembled.path, 'app.cjs'),
+            bytes = readFileSync(changed)
+          store.files.atomic('fixture-handoff-original-app.cjs', bytes)
+          try {
+            writeFileSync(
+              changed,
+              Buffer.concat([
+                bytes,
+                Buffer.from('\n// Observe stale handoff proof without replay.\n'),
+              ]),
+            )
+            assert.equal(
+              (await handoff.endpoint(request, context.plan, new AbortController().signal)).current,
+              false,
+            )
+          } finally {
+            writeFileSync(changed, bytes)
+          }
+          assert.deepEqual(
+            await handoff.endpoint(request, context.plan, new AbortController().signal),
+            endpoint,
+          )
+          assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+          checks.push(
+            'original accepted topics produce one bounded owned-core report and a current code-ready local endpoint without another native process or publication',
+          )
+          checks.push(
+            'lost handoff locators and changed candidate bytes refuse local completion; exact restoration recovers identical endpoint proof and journal without replay',
+          )
+          console.log('Original local endpoint observed: code-ready')
+        }
       }
       product = { host, proof }
       assert.deepEqual(
@@ -659,6 +738,7 @@ const report = {
       : 'accepted-original-fixture-only'
     : 'not-established',
   publication: 'not-performed',
+  localEndpoint: localHandoff ? 'code-ready-original-fixture-only' : 'not-established',
 }
 mkdirSync(destination, { recursive: true })
 writeFileSync(join(destination, 'report.json'), `${JSON.stringify(report, null, 2)}\n`)

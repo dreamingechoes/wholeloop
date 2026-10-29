@@ -6,8 +6,10 @@ import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 
 const args = process.argv.slice(2)
-if (!(args.length === 1 || (args.length === 2 && args[1] === '--acceptance')))
-  throw new Error('Supply one retained disposable runner fixture store and optional --acceptance')
+if (!(args.length === 1 || (args.length === 2 && ['--acceptance', '--handoff'].includes(args[1]))))
+  throw new Error(
+    'Supply one retained disposable runner fixture store and optional --acceptance or --handoff',
+  )
 const root = dirname(dirname(fileURLToPath(import.meta.url))),
   destination = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-feature-readiness-'))),
   runner = join(destination, 'runner.mjs')
