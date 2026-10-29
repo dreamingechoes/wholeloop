@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 
 const args = process.argv.slice(2)
-if (args.length !== 1) throw new Error('Supply one retained disposable runner fixture store')
+if (!(args.length === 1 || (args.length === 2 && args[1] === '--acceptance')))
+  throw new Error('Supply one retained disposable runner fixture store and optional --acceptance')
 const root = dirname(dirname(fileURLToPath(import.meta.url))),
   destination = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-feature-readiness-'))),
   runner = join(destination, 'runner.mjs')

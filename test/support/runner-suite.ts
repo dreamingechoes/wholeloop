@@ -50,6 +50,7 @@ export async function runnerSuiteFixture(
     privateMismatch?: boolean
     productQaBrowser?: boolean
     browserMismatch?: boolean
+    acceptanceStage?: boolean
   } = {},
 ) {
   if (options.production && options.unit)
@@ -477,11 +478,40 @@ export async function runnerSuiteFixture(
     {
       singleUnit: !options.unit,
       ...(options.unit ||
+      options.acceptanceStage ||
       options.unattended ||
       options.noProgress !== undefined ||
       options.successor
         ? {
-            configure: (plan) => {
+            configure: (plan, files) => {
+              if (options.acceptanceStage) {
+                plan.policy.intervention = 'none'
+                const ref = 'rubrics/acceptance.json',
+                  body = JSON.stringify({
+                    schema: 'wholeloop/delegated-decision-rubric@1',
+                    decision: 'acceptance',
+                    purpose:
+                      'Accept only the complete original product and actual criterion evidence.',
+                    rules: [
+                      {
+                        id: 'product',
+                        text: 'Require current whole-product QA and independent exact-input judgment.',
+                      },
+                    ],
+                    outcomes: ['accept', 'reject'],
+                    unknowns: { allowed: [], defaults: [] },
+                    timeoutMs: 10000,
+                  })
+                files.atomic(ref, body)
+                plan.policy.delegations = [
+                  {
+                    id: 'acceptance',
+                    rubric: { ref, sha256: sourceHash(body) },
+                    evidence: ['production'],
+                    fallback: 'blocked',
+                  },
+                ]
+              }
               if (options.unattended) plan.policy.intervention = 'none'
               if (options.noProgress !== undefined) plan.budgets.noProgress = options.noProgress
               if (options.successor) {
@@ -523,6 +553,7 @@ export async function runnerSuiteFixture(
       ...(options.guidance !== undefined || options.production
         ? { guidance: options.guidance ?? DEFAULT_REVIEW_RUBRIC }
         : {}),
+      ...(options.acceptanceStage ? { decisions: ['acceptance' as const] } : {}),
       ...(options.backend ? { stageBudget: 'plan' as const } : {}),
       ...(options.retain ? { retain: true } : {}),
     },

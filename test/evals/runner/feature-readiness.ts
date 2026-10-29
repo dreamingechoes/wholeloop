@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync, renameSync, writeFileSync } from
 import { join } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
+import { RunnerAcceptanceStages } from '../../../src/runner/acceptance-stages.js'
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
 import { RunnerFeatureReadiness } from '../../../src/runner/feature-readiness.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
@@ -124,3 +125,51 @@ console.log(
     replay: 'not-performed',
   }),
 )
+
+if (process.argv.includes('--acceptance')) {
+  const stage = store.stage(binding.request, 'acceptance')
+  assert.ok(stage)
+  const adapter = new RunnerAcceptanceStages(store, feature, {
+      identity: request.host,
+      requests: deny,
+      host: deny,
+    }),
+    observed = await adapter.inspect(request, stage)
+  assert.equal(observed.status, stage.status, JSON.stringify(observed))
+  assert.equal(observed.invocationState, 'stopped')
+  assert.equal(observed.evidence, stage.evidence)
+  const inspectProduct = feature.inspect.bind(feature)
+  try {
+    feature.inspect = async (...args) => ({
+      ...(await inspectProduct(...args)),
+      candidate: '0'.repeat(64),
+    })
+    assert.equal((await adapter.inspect(request, stage)).status, 'unknown')
+  } finally {
+    feature.inspect = inspectProduct
+  }
+  assert.deepEqual(await adapter.inspect(request, stage), observed)
+  const path = store.files.path(`delivery/runner-acceptance/${stage.invocation}/binding.json`),
+    retained = `${path}.metadata-original`
+  assert.equal(existsSync(retained), false)
+  try {
+    renameSync(path, retained)
+    assert.equal((await adapter.inspect(request, stage)).status, 'unknown')
+  } finally {
+    if (existsSync(retained)) renameSync(retained, path)
+  }
+  assert.deepEqual(await adapter.inspect(request, stage), observed)
+  assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+  console.log(
+    JSON.stringify({
+      acceptance: observed.status,
+      evidence: observed.evidence,
+      freshController: 'observed',
+      lostInput: 'refused',
+      sameEvidenceForeignCandidate: 'refused',
+      restoration: 'identical',
+      journal: 'unchanged',
+      replay: 'not-performed',
+    }),
+  )
+}

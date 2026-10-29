@@ -176,6 +176,7 @@
 | [0163](./0163-owned-private-product-verification.md) | Owned private product verification | Accepted | 2026-10-29 |
 | [0164](./0164-owned-browser-product-verification.md) | Owned browser product verification | Accepted | 2026-10-29 |
 | [0165](./0165-current-whole-feature-product-input.md) | Current whole-feature product input | Accepted | 2026-10-29 |
+| [0166](./0166-owned-delegated-feature-acceptance.md) | Owned delegated feature acceptance | Accepted | 2026-10-29 |
 
 ## Lifecycle
 

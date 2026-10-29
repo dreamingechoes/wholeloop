@@ -15,23 +15,29 @@ import { IntegrationAssembly } from '../../../src/integration/assembly.js'
 import { integrationScope } from '../../../src/integration/contracts.js'
 import { IntegrationCandidates } from '../../../src/integration/store.js'
 import { integrationVerificationKey } from '../../../src/integration/verification.js'
+import { RunnerAcceptanceStages } from '../../../src/runner/acceptance-stages.js'
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
 import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
+import { RunnerFeatureReadiness } from '../../../src/runner/feature-readiness.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
 import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.js'
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
+import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { RunnerUnitReadiness } from '../../../src/runner/unit-readiness.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
 import { withBrowserService } from '../../support/browser.js'
 import { gateWorkerFixture } from '../../support/gate-worker.js'
+import { runnerAcceptanceOptions } from '../../support/runner-acceptance.js'
 import { runnerSuiteFixture } from '../../support/runner-suite.js'
 
 const destination = process.argv[2]
 if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
+  acceptanceReject = process.argv.includes('--acceptance-reject'),
+  acceptanceStage = acceptanceReject || process.argv.includes('--acceptance'),
   productQaApi = process.argv.includes('--product-qa-api'),
   browserMismatch = process.argv.includes('--product-qa-browser-failure'),
   productQaBrowser = browserMismatch || process.argv.includes('--product-qa-browser'),
@@ -44,6 +50,7 @@ const productQaFailure = process.argv.includes('--product-qa-failure'),
     productQaApi ||
     productQaPrivate ||
     productQaBrowser ||
+    acceptanceStage ||
     process.argv.includes('--product-qa')
 await runnerSuiteFixture(
   async ({ store, context, engine, selection, driver, dispatch, observe }) => {
@@ -449,6 +456,61 @@ await runnerSuiteFixture(
       }
       console.log(`Original root product QA observed: ${proof.status}`)
       observe(proof)
+      if (acceptanceStage) {
+        const acceptanceContext = dispatch('acceptance')
+        acceptanceContext.deadline = new Date(
+          Math.min(Date.parse(acceptanceContext.deadline), Date.now() + 120000),
+        ).toISOString()
+        const acceptance = new RunnerAcceptanceStages(
+            store,
+            new RunnerFeatureReadiness(store, host),
+            runnerAcceptanceOptions(store, request, acceptanceReject ? 'reject' : 'accept'),
+          ),
+          accepted = await acceptance.execute(acceptanceContext)
+        assert.equal(
+          accepted.status,
+          acceptanceReject ? 'blocked' : 'passed',
+          JSON.stringify(accepted),
+        )
+        assert.equal(accepted.invocationState, 'stopped')
+        assert.equal(accepted.provenance, 'host-observed')
+        assert.equal(accepted.decisions?.length, 1)
+        observe(accepted)
+        const calls = new RunnerNativeScope(store.files, acceptanceContext.invocation).inspect(),
+          before = contractDigest(store.lifecycle.journal.events()),
+          path = store.files.path(
+            `delivery/runner-acceptance/${acceptanceContext.invocation}/binding.json`,
+          ),
+          retained = `${path}.observed-original`,
+          record = store.stage(digest, acceptanceContext.stage.id)
+        assert.ok(record)
+        assert.ok(calls.length >= 2)
+        assert.ok(calls.every((call) => call.observed.invocationState === 'stopped'))
+        acceptance.options.requests = deny
+        acceptance.options.host = deny
+        assert.equal(existsSync(retained), false)
+        try {
+          renameSync(path, retained)
+          assert.equal((await acceptance.inspect(request, record)).status, 'unknown')
+        } finally {
+          renameSync(retained, path)
+        }
+        assert.deepEqual(await acceptance.inspect(request, record), accepted)
+        assert.deepEqual(
+          new RunnerNativeScope(store.files, acceptanceContext.invocation).inspect(),
+          calls,
+        )
+        assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+        checks.push(
+          acceptanceReject
+            ? 'complete original product QA remains unaccepted after an independent delegated rejection, with closed original native owners and no human prompt'
+            : 'complete original product QA joins independent delegated acceptance under its original deadline without human approval or publication',
+        )
+        checks.push(
+          'a lost consumed acceptance input remains unknown; exact restoration recovers identical original decisions and native owners without selecting judgment or changing the journal',
+        )
+        console.log(`Original feature acceptance observed: ${accepted.status}`)
+      }
       product = { host, proof }
       assert.deepEqual(
         await host.inspect(
@@ -532,9 +594,11 @@ await runnerSuiteFixture(
       2,
     )
     checks.push(
-      productQa
-        ? 'paused fresh assembly inspection selects no model, command or Git operation, preserves the journal and leaves feature acceptance pending'
-        : 'paused fresh assembly inspection selects no model, command or Git operation, preserves the journal and leaves root integration/whole-product QA pending',
+      acceptanceStage
+        ? 'paused fresh assembly inspection selects no model, command or Git operation and preserves the independently observed acceptance result without publication'
+        : productQa
+          ? 'paused fresh assembly inspection selects no model, command or Git operation, preserves the journal and leaves feature acceptance pending'
+          : 'paused fresh assembly inspection selects no model, command or Git operation, preserves the journal and leaves root integration/whole-product QA pending',
     )
     if (process.argv.includes('--retire-success')) {
       const resources = new EnvironmentResources(store.files)
@@ -574,6 +638,7 @@ await runnerSuiteFixture(
     privateMismatch,
     productQaBrowser,
     browserMismatch,
+    acceptanceStage,
   },
 )
 const report = {
@@ -588,7 +653,11 @@ const report = {
         ? 'failed-original-fixture-only'
         : 'passed-original-fixture-only'
     : 'not-established',
-  acceptance: 'not-established',
+  acceptance: acceptanceStage
+    ? acceptanceReject
+      ? 'rejected-original-fixture-only'
+      : 'accepted-original-fixture-only'
+    : 'not-established',
   publication: 'not-performed',
 }
 mkdirSync(destination, { recursive: true })
