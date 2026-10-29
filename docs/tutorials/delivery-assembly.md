@@ -93,5 +93,11 @@ The internal assembly adapter can accept the same fixed controller control used 
 
 Original reconciliation and paused inspection remain available without dispatch authority and do not replay checkout or merge. The unconfigured domain API and existing schemas remain unchanged. This control is a prerequisite for runner composition; it does not establish an executed complete route or whole-product acceptance. See [ADR-0156](../decisions/0156-original-runner-controls-for-assembly.md).
 
+## Join current unit QA to the actual assembly
+
+The internal assembly-readiness reader requires the complete current observed unit-QA vector and the matching owned assembly under the same run, plan, source, grant and milestone. All original Git effects must be applied and positively closed. It reopens unit QA and rechecks the assembly and basis after asynchronous inspection; changed or partial evidence returns no candidates.
+
+Run npm run eval:runner-assembly-readiness -- --retire-success for the opt-in actual Docker/synthetic-worker control. It executes one declared application suite and independent verification/review, assembles the exact unit vector through bounded owned Git operations, refuses changed assembled bytes and recovers identical evidence after restoration and paused fresh-object inspection. No account, authenticated model or publication is used. The exact original environment retires. Readiness still leaves the root integration stage running and whole-product QA and acceptance pending. See [ADR-0158](../decisions/0158-current-unit-qa-and-owned-assembly.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

@@ -63,6 +63,7 @@
     "eval:runner-suite-continuation": "node scripts/check-runner-suite-continuation.mjs",
     "eval:runner-verification-continuation": "node scripts/check-runner-verification-continuation.mjs",
     "eval:runner-native-history": "node scripts/check-runner-native-history.mjs",
+    "eval:runner-assembly-readiness": "node scripts/check-runner-assembly-readiness.mjs",
     "eval:runner-review": "node scripts/check-runner-review.mjs",
     "eval:runner-repairs": "node scripts/check-runner-repairs.mjs",
     "eval:runner-definitions": "node scripts/check-runner-definitions.mjs",

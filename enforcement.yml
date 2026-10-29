@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-current-assembly-qa
+    enforcers: [src/runner/assembly-readiness.ts#RunnerAssemblyReadiness, src/runner/assembly-readiness.ts#inspect, src/runner/milestone-readiness.ts#inspect, src/integration/assembly.ts#inspect, test/unit/runner/assembly-readiness.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-complete-unit-qa-vector
     enforcers: [src/runner/milestone-readiness.ts#RunnerMilestoneReadiness, src/runner/milestone-readiness.ts#inspect, src/integration/contracts.ts#integrationScope, test/unit/runner/milestone-readiness.test.ts]
   - id: delivery-original-assembly-control
