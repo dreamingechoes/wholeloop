@@ -429,9 +429,9 @@ export class RunnerEnvironmentScope {
       operations = retained.binding.operations.map((o) =>
         observed.find((actual) => actual.operation.id === o.id),
       ),
-      reads = retained.binding.reads.map((id) =>
-        new ManagedRunnerProcess(this.store.files, id).observe(),
-      ),
+      // One common process-table observation avoids a subprocess per retained read.
+      // The existing batch reader preserves exact nonces and fails closed as a group.
+      reads = ManagedRunnerProcess.observeAll(this.store.files, retained.binding.reads),
       closed =
         operations.every((o) => o && ['stopped', 'not-started'].includes(o.status)) &&
         reads.every((r) => ['stopped', 'not-started'].includes(r.invocationState))

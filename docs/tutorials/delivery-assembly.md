@@ -91,7 +91,7 @@ All earlier candidates and root records are checked again after the asynchronous
 
 The internal assembly adapter can accept the same fixed controller control used by owned Git stages. Every original wrapper receives the narrower deadline, combined cancellation signals and current-ownership watcher; its actual operation is registered before input. Cancelled, expired or fenced controllers cannot prepare a resource or admit another effect. A fresh controller can request cancellation of the exact original pending operation by its retained nonce, including after revocation; no stored PID is signalled.
 
-Original reconciliation and paused inspection remain available without dispatch authority and do not replay checkout or merge. The unconfigured domain API and existing schemas remain unchanged. This control is a prerequisite for runner composition; it does not establish an executed complete route or whole-product acceptance. See [ADR-0156](../decisions/0156-original-runner-controls-for-assembly.md).
+Environment inspection observes retained read owners through one bounded common process-table snapshot, preserving each original registration, result and evidence. An unavailable common observation cannot become positive closure through a per-owner retry. Original reconciliation and paused inspection remain available without dispatch authority and do not replay checkout or merge. The unconfigured domain API and existing schemas remain unchanged. This control is a prerequisite for runner composition; it does not establish an executed complete route or whole-product acceptance. See [ADR-0156](../decisions/0156-original-runner-controls-for-assembly.md).
 
 ## Join current unit QA to the actual assembly
 

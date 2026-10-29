@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { EnvironmentResources } from '../../../src/environment/runtime.js'
 import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
+import { ManagedRunnerProcess } from '../../../src/runner/native-process.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { runnerEnvironmentFixture as setup } from '../../support/runner-environment.js'
 
@@ -102,6 +103,38 @@ describe('root-owned environment operations retain their original private invoke
       expect(new RunnerEnvironmentScope(scope.store, context.invocation).inspect()).toEqual(
         observation,
       )
+    })
+  })
+  it('preserves every read proof and lost-owner refusal in a common observation', async () => {
+    await setup(async ({ store, scope, context, environment, driver }) => {
+      await scope.run(context, environment, driver, async (selected) => {
+        for (let index = 0; index < 3; index++) await selected.call(['info'])
+      })
+      const original = scope.inspect(),
+        journal = contractDigest(store.lifecycle.journal.events()),
+        individual = original.reads.map((read) =>
+          new ManagedRunnerProcess(store.files, read.invocation).observe(),
+        ),
+        second = original.reads[1]
+      expect(original.reads).toHaveLength(3)
+      expect(original.reads).toEqual(individual)
+      expect(original.invocationState).toBe('stopped')
+      if (!second) throw new Error('Fixture second read owner missing')
+      const path = store.files.path(`delivery/runner-native/${second.invocation}/intent.json`)
+      try {
+        renameSync(path, `${path}.retained`)
+        const missing = scope.inspect()
+        expect(missing.invocationState).toBe('unknown')
+        expect(missing.reads[1]?.invocationState).toBe('unknown')
+        expect(missing.reads[0]).toEqual(original.reads[0])
+        expect(missing.reads[2]).toEqual(original.reads[2])
+      } finally {
+        renameSync(`${path}.retained`, path)
+      }
+      expect(
+        new RunnerEnvironmentScope(new RunnerStore(store.files.root), context.invocation).inspect(),
+      ).toEqual(original)
+      expect(contractDigest(store.lifecycle.journal.events())).toBe(journal)
     })
   })
   it('keeps separate phase owners and original observations without overwriting or replay', async () => {
