@@ -14,10 +14,13 @@ export function browserRecipe(
   app: string,
   architecture: 'arm64' | 'amd64',
 ): EnvironmentRecipe {
-  const recipe = environmentRecipe(root, app, architecture)
+  return withBrowserService(environmentRecipe(root, app, architecture))
+}
+/** Reuse the same fixed browser boundary for an assembled recipe. */
+export function withBrowserService(recipe: EnvironmentRecipe): EnvironmentRecipe {
   recipe.services.push({
     id: 'browser',
-    image: BROWSER_REFERENCE_IMAGES[architecture],
+    image: BROWSER_REFERENCE_IMAGES[recipe.backend.architecture],
     acquisition: 'cache-only',
     after: ['web'],
     mounts: [],

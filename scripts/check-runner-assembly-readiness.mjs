@@ -20,11 +20,13 @@ if (
         '--product-qa-private',
         '--product-qa-private-unproven',
         '--product-qa-private-failure',
+        '--product-qa-browser',
+        '--product-qa-browser-failure',
       ].includes(arg),
   )
 )
   throw new Error(
-    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api, --product-qa-private, --product-qa-private-unproven, --product-qa-private-failure',
+    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api, --product-qa-private, --product-qa-private-unproven, --product-qa-private-failure, --product-qa-browser, --product-qa-browser-failure',
   )
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-assembly-readiness-')),

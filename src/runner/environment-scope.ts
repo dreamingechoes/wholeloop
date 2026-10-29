@@ -1,7 +1,11 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
-import type { DockerCallOptions, DockerTransport } from '../environment/docker-command.js'
+import {
+  type DockerCallOptions,
+  DockerCli,
+  type DockerTransport,
+} from '../environment/docker-command.js'
 import { EnvironmentOperations } from '../environment/operations.js'
 import { EnvironmentResources } from '../environment/runtime.js'
 import { withWorkerOwnership } from '../fanout/ownership.js'
@@ -203,73 +207,127 @@ export class RunnerEnvironmentScope {
         registered = true
       }
     }
+    const admit = (args: string[], options: DockerCallOptions = {}) => {
+      const remaining = Date.parse(context.deadline) - Date.now()
+      if (
+        !open ||
+        context.signal.aborted ||
+        options.signal?.aborted ||
+        !context.current() ||
+        remaining <= 0
+      )
+        throw new DeliveryRunnerError('environment-stage-fenced')
+      safeSourceText(JSON.stringify(args), 65536)
+      const current = this.read()
+      if (!current) throw new DeliveryRunnerError('environment-stage-original-unresolved')
+      const registration = options.registration
+      let allowance = remaining
+      if (registration) {
+        const original = current.operations.list().find((o) => o.id === registration.operation),
+          directory = `delivery/environment-operations/${environment}/${registration.operation}`
+        if (
+          !original ||
+          original.nonce !== registration.nonce ||
+          original.command !== contractDigest(args) ||
+          original.provenance !== driver.provenance ||
+          registration.cancel !== this.store.files.path(`${directory}/cancel.json`) ||
+          registration.outcome !== this.store.files.path(`${directory}/outcome.json`)
+        )
+          throw new DeliveryRunnerError('environment-stage-operation-binding')
+        allowance = Math.min(allowance, original.timeoutMs)
+        this.store.files.locked(() => {
+          const retained = this.read()
+          if (
+            !retained ||
+            retained.binding.operations.length + retained.binding.reads.length >= 1000 ||
+            retained.binding.operations.some((o) => o.id === original.id)
+          )
+            throw new DeliveryRunnerError('environment-stage-operation-already-issued')
+          const claim = `delivery/runner-environment-claims/${original.id}.json`
+          if (
+            existsSync(this.store.files.path(claim)) ||
+            ['started', 'outcome', 'client-close', 'cancel'].some((name) =>
+              existsSync(this.store.files.path(`${directory}/${name}.json`)),
+            )
+          )
+            throw new DeliveryRunnerError('environment-stage-operation-already-issued')
+          this.store.files.atomic(
+            claim,
+            `${JSON.stringify({ invocation: this.invocation, ...(this.phase ? { phase: this.phase } : {}), environment, operation: original })}\n`,
+          )
+          retained.binding.operations.push({
+            id: original.id,
+            nonce: original.nonce,
+            command: original.command,
+          })
+          this.store.files.atomic(this.path, `${JSON.stringify(retained.binding)}\n`)
+        })
+      } else if (
+        !(
+          args.length >= 1 &&
+          (['info', 'version'].includes(args[0] ?? '') ||
+            (['container', 'image', 'network', 'volume'].includes(args[0] ?? '') &&
+              args[1] === 'inspect') ||
+            (args[0] === 'container' && ['logs', 'wait'].includes(args[1] ?? '')))
+        )
+      )
+        throw new DeliveryRunnerError('environment-stage-unregistered-operation')
+
+      return {
+        allowance,
+        registration: registration
+          ? {
+              ...registration,
+              started: (pid: number) => {
+                if (
+                  !open ||
+                  context.signal.aborted ||
+                  options.signal?.aborted ||
+                  !context.current() ||
+                  Date.now() >= Date.parse(context.deadline)
+                )
+                  throw new DeliveryRunnerError('environment-stage-fenced')
+                registration.started(pid)
+                const started = JSON.parse(
+                  readSourceFile(
+                    this.store.files.root,
+                    `delivery/environment-operations/${environment}/${registration.operation}/started.json`,
+                    65536,
+                  ),
+                )
+                if (
+                  started.pid !== pid ||
+                  started.nonce !== registration.nonce ||
+                  started.operation !== registration.operation
+                )
+                  throw new DeliveryRunnerError('environment-stage-operation-start')
+                registerRoot(registration.operation)
+              },
+            }
+          : undefined,
+      }
+    }
     const wrapped: DockerTransport = {
       provenance: driver.provenance,
+      ...(driver instanceof DockerCli
+        ? {
+            interactive: {
+              native: driver,
+              register: (
+                args: string[],
+                registration: NonNullable<DockerCallOptions['registration']>,
+              ) => {
+                if (args[0] !== 'container' || args[1] !== 'exec' || args[2] !== '--interactive')
+                  throw new DeliveryRunnerError('environment-stage-interactive-command')
+                const owned = admit(args, { registration }).registration
+                if (!owned) throw new DeliveryRunnerError('environment-stage-operation-binding')
+                return owned
+              },
+            },
+          }
+        : {}),
       call: async (args, options: DockerCallOptions = {}) => {
-        const remaining = Date.parse(context.deadline) - Date.now()
-        if (
-          !open ||
-          context.signal.aborted ||
-          options.signal?.aborted ||
-          !context.current() ||
-          remaining <= 0
-        )
-          throw new DeliveryRunnerError('environment-stage-fenced')
-        safeSourceText(JSON.stringify(args), 65536)
-        const current = this.read()
-        if (!current) throw new DeliveryRunnerError('environment-stage-original-unresolved')
-        const registration = options.registration
-        let allowance = remaining
-        if (registration) {
-          const original = current.operations.list().find((o) => o.id === registration.operation),
-            directory = `delivery/environment-operations/${environment}/${registration.operation}`
-          if (
-            !original ||
-            original.nonce !== registration.nonce ||
-            original.command !== contractDigest(args) ||
-            original.provenance !== driver.provenance ||
-            registration.cancel !== this.store.files.path(`${directory}/cancel.json`) ||
-            registration.outcome !== this.store.files.path(`${directory}/outcome.json`)
-          )
-            throw new DeliveryRunnerError('environment-stage-operation-binding')
-          allowance = Math.min(allowance, original.timeoutMs)
-          this.store.files.locked(() => {
-            const retained = this.read()
-            if (
-              !retained ||
-              retained.binding.operations.length + retained.binding.reads.length >= 1000 ||
-              retained.binding.operations.some((o) => o.id === original.id)
-            )
-              throw new DeliveryRunnerError('environment-stage-operation-already-issued')
-            const claim = `delivery/runner-environment-claims/${original.id}.json`
-            if (
-              existsSync(this.store.files.path(claim)) ||
-              ['started', 'outcome', 'client-close', 'cancel'].some((name) =>
-                existsSync(this.store.files.path(`${directory}/${name}.json`)),
-              )
-            )
-              throw new DeliveryRunnerError('environment-stage-operation-already-issued')
-            this.store.files.atomic(
-              claim,
-              `${JSON.stringify({ invocation: this.invocation, ...(this.phase ? { phase: this.phase } : {}), environment, operation: original })}\n`,
-            )
-            retained.binding.operations.push({
-              id: original.id,
-              nonce: original.nonce,
-              command: original.command,
-            })
-            this.store.files.atomic(this.path, `${JSON.stringify(retained.binding)}\n`)
-          })
-        } else if (
-          !(
-            args.length >= 1 &&
-            (['info', 'version'].includes(args[0] ?? '') ||
-              (['container', 'image', 'network', 'volume'].includes(args[0] ?? '') &&
-                args[1] === 'inspect') ||
-              (args[0] === 'container' && ['logs', 'wait'].includes(args[1] ?? '')))
-          )
-        )
-          throw new DeliveryRunnerError('environment-stage-unregistered-operation')
+        const { allowance, registration } = admit(args, options)
         const abort = new AbortController(),
           cancel = () => abort.abort(),
           signals = [context.signal, ...(options.signal ? [options.signal] : [])]
@@ -282,37 +340,7 @@ export class RunnerEnvironmentScope {
             ...options,
             signal: abort.signal,
             timeoutMs: Math.max(1, Math.min(options.timeoutMs ?? 10000, allowance)),
-            ...(registration
-              ? {
-                  registration: {
-                    ...registration,
-                    started: (pid: number) => {
-                      if (
-                        !open ||
-                        abort.signal.aborted ||
-                        !context.current() ||
-                        Date.now() >= Date.parse(context.deadline)
-                      )
-                        throw new DeliveryRunnerError('environment-stage-fenced')
-                      registration.started(pid)
-                      const started = JSON.parse(
-                        readSourceFile(
-                          this.store.files.root,
-                          `delivery/environment-operations/${environment}/${registration.operation}/started.json`,
-                          65536,
-                        ),
-                      )
-                      if (
-                        started.pid !== pid ||
-                        started.nonce !== registration.nonce ||
-                        started.operation !== registration.operation
-                      )
-                        throw new DeliveryRunnerError('environment-stage-operation-start')
-                      registerRoot(registration.operation)
-                    },
-                  },
-                }
-              : {}),
+            ...(registration ? { registration } : {}),
           }
           // Effect wrappers keep their actual PID. Nesting another wrapper
           // would break their original started/outcome identity. Inert reads

@@ -24,6 +24,7 @@ import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { RunnerUnitReadiness } from '../../../src/runner/unit-readiness.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
+import { withBrowserService } from '../../support/browser.js'
 import { gateWorkerFixture } from '../../support/gate-worker.js'
 import { runnerSuiteFixture } from '../../support/runner-suite.js'
 
@@ -32,12 +33,18 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   productQaApi = process.argv.includes('--product-qa-api'),
+  browserMismatch = process.argv.includes('--product-qa-browser-failure'),
+  productQaBrowser = browserMismatch || process.argv.includes('--product-qa-browser'),
   privateRegression = process.argv.includes('--product-qa-private-unproven'),
   privateMismatch = process.argv.includes('--product-qa-private-failure'),
   productQaPrivate =
     privateRegression || privateMismatch || process.argv.includes('--product-qa-private'),
   productQa =
-    productQaFailure || productQaApi || productQaPrivate || process.argv.includes('--product-qa')
+    productQaFailure ||
+    productQaApi ||
+    productQaPrivate ||
+    productQaBrowser ||
+    process.argv.includes('--product-qa')
 await runnerSuiteFixture(
   async ({ store, context, engine, selection, driver, dispatch, observe }) => {
     console.log(`Retained original store: ${store.files.root}`)
@@ -144,6 +151,22 @@ await runnerSuiteFixture(
     checks.push(
       'the complete original unit vector requires actual suite/verification and independent review, without promoting flags',
     )
+    if (productQaBrowser) {
+      // Unit QA is already closed. Release its exact resources rather than
+      // reserving two browsers or weakening the daemon's capacity guard.
+      const resources = new EnvironmentResources(store.files),
+        retired = await new EnvironmentLifecycle(store.files, driver).execute({
+          schema: 'wholeloop/environment-lifecycle-request@1',
+          id: `browser-unit-complete-${selection.environment}`,
+          environment: selection.environment,
+          expected: resources.get(selection.environment).digest,
+          action: 'retire',
+          reason:
+            'Release the exact completed unit QA environment before bounded browser product QA.',
+        })
+      assert.equal(retired.state, 'retired', JSON.stringify(retired))
+      assert.equal(retired.clients, 'stopped')
+    }
     const integration = dispatch('integration:feature'),
       abort = new AbortController(),
       timer = setTimeout(() => abort.abort(), 120000)
@@ -209,7 +232,7 @@ await runnerSuiteFixture(
         'current original unit QA and closed owned assembly effects join at the exact vector; changed assembly bytes refuse and exact restoration recovers identical proof',
       )
     }
-    if (!productQaApi && !productQaPrivate) await checkAssemblyBytes()
+    if (!productQaApi && !productQaPrivate && !productQaBrowser) await checkAssemblyBytes()
     const environments = [selection.environment]
     let product:
       | {
@@ -227,6 +250,9 @@ await runnerSuiteFixture(
         ...repository,
         root: assembled.path,
       }))
+      if (productQaBrowser) {
+        withBrowserService(recipe)
+      }
       if (productQaFailure) {
         const command = recipe.commands.find((command) => command.id === 'suite')
         assert.ok(command)
@@ -325,11 +351,34 @@ await runnerSuiteFixture(
         )
       assert.equal(
         proof.status,
-        privateRegression ? 'unknown' : productQaFailure || privateMismatch ? 'failed' : 'passed',
+        privateRegression
+          ? 'unknown'
+          : productQaFailure || privateMismatch || browserMismatch
+            ? 'failed'
+            : 'passed',
         JSON.stringify(proof),
       )
       assert.equal(proof.invocationState, privateRegression ? 'unknown' : 'stopped')
       assert.equal(proof.provenance, privateRegression ? 'fixture' : 'host-observed')
+      if (productQaBrowser) {
+        const facts = acceptance.observedResults(selection.acceptance, 'browser-product'),
+          fact = facts.at(-1)
+        assert.ok(fact)
+        assert.equal(facts.length, 1)
+        assert.equal(fact.status, browserMismatch ? 'failed' : 'passed')
+        assert.equal(fact.process?.code, 0)
+        assert.ok(fact.artifacts.length > 1, 'The original screenshot capture is retained')
+        const native = new RunnerEnvironmentScope(store, integration.invocation).inspect(),
+          execs = native.operations.filter((entry) => entry?.operation.action === 'exec')
+        assert.equal(execs.length, 1)
+        assert.equal(execs[0]?.status, 'stopped')
+        assert.equal(native.invocationState, 'stopped')
+        checks.push(
+          browserMismatch
+            ? 'an actual missing browser objective fails root QA despite zero MCP client exit and a retained screenshot'
+            : 'the original isolated Chromium journey and screenshot join the invocation-specific private stdio exec with closed original root owners',
+        )
+      }
       if (productQaPrivate) {
         const facts = acceptance.observedResults(selection.acceptance, 'private-product'),
           fact = facts.at(-1)
@@ -414,7 +463,7 @@ await runnerSuiteFixture(
       checks.push(
         'original root product QA executes the complete pinned machine coverage through owned Docker phases at the unchanged original deadline and records only its scoped integration result',
       )
-      if (productQaApi || productQaPrivate) {
+      if (productQaApi || productQaPrivate || productQaBrowser) {
         const reportPath = store.files.path(
             `delivery/runner-integrations/${integration.invocation}/report.json`,
           ),
@@ -447,7 +496,7 @@ await runnerSuiteFixture(
         )
       }
     }
-    if (productQaApi || productQaPrivate) await checkAssemblyBytes()
+    if (productQaApi || productQaPrivate || productQaBrowser) await checkAssemblyBytes()
     store.lifecycle.transition(request.run, {
       to: 'paused',
       reason: 'Inspect original assembly readiness without replay.',
@@ -461,7 +510,7 @@ await runnerSuiteFixture(
       productQa
         ? privateRegression
           ? 'unknown'
-          : productQaFailure || privateMismatch
+          : productQaFailure || privateMismatch || browserMismatch
             ? 'failed'
             : 'passed'
         : 'running',
@@ -490,6 +539,7 @@ await runnerSuiteFixture(
     if (process.argv.includes('--retire-success')) {
       const resources = new EnvironmentResources(store.files)
       for (const environment of environments) {
+        if (resources.get(environment).record.state === 'retired') continue
         const result = await new EnvironmentLifecycle(store.files, driver).execute({
           schema: 'wholeloop/environment-lifecycle-request@1',
           id: `assembly-ready-${environment}`,
@@ -522,6 +572,8 @@ await runnerSuiteFixture(
     productQaPrivate,
     privateRegression,
     privateMismatch,
+    productQaBrowser,
+    browserMismatch,
   },
 )
 const report = {
@@ -532,7 +584,7 @@ const report = {
   integrationQa: productQa
     ? privateRegression
       ? 'not-established-private-sensitivity'
-      : productQaFailure || privateMismatch
+      : productQaFailure || privateMismatch || browserMismatch
         ? 'failed-original-fixture-only'
         : 'passed-original-fixture-only'
     : 'not-established',

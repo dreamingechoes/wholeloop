@@ -32,6 +32,11 @@ export interface DockerCallOptions {
 export interface DockerTransport {
   provenance: 'fixture' | 'host-observed'
   call(args: string[], options?: DockerCallOptions): Promise<DockerResult>
+  /** Private stdio cannot use call(); claim its original operation before spawning. */
+  interactive?: {
+    native: DockerCli
+    register(args: string[], registration: DockerOperationRegistration): DockerOperationRegistration
+  }
 }
 /** Docker authenticates through its own native store; application containers receive none of this environment. */
 export class DockerCli implements DockerTransport {

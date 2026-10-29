@@ -80,13 +80,15 @@ export class DockerBrowserHost extends DockerObservedHost {
     for (const step of input.steps)
       if (step.target && !texts.some((text) => text.includes(step.target?.name ?? '')))
         throw new AcceptanceError('browser-target-not-grounded')
-    if (!(this.driver instanceof DockerCli))
+    const native = this.driver instanceof DockerCli ? this.driver : this.driver.interactive?.native
+    if (!(native instanceof DockerCli) || native.provenance !== this.driver.provenance)
       throw new AcceptanceError('browser-native-transport-unavailable')
     const transport = new BrowserStdioTransport(
       runtime,
       bound.resource,
-      this.driver,
+      native,
       bound.internal,
+      this.driver.interactive,
     )
     const session = new BrowserMcpSession(
       transport,

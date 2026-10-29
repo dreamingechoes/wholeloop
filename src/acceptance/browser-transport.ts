@@ -8,6 +8,7 @@ import { contractDigest } from '../contracts/compatibility.js'
 import {
   type DockerCli,
   type DockerProcessObservation,
+  type DockerTransport,
   dockerCliEnvironment,
 } from '../environment/docker-command.js'
 import { DOCKER_INTERACTIVE_WRAPPER } from '../environment/interactive-wrapper.js'
@@ -45,6 +46,7 @@ export class BrowserStdioTransport implements Transport {
     readonly resource: EnvironmentResource,
     readonly native: DockerCli,
     readonly origin: string,
+    readonly ownership?: DockerTransport['interactive'],
   ) {
     if (!resource.id) throw new AcceptanceError('browser-container-unobserved')
     this.args = [
@@ -52,7 +54,10 @@ export class BrowserStdioTransport implements Transport {
       'exec',
       '--interactive',
       resource.id,
-      ...browserReferenceCommand(origin),
+      ...browserReferenceCommand(
+        origin,
+        ownership ? contractDigest(runtime.invocation) : undefined,
+      ),
     ]
     this.operations = new EnvironmentOperations(
       runtime.records.files,
@@ -79,7 +84,8 @@ export class BrowserStdioTransport implements Transport {
     )
       throw new AcceptanceError('browser-prior-daemon-exec-unknown')
     this.runtime.current()
-    const registration = this.operations.begin(this.args, this.runtime.remaining(1800000))
+    const original = this.operations.begin(this.args, this.runtime.remaining(1800000)),
+      registration = this.ownership?.register(this.args, original) ?? original
     this.registration = registration
     const argv = ['--input-type=module', '-e', DOCKER_INTERACTIVE_WRAPPER]
     const child = spawn(process.execPath, argv, {

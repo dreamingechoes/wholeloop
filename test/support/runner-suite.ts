@@ -1,5 +1,6 @@
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { BROWSER_REFERENCE } from '../../src/acceptance/browser-reference.js'
 import { PrivateAcceptance } from '../../src/acceptance/private-plan.js'
 import { DeliveryAcceptance } from '../../src/acceptance/store.js'
 import { sourceHash } from '../../src/delivery/input.js'
@@ -47,12 +48,16 @@ export async function runnerSuiteFixture(
     productQaPrivate?: boolean
     privateRegression?: boolean
     privateMismatch?: boolean
+    productQaBrowser?: boolean
+    browserMismatch?: boolean
   } = {},
 ) {
   if (options.production && options.unit)
     throw new Error('Production fixture requires its search unit')
-  const app =
-      options.productQaApi || options.productQaPrivate
+  const design = 'The application displays the Owned suite fixture heading.\n',
+    app = options.productQaBrowser
+      ? "require('node:http').createServer((_request,response)=>{response.setHeader('content-type','text/html');response.end('<!doctype html><title>Owned suite fixture</title><h1>Owned suite fixture</h1>')}).listen(3000,'0.0.0.0')\n"
+      : options.productQaApi || options.productQaPrivate
         ? "require('node:http').createServer((_request,response)=>{response.setHeader('content-type','application/json');response.end(JSON.stringify({status:'owned suite fixture'}))}).listen(3000,'0.0.0.0')\n"
         : "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
     check = options.secondRepairSensitive
@@ -112,6 +117,64 @@ export async function runnerSuiteFixture(
           plan: request.plan,
           source: store.basis(request).plan.source,
           cases: [
+            ...(options.productQaBrowser
+              ? [
+                  {
+                    id: 'browser-product',
+                    criteria: ['search'],
+                    owner: 'machine',
+                    applicability: 'applicable',
+                    rationale:
+                      'Observe the assembled application through the pinned isolated browser and original private stdio owner.',
+                    initial: 'The exact assembled application and pinned browser are ready.',
+                    actions: store
+                      .basis(request)
+                      .plan.milestones.map((milestone) => milestone.procedure),
+                    assertions: [
+                      {
+                        id: 'heading',
+                        subject: 'state',
+                        operator: 'equals',
+                        path: '/checks/heading',
+                        expected: 'true',
+                        description: 'The real browser observes the pinned application heading.',
+                      },
+                    ],
+                    failureConditions: ['A missing heading fails the original browser case.'],
+                    runner: {
+                      kind: 'browser',
+                      capability: 'browser.journey',
+                      input: JSON.stringify({
+                        schema: 'wholeloop/browser-input@1',
+                        service: 'web',
+                        port: 3000,
+                        browser: {
+                          service: 'browser',
+                          reference: BROWSER_REFERENCE.id,
+                          tools: BROWSER_REFERENCE.digest,
+                        },
+                        grounding: [{ file: 'design', sha256: sourceHash(design) }],
+                        persistence: 'not-applicable',
+                        steps: [
+                          { id: 'open', kind: 'navigate', path: '/' },
+                          { id: 'capture', kind: 'capture', label: 'original-page' },
+                          {
+                            id: 'heading',
+                            kind: 'check',
+                            assertion: 'heading',
+                            text: options.browserMismatch
+                              ? 'Missing original heading'
+                              : 'Owned suite fixture',
+                            mode: 'present',
+                          },
+                        ],
+                      }),
+                    },
+                    fixture: { ref: 'fixture:browser-root-product', sha256: sourceHash(app) },
+                    timeoutMs: 120000,
+                  },
+                ]
+              : []),
             ...(hidden
               ? [
                   {
@@ -293,6 +356,15 @@ export async function runnerSuiteFixture(
       if (options.backend === 'docker') {
         const environments = new DeliveryEnvironments(store.files.root, driver),
           recipe = environmentRecipe(root, app, process.arch === 'x64' ? 'amd64' : 'arm64')
+        if (options.productQaBrowser) {
+          recipe.files.push({
+            id: 'design',
+            repository: 'app',
+            ref: 'ui-contract.md',
+            sha256: sourceHash(design),
+            kind: 'guidance',
+          })
+        }
         recipe.files.push(
           {
             id: 'package',
@@ -445,6 +517,7 @@ export async function runnerSuiteFixture(
         'package.json': pkg,
         'app.cjs': app,
         'suite.cjs': check,
+        ...(options.productQaBrowser ? { 'ui-contract.md': design } : {}),
         ...(options.unit ? { 'search-contract.txt': contractBody } : {}),
       },
       ...(options.guidance !== undefined || options.production

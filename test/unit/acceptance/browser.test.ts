@@ -9,6 +9,7 @@ import {
 } from '../../../src/acceptance/browser-observation.js'
 import {
   BROWSER_REFERENCE,
+  browserReferenceCommand,
   browserToolContract,
   validateBrowserTools,
 } from '../../../src/acceptance/browser-reference.js'
@@ -19,6 +20,16 @@ import { entry } from '../../support/delivery.js'
 const page =
   '### Page\n- Page URL: http://web:3000/\n### Snapshot\n```yaml\n- heading "Task list" [ref=e1]\n- textbox "Task title" [ref=e2]\n- button "Add task" [ref=e3]\n```'
 describe('grounded native browser observations', () => {
+  it('binds owned browser sessions to exact command namespaces without changing standalone commands', () => {
+    const first = browserReferenceCommand('http://web:3000', 'a'.repeat(64)),
+      second = browserReferenceCommand('http://web:3000', 'b'.repeat(64))
+    expect(first).not.toEqual(second)
+    expect(first[first.indexOf('--output-dir') + 1]).toBe(
+      `/tmp/wholeloop-browser-${'a'.repeat(64)}`,
+    )
+    expect(browserReferenceCommand('http://web:3000')).toContain('/tmp/wholeloop-browser')
+    expect(() => browserReferenceCommand('http://web:3000', '../foreign')).toThrow('session')
+  })
   it('selects exact observed roles and names without interpreting selectors or guessing duplicate controls', () => {
     const observed = browserPage(page, 'http://web:3000')
     expect(browserTarget(observed.snapshot, { role: 'textbox', name: 'Task title' })).toBe('e2')

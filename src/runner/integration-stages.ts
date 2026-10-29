@@ -1,4 +1,6 @@
 import { existsSync } from 'node:fs'
+import { browserInput } from '../acceptance/browser-input.js'
+import { browserReferenceCommand } from '../acceptance/browser-reference.js'
 import { type AcceptanceCase, acceptanceShape } from '../acceptance/contracts.js'
 import { privateEvaluatorSource } from '../acceptance/docker-private.js'
 import { PrivateAcceptance } from '../acceptance/private-plan.js'
@@ -31,6 +33,8 @@ export function rootIntegrationCaseOwner(test: Pick<AcceptanceCase, 'runner'> | 
     return 'controller-http'
   if (test?.runner.kind === 'api' && test.runner.capability === 'evaluator.private-http')
     return 'evaluator-container'
+  if (test?.runner.kind === 'browser' && test.runner.capability === 'browser.journey')
+    return 'browser-exec'
   return 'unsupported'
 }
 
@@ -307,39 +311,58 @@ export class RunnerIntegrationStages {
           throw new DeliveryRunnerError('integration-stage-original-case-deadline')
         if (result.process) {
           const execution = observed.execution as
-              | { container?: string; controllerOperation?: string; clientExit?: number }
+              | {
+                  container?: string
+                  controllerOperation?: string
+                  clientExit?: number
+                  operation?: string
+                }
               | undefined,
-            completion =
-              typeof execution?.container === 'string'
-                ? new EnvironmentOperations(
-                    this.store.files,
-                    binding.selection.environment,
-                    'host-observed',
-                  ).completion(
-                    ['container', 'start', '--attach', '--interactive', execution.container],
-                    result.process.pid,
-                  )
-                : undefined
-          const resource = new EnvironmentResources(this.store.files)
-            .get(binding.selection.environment)
-            .record.resources.find(
-              (resource) =>
-                resource.kind === 'container' &&
-                resource.id === execution?.container &&
-                resource.purpose === 'test' &&
-                (owner === 'evaluator-container'
-                  ? resource.slot ===
-                    `private-${contractDigest(result.invocation).slice(0, 20)}-verify`
-                  : resource.slot.startsWith(
-                      `behavior-${contractDigest(result.invocation).slice(0, 20)}-`,
-                    )),
-            )
+            input = owner === 'browser-exec' && definition ? browserInput(definition) : undefined,
+            resource = new EnvironmentResources(this.store.files)
+              .get(binding.selection.environment)
+              .record.resources.find(
+                (resource) =>
+                  resource.kind === 'container' &&
+                  (input
+                    ? resource.purpose === 'service' && resource.service === input.browser.service
+                    : resource.id === execution?.container &&
+                      resource.purpose === 'test' &&
+                      (owner === 'evaluator-container'
+                        ? resource.slot ===
+                          `private-${contractDigest(result.invocation).slice(0, 20)}-verify`
+                        : resource.slot.startsWith(
+                            `behavior-${contractDigest(result.invocation).slice(0, 20)}-`,
+                          ))),
+              ),
+            completion = resource?.id
+              ? new EnvironmentOperations(
+                  this.store.files,
+                  binding.selection.environment,
+                  'host-observed',
+                ).completion(
+                  input
+                    ? [
+                        'container',
+                        'exec',
+                        '--interactive',
+                        resource.id,
+                        ...browserReferenceCommand(
+                          `http://${input.service}:${input.port}`,
+                          contractDigest(result.invocation),
+                        ),
+                      ]
+                    : ['container', 'start', '--attach', '--interactive', resource.id],
+                  result.process.pid,
+                )
+              : undefined
           if (
             !resource ||
-            !['container-start', 'evaluator-container'].includes(owner) ||
+            !['container-start', 'evaluator-container', 'browser-exec'].includes(owner) ||
             !completion ||
-            completion.operation !== execution?.controllerOperation ||
-            completion.code !== execution?.clientExit ||
+            completion.operation !==
+              (input ? execution?.operation : execution?.controllerOperation) ||
+            completion.code !== (input ? 0 : execution?.clientExit) ||
             // The private wrapper normalizes nonzero exits to one; the
             // original Docker outcome retains the exact application code.
             result.process.code !== (completion.code === 0 ? 0 : 1) ||

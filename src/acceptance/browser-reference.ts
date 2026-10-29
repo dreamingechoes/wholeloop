@@ -12,9 +12,11 @@ export const BROWSER_REFERENCE_IMAGES = {
 export const BROWSER_PROBE_PORT = 8931
 export const BROWSER_KEEPALIVE =
   "const net=require('node:net');net.createServer(s=>s.end('ready')).listen(8931,'127.0.0.1')"
-export function browserReferenceCommand(appOrigin: string) {
+export function browserReferenceCommand(appOrigin: string, session?: string) {
   if (!/^http:\/\/[a-z][a-z0-9_-]{0,63}:\d{1,5}$/.test(appOrigin))
     throw new AcceptanceError('invalid-browser-reference-origin')
+  if (session !== undefined && !/^[a-f0-9]{64}$/.test(session))
+    throw new AcceptanceError('invalid-browser-reference-session')
   return [
     'node',
     '/app/cli.js',
@@ -25,7 +27,7 @@ export function browserReferenceCommand(appOrigin: string) {
     '--isolated',
     '--no-webmcp',
     '--output-dir',
-    '/tmp/wholeloop-browser',
+    session ? `/tmp/wholeloop-browser-${session}` : '/tmp/wholeloop-browser',
     '--timeout-action',
     '3000',
     '--timeout-navigation',

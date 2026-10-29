@@ -7,6 +7,88 @@ import { RunnerStore } from '../../../src/runner/store.js'
 import { runnerEnvironmentFixture as setup } from '../../support/runner-environment.js'
 
 describe('root-owned environment operations retain their original private invokers', () => {
+  it.each(['cancelled', 'expired', 'fenced', 'ended'] as const)(
+    'refuses %s private stdio registration before spawning a native process',
+    async (mode) => {
+      await setup(async ({ store, scope, context, environment, driver, operations, ready }) => {
+        new EnvironmentResources(store.files).update(environment, (record) => {
+          record.resources.push({
+            kind: 'container',
+            slot: 'service-browser',
+            name: 'fixture-browser',
+            token: 'fixture-token',
+            status: 'started',
+            id: 'd'.repeat(64),
+            purpose: 'service',
+            service: 'browser',
+          })
+        })
+        const args = ['container', 'exec', '--interactive', 'd'.repeat(64), 'node', 'fixture'],
+          registration = operations.begin(args, 5000),
+          abort = new AbortController()
+        context.signal = abort.signal
+        let late: (() => unknown) | undefined
+        await scope.run(context, environment, driver, async (selected) => {
+          expect(selected.interactive).toBeDefined()
+          const register = () => selected.interactive?.register(args, registration)
+          if (mode === 'ended') {
+            late = register
+            return
+          }
+          if (mode === 'cancelled') abort.abort()
+          if (mode === 'expired') context.deadline = new Date(Date.now() - 1).toISOString()
+          if (mode === 'fenced') context.current = () => false
+          expect(register).toThrow('environment-stage-fenced')
+        })
+        if (late) expect(late).toThrow('environment-stage-fenced')
+        expect(existsSync(ready)).toBe(false)
+        expect(scope.inspect().operations).toEqual([])
+      })
+    },
+  )
+  it('claims private stdio before input and cancels its original client after revocation', async () => {
+    await setup(async ({ store, scope, context, environment, driver, operations, ready }) => {
+      new EnvironmentResources(store.files).update(environment, (record) => {
+        record.resources.push({
+          kind: 'container',
+          slot: 'service-browser',
+          name: 'fixture-browser',
+          token: 'fixture-token',
+          status: 'started',
+          id: 'd'.repeat(64),
+          purpose: 'service',
+          service: 'browser',
+        })
+      })
+      const args = ['container', 'exec', '--interactive', 'd'.repeat(64), 'node', 'fixture'],
+        registration = operations.begin(args, 5000),
+        unrelated = operations.begin(['container', 'create', 'unrelated'], 5000)
+      const pending = scope.run(context, environment, driver, async (selected) => {
+        const pipe = selected.interactive
+        if (!pipe) throw new Error('Original private stdio owner missing')
+        const owned = pipe.register(args, registration)
+        expect(scope.inspect().operations[0]?.operation.id).toBe(registration.operation)
+        expect(() => pipe.register(args, registration)).toThrow('already-issued')
+        const result = await pipe.native.call(args, { registration: owned, timeoutMs: 5000 })
+        operations.close(registration, result)
+        return result
+      })
+      const until = Date.now() + 3000
+      while (!existsSync(ready) && Date.now() < until)
+        await new Promise((resolve) => setTimeout(resolve, 10))
+      expect(existsSync(ready)).toBe(true)
+      store.lifecycle.authority.revoke({
+        schema: 'wholeloop/delivery-revocation-request@1',
+        grant: context.request.grant,
+        operator: 'Fixture Operator',
+        reason: 'Cancel the original private stdio client after revocation.',
+      })
+      new RunnerEnvironmentScope(new RunnerStore(store.files.root), context.invocation).cancelAll()
+      expect((await pending).status).not.toBe('succeeded')
+      expect(existsSync(registration.cancel)).toBe(true)
+      expect(existsSync(unrelated.cancel)).toBe(false)
+    }, true)
+  })
   it('recovers actual inert reads under their own durable process owner', async () => {
     await setup(async ({ scope, context, environment, driver, operations }) => {
       const result = await scope.run(context, environment, driver, (selected) =>

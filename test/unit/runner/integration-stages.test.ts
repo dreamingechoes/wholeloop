@@ -18,6 +18,8 @@ it.each([
   ['api', 'evaluator.private-http', 'evaluator-container'],
   ['semantic', 'evaluator.private-http', 'unsupported'],
   ['browser', 'browser.use', 'unsupported'],
+  ['browser', 'browser.journey', 'browser-exec'],
+  ['api', 'browser.journey', 'unsupported'],
   ['api', 'process.exec', 'unsupported'],
   ['cli', 'http.request', 'unsupported'],
   ['human', 'manual.observe', 'unsupported'],
