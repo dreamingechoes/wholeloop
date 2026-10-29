@@ -1,4 +1,5 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import { candidateFiles, candidateIndex } from '../delivery/candidate-files.js'
 import {
@@ -46,6 +47,94 @@ export class RunnerRepairCommits {
       throw new DeliveryRunnerError('fixed-repair-workers-required')
     this.store = workers.store
     this.commits = new DeliveryCommits(this.store.files.root)
+  }
+  /** Reconstruct exact recorded ownership, not a newest-file or new-work fallback. */
+  static reopen(workers: RunnerRepairWorkers, request: Readonly<RunnerRequest>, unit: string) {
+    if (!(workers instanceof RunnerRepairWorkers))
+      throw new DeliveryRunnerError('fixed-repair-workers-required')
+    if (contractDigest(workers.options.identity) !== contractDigest(request.host))
+      throw new DeliveryRunnerError('checkpoint-reopen-host-required')
+    try {
+      const base = new RunnerRepairWorkers(workers.store, workers.queue, workers.options),
+        first = new RunnerRepairCommits(base),
+        store = first.store,
+        digest = contractDigest(request),
+        allocation = base.workers.git.workspace(request, unit),
+        current = currentWorkspaceCommit(first.commits.effects.lifecycle, allocation)
+      if (contractDigest(store.get(digest)) !== digest || !current)
+        throw new DeliveryRunnerError('checkpoint-reopen-current-candidate-required')
+      const owned = (relative: string) => {
+          const path = store.files.path(relative)
+          if (path !== resolve(store.files.root, relative))
+            throw new DeliveryRunnerError('checkpoint-reopen-aliased-locator')
+          return path
+        },
+        locators: { invocation: string; path: string; after?: string; resource: string }[] = []
+      for (const stage of store
+        .record(digest)
+        .stages.filter(
+          (stage) =>
+            stage.basis === allocation.request.plan &&
+            ['verification', 'review'].some((kind) => stage.id === `${kind}:${unit}`),
+        )) {
+        const paths: { path: string; after?: string }[] = [],
+          original = first.path(stage.invocation),
+          directory = `delivery/runner-repair-commits/${stage.invocation}/after`
+        if (existsSync(owned(original))) paths.push({ path: original })
+        if (existsSync(owned(directory))) {
+          const names = readdirSync(owned(directory)).filter((name) => name.endsWith('.json'))
+          // Worker restart limits admit at most one hundred correction generations.
+          // Retained atomic temporary files grant no locator and remain untouched.
+          if (names.length > 100 || names.some((name) => !/^[a-f0-9]{64}\.json$/.test(name)))
+            throw new DeliveryRunnerError('checkpoint-reopen-catalog-unavailable')
+          for (const name of names.sort())
+            paths.push({ path: `${directory}/${name}`, after: name.slice(0, -5) })
+        }
+        for (const locator of paths) {
+          owned(locator.path)
+          const hint = JSON.parse(
+            readSourceFile(store.files.root, locator.path, 65536),
+          ) as RepairCommitBinding
+          locators.push({ ...locator, invocation: stage.invocation, resource: hint.resource })
+        }
+      }
+      const seen = new Set<string>(),
+        load = (receiptDigest: string, invocation?: string): RunnerRepairCommits => {
+          if (seen.has(receiptDigest) || seen.size >= 100)
+            throw new DeliveryRunnerError('checkpoint-reopen-chain-unavailable')
+          seen.add(receiptDigest)
+          const receipt = readCommitReceipt(first.commits.effects.lifecycle, receiptDigest)
+          validateHistoricalWorkspaceCommit(first.commits.effects.lifecycle, allocation, receipt)
+          const matches = locators.filter((locator) => locator.resource === receipt.record)
+          if (matches.length !== 1)
+            throw new DeliveryRunnerError('checkpoint-reopen-exact-locator-required')
+          const selected = matches[0]
+          if (!selected || (invocation !== undefined && selected.invocation !== invocation))
+            throw new DeliveryRunnerError('checkpoint-reopen-origin-required')
+          const checkpoint = selected.after
+            ? new RunnerRepairCommits(
+                RunnerRepairWorkers.after(
+                  load(selected.after, selected.invocation),
+                  request,
+                  selected.invocation,
+                  selected.after,
+                ),
+              )
+            : new RunnerRepairCommits(base)
+          // A catalog entry is only a hint. Reopen the complete original worker,
+          // native prefix, commit effects and exact receipt before trusting it.
+          checkpoint.historical(request, selected.invocation, receiptDigest)
+          return checkpoint
+        },
+        checkpoint = load(current.digest),
+        selected = base.workers.git.candidate(request, unit, checkpoint)
+      if (selected.receipt.digest !== current.digest)
+        throw new DeliveryRunnerError('checkpoint-reopen-candidate-changed')
+      return checkpoint
+    } catch (error) {
+      if (error instanceof DeliveryRunnerError) throw error
+      throw new DeliveryRunnerError('checkpoint-reopen-original-evidence-unavailable')
+    }
   }
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation))

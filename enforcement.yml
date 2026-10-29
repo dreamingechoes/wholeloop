@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-recorded-correction-checkpoints
+    enforcers: [src/runner/repair-commits.ts#reopen, src/runner/repair-commits.ts#historical, src/runner/git-stages.ts#candidate, test/unit/runner/repair-checkpoints.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-current-unit-qa-readiness
     enforcers: [src/runner/unit-readiness.ts#RunnerUnitReadiness, src/runner/unit-readiness.ts#inspect, src/runner/review-stages.ts#inspect, src/runner/verification-stages.ts#inspect, test/unit/runner/unit-readiness.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-stage-candidate-lineage

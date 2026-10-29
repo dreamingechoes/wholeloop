@@ -164,6 +164,7 @@
 | [0151](./0151-original-repeated-qa-continuations.md) | Original repeated QA continuations | Accepted | 2026-10-28 |
 | [0152](./0152-candidate-lineage-and-stage-continuations.md) | Candidate lineage and stage continuations | Accepted | 2026-10-29 |
 | [0153](./0153-current-joint-unit-qa-readiness.md) | Current joint unit QA readiness | Accepted | 2026-10-29 |
+| [0154](./0154-recorded-correction-checkpoint-reconstruction.md) | Recorded correction checkpoint reconstruction | Accepted | 2026-10-29 |
 
 ## Lifecycle
 

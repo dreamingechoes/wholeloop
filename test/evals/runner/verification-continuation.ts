@@ -1,11 +1,21 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { findBudget } from '../../../src/delivery/budget-events.js'
+import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { EnvironmentLifecycle } from '../../../src/environment/lifecycle.js'
 import { DeliveryEnvironments } from '../../../src/environment/provision.js'
 import { EnvironmentResources } from '../../../src/environment/runtime.js'
+import { FlowEngine } from '../../../src/flow/engine.js'
 import { workspaceSnapshot } from '../../../src/gates/snapshot.js'
 import { gateRuns } from '../../../src/gates/state.js'
 import { GateWorkflow } from '../../../src/gates/workflow.js'
@@ -17,11 +27,13 @@ import { runnerRepairFeedback } from '../../../src/runner/repair-feedback.js'
 import { runnerRepairStreak } from '../../../src/runner/repair-progress.js'
 import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
+import { RunnerStore } from '../../../src/runner/store.js'
 import {
   RunnerUnitReadiness,
   type RunnerUnitReadinessResult,
 } from '../../../src/runner/unit-readiness.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
+import { StateStore } from '../../../src/state/store.js'
 import { gateWorkerFixture } from '../../support/gate-worker.js'
 import { runnerSuiteFixture } from '../../support/runner-suite.js'
 
@@ -30,7 +42,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = [],
   extraEnvironments: string[] = [],
   retiredEnvironments = new Set<string>(),
-  unitReadiness = process.argv.includes('--unit-readiness'),
+  reopenCheckpoint = process.argv.includes('--reopen-checkpoint'),
+  unitReadiness = process.argv.includes('--unit-readiness') || reopenCheckpoint,
   reviewAfterVerification = process.argv.includes('--review-after-verification') || unitReadiness,
   repeatVerification = process.argv.includes('--repeat-verification') || reviewAfterVerification,
   secondCorrection = process.argv.includes('--second-correction') || repeatVerification,
@@ -466,6 +479,103 @@ await runnerSuiteFixture(
                   reviewed,
                 )
                 if (readiness) {
+                  if (reopenCheckpoint) {
+                    const journal = contractDigest(store.lifecycle.journal.events()),
+                      fresh = new RunnerStore(store.files.root),
+                      restoredRequest = fresh.get(contractDigest(context.request)),
+                      deny = () => {
+                        throw new Error('Checkpoint reconstruction cannot select or launch work')
+                      },
+                      factory = new RunnerRepairWorkers(
+                        fresh,
+                        new DeliveryQueue(fresh.files.root),
+                        {
+                          identity: restoredRequest.host,
+                          get native() {
+                            return deny()
+                          },
+                          context: deny,
+                          boundary: deny,
+                          admit: deny,
+                        },
+                      ),
+                      reopened = RunnerRepairCommits.reopen(factory, restoredRequest, 'search'),
+                      originalEngine = original.options.engine(context.request, initial.repository),
+                      engine = () =>
+                        new FlowEngine(
+                          new StateStore(fresh.files.root),
+                          originalEngine.root,
+                          originalEngine.userFile,
+                          originalEngine.home,
+                        ),
+                      verified = new RunnerVerificationStages(fresh, {
+                        identity: restoredRequest.host,
+                        engine,
+                        correction: reopened,
+                        suite: deny,
+                        gate: deny,
+                      }),
+                      reviewed = new RunnerReviewStages(fresh, {
+                        identity: restoredRequest.host,
+                        engine,
+                        correction: reopened,
+                        gate: deny,
+                      })
+                    assert.equal(
+                      reopened.workers.checkpointScope(context.invocation),
+                      committed.receipt.digest,
+                    )
+                    assert.deepEqual(
+                      await new RunnerUnitReadiness(verified, reviewed).inspect(
+                        restoredRequest,
+                        'search',
+                      ),
+                      ready,
+                    )
+                    const relative = `delivery/runner-repair-commits/${context.invocation}/after/${committed.receipt.digest}.json`,
+                      locator = store.files.path(relative),
+                      retained = `${locator}.catalog-retained`,
+                      duplicate = store.files.path(
+                        `delivery/runner-repair-commits/${context.invocation}/after/${'f'.repeat(64)}.json`,
+                      )
+                    assert.equal(existsSync(retained), false)
+                    renameSync(locator, retained)
+                    try {
+                      symlinkSync(retained, locator)
+                      assert.throws(
+                        () => RunnerRepairCommits.reopen(factory, restoredRequest, 'search'),
+                        /checkpoint-reopen-aliased-locator/,
+                      )
+                    } finally {
+                      rmSync(locator, { force: true })
+                      renameSync(retained, locator)
+                    }
+                    assert.equal(existsSync(duplicate), false)
+                    try {
+                      writeFileSync(duplicate, readFileSync(locator))
+                      assert.throws(
+                        () => RunnerRepairCommits.reopen(factory, restoredRequest, 'search'),
+                        /checkpoint-reopen-exact-locator-required/,
+                      )
+                    } finally {
+                      rmSync(duplicate, { force: true })
+                    }
+                    assert.equal(
+                      new RunnerGitStages(fresh).candidate(
+                        restoredRequest,
+                        'search',
+                        RunnerRepairCommits.reopen(factory, restoredRequest, 'search'),
+                      ).receipt.digest,
+                      pinned.receipt.digest,
+                    )
+                    assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
+                    checks.push(
+                      'fresh store/queue/factory instances reconstruct the exact predecessor chain from the journal-selected receipt and recover identical paused QA without selecting work',
+                    )
+                    checks.push(
+                      'aliased or ambiguous checkpoint locators refuse without a newest-file fallback, mutation, replay or budget renewal; exact restoration remains inspectable',
+                    )
+                  }
                   assert.deepEqual(await readiness.inspect(context.request, 'search'), ready)
                   assert.equal(
                     findBudget(store.lifecycle.journal.get(context.request.run))?.failures.length,

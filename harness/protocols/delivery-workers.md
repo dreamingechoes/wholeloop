@@ -49,6 +49,8 @@ For pinned behavioral acceptance, follow delivery-acceptance. Return proposed fi
 
 ⛔ `delivery-original-correction-successor`: select a correction only through its fixed original checkpoint, current owned Git effects, exact initial parent and stable owned files/index. Reject locked, changed, unrelated or ambiguous heads. Explicit successor selection changes no gate verdict, progress or default candidate behavior.
 
+⛔ `delivery-recorded-correction-checkpoints`: reconstruct only the authoritative current receipt through exact canonical original locators and complete historical production/Git proofs. Refuse missing, aliased or ambiguous evidence; never select work, renew limits or choose the newest file.
+
 ⛔ `delivery-current-unit-qa-readiness`: require original completed unit stages and reopen both observed gates at the same current owned head. Recheck bytes, basis and root records after inspection; flags, fixture claims and stale heads cannot pass. Inspection dispatches nothing and establishes no feature acceptance or new budget.
 
 ⛔ `delivery-stage-candidate-lineage`: inspect a corrected current head through its exact fixed checkpoint across stages, but derive a continuation namespace only from the current invocation owner. Earlier-stage lineage supplies neither another stage's verdict nor dispatch, native calls or runtime budget.
