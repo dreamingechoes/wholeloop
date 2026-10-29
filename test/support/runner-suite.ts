@@ -40,17 +40,23 @@ export async function runnerSuiteFixture(
     secondRepairSensitive?: boolean
     noProgress?: number
     successor?: boolean
+    productQa?: boolean
+    productQaFailure?: boolean
+    productQaApi?: boolean
   } = {},
 ) {
   if (options.production && options.unit)
     throw new Error('Production fixture requires its search unit')
-  const app =
-      "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
+  const app = options.productQaApi
+      ? "require('node:http').createServer((_request,response)=>{response.setHeader('content-type','application/json');response.end(JSON.stringify({status:'owned suite fixture'}))}).listen(3000,'0.0.0.0')\n"
+      : "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
     check = options.secondRepairSensitive
       ? `const fs=require('node:fs');process.exitCode=fs.readFileSync('app.txt','utf8')==='Synthetic owned second correction.\\n'?0:7\n`
       : options.repairSensitive
         ? `const fs=require('node:fs');process.exitCode=fs.readFileSync('app.txt','utf8')==='Synthetic owned correction.\\n'?0:7\n`
-        : `process.stdout.write('observed suite\\n');process.exitCode=${options.exit ?? 0}\n`,
+        : options.productQaFailure
+          ? "process.stdout.write('observed suite\\n');process.exitCode=process.argv.includes('--root-fail')?7:0\n"
+          : `process.stdout.write('observed suite\\n');process.exitCode=${options.exit ?? 0}\n`,
     pkg = JSON.stringify({ private: true, scripts: { check: 'node suite.cjs' } }),
     contractBody = 'Title query returns matching task IDs.\n',
     unit = options.unit ?? 'search',
@@ -75,7 +81,12 @@ export async function runnerSuiteFixture(
               applicability: 'applicable',
               rationale: 'This case records repository-suite facts only.',
               initial: 'The owned candidate contains its declared check.',
-              actions: ['Run the declared project suite.'],
+              actions: [
+                'Run the declared project suite.',
+                ...(options.productQa
+                  ? store.basis(request).plan.milestones.map((milestone) => milestone.procedure)
+                  : []),
+              ],
               assertions: [
                 {
                   id: 'exit',
@@ -99,6 +110,46 @@ export async function runnerSuiteFixture(
               fixture: { ref: 'fixture:declared-suite', sha256: sourceHash(check) },
               timeoutMs,
             },
+            ...(options.productQaApi
+              ? [
+                  {
+                    id: 'product-api',
+                    criteria: ['search'],
+                    owner: 'machine',
+                    applicability: 'applicable',
+                    rationale:
+                      'Observe the declared assembled application service through its public HTTP endpoint.',
+                    initial: 'The exact assembled fixture service is ready.',
+                    actions: store
+                      .basis(request)
+                      .plan.milestones.map((milestone) => milestone.procedure),
+                    assertions: [
+                      {
+                        id: 'response',
+                        description: 'The assembled service returns the pinned fixture response.',
+                        subject: 'json',
+                        operator: 'equals',
+                        path: '/status',
+                        expected: '"owned suite fixture"',
+                      },
+                    ],
+                    failureConditions: ['A different response fails the assembled-service check.'],
+                    runner: {
+                      kind: 'api',
+                      capability: 'http.request',
+                      input: JSON.stringify({
+                        schema: 'wholeloop/behavior-input@1',
+                        kind: 'api',
+                        service: 'web',
+                        port: 3000,
+                        steps: [{ id: 'read', kind: 'request', method: 'GET', path: '/' }],
+                      }),
+                    },
+                    fixture: { ref: 'fixture:assembled-service', sha256: sourceHash(app) },
+                    timeoutMs,
+                  },
+                ]
+              : []),
           ],
           retention: { reviewAfterMs: 86400000, expiryAction: 'retain' },
         })

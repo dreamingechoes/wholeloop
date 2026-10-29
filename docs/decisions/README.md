@@ -172,6 +172,7 @@
 | [0159](./0159-original-docker-assertion-observations.md) | Original Docker assertion observations | Accepted | 2026-10-29 |
 | [0160](./0160-original-integrated-verification-observations.md) | Original integrated verification observations | Accepted | 2026-10-29 |
 | [0161](./0161-original-parent-controls-for-acceptance.md) | Original parent controls for acceptance | Accepted | 2026-10-29 |
+| [0162](./0162-owned-root-product-verification.md) | Owned root product verification | Accepted | 2026-10-29 |
 
 ## Lifecycle
 

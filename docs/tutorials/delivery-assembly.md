@@ -119,5 +119,11 @@ The internal integrated verifier can capture the original parent deadline, cance
 
 Historical metadata remains readable after cancellation. This control does not replace original native-scope auditing or current unit/assembly readiness, and the public complete-route runner remains open. The existing combined Docker evaluation also refuses a fenced parent's new execution without Docker reads or journal changes while retaining its original report proof. See [ADR-0161](../decisions/0161-original-parent-controls-for-acceptance.md).
 
+## Execute original root product QA
+
+The internal fixed integration adapter joins current unit QA and its owned assembly to actual pinned CLI/API product observations. It consumes one original root selection, retains its original deadline and refuses prior unowned case intents. Recovery requires the exact product report, closed original native owners, invocation-specific CLI containers and current unchanged unit/assembly inputs. Missing or changed proof stays unknown; inspection does not replay a case or grant another attempt. Existing environment-scope observation digests remain unchanged.
+
+Run npm run eval:runner-assembly-readiness -- --product-qa --retire-success for the CLI control, or substitute --product-qa-api for combined HTTP/CLI and evidence-tamper controls. Use --product-qa-failure to exercise a known nonzero product result while original unit QA remains green. These modes use actual disposable Git/Docker resources and synthetic independent workers, preserve all default assembly controls and retire both exact environments. Root integration is distinct from feature acceptance; no public complete-route execution, authenticated model acceptance or independent Linux application-host certification is implied. Browser/private root-stage ownership and the remaining route composition are still technical work. See [ADR-0162](../decisions/0162-owned-root-product-verification.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

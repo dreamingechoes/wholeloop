@@ -4,11 +4,18 @@ import { join } from 'node:path'
 import { observedDockerAcceptanceCase } from '../../../src/acceptance/case-observation.js'
 import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { sourceHash } from '../../../src/delivery/input.js'
+import { DOCKER_REFERENCE_HELPER } from '../../../src/environment/docker-policy.js'
 import { EnvironmentLifecycle } from '../../../src/environment/lifecycle.js'
+import { DeliveryEnvironments } from '../../../src/environment/provision.js'
+import { EnvironmentRecipes } from '../../../src/environment/recipe-store.js'
 import { EnvironmentResources } from '../../../src/environment/runtime.js'
 import { IntegrationAssembly } from '../../../src/integration/assembly.js'
+import { integrationScope } from '../../../src/integration/contracts.js'
+import { IntegrationCandidates } from '../../../src/integration/store.js'
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
+import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.js'
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
 import { RunnerStore } from '../../../src/runner/store.js'
@@ -20,6 +27,9 @@ import { runnerSuiteFixture } from '../../support/runner-suite.js'
 const destination = process.argv[2]
 if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
+const productQaFailure = process.argv.includes('--product-qa-failure'),
+  productQaApi = process.argv.includes('--product-qa-api'),
+  productQa = productQaFailure || productQaApi || process.argv.includes('--product-qa')
 await runnerSuiteFixture(
   async ({ store, context, engine, selection, driver, dispatch, observe }) => {
     console.log(`Retained original store: ${store.files.root}`)
@@ -177,18 +187,187 @@ await runnerSuiteFixture(
     const file = join(assembled.path, 'app.txt'),
       bytes = readFileSync(file)
     assert.deepEqual(bytes, readFileSync(join(candidate.allocation.repository.path, 'app.txt')))
-    try {
-      writeFileSync(file, 'Changed assembled bytes.\n')
-      const refused = await reader.inspect(request, 'feature', resource)
-      assert.equal(refused.status, 'blocked', JSON.stringify(refused))
-      assert.equal(refused.candidates, undefined)
-    } finally {
-      writeFileSync(file, bytes)
+    const checkAssemblyBytes = async () => {
+      try {
+        writeFileSync(file, 'Changed assembled bytes.\n')
+        const refused = await reader.inspect(request, 'feature', resource)
+        assert.equal(refused.status, 'blocked', JSON.stringify(refused))
+        assert.equal(refused.candidates, undefined)
+      } finally {
+        writeFileSync(file, bytes)
+      }
+      assert.deepEqual(await reader.inspect(request, 'feature', resource), observed)
+      checks.push(
+        'current original unit QA and closed owned assembly effects join at the exact vector; changed assembly bytes refuse and exact restoration recovers identical proof',
+      )
     }
-    assert.deepEqual(await reader.inspect(request, 'feature', resource), observed)
-    checks.push(
-      'current original unit QA and closed owned assembly effects join at the exact vector; changed assembly bytes refuse and exact restoration recovers identical proof',
-    )
+    if (!productQaApi) await checkAssemblyBytes()
+    const environments = [selection.environment]
+    let product:
+      | {
+          host: RunnerIntegrationStages
+          proof: Awaited<ReturnType<RunnerIntegrationStages['inspect']>>
+        }
+      | undefined
+    if (productQa) {
+      const recipes = new EnvironmentRecipes(store.files.root),
+        originalRecipe = recipes.get(
+          new EnvironmentResources(store.files).get(selection.environment).record.recipe,
+        ),
+        recipe = structuredClone(originalRecipe.recipe)
+      recipe.repositories = recipe.repositories.map((repository) => ({
+        ...repository,
+        root: assembled.path,
+      }))
+      if (productQaFailure) {
+        const command = recipe.commands.find((command) => command.id === 'suite')
+        assert.ok(command)
+        command.command = {
+          argv: ['node', '/workspace/app/suite.cjs', '--root-fail'],
+          cwd: '/workspace/app',
+          origin: { kind: 'file', file: 'suite' },
+        }
+      }
+      const preparedRecipe = recipes.prepare(recipe),
+        asset = (id: string, body: string) => {
+          const ref = `delivery/integration-inputs/runner-${id}.txt`
+          store.files.atomic(ref, body)
+          return { ref, sha256: sourceHash(body) }
+        },
+        data = asset('db', '[]\n'),
+        verify = asset('verify', 'Original required verification policy.\n'),
+        rubric = asset('review', 'Original independent review policy.\n'),
+        integrated = new IntegrationCandidates(store.files.root).prepare({
+          schema: 'wholeloop/integration-candidate-request@1',
+          run: request.run,
+          revision: request.revision,
+          plan: request.plan,
+          milestone: 'feature',
+          strategy: 'ordered-merge',
+          parts: ready.parts,
+          assemblies: observed.candidates?.map((repository) => ({
+            ...repository,
+            base: context.plan.repositories.find(
+              (declared) => declared.id === repository.repository,
+            )?.base,
+          })),
+          contracts: integrationScope(context.plan, 'feature').contracts,
+          inputs: [
+            {
+              id: 'acceptance',
+              kind: 'acceptance',
+              ref: selection.acceptance,
+              sha256: selection.acceptance,
+              after: ['recipe', 'db'],
+            },
+            {
+              id: 'recipe',
+              kind: 'recipe',
+              ref: preparedRecipe.digest,
+              sha256: preparedRecipe.digest,
+              after: [],
+            },
+            { id: 'db', kind: 'data', ...data, after: [] },
+            {
+              id: 'app-verify',
+              kind: 'gate-policy',
+              repository: 'app',
+              gate: 'verify',
+              ...verify,
+              after: ['recipe'],
+            },
+            {
+              id: 'app-review',
+              kind: 'gate-policy',
+              repository: 'app',
+              gate: 'review',
+              ...rubric,
+              after: ['recipe'],
+            },
+          ],
+          repairOwners: [{ criterion: 'search', kind: 'integration', id: 'feature' }],
+        }),
+        provision = await new DeliveryEnvironments(store.files.root, driver).provision({
+          schema: 'wholeloop/environment-provision-request@1',
+          run: request.run,
+          recipe: preparedRecipe.digest,
+          key: 'original-root-product-qa',
+          helperImage: DOCKER_REFERENCE_HELPER,
+          workspaces: integrated.candidate.assemblies.map(
+            ({ repository, path, head, snapshot }) => ({ repository, path, head, snapshot }),
+          ),
+        })
+      assert.equal(provision.status, 'ready', JSON.stringify(provision))
+      assert.ok(provision.environment)
+      environments.push(provision.environment.record.id)
+      store.lifecycle.transition(request.run, {
+        to: 'queued',
+        reason: 'Continue original integration after owned product environment readiness.',
+      })
+      const host = new RunnerIntegrationStages(store, reader),
+        proof = await host.execute(
+          integration,
+          {
+            schema: 'wholeloop/integration-verification-request@1',
+            candidate: integrated.digest,
+            assembly: resource,
+            environment: provision.environment.record.id,
+          },
+          driver,
+        )
+      assert.equal(proof.status, productQaFailure ? 'failed' : 'passed', JSON.stringify(proof))
+      assert.equal(proof.invocationState, 'stopped')
+      assert.equal(proof.provenance, 'host-observed')
+      console.log(`Original root product QA observed: ${proof.status}`)
+      observe(proof)
+      product = { host, proof }
+      assert.deepEqual(
+        await host.inspect(
+          request,
+          store.stage(digest, integration.stage.id) ??
+            (() => {
+              throw new Error('Original stage missing')
+            })(),
+        ),
+        proof,
+      )
+      checks.push(
+        'original root product QA executes the complete pinned machine coverage through owned Docker phases at the unchanged original deadline and records only integration completion',
+      )
+      if (productQaApi) {
+        const reportPath = store.files.path(
+            `delivery/runner-integrations/${integration.invocation}/report.json`,
+          ),
+          reportBytes = readFileSync(reportPath),
+          scopePath = store.files.path(
+            `delivery/runner-environments/${integration.invocation}.json`,
+          ),
+          scopeBytes = readFileSync(scopePath),
+          record = store.stage(digest, integration.stage.id),
+          journal = contractDigest(store.lifecycle.journal.events())
+        assert.ok(record)
+        try {
+          writeFileSync(reportPath, JSON.stringify({ artifact: '0'.repeat(64) }))
+          assert.equal((await host.inspect(request, record)).status, 'unknown')
+        } finally {
+          writeFileSync(reportPath, reportBytes)
+        }
+        try {
+          const changed = JSON.parse(scopeBytes.toString('utf8'))
+          changed.deadline = new Date(Date.parse(changed.deadline) + 1000).toISOString()
+          writeFileSync(scopePath, JSON.stringify(changed))
+          assert.equal((await host.inspect(request, record)).status, 'unknown')
+        } finally {
+          writeFileSync(scopePath, scopeBytes)
+        }
+        assert.deepEqual(await host.inspect(request, record), proof)
+        assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
+        checks.push(
+          'actual assembled HTTP and CLI evidence refuses substituted report locators and a renewed native-scope deadline; exact restoration recovers identical proof without journal mutation',
+        )
+      }
+    }
+    if (productQaApi) await checkAssemblyBytes()
     store.lifecycle.transition(request.run, {
       to: 'paused',
       reason: 'Inspect original assembly readiness without replay.',
@@ -197,7 +376,19 @@ await runnerSuiteFixture(
       reopened = new RunnerAssemblyReadiness(new RunnerStore(store.files.root), units)
     assert.deepEqual(await reopened.inspect(request, 'feature', resource), observed)
     assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
-    assert.equal(store.stage(digest, integration.stage.id)?.status, 'running')
+    assert.equal(
+      store.stage(digest, integration.stage.id)?.status,
+      productQa ? (productQaFailure ? 'failed' : 'passed') : 'running',
+    )
+    if (product) {
+      const record = store.stage(digest, integration.stage.id)
+      assert.ok(record)
+      assert.deepEqual(await product.host.inspect(request, record), product.proof)
+      assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
+      checks.push(
+        'paused original root integration recovery reopens actual product observations and native owners without replay, journal mutation or feature acceptance',
+      )
+    }
     assert.equal(
       assembly.effects
         .inspect(request.run)
@@ -206,30 +397,54 @@ await runnerSuiteFixture(
       2,
     )
     checks.push(
-      'paused fresh assembly inspection selects no model, command or Git operation, preserves the journal and leaves root integration/whole-product QA pending',
+      productQa
+        ? 'paused fresh assembly inspection selects no model, command or Git operation, preserves the journal and leaves feature acceptance pending'
+        : 'paused fresh assembly inspection selects no model, command or Git operation, preserves the journal and leaves root integration/whole-product QA pending',
     )
     if (process.argv.includes('--retire-success')) {
-      const resources = new EnvironmentResources(store.files),
-        result = await new EnvironmentLifecycle(store.files, driver).execute({
+      const resources = new EnvironmentResources(store.files)
+      for (const environment of environments) {
+        const result = await new EnvironmentLifecycle(store.files, driver).execute({
           schema: 'wholeloop/environment-lifecycle-request@1',
-          id: `assembly-ready-${selection.environment}`,
-          environment: selection.environment,
-          expected: resources.get(selection.environment).digest,
+          id: `assembly-ready-${environment}`,
+          environment,
+          expected: resources.get(environment).digest,
           action: 'retire',
           reason: 'Retire only the exact original assembly-readiness fixture environment.',
         })
-      assert.equal(result.state, 'retired', JSON.stringify(result))
+        assert.equal(result.state, 'retired', JSON.stringify(result))
+      }
+      if (product) {
+        const record = store.stage(digest, integration.stage.id)
+        assert.ok(record)
+        const before = contractDigest(store.lifecycle.journal.events())
+        assert.deepEqual(await product.host.inspect(request, record), product.proof)
+        assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+      }
       checks.push('the exact original application environment retires without broad cleanup')
     }
   },
-  { backend: 'docker', production: true, unattended: true, exit: 0, retain: true },
+  {
+    backend: 'docker',
+    production: true,
+    unattended: true,
+    exit: 0,
+    retain: true,
+    productQa,
+    productQaFailure,
+    productQaApi,
+  },
 )
 const report = {
   status: 'passed',
   runtime: { node: process.version, platform: process.platform, arch: process.arch },
   checks,
   nativeAcceptance: 'not-established',
-  integrationQa: 'not-established',
+  integrationQa: productQa
+    ? productQaFailure
+      ? 'failed-original-fixture-only'
+      : 'passed-original-fixture-only'
+    : 'not-established',
   acceptance: 'not-established',
   publication: 'not-performed',
 }

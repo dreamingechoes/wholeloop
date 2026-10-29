@@ -9,6 +9,8 @@ P6-10's first increment now adds [runner preparation/status and pause/resume/sto
 
 ## Implemented local state boundary
 
+The internal root integration adapter now connects current independent unit QA and its owned assembly to original bounded CLI/API product execution. It requires closed native scopes and exact original case/report bindings, recovers without replay while paused and rechecks the current vector after asynchronous inspection. Feature acceptance, browser/private root-stage ownership and full public-route composition remain separate P6-10 work; see [ADR-0162](../../../docs/decisions/0162-owned-root-product-verification.md).
+
 See the [recovery tutorial](../../../docs/tutorials/delivery-recovery.md) and [ADR-0096](../../../docs/decisions/0096-replayable-delivery-journal-without-authority-recovery.md). The core validates the versioned event envelope plus its registered closed payload schema, then replays exact revisions, state edges, grant observations and attempt identities. Immutable numbered transaction segments commit before disposable projections. Cache reconstruction neither recreates private authority nor reinterprets existing human/PR records; no worker or endpoint completion is implied. Later event/facet families remain additive and unknown versions refuse.
 
 ## State model

@@ -379,6 +379,14 @@ export class RunnerEnvironmentScope {
       open = false
     }
   }
+  /** Expose original control bindings without changing existing observation digests. */
+  origin() {
+    const retained = this.read()
+    if (!retained) return undefined
+    const { request, plan, stage, invocation, deadline, environment, identity, provenance } =
+      retained.binding
+    return { request, plan, stage, invocation, deadline, environment, identity, provenance }
+  }
   inspect() {
     const retained = this.read()
     if (!retained)

@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-owned-root-product-qa
+    enforcers: [src/runner/integration-stages.ts#RunnerIntegrationStages, src/runner/integration-stages.ts#rootIntegrationCaseOwner, src/runner/integration-stages.ts#execute, src/runner/integration-stages.ts#inspect, src/runner/environment-scope.ts#origin, test/unit/runner/integration-stages.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-original-acceptance-control
     enforcers: [src/acceptance/store.ts#controller, src/acceptance/store.ts#executeCase, src/integration/verification.ts#context, test/unit/acceptance/execution-control.test.ts, test/evals/assembly/run.ts]
   - id: delivery-original-integrated-observations

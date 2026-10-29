@@ -8,8 +8,17 @@ import { harnessAssets } from './harness-assets.mjs'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const args = process.argv.slice(2)
-if (args.some((arg) => arg !== '--retire-success'))
-  throw new Error('Supported option: --retire-success')
+if (
+  args.some(
+    (arg) =>
+      !['--retire-success', '--product-qa', '--product-qa-failure', '--product-qa-api'].includes(
+        arg,
+      ),
+  )
+)
+  throw new Error(
+    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api',
+  )
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-assembly-readiness-')),
   ),
