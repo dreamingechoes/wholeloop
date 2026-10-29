@@ -170,6 +170,7 @@
 | [0157](./0157-complete-current-unit-vectors-before-assembly.md) | Complete current unit vectors before assembly | Accepted | 2026-10-29 |
 | [0158](./0158-current-unit-qa-and-owned-assembly.md) | Current unit QA and owned assembly | Accepted | 2026-10-29 |
 | [0159](./0159-original-docker-assertion-observations.md) | Original Docker assertion observations | Accepted | 2026-10-29 |
+| [0160](./0160-original-integrated-verification-observations.md) | Original integrated verification observations | Accepted | 2026-10-29 |
 
 ## Lifecycle
 

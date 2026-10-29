@@ -21,6 +21,9 @@ export interface IntegrationVerificationRequest {
   assembly: string
   environment: string
 }
+export function integrationVerificationKey(request: IntegrationVerificationRequest, id: string) {
+  return `integration-${contractDigest({ candidate: request.candidate, assembly: request.assembly, environment: request.environment, case: id }).slice(0, 40)}`
+}
 /** Contract/procedure mappings must already exist in the immutable pre-builder acceptance definition. */
 export function integrationVerificationSelection(
   candidate: IntegrationCandidate,
@@ -172,7 +175,7 @@ export class IntegrationVerification {
       const result = await this.acceptance.executeCase(
         pinned.digest,
         id,
-        `integration-${contractDigest({ candidate: request.candidate, assembly: request.assembly, environment: request.environment, case: id }).slice(0, 40)}`,
+        integrationVerificationKey(request, id),
         boundary,
         host,
       )

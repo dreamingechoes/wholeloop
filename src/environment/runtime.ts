@@ -88,6 +88,20 @@ export const ENVIRONMENT_RUNTIME_SCHEMA = runtimeSchema
 export class EnvironmentResources {
   constructor(readonly files: StoreFiles) {}
   get(id: string): { record: EnvironmentRuntime; digest: string; sequence: number } {
+    return this.read(id)
+  }
+  /** Resolve an exact historical binding only after validating its complete original chain. */
+  snapshot(
+    id: string,
+    digest: string,
+  ): { record: EnvironmentRuntime; digest: string; sequence: number } {
+    if (!/^[a-f0-9]{64}$/.test(digest)) throw new EnvironmentRecipeError('invalid-runtime-snapshot')
+    return this.read(id, digest)
+  }
+  private read(
+    id: string,
+    wanted?: string,
+  ): { record: EnvironmentRuntime; digest: string; sequence: number } {
     const directory = this.directory(id)
     if (!existsSync(this.files.path(directory)))
       throw new EnvironmentRecipeError('unknown-environment')
@@ -98,6 +112,7 @@ export class EnvironmentResources {
       throw new EnvironmentRecipeError('invalid-environment-history')
     let previous: string | undefined
     let latest: ReturnType<EnvironmentResources['get']> | undefined
+    let selected: ReturnType<EnvironmentResources['get']> | undefined
     for (const [index, name] of names.entries()) {
       if (name !== `${String(index + 1).padStart(4, '0')}.json`)
         throw new EnvironmentRecipeError('incomplete-environment-history')
@@ -148,8 +163,11 @@ export class EnvironmentResources {
       if (latest) this.next(latest.record, record)
       previous = digest
       latest = { record, digest, sequence: index + 1 }
+      if (digest === wanted) selected = latest
     }
     if (!latest) throw new EnvironmentRecipeError('unknown-environment')
+    if (wanted && !selected) throw new EnvironmentRecipeError('unknown-runtime-snapshot')
+    if (selected) return selected
     return latest
   }
   create(

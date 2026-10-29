@@ -1,4 +1,4 @@
-import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -458,6 +458,10 @@ it('rejects changed runtime identities before adding a corrupt snapshot and pres
       }),
     )
     const before = resources.get(record.id)
+    expect(resources.snapshot(record.id, first.digest)).toEqual(first)
+    expect(resources.snapshot(record.id, before.digest)).toEqual(before)
+    expect(() => resources.snapshot(record.id, '0'.repeat(64))).toThrow('unknown-runtime-snapshot')
+    expect(() => resources.snapshot(record.id, '../outside')).toThrow('invalid-runtime-snapshot')
     expect(() =>
       resources.update(record.id, (value) => {
         entry(value.resources, 0).id = 'foreign'
@@ -479,6 +483,15 @@ it('rejects changed runtime identities before adding a corrupt snapshot and pres
     await expect(runtime.start(entry(before.record.resources, 0))).rejects.toThrow(
       'invalid-start-resource',
     )
+    const suffix = resources.files.path(`delivery/environments/${record.id}/0002.json`),
+      original = readFileSync(suffix)
+    try {
+      writeFileSync(suffix, '{}')
+      expect(() => resources.snapshot(record.id, first.digest)).toThrow()
+    } finally {
+      writeFileSync(suffix, original)
+    }
+    expect(resources.snapshot(record.id, first.digest)).toEqual(first)
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }

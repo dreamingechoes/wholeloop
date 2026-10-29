@@ -17,6 +17,7 @@ import evaluationSchema from '../../../src/integration/schemas/assembly-evaluati
 }
 import { IntegrationCandidates } from '../../../src/integration/store.js'
 import { IntegrationVerification } from '../../../src/integration/verification.js'
+import { observedIntegrationVerification } from '../../../src/integration/verification-observation.js'
 import { authorization, entry, fixture, git } from '../../support/delivery.js'
 import { environmentRecipe } from '../../support/environment.js'
 
@@ -451,6 +452,7 @@ try {
       assert.equal(passed.wholeFeature, 'not-established-by-this-receipt')
       check('repaired-complete-vector-passes-real-cli-contract-and-api-checks', passed)
       assert.ok(failed.artifact && passed.artifact)
+      const passedArtifact = passed.artifact
       assert.equal(
         JSON.parse(acceptance.artifacts.bytes(plan.run, failed.artifact).toString('utf8')).status,
         'failed',
@@ -463,6 +465,75 @@ try {
         failed.artifact,
         passed.artifact,
       ])
+      const originalFailed = observedIntegrationVerification(
+          planning.sources.files.root,
+          first.request,
+          failed.artifact,
+        ),
+        originalPassed = observedIntegrationVerification(
+          planning.sources.files.root,
+          second.request,
+          passedArtifact,
+        )
+      assert.equal(originalFailed.report.status, 'failed')
+      assert.equal(originalPassed.report.status, 'passed')
+      assert.equal(originalPassed.nativeOwnership, 'not-established')
+      assert.equal(originalPassed.currentAcceptance, 'not-established')
+      check(
+        'exact-original-combined-failure-and-success-reopen-without-current-candidate-approval',
+        [originalFailed.evidence, originalPassed.evidence],
+      )
+      const changes = [
+        (body: typeof originalPassed.report) => {
+          body.status = 'failed'
+        },
+        (body: typeof originalPassed.report) => {
+          body.checks.pop()
+        },
+        (body: typeof originalPassed.report) => {
+          body.cases.pop()
+        },
+        (body: typeof originalPassed.report) => {
+          entry(body.cases, 0).evidence = []
+        },
+        (body: typeof originalPassed.report) => {
+          entry(body.cases, 0).status = 'failed'
+        },
+        (body: typeof originalPassed.report) => {
+          body.bindings.runtime = 'f'.repeat(64)
+        },
+        (body: typeof originalPassed.report) => {
+          body.repairs = structuredClone(failed.repairs)
+        },
+        (body: typeof originalPassed.report) => {
+          body.acceptance = 'not-established'
+        },
+      ]
+      for (const change of changes) {
+        const body = structuredClone(originalPassed.report)
+        change(body)
+        const altered = acceptance.artifacts.capture(
+            plan.run,
+            Buffer.from(JSON.stringify(body)),
+            'application/json',
+          ),
+          journal = contractDigest(assembly.effects.lifecycle.journal.events())
+        assert.throws(() =>
+          observedIntegrationVerification(
+            planning.sources.files.root,
+            second.request,
+            altered.digest,
+          ),
+        )
+        assert.equal(contractDigest(assembly.effects.lifecycle.journal.events()), journal)
+      }
+      assert.throws(() =>
+        observedIntegrationVerification(planning.sources.files.root, first.request, passedArtifact),
+      )
+      check(
+        'substituted-report-status-coverage-cases-bindings-and-repair-claims-refuse-without-replay',
+        changes.length,
+      )
       assert.deepEqual(
         plan.repositories.map((r) => git(r.root, ['rev-parse', 'HEAD'])),
         originalHeads,
@@ -495,6 +566,32 @@ try {
         check(
           'exact-owned-environments-retired-with-evidence-preserved',
           report.environments.map((e) => e.id),
+        )
+        assembly.effects.lifecycle.transition(plan.run, {
+          to: 'paused',
+          reason: 'Reopen original integrated observations after exact environment retirement.',
+        })
+        const journal = contractDigest(assembly.effects.lifecycle.journal.events())
+        assert.deepEqual(
+          observedIntegrationVerification(
+            planning.sources.files.root,
+            first.request,
+            failed.artifact,
+          ),
+          originalFailed,
+        )
+        assert.deepEqual(
+          observedIntegrationVerification(
+            planning.sources.files.root,
+            second.request,
+            passed.artifact,
+          ),
+          originalPassed,
+        )
+        assert.equal(contractDigest(assembly.effects.lifecycle.journal.events()), journal)
+        check(
+          'paused-retired-original-combined-evidence-recovery-preserves-all-journal-entries',
+          journal,
         )
       }
       report.status = 'passed'

@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-original-integrated-observations
+    enforcers: [src/integration/verification-observation.ts#observedIntegrationVerification, src/integration/verification.ts#integrationVerificationKey, src/environment/runtime.ts#snapshot, test/unit/integration/verification-observation.test.ts, test/unit/environment/docker.test.ts, test/evals/assembly/run.ts]
   - id: delivery-original-docker-assertions
     enforcers: [src/acceptance/case-observation.ts#observedDockerAcceptanceCase, src/acceptance/docker-effect.ts#execute, src/acceptance/store.ts#observedCase, test/unit/acceptance/case-observation.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-current-assembly-qa

@@ -5,3 +5,5 @@
 Assembly readiness is an input to whole-product verification. It grants no integration verdict, feature acceptance, root completion or publication. Inspection may reconcile original metadata but never issues checkout, merge, a suite or a worker. Keep paused recovery separate from dispatch authority.
 
 ⛔ `delivery-original-docker-assertions`: reopen exact fixed-host case artifacts through their original applied observation/assertion/capture effect hash and environment bindings. A copied host label or substituted result cannot replace that proof. Read-only history grants neither native ownership nor current acceptance; audit those separately before promotion.
+
+⛔ `delivery-original-integrated-observations`: recover machine-only combined reports from their exact original case keys, immutable candidate/assembly, pinned complete coverage and original Docker assertion effects. Validate each bound environment revision through its complete original chain. Recompute status and repair ownership; never borrow a newer passing case, replay work or promote historical proof into current acceptance or native ownership.

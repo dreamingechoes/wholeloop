@@ -105,5 +105,13 @@ The internal fixed-host case observer reopens an exact acceptance-plan/case/key 
 
 This is historical assertion evidence. Its result explicitly leaves native ownership and current acceptance unestablished; the controller must still audit the original process scope, deadlines and exact current assembled candidate before approving whole-product QA. See [ADR-0159](../decisions/0159-original-docker-assertion-observations.md).
 
+## Recover the original combined verification report
+
+The internal integrated-report observer reopens the exact budgeted report, candidate, assembly and pinned pre-builder cases. It derives criterion, contract and procedure coverage again and requires each case's exact original integration attempt key, assertions, captures and journaled Docker effect. Changed coverage, passing claims, runtime bindings or repair ownership refuse recovery. It preserves original failures rather than substituting newer passing cases.
+
+Runtime revisions legitimately change while test containers are registered. Recovery validates the complete original environment history and resolves each exact historical revision; it does not query Docker. Both failed and successful machine-only reports remain readable after correction, pause and exact environment retirement without journal changes. Human or incomplete reports remain unsupported by this internal reader. Historical proof still leaves native ownership and current acceptance unestablished; root integration and public-route composition remain open. See [ADR-0160](../decisions/0160-original-integrated-verification-observations.md).
+
+The existing npm run eval:assembly -- --retire-success instruction also exercises report recovery and eight report-substitution refusals, retaining its original two-repository failing-combined scenario, correction and case expectations. This executes actual Docker CLI/API behavior with disposable local repositories; it does not use authenticated models or publish anything. Both exact trial environments retire before paused recovery is checked.
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)
