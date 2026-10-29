@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-complete-unit-qa-vector
+    enforcers: [src/runner/milestone-readiness.ts#RunnerMilestoneReadiness, src/runner/milestone-readiness.ts#inspect, src/integration/contracts.ts#integrationScope, test/unit/runner/milestone-readiness.test.ts]
   - id: delivery-original-assembly-control
     enforcers: [src/integration/assembly.ts#controller, src/integration/assembly.ts#host, src/integration/assembly.ts#requestCancellation, src/integration/git-process.ts#invoke, test/unit/integration/assembly.test.ts, test/unit/integration/git-process.test.ts]
   - id: delivery-recorded-correction-checkpoints

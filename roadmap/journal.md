@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-29 · P6-10 continuing — complete current unit vectors
+
+- Add a read-only milestone reader over the complete dependency-ordered unit closure, including prerequisite milestones and transitive work. Require fixed current joint-QA readers for every required code unit, select exact owned correction receipts and recheck all earlier candidates/root records and the plan after asynchronous inspection. Missing or changed evidence returns no partial parts. A ready vector explicitly establishes neither integration QA nor feature acceptance. Add ADR-0157 and enforcement. P6-10 stays open; counts remain 59/88 complete. Executed root integration, whole-product QA and complete-route/public composition remain technical work.
+- All four admission controls pass on macOS Node 24.22.0 in 3.85 seconds without selecting work or changing the journal. Fresh-process metadata control 52781e64cf41f74e8c4c6570d1a8e73e4a93c36506b6d1786926ba321443cf2d reopens the actual retained two-correction candidate 3a5cb40713e7516d1b8f30dbe98984849020f440d814594e31fa789341d7d3a6, derives its complete exact vector, refuses changed bytes, restores identical original evidence and preserves the full journal without selectors or acceptance. Complete Linux snapshot 7863a3a3d46024072942ee619666332883f1ea53cee2da67b1fd090a1c5f98f1 passes 3337 tests in 173 files and all remaining checks, as recorded in the assembly entry. Mac lint984/types/build/docs386/harness150/Markdown385/Mermaid36 pass. The complete macOS predecessor snapshot separately passes 3328 tests in 172 files (1632.84 seconds), excluding later assembly/vector code; do not relabel that baseline. No original deadline, case or assertion is relaxed; authenticated-native, independent Linux application-host and complete-route acceptance remain unestablished.
+
+---
+
 ## 2026-10-29 · P6-10 continuing — original assembly controller bounds
 
 - Bind optional original runner control to integration assembly preparation, every new effect and every actual private Git wrapper. Preserve the narrower deadline, cancellation signals, live ownership and actual registration before input. Expose exact original-nonce cancellation after revocation and keep paused metadata recovery independent of dispatch authority. Preserve schemas, original effect keys, conflict/repair behavior and the unconfigured API. Add ADR-0156 and enforcement. P6-10 remains open; counts stay 59/88 complete. Assembly ownership alone establishes neither integrated QA nor acceptance.

@@ -81,6 +81,12 @@ npm run eval:assembly -- --retire-success
 
 This opt-in evaluation creates two disposable local Git repositories and actual owned Docker services. Backend and frontend units pass separately while the combined API fails. A committed backend repair creates a new complete assembly and passes the unchanged contract/API cases. The test preserves personal targets, worker files, old failures and budgeted failed/passed artifacts, then observes exact owned resource retirement. Reports and fixtures remain in the printed external locations. No model account, external service, remote Git write, pull request or project merge is exercised. See the [integration specification](../../roadmap/specifications/autonomous-delivery/05-integration-and-change-impact.md) for later change-impact and publication boundaries.
 
+## Current unit QA before assembly
+
+The internal milestone-readiness reader derives the complete ordered unit vector from the selected milestone, its prerequisite milestones and transitive work dependencies. Each unit needs fixed original verification and independent review readers at its exact current owned commit, including any recorded correction chain. Missing reader coverage, pending QA or changed evidence returns no parts; the caller cannot request a convenient subset.
+
+All earlier candidates and root records are checked again after the asynchronous reads. A ready result supplies only assembly inputs and explicitly leaves integration QA and feature acceptance unestablished. Inspection runs no worker, suite, Git mutation or assembly and changes no journal or budget. Actual assembly and combined application checks remain necessary. See [ADR-0157](../decisions/0157-complete-current-unit-vectors-before-assembly.md).
+
 ## Foreground runner ownership
 
 The internal assembly adapter can accept the same fixed controller control used by owned Git stages. Every original wrapper receives the narrower deadline, combined cancellation signals and current-ownership watcher; its actual operation is registered before input. Cancelled, expired or fenced controllers cannot prepare a resource or admit another effect. A fresh controller can request cancellation of the exact original pending operation by its retained nonce, including after revocation; no stored PID is signalled.
