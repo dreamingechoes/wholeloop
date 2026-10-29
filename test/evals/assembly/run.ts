@@ -220,6 +220,8 @@ try {
         ],
         retention: { reviewAfterMs: 60000, expiryAction: 'retain' },
       })
+      let verificationCurrent = true,
+        verificationCalls = 0
       const driver = new DockerCli(),
         daemon = dockerJson(await driver.call(['info', '--format', '{{json .}}'])) as {
           Architecture: string
@@ -227,7 +229,16 @@ try {
         architecture = ['aarch64', 'arm64'].includes(daemon.Architecture) ? 'arm64' : 'amd64',
         environments = new DeliveryEnvironments(planning.sources.files.root),
         candidates = new IntegrationCandidates(planning.sources.files.root),
-        verifier = new IntegrationVerification(planning.sources.files.root, driver)
+        verifier = new IntegrationVerification(planning.sources.files.root, driver, {
+          deadline: new Date(Date.now() + plan.budgets.wallTimeMs).toISOString(),
+          signal: new AbortController().signal,
+          current: () => verificationCurrent,
+        }),
+        originalCall = driver.call.bind(driver)
+      driver.call = (...args) => {
+        verificationCalls++
+        return originalCall(...args)
+      }
       const protectedInput = (id: string, body: string) => {
         const ref = `delivery/integration-inputs/${id}.txt`
         planning.sources.files.atomic(ref, body)
@@ -533,6 +544,24 @@ try {
       check(
         'substituted-report-status-coverage-cases-bindings-and-repair-claims-refuse-without-replay',
         changes.length,
+      )
+      verificationCurrent = false
+      const callsBefore = verificationCalls,
+        journalBefore = contractDigest(assembly.effects.lifecycle.journal.events())
+      await assert.rejects(verifier.run(second.request), /acceptance-controller-fenced/)
+      assert.equal(verificationCalls, callsBefore)
+      assert.equal(contractDigest(assembly.effects.lifecycle.journal.events()), journalBefore)
+      assert.deepEqual(
+        observedIntegrationVerification(
+          planning.sources.files.root,
+          second.request,
+          passedArtifact,
+        ),
+        originalPassed,
+      )
+      check(
+        'fenced-original-parent-prevents-integrated-dispatch-and-docker-reads-without-losing-history',
+        callsBefore,
       )
       assert.deepEqual(
         plan.repositories.map((r) => git(r.root, ['rev-parse', 'HEAD'])),

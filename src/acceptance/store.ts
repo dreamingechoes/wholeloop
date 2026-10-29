@@ -57,24 +57,45 @@ export interface AcceptanceHost {
   /** Only a trusted host can bind its current case to an already journaled test effect. */
   pendingEffect?(invocation: string): string | undefined
 }
+export interface AcceptanceExecutionControl {
+  deadline: string
+  signal: AbortSignal
+  current(): boolean
+}
 /** Fixed controller hosts call this boundary. There is intentionally no result/JSON import command. */
 export class DeliveryAcceptance {
   readonly planning: DeliveryPlanning
   readonly budgets: DeliveryBudgets
   readonly artifacts: AcceptanceArtifacts
+  readonly control: Readonly<AcceptanceExecutionControl> | undefined
   constructor(
     store?: string,
     readonly options: {
       now?: () => string
       planAccepted?: (grant: string, plan: string) => boolean
+      control?: AcceptanceExecutionControl
     } = {},
   ) {
     this.planning = new DeliveryPlanning(store)
     this.budgets = new DeliveryBudgets(this.planning.sources.files.root, options.now)
     this.artifacts = new AcceptanceArtifacts(this.budgets)
+    // Retain the original window and signal even if a caller later reuses its options.
+    this.control = options.control ? Object.freeze({ ...options.control }) : undefined
   }
   private now() {
     return this.options.now?.() ?? new Date().toISOString()
+  }
+  private controller() {
+    const control = this.control
+    if (
+      control &&
+      (!Number.isFinite(Date.parse(control.deadline)) ||
+        new Date(control.deadline).toISOString() !== control.deadline ||
+        control.signal.aborted ||
+        this.now() >= control.deadline ||
+        !control.current())
+    )
+      throw new AcceptanceError('acceptance-controller-fenced')
   }
   prepare(value: unknown) {
     acceptanceShape(value, ACCEPTANCE_SCHEMAS.plan)
@@ -177,6 +198,8 @@ export class DeliveryAcceptance {
       throw new AcceptanceError('unavailable-observation-host')
     this.authority(plan)
     const bindings = await boundary.observe(plan)
+    // Observation may yield to a pause or takeover; accounting is already a mutation.
+    this.controller()
     this.bindings(plan, bindings)
     this.budgets.start(plan.run)
     this.authority(plan)
@@ -186,7 +209,12 @@ export class DeliveryAcceptance {
       budget.remainingMs ?? test.timeoutMs,
       budget.limits?.attemptMs ?? test.timeoutMs,
     )
-    const deadline = new Date(Date.parse(this.now()) + timeoutMs).toISOString()
+    const deadline = new Date(
+      Math.min(
+        Date.parse(this.now()) + timeoutMs,
+        this.control ? Date.parse(this.control.deadline) : Number.POSITIVE_INFINITY,
+      ),
+    ).toISOString()
     const base = this.casePath(digest, caseId),
       path = `${base}/${key}`,
       files = this.planning.sources.files
@@ -242,6 +270,9 @@ export class DeliveryAcceptance {
     }
     const startedAt = this.now(),
       abort = new AbortController()
+    const cancel = () => abort.abort()
+    this.control?.signal.addEventListener('abort', cancel, { once: true })
+    if (this.control?.signal.aborted) cancel()
     let complete = false,
       dispatched = false,
       observedStopped = false
@@ -279,6 +310,7 @@ export class DeliveryAcceptance {
             abort.abort()
             throw new AcceptanceError('case-cancelled')
           }
+          this.controller()
           dispatched = true
           return host.execute(structuredClone(test), {
             invocation,
@@ -366,6 +398,7 @@ export class DeliveryAcceptance {
       complete = true
       clearTimeout(timer)
       clearInterval(watch)
+      this.control?.signal.removeEventListener('abort', cancel)
     }
     acceptanceShape(receipt, ACCEPTANCE_SCHEMAS.result)
     files.locked(() => {
@@ -527,6 +560,7 @@ export class DeliveryAcceptance {
     }
   }
   private authority(plan: AcceptancePlan, effectId?: string) {
+    this.controller()
     // One fresh authority/budget observation per check; never retain it across polls.
     const { state, authority, report } = this.budgets.observation(plan.run)
     const effect = effectId

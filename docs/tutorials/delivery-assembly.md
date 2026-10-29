@@ -113,5 +113,11 @@ Runtime revisions legitimately change while test containers are registered. Reco
 
 The existing npm run eval:assembly -- --retire-success instruction also exercises report recovery and eight report-substitution refusals, retaining its original two-repository failing-combined scenario, correction and case expectations. This executes actual Docker CLI/API behavior with disposable local repositories; it does not use authenticated models or publish anything. Both exact trial environments retire before paused recovery is checked.
 
+## Preserve the original parent control during product QA
+
+The internal integrated verifier can capture the original parent deadline, cancellation signal and live-ownership predicate. Each case keeps the narrower case/run/attempt limit and that original deadline. Parent cancellation reaches HTTP requests as well as native operations; fencing and expiration also prevent late artifact capture or a new aggregate report. Post-await rechecks occur before accounting or dispatch, so a pause cannot admit another case while environment observation is returning.
+
+Historical metadata remains readable after cancellation. This control does not replace original native-scope auditing or current unit/assembly readiness, and the public complete-route runner remains open. The existing combined Docker evaluation also refuses a fenced parent's new execution without Docker reads or journal changes while retaining its original report proof. See [ADR-0161](../decisions/0161-original-parent-controls-for-acceptance.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

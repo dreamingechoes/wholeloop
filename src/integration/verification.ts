@@ -2,7 +2,7 @@ import { DockerAcceptanceBoundary } from '../acceptance/boundary.js'
 import type { AcceptancePlan } from '../acceptance/contracts.js'
 import { acceptanceShape } from '../acceptance/contracts.js'
 import { DockerBehaviorHost } from '../acceptance/docker-behavior.js'
-import { DeliveryAcceptance } from '../acceptance/store.js'
+import { type AcceptanceExecutionControl, DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'
 import { EnvironmentResources } from '../environment/runtime.js'
@@ -79,10 +79,14 @@ export class IntegrationVerification {
   constructor(
     store?: string,
     readonly driver: DockerTransport = new DockerCli(),
+    control?: AcceptanceExecutionControl,
   ) {
     this.candidates = new IntegrationCandidates(store)
     this.assembly = new IntegrationAssembly(this.candidates.planning.sources.files.root)
-    this.acceptance = new DeliveryAcceptance(this.candidates.planning.sources.files.root)
+    this.acceptance = new DeliveryAcceptance(
+      this.candidates.planning.sources.files.root,
+      control ? { control } : {},
+    )
   }
   private async context(value: unknown) {
     acceptanceShape(value, requestSchema)
@@ -118,12 +122,14 @@ export class IntegrationVerification {
     if (!acceptanceInput) throw new IntegrationError('missing-integrated-acceptance')
     const pinned = this.acceptance.get(acceptanceInput.ref),
       selection = integrationVerificationSelection(candidate.candidate, pinned.plan)
+    if (this.acceptance.control) this.acceptance.assertCurrent(pinned.digest)
     if (selection.missing.length)
       throw new IntegrationError('integration-contract-or-procedure-coverage')
     const resources = new EnvironmentResources(this.candidates.planning.sources.files),
       environment = resources.get(request.environment).record,
       boundary = new DockerAcceptanceBoundary(resources, request.environment, this.driver),
       bindings = await boundary.observe(pinned.plan)
+    if (this.acceptance.control) this.acceptance.assertCurrent(pinned.digest)
     if (
       !candidate.candidate.inputs.some(
         (i) => i.kind === 'recipe' && i.ref === environment.recipe,
@@ -264,6 +270,7 @@ export class IntegrationVerification {
       at: new Date().toISOString(),
     }
     acceptanceShape(report, reportSchema)
+    if (retain && this.acceptance.control) this.acceptance.assertCurrent(pinned.digest)
     const artifact = retain
       ? this.acceptance.artifacts.capture(
           candidate.candidate.run,
