@@ -7,8 +7,8 @@ import { build } from 'esbuild'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const args = process.argv.slice(2)
-if (args.some((arg) => arg !== '--retire-success'))
-  throw new Error('Supported option: --retire-success')
+if (args.some((arg) => !['--retire-success', '--parent-control'].includes(arg)))
+  throw new Error('Supported options: --retire-success, --parent-control')
 const destination = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-docker-evaluation-')))
 mkdirSync(join(destination, 'results'))
 const runner = join(destination, 'runner.mjs')

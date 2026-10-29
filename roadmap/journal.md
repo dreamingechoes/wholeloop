@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-29 · P6-10 continuing — original provisioning parent controls
+
+- Capture optional original parent deadline/signal/ownership for the existing environment backend. Recheck after preflight and before reservation/resource/effect admission and positive results; narrow actual calls and setup while keeping service lifetime and original operation observations separate. Preserve default transport behavior and actual callbacks, and prevent replacement signals/predicates from changing the selected parent. Add ADR-0169, enforcement and an opt-in existing Docker-evaluation mode without removing ordinary controls. Root producer ownership and complete-route environment preparation remain separate technical work; P6-10 stays open at 59/88 overall and 19/34 expanded tasks complete.
+- Preserve the initial exactOptionalPropertyTypes failure and explicitly type the captured optional control before tests. Preserve the evaluation request's initial readonly-array incompatibility and copy only that input array for the existing mutable domain API. All 68 directed provisioning/backend/lifecycle cases pass on macOS Node 24.22.0 in 7.77 seconds, including actual original-client closure with an independent peer retained. The actual Docker parent-control mode passes all twenty checks with bundle ba2a520df5984c8390e453134ad68de1f94b40fc8f7ce48f903e70bb8662c008: real post-await preflight refusal without a journal/effect, two bounded successful environments with independent service lifetimes and every existing boundary, failing-setup, collision, stopped-volume and interrupted-retirement control. Exact owned absence is observed for all trial resources. Current lint1008/types/build/docs399/harness151/Markdown398 checks pass. Complete isolated Linux arm64/Node 24.22.0/Git 2.39.5 checks pass 3440 tests in 183 files (245.18 seconds), lint1008/types/build/docs399/harness151/Markdown398/Mermaid36, generators, smoke and offline packaging on archive e07be613dc9d31d7aafd8774e920cbaea63ef908ab04b81bc38283e06e8bfce5 (1458 files). Only final evidence prose follows this snapshot; no existing case, assertion or original invocation is renewed or relaxed.
+
+---
+
 ## 2026-10-29 · Owner-requested resume — complete fixed domain dispatch
 
 - The owner explicitly resumes implementation after the computer move. Confirm unchanged main 3e9db5a, preserved uncommitted dispatcher changes, no staged files and available Linux/aarch64 Docker backend. Read the durable pause checkpoint and current phase; the interrupted trial remains historical, with both exact environments retired.

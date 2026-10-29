@@ -28,6 +28,7 @@ import { environmentRecipe } from '../../support/environment.js'
 
 const output = new StoreFiles(process.argv[2] ?? '')
 const retire = process.argv.includes('--retire-success')
+const parentControl = process.argv.includes('--parent-control')
 const report: {
   schema: string
   status: string
@@ -302,14 +303,69 @@ try {
       const selected = environments.recipes.prepare(recipe)
       process.env.WHOLELOOP_FIXTURE_CONTROLLER_ONLY = 'non-secret-controller-marker'
       const run = async (key: string) => {
-        const result = await environments.provision({
-          schema: 'wholeloop/environment-provision-request@1',
-          run: plan.run,
-          key,
-          recipe: selected.digest,
-          helperImage: DOCKER_REFERENCE_HELPER,
-          workspaces: [{ repository: 'app', path, head: snapshot.head, snapshot: snapshot.digest }],
-        })
+        const request = {
+            schema: 'wholeloop/environment-provision-request@1',
+            run: plan.run,
+            key,
+            recipe: selected.digest,
+            helperImage: DOCKER_REFERENCE_HELPER,
+            workspaces: [
+              { repository: 'app', path, head: snapshot.head, snapshot: snapshot.digest },
+            ],
+          } as const,
+          deadline = new Date(Date.now() + 60000).toISOString()
+        if (parentControl && key === 'first') {
+          const before = contractDigest(environments.effects.lifecycle.journal.events())
+          for (const mode of ['cancelled', 'fenced', 'post-await'] as const) {
+            const abort = new AbortController()
+            let active = mode !== 'fenced',
+              calls = 0
+            if (mode === 'cancelled') abort.abort()
+            const control = { deadline, signal: abort.signal, current: () => active },
+              selected = new DeliveryEnvironments(
+                planning.sources.files.root,
+                {
+                  provenance: driver.provenance,
+                  call: async (args, options) => {
+                    calls++
+                    assert.equal(mode, 'post-await')
+                    const result = await driver.call(args, options)
+                    active = false
+                    control.current = () => true
+                    return result
+                  },
+                },
+                undefined,
+                undefined,
+                control,
+              )
+            await assert.rejects(
+              selected.provision({
+                ...request,
+                key: `parent-${mode}`,
+                workspaces: [...request.workspaces],
+              }),
+              /environment-parent-not-current/,
+            )
+            assert.equal(calls, mode === 'post-await' ? 1 : 0)
+            assert.equal(contractDigest(environments.effects.lifecycle.journal.events()), before)
+            assert.equal(environments.resources.list().length, 0)
+          }
+          check('original-parent-preflight-refusals', { journal: before, effects: 'not-issued' })
+        }
+        // Each actual attempt receives its own original window. Never renew an
+        // existing input when inspecting it later through the ordinary API.
+        const selectedBackend = parentControl
+            ? new DeliveryEnvironments(planning.sources.files.root, driver, undefined, undefined, {
+                deadline,
+                signal: new AbortController().signal,
+                current: () => true,
+              })
+            : environments,
+          result = await selectedBackend.provision({
+            ...request,
+            workspaces: [...request.workspaces],
+          })
         output.atomic(`${key}.json`, `${JSON.stringify(result, null, 2)}\n`)
         assert.equal(
           result.status,
@@ -317,6 +373,15 @@ try {
           result.environment?.record.reason ?? result.preflight.reason,
         )
         assert.ok(result.environment)
+        if (parentControl) {
+          assert.ok(result.environment.record.deadline <= deadline)
+          assert.ok(result.environment.record.lifetimeDeadline > deadline)
+          check(`original-parent-bounded-${key}`, {
+            deadline,
+            actual: result.environment.record.deadline,
+            lifetime: result.environment.record.lifetimeDeadline,
+          })
+        }
         report.environments.push({
           id: result.environment.record.id,
           digest: result.environment.digest,

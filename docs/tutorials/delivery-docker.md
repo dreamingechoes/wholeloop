@@ -90,5 +90,13 @@ Application networking stays on no network or an isolated internal bridge. A sep
 
 Keep the printed external history when reporting failures. Do not remove guessed names or run ledger undo commands automatically. Use the [lifecycle guide](./delivery-lifecycle.md) for public stop, reconciliation and explicit retirement. These commands fence provisioning, preserve failure data by default and recover only through exact ownership/absence observations. See [ADR-0103](../decisions/0103-owned-docker-environments-and-isolated-publication.md), the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) and [V1 acceptance](../v1-acceptance.md) for remaining host/native obligations.
 
+## Preserve the provisioning parent's original bounds
+
+The internal provisioning API can capture an enclosing controller's original deadline, cancellation signal and live ownership predicate. It refuses late or fenced preflight results before effect/resource admission, bounds each backend call and the setup deadline, and rechecks before returning a result. Replacing the caller's signal or predicate does not replace the original controller. Existing native registration and process callbacks remain attached to their actual calls; cancellation stops that live invoker rather than signalling a stored PID.
+
+Run npm run eval:environments -- --parent-control --retire-success to add original-parent controls to both actual application environments. The mode retains every ordinary isolation, setup-failure, reinspection, collision and crash-recovery check, adds cancelled/fenced/late-preflight refusals without effects and verifies that both setup deadlines stay within their original parent windows. Service lifetime remains independently bounded so later authorized QA can still use a prepared environment. The ordinary command and public schemas remain unchanged.
+
+This is a prerequisite for complete runner environment composition. It supplies neither root producer ownership nor semantic acceptance; those remain separate checks. An expired parent cannot be renewed by repeating a provision call. Use ordinary historical inspection and explicit lifecycle commands for retained resources. See [ADR-0169](../decisions/0169-original-parent-controls-for-provisioning.md).
+
 <!-- docnav -->
 [◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment stop and retirement ▶](delivery-lifecycle.md)

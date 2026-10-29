@@ -26,6 +26,10 @@ import { TCP_READY } from './docker-readiness.js'
 import { DockerResources } from './docker-resources.js'
 import { inspectEnvironment } from './inspect.js'
 import { EnvironmentOperations, environmentFenced, TrackedDockerTransport } from './operations.js'
+import {
+  type EnvironmentProvisionControl,
+  EnvironmentProvisionParent,
+} from './provision-control.js'
 import type { EnvironmentRecipe, EnvironmentService } from './recipe.js'
 import { EnvironmentRecipes } from './recipe-store.js'
 import {
@@ -58,17 +62,23 @@ export class DeliveryEnvironments {
   readonly effects: DeliveryEffects
   readonly recipes: EnvironmentRecipes
   readonly resources: EnvironmentResources
+  readonly driver: DockerTransport
+  private readonly parent: EnvironmentProvisionParent
   constructor(
     store?: string,
-    readonly driver: DockerTransport = new DockerCli(),
+    driver: DockerTransport = new DockerCli(),
     now?: () => string,
     readonly planAccepted?: (grant: string, plan: string) => boolean,
+    control?: EnvironmentProvisionControl,
   ) {
+    this.parent = new EnvironmentProvisionParent(driver, control)
+    this.driver = this.parent.driver
     this.effects = new DeliveryEffects(store, now)
     this.recipes = new EnvironmentRecipes(this.effects.lifecycle.journal.files.root)
     this.resources = new EnvironmentResources(this.recipes.files)
   }
   async provision(input: EnvironmentProvisionRequest): Promise<EnvironmentProvisionResult> {
+    this.parent.check()
     try {
       validateDeliveryShape(input, provisionSchema)
     } catch {
@@ -88,6 +98,7 @@ export class DeliveryEnvironments {
     const captured = captureEnvironmentCandidates(recipe, prepared.plan, grant, input.workspaces)
     const candidates = captured.map((entry) => entry.candidate)
     const preflight = await dockerPreflight(this.driver, recipe, input.helperImage)
+    this.parent.check()
     const result: EnvironmentProvisionResult = {
       schema: 'wholeloop/environment-provision-result@1',
       status: 'unavailable',
@@ -110,6 +121,7 @@ export class DeliveryEnvironments {
       helperImage: input.helperImage,
       candidates,
     })
+    this.parent.check()
     const effect = this.effects.prepare(input.run, {
       key: `environment-${input.key}`,
       operation: 'workspace.create',
@@ -131,12 +143,14 @@ export class DeliveryEnvironments {
       token: randomUUID(),
       effect: effect.intent.id,
       createdAt: now,
-      deadline: new Date(
-        Math.min(
-          Date.parse(now) + recipe.limits.setupMs + recipe.limits.readinessMs,
-          Date.parse(grant.expiresAt),
-        ),
-      ).toISOString(),
+      deadline: this.parent.deadline(
+        new Date(
+          Math.min(
+            Date.parse(now) + recipe.limits.setupMs + recipe.limits.readinessMs,
+            Date.parse(grant.expiresAt),
+          ),
+        ).toISOString(),
+      ),
       lifetimeDeadline: new Date(
         Math.min(Date.parse(now) + grant.budgets.wallTimeMs, Date.parse(grant.expiresAt)),
       ).toISOString(),
@@ -154,6 +168,7 @@ export class DeliveryEnvironments {
     let saved: ReturnType<EnvironmentResources['create']>
     try {
       saved = this.resources.create(record, (existing) => {
+        this.parent.check()
         this.authority(input.run)
         const active = existing.filter(
           (entry) =>
@@ -195,6 +210,7 @@ export class DeliveryEnvironments {
         this.driver,
         this.effects.lifecycle.journal.now,
       )
+      this.parent.check()
       return {
         ...result,
         status:
@@ -208,12 +224,16 @@ export class DeliveryEnvironments {
       }
     }
     const host: EffectHost = {
-      eligible: () => ({
-        allowed: true,
-        provenance: this.driver.provenance,
-        evidence: preflight.evidence,
-      }),
+      eligible: () => {
+        this.parent.check()
+        return {
+          allowed: true,
+          provenance: this.driver.provenance,
+          evidence: preflight.evidence,
+        }
+      },
       invoke: async (_intent, invocation, signal) => {
+        this.parent.check()
         this.resources.update(id, (record) => {
           record.invocation = invocation
           record.state = 'provisioning'
@@ -265,6 +285,7 @@ export class DeliveryEnvironments {
       },
     }
     const executed = await this.effects.execute(input.run, effect.intent.id, host)
+    this.parent.check()
     const final = this.resources.get(id)
     const status =
       executed.status === 'unknown' ||
@@ -315,6 +336,7 @@ export class DeliveryEnvironments {
     return { state, grant: receipt.grant, prepared }
   }
   private current(id: string) {
+    this.parent.check()
     const { record } = this.resources.get(id)
     if (environmentFenced(this.recipes.files, id))
       throw new DockerEnvironmentError('environment-fenced')

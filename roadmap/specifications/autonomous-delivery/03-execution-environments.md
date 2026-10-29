@@ -5,6 +5,8 @@
 > [!NOTE]
 > **Status: 🚧 partial.** P6-11 implements inert discovery, closed recipes, exact selected-byte retention and current-input inspection. P6-12 adds owned Docker provisioning/setup/readiness and current-resource inspection. P6-13 adds owned stop, private native cancellation, partial lifecycle recovery and explicit retirement; an independent Linux-host and actual native acceptance remain open. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
 
+The internal provisioning API also enforces an optional enclosing controller's captured deadline, signal and ownership across preflight, resource admission and actual setup calls. Original operation observations and independently bounded service lifetime remain separate. This parent control does not itself establish root producer ownership or complete-route preparation; see [ADR-0169](../../../docs/decisions/0169-original-parent-controls-for-provisioning.md).
+
 ## Environment recipe
 
 Implemented planning contract `wholeloop/environment-recipe@1` contains a named backend, immutable image identity, explicit repository mounts, bounded argv/cwd commands, service dependencies, readiness checks, fixture-data setup, ports, resource limits, network policy, secret references and cleanup policy. Do not store secret values or accept arbitrary executable provider plugins.

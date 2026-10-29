@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-original-provision-control
+    enforcers: [src/environment/provision-control.ts#EnvironmentProvisionParent, src/environment/provision-control.ts#check, src/environment/provision-control.ts#deadline, src/environment/provision-control.ts#call, src/environment/provision.ts#provision, src/environment/provision.ts#current, test/unit/environment/provision-control.test.ts, test/evals/environment/run.ts]
   - id: delivery-fixed-original-domain-dispatch
     enforcers: [src/runner/stage-dispatcher.ts#RunnerStageDispatcher, src/runner/stage-dispatcher.ts#original, src/runner/stage-dispatcher.ts#execute, src/runner/stage-dispatcher.ts#inspect, src/runner/stage-dispatcher.ts#stop, test/unit/runner/stage-dispatcher.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-owned-local-handoff
