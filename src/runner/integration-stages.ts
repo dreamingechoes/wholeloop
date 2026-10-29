@@ -1,5 +1,7 @@
 import { existsSync } from 'node:fs'
 import { type AcceptanceCase, acceptanceShape } from '../acceptance/contracts.js'
+import { privateEvaluatorSource } from '../acceptance/docker-private.js'
+import { PrivateAcceptance } from '../acceptance/private-plan.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'
@@ -27,6 +29,8 @@ export function rootIntegrationCaseOwner(test: Pick<AcceptanceCase, 'runner'> | 
     return 'container-start'
   if (test?.runner.kind === 'api' && test.runner.capability === 'http.request')
     return 'controller-http'
+  if (test?.runner.kind === 'api' && test.runner.capability === 'evaluator.private-http')
+    return 'evaluator-container'
   return 'unsupported'
 }
 
@@ -181,6 +185,14 @@ export class RunnerIntegrationStages {
       )
     )
       throw new DeliveryRunnerError('integration-stage-case-owner-unsupported')
+    for (const test of pinned.plan.cases)
+      if (
+        tests.cases.includes(test.id) &&
+        rootIntegrationCaseOwner(test) === 'evaluator-container'
+      ) {
+        new PrivateAcceptance(verifier.acceptance).forCase(pinned.digest, test)
+        privateEvaluatorSource()
+      }
     const binding: IntegrationStageBinding = {
       version: 1,
       request: digest,
@@ -280,6 +292,11 @@ export class RunnerIntegrationStages {
               65536,
             ),
           ) as { deadline: string }
+        const owner = rootIntegrationCaseOwner(definition)
+        if (owner === 'evaluator-container' && definition)
+          new PrivateAcceptance(
+            new IntegrationVerification(this.store.files.root).acceptance,
+          ).forCase(proof.report.acceptancePlan, definition)
         if (
           result.startedAt < binding.at ||
           result.endedAt > binding.deadline ||
@@ -310,13 +327,16 @@ export class RunnerIntegrationStages {
                 resource.kind === 'container' &&
                 resource.id === execution?.container &&
                 resource.purpose === 'test' &&
-                resource.slot.startsWith(
-                  `behavior-${contractDigest(result.invocation).slice(0, 20)}-`,
-                ),
+                (owner === 'evaluator-container'
+                  ? resource.slot ===
+                    `private-${contractDigest(result.invocation).slice(0, 20)}-verify`
+                  : resource.slot.startsWith(
+                      `behavior-${contractDigest(result.invocation).slice(0, 20)}-`,
+                    )),
             )
           if (
             !resource ||
-            rootIntegrationCaseOwner(definition) !== 'container-start' ||
+            !['container-start', 'evaluator-container'].includes(owner) ||
             !completion ||
             completion.operation !== execution?.controllerOperation ||
             completion.code !== execution?.clientExit ||

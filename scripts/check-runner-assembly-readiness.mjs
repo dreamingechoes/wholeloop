@@ -5,19 +5,26 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 import { harnessAssets } from './harness-assets.mjs'
+import { privateEvaluator } from './private-evaluator.mjs'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const args = process.argv.slice(2)
 if (
   args.some(
     (arg) =>
-      !['--retire-success', '--product-qa', '--product-qa-failure', '--product-qa-api'].includes(
-        arg,
-      ),
+      ![
+        '--retire-success',
+        '--product-qa',
+        '--product-qa-failure',
+        '--product-qa-api',
+        '--product-qa-private',
+        '--product-qa-private-unproven',
+        '--product-qa-private-failure',
+      ].includes(arg),
   )
 )
   throw new Error(
-    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api',
+    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api, --product-qa-private, --product-qa-private-unproven, --product-qa-private-failure',
   )
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-assembly-readiness-')),
@@ -30,7 +37,10 @@ await build({
   platform: 'node',
   format: 'esm',
   target: 'node20',
-  define: { __WL_HARNESS__: JSON.stringify(harnessAssets(root)) },
+  define: {
+    __WL_HARNESS__: JSON.stringify(harnessAssets(root)),
+    __WL_PRIVATE_EVALUATOR__: JSON.stringify(await privateEvaluator(import.meta.url)),
+  },
   banner: {
     js: "import {createRequire as __wlRunnerRequire} from 'node:module';const require=__wlRunnerRequire(import.meta.url);",
   },

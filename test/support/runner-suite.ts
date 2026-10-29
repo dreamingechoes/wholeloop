@@ -1,5 +1,6 @@
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { PrivateAcceptance } from '../../src/acceptance/private-plan.js'
 import { DeliveryAcceptance } from '../../src/acceptance/store.js'
 import { sourceHash } from '../../src/delivery/input.js'
 import { DockerCli, type DockerTransport } from '../../src/environment/docker-command.js'
@@ -43,13 +44,17 @@ export async function runnerSuiteFixture(
     productQa?: boolean
     productQaFailure?: boolean
     productQaApi?: boolean
+    productQaPrivate?: boolean
+    privateRegression?: boolean
+    privateMismatch?: boolean
   } = {},
 ) {
   if (options.production && options.unit)
     throw new Error('Production fixture requires its search unit')
-  const app = options.productQaApi
-      ? "require('node:http').createServer((_request,response)=>{response.setHeader('content-type','application/json');response.end(JSON.stringify({status:'owned suite fixture'}))}).listen(3000,'0.0.0.0')\n"
-      : "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
+  const app =
+      options.productQaApi || options.productQaPrivate
+        ? "require('node:http').createServer((_request,response)=>{response.setHeader('content-type','application/json');response.end(JSON.stringify({status:'owned suite fixture'}))}).listen(3000,'0.0.0.0')\n"
+        : "require('node:http').createServer((_request,response)=>response.end('owned suite fixture')).listen(3000,'0.0.0.0')\n",
     check = options.secondRepairSensitive
       ? `const fs=require('node:fs');process.exitCode=fs.readFileSync('app.txt','utf8')==='Synthetic owned second correction.\\n'?0:7\n`
       : options.repairSensitive
@@ -67,6 +72,39 @@ export async function runnerSuiteFixture(
       observe(await host.execute(dispatch(`workspace:${unit}`)))
       const workspace = host.workspace(request, unit).repository.path
       const acceptance = new DeliveryAcceptance(store.files.root),
+        hidden = options.productQaPrivate
+          ? new PrivateAcceptance(acceptance).prepare({
+              schema: 'wholeloop/private-acceptance@1',
+              run: request.run,
+              revision: request.revision,
+              plan: request.plan,
+              source: store.basis(request).plan.source,
+              case: 'private-product',
+              behavior: {
+                schema: 'wholeloop/behavior-input@1',
+                kind: 'api',
+                service: 'web',
+                port: 3000,
+                steps: [{ id: 'read', kind: 'request', method: 'GET', path: '/' }],
+              },
+              assertions: [
+                {
+                  id: 'private-response',
+                  description: 'The assembled service returns the pinned private response.',
+                  subject: 'json',
+                  operator: 'equals',
+                  path: '/status',
+                  expected: JSON.stringify(
+                    options.privateMismatch ? 'different private fixture' : 'owned suite fixture',
+                  ),
+                },
+              ],
+              sensitivity: {
+                mode: options.privateRegression ? 'regression' : 'new-feature',
+                relevant: ['private-response'],
+              },
+            })
+          : undefined,
         pinned = acceptance.prepare({
           schema: 'wholeloop/acceptance-plan@1',
           run: request.run,
@@ -74,6 +112,43 @@ export async function runnerSuiteFixture(
           plan: request.plan,
           source: store.basis(request).plan.source,
           cases: [
+            ...(hidden
+              ? [
+                  {
+                    id: 'private-product',
+                    criteria: ['search'],
+                    owner: 'machine',
+                    applicability: 'applicable',
+                    rationale:
+                      'Observe the assembled service through the fixed evaluator without exposing its private inputs to the application.',
+                    initial: 'The original assembled service and private definition are available.',
+                    actions: store
+                      .basis(request)
+                      .plan.milestones.map((milestone) => milestone.procedure),
+                    assertions: [
+                      {
+                        id: 'private-outcome',
+                        description: 'Every original private objective assertion passes.',
+                        subject: 'state',
+                        operator: 'equals',
+                        path: '/passed',
+                        expected: 'true',
+                      },
+                    ],
+                    failureConditions: ['Any private objective mismatch fails the product check.'],
+                    runner: {
+                      kind: 'api',
+                      capability: 'evaluator.private-http',
+                      input: JSON.stringify({
+                        schema: 'wholeloop/private-case-input@1',
+                        manifest: hidden.digest,
+                      }),
+                    },
+                    fixture: { ref: 'fixture:private-root-product', sha256: hidden.digest },
+                    timeoutMs: 120000,
+                  },
+                ]
+              : []),
             {
               id: 'suite',
               criteria: ['search'],

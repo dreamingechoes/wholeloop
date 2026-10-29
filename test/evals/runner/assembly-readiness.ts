@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { randomUUID } from 'node:crypto'
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { observedDockerAcceptanceCase } from '../../../src/acceptance/case-observation.js'
 import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
@@ -13,7 +14,9 @@ import { EnvironmentResources } from '../../../src/environment/runtime.js'
 import { IntegrationAssembly } from '../../../src/integration/assembly.js'
 import { integrationScope } from '../../../src/integration/contracts.js'
 import { IntegrationCandidates } from '../../../src/integration/store.js'
+import { integrationVerificationKey } from '../../../src/integration/verification.js'
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
+import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
 import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.js'
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
@@ -29,7 +32,12 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   productQaApi = process.argv.includes('--product-qa-api'),
-  productQa = productQaFailure || productQaApi || process.argv.includes('--product-qa')
+  privateRegression = process.argv.includes('--product-qa-private-unproven'),
+  privateMismatch = process.argv.includes('--product-qa-private-failure'),
+  productQaPrivate =
+    privateRegression || privateMismatch || process.argv.includes('--product-qa-private'),
+  productQa =
+    productQaFailure || productQaApi || productQaPrivate || process.argv.includes('--product-qa')
 await runnerSuiteFixture(
   async ({ store, context, engine, selection, driver, dispatch, observe }) => {
     console.log(`Retained original store: ${store.files.root}`)
@@ -201,7 +209,7 @@ await runnerSuiteFixture(
         'current original unit QA and closed owned assembly effects join at the exact vector; changed assembly bytes refuse and exact restoration recovers identical proof',
       )
     }
-    if (!productQaApi) await checkAssemblyBytes()
+    if (!productQaApi && !productQaPrivate) await checkAssemblyBytes()
     const environments = [selection.environment]
     let product:
       | {
@@ -315,9 +323,81 @@ await runnerSuiteFixture(
           },
           driver,
         )
-      assert.equal(proof.status, productQaFailure ? 'failed' : 'passed', JSON.stringify(proof))
-      assert.equal(proof.invocationState, 'stopped')
-      assert.equal(proof.provenance, 'host-observed')
+      assert.equal(
+        proof.status,
+        privateRegression ? 'unknown' : productQaFailure || privateMismatch ? 'failed' : 'passed',
+        JSON.stringify(proof),
+      )
+      assert.equal(proof.invocationState, privateRegression ? 'unknown' : 'stopped')
+      assert.equal(proof.provenance, privateRegression ? 'fixture' : 'host-observed')
+      if (productQaPrivate) {
+        const facts = acceptance.observedResults(selection.acceptance, 'private-product'),
+          fact = facts.at(-1)
+        assert.ok(fact)
+        assert.equal(facts.length, 1)
+        assert.equal(fact.status, privateMismatch ? 'failed' : 'passed')
+        assert.equal(fact.process?.code, 0)
+        assert.equal(
+          new RunnerEnvironmentScope(store, integration.invocation).inspect().invocationState,
+          'stopped',
+        )
+        if (privateMismatch) {
+          assert.equal(acceptance.observedResults(selection.acceptance, 'suite').length, 1)
+          const directory = `delivery/runner-integrations/${integration.invocation}`,
+            locator = JSON.parse(
+              readFileSync(store.files.path(`${directory}/report.json`), 'utf8'),
+            ),
+            report = JSON.parse(
+              acceptance.artifacts.bytes(request.run, locator.artifact).toString('utf8'),
+            ),
+            suffix = report.cases.find((entry: { id: string }) => entry.id === 'suite'),
+            binding = JSON.parse(
+              readFileSync(store.files.path(`${directory}/binding.json`), 'utf8'),
+            ),
+            key = integrationVerificationKey(binding.selection, 'suite'),
+            intent = `delivery/acceptance-cases/${selection.acceptance}/suite/${key}/intent.json`,
+            record = store.stage(digest, integration.stage.id),
+            journal = contractDigest(store.lifecycle.journal.events())
+          assert.equal(report.status, 'failed')
+          assert.equal(suffix?.status, 'unavailable')
+          assert.deepEqual(suffix?.evidence, [])
+          assert.ok(record)
+          assert.equal(existsSync(store.files.path(intent)), false)
+          try {
+            store.files.atomic(
+              intent,
+              JSON.stringify({
+                schema: 'wholeloop/acceptance-case-intent@1',
+                plan: selection.acceptance,
+                case: 'suite',
+                key,
+                sequence: 2,
+                invocation: randomUUID(),
+                bindings: report.bindings,
+                at: binding.at,
+                deadline: binding.deadline,
+                host: { id: 'docker-behavior', version: '1', capability: 'process.exec' },
+                provenance: 'host-observed',
+              }),
+            )
+            assert.equal((await host.inspect(request, record)).status, 'unknown')
+          } finally {
+            renameSync(store.files.path(intent), store.files.path(`${intent}.observed-fault`))
+          }
+          assert.deepEqual(await host.inspect(request, record), proof)
+          assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
+          checks.push(
+            'the failed original prefix borrows no earlier suite result and refuses an unowned unresolved later intent; moving the fault aside restores identical proof',
+          )
+        }
+        checks.push(
+          privateRegression
+            ? 'a passing private evaluator with no relevant observed baseline cannot establish regression sensitivity or root acceptance'
+            : privateMismatch
+              ? 'an actual private objective failure remains a failed root verdict despite zero evaluator exit and green original unit QA'
+              : 'the original private definition and sensitivity proof join the invocation-specific evaluator container and closed root native owners',
+        )
+      }
       console.log(`Original root product QA observed: ${proof.status}`)
       observe(proof)
       product = { host, proof }
@@ -332,9 +412,9 @@ await runnerSuiteFixture(
         proof,
       )
       checks.push(
-        'original root product QA executes the complete pinned machine coverage through owned Docker phases at the unchanged original deadline and records only integration completion',
+        'original root product QA executes the complete pinned machine coverage through owned Docker phases at the unchanged original deadline and records only its scoped integration result',
       )
-      if (productQaApi) {
+      if (productQaApi || productQaPrivate) {
         const reportPath = store.files.path(
             `delivery/runner-integrations/${integration.invocation}/report.json`,
           ),
@@ -367,7 +447,7 @@ await runnerSuiteFixture(
         )
       }
     }
-    if (productQaApi) await checkAssemblyBytes()
+    if (productQaApi || productQaPrivate) await checkAssemblyBytes()
     store.lifecycle.transition(request.run, {
       to: 'paused',
       reason: 'Inspect original assembly readiness without replay.',
@@ -378,7 +458,13 @@ await runnerSuiteFixture(
     assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
     assert.equal(
       store.stage(digest, integration.stage.id)?.status,
-      productQa ? (productQaFailure ? 'failed' : 'passed') : 'running',
+      productQa
+        ? privateRegression
+          ? 'unknown'
+          : productQaFailure || privateMismatch
+            ? 'failed'
+            : 'passed'
+        : 'running',
     )
     if (product) {
       const record = store.stage(digest, integration.stage.id)
@@ -433,6 +519,9 @@ await runnerSuiteFixture(
     productQa,
     productQaFailure,
     productQaApi,
+    productQaPrivate,
+    privateRegression,
+    privateMismatch,
   },
 )
 const report = {
@@ -441,9 +530,11 @@ const report = {
   checks,
   nativeAcceptance: 'not-established',
   integrationQa: productQa
-    ? productQaFailure
-      ? 'failed-original-fixture-only'
-      : 'passed-original-fixture-only'
+    ? privateRegression
+      ? 'not-established-private-sensitivity'
+      : productQaFailure || privateMismatch
+        ? 'failed-original-fixture-only'
+        : 'passed-original-fixture-only'
     : 'not-established',
   acceptance: 'not-established',
   publication: 'not-performed',

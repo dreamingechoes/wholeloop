@@ -19,6 +19,8 @@ The adapter returns only the root integration-stage verdict. Whole-feature accep
 
 ## Alternatives rejected
 
+[ADR-0163](./0163-owned-private-product-verification.md) subsequently extends the original private-case refusal with exact evaluator-container ownership and unchanged sensitivity requirements. Browser ownership and full-route composition remain separate.
+
 Passing on assembled bytes or unit flags skips product QA. Passing on retained reports alone loses native ownership and current-candidate proof. Selecting a newer case or recreating a missing consumed resource replays uncertain work. Renewing the deadline at product QA erases assembly/preparation time. Changing existing scope observation fields breaks historical digests. Requiring current authority for metadata inspection or cancellation prevents safe recovery after revocation.
 
 ## Verification

@@ -1,7 +1,13 @@
-import { DockerAcceptanceBoundary } from '../acceptance/boundary.js'
-import type { AcceptancePlan } from '../acceptance/contracts.js'
+import { existsSync } from 'node:fs'
+import { DockerAcceptanceBoundary, sameAcceptanceInputs } from '../acceptance/boundary.js'
+import type {
+  AcceptanceCaseResult,
+  AcceptancePlan,
+  AcceptanceReport,
+} from '../acceptance/contracts.js'
 import { acceptanceShape } from '../acceptance/contracts.js'
 import { DockerBehaviorHost } from '../acceptance/docker-behavior.js'
+import { requiredPrivateSensitivity } from '../acceptance/sensitivity.js'
 import { type AcceptanceExecutionControl, DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'
@@ -191,29 +197,70 @@ export class IntegrationVerification {
   }
   async report(value: unknown, retain = false) {
     const { request, candidate, pinned, selection, boundary, bindings } = await this.context(value),
-      observed = await this.acceptance.report(pinned.digest, boundary)
+      observed = pinned.plan.cases.some(
+        (test) => selection.cases.includes(test.id) && test.owner === 'human',
+      )
+        ? await this.acceptance.report(pinned.digest, boundary)
+        : undefined
     await this.context(value)
+    // Ordinary reports select the latest case. That is useful for operator
+    // notes, but machine integration must retain its exact original attempt.
+    const entries =
+      observed?.cases ??
+      pinned.plan.cases.map((test) => ({
+        id: test.id,
+        owner: test.owner,
+        status: 'unavailable' as const,
+        evidence: [] as string[],
+      }))
+    const originals = new Map<string, AcceptanceCaseResult>(),
+      relevant: AcceptanceReport['cases'] = entries
+        .filter((entry) => selection.cases.includes(entry.id))
+        .map((entry) => {
+          if (entry.owner === 'human') return entry
+          const key = integrationVerificationKey(request, entry.id),
+            files = this.acceptance.planning.sources.files
+          if (
+            !existsSync(
+              files.path(
+                `delivery/acceptance-cases/${pinned.digest}/${entry.id}/${key}/result.json`,
+              ),
+            )
+          )
+            return { ...entry, status: 'unavailable', evidence: [] }
+          const original = this.acceptance.observedCase(pinned.digest, entry.id, key),
+            test = pinned.plan.cases.find((test) => test.id === entry.id)
+          if (!test) throw new IntegrationError('integration-original-case-missing')
+          originals.set(entry.id, original)
+          return {
+            ...entry,
+            status: !sameAcceptanceInputs(original.bindings, bindings)
+              ? 'stale'
+              : original.status === 'passed' &&
+                  test.runner.capability === 'evaluator.private-http' &&
+                  !requiredPrivateSensitivity(this.acceptance, pinned.digest, test, original)
+                    .allowed
+                ? 'unavailable'
+                : original.status,
+            evidence: [contractDigest(original)],
+          }
+        })
     const checks = selection.checks.map((check) => ({
       ...check,
-      status: check.cases.every((id) =>
-        observed.cases.some((c) => c.id === id && c.status === 'passed'),
-      )
+      status: check.cases.every((id) => relevant.some((c) => c.id === id && c.status === 'passed'))
         ? 'passed'
         : 'not-established',
     }))
-    const relevant = observed.cases.filter((c) => selection.cases.includes(c.id)),
-      fixture =
+    const fixture =
         this.driver.provenance === 'fixture' ||
-        observed.acceptance === 'fixture-only' ||
+        observed?.acceptance === 'fixture-only' ||
         relevant.some(
-          (c) =>
-            c.owner === 'machine' &&
-            this.acceptance.observedResults(pinned.digest, c.id).at(-1)?.provenance === 'fixture',
+          (c) => c.owner === 'machine' && originals.get(c.id)?.provenance === 'fixture',
         ),
       human = relevant.some((c) => c.owner === 'human')
     const established =
       checks.every((c) => c.status === 'passed') &&
-      (!human || observed.acceptance === 'operator-and-machine')
+      (!human || observed?.acceptance === 'operator-and-machine')
     const status = established
       ? fixture
         ? 'fixture-only'

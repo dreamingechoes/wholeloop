@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { sameAcceptanceInputs } from '../acceptance/boundary.js'
 import { observedDockerAcceptanceCase } from '../acceptance/case-observation.js'
 import { acceptanceShape } from '../acceptance/contracts.js'
@@ -111,7 +112,15 @@ export function observedIntegrationVerification(
     if (failed) {
       // The fixed executor stops at the first failure; later results cannot be
       // borrowed from a different attempt, even when their bindings match.
-      if (entry.status !== 'unavailable' || entry.evidence.length)
+      if (
+        entry.status !== 'unavailable' ||
+        entry.evidence.length ||
+        existsSync(
+          acceptance.planning.sources.files.path(
+            `delivery/acceptance-cases/${pinned.digest}/${id}/${integrationVerificationKey(value, id)}/intent.json`,
+          ),
+        )
+      )
         throw new IntegrationError('integration-original-case-prefix')
       continue
     }

@@ -15,7 +15,7 @@ import { runnerGitFixture } from '../../support/runner-git.js'
 it.each([
   ['cli', 'process.exec', 'container-start'],
   ['api', 'http.request', 'controller-http'],
-  ['api', 'evaluator.private-http', 'unsupported'],
+  ['api', 'evaluator.private-http', 'evaluator-container'],
   ['semantic', 'evaluator.private-http', 'unsupported'],
   ['browser', 'browser.use', 'unsupported'],
   ['api', 'process.exec', 'unsupported'],
