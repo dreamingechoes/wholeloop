@@ -178,6 +178,7 @@
 | [0165](./0165-current-whole-feature-product-input.md) | Current whole-feature product input | Accepted | 2026-10-29 |
 | [0166](./0166-owned-delegated-feature-acceptance.md) | Owned delegated feature acceptance | Accepted | 2026-10-29 |
 | [0167](./0167-owned-local-handoff-endpoints.md) | Owned local handoff endpoints | Accepted | 2026-10-29 |
+| [0168](./0168-fixed-original-domain-stage-dispatch.md) | Fixed original domain-stage dispatch | Accepted | 2026-10-29 |
 
 ## Lifecycle
 

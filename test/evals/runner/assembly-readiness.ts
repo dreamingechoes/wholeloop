@@ -25,6 +25,7 @@ import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
+import { RunnerStageDispatcher } from '../../../src/runner/stage-dispatcher.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { RunnerUnitReadiness } from '../../../src/runner/unit-readiness.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
@@ -38,7 +39,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   acceptanceReject = process.argv.includes('--acceptance-reject'),
-  localHandoff = process.argv.includes('--handoff'),
+  fixedDispatcher = process.argv.includes('--dispatcher'),
+  localHandoff = fixedDispatcher || process.argv.includes('--handoff'),
   acceptanceStage = localHandoff || acceptanceReject || process.argv.includes('--acceptance'),
   productQaApi = process.argv.includes('--product-qa-api'),
   browserMismatch = process.argv.includes('--product-qa-browser-failure'),
@@ -160,18 +162,17 @@ await runnerSuiteFixture(
     checks.push(
       'the complete original unit vector requires actual suite/verification and independent review, without promoting flags',
     )
-    if (productQaBrowser) {
+    if (productQaBrowser || fixedDispatcher) {
       // Unit QA is already closed. Release its exact resources rather than
-      // reserving two browsers or weakening the daemon's capacity guard.
+      // carrying completed services into the next original bounded stage.
       const resources = new EnvironmentResources(store.files),
         retired = await new EnvironmentLifecycle(store.files, driver).execute({
           schema: 'wholeloop/environment-lifecycle-request@1',
-          id: `browser-unit-complete-${selection.environment}`,
+          id: `completed-unit-${selection.environment}`,
           environment: selection.environment,
           expected: resources.get(selection.environment).digest,
           action: 'retire',
-          reason:
-            'Release the exact completed unit QA environment before bounded browser product QA.',
+          reason: 'Release the exact completed unit QA environment before bounded product QA.',
         })
       assert.equal(retired.state, 'retired', JSON.stringify(retired))
       assert.equal(retired.clients, 'stopped')
@@ -241,7 +242,10 @@ await runnerSuiteFixture(
         'current original unit QA and closed owned assembly effects join at the exact vector; changed assembly bytes refuse and exact restoration recovers identical proof',
       )
     }
-    if (!productQaApi && !productQaPrivate && !productQaBrowser) await checkAssemblyBytes()
+    // Keep adversarial readback controls outside the original live execution
+    // window, as in the API/browser modes; every assertion still runs below.
+    if (!productQaApi && !productQaPrivate && !productQaBrowser && !fixedDispatcher)
+      await checkAssemblyBytes()
     const environments = [selection.environment]
     let product:
       | {
@@ -348,16 +352,21 @@ await runnerSuiteFixture(
         reason: 'Continue original integration after owned product environment readiness.',
       })
       const host = new RunnerIntegrationStages(store, reader),
-        proof = await host.execute(
-          integration,
-          {
+        productInput = {
+          selection: {
             schema: 'wholeloop/integration-verification-request@1',
             candidate: integrated.digest,
             assembly: resource,
             environment: provision.environment.record.id,
           },
           driver,
-        )
+        } as const,
+        proof = fixedDispatcher
+          ? await new RunnerStageDispatcher(store, request.host, { integration: host }).execute(
+              integration,
+              productInput,
+            )
+          : await host.execute(integration, productInput.selection, driver)
       assert.equal(
         proof.status,
         privateRegression
@@ -468,7 +477,11 @@ await runnerSuiteFixture(
             new RunnerFeatureReadiness(store, host),
             runnerAcceptanceOptions(store, request, acceptanceReject ? 'reject' : 'accept'),
           ),
-          accepted = await acceptance.execute(acceptanceContext)
+          accepted = fixedDispatcher
+            ? await new RunnerStageDispatcher(store, request.host, { acceptance }).execute(
+                acceptanceContext,
+              )
+            : await acceptance.execute(acceptanceContext)
         assert.equal(
           accepted.status,
           acceptanceReject ? 'blocked' : 'passed',
@@ -518,7 +531,11 @@ await runnerSuiteFixture(
             Math.min(Date.parse(handoffContext.deadline), Date.now() + 120000),
           ).toISOString()
           const handoff = new RunnerHandoffStages(store, acceptance),
-            delivered = await handoff.execute(handoffContext)
+            delivered = fixedDispatcher
+              ? await new RunnerStageDispatcher(store, request.host, { handoff }).execute(
+                  handoffContext,
+                )
+              : await handoff.execute(handoffContext)
           assert.equal(delivered.status, 'passed', JSON.stringify(delivered))
           assert.equal(delivered.invocationState, 'stopped')
           assert.equal(delivered.provenance, 'host-observed')
@@ -637,7 +654,8 @@ await runnerSuiteFixture(
         )
       }
     }
-    if (productQaApi || productQaPrivate || productQaBrowser) await checkAssemblyBytes()
+    if (productQaApi || productQaPrivate || productQaBrowser || fixedDispatcher)
+      await checkAssemblyBytes()
     store.lifecycle.transition(request.run, {
       to: 'paused',
       reason: 'Inspect original assembly readiness without replay.',
@@ -739,6 +757,7 @@ const report = {
     : 'not-established',
   publication: 'not-performed',
   localEndpoint: localHandoff ? 'code-ready-original-fixture-only' : 'not-established',
+  stageDispatch: fixedDispatcher ? 'fixed-domain-adapters-original-fixture-only' : 'direct',
 }
 mkdirSync(destination, { recursive: true })
 writeFileSync(join(destination, 'report.json'), `${JSON.stringify(report, null, 2)}\n`)

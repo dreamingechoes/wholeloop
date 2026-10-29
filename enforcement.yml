@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-fixed-original-domain-dispatch
+    enforcers: [src/runner/stage-dispatcher.ts#RunnerStageDispatcher, src/runner/stage-dispatcher.ts#original, src/runner/stage-dispatcher.ts#execute, src/runner/stage-dispatcher.ts#inspect, src/runner/stage-dispatcher.ts#stop, test/unit/runner/stage-dispatcher.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-owned-local-handoff
     enforcers: [src/runner/handoff-stages.ts#RunnerHandoffStages, src/runner/handoff-stages.ts#proof, src/runner/handoff-stages.ts#read, src/runner/handoff-stages.ts#execute, src/runner/handoff-stages.ts#inspect, src/runner/handoff-stages.ts#endpoint, src/runner/handoff-stages.ts#stop, src/runner/acceptance-stages.ts#originalInput, test/unit/runner/handoff-stages.test.ts, test/evals/runner/assembly-readiness.ts, test/evals/runner/feature-readiness.ts]
   - id: delivery-owned-feature-acceptance

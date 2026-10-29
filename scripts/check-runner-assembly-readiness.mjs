@@ -25,11 +25,12 @@ if (
         '--acceptance',
         '--acceptance-reject',
         '--handoff',
+        '--dispatcher',
       ].includes(arg),
   )
 )
   throw new Error(
-    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api, --product-qa-private, --product-qa-private-unproven, --product-qa-private-failure, --product-qa-browser, --product-qa-browser-failure, --acceptance, --acceptance-reject, --handoff',
+    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api, --product-qa-private, --product-qa-private-unproven, --product-qa-private-failure, --product-qa-browser, --product-qa-browser-failure, --acceptance, --acceptance-reject, --handoff, --dispatcher',
   )
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-assembly-readiness-')),
