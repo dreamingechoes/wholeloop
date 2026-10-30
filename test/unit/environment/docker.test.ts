@@ -413,61 +413,109 @@ it('refuses authority before Docker startup or source selection', () =>
     ).rejects.toThrow('unknown-run')
     expect(calls).toEqual([])
   }))
-it('retains the issued provisioning key when its caller changes input during preflight', () =>
-  fixture(async ({ planning, plan, root, dir }) => {
-    const app = 'process.stdout.write("Pinned provisioning input.")\n'
-    writeFileSync(join(root, 'app.cjs'), app)
-    git(root, ['add', 'app.cjs'])
-    git(root, [
-      'commit',
-      '-m',
-      'test: pin a provisioning request fixture',
-      '-m',
-      'Observe input aliasing across asynchronous backend reads.',
-    ])
-    entry(plan.repositories, 0).base = git(root, ['rev-parse', 'HEAD'])
-    const prepared = planning.preparePlan(plan),
-      original = preflightDriver(),
-      request: EnvironmentProvisionRequest = {
-        schema: 'wholeloop/environment-provision-request@1',
-        run: plan.run,
-        key: 'original-input',
-        recipe: '',
-        helperImage: DOCKER_REFERENCE_HELPER,
-        workspaces: [],
-      },
-      driver: DockerTransport = {
-        provenance: 'fixture',
-        call: async (args) => {
-          request.key = 'replaced-input'
-          if (['context', 'version', 'info', 'image'].includes(args[0] ?? ''))
-            return original.driver.call(args)
-          return { status: 'crashed', stdout: '', code: 7, digest: 'f'.repeat(64) }
+it.each(['caller-input', 'concurrent-resource'] as const)(
+  'retains original provisioning admission after %s changes during preflight',
+  (mode) =>
+    fixture(async ({ planning, plan, root, dir }) => {
+      const app = 'process.stdout.write("Pinned provisioning input.")\n'
+      writeFileSync(join(root, 'app.cjs'), app)
+      git(root, ['add', 'app.cjs'])
+      git(root, [
+        'commit',
+        '-m',
+        'test: pin a provisioning request fixture',
+        '-m',
+        'Observe input aliasing across asynchronous backend reads.',
+      ])
+      entry(plan.repositories, 0).base = git(root, ['rev-parse', 'HEAD'])
+      const prepared = planning.preparePlan(plan),
+        original = preflightDriver(),
+        request: EnvironmentProvisionRequest = {
+          schema: 'wholeloop/environment-provision-request@1',
+          run: plan.run,
+          key: 'original-input',
+          recipe: '',
+          helperImage: DOCKER_REFERENCE_HELPER,
+          workspaces: [],
         },
-      },
-      environments = new DeliveryEnvironments(planning.sources.files.root, driver),
-      grant = environments.effects.lifecycle.authority.authorize(
-        authorization(plan, prepared.digest),
+        backend: DockerTransport = {
+          provenance: 'fixture',
+          call: async (args) => {
+            if (['context', 'version', 'info', 'image'].includes(args[0] ?? ''))
+              return original.driver.call(args)
+            return { status: 'crashed', stdout: '', code: 7, digest: 'f'.repeat(64) }
+          },
+        },
+        strict = {
+          deadline: new Date(Date.now() + 10000).toISOString(),
+          signal: new AbortController().signal,
+          current: () => true,
+          requireNewResource: true,
+        }
+      let concurrent: ReturnType<DeliveryEnvironments['resources']['get']> | undefined,
+        concurrentJournal: string | undefined,
+        changed = false
+      const driver: DockerTransport = {
+          provenance: 'fixture',
+          call: async (args) => {
+            if (mode === 'caller-input') request.key = 'replaced-input'
+            else if (!changed) {
+              changed = true
+              const other = await new DeliveryEnvironments(
+                planning.sources.files.root,
+                backend,
+              ).provision(structuredClone(request))
+              concurrent = other.environment
+              concurrentJournal = contractDigest(environments.effects.lifecycle.journal.events())
+              expect(concurrent).toBeDefined()
+            }
+            return backend.call(args)
+          },
+        },
+        environments = new DeliveryEnvironments(
+          planning.sources.files.root,
+          driver,
+          undefined,
+          undefined,
+          mode === 'concurrent-resource' ? strict : undefined,
+        ),
+        grant = environments.effects.lifecycle.authority.authorize(
+          authorization(plan, prepared.digest),
+        )
+      environments.effects.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
+      environments.effects.lifecycle.transition(plan.run, {
+        to: 'queued',
+        reason: 'Observe original request identity through failed fixture setup.',
+      })
+      const candidate = join(dir, 'candidate')
+      git(root, ['worktree', 'add', '-b', 'wl/provision-input', candidate, 'HEAD'])
+      const snapshot = workspaceSnapshot(candidate)
+      request.recipe = environments.recipes.prepare(environmentRecipe(root, app)).digest
+      request.workspaces = [
+        { repository: 'app', path: candidate, head: snapshot.head, snapshot: snapshot.digest },
+      ]
+      if (mode === 'concurrent-resource') {
+        await expect(environments.provision(request)).rejects.toThrow(
+          'environment-resource-already-exists',
+        )
+        if (!concurrent) throw new Error('Concurrent original fixture missing')
+        expect(environments.resources.get(concurrent.record.id)).toEqual(concurrent)
+        expect(environments.resources.list()).toHaveLength(1)
+        expect(contractDigest(environments.effects.lifecycle.journal.events())).toBe(
+          concurrentJournal,
+        )
+        return
+      }
+      const result = await environments.provision(request)
+      expect(result.status).not.toBe('ready')
+      expect(request.key).toBe('replaced-input')
+      expect(result.environment?.record.key).toBe('original-input')
+      expect(environments.resources.list()).toHaveLength(1)
+      expect(environments.effects.inspect(plan.run)[0]?.intent.key).toBe(
+        'environment-original-input',
       )
-    environments.effects.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
-    environments.effects.lifecycle.transition(plan.run, {
-      to: 'queued',
-      reason: 'Observe original request identity through failed fixture setup.',
-    })
-    const candidate = join(dir, 'candidate')
-    git(root, ['worktree', 'add', '-b', 'wl/provision-input', candidate, 'HEAD'])
-    const snapshot = workspaceSnapshot(candidate)
-    request.recipe = environments.recipes.prepare(environmentRecipe(root, app)).digest
-    request.workspaces = [
-      { repository: 'app', path: candidate, head: snapshot.head, snapshot: snapshot.digest },
-    ]
-    const result = await environments.provision(request)
-    expect(result.status).not.toBe('ready')
-    expect(request.key).toBe('replaced-input')
-    expect(result.environment?.record.key).toBe('original-input')
-    expect(environments.resources.list()).toHaveLength(1)
-    expect(environments.effects.inspect(plan.run)[0]?.intent.key).toBe('environment-original-input')
-  }))
+    }),
+)
 it('rejects changed runtime identities before adding a corrupt snapshot and preserves prior observations', async () => {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-resources-')))
   try {

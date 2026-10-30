@@ -8,16 +8,19 @@ export interface EnvironmentProvisionControl {
   deadline: string
   signal: AbortSignal
   current(): boolean
+  requireNewResource?: boolean
 }
 
 /** Parent bounds narrow provisioning; they never renew the resource's own limits. */
 export class EnvironmentProvisionParent {
   private readonly control: Readonly<EnvironmentProvisionControl> | undefined
   readonly driver: DockerTransport
+  readonly requireNewResource: boolean
   constructor(
     private readonly original: DockerTransport,
     control?: EnvironmentProvisionControl,
   ) {
+    this.requireNewResource = control?.requireNewResource === true
     this.control =
       control &&
       Object.freeze({

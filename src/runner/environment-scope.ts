@@ -7,16 +7,23 @@ import {
   type DockerTransport,
 } from '../environment/docker-command.js'
 import { EnvironmentOperations } from '../environment/operations.js'
+import { DeliveryEnvironments, type EnvironmentProvisionRequest } from '../environment/provision.js'
 import { EnvironmentResources } from '../environment/runtime.js'
 import { withWorkerOwnership } from '../fanout/ownership.js'
 import type { RunnerStageContext } from './engine.js'
+import {
+  captureEnvironmentPreparation,
+  type EnvironmentPreparation,
+  validateEnvironmentPreparation,
+} from './environment-preparation.js'
 import { ManagedRunnerProcess } from './native-process.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerStore } from './store.js'
 
 interface EnvironmentStageBinding {
-  version: 1 | 2
+  version: 1 | 2 | 3
   phase?: string
+  preparation?: EnvironmentPreparation
   request: string
   plan: string
   stage: string
@@ -47,8 +54,18 @@ export class RunnerEnvironmentScope {
       ? `delivery/runner-environments/${this.invocation}/${this.phase}.json`
       : `delivery/runner-environments/${this.invocation}.json`
   }
-  private identity(environment: string) {
-    const { record } = new EnvironmentResources(this.store.files).get(environment)
+  private identity(environment: string, preparation?: EnvironmentPreparation) {
+    // Only an intact original preparation can precede the resource record.
+    // A present but damaged history must never fall back to this expectation.
+    const record =
+      preparation && !existsSync(this.store.files.path(`delivery/environments/${environment}`))
+        ? preparation.expected
+        : new EnvironmentResources(this.store.files).get(environment).record
+    if (
+      preparation &&
+      (record.key !== preparation.input.key || record.helperImage !== preparation.input.helperImage)
+    )
+      throw new DeliveryRunnerError('environment-preparation-original-binding')
     return {
       record,
       digest: contractDigest({
@@ -69,10 +86,12 @@ export class RunnerEnvironmentScope {
     ) as EnvironmentStageBinding
     if (
       Object.keys(binding).sort().join(',') !==
-        (this.phase
-          ? 'deadline,environment,identity,invocation,operations,phase,plan,provenance,reads,request,stage,version'
-          : 'deadline,environment,identity,invocation,operations,plan,provenance,reads,request,stage,version') ||
-      binding.version !== (this.phase ? 2 : 1) ||
+        (binding.version === 3 && this.phase
+          ? 'deadline,environment,identity,invocation,operations,phase,plan,preparation,provenance,reads,request,stage,version'
+          : this.phase
+            ? 'deadline,environment,identity,invocation,operations,phase,plan,provenance,reads,request,stage,version'
+            : 'deadline,environment,identity,invocation,operations,plan,provenance,reads,request,stage,version') ||
+      binding.version !== (binding.preparation && this.phase ? 3 : this.phase ? 2 : 1) ||
       binding.phase !== this.phase ||
       binding.invocation !== this.invocation ||
       !Array.isArray(binding.operations) ||
@@ -85,11 +104,20 @@ export class RunnerEnvironmentScope {
       new Date(binding.deadline).toISOString() !== binding.deadline
     )
       throw new DeliveryRunnerError('environment-stage-private-binding')
+    if (binding.preparation) {
+      validateEnvironmentPreparation(binding.preparation)
+      if (
+        !existsSync(this.store.files.path(`${this.path}.consumed`)) ||
+        readSourceFile(this.store.files.root, `${this.path}.consumed`, 128).trim() !==
+          contractDigest({ ...binding, operations: [], reads: [] })
+      )
+        throw new DeliveryRunnerError('environment-preparation-original-binding')
+    }
     const request = this.store.get(binding.request),
       stage = this.store
         .record(binding.request)
         .stages.find((s) => s.id === binding.stage && s.invocation === binding.invocation),
-      environment = this.identity(binding.environment),
+      environment = this.identity(binding.environment, binding.preparation),
       authority = this.store.lifecycle.authority.inspect(request.grant)
     if (
       !stage ||
@@ -102,6 +130,21 @@ export class RunnerEnvironmentScope {
       environment.record.provenance !== binding.provenance
     )
       throw new DeliveryRunnerError('environment-stage-original-binding')
+    if (
+      binding.preparation &&
+      (binding.preparation.expected.id !== binding.environment ||
+        binding.identity !==
+          contractDigest({
+            id: binding.preparation.expected.id,
+            run: binding.preparation.expected.run,
+            basis: binding.preparation.expected.basis,
+            grant: binding.preparation.expected.grant,
+            grantDigest: binding.preparation.expected.grantDigest,
+            recipe: binding.preparation.expected.recipe,
+            candidates: binding.preparation.expected.candidates,
+          }))
+    )
+      throw new DeliveryRunnerError('environment-preparation-original-binding')
     const operations = new EnvironmentOperations(
         this.store.files,
         binding.environment,
@@ -147,11 +190,54 @@ export class RunnerEnvironmentScope {
     driver: DockerTransport,
     operation: (driver: DockerTransport) => Promise<T>,
   ): Promise<T> {
+    return this.runOwned(context, environment, driver, operation)
+  }
+  /** Provision under a distinct original phase, then retain its owners for recovery. */
+  async provision(
+    inputContext: RunnerStageContext,
+    input: EnvironmentProvisionRequest,
+    driver: DockerTransport = new DockerCli(),
+  ) {
+    if (!this.phase) throw new DeliveryRunnerError('environment-preparation-phase-required')
+    if (inputContext.invocation !== this.invocation)
+      throw new DeliveryRunnerError('environment-preparation-invocation')
+    const context = Object.freeze({
+        ...inputContext,
+        request: structuredClone(inputContext.request),
+        plan: structuredClone(inputContext.plan),
+        stage: structuredClone(inputContext.stage),
+        current: inputContext.current.bind(inputContext),
+        started: inputContext.started.bind(inputContext),
+      }),
+      preparation = captureEnvironmentPreparation(this.store, context, input, driver.provenance)
+    if (existsSync(this.store.files.path(`delivery/environments/${preparation.expected.id}`)))
+      throw new DeliveryRunnerError('environment-preparation-already-exists')
+    return this.runOwned(
+      context,
+      preparation.expected.id,
+      driver,
+      (owned) =>
+        new DeliveryEnvironments(this.store.files.root, owned, undefined, undefined, {
+          deadline: context.deadline,
+          signal: context.signal,
+          current: context.current,
+          requireNewResource: true,
+        }).provision(preparation.input),
+      preparation,
+    )
+  }
+  private async runOwned<T>(
+    context: RunnerStageContext,
+    environment: string,
+    driver: DockerTransport,
+    operation: (driver: DockerTransport) => Promise<T>,
+    preparation?: EnvironmentPreparation,
+  ): Promise<T> {
     const request = contractDigest(context.request),
       actual = this.store.get(request),
       record = this.store.stage(request, context.stage.id),
       basis = this.store.basis(actual),
-      selected = this.identity(environment),
+      selected = this.identity(environment, preparation),
       stage = runnerRoute(basis.plan).find((s) => s.id === context.stage.id),
       authority = this.store.lifecycle.authority.inspect(actual.grant)
     if (
@@ -176,8 +262,9 @@ export class RunnerEnvironmentScope {
     )
       throw new DeliveryRunnerError('environment-stage-not-current')
     const binding: EnvironmentStageBinding = {
-      version: this.phase ? 2 : 1,
+      version: preparation ? 3 : this.phase ? 2 : 1,
       ...(this.phase ? { phase: this.phase } : {}),
+      ...(preparation ? { preparation } : {}),
       request,
       plan: basis.digest,
       stage: context.stage.id,
@@ -266,6 +353,7 @@ export class RunnerEnvironmentScope {
         !(
           args.length >= 1 &&
           (['info', 'version'].includes(args[0] ?? '') ||
+            (preparation && args[0] === 'context' && args[1] === 'inspect') ||
             (['container', 'image', 'network', 'volume'].includes(args[0] ?? '') &&
               args[1] === 'inspect') ||
             (args[0] === 'container' && ['logs', 'wait'].includes(args[1] ?? '')))

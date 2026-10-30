@@ -201,6 +201,10 @@ export class DeliveryEnvironments {
       } catch {}
       throw error
     }
+    // The standalone API can inspect an existing key. A root producer must
+    // also win actual resource admission after preflight, not adopt a racer.
+    if (this.parent.requireNewResource && saved.record.token !== record.token)
+      throw new DockerEnvironmentError('environment-resource-already-exists')
     if (
       saved.record.recipe !== input.recipe ||
       saved.record.helperImage !== input.helperImage ||

@@ -100,5 +100,11 @@ Run npm run eval:environments -- --parent-control --retire-success to add origin
 
 This is a prerequisite for complete runner environment composition. It supplies neither root producer ownership nor semantic acceptance; those remain separate checks. An expired parent cannot be renewed by repeating a provision call. Use ordinary historical inspection and explicit lifecycle commands for retained resources. See [ADR-0169](../decisions/0169-original-parent-controls-for-provisioning.md).
 
+## Inspect original runner preparation owners
+
+The internal runner environment scope can prepare a selected environment in its own original phase. It captures request and candidate identity before actual preflight, retains every preflight read and registered mutation owner, and preserves the original parent window. Failed preflight remains inspectable even before any environment resource exists. It refuses an already existing environment, checks the fresh resource token again at actual admission after preflight and refuses a second preparation through a consumed phase. The parent-control Docker mode also requires fresh admission for its two original successful environments; ordinary standalone reinspection remains unchanged.
+
+Run npm run eval:runner-assembly-readiness -- --provision-owner --retire-success for the disposable fixed-dispatch composition: original unit QA, owned assembly, original product preparation, product QA, independent synthetic acceptance and local handoff. It retains the existing adversarial recovery and exact retirement controls. Models remain synthetic; this is an internal integration evaluation, not the public complete-route command or independent Linux application-host acceptance. See [ADR-0171](../decisions/0171-original-runner-provisioning-owners.md).
+
 <!-- docnav -->
 [◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment stop and retirement ▶](delivery-lifecycle.md)

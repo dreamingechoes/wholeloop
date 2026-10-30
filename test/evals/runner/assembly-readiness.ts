@@ -8,7 +8,10 @@ import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
 import { DOCKER_REFERENCE_HELPER } from '../../../src/environment/docker-policy.js'
 import { EnvironmentLifecycle } from '../../../src/environment/lifecycle.js'
-import { DeliveryEnvironments } from '../../../src/environment/provision.js'
+import {
+  DeliveryEnvironments,
+  type EnvironmentProvisionRequest,
+} from '../../../src/environment/provision.js'
 import { EnvironmentRecipes } from '../../../src/environment/recipe-store.js'
 import { EnvironmentResources } from '../../../src/environment/runtime.js'
 import { IntegrationAssembly } from '../../../src/integration/assembly.js'
@@ -39,7 +42,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   acceptanceReject = process.argv.includes('--acceptance-reject'),
-  fixedDispatcher = process.argv.includes('--dispatcher'),
+  provisionOwner = process.argv.includes('--provision-owner'),
+  fixedDispatcher = provisionOwner || process.argv.includes('--dispatcher'),
   localHandoff = fixedDispatcher || process.argv.includes('--handoff'),
   acceptanceStage = localHandoff || acceptanceReject || process.argv.includes('--acceptance'),
   productQaApi = process.argv.includes('--product-qa-api'),
@@ -334,7 +338,7 @@ await runnerSuiteFixture(
           ],
           repairOwners: [{ criterion: 'search', kind: 'integration', id: 'feature' }],
         }),
-        provision = await new DeliveryEnvironments(store.files.root, driver).provision({
+        provisionInput: EnvironmentProvisionRequest = {
           schema: 'wholeloop/environment-provision-request@1',
           run: request.run,
           recipe: preparedRecipe.digest,
@@ -343,10 +347,37 @@ await runnerSuiteFixture(
           workspaces: integrated.candidate.assemblies.map(
             ({ repository, path, head, snapshot }) => ({ repository, path, head, snapshot }),
           ),
-        })
+        },
+        preparation = new RunnerEnvironmentScope(
+          store,
+          integration.invocation,
+          contractDigest({ phase: 'original-product-preparation' }),
+        ),
+        provision = provisionOwner
+          ? await preparation.provision(integration, provisionInput, driver)
+          : await new DeliveryEnvironments(store.files.root, driver).provision(provisionInput)
       assert.equal(provision.status, 'ready', JSON.stringify(provision))
       assert.ok(provision.environment)
       environments.push(provision.environment.record.id)
+      if (provisionOwner) {
+        const preparedOwners = preparation.inspect()
+        assert.equal(preparedOwners.invocationState, 'stopped')
+        assert.ok(preparedOwners.operations.length > 0)
+        assert.ok(preparedOwners.reads.length > 0)
+        assert.equal(preparation.origin()?.deadline, integration.deadline)
+        assert.ok(provision.environment.record.deadline <= integration.deadline)
+        assert.deepEqual(
+          new RunnerEnvironmentScope(
+            new RunnerStore(store.files.root),
+            integration.invocation,
+            preparation.phase,
+          ).inspect(),
+          preparedOwners,
+        )
+        checks.push(
+          'original product preparation owns actual preflight reads and every registered Docker operation before product QA without renewing the original root deadline',
+        )
+      }
       store.lifecycle.transition(request.run, {
         to: 'queued',
         reason: 'Continue original integration after owned product environment readiness.',

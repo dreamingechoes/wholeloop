@@ -34,12 +34,15 @@ const control = (): EnvironmentProvisionControl => ({
 describe('original provisioning parent bounds', () => {
   it('preserves the unconfigured transport and narrower resource deadlines', () => {
     const original = new EnvironmentProvisionParent(deny),
-      input = control(),
+      input = { ...control(), requireNewResource: true },
       parent = new EnvironmentProvisionParent(deny, input),
       deadline = input.deadline,
       earlier = new Date(Date.parse(deadline) - 1000).toISOString(),
       later = new Date(Date.parse(deadline) + 1000).toISOString()
     input.deadline = later
+    input.requireNewResource = false
+    expect(original.requireNewResource).toBe(false)
+    expect(parent.requireNewResource).toBe(true)
     expect(original.driver).toBe(deny)
     expect(original.deadline(later)).toBe(later)
     expect(parent.deadline(later)).toBe(deadline)

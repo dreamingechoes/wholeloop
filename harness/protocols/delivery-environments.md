@@ -1,5 +1,7 @@
 # Delivery environment planning
 
+- ⛔ `delivery-original-provision-owners` — bind runner preparation to a distinct original phase before backend preflight. Retain its consumed input, expected identity, actual read owners and original registered operation nonces. Require its fresh resource token at actual admission after preflight. Refuse replay, foreign existing resources and changed bindings; recover or cancel those original owners without renewing authority. Owner closure alone establishes neither readiness nor acceptance.
+
 - ⛔ `delivery-original-provision-input` — capture the complete original provisioning request before validation and asynchronous preflight. Caller-owned replacements cannot change its run, key, recipe, helper or workspaces after the observation; effect admission and resource identity retain that original input.
 
 - ⛔ `delivery-original-provision-control` — configured provisioning captures the original parent deadline, signal and ownership predicate; later replacements cannot renew authority. Recheck after asynchronous preflight and before effect/resource admission and positive results. Bound calls and setup by the narrower original limits, cancel only through the live original invoker and retain its outcomes. Keep service lifetime, historical inspection and explicit retirement separate. This grants neither root producer ownership nor semantic acceptance.

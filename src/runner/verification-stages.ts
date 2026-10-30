@@ -746,7 +746,8 @@ export class RunnerVerificationStages {
         if (
           existsSync(
             this.store.files.path(`delivery/runner-environments/${record.invocation}.json`),
-          )
+          ) ||
+          existsSync(this.store.files.path(`delivery/runner-environments/${record.invocation}`))
         )
           new RunnerEnvironmentScope(this.store, record.invocation).cancelAll()
       } finally {

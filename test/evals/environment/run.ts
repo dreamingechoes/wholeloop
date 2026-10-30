@@ -385,6 +385,7 @@ try {
                   deadline,
                   signal: new AbortController().signal,
                   current: () => true,
+                  requireNewResource: true,
                 },
               )
             : environments,
