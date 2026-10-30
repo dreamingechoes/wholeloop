@@ -9,7 +9,7 @@ The internal provisioning API also enforces an optional enclosing controller's c
 
 ## Environment recipe
 
-The internal runner scope also retains a distinct original preparation phase before any runtime resource exists, then binds actual preflight clients and later mutations to the same captured request and candidate content. Fresh inspection and original cancellation do not repeat provisioning; closure alone establishes no readiness. Complete-route selection and producer-result recovery remain technical work; see [ADR-0171](../../../docs/decisions/0171-original-runner-provisioning-owners.md).
+The internal runner scope also retains a distinct original preparation phase before any runtime resource exists, then binds actual preflight clients and later mutations to the same captured request and candidate content. Fresh inspection and original cancellation do not repeat provisioning; closure alone establishes no readiness. The fixed producer separately recovers the exact original applied ready input through consumed budgeted artifact bytes, preflight and successful native outcomes, including after retirement. Its readiness remains historical-only with no acceptance. Complete-route selection remains technical work; see [ADR-0171](../../../docs/decisions/0171-original-runner-provisioning-owners.md) and [ADR-0172](../../../docs/decisions/0172-recorded-original-environment-inputs.md).
 
 The backend captures the complete original provisioning request before validation and asynchronous preflight. Later caller-owned changes cannot select a different run, resource key, recipe, helper or candidate set for admission; see [ADR-0170](../../../docs/decisions/0170-original-provisioning-request-capture.md).
 

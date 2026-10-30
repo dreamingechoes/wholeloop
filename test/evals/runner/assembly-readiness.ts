@@ -20,6 +20,10 @@ import { IntegrationCandidates } from '../../../src/integration/store.js'
 import { integrationVerificationKey } from '../../../src/integration/verification.js'
 import { RunnerAcceptanceStages } from '../../../src/runner/acceptance-stages.js'
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
+import {
+  RunnerEnvironmentProducer,
+  type RunnerEnvironmentProducerResult,
+} from '../../../src/runner/environment-producer.js'
 import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js'
 import { RunnerFeatureReadiness } from '../../../src/runner/feature-readiness.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
@@ -42,7 +46,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   acceptanceReject = process.argv.includes('--acceptance-reject'),
-  provisionOwner = process.argv.includes('--provision-owner'),
+  producerResult = process.argv.includes('--producer-result'),
+  provisionOwner = producerResult || process.argv.includes('--provision-owner'),
   fixedDispatcher = provisionOwner || process.argv.includes('--dispatcher'),
   localHandoff = fixedDispatcher || process.argv.includes('--handoff'),
   acceptanceStage = localHandoff || acceptanceReject || process.argv.includes('--acceptance'),
@@ -251,6 +256,9 @@ await runnerSuiteFixture(
     if (!productQaApi && !productQaPrivate && !productQaBrowser && !fixedDispatcher)
       await checkAssemblyBytes()
     const environments = [selection.environment]
+    let originalPreparation:
+      | { producer: RunnerEnvironmentProducer; result: RunnerEnvironmentProducerResult }
+      | undefined
     let product:
       | {
           host: RunnerIntegrationStages
@@ -353,19 +361,35 @@ await runnerSuiteFixture(
           integration.invocation,
           contractDigest({ phase: 'original-product-preparation' }),
         ),
-        provision = provisionOwner
-          ? await preparation.provision(integration, provisionInput, driver)
-          : await new DeliveryEnvironments(store.files.root, driver).provision(provisionInput)
-      assert.equal(provision.status, 'ready', JSON.stringify(provision))
-      assert.ok(provision.environment)
-      environments.push(provision.environment.record.id)
-      if (provisionOwner) {
+        producer = new RunnerEnvironmentProducer(store, preparation.phase ?? ''),
+        produced = producerResult
+          ? await producer.prepare(integration, provisionInput, driver)
+          : undefined,
+        provision = producerResult
+          ? undefined
+          : provisionOwner
+            ? await preparation.provision(integration, provisionInput, driver)
+            : await new DeliveryEnvironments(store.files.root, driver).provision(provisionInput)
+      if (produced) {
+        assert.equal(produced.status, 'recorded-ready', JSON.stringify(produced))
+        assert.ok(produced.environment)
+        originalPreparation = { producer, result: produced }
+      } else assert.equal(provision?.status, 'ready', JSON.stringify(provision))
+      const preparedEnvironment = produced?.environment
+        ? new EnvironmentResources(store.files).snapshot(
+            produced.environment.id,
+            produced.environment.digest,
+          )
+        : provision?.environment
+      assert.ok(preparedEnvironment)
+      environments.push(preparedEnvironment.record.id)
+      const checkPreparation = () => {
         const preparedOwners = preparation.inspect()
         assert.equal(preparedOwners.invocationState, 'stopped')
         assert.ok(preparedOwners.operations.length > 0)
         assert.ok(preparedOwners.reads.length > 0)
         assert.equal(preparation.origin()?.deadline, integration.deadline)
-        assert.ok(provision.environment.record.deadline <= integration.deadline)
+        assert.ok(preparedEnvironment.record.deadline <= integration.deadline)
         assert.deepEqual(
           new RunnerEnvironmentScope(
             new RunnerStore(store.files.root),
@@ -378,6 +402,7 @@ await runnerSuiteFixture(
           'original product preparation owns actual preflight reads and every registered Docker operation before product QA without renewing the original root deadline',
         )
       }
+      if (provisionOwner && !producerResult) checkPreparation()
       store.lifecycle.transition(request.run, {
         to: 'queued',
         reason: 'Continue original integration after owned product environment readiness.',
@@ -388,7 +413,7 @@ await runnerSuiteFixture(
             schema: 'wholeloop/integration-verification-request@1',
             candidate: integrated.digest,
             assembly: resource,
-            environment: provision.environment.record.id,
+            environment: preparedEnvironment.record.id,
           },
           driver,
         } as const,
@@ -409,6 +434,9 @@ await runnerSuiteFixture(
       )
       assert.equal(proof.invocationState, privateRegression ? 'unknown' : 'stopped')
       assert.equal(proof.provenance, privateRegression ? 'fixture' : 'host-observed')
+      // Keep every owner assertion after actual QA for this mode, just as the
+      // existing dispatcher mode defers adversarial reads until after execution.
+      if (producerResult) checkPreparation()
       if (productQaBrowser) {
         const facts = acceptance.observedResults(selection.acceptance, 'browser-product'),
           fact = facts.at(-1)
@@ -693,6 +721,57 @@ await runnerSuiteFixture(
     })
     const journal = contractDigest(store.lifecycle.journal.events()),
       reopened = new RunnerAssemblyReadiness(new RunnerStore(store.files.root), units)
+    if (originalPreparation) {
+      const { producer, result } = originalPreparation,
+        base = `delivery/runner-environment-results/${integration.invocation}/${producer.phase}`,
+        locator = store.files.path(`${base}/result.json`),
+        artifact = JSON.parse(readFileSync(locator, 'utf8')).artifact,
+        originalOwner = new RunnerEnvironmentScope(
+          store,
+          integration.invocation,
+          producer.phase,
+        ).inspect().operations[0]
+      assert.ok(originalOwner)
+      assert.deepEqual(producer.inspect(integration.invocation), result)
+      for (const [name, path] of [
+        ['locator', locator],
+        ['consumption', store.files.path(`${base}/consumed`)],
+        ['artifact', store.files.path(`delivery/artifacts/${request.run}/${artifact}`)],
+        [
+          'native',
+          store.files.path(
+            `delivery/environment-operations/${result.environment?.id}/${originalOwner.operation.id}/outcome.json`,
+          ),
+        ],
+      ] as const) {
+        const backup = store.files.path(`${base}/${name}.original.retained`)
+        try {
+          renameSync(path, backup)
+          if (name === 'native')
+            assert.equal(
+              new RunnerEnvironmentScope(store, integration.invocation, producer.phase).inspect()
+                .invocationState,
+              'stopped',
+            )
+          const lost = producer.inspect(integration.invocation)
+          assert.equal(lost.status, 'unknown')
+          assert.equal(lost.environment, undefined)
+        } finally {
+          renameSync(backup, path)
+        }
+        assert.deepEqual(producer.inspect(integration.invocation), result)
+        assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
+      }
+      assert.deepEqual(
+        new RunnerEnvironmentProducer(new RunnerStore(store.files.root), producer.phase).inspect(
+          integration.invocation,
+        ),
+        result,
+      )
+      checks.push(
+        'the budgeted original ready input survives paused fresh-controller recovery; lost locator, consumption, artifact and native outcome refuse despite stopped owners, and exact restoration preserves proof and journal without reprovisioning',
+      )
+    }
     assert.deepEqual(await reopened.inspect(request, 'feature', resource), observed)
     assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
     assert.equal(
@@ -748,6 +827,18 @@ await runnerSuiteFixture(
         const before = contractDigest(store.lifecycle.journal.events())
         assert.deepEqual(await product.host.inspect(request, record), product.proof)
         assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+      }
+      if (originalPreparation) {
+        const before = contractDigest(store.lifecycle.journal.events())
+        assert.deepEqual(
+          originalPreparation.producer.inspect(integration.invocation),
+          originalPreparation.result,
+        )
+        assert.equal(originalPreparation.result.readiness, 'historical-only')
+        assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+        checks.push(
+          'exact retirement preserves the recorded original prepared input while granting no live readiness or acceptance',
+        )
       }
       checks.push('the exact original application environment retires without broad cleanup')
     }

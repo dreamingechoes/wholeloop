@@ -106,5 +106,11 @@ The internal runner environment scope can prepare a selected environment in its 
 
 Run npm run eval:runner-assembly-readiness -- --provision-owner --retire-success for the disposable fixed-dispatch composition: original unit QA, owned assembly, original product preparation, product QA, independent synthetic acceptance and local handoff. It retains the existing adversarial recovery and exact retirement controls. Models remain synthetic; this is an internal integration evaluation, not the public complete-route command or independent Linux application-host acceptance. See [ADR-0171](../decisions/0171-original-runner-provisioning-owners.md).
 
+## Recover the original prepared input
+
+The internal environment producer records the original applied ready revision as a budgeted artifact only after reopening its successful native mutation outcomes, finished reads and preflight. Its consumed result and private artifact locator allow a fresh controller to recover the same input without another provision call. Missing locators, consumption, artifact bytes or native outcomes return unknown; exact restoration recovers the original proof without changing the journal.
+
+Run npm run eval:runner-assembly-readiness -- --producer-result --retire-success to exercise these controls inside the existing fixed-dispatch composition. It retains every original QA, acceptance, handoff and recovery assertion. A recorded-ready result remains historical-only after subsequent QA and exact retirement; current environment readiness, execution authority and semantic acceptance need their own observations. Automatic complete-route selection and public execution remain P6-10 work. See [ADR-0172](../decisions/0172-recorded-original-environment-inputs.md).
+
 <!-- docnav -->
 [◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment stop and retirement ▶](delivery-lifecycle.md)

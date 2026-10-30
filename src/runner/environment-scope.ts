@@ -495,6 +495,10 @@ export class RunnerEnvironmentScope {
       open = false
     }
   }
+  /** Return captured inputs without rereading mutable worktrees or granting another execution. */
+  originalPreparation() {
+    return structuredClone(this.read()?.binding.preparation)
+  }
   /** Expose original control bindings without changing existing observation digests. */
   origin() {
     const retained = this.read()

@@ -1,5 +1,7 @@
 # Delivery environment planning
 
+- ⛔ `delivery-recorded-environment-input` — recover a prepared input only from its original consumed budgeted artifact, exact applied ready revision, preflight and stopped original native outcomes. Lost evidence stays unknown without provisioning or report capture. Recorded readiness is historical only; it grants no live execution or acceptance.
+
 - ⛔ `delivery-original-provision-owners` — bind runner preparation to a distinct original phase before backend preflight. Retain its consumed input, expected identity, actual read owners and original registered operation nonces. Require its fresh resource token at actual admission after preflight. Refuse replay, foreign existing resources and changed bindings; recover or cancel those original owners without renewing authority. Owner closure alone establishes neither readiness nor acceptance.
 
 - ⛔ `delivery-original-provision-input` — capture the complete original provisioning request before validation and asynchronous preflight. Caller-owned replacements cannot change its run, key, recipe, helper or workspaces after the observation; effect admission and resource identity retain that original input.

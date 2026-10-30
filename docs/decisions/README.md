@@ -182,6 +182,7 @@
 | [0169](./0169-original-parent-controls-for-provisioning.md) | Original parent controls for provisioning | Accepted | 2026-10-29 |
 | [0170](./0170-original-provisioning-request-capture.md) | Original provisioning request capture | Accepted | 2026-10-30 |
 | [0171](./0171-original-runner-provisioning-owners.md) | Original runner provisioning owners | Accepted | 2026-10-30 |
+| [0172](./0172-recorded-original-environment-inputs.md) | Recorded original environment inputs | Accepted | 2026-10-30 |
 
 ## Lifecycle
 

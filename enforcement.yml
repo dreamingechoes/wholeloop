@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-recorded-environment-input
+    enforcers: [src/runner/environment-producer.ts#RunnerEnvironmentProducer, src/runner/environment-producer.ts#prepare, src/runner/environment-producer.ts#inspect, src/runner/environment-proof.ts#originalPreparedEnvironment, test/unit/runner/environment-producer.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-original-provision-owners
     enforcers: [src/runner/environment-preparation.ts#captureEnvironmentPreparation, src/runner/environment-preparation.ts#validateEnvironmentPreparation, src/runner/environment-scope.ts#provision, src/runner/environment-scope.ts#read, src/runner/environment-scope.ts#runOwned, src/runner/environment-scope.ts#cancelAll, src/runner/verification-stages.ts#stop, src/environment/provision-control.ts#EnvironmentProvisionParent, src/environment/provision.ts#provision, test/unit/environment/docker.test.ts, test/unit/environment/provision-control.test.ts, test/evals/environment/run.ts, test/unit/runner/environment-preparation.test.ts, test/unit/runner/environment-scope.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-original-provision-input
