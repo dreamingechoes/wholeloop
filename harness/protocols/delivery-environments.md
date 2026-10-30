@@ -1,5 +1,7 @@
 # Delivery environment planning
 
+- ⛔ `delivery-original-provision-input` — capture the complete original provisioning request before validation and asynchronous preflight. Caller-owned replacements cannot change its run, key, recipe, helper or workspaces after the observation; effect admission and resource identity retain that original input.
+
 - ⛔ `delivery-original-provision-control` — configured provisioning captures the original parent deadline, signal and ownership predicate; later replacements cannot renew authority. Recheck after asynchronous preflight and before effect/resource admission and positive results. Bound calls and setup by the narrower original limits, cancel only through the live original invoker and retain its outcomes. Keep service lifetime, historical inspection and explicit retirement separate. This grants neither root producer ownership nor semantic acceptance.
 
 - ⛔ `delivery-environment-recipe` — treat discovery and environment-ledger undo entries as inert declarations. Execute no discovered script, hook or backend action during preparation. Pin selected bounded bytes, explicit command origins, immutable images, logical owned mounts, finite resources and declared network phases; refuse ambiguous or unsafe inputs. A prepared recipe supplies neither authority nor observed readiness.

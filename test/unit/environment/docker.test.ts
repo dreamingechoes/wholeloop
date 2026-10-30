@@ -18,13 +18,16 @@ import {
   observedContainerPolicy,
 } from '../../../src/environment/docker-policy.js'
 import { DockerResources } from '../../../src/environment/docker-resources.js'
-import { DeliveryEnvironments } from '../../../src/environment/provision.js'
+import {
+  DeliveryEnvironments,
+  type EnvironmentProvisionRequest,
+} from '../../../src/environment/provision.js'
 import { validateEnvironmentRecipe } from '../../../src/environment/recipe.js'
 import { EnvironmentResources, type EnvironmentRuntime } from '../../../src/environment/runtime.js'
 import { workspaceSnapshot } from '../../../src/gates/snapshot.js'
 import { StoreFiles } from '../../../src/state/files.js'
 import inspector from '../../fixtures/environment/container-inspect.json' with { type: 'json' }
-import { entry, fixture } from '../../support/delivery.js'
+import { authorization, entry, fixture, git } from '../../support/delivery.js'
 import { environmentRecipe } from '../../support/environment.js'
 
 type Inspector = Omit<typeof inspector, 'HostConfig'> & {
@@ -409,6 +412,61 @@ it('refuses authority before Docker startup or source selection', () =>
       }),
     ).rejects.toThrow('unknown-run')
     expect(calls).toEqual([])
+  }))
+it('retains the issued provisioning key when its caller changes input during preflight', () =>
+  fixture(async ({ planning, plan, root, dir }) => {
+    const app = 'process.stdout.write("Pinned provisioning input.")\n'
+    writeFileSync(join(root, 'app.cjs'), app)
+    git(root, ['add', 'app.cjs'])
+    git(root, [
+      'commit',
+      '-m',
+      'test: pin a provisioning request fixture',
+      '-m',
+      'Observe input aliasing across asynchronous backend reads.',
+    ])
+    entry(plan.repositories, 0).base = git(root, ['rev-parse', 'HEAD'])
+    const prepared = planning.preparePlan(plan),
+      original = preflightDriver(),
+      request: EnvironmentProvisionRequest = {
+        schema: 'wholeloop/environment-provision-request@1',
+        run: plan.run,
+        key: 'original-input',
+        recipe: '',
+        helperImage: DOCKER_REFERENCE_HELPER,
+        workspaces: [],
+      },
+      driver: DockerTransport = {
+        provenance: 'fixture',
+        call: async (args) => {
+          request.key = 'replaced-input'
+          if (['context', 'version', 'info', 'image'].includes(args[0] ?? ''))
+            return original.driver.call(args)
+          return { status: 'crashed', stdout: '', code: 7, digest: 'f'.repeat(64) }
+        },
+      },
+      environments = new DeliveryEnvironments(planning.sources.files.root, driver),
+      grant = environments.effects.lifecycle.authority.authorize(
+        authorization(plan, prepared.digest),
+      )
+    environments.effects.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
+    environments.effects.lifecycle.transition(plan.run, {
+      to: 'queued',
+      reason: 'Observe original request identity through failed fixture setup.',
+    })
+    const candidate = join(dir, 'candidate')
+    git(root, ['worktree', 'add', '-b', 'wl/provision-input', candidate, 'HEAD'])
+    const snapshot = workspaceSnapshot(candidate)
+    request.recipe = environments.recipes.prepare(environmentRecipe(root, app)).digest
+    request.workspaces = [
+      { repository: 'app', path: candidate, head: snapshot.head, snapshot: snapshot.digest },
+    ]
+    const result = await environments.provision(request)
+    expect(result.status).not.toBe('ready')
+    expect(request.key).toBe('replaced-input')
+    expect(result.environment?.record.key).toBe('original-input')
+    expect(environments.resources.list()).toHaveLength(1)
+    expect(environments.effects.inspect(plan.run)[0]?.intent.key).toBe('environment-original-input')
   }))
 it('rejects changed runtime identities before adding a corrupt snapshot and preserves prior observations', async () => {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-resources-')))

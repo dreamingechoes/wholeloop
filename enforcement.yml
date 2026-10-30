@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-original-provision-input
+    enforcers: [src/environment/provision.ts#provision, test/unit/environment/docker.test.ts, test/evals/environment/run.ts]
   - id: delivery-original-provision-control
     enforcers: [src/environment/provision-control.ts#EnvironmentProvisionParent, src/environment/provision-control.ts#check, src/environment/provision-control.ts#deadline, src/environment/provision-control.ts#call, src/environment/provision.ts#provision, src/environment/provision.ts#current, test/unit/environment/provision-control.test.ts, test/evals/environment/run.ts]
   - id: delivery-fixed-original-domain-dispatch

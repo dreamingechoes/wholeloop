@@ -9,6 +9,8 @@ The internal provisioning API also enforces an optional enclosing controller's c
 
 ## Environment recipe
 
+The backend captures the complete original provisioning request before validation and asynchronous preflight. Later caller-owned changes cannot select a different run, resource key, recipe, helper or candidate set for admission; see [ADR-0170](../../../docs/decisions/0170-original-provisioning-request-capture.md).
+
 Implemented planning contract `wholeloop/environment-recipe@1` contains a named backend, immutable image identity, explicit repository mounts, bounded argv/cwd commands, service dependencies, readiness checks, fixture-data setup, ports, resource limits, network policy, secret references and cleanup policy. Do not store secret values or accept arbitrary executable provider plugins.
 
 Discover candidates from repository guidance, then require explicit selection and pin their bytes. Existing scripts/package commands may be referenced; discovery never executes them. Shell-dependent setup must select a named shell explicitly rather than turn every command into interpolated text.

@@ -5,7 +5,11 @@ import { dirname, join, resolve } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
 import { validateDeliveryShape } from '../../../src/delivery/plan.js'
-import { DockerCli, dockerJson } from '../../../src/environment/docker-command.js'
+import {
+  DockerCli,
+  type DockerTransport,
+  dockerJson,
+} from '../../../src/environment/docker-command.js'
 import { DOCKER_REFERENCE_HELPER } from '../../../src/environment/docker-policy.js'
 import { DockerResources } from '../../../src/environment/docker-resources.js'
 import { inspectEnvironment } from '../../../src/environment/inspect.js'
@@ -355,17 +359,36 @@ try {
         }
         // Each actual attempt receives its own original window. Never renew an
         // existing input when inspecting it later through the ordinary API.
-        const selectedBackend = parentControl
-            ? new DeliveryEnvironments(planning.sources.files.root, driver, undefined, undefined, {
-                deadline,
-                signal: new AbortController().signal,
-                current: () => true,
-              })
+        const issued = { ...request, workspaces: [...request.workspaces] }
+        let substituted = false
+        const observedDriver: DockerTransport =
+            parentControl && key === 'first'
+              ? {
+                  provenance: driver.provenance,
+                  call: async (args, options) => {
+                    const result = await driver.call(args, options)
+                    if (!substituted) {
+                      issued.key = 'substituted-request'
+                      substituted = true
+                    }
+                    return result
+                  },
+                }
+              : driver,
+          selectedBackend = parentControl
+            ? new DeliveryEnvironments(
+                planning.sources.files.root,
+                observedDriver,
+                undefined,
+                undefined,
+                {
+                  deadline,
+                  signal: new AbortController().signal,
+                  current: () => true,
+                },
+              )
             : environments,
-          result = await selectedBackend.provision({
-            ...request,
-            workspaces: [...request.workspaces],
-          })
+          result = await selectedBackend.provision(issued)
         output.atomic(`${key}.json`, `${JSON.stringify(result, null, 2)}\n`)
         assert.equal(
           result.status,
@@ -373,6 +396,16 @@ try {
           result.environment?.record.reason ?? result.preflight.reason,
         )
         assert.ok(result.environment)
+        if (parentControl && key === 'first') {
+          assert.equal(substituted, true)
+          assert.equal(issued.key, 'substituted-request')
+          assert.equal(result.environment.record.key, key)
+          check('original-provision-request-after-await', {
+            issued: key,
+            retained: result.environment.record.key,
+            caller: issued.key,
+          })
+        }
         if (parentControl) {
           assert.ok(result.environment.record.deadline <= deadline)
           assert.ok(result.environment.record.lifetimeDeadline > deadline)

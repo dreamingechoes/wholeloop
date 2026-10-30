@@ -180,6 +180,7 @@
 | [0167](./0167-owned-local-handoff-endpoints.md) | Owned local handoff endpoints | Accepted | 2026-10-29 |
 | [0168](./0168-fixed-original-domain-stage-dispatch.md) | Fixed original domain-stage dispatch | Accepted | 2026-10-29 |
 | [0169](./0169-original-parent-controls-for-provisioning.md) | Original parent controls for provisioning | Accepted | 2026-10-29 |
+| [0170](./0170-original-provisioning-request-capture.md) | Original provisioning request capture | Accepted | 2026-10-30 |
 
 ## Lifecycle
 

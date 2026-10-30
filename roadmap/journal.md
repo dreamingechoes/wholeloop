@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-30 · P6-10 continuing — original provisioning request capture
+
+- Reproduce a caller-owned request substitution during asynchronous preflight: the original backend records replaced-input instead of original-input. Capture the complete request before validation and every await, preserving the existing invalid-request boundary, public schema and original parent bounds. Add ADR-0170, enforcement and an actual Docker observation control without removing any original assertions. This is a backend correctness fix before root producer composition; P6-10 remains open at 59/88 overall and 19/34 expanded tasks complete.
+- The pre-change regression fails exactly on the substituted key (one failed, 43 skipped). After the fix, all 69 directed provisioning/backend/lifecycle cases pass on macOS Node 24.22.0 in 9.10 seconds; typecheck and targeted lint pass. The real Docker parent-control evaluation passes all 21 checks with frozen bundle da4e7057e91217976da59c3359093ba54403921efdf6528de343bb52f4341b25. The new actual-observation substitution control preserves the original first key; every original isolation, setup failure, collision and crash-recovery assertion passes, and all trial resources reach exact owned absence. Complete isolated Linux arm64/Node 24.22.0/Git 2.39.5 checks pass 3441 tests in 183 files (239.12 seconds), lint1008/types/build/docs400/harness151/Markdown399/Mermaid36, generators, smoke and offline packaging on archive 9b95c1fca9eb65772071a6816287187c97cd68be79868bf673c6c29d4b545550 (1459 files). Only final evidence prose follows the frozen snapshot; original cases, assertions and deadlines remain unchanged.
+
+---
+
 ## 2026-10-29 · P6-10 continuing — original provisioning parent controls
 
 - Capture optional original parent deadline/signal/ownership for the existing environment backend. Recheck after preflight and before reservation/resource/effect admission and positive results; narrow actual calls and setup while keeping service lifetime and original operation observations separate. Preserve default transport behavior and actual callbacks, and prevent replacement signals/predicates from changing the selected parent. Add ADR-0169, enforcement and an opt-in existing Docker-evaluation mode without removing ordinary controls. Root producer ownership and complete-route environment preparation remain separate technical work; P6-10 stays open at 59/88 overall and 19/34 expanded tasks complete.

@@ -77,9 +77,13 @@ export class DeliveryEnvironments {
     this.recipes = new EnvironmentRecipes(this.effects.lifecycle.journal.files.root)
     this.resources = new EnvironmentResources(this.recipes.files)
   }
-  async provision(input: EnvironmentProvisionRequest): Promise<EnvironmentProvisionResult> {
+  async provision(inputRequest: EnvironmentProvisionRequest): Promise<EnvironmentProvisionResult> {
     this.parent.check()
+    let input: EnvironmentProvisionRequest
     try {
+      // Preflight yields to the caller; subsequent admission must retain the
+      // same run, recipe and key that were checked before that observation.
+      input = structuredClone(inputRequest)
       validateDeliveryShape(input, provisionSchema)
     } catch {
       throw new DockerEnvironmentError('invalid-provision-request')

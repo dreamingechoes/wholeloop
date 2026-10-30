@@ -92,6 +92,8 @@ Keep the printed external history when reporting failures. Do not remove guessed
 
 ## Preserve the provisioning parent's original bounds
 
+The backend captures the complete original request before validation and preflight. A caller changing its request during a backend observation cannot replace the resource key, run, recipe, helper or selected workspaces used for later admission. The parent-control evaluation also checks this with an actual Docker observation; see [ADR-0170](../decisions/0170-original-provisioning-request-capture.md).
+
 The internal provisioning API can capture an enclosing controller's original deadline, cancellation signal and live ownership predicate. It refuses late or fenced preflight results before effect/resource admission, bounds each backend call and the setup deadline, and rechecks before returning a result. Replacing the caller's signal or predicate does not replace the original controller. Existing native registration and process callbacks remain attached to their actual calls; cancellation stops that live invoker rather than signalling a stored PID.
 
 Run npm run eval:environments -- --parent-control --retire-success to add original-parent controls to both actual application environments. The mode retains every ordinary isolation, setup-failure, reinspection, collision and crash-recovery check, adds cancelled/fenced/late-preflight refusals without effects and verifies that both setup deadlines stay within their original parent windows. Service lifetime remains independently bounded so later authorized QA can still use a prepared environment. The ordinary command and public schemas remain unchanged.
