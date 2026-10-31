@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11, P6-13–P6-19, P6-26 and P6-34 are implemented and tested. P6-12 implementation and its reference Docker trial pass; independent Linux-host acceptance remains pending. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11–P6-19, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 59 complete, fourteen original open tasks, one implemented new task awaiting host acceptance and 14 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 60 complete, fourteen original open tasks and 14 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -315,7 +315,7 @@ These are implementation tasks. Original manual/account/native acceptance checks
 
 ## P6-12 · Owned isolated application environments
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P6-11, P6-09
+**Status:** ✅ · **Size:** L · **Depends on:** P6-11, P6-09
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -337,11 +337,11 @@ These are implementation tasks. Original manual/account/native acceptance checks
 
 **Actual backend evidence** — The explicit model-free evaluation passes ten observations on a macOS arm64 controller with Docker 29.9.2 and a Linux aarch64 daemon: two actual applications, disjoint ports/data, read-only copied input and implementation, denied controller/home/credential/sibling/socket/environment access, denied setup/runtime egress, no effect reissue, candidate invalidation and setup exit 7 refusing readiness. Explicit successful-test teardown verifies exact identities and observes absence. Preserve both the first missing-publication failure and the platform-image identity refusal; fix the contracts and pass the final trials without weakening policy.
 
-**Acceptance remaining:**
+**Independent Linux acceptance:**
 
-- [ ] ENV-07 on an independent Linux host, with controller/daemon/architecture and actual denials recorded.
+- [x] ENV-07 on an independent Linux host, with controller/daemon/architecture and actual denials recorded.
 
-The available Linux controller container is not that proof. Actual native clients/models remain P6-27. P6-12 stays open for that acceptance; its completed implementation satisfies P6-13's technical dependency, and the owner explicitly authorized continuing without waiting for manual/host trials.
+On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-success passes on a separate ephemeral Linux VM: controller Linux x64/Node 22.23.4, local Docker 29.9.2 daemon on Linux x86_64 with four CPUs and 16872808448 bytes, and the amd64 manifest of the same pinned helper root. All seventeen checks across eleven controls pass, including disjoint ports/data, denied controller/home/credential/sibling/socket/environment access, denied setup and application egress, setup exit 7 refusing readiness, foreign same-name volume retention and killed-controller retirement recovery; exact owned absence is observed afterwards. Controller and daemon share one VM, so this establishes backend behavior on Linux, not native model/tool permission enforcement, which remains P6-27.
 
 ---
 

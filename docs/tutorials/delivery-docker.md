@@ -3,7 +3,7 @@
 > **TL;DR** — The Docker backend executes an explicitly selected recipe under a current delivery grant, verifies actual resources and retains failure evidence. A separate model-free evaluation exercises real applications and boundary denials; no native client or service account is needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Owned provisioning, setup/readiness, isolated application networking, loopback publication and reinspection are implemented. The reference Docker trial is scoped to a macOS arm64 controller and Linux arm64 daemon. Owned stop/reconciliation/retirement are also implemented. The complete unattended runner and independent Linux-host/native acceptance remain subsequent tasks.
+> **Status: 🚧 partial.** Owned provisioning, setup/readiness, isolated application networking, loopback publication and reinspection are implemented. The reference Docker trial passes on a macOS arm64 controller with a Linux arm64 daemon and on an independent Linux x86_64 host. Owned stop/reconciliation/retirement are also implemented. The complete unattended runner and native acceptance remain subsequent tasks.
 
 ## Requirements and costs
 

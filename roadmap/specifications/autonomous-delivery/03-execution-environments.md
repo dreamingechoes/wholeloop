@@ -3,7 +3,7 @@
 > **TL;DR** — Start the actual application and its dependencies in resources owned by one execution. Separate controller authority from untrusted build/test commands, and retain observed lifecycle receipts. A worktree or declared undo recipe alone is not containment.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-11 implements inert discovery, closed recipes, exact selected-byte retention and current-input inspection. P6-12 adds owned Docker provisioning/setup/readiness and current-resource inspection. P6-13 adds owned stop, private native cancellation, partial lifecycle recovery and explicit retirement; an independent Linux-host and actual native acceptance remain open. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
+> **Status: 🚧 partial.** P6-11 implements inert discovery, closed recipes, exact selected-byte retention and current-input inspection. P6-12 adds owned Docker provisioning/setup/readiness and current-resource inspection. P6-13 adds owned stop, private native cancellation, partial lifecycle recovery and explicit retirement. Actual backend checks pass on a macOS arm64 controller with a Linux aarch64 daemon and on an independent Linux x86_64 host; actual native acceptance remains open. Docker is the first isolated backend; existing local scripts remain available in explicitly supervised operation.
 
 The internal provisioning API also enforces an optional enclosing controller's captured deadline, signal and ownership across preflight, resource admission and actual setup calls. Original operation observations and independently bounded service lifetime remain separate. This parent control does not itself establish root producer ownership or complete-route preparation; see [ADR-0169](../../../docs/decisions/0169-original-parent-controls-for-provisioning.md).
 
@@ -69,7 +69,7 @@ The [lifecycle guide](../../../docs/tutorials/delivery-lifecycle.md) describes c
 - [x] **ENV-04:** Stop/restart/retire under interruption preserve exact ownership; an unowned resource is never removed.
 - [ ] **ENV-05:** Network-denied setup and missing images are reported explicitly; no ambient credentials or automatic broad fallback appear.
 - [ ] **ENV-06:** Recipe changes invalidate environment readiness and dependent QA evidence.
-- [ ] **ENV-07:** Real backend checks run on macOS and Linux hosts, recording architecture and limitations; Docker fixtures alone do not pass them.
+- [x] **ENV-07:** Real backend checks run on macOS and Linux hosts, recording architecture and limitations; Docker fixtures alone do not pass them.
 
 Test pure planning with synthetic backend responses, then run actual disposable containers for filesystem, services, data, cancellation and cleanup assertions. Account-bound native client startup remains a separate trial.
 

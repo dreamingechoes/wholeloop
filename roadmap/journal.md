@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-10-31 · P6-12 · Independent Linux-host acceptance
+
+- Run the unchanged npm run eval:environments -- --retire-success on the isolated Linux VM, separate from the owner's Mac: controller Linux x64/Node 22.23.4, local Docker 29.9.2 daemon on Linux x86_64 (four CPUs, 16872808448 bytes) and the amd64 manifest sha256:0d41de3612a3aab1befe508106436a86bb0231232050406ff9e850f1bf489ad0 of the same pinned helper root. The report passes in 118 seconds with seventeen checks across eleven controls: read-only owned input, network-denied setup, disjoint ports and data, denied controller/home/credential/sibling/socket/environment access, denied application egress, current ownership without reissue, changed-candidate invalidation, observed stop retaining owned volumes, foreign same-name volume retention, killed-controller retirement recovery and setup exit 7 refusing readiness. Retained report SHA-256 91698d4740e8a9cf61439f583867034f4ad0fdf87f9eab0faecf4046d5530ebb.
+- Exact owned absence is observed after retirement and no wl- container, network or volume remains. Controller and daemon share one ephemeral VM; this establishes backend behavior on Linux, not native model/tool permission enforcement, which remains P6-27.
+- Mark P6-12 ✅ and ENV-07 checked. The roadmap is now 60/88 overall and 20/34 expanded tasks complete; update the phase, roadmap, specification, Docker guide, platforms, V1 acceptance, README and manual-verification records. No source or test changes; the targeted docs, Markdown and nav checks pass. Next: the remaining P6-10 route composition.
+
+---
+
 ## 2026-10-31 · P6-10 continuing — exact-byte delivery replay reuse
 
 - Run the open composed acceptance on an isolated Linux x86_64 VM (4 vCPU, 16 GB, Node 22.23.4, Git 2.43.0, Docker 29.9.2 with a local Linux x86_64 daemon). Under a load average near two it still fails: the first trial retains unknown with integration-stage-original-observation-unavailable, the second refuses integration-stage-not-current, matching both Mac results. Contention is therefore not the cause. Instrumented timing of a third trial shows each assembly-readiness read spending about 37 seconds without any Docker call: the window opens at 22:01:19.5, assembly ends at 22:01:23, the selector's read takes 36.6 seconds, provisioning 47 seconds and the integration adapter's read 37.1 seconds, ending after the 22:03:19.5 deadline. A CPU profile attributes these reads to full delivery-journal replays: each re-decodes, credential-scans and validates every segment, then replays and re-validates every event and projection, about 46 milliseconds per read on 166 events, hundreds of times per stage.

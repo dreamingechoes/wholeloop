@@ -7,7 +7,7 @@
 
 ---
 
-[Owned Docker environments](../tutorials/delivery-docker.md) have a separate actual application/backend evaluation. Its reference controller is macOS arm64 with a Linux aarch64 daemon; this does not certify native models/tools or an independent Linux host. Existing client/service evidence retains its original scope.
+[Owned Docker environments](../tutorials/delivery-docker.md) have a separate actual application/backend evaluation. It passes with a macOS arm64 controller and Linux aarch64 daemon and on an independent Linux x86_64 host; this does not certify native models/tools. Existing client/service evidence retains its original scope.
 
 ## Browser acceptance boundary
 

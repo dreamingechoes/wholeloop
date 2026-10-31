@@ -146,7 +146,7 @@ The [lifecycle guide](../docs/tutorials/delivery-lifecycle.md) explains current 
 
 ## Owned Docker application backend checks (2026-10-25)
 
-P6-12 implementation is complete and remains acceptance-open for an independent Linux host. Forty-one backend unit cases plus one compiled CLI canary cover capability/denial policy, actual-inspect-shaped fixtures, private-authority refusal, immutable ownership, image/index/manifest/platform bindings, output bounds, compatible bounded snapshots and preserved input-file planning contracts. The six focused files pass 504 environment/contract checks. Actual Docker observations below are separate from fixtures and native/model acceptance.
+P6-12 is complete: its implementation and ENV-07 now pass on macOS and an independent Linux host. Forty-one backend unit cases plus one compiled CLI canary cover capability/denial policy, actual-inspect-shaped fixtures, private-authority refusal, immutable ownership, image/index/manifest/platform bindings, output bounds, compatible bounded snapshots and preserved input-file planning contracts. The six focused files pass 504 environment/contract checks. Actual Docker observations below are separate from fixtures and native/model acceptance.
 
 | Environment | Executed result |
 | --- | --- |
@@ -154,7 +154,7 @@ P6-12 implementation is complete and remains acceptance-open for an independent 
 | Debian Linux arm64 / Node 24.22.0 | Same complete check: 2461 tests in 106 files (72.86 seconds), no skips; isolated non-root controller container without network, private history, credentials or Docker socket; backend execution there is fixture scope |
 | macOS Node 24 and Linux Node 20.0.0/24.22.0 | Exact closed-runtime-schema guide assertions pass with ShellCheck; these launch no Docker/model |
 | macOS arm64 controller / Linux aarch64 daemon / Docker 29.9.2 | Actual model-free evaluation passes ten observations: two app endpoints/data sets, copied read-only inputs/implementation, denied controller/home/credential/sibling/socket/environment access, denied setup/runtime egress, no effect reissue, stale candidate invalidation and setup exit 7 refusing readiness |
-| Independent Linux host/backend | Not executed; ENV-07 remains unchecked. Repeat the explicit evaluation on an available Linux host and record the actual controller/daemon/architecture; no service/model accounts are needed |
+| Independent Linux x64 VM / Node 22.23.4 / local Linux x86_64 daemon / Docker 29.9.2 | 2026-10-31: the same evaluation passes seventeen checks across eleven controls, including denied controller/home/credential/sibling/socket/environment access, denied setup and application egress, setup exit 7, foreign same-name volume retention and killed-controller retirement recovery; exact owned absence observed. Controller and daemon share one ephemeral VM; no service/model account is used |
 
 Frozen candidate archive f69f7e627d7396fab32b71f5301a14ea9a2155ac59c0ecfc4307b11765ffe619 is based on 2e229a2 plus P6-12 source/tests. Copied core: 9fe69a3d578dee041b8379c312e175796a1e728199ac595532ce9701055ab006. Pre-evidence package receipts: macOS eea7bfd7be62f2e687de943c8278061123b503a5c4dc7ad05ee9f1ae94f59b7f and Linux c09e633dfdebd167db5ca54f3be3915ddcd976c8cbb4dafd0020b2063e078d90. Preserve the existing dependency-path build distinction; final evidence-only docs receive another local package/docs check.
 
@@ -167,7 +167,7 @@ Preserve failures and corrections:
 - Precise platform image inspection exposes engine root ID sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5 and selected arm64 manifest sha256:0e84a1a8a11b9a42374419513e0825262dfd6f072eeb4a724c52fc0aab3061d2. The first stricter run refuses startup. Preserve that failure, bind both IDs/platforms and pass the final actual input/setup/data/boundary trials. Retire the three reviewed failed-probe resources only after exact ownership/daemon checks and observed absence; retain their diagnostic history.
 - Initial fixture TypeScript errors use mutable types for readonly tables and a null-only capability field. Correct fixture types, not product guards. No original native failure or service-unverified integration becomes passed.
 
-The backend has no remaining P6-12 code blocker. P6-13 has since passed its own local/reference lifecycle checks above, under the owner's explicit instruction to defer manual/host acceptance. P6-12 stays open for ENV-07; actual native clients/models remain P6-27, with original fourteen open tasks unchanged. No hosted publication, merge, production resource or account-bound service trial occurs.
+The backend has no remaining P6-12 code blocker. P6-13 has since passed its own local/reference lifecycle checks above, under the owner's explicit instruction to defer manual/host acceptance. ENV-07 is closed by the independent Linux run above; actual native clients/models remain P6-27, with original fourteen open tasks unchanged. No hosted publication, merge, production resource or account-bound service trial occurs.
 
 ## Environment planning platform checks (2026-10-25)
 
