@@ -637,6 +637,7 @@ The adapter criterion stays unchecked; it does not block dependent local rollout
 
 | Task | Action | Current evidence |
 | --- | --- | --- |
+| P6-10 | Decide the public runner host identity and complete-route configuration: which native clients, models and containment an unattended run may launch | Fixed dispatch, product production and static preflight are implemented; no command supplies runtime proof and default observation stays unavailable |
 | P0-01 | Authenticate to npm and reserve the package when ready to make the name public | No package was published in this session |
 | P0-03 | Follow the isolated-session [conformance checklist](../test/conformance/notes/README.md) for all four tier-A CLIs | Owner-observed Claude loose-skill framing/status and session recovery; broad discovery, permissions, hooks, MCP, plugin loading and other clients remain unverified |
 | P0-06 | Optionally enable the local hook with `npm run hooks:install`; preserve any existing hook chain | A real hook was exercised in a temporary git repository; this checkout's Git configuration was not changed |
