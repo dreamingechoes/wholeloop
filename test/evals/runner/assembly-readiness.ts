@@ -47,7 +47,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   acceptanceReject = process.argv.includes('--acceptance-reject'),
-  productEnvironment = process.argv.includes('--product-environment'),
+  productProduction = process.argv.includes('--product-production'),
+  productEnvironment = productProduction || process.argv.includes('--product-environment'),
   producerResult = productEnvironment || process.argv.includes('--producer-result'),
   provisionOwner = producerResult || process.argv.includes('--provision-owner'),
   fixedDispatcher = provisionOwner || process.argv.includes('--dispatcher'),
@@ -195,7 +196,8 @@ await runnerSuiteFixture(
     integration.deadline = new Date(
       Math.min(Date.parse(integration.deadline), Date.now() + 120000),
     ).toISOString()
-    let registered = false
+    let registered = false,
+      resource = ''
     const assembly = new IntegrationAssembly(store.files.root, undefined, {
       deadline: integration.deadline,
       signal: integration.signal,
@@ -210,24 +212,26 @@ await runnerSuiteFixture(
         registered = true
       },
     })
-    let resource: string
-    try {
-      resource = assembly.prepare({
-        schema: 'wholeloop/integration-assembly-request@1',
-        run: request.run,
-        revision: request.revision,
-        plan: request.plan,
-        milestone: 'feature',
-        key: `runner-${integration.invocation.slice(0, 25)}`,
-        parts: ready.parts,
-      }).digest
-      const result = await assembly.execute(resource)
-      assert.equal(result.status, 'assembled', JSON.stringify(result))
-    } finally {
-      clearTimeout(timer)
+    // Production mode leaves the owned assembly to the fixed dispatcher.
+    if (!productProduction) {
+      try {
+        resource = assembly.prepare({
+          schema: 'wholeloop/integration-assembly-request@1',
+          run: request.run,
+          revision: request.revision,
+          plan: request.plan,
+          milestone: 'feature',
+          key: `runner-${integration.invocation.slice(0, 25)}`,
+          parts: ready.parts,
+        }).digest
+        const result = await assembly.execute(resource)
+        assert.equal(result.status, 'assembled', JSON.stringify(result))
+      } finally {
+        clearTimeout(timer)
+      }
+      assert.equal(registered, true)
+      console.log('The exact QA-ready vector is assembled through original owned Git effects')
     }
-    assert.equal(registered, true)
-    console.log('The exact QA-ready vector is assembled through original owned Git effects')
     const reader = new RunnerAssemblyReadiness(store, units),
       inspectAssembly = async () => {
         const proof = await reader.inspect(request, 'feature', resource)
@@ -242,23 +246,29 @@ await runnerSuiteFixture(
     // this extra evaluation assertion after QA rather than spending the same
     // original live window on a third preliminary metadata inspection.
     let observed = productEnvironment ? undefined : await inspectAssembly()
-    const assembledCandidates = productEnvironment
-        ? assembly.inspect(resource).repositories.map((repository) => {
-            assert.ok(repository.head)
-            return {
-              repository: repository.repository,
-              path: repository.path,
-              ref: repository.ref,
-              head: repository.head,
-            }
-          })
-        : observed?.candidates,
-      assembled = assembledCandidates?.[0]
-    assert.ok(assembled)
-    const file = join(assembled.path, 'app.txt'),
-      bytes = readFileSync(file)
-    assert.deepEqual(bytes, readFileSync(join(candidate.allocation.repository.path, 'app.txt')))
+    const assembledVector = () => {
+      const candidates = productEnvironment
+          ? assembly.inspect(resource).repositories.map((repository) => {
+              assert.ok(repository.head)
+              return {
+                repository: repository.repository,
+                path: repository.path,
+                ref: repository.ref,
+                head: repository.head,
+              }
+            })
+          : observed?.candidates,
+        first = candidates?.[0]
+      assert.ok(candidates && first)
+      const file = join(first.path, 'app.txt'),
+        bytes = readFileSync(file)
+      assert.deepEqual(bytes, readFileSync(join(candidate.allocation.repository.path, 'app.txt')))
+      return { candidates, assembled: first, file, bytes }
+    }
+    let vector = productProduction ? undefined : assembledVector()
     const checkAssemblyBytes = async () => {
+      assert.ok(vector)
+      const { file, bytes } = vector
       try {
         writeFileSync(file, 'Changed assembled bytes.\n')
         const refused = await reader.inspect(request, 'feature', resource)
@@ -295,7 +305,7 @@ await runnerSuiteFixture(
         recipe = structuredClone(originalRecipe.recipe)
       recipe.repositories = recipe.repositories.map((repository) => ({
         ...repository,
-        root: assembled.path,
+        root: vector?.assembled.path ?? repository.root,
       }))
       if (productQaBrowser) {
         withBrowserService(recipe)
@@ -309,7 +319,8 @@ await runnerSuiteFixture(
           origin: { kind: 'file', file: 'suite' },
         }
       }
-      const preparedRecipe = recipes.prepare(recipe),
+      assert.ok(!productProduction || !(productQaBrowser || productQaFailure))
+      const preparedRecipe = productProduction ? originalRecipe : recipes.prepare(recipe),
         asset = (id: string, body: string) => {
           const ref = `delivery/integration-inputs/runner-${id}.txt`
           store.files.atomic(ref, body)
@@ -318,65 +329,70 @@ await runnerSuiteFixture(
         data = asset('db', '[]\n'),
         verify = asset('verify', 'Original required verification policy.\n'),
         rubric = asset('review', 'Original independent review policy.\n'),
-        integrated = new IntegrationCandidates(store.files.root).prepare({
-          schema: 'wholeloop/integration-candidate-request@1',
-          run: request.run,
-          revision: request.revision,
-          plan: request.plan,
-          milestone: 'feature',
-          strategy: 'ordered-merge',
-          parts: ready.parts,
-          assemblies: assembledCandidates?.map((repository) => ({
-            ...repository,
-            base: context.plan.repositories.find(
-              (declared) => declared.id === repository.repository,
-            )?.base,
-          })),
-          contracts: integrationScope(context.plan, 'feature').contracts,
-          inputs: [
-            {
-              id: 'acceptance',
-              kind: 'acceptance',
-              ref: selection.acceptance,
-              sha256: selection.acceptance,
-              after: ['recipe', 'db'],
-            },
-            {
-              id: 'recipe',
-              kind: 'recipe',
-              ref: preparedRecipe.digest,
-              sha256: preparedRecipe.digest,
-              after: [],
-            },
-            { id: 'db', kind: 'data', ...data, after: [] },
-            {
-              id: 'app-verify',
-              kind: 'gate-policy',
-              repository: 'app',
-              gate: 'verify',
-              ...verify,
-              after: ['recipe'],
-            },
-            {
-              id: 'app-review',
-              kind: 'gate-policy',
-              repository: 'app',
-              gate: 'review',
-              ...rubric,
-              after: ['recipe'],
-            },
-          ],
-          repairOwners: [{ criterion: 'search', kind: 'integration', id: 'feature' }],
-        }),
-        provisionInput: EnvironmentProvisionRequest = {
-          schema: 'wholeloop/environment-provision-request@1',
-          run: request.run,
-          recipe: preparedRecipe.digest,
-          key: 'original-root-product-qa',
-          helperImage: DOCKER_REFERENCE_HELPER,
-          workspaces: integrated.candidate.assemblies.map(
-            ({ repository, path, head, snapshot }) => ({ repository, path, head, snapshot }),
-          ),
+        integrated = productProduction
+          ? undefined
+          : new IntegrationCandidates(store.files.root).prepare({
+              schema: 'wholeloop/integration-candidate-request@1',
+              run: request.run,
+              revision: request.revision,
+              plan: request.plan,
+              milestone: 'feature',
+              strategy: 'ordered-merge',
+              parts: ready.parts,
+              assemblies: vector?.candidates.map((repository) => ({
+                ...repository,
+                base: context.plan.repositories.find(
+                  (declared) => declared.id === repository.repository,
+                )?.base,
+              })),
+              contracts: integrationScope(context.plan, 'feature').contracts,
+              inputs: [
+                {
+                  id: 'acceptance',
+                  kind: 'acceptance',
+                  ref: selection.acceptance,
+                  sha256: selection.acceptance,
+                  after: ['recipe', 'db'],
+                },
+                {
+                  id: 'recipe',
+                  kind: 'recipe',
+                  ref: preparedRecipe.digest,
+                  sha256: preparedRecipe.digest,
+                  after: [],
+                },
+                { id: 'db', kind: 'data', ...data, after: [] },
+                {
+                  id: 'app-verify',
+                  kind: 'gate-policy',
+                  repository: 'app',
+                  gate: 'verify',
+                  ...verify,
+                  after: ['recipe'],
+                },
+                {
+                  id: 'app-review',
+                  kind: 'gate-policy',
+                  repository: 'app',
+                  gate: 'review',
+                  ...rubric,
+                  after: ['recipe'],
+                },
+              ],
+              repairOwners: [{ criterion: 'search', kind: 'integration', id: 'feature' }],
+            }),
+        provisionInput = (): EnvironmentProvisionRequest => {
+          assert.ok(integrated)
+          return {
+            schema: 'wholeloop/environment-provision-request@1',
+            run: request.run,
+            recipe: preparedRecipe.digest,
+            key: 'original-root-product-qa',
+            helperImage: DOCKER_REFERENCE_HELPER,
+            workspaces: integrated.candidate.assemblies.map(
+              ({ repository, path, head, snapshot }) => ({ repository, path, head, snapshot }),
+            ),
+          }
         },
         products = productEnvironment
           ? new RunnerProductEnvironments(
@@ -385,11 +401,43 @@ await runnerSuiteFixture(
               new Map([
                 [
                   'feature',
-                  {
-                    candidate: integrated.digest,
-                    assembly: resource,
-                    helperImage: DOCKER_REFERENCE_HELPER,
-                  },
+                  integrated
+                    ? {
+                        candidate: integrated.digest,
+                        assembly: resource,
+                        helperImage: DOCKER_REFERENCE_HELPER,
+                      }
+                    : {
+                        helperImage: DOCKER_REFERENCE_HELPER,
+                        recipe: preparedRecipe.digest,
+                        inputs: [
+                          {
+                            id: 'acceptance',
+                            kind: 'acceptance',
+                            ref: selection.acceptance,
+                            sha256: selection.acceptance,
+                            after: ['recipe', 'db'],
+                          },
+                          { id: 'db', kind: 'data', ...data, after: [] },
+                          {
+                            id: 'app-verify',
+                            kind: 'gate-policy',
+                            repository: 'app',
+                            gate: 'verify',
+                            ...verify,
+                            after: ['recipe'],
+                          },
+                          {
+                            id: 'app-review',
+                            kind: 'gate-policy',
+                            repository: 'app',
+                            gate: 'review',
+                            ...rubric,
+                            after: ['recipe'],
+                          },
+                        ],
+                        repairOwners: [{ criterion: 'search', kind: 'integration', id: 'feature' }],
+                      },
                 ],
               ]),
               driver,
@@ -404,13 +452,13 @@ await runnerSuiteFixture(
           products?.producer ?? new RunnerEnvironmentProducer(store, preparation.phase ?? ''),
         produced =
           producerResult && !products
-            ? await producer.prepare(integration, provisionInput, driver)
+            ? await producer.prepare(integration, provisionInput(), driver)
             : undefined,
         provision = producerResult
           ? undefined
           : provisionOwner
-            ? await preparation.provision(integration, provisionInput, driver)
-            : await new DeliveryEnvironments(store.files.root, driver).provision(provisionInput)
+            ? await preparation.provision(integration, provisionInput(), driver)
+            : await new DeliveryEnvironments(store.files.root, driver).provision(provisionInput())
       if (produced) {
         assert.equal(produced.status, 'recorded-ready', JSON.stringify(produced))
         assert.ok(produced.environment)
@@ -453,17 +501,18 @@ await runnerSuiteFixture(
           reason: 'Continue original integration after owned product environment readiness.',
         })
       const host = new RunnerIntegrationStages(store, reader),
-        productInput = preparedEnvironment
-          ? ({
-              selection: {
-                schema: 'wholeloop/integration-verification-request@1',
-                candidate: integrated.digest,
-                assembly: resource,
-                environment: preparedEnvironment.record.id,
-              },
-              driver,
-            } as const)
-          : undefined,
+        productInput =
+          preparedEnvironment && integrated
+            ? ({
+                selection: {
+                  schema: 'wholeloop/integration-verification-request@1',
+                  candidate: integrated.digest,
+                  assembly: resource,
+                  environment: preparedEnvironment.record.id,
+                },
+                driver,
+              } as const)
+            : undefined,
         proof = await (async () => {
           if (fixedDispatcher)
             return new RunnerStageDispatcher(
@@ -475,6 +524,7 @@ await runnerSuiteFixture(
           assert.ok(productInput)
           return host.execute(integration, productInput.selection, driver)
         })()
+      if (productProduction) clearTimeout(timer)
       if (products) {
         const result = products.producer.inspect(integration.invocation)
         assert.equal(result.status, 'recorded-ready', JSON.stringify(result))
@@ -488,9 +538,31 @@ await runnerSuiteFixture(
         originalPreparation = { producer: products.producer, result }
         const record = store.stage(digest, integration.stage.id)
         assert.ok(record)
-        assert.deepEqual(products.inspect(request, record)?.selection, {
+        const selected = products.inspect(request, record)?.selection
+        if (productProduction) {
+          assert.ok(selected)
+          resource = selected.assembly
+          vector = assembledVector()
+          assert.equal(record.runtime?.backend, 'owned-assembly-git')
+          const produced = new IntegrationCandidates(store.files.root).get(selected.candidate),
+            recipe = produced.candidate.inputs.find((entry) => entry.kind === 'recipe')
+          assert.ok(recipe)
+          assert.notEqual(recipe.ref, preparedRecipe.digest)
+          assert.deepEqual(
+            recipes.get(recipe.ref).recipe.repositories.map((entry) => entry.root),
+            [vector.assembled.path],
+          )
+          assert.deepEqual(
+            produced.candidate.assemblies.map(({ head }) => head),
+            [vector.assembled.head],
+          )
+          checks.push(
+            'the fixed dispatcher assembles the current unit vector under its original deadline, registers it once and derives a re-rooted recipe and candidate before preparing product QA',
+          )
+        }
+        assert.deepEqual(selected, {
           schema: 'wholeloop/integration-verification-request@1',
-          candidate: integrated.digest,
+          candidate: integrated?.digest ?? selected?.candidate,
           assembly: resource,
           environment: result.environment.id,
         })
@@ -710,7 +782,8 @@ await runnerSuiteFixture(
             await handoff.endpoint(request, context.plan, new AbortController().signal),
             endpoint,
           )
-          const changed = join(assembled.path, 'app.cjs'),
+          assert.ok(vector)
+          const changed = join(vector.assembled.path, 'app.cjs'),
             bytes = readFileSync(changed)
           store.files.atomic('fixture-handoff-original-app.cjs', bytes)
           try {

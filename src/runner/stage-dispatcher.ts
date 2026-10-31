@@ -172,6 +172,8 @@ export class RunnerStageDispatcher {
     // Resolve the original revision without requiring current dispatch authority.
     // Each fixed adapter retains its own nonce-bound cancellation semantics.
     const { adapter } = this.original(request, record)
+    if (adapter instanceof RunnerIntegrationStages && !signal.aborted)
+      this.products?.stop(request, record)
     await adapter.stop(request, record, signal)
   }
   async endpoint(request: Readonly<RunnerRequest>, plan: DeliveryPlan, signal: AbortSignal) {

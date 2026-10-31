@@ -116,7 +116,13 @@ Run npm run eval:runner-assembly-readiness -- --producer-result --retire-success
 
 The internal dispatcher can use a fixed product-environment selector with copied candidate/assembly/helper inputs per milestone and the integration adapter's exact assembly reader. It validates current complete unit QA, the owned assembly, the pinned candidate and supported machine coverage before consuming an original selection and provisioning its single complete recipe. It then executes root QA through the existing adapter without a caller-supplied environment. Caller overrides and changed original selections refuse. Existing explicit-selection callers keep their current behavior.
 
-Run npm run eval:runner-assembly-readiness -- --product-environment --retire-success for the composed control. It retains every producer-result assertion and also checks paused product selection recovery with no configured selector or backend, lost binding/consumption refusal and identical restoration. This internal composition still requires prepared candidate/assembly inputs; runtime preflight and the public complete-route command remain P6-10 work. See [ADR-0173](../decisions/0173-fixed-product-environment-selection.md).
+Run npm run eval:runner-assembly-readiness -- --product-environment --retire-success for the composed control. It retains every producer-result assertion and also checks paused product selection recovery with no configured selector or backend, lost binding/consumption refusal and identical restoration. This configuration requires prepared candidate/assembly inputs. See [ADR-0173](../decisions/0173-fixed-product-environment-selection.md).
+
+## Produce the milestone assembly inside dispatch
+
+A milestone can instead configure a helper image, a prepared template recipe, its static acceptance, data and gate-policy inputs, and repair owners. Dispatch then reads current unit QA, consumes an original production binding, assembles the exact vector through owned Git effects under the stage's original deadline and registration, re-roots the template at the assembled worktree and prepares the candidate before the selection above. Malformed coverage or inputs refuse before the first Git effect, a retained binding never assembles again, and stop can cancel in-flight assembly from the original locator after revocation.
+
+Run npm run eval:runner-assembly-readiness -- --product-production --retire-success for the composed control. It adds the dispatcher's own assembly, single registration and re-rooted recipe to every product-environment assertion. Runtime preflight and the public complete-route command remain P6-10 work. See [ADR-0175](../decisions/0175-original-milestone-product-production.md).
 
 <!-- docnav -->
 [◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment stop and retirement ▶](delivery-lifecycle.md)

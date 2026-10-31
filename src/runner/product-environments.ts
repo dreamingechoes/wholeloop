@@ -2,8 +2,17 @@ import { existsSync } from 'node:fs'
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
+import type { DeliveryPlan } from '../delivery/plan.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'
 import type { EnvironmentProvisionRequest } from '../environment/provision.js'
+import { EnvironmentRecipes } from '../environment/recipe-store.js'
+import { type AssemblyRequest, IntegrationAssembly } from '../integration/assembly.js'
+import {
+  type IntegrationInput,
+  type IntegrationRequest,
+  integrationRequest,
+  integrationScope,
+} from '../integration/contracts.js'
 import type { IntegrationCandidate } from '../integration/observe.js'
 import { IntegrationCandidates } from '../integration/store.js'
 import {
@@ -24,6 +33,24 @@ export interface RunnerProductInput {
   assembly: string
   helperImage: string
 }
+/** Static milestone inputs; the owned assembly, its recipe and candidate are derived. */
+export interface RunnerProductProduction {
+  helperImage: string
+  recipe: string
+  inputs: IntegrationInput[]
+  repairOwners: IntegrationRequest['repairOwners']
+}
+interface ProductionBinding {
+  version: 1
+  request: string
+  plan: string
+  stage: string
+  invocation: string
+  deadline: string
+  input: RunnerProductProduction
+  units: string
+  assembly: AssemblyRequest
+}
 interface ProductBinding {
   version: 1
   request: string
@@ -38,12 +65,12 @@ interface ProductBinding {
 
 /** Fixed product inputs select original preparation; they never supply a backend or QA verdict. */
 export class RunnerProductEnvironments {
-  private readonly selections: ReadonlyMap<string, RunnerProductInput>
+  private readonly selections: ReadonlyMap<string, RunnerProductInput | RunnerProductProduction>
   readonly producer: RunnerEnvironmentProducer
   constructor(
     readonly store: RunnerStore,
     readonly readiness: RunnerAssemblyReadiness,
-    inputs: ReadonlyMap<string, RunnerProductInput>,
+    inputs: ReadonlyMap<string, RunnerProductInput | RunnerProductProduction>,
     readonly driver: DockerTransport = new DockerCli(),
   ) {
     if (
@@ -55,7 +82,8 @@ export class RunnerProductEnvironments {
       [...inputs].map(([milestone, input]) => {
         if (!/^[a-z][a-z0-9_-]{0,63}$/.test(milestone))
           throw new DeliveryRunnerError('product-environment-milestone')
-        this.validate(input)
+        if ('recipe' in input) this.production(input)
+        else this.validate(input)
         return [milestone, Object.freeze(structuredClone(input))]
       }),
     )
@@ -76,10 +104,231 @@ export class RunnerProductEnvironments {
     )
       throw new DeliveryRunnerError('product-environment-input')
   }
+  private production(input: RunnerProductProduction) {
+    const id = /^[a-z][a-z0-9_-]{0,63}$/
+    if (
+      Object.keys(input).sort().join(',') !== 'helperImage,inputs,recipe,repairOwners' ||
+      !/^[a-f0-9]{64}$/.test(input.recipe) ||
+      input.helperImage.length > 512 ||
+      !/^[a-z0-9][a-z0-9./:_-]*@sha256:[a-f0-9]{64}$/.test(input.helperImage) ||
+      !Array.isArray(input.inputs) ||
+      !input.inputs.length ||
+      input.inputs.length > 255 ||
+      // The derived recipe owns this identifier; static inputs cannot replace it.
+      input.inputs.some(
+        (entry) =>
+          !id.test(entry?.id ?? '') ||
+          entry.id === 'recipe' ||
+          !['acceptance', 'data', 'gate-policy'].includes(entry.kind) ||
+          !/^[a-f0-9]{64}$/.test(entry.sha256 ?? '') ||
+          !Array.isArray(entry.after),
+      ) ||
+      input.inputs.filter((entry) => entry.kind === 'acceptance').length !== 1 ||
+      !Array.isArray(input.repairOwners) ||
+      input.repairOwners.length > 256
+    )
+      throw new DeliveryRunnerError('product-environment-production-input')
+    safeSourceText(JSON.stringify(input), 65536)
+  }
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation))
       throw new DeliveryRunnerError('product-environment-invocation')
     return `delivery/runner-products/${invocation}`
+  }
+  private candidateRequest(
+    plan: DeliveryPlan,
+    input: RunnerProductProduction,
+    request: AssemblyRequest,
+    assemblies: IntegrationRequest['assemblies'],
+    recipe: string,
+  ): IntegrationRequest {
+    return {
+      schema: 'wholeloop/integration-candidate-request@1',
+      run: request.run,
+      revision: request.revision,
+      plan: request.plan,
+      milestone: request.milestone,
+      strategy: 'ordered-merge',
+      parts: structuredClone(request.parts),
+      assemblies,
+      contracts: integrationScope(plan, request.milestone).contracts,
+      inputs: [
+        ...structuredClone(input.inputs),
+        { id: 'recipe', kind: 'recipe', ref: recipe, sha256: recipe, after: [] },
+      ],
+      repairOwners: structuredClone(input.repairOwners),
+    }
+  }
+  private readProduction(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    const base = this.path(record.invocation)
+    if (!existsSync(this.store.files.path(`${base}/production.json`))) return undefined
+    const binding = JSON.parse(
+        readSourceFile(this.store.files.root, `${base}/production.json`, 65536),
+      ) as ProductionBinding,
+      original = this.original(request, record)
+    this.production(binding.input)
+    if (
+      Object.keys(binding).sort().join(',') !==
+        'assembly,deadline,input,invocation,plan,request,stage,units,version' ||
+      binding.version !== 1 ||
+      binding.request !== original.digest ||
+      binding.plan !== record.basis ||
+      binding.stage !== record.id ||
+      binding.invocation !== record.invocation ||
+      !Number.isFinite(Date.parse(binding.deadline)) ||
+      new Date(binding.deadline).toISOString() !== binding.deadline ||
+      !/^[a-f0-9]{64}$/.test(binding.units) ||
+      binding.assembly.run !== request.run ||
+      binding.assembly.plan !== record.basis ||
+      binding.assembly.milestone !== original.milestone ||
+      binding.assembly.key !== `runner-${record.invocation.slice(0, 25)}` ||
+      readSourceFile(this.store.files.root, `${base}/production.consumed`, 128).trim() !==
+        contractDigest(binding)
+    )
+      throw new DeliveryRunnerError('product-environment-original-production')
+    return binding
+  }
+  private produced(invocation: string) {
+    return readSourceFile(
+      this.store.files.root,
+      `${this.path(invocation)}/production-assembly`,
+      128,
+    ).trim()
+  }
+  /** Assemble the current unit vector once, then derive its recipe and candidate as metadata. */
+  private async produce(
+    context: RunnerStageContext,
+    record: Readonly<RunnerStageRecord>,
+    original: ReturnType<RunnerProductEnvironments['original']>,
+    input: RunnerProductProduction,
+    current: () => void,
+  ): Promise<RunnerProductInput> {
+    const base = this.path(context.invocation),
+      prior = this.readProduction(context.request, record),
+      plan = original.basis.plan
+    if (
+      prior &&
+      (contractDigest(prior.input) !== contractDigest(input) || prior.deadline !== context.deadline)
+    )
+      throw new DeliveryRunnerError('product-environment-input-conflict')
+    if (!prior && existsSync(this.store.files.path(`${base}/production.consumed`)))
+      throw new DeliveryRunnerError('product-environment-original-unresolved')
+    const recipes = new EnvironmentRecipes(this.store.files.root),
+      template = recipes.get(input.recipe).recipe
+    if (
+      contractDigest(template.repositories.map((entry) => entry.id).sort()) !==
+      contractDigest([...integrationScope(plan, original.milestone).repositories].sort())
+    )
+      throw new DeliveryRunnerError('product-environment-recipe-repositories')
+    let request = prior?.assembly
+    if (!request) {
+      const units = await this.readiness.units.inspect(context.request, original.milestone)
+      current()
+      if (units.status !== 'ready' || units.provenance !== 'host-observed' || !units.parts)
+        throw new DeliveryRunnerError('product-environment-current-units-required')
+      request = {
+        schema: 'wholeloop/integration-assembly-request@1',
+        run: context.request.run,
+        revision: plan.revision,
+        plan: record.basis,
+        milestone: original.milestone,
+        key: `runner-${context.invocation.slice(0, 25)}`,
+        parts: units.parts,
+      }
+      const binding: ProductionBinding = {
+        version: 1,
+        request: original.digest,
+        plan: record.basis,
+        stage: record.id,
+        invocation: context.invocation,
+        deadline: context.deadline,
+        input: structuredClone(input),
+        units: units.evidence,
+        assembly: request,
+      }
+      safeSourceText(JSON.stringify(binding), 65536)
+      this.store.files.locked(() => {
+        current()
+        if (existsSync(this.store.files.path(`${base}/production.consumed`)))
+          throw new DeliveryRunnerError('product-environment-original-unresolved')
+        // Consume before publishing the locator: losing it must never buy another assembly.
+        this.store.files.atomic(`${base}/production.consumed`, `${contractDigest(binding)}\n`)
+        this.store.files.atomic(`${base}/production.json`, `${JSON.stringify(binding)}\n`)
+      })
+    }
+    let registered = this.store.stage(original.digest, record.id)?.runtime !== undefined
+    const assembly = new IntegrationAssembly(this.store.files.root, undefined, {
+        deadline: context.deadline,
+        signal: context.signal,
+        current: context.current,
+        started: ({ operation, pid }) => {
+          if (registered) return
+          context.started({
+            backend: 'owned-assembly-git',
+            instance: operation,
+            worker: String(pid),
+          })
+          registered = true
+        },
+      }),
+      prepared = assembly.prepare(request),
+      provisional = prepared.assembly.repositories.map((repository) => ({
+        repository: repository.repository,
+        path: repository.path,
+        ref: `refs/heads/${repository.branch}`,
+        base: repository.base,
+        head: repository.base,
+      }))
+    current()
+    if (prior) {
+      if (this.produced(context.invocation) !== prepared.digest)
+        throw new DeliveryRunnerError('product-environment-original-production')
+    } else this.store.files.atomic(`${base}/production-assembly`, `${prepared.digest}\n`)
+    // Refuse structurally invalid static inputs before the first Git effect.
+    integrationRequest(
+      this.candidateRequest(plan, input, prepared.assembly.request, provisional, input.recipe),
+      plan,
+      record.basis,
+    )
+    // A retained binding observes its original assembly; it never issues Git again.
+    const observed = prior
+      ? assembly.inspect(prepared.digest)
+      : await assembly.execute(prepared.digest)
+    current()
+    if (observed.status !== 'assembled')
+      throw new DeliveryRunnerError(
+        prior
+          ? 'product-environment-original-assembly-unresolved'
+          : 'product-environment-assembly-unavailable',
+      )
+    const assemblies = observed.repositories.map((repository) => {
+        const declared = plan.repositories.find((entry) => entry.id === repository.repository)
+        if (!repository.head || !declared)
+          throw new DeliveryRunnerError('product-environment-assembly-head-required')
+        return {
+          repository: repository.repository,
+          path: repository.path,
+          ref: repository.ref,
+          base: declared.base,
+          head: repository.head,
+        }
+      }),
+      recipe = structuredClone(template)
+    recipe.repositories = recipe.repositories.map((entry) => ({
+      ...entry,
+      root: assemblies.find((repository) => repository.repository === entry.id)?.path ?? '',
+    }))
+    const derived = recipes.prepare(recipe)
+    current()
+    const candidate = new IntegrationCandidates(this.store.files.root).prepare(
+      this.candidateRequest(plan, input, prepared.assembly.request, assemblies, derived.digest),
+    )
+    current()
+    return {
+      candidate: candidate.digest,
+      assembly: prepared.digest,
+      helperImage: input.helperImage,
+    }
   }
   private provision(
     input: RunnerProductInput,
@@ -161,6 +410,14 @@ export class RunnerProductEnvironments {
         contractDigest(this.provision(binding.input, record.invocation, candidate.candidate))
     )
       throw new DeliveryRunnerError('product-environment-original-candidate-binding')
+    const production = this.readProduction(request, record)
+    if (
+      production &&
+      (this.produced(record.invocation) !== binding.input.assembly ||
+        assembly.assembly.request.key !== production.assembly.key ||
+        binding.input.helperImage !== production.input.helperImage)
+    )
+      throw new DeliveryRunnerError('product-environment-original-production')
     return binding
   }
   async prepare(inputContext: RunnerStageContext): Promise<IntegrationVerificationRequest> {
@@ -193,17 +450,26 @@ export class RunnerProductEnvironments {
           throw new DeliveryRunnerError('product-environment-not-current')
       }
     current()
-    const input = this.selections.get(original.milestone)
-    if (!input) throw new DeliveryRunnerError('product-environment-selection-required')
+    const configured = this.selections.get(original.milestone)
+    if (!configured) throw new DeliveryRunnerError('product-environment-selection-required')
     const base = this.path(context.invocation),
       prior = this.read(context.request, record)
     if (
       prior &&
-      (contractDigest(prior.input) !== contractDigest(input) || prior.deadline !== context.deadline)
+      (('recipe' in configured
+        ? !existsSync(this.store.files.path(`${base}/production.json`))
+        : contractDigest(prior.input) !== contractDigest(configured)) ||
+        prior.deadline !== context.deadline)
     )
       throw new DeliveryRunnerError('product-environment-input-conflict')
     if (!prior && existsSync(this.store.files.path(`${base}/consumed`)))
       throw new DeliveryRunnerError('product-environment-original-unresolved')
+    const input =
+      'recipe' in configured
+        ? await this.produce(context, record, original, configured, current)
+        : configured
+    if (prior && contractDigest(prior.input) !== contractDigest(input))
+      throw new DeliveryRunnerError('product-environment-input-conflict')
     const ready = await this.readiness.inspect(context.request, original.milestone, input.assembly)
     current()
     if (ready.status !== 'ready' || ready.provenance !== 'host-observed')
@@ -295,6 +561,16 @@ export class RunnerProductEnvironments {
       assembly: input.assembly,
       environment: produced.environment.id,
     }
+  }
+  /** Cancellation reads only the original production locator, including after revocation. */
+  stop(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    if (
+      this.readProduction(request, record) &&
+      existsSync(this.store.files.path(`${this.path(record.invocation)}/production-assembly`))
+    )
+      new IntegrationAssembly(this.store.files.root).requestCancellation(
+        this.produced(record.invocation),
+      )
   }
   /** Historical selection never consults new configuration or executes preparation. */
   inspect(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
