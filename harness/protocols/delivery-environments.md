@@ -1,5 +1,7 @@
 # Delivery environment planning
 
+- ⛔ `delivery-fixed-product-environment` — configured dispatch selects only copied milestone inputs against current complete unit QA, owned assembly and pinned product coverage. Consume the original binding before provisioning in one fixed phase. Retain original parent bounds and refuse caller overrides, changed selections and lost evidence without another effect. Recover historical selection without new configuration; actual QA remains required.
+
 - ⛔ `delivery-recorded-environment-input` — recover a prepared input only from its original consumed budgeted artifact, exact applied ready revision, preflight and stopped original native outcomes. Lost evidence stays unknown without provisioning or report capture. Recorded readiness is historical only; it grants no live execution or acceptance.
 
 - ⛔ `delivery-original-provision-owners` — bind runner preparation to a distinct original phase before backend preflight. Retain its consumed input, expected identity, actual read owners and original registered operation nonces. Require its fresh resource token at actual admission after preflight. Refuse replay, foreign existing resources and changed bindings; recover or cancel those original owners without renewing authority. Owner closure alone establishes neither readiness nor acceptance.

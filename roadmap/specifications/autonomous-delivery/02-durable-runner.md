@@ -13,6 +13,8 @@ The internal root integration adapter now connects current independent unit QA a
 
 See the [recovery tutorial](../../../docs/tutorials/delivery-recovery.md) and [ADR-0096](../../../docs/decisions/0096-replayable-delivery-journal-without-authority-recovery.md). The core validates the versioned event envelope plus its registered closed payload schema, then replays exact revisions, state edges, grant observations and attempt identities. Immutable numbered transaction segments commit before disposable projections. Cache reconstruction neither recreates private authority nor reinterprets existing human/PR records; no worker or endpoint completion is implied. Later event/facet families remain additive and unknown versions refuse.
 
+Optional fixed product selection also joins copied milestone candidate/assembly inputs to current complete unit QA, original single-recipe provisioning and root QA without a caller-supplied environment. Its consumed original binding and historical preparation recover without new configuration or backend calls. Candidate/assembly production, complete runtime preflight and public foreground execution remain technical work; see [ADR-0173](../../../docs/decisions/0173-fixed-product-environment-selection.md).
+
 ## State model
 
 | State | Meaning | Eligible continuation |

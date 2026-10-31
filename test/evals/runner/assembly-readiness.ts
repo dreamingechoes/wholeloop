@@ -31,6 +31,7 @@ import { RunnerHandoffStages } from '../../../src/runner/handoff-stages.js'
 import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.js'
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { RunnerProductEnvironments } from '../../../src/runner/product-environments.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
 import { RunnerStageDispatcher } from '../../../src/runner/stage-dispatcher.js'
 import { RunnerStore } from '../../../src/runner/store.js'
@@ -46,7 +47,8 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   acceptanceReject = process.argv.includes('--acceptance-reject'),
-  producerResult = process.argv.includes('--producer-result'),
+  productEnvironment = process.argv.includes('--product-environment'),
+  producerResult = productEnvironment || process.argv.includes('--producer-result'),
   provisionOwner = producerResult || process.argv.includes('--provision-owner'),
   fixedDispatcher = provisionOwner || process.argv.includes('--dispatcher'),
   localHandoff = fixedDispatcher || process.argv.includes('--handoff'),
@@ -227,12 +229,31 @@ await runnerSuiteFixture(
     assert.equal(registered, true)
     console.log('The exact QA-ready vector is assembled through original owned Git effects')
     const reader = new RunnerAssemblyReadiness(store, units),
-      observed = await reader.inspect(request, 'feature', resource)
-    assert.equal(observed.status, 'ready', JSON.stringify(observed))
-    assert.equal(observed.integrationQa, 'not-established')
-    assert.equal(observed.acceptance, 'not-established')
-    assert.equal(observed.candidates?.length, 1)
-    const assembled = observed.candidates?.[0]
+      inspectAssembly = async () => {
+        const proof = await reader.inspect(request, 'feature', resource)
+        assert.equal(proof.status, 'ready', JSON.stringify(proof))
+        assert.equal(proof.integrationQa, 'not-established')
+        assert.equal(proof.acceptance, 'not-established')
+        assert.equal(proof.candidates?.length, 1)
+        return proof
+      }
+    // The configured selector performs its own complete QA read before any
+    // provisioning, and integration checks it again before execution. Keep
+    // this extra evaluation assertion after QA rather than spending the same
+    // original live window on a third preliminary metadata inspection.
+    let observed = productEnvironment ? undefined : await inspectAssembly()
+    const assembledCandidates = productEnvironment
+        ? assembly.inspect(resource).repositories.map((repository) => {
+            assert.ok(repository.head)
+            return {
+              repository: repository.repository,
+              path: repository.path,
+              ref: repository.ref,
+              head: repository.head,
+            }
+          })
+        : observed?.candidates,
+      assembled = assembledCandidates?.[0]
     assert.ok(assembled)
     const file = join(assembled.path, 'app.txt'),
       bytes = readFileSync(file)
@@ -259,6 +280,7 @@ await runnerSuiteFixture(
     let originalPreparation:
       | { producer: RunnerEnvironmentProducer; result: RunnerEnvironmentProducerResult }
       | undefined
+    let originalProduct: RunnerProductEnvironments | undefined
     let product:
       | {
           host: RunnerIntegrationStages
@@ -304,7 +326,7 @@ await runnerSuiteFixture(
           milestone: 'feature',
           strategy: 'ordered-merge',
           parts: ready.parts,
-          assemblies: observed.candidates?.map((repository) => ({
+          assemblies: assembledCandidates?.map((repository) => ({
             ...repository,
             base: context.plan.repositories.find(
               (declared) => declared.id === repository.repository,
@@ -356,15 +378,34 @@ await runnerSuiteFixture(
             ({ repository, path, head, snapshot }) => ({ repository, path, head, snapshot }),
           ),
         },
+        products = productEnvironment
+          ? new RunnerProductEnvironments(
+              store,
+              reader,
+              new Map([
+                [
+                  'feature',
+                  {
+                    candidate: integrated.digest,
+                    assembly: resource,
+                    helperImage: DOCKER_REFERENCE_HELPER,
+                  },
+                ],
+              ]),
+              driver,
+            )
+          : undefined,
         preparation = new RunnerEnvironmentScope(
           store,
           integration.invocation,
-          contractDigest({ phase: 'original-product-preparation' }),
+          products?.producer.phase ?? contractDigest({ phase: 'original-product-preparation' }),
         ),
-        producer = new RunnerEnvironmentProducer(store, preparation.phase ?? ''),
-        produced = producerResult
-          ? await producer.prepare(integration, provisionInput, driver)
-          : undefined,
+        producer =
+          products?.producer ?? new RunnerEnvironmentProducer(store, preparation.phase ?? ''),
+        produced =
+          producerResult && !products
+            ? await producer.prepare(integration, provisionInput, driver)
+            : undefined,
         provision = producerResult
           ? undefined
           : provisionOwner
@@ -374,16 +415,19 @@ await runnerSuiteFixture(
         assert.equal(produced.status, 'recorded-ready', JSON.stringify(produced))
         assert.ok(produced.environment)
         originalPreparation = { producer, result: produced }
-      } else assert.equal(provision?.status, 'ready', JSON.stringify(provision))
-      const preparedEnvironment = produced?.environment
+      } else if (!products) assert.equal(provision?.status, 'ready', JSON.stringify(provision))
+      let preparedEnvironment = produced?.environment
         ? new EnvironmentResources(store.files).snapshot(
             produced.environment.id,
             produced.environment.digest,
           )
         : provision?.environment
-      assert.ok(preparedEnvironment)
-      environments.push(preparedEnvironment.record.id)
+      if (!products) {
+        assert.ok(preparedEnvironment)
+        environments.push(preparedEnvironment.record.id)
+      }
       const checkPreparation = () => {
+        assert.ok(preparedEnvironment)
         const preparedOwners = preparation.inspect()
         assert.equal(preparedOwners.invocationState, 'stopped')
         assert.ok(preparedOwners.operations.length > 0)
@@ -403,26 +447,57 @@ await runnerSuiteFixture(
         )
       }
       if (provisionOwner && !producerResult) checkPreparation()
-      store.lifecycle.transition(request.run, {
-        to: 'queued',
-        reason: 'Continue original integration after owned product environment readiness.',
-      })
+      if (!products)
+        store.lifecycle.transition(request.run, {
+          to: 'queued',
+          reason: 'Continue original integration after owned product environment readiness.',
+        })
       const host = new RunnerIntegrationStages(store, reader),
-        productInput = {
-          selection: {
-            schema: 'wholeloop/integration-verification-request@1',
-            candidate: integrated.digest,
-            assembly: resource,
-            environment: preparedEnvironment.record.id,
-          },
-          driver,
-        } as const,
-        proof = fixedDispatcher
-          ? await new RunnerStageDispatcher(store, request.host, { integration: host }).execute(
-              integration,
-              productInput,
-            )
-          : await host.execute(integration, productInput.selection, driver)
+        productInput = preparedEnvironment
+          ? ({
+              selection: {
+                schema: 'wholeloop/integration-verification-request@1',
+                candidate: integrated.digest,
+                assembly: resource,
+                environment: preparedEnvironment.record.id,
+              },
+              driver,
+            } as const)
+          : undefined,
+        proof = await (async () => {
+          if (fixedDispatcher)
+            return new RunnerStageDispatcher(
+              store,
+              request.host,
+              { integration: host },
+              products,
+            ).execute(integration, productInput)
+          assert.ok(productInput)
+          return host.execute(integration, productInput.selection, driver)
+        })()
+      if (products) {
+        const result = products.producer.inspect(integration.invocation)
+        assert.equal(result.status, 'recorded-ready', JSON.stringify(result))
+        assert.ok(result.environment)
+        preparedEnvironment = new EnvironmentResources(store.files).snapshot(
+          result.environment.id,
+          result.environment.digest,
+        )
+        environments.push(result.environment.id)
+        originalProduct = products
+        originalPreparation = { producer: products.producer, result }
+        const record = store.stage(digest, integration.stage.id)
+        assert.ok(record)
+        assert.deepEqual(products.inspect(request, record)?.selection, {
+          schema: 'wholeloop/integration-verification-request@1',
+          candidate: integrated.digest,
+          assembly: resource,
+          environment: result.environment.id,
+        })
+        checks.push(
+          'fixed dispatcher selects its copied milestone input, prepares its original environment and executes product QA without a caller-provided environment or renewed deadline',
+        )
+      }
       assert.equal(
         proof.status,
         privateRegression
@@ -434,6 +509,7 @@ await runnerSuiteFixture(
       )
       assert.equal(proof.invocationState, privateRegression ? 'unknown' : 'stopped')
       assert.equal(proof.provenance, privateRegression ? 'fixture' : 'host-observed')
+      if (productEnvironment) observed = await inspectAssembly()
       // Keep every owner assertion after actual QA for this mode, just as the
       // existing dispatcher mode defers adversarial reads until after execution.
       if (producerResult) checkPreparation()
@@ -721,6 +797,61 @@ await runnerSuiteFixture(
     })
     const journal = contractDigest(store.lifecycle.journal.events()),
       reopened = new RunnerAssemblyReadiness(new RunnerStore(store.files.root), units)
+    if (originalProduct) {
+      const record = store.stage(digest, integration.stage.id)
+      assert.ok(record)
+      const before = originalProduct.inspect(request, record)
+      assert.ok(before)
+      const fresh = new RunnerProductEnvironments(
+          new RunnerStore(store.files.root),
+          reopened,
+          new Map(),
+          {
+            provenance: 'host-observed',
+            async call() {
+              throw new Error('Product metadata recovery cannot provision or run QA')
+            },
+          },
+        ),
+        base = `delivery/runner-products/${record.invocation}`
+      assert.deepEqual(fresh.inspect(request, record), before)
+      for (const [name, relative] of [
+        ['binding', `${base}/binding.json`],
+        ['consumption', `${base}/consumed`],
+        ['candidate', `delivery/integration-candidates/${before.selection.candidate}.json`],
+        ['assembly', `delivery/assemblies/${before.selection.assembly}/record.json`],
+      ]) {
+        const path = store.files.path(relative ?? ''),
+          backup = store.files.path(`${base}/${name}.original.retained`)
+        try {
+          renameSync(path, backup)
+          assert.equal(fresh.inspect(request, record), undefined)
+        } finally {
+          renameSync(backup, path)
+        }
+        assert.deepEqual(fresh.inspect(request, record), before)
+        assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
+      }
+      const locator = store.files.path(`${base}/binding.json`),
+        consumption = store.files.path(`${base}/consumed`),
+        originalBinding = readFileSync(locator),
+        originalConsumption = readFileSync(consumption),
+        changed = JSON.parse(originalBinding.toString('utf8'))
+      changed.deadline = new Date(Date.parse(changed.deadline) + 1).toISOString()
+      try {
+        writeFileSync(locator, JSON.stringify(changed))
+        writeFileSync(consumption, `${contractDigest(changed)}\n`)
+        assert.equal(fresh.inspect(request, record), undefined)
+      } finally {
+        writeFileSync(locator, originalBinding)
+        writeFileSync(consumption, originalConsumption)
+      }
+      assert.deepEqual(fresh.inspect(request, record), before)
+      assert.equal(contractDigest(store.lifecycle.journal.events()), journal)
+      checks.push(
+        'paused product selection recovery uses its original consumed binding with no configured selector or backend; lost binding, consumption, candidate or assembly and substituted original deadline refuse, while exact restoration preserves proof and journal',
+      )
+    }
     if (originalPreparation) {
       const { producer, result } = originalPreparation,
         base = `delivery/runner-environment-results/${integration.invocation}/${producer.phase}`,

@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-fixed-product-environment
+    enforcers: [src/runner/product-environments.ts#RunnerProductEnvironments, src/runner/product-environments.ts#prepare, src/runner/product-environments.ts#inspect, src/runner/stage-dispatcher.ts#RunnerStageDispatcher, src/runner/stage-dispatcher.ts#execute, test/unit/runner/product-environments.test.ts, test/unit/runner/stage-dispatcher.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-recorded-environment-input
     enforcers: [src/runner/environment-producer.ts#RunnerEnvironmentProducer, src/runner/environment-producer.ts#prepare, src/runner/environment-producer.ts#inspect, src/runner/environment-proof.ts#originalPreparedEnvironment, test/unit/runner/environment-producer.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-original-provision-owners

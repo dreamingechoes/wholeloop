@@ -112,5 +112,11 @@ The internal environment producer records the original applied ready revision as
 
 Run npm run eval:runner-assembly-readiness -- --producer-result --retire-success to exercise these controls inside the existing fixed-dispatch composition. It retains every original QA, acceptance, handoff and recovery assertion. A recorded-ready result remains historical-only after subsequent QA and exact retirement; current environment readiness, execution authority and semantic acceptance need their own observations. Automatic complete-route selection and public execution remain P6-10 work. See [ADR-0172](../decisions/0172-recorded-original-environment-inputs.md).
 
+## Select product preparation inside dispatch
+
+The internal dispatcher can use a fixed product-environment selector with copied candidate/assembly/helper inputs per milestone and the integration adapter's exact assembly reader. It validates current complete unit QA, the owned assembly, the pinned candidate and supported machine coverage before consuming an original selection and provisioning its single complete recipe. It then executes root QA through the existing adapter without a caller-supplied environment. Caller overrides and changed original selections refuse. Existing explicit-selection callers keep their current behavior.
+
+Run npm run eval:runner-assembly-readiness -- --product-environment --retire-success for the composed control. It retains every producer-result assertion and also checks paused product selection recovery with no configured selector or backend, lost binding/consumption refusal and identical restoration. This internal composition still requires prepared candidate/assembly inputs; runtime preflight and the public complete-route command remain P6-10 work. See [ADR-0173](../decisions/0173-fixed-product-environment-selection.md).
+
 <!-- docnav -->
 [◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment stop and retirement ▶](delivery-lifecycle.md)

@@ -28,11 +28,12 @@ if (
         '--dispatcher',
         '--provision-owner',
         '--producer-result',
+        '--product-environment',
       ].includes(arg),
   )
 )
   throw new Error(
-    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api, --product-qa-private, --product-qa-private-unproven, --product-qa-private-failure, --product-qa-browser, --product-qa-browser-failure, --acceptance, --acceptance-reject, --handoff, --dispatcher, --provision-owner, --producer-result',
+    'Supported options: --retire-success, --product-qa, --product-qa-failure, --product-qa-api, --product-qa-private, --product-qa-private-unproven, --product-qa-private-failure, --product-qa-browser, --product-qa-browser-failure, --acceptance, --acceptance-reject, --handoff, --dispatcher, --provision-owner, --producer-result, --product-environment',
   )
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-assembly-readiness-')),

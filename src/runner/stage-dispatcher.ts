@@ -12,6 +12,7 @@ import { RunnerGitStages } from './git-stages.js'
 import { RunnerHandoffStages } from './handoff-stages.js'
 import { RunnerIntegrationStages } from './integration-stages.js'
 import { RunnerPlanStages } from './plan-stages.js'
+import { RunnerProductEnvironments } from './product-environments.js'
 import { RunnerReviewStages } from './review-stages.js'
 import { DeliveryRunnerError, type RunnerStageKind, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
@@ -53,6 +54,7 @@ export class RunnerStageDispatcher {
     readonly store: RunnerStore,
     identity: RunnerRequest['host'],
     adapters: Partial<RunnerStageAdapters>,
+    private readonly products?: RunnerProductEnvironments,
   ) {
     this.identity = Object.freeze(structuredClone(identity))
     for (const [key, adapter] of Object.entries(adapters)) {
@@ -66,6 +68,14 @@ export class RunnerStageDispatcher {
         throw new DeliveryRunnerError('dispatcher-fixed-domain-adapter-required')
     }
     this.adapters = Object.freeze({ ...adapters })
+    if (
+      products &&
+      (!(products instanceof RunnerProductEnvironments) ||
+        products.store.files.root !== store.files.root ||
+        !(this.adapters.integration instanceof RunnerIntegrationStages) ||
+        products.readiness !== this.adapters.integration.readiness)
+    )
+      throw new DeliveryRunnerError('dispatcher-fixed-product-environments-required')
   }
   private adapter(kind: RunnerStageKind) {
     if (kind === 'workspace' || kind === 'commit') return this.adapters.git
@@ -112,6 +122,8 @@ export class RunnerStageDispatcher {
         request: structuredClone(input.request),
         plan: structuredClone(input.plan),
         stage: structuredClone(input.stage),
+        current: input.current.bind(input),
+        started: input.started.bind(input),
       }),
       record = this.store.stage(contractDigest(context.request), context.stage.id)
     if (!record || record.invocation !== context.invocation)
@@ -130,6 +142,11 @@ export class RunnerStageDispatcher {
     )
       throw new DeliveryRunnerError('dispatcher-stage-not-current')
     if (adapter instanceof RunnerIntegrationStages) {
+      if (this.products) {
+        if (product) throw new DeliveryRunnerError('dispatcher-product-selection-conflict')
+        const selection = await this.products.prepare(context)
+        return adapter.execute(context, selection, this.products.driver)
+      }
       if (!product) throw new DeliveryRunnerError('dispatcher-product-selection-required')
       return adapter.execute(context, structuredClone(product.selection), product.driver)
     }
