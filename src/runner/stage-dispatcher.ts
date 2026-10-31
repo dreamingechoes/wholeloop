@@ -6,7 +6,7 @@ import { RunnerAcceptanceDefinitionStages } from './acceptance-definition-stages
 import { RunnerAcceptanceStages } from './acceptance-stages.js'
 import { RunnerBuilderPlanningStages } from './builder-planning-stages.js'
 import { RunnerDefinitionStages } from './definition-stages.js'
-import type { RunnerStageContext } from './engine.js'
+import type { DeliveryRunnerHost, RunnerStageContext } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerHandoffStages } from './handoff-stages.js'
@@ -14,7 +14,12 @@ import { RunnerIntegrationStages } from './integration-stages.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments } from './product-environments.js'
 import { RunnerReviewStages } from './review-stages.js'
-import { DeliveryRunnerError, type RunnerStageKind, runnerRoute } from './route.js'
+import {
+  DeliveryRunnerError,
+  type RunnerStage,
+  type RunnerStageKind,
+  runnerRoute,
+} from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 import { RunnerVerificationStages } from './verification-stages.js'
 import { RunnerWorkerStages } from './worker-stages.js'
@@ -47,7 +52,7 @@ const CLASSES = {
 } as const
 
 /** Installed controller code registers domain adapters; source text never supplies a host. */
-export class RunnerStageDispatcher {
+export class RunnerStageDispatcher implements DeliveryRunnerHost {
   private readonly adapters: Readonly<Partial<RunnerStageAdapters>>
   readonly identity: RunnerRequest['host']
   constructor(
@@ -88,6 +93,59 @@ export class RunnerStageDispatcher {
       .filter((stage) => !this.adapter(stage.kind))
       .map((stage) => stage.id)
     return { complete: unsupported.length === 0, unsupported }
+  }
+  /** Static route support only; runtime failures remain observed per stage, never assumed. */
+  async preflight(
+    request: Readonly<RunnerRequest>,
+    plan: Readonly<DeliveryPlan>,
+    stages: readonly RunnerStage[],
+    signal: AbortSignal,
+  ) {
+    if (signal.aborted) throw new DeliveryRunnerError('dispatcher-preflight-cancelled')
+    const unavailable = (reason: string) => ({
+      available: false,
+      interactive: 'unverified' as const,
+      humanRequired: false,
+      reason,
+    })
+    let route: RunnerStage[]
+    try {
+      route = runnerRoute(plan as DeliveryPlan)
+      if (
+        contractDigest(request.host) !== contractDigest(this.identity) ||
+        this.store.basis(request).digest !== contractDigest(plan) ||
+        contractDigest(stages) !== contractDigest(route)
+      )
+        throw new DeliveryRunnerError('dispatcher-preflight-original-route')
+    } catch {
+      return unavailable('dispatcher-preflight-original-route')
+    }
+    // The engine cannot supply a caller selection, so each milestone needs its fixed input.
+    if (
+      route.some(
+        (stage) =>
+          stage.kind === 'integration' &&
+          !(stage.milestone && this.products?.configured(stage.milestone)),
+      )
+    )
+      return unavailable('dispatcher-product-configuration-required')
+    if (!this.coverage(plan as DeliveryPlan).complete)
+      return unavailable('dispatcher-unsupported-stage')
+    if (signal.aborted) throw new DeliveryRunnerError('dispatcher-preflight-cancelled')
+    // Fixed adapters only compose explicitly delegated judgments.
+    if (plan.policy.intervention !== 'none')
+      return {
+        available: true,
+        interactive: 'unverified' as const,
+        humanRequired: true,
+        reason: 'dispatcher-supervised-decisions-unavailable',
+      }
+    return {
+      available: true,
+      interactive: 'disabled' as const,
+      humanRequired: false,
+      reason: 'dispatcher-static-route-supported',
+    }
   }
   private original(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
     const digest = contractDigest(request),

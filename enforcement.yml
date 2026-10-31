@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-static-dispatch-preflight
+    enforcers: [src/runner/stage-dispatcher.ts#preflight, src/runner/product-environments.ts#configured, src/runner/engine.ts#DeliveryRunner, test/unit/runner/stage-dispatcher.test.ts]
   - id: delivery-original-product-production
     enforcers: [src/runner/product-environments.ts#RunnerProductEnvironments, src/runner/product-environments.ts#produce, src/runner/product-environments.ts#readProduction, src/runner/product-environments.ts#stop, src/runner/stage-dispatcher.ts#stop, test/unit/runner/product-environments.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-fixed-product-environment

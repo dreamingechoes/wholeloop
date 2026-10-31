@@ -94,6 +94,10 @@ export class RunnerProductEnvironments {
       contractDigest({ phase: 'original-root-product-environment' }),
     )
   }
+  /** Configuration coverage only; actual selection still validates current inputs. */
+  configured(milestone: string) {
+    return this.selections.has(milestone)
+  }
   private validate(input: RunnerProductInput) {
     if (
       Object.keys(input).sort().join(',') !== 'assembly,candidate,helperImage' ||

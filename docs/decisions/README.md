@@ -186,6 +186,7 @@
 | [0173](./0173-fixed-product-environment-selection.md) | Fixed product environment selection | Accepted | 2026-10-30 |
 | [0174](./0174-exact-byte-delivery-replay-reuse.md) | Exact-byte delivery replay reuse | Accepted | 2026-10-31 |
 | [0175](./0175-original-milestone-product-production.md) | Original milestone product production | Accepted | 2026-10-31 |
+| [0176](./0176-static-fixed-dispatch-route-preflight.md) | Static fixed-dispatch route preflight | Accepted | 2026-10-31 |
 
 ## Lifecycle
 
