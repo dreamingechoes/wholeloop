@@ -267,7 +267,7 @@ The internal environment backend can also capture original parent bounds across 
 
 **Remaining technical work:**
 
-The provisioning backend also retains a private copy of the original request across asynchronous preflight, preventing caller-owned substitutions from changing later effect/resource identity. This correction does not close root preparation or any item below.
+The provisioning backend also retains a private copy of the original request across asynchronous preflight, preventing caller-owned substitutions from changing later effect/resource identity. This correction does not close root preparation or any item below. Delivery journal reads also reuse one validated replay for identical current segment bytes, so the composed product-environment route completes inside its unchanged original window; this is a cost correction, not new capability.
 
 - Complete-route configuration and runtime preflight, product-environment preparation, public foreground execution and endpoint/reconciliation commands.
 - Supervised/manual acceptance and remaining route-specific decision composition.

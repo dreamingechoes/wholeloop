@@ -184,6 +184,7 @@
 | [0171](./0171-original-runner-provisioning-owners.md) | Original runner provisioning owners | Accepted | 2026-10-30 |
 | [0172](./0172-recorded-original-environment-inputs.md) | Recorded original environment inputs | Accepted | 2026-10-30 |
 | [0173](./0173-fixed-product-environment-selection.md) | Fixed product environment selection | Accepted | 2026-10-30 |
+| [0174](./0174-exact-byte-delivery-replay-reuse.md) | Exact-byte delivery replay reuse | Accepted | 2026-10-31 |
 
 ## Lifecycle
 
