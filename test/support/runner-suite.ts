@@ -13,6 +13,7 @@ import { GateWorkflow } from '../../src/gates/workflow.js'
 import { DEFAULT_REVIEW_RUBRIC } from '../../src/review/input.js'
 import { type RunnerSuiteSelection, RunnerSuiteStages } from '../../src/runner/suite-stages.js'
 import { StateStore } from '../../src/state/store.js'
+import { git } from './delivery.js'
 import { environmentRecipe } from './environment.js'
 import { runnerGitFixture } from './runner-git.js'
 import { runnerWorkerComponents } from './runner-worker.js'
@@ -51,6 +52,8 @@ export async function runnerSuiteFixture(
     productQaBrowser?: boolean
     browserMismatch?: boolean
     acceptanceStage?: boolean
+    /** Publish the accepted candidate to a stub code host (to-pr endpoint). */
+    publication?: boolean
   } = {},
 ) {
   if (options.production && options.unit)
@@ -484,6 +487,18 @@ export async function runnerSuiteFixture(
       options.successor
         ? {
             configure: (plan, files) => {
+              if (options.publication) {
+                plan.policy.endpoint = 'to-pr'
+                for (const repository of plan.repositories) {
+                  git(repository.root, [
+                    'remote',
+                    'add',
+                    'origin',
+                    'https://github.com/fixture/app.git',
+                  ])
+                  repository.remote = { name: 'origin', url: 'https://github.com/fixture/app' }
+                }
+              }
               if (options.acceptanceStage) {
                 plan.policy.intervention = 'none'
                 const ref = 'rubrics/acceptance.json',
@@ -554,6 +569,9 @@ export async function runnerSuiteFixture(
         ? { guidance: options.guidance ?? DEFAULT_REVIEW_RUBRIC }
         : {}),
       ...(options.acceptanceStage ? { decisions: ['acceptance' as const] } : {}),
+      ...(options.publication
+        ? { effects: ['git.push' as const, 'pr.create' as const, 'pr.ready' as const] }
+        : {}),
       ...(options.backend ? { stageBudget: 'plan' as const } : {}),
       ...(options.retain ? { retain: true } : {}),
     },

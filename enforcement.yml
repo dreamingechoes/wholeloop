@@ -9,6 +9,8 @@ version: 1
 rules:
   - id: delivery-public-runner-host
     enforcers: [src/runner/public-host.ts#RunnerPublicHost, src/runner/public-host.ts#publicRunnerIdentity, src/runner/public-host.ts#publicNativeRoles, src/cli/delivery-runner.ts#deliveryRunnerAsyncCommand, src/cli/delivery-runner.ts#deliveryForegroundChild, test/unit/runner/public-runner.test.ts]
+  - id: delivery-authorized-publication
+    enforcers: [src/runner/publication-stages.ts#RunnerPublicationStages, src/runner/publication-stages.ts#RunnerPublisher, src/runner/publication-stages.ts#publicationTargets, src/runner/publication-stages.ts#publicationText, src/runner/publication-host.ts#GithubCliCodeHost, src/runner/stage-dispatcher.ts#preflight, test/unit/runner/publication-stages.test.ts, test/unit/runner/publication-host.test.ts, test/unit/pull-requests/pull-requests.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-unattended-research-host
     enforcers: [src/runner/research-stages.ts#RunnerResearchStages, src/runner/research-stages.ts#researchSynthesis, src/runner/research-workers.ts#NativeResearchWorkers, src/runner/research-workers.ts#RunnerResearchAttempts, src/runner/decision-stages.ts#execute, test/unit/runner/research-stages.test.ts]
   - id: delivery-research-dispatch-boundary

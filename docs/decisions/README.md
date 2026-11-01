@@ -195,6 +195,7 @@
 | [0182](./0182-fresh-exact-grants-for-derived-supervised-plans.md) | Fresh exact-plan grants for derived supervised plans | Accepted | 2026-11-01 |
 | [0183](./0183-public-foreground-runner-host.md) | Public foreground runner host | Accepted | 2026-11-01 |
 | [0184](./0184-unattended-research-host.md) | Unattended research host | Accepted | 2026-11-01 |
+| [0185](./0185-authorized-pr-publication.md) | Authorized pull request publication | Accepted | 2026-11-01 |
 
 ## Lifecycle
 

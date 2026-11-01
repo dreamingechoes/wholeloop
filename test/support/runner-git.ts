@@ -3,6 +3,7 @@ import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../src/contracts/compatibility.js'
 import type { DecisionId } from '../../src/decisions/policy.js'
+import type { DeliveryEffect } from '../../src/delivery/authority.js'
 import type { DeliveryPlan } from '../../src/delivery/plan.js'
 import {
   DeliveryRunner,
@@ -37,6 +38,8 @@ export async function runnerGitFixture(
     retain?: boolean
     configure?(plan: DeliveryPlan, files: StoreFiles): void
     decisions?: DecisionId[]
+    /** Extra granted effects, for example publication; never part of the default grant. */
+    effects?: DeliveryEffect[]
   } = {},
 ) {
   await fixture(
@@ -81,6 +84,9 @@ export async function runnerGitFixture(
             ? { basis: { kind: 'envelope' as const, digest: plan.envelope ?? '' } }
             : {}),
           decisions: options.decisions ?? [],
+          ...(options.effects
+            ? { effects: [...authorization(plan, prepared.digest).effects, ...options.effects] }
+            : {}),
         })
       store.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
       const request: RunnerRequest = {

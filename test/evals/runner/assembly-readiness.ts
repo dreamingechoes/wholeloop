@@ -34,6 +34,7 @@ import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerProductEnvironments } from '../../../src/runner/product-environments.js'
+import { RunnerPublicationStages } from '../../../src/runner/publication-stages.js'
 import { RunnerReviewStages } from '../../../src/runner/review-stages.js'
 import { RunnerStageDispatcher } from '../../../src/runner/stage-dispatcher.js'
 import { RunnerStore } from '../../../src/runner/store.js'
@@ -42,12 +43,14 @@ import { RunnerVerificationStages } from '../../../src/runner/verification-stage
 import { withBrowserService } from '../../support/browser.js'
 import { gateWorkerFixture } from '../../support/gate-worker.js'
 import { runnerAcceptanceOptions } from '../../support/runner-acceptance.js'
+import { StubCodeHost } from '../../support/runner-publication.js'
 import { runnerSuiteFixture } from '../../support/runner-suite.js'
 
 const destination = process.argv[2]
 if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
-const productQaFailure = process.argv.includes('--product-qa-failure'),
+const publication = process.argv.includes('--publication'),
+  productQaFailure = process.argv.includes('--product-qa-failure'),
   acceptanceReject = process.argv.includes('--acceptance-reject'),
   humanAcceptance = process.argv.includes('--human-acceptance'),
   productProduction = process.argv.includes('--product-production'),
@@ -56,7 +59,8 @@ const productQaFailure = process.argv.includes('--product-qa-failure'),
   provisionOwner = producerResult || process.argv.includes('--provision-owner'),
   fixedDispatcher = provisionOwner || process.argv.includes('--dispatcher'),
   localHandoff = fixedDispatcher || humanAcceptance || process.argv.includes('--handoff'),
-  acceptanceStage = localHandoff || acceptanceReject || process.argv.includes('--acceptance'),
+  acceptanceStage =
+    localHandoff || publication || acceptanceReject || process.argv.includes('--acceptance'),
   productQaApi = process.argv.includes('--product-qa-api'),
   browserMismatch = process.argv.includes('--product-qa-browser-failure'),
   productQaBrowser = browserMismatch || process.argv.includes('--product-qa-browser'),
@@ -805,6 +809,48 @@ await runnerSuiteFixture(
           )
         }
         console.log(`Original feature acceptance observed: ${accepted.status}`)
+        if (publication) {
+          // The composed to-pr route: the accepted product is pushed and opened as
+          // an owned PR on a stub code host, then handed off as a ready PR endpoint.
+          const code = new StubCodeHost(),
+            publisher = new RunnerPublicationStages(store, acceptance, {
+              identity: request.host,
+              host: code,
+            }),
+            dispatcher = new RunnerStageDispatcher(store, request.host, {
+              publication: publisher,
+            }),
+            published = await dispatcher.execute(dispatch('publication'))
+          assert.equal(published.status, 'passed', JSON.stringify(published))
+          assert.equal(published.invocationState, 'stopped')
+          assert.equal(published.provenance, 'host-observed')
+          observe(published)
+          assert.deepEqual(code.writes, { push: 1, create: 1, ready: 1 })
+          assert.equal(code.prs.length, 1)
+          assert.equal(code.prs[0]?.draft, false)
+          assert.match(code.prs[0]?.body ?? '', /This is not human testing\./)
+          const handedOff = await dispatcher.execute(dispatch('handoff'))
+          assert.equal(handedOff.status, 'passed', JSON.stringify(handedOff))
+          observe(handedOff)
+          const endpoint = await dispatcher.endpoint(
+            request,
+            store.basis(request).plan,
+            new AbortController().signal,
+          )
+          assert.equal(endpoint.current, true)
+          assert.equal(endpoint.outcome, 'ready-pr')
+          assert.equal(endpoint.provenance, 'host-observed')
+          const record = store.stage(digest, 'publication')
+          assert.ok(record)
+          const before = contractDigest(store.lifecycle.journal.events())
+          assert.deepEqual(await publisher.inspect(request, record), published)
+          assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+          assert.deepEqual(code.writes, { push: 1, create: 1, ready: 1 })
+          checks.push(
+            'delegated acceptance publishes the exact accepted candidate as one owned ready PR through a stub code host with no later human turn; inspection repeats no write',
+          )
+          console.log('Original publication observed: ready-pr on a stub code host')
+        }
         if (localHandoff) {
           const handoffContext = dispatch('handoff')
           handoffContext.deadline = new Date(
@@ -1134,6 +1180,7 @@ await runnerSuiteFixture(
     productQaBrowser,
     browserMismatch,
     acceptanceStage: acceptanceStage && !humanAcceptance,
+    publication,
     // Supervised acceptance keeps permitted intervention; every other mode stays unattended.
     unattended: !humanAcceptance,
   },
@@ -1155,7 +1202,7 @@ const report = {
       ? 'rejected-original-fixture-only'
       : 'accepted-original-fixture-only'
     : 'not-established',
-  publication: 'not-performed',
+  publication: publication ? 'ready-pr-stub-code-host-fixture-only' : 'not-performed',
   localEndpoint: localHandoff ? 'code-ready-original-fixture-only' : 'not-established',
   stageDispatch: fixedDispatcher ? 'fixed-domain-adapters-original-fixture-only' : 'direct',
 }

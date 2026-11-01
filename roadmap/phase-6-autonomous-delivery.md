@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-19, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-20, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 61 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 12 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 62 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 11 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -515,7 +515,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-20 · Delegated acceptance and authorized PR lifecycle
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-03, P6-10, P6-19, P3-07
+**Status:** ✅ · **Size:** M · **Depends on:** P6-03, P6-10, P6-19, P3-07
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -525,13 +525,15 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] Default supervised publication still requires its existing actual human record.
-- [ ] A current to-pr grant can publish from delegated acceptance without a later human turn.
-- [ ] Wrong remote/prior tip, duplicate PR, changed snapshot and unowned remote edits refuse or reconcile without overwrite.
+- [x] Default supervised publication still requires its existing actual human record.
+- [x] A current to-pr grant can publish from delegated acceptance without a later human turn.
+- [x] Wrong remote/prior tip, duplicate PR, changed snapshot and unowned remote edits refuse or reconcile without overwrite.
 
 **Tests** — REL-01 and REL-06, AUTH-04–AUTH-08: old receipt regressions, synthetic code-host processes and lost-write responses.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/06-publication-ci-and-merge.md); open-pr, guards, providers, core CLI.
+
+**Evidence** — The fixed publication adapter ([ADR-0185](../docs/decisions/0185-authorized-pr-publication.md)) publishes the current accepted product through the effect ledger: a non-force push of the exact head to the owned topic, one marked draft PR and a granted ready transition, each with its own intent and read-back. Publisher cases on a stub code host refuse a competing writer, a foreign PR, duplicate owned PRs, a changed snapshot and an unreadable remote without writing, and reconcile lost push, create and ready responses without a second write. The legacy `open-pr` cases still require a person's exact-plan testing. The Docker-backed runner evaluation in `--publication` mode joins real product QA and delegated acceptance to one owned ready PR and a current `ready-pr` endpoint. This is stub code-host evidence: no hosted code host was used, and the GitHub CLI host is checked only with a stub executor.
 
 ---
 

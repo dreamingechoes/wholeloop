@@ -14,7 +14,7 @@ import { RunnerNativeScope } from './native-scope.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 
-interface AcceptedProduct {
+export interface AcceptedProduct {
   invocation: string
   record: string
   evidence: string
@@ -71,6 +71,10 @@ export class RunnerHandoffStages {
     )
       throw new DeliveryRunnerError('handoff-stage-original-binding')
     return { digest, basis, stage, original, local: basis.plan.policy.endpoint === 'local-handoff' }
+  }
+  /** The current accepted product, for any later stage that must not re-judge it. */
+  accepted(request: Readonly<RunnerRequest>): Promise<AcceptedProduct> {
+    return this.proof(request)
   }
   private async proof(request: Readonly<RunnerRequest>): Promise<AcceptedProduct> {
     const digest = contractDigest(request),
