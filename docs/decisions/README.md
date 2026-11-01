@@ -187,6 +187,7 @@
 | [0174](./0174-exact-byte-delivery-replay-reuse.md) | Exact-byte delivery replay reuse | Accepted | 2026-10-31 |
 | [0175](./0175-original-milestone-product-production.md) | Original milestone product production | Accepted | 2026-10-31 |
 | [0176](./0176-static-fixed-dispatch-route-preflight.md) | Static fixed-dispatch route preflight | Accepted | 2026-10-31 |
+| [0177](./0177-review-reentry-verification.md) | Review re-entry verification | Accepted | 2026-11-01 |
 
 ## Lifecycle
 

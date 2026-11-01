@@ -271,7 +271,7 @@ The provisioning backend also retains a private copy of the original request acr
 
 - Complete-route configuration and runtime preflight, product-environment preparation, public foreground execution and endpoint/reconciliation commands.
 - Supervised/manual acceptance and remaining route-specific decision composition.
-- Review-triggered cross-stage repair/reverification and complete integration/acceptance invalidation and continuation.
+- Complete integration/acceptance invalidation and continuation after later repairs. Review-triggered corrections are now verified again by a fixed re-entry stage (ADR-0177).
 - Research-report production and complete unattended research route composition.
 - Hosted endpoint composition with the publication/CI/conditional-merge work in P6-20–P6-24.
 

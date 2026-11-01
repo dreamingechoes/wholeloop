@@ -264,3 +264,108 @@ describe('owned criterion verification admission', () => {
     )
   })
 })
+
+describe('original verification re-entry after review', () => {
+  it('refuses re-entry before original verification and review pass, without any effect', async () => {
+    await setup(async ({ store, engine, selection, driver, dispatch }) => {
+      const context = dispatch('reverification:search'),
+        stages = new RunnerVerificationStages(store, {
+          identity: context.request.host,
+          engine: () => engine,
+          suite: () => selection,
+          driver,
+          gate: () => {
+            throw new Error('Must not construct a native host')
+          },
+        }),
+        runs = gateRuns(engine.store.events()).length,
+        journal = contractDigest(store.lifecycle.journal.events())
+      expect(context.stage).toMatchObject({ kind: 'verification', unit: 'search' })
+      await expect(stages.execute(context)).rejects.toThrow(
+        'verification-reentry-predecessors-required',
+      )
+      for (const suffix of ['.consumed', '.attested', ''])
+        expect(
+          existsSync(
+            store.files.path(`delivery/runner-verifications/${context.invocation}.json${suffix}`),
+          ),
+        ).toBe(false)
+      expect(gateRuns(engine.store.events())).toHaveLength(runs)
+      expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+      expect(contractDigest(store.lifecycle.journal.events())).toBe(journal)
+    })
+  })
+  it.each(['changed-head', 'lost-consumption'] as const)(
+    'refuses a %s attestation locator instead of reporting a pass',
+    async (mode) => {
+      await setup(async ({ store, engine, selection, driver, dispatch }) => {
+        const context = dispatch('reverification:search'),
+          stages = new RunnerVerificationStages(store, {
+            identity: context.request.host,
+            engine: () => engine,
+            suite: () => selection,
+            driver,
+            gate: () => {
+              throw new Error('Must not construct a native host')
+            },
+          }),
+          record = store.stage(contractDigest(context.request), context.stage.id),
+          base = `delivery/runner-verifications/${context.invocation}.json`,
+          attestation = {
+            version: 1,
+            request: contractDigest(context.request),
+            plan: context.request.plan,
+            stage: context.stage.id,
+            invocation: context.invocation,
+            original: { invocation: 'a'.repeat(64), evidence: 'b'.repeat(64) },
+            head: mode === 'changed-head' ? 'c'.repeat(40) : 'd'.repeat(40),
+          }
+        if (!record) throw new Error('Original re-entry stage required')
+        store.files.atomic(`${base}.attested`, `${JSON.stringify(attestation)}\n`)
+        store.files.atomic(
+          `${base}.consumed`,
+          `${mode === 'lost-consumption' ? 'e'.repeat(64) : contractDigest(attestation)}\n`,
+        )
+        if (mode === 'lost-consumption')
+          await expect(stages.inspect(context.request, record)).rejects.toThrow(
+            'verification-reentry-attestation-binding',
+          )
+        else
+          expect(await stages.inspect(context.request, record)).toMatchObject({
+            status: 'unknown',
+            provenance: 'fixture',
+          })
+        await expect(stages.execute(context)).rejects.toThrow()
+        expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+      })
+    },
+  )
+  it('cancels re-entry and original verification records but no other stage', async () => {
+    await setup(async ({ store, context, engine, selection, driver, dispatch }) => {
+      const stages = new RunnerVerificationStages(store, {
+          identity: context.request.host,
+          engine: () => engine,
+          suite: () => selection,
+          driver,
+          gate: () => {
+            throw new Error('Must not construct a native host')
+          },
+        }),
+        digest = contractDigest(context.request),
+        reentry = dispatch('reverification:search'),
+        review = dispatch('review:search')
+      for (const id of [context.stage.id, reentry.stage.id]) {
+        const record = store.stage(digest, id)
+        if (!record) throw new Error('Original stage required')
+        await expect(
+          stages.stop(context.request, record, new AbortController().signal),
+        ).resolves.toBeUndefined()
+      }
+      const other = store.stage(digest, review.stage.id)
+      if (!other) throw new Error('Original review stage required')
+      await expect(
+        stages.stop(context.request, other, new AbortController().signal),
+      ).rejects.toThrow('verification-stage-binding')
+    })
+  })
+})

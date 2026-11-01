@@ -306,7 +306,13 @@ A following review can inspect the exact corrected candidate that passed verific
 
 Run npm run eval:runner-verification-continuation -- --review-after-verification --retire-success for the finite actual Docker/synthetic-worker composition. It runs the original failed suite, two corrections and the passing third verification, records that exact verification stage and independently reviews the same committed head in the following stage. The new review declares its own original finite window before execution while preserving the global delivery deadline. Paused recovery launches neither reviewers nor old verification work; all three exact environments retire through their original ownership.
 
-This connects candidate consumption across stages. Further review-triggered repairs, fresh behavioral verification after those repairs, feature readiness and public complete-route execution remain technical work. The fixture control supplies no authenticated model, independent Linux application-host, human approval or feature endpoint acceptance. See [ADR-0152](../decisions/0152-candidate-lineage-and-stage-continuations.md).
+This connects candidate consumption across stages. Review-triggered repairs are verified again by the route's re-entry stage, described below; feature readiness and public complete-route execution remain technical work. The fixture control supplies no authenticated model, independent Linux application-host, human approval or feature endpoint acceptance. See [ADR-0152](../decisions/0152-candidate-lineage-and-stage-continuations.md).
+
+## Verify the reviewed head again
+
+Every implementation unit now ends with `reverification:<unit>` after review. When the original verification still attests the exact reviewed head, the stage records that attestation and passes without a suite, model, gate round or environment. When review committed a correction, it runs a fresh verification on its own subject, with its suite in an environment holding the corrected head; the original verification run stays unchanged. A failed re-entry does not start another correction loop. Unit readiness prefers a passed re-entry and otherwise keeps the original verification.
+
+Run npm run eval:runner-reverification -- --retire-success for the corrected path: original verification passes, review keeps a finding, one owned correction is committed, review passes, readiness refuses until the re-entry verifies the corrected head, and paused recovery repeats nothing. Add --unchanged for the attestation path. See [ADR-0177](../decisions/0177-review-reentry-verification.md).
 
 ## Inspect joint unit QA readiness
 

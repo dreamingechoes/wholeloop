@@ -45,6 +45,16 @@ interface VerificationStageBinding {
   gate: string
   selection: RunnerSuiteSelection
 }
+/** A re-entry that adds no work: the original verification still attests this exact head. */
+interface VerificationAttestation {
+  version: 1
+  request: string
+  plan: string
+  stage: string
+  invocation: string
+  original: { invocation: string; evidence: string }
+  head: string
+}
 interface VerificationContinuation {
   version: 1
   request: string
@@ -76,6 +86,108 @@ export class RunnerVerificationStages {
     if (!/^[a-f0-9]{64}$/.test(invocation))
       throw new DeliveryRunnerError('verification-stage-invocation')
     return `delivery/runner-verifications/${invocation}.json`
+  }
+  private reentry(stage: { id: string; unit?: string }) {
+    return stage.id === `reverification:${stage.unit}`
+  }
+  private predecessors(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    const unit = record.id.slice('reverification:'.length),
+      digest = contractDigest(request),
+      original = this.store.stage(digest, `verification:${unit}`),
+      review = this.store.stage(digest, `review:${unit}`)
+    if (
+      original?.status !== 'passed' ||
+      review?.status !== 'passed' ||
+      original.basis !== record.basis ||
+      review.basis !== record.basis
+    )
+      throw new DeliveryRunnerError('verification-reentry-predecessors-required')
+    return original
+  }
+  private attested(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    const path = `${this.path(record.invocation)}.attested`
+    if (!existsSync(this.store.files.path(path))) return undefined
+    const value = JSON.parse(
+      readSourceFile(this.store.files.root, path, 65536),
+    ) as VerificationAttestation
+    if (
+      Object.keys(value).sort().join(',') !==
+        'head,invocation,original,plan,request,stage,version' ||
+      value.version !== 1 ||
+      value.request !== contractDigest(request) ||
+      value.plan !== record.basis ||
+      value.stage !== record.id ||
+      value.invocation !== record.invocation ||
+      readSourceFile(
+        this.store.files.root,
+        `${this.path(record.invocation)}.consumed`,
+        128,
+      ).trim() !== contractDigest(value)
+    )
+      throw new DeliveryRunnerError('verification-reentry-attestation-binding')
+    return value
+  }
+  /** Reuse only an original verdict that still attests the exact current head; never borrow a newer one. */
+  private async attest(
+    context: RunnerStageContext,
+    record: Readonly<RunnerStageRecord>,
+    pinned: ReturnType<RunnerVerificationStages['context']>,
+  ) {
+    const original = this.predecessors(context.request, record),
+      // An original that cannot reopen at this head attests nothing; verify afresh.
+      observed = await this.inspect(context.request, original).catch(() => undefined),
+      current = () => {
+        if (
+          context.signal.aborted ||
+          !context.current() ||
+          Date.parse(context.deadline) <= Date.now() ||
+          !['prepared', 'running'].includes(
+            this.store.stage(pinned.digest, record.id)?.status ?? '',
+          )
+        )
+          throw new DeliveryRunnerError('verification-stage-not-current')
+      }
+    current()
+    if (
+      observed?.status !== 'passed' ||
+      observed.provenance !== 'host-observed' ||
+      contractDigest(this.store.stage(pinned.digest, original.id)) !== contractDigest(original)
+    )
+      return undefined
+    const head = new RunnerGitStages(this.store).candidate(
+        context.request,
+        pinned.stage.unit as string,
+        this.options.correction,
+      ).receipt.head,
+      attestation: VerificationAttestation = {
+        version: 1,
+        request: pinned.digest,
+        plan: record.basis,
+        stage: record.id,
+        invocation: record.invocation,
+        original: { invocation: original.invocation, evidence: observed.evidence },
+        head,
+      }
+    if (head !== pinned.candidate.receipt.head)
+      throw new DeliveryRunnerError('verification-reentry-candidate-changed')
+    this.store.files.locked(() => {
+      current()
+      const marker = `${this.path(record.invocation)}.consumed`
+      if (existsSync(this.store.files.path(marker)))
+        throw new DeliveryRunnerError('verification-stage-original-unresolved')
+      this.store.files.atomic(marker, `${contractDigest(attestation)}\n`)
+      this.store.files.atomic(
+        `${this.path(record.invocation)}.attested`,
+        `${JSON.stringify(attestation)}\n`,
+      )
+    })
+    // This PID describes core metadata work; it is never a cancellation target.
+    context.started({
+      backend: 'owned-core',
+      instance: record.invocation,
+      worker: `pid-${process.pid}`,
+    })
+    return this.inspect(context.request, this.store.stage(pinned.digest, record.id) ?? record)
   }
   private context(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
     const digest = contractDigest(request),
@@ -212,6 +324,13 @@ export class RunnerVerificationStages {
     // locked recheck below too, so another owner cannot race round consumption.
     if (existsSync(this.store.files.path(`${this.path(record.invocation)}.consumed`)))
       throw new DeliveryRunnerError('verification-stage-original-unresolved')
+    const reentry = this.reentry(pinned.stage)
+    if (reentry) {
+      const attested = await this.attest(context, record, pinned)
+      if (attested) return attested
+      if (existsSync(this.store.files.path(`${this.path(record.invocation)}.consumed`)))
+        throw new DeliveryRunnerError('verification-stage-original-unresolved')
+    }
     let contracts: ContractGateInput | undefined
     if (!pinned.stage.criteria.length) {
       if (!this.options.contracts)
@@ -231,7 +350,18 @@ export class RunnerVerificationStages {
         contracts,
       )
     }
-    const slot = `delivery/runner-verification-subjects/${contractDigest({ request: pinned.digest, plan: record.basis, unit: pinned.stage.unit })}.json`,
+    // A re-entry verifies the reviewed head on its own subject, leaving the
+    // original verification run and its round budget historically intact.
+    const slot = `delivery/runner-verification-subjects/${contractDigest(
+        reentry
+          ? {
+              request: pinned.digest,
+              plan: record.basis,
+              unit: pinned.stage.unit,
+              stage: record.id,
+            }
+          : { request: pinned.digest, plan: record.basis, unit: pinned.stage.unit },
+      )}.json`,
       marker = `${this.path(record.invocation)}.consumed`,
       engine = pinned.engine
     this.store.files.locked(() => {
@@ -567,6 +697,10 @@ export class RunnerVerificationStages {
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,
   ): Promise<RunnerStageObservation> {
+    const attestation = record.id.startsWith('reverification:')
+      ? this.attested(request, record)
+      : undefined
+    if (attestation) return this.inspectAttestation(request, record, attestation)
     let state = this.read(request, record)
     const retained = this.continuation(request, record),
       phase = retained?.next ? contractDigest(retained.next.plan) : undefined
@@ -721,6 +855,43 @@ export class RunnerVerificationStages {
           : 'Retain original verification rounds, suite/native receipts and budgets; no replay, approval or endpoint is inferred.',
     }
   }
+  private async inspectAttestation(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    attestation: VerificationAttestation,
+  ): Promise<RunnerStageObservation> {
+    let passed = false
+    try {
+      const original = this.predecessors(request, record),
+        context = this.context(request, record),
+        observed =
+          original.invocation === attestation.original.invocation
+            ? await this.inspect(request, original)
+            : undefined
+      passed =
+        observed?.status === 'passed' &&
+        observed.provenance === 'host-observed' &&
+        observed.evidence === attestation.original.evidence &&
+        context.candidate.receipt.head === attestation.head &&
+        this.store.stage(contractDigest(request), record.id)?.runtime !== undefined
+    } catch {
+      passed = false
+    }
+    return {
+      schema: 'wholeloop/delivery-runner-stage-observation@1',
+      request: contractDigest(request),
+      plan: record.basis,
+      stage: record.id,
+      invocation: record.invocation,
+      status: passed ? 'passed' : 'unknown',
+      invocationState: 'stopped',
+      evidence: contractDigest({ attestation, passed }),
+      provenance: passed ? 'host-observed' : 'fixture',
+      reason: passed
+        ? 'The original verification still attests the exact reviewed head; no suite or model was repeated.'
+        : 'The original verification no longer attests the exact reviewed head; nothing is borrowed or replayed.',
+    }
+  }
   async stop(
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,
@@ -730,7 +901,7 @@ export class RunnerVerificationStages {
     this.store.get(digest)
     if (
       contractDigest(request.host) !== contractDigest(this.options.identity) ||
-      !record.id.startsWith('verification:') ||
+      !/^(re)?verification:/.test(record.id) ||
       !this.store
         .record(digest)
         .stages.some(

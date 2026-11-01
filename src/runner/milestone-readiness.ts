@@ -75,7 +75,7 @@ export class RunnerMilestoneReadiness {
             }
           },
           records = () =>
-            ['verification', 'review'].map((kind) =>
+            ['verification', 'review', 'reverification'].map((kind) =>
               this.store.stage(digest, `${kind}:${unit.id}`),
             ),
           original = contractDigest(records()),

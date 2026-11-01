@@ -52,8 +52,18 @@ export class RunnerUnitReadiness {
         route = runnerRoute(basis.plan),
         verifyStage = route.find((stage) => stage.id === `verification:${unit}`),
         reviewStage = route.find((stage) => stage.id === `review:${unit}`),
-        verified = this.store.stage(digest, `verification:${unit}`),
-        reviewed = this.store.stage(digest, `review:${unit}`)
+        reentryStage = route.find((stage) => stage.id === `reverification:${unit}`),
+        reentry = this.store.stage(digest, `reverification:${unit}`),
+        reviewed = this.store.stage(digest, `review:${unit}`),
+        // After a passed re-entry, only it may attest the reviewed head.
+        verified =
+          reentry?.status === 'passed' &&
+          reentry.basis === basis.digest &&
+          reentryStage?.kind === 'verification' &&
+          reviewStage &&
+          reentryStage.after.includes(reviewStage.id)
+            ? reentry
+            : this.store.stage(digest, `verification:${unit}`)
       if (
         !basis.plan.work.some((work) => work.id === unit && work.role !== 'research') ||
         verifyStage?.kind !== 'verification' ||

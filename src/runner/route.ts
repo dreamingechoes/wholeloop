@@ -103,13 +103,16 @@ export function runnerRoute(plan: DeliveryPlan): RunnerStage[] {
     ['plan'],
     plan.criteria.map((c) => c.id),
   )
+  // Implementation work ends after review and its re-entry verification of the reviewed head.
   const terminal = (id: string) =>
-    `${plan.work.find((w) => w.id === id)?.role === 'research' ? 'research' : 'review'}:${id}`
+    plan.work.find((w) => w.id === id)?.role === 'research'
+      ? [`research:${id}`]
+      : [`review:${id}`, `reverification:${id}`]
   for (const wave of planWaves(plan)) {
     for (const id of wave) {
       const work = plan.work.find((w) => w.id === id)
       if (!work) throw new DeliveryRunnerError('missing-route-work')
-      let previous = work.after.length ? work.after.map(terminal) : ['acceptance-definition']
+      let previous = work.after.length ? work.after.flatMap(terminal) : ['acceptance-definition']
       if (work.role === 'research') {
         add(
           `research:${id}`,
@@ -134,13 +137,20 @@ export function runnerRoute(plan: DeliveryPlan): RunnerStage[] {
         })
         previous = [stage]
       }
+      add(
+        `reverification:${id}`,
+        'verification',
+        [...new Set(['acceptance-definition', ...previous])],
+        work.criteria,
+        { unit: id },
+      )
     }
   }
   for (const milestone of plan.milestones) {
     add(
       `integration:${milestone.id}`,
       'integration',
-      [...milestone.work.map(terminal), ...milestone.after.map((id) => `integration:${id}`)],
+      [...milestone.work.flatMap(terminal), ...milestone.after.map((id) => `integration:${id}`)],
       milestone.criteria,
       { milestone: milestone.id },
     )

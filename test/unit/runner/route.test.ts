@@ -141,12 +141,14 @@ describe('deterministic complete delivery routes', () => {
         'commit:contract',
         'verification:contract',
         'review:contract',
+        'reverification:contract',
         'workspace:search',
         'build-plan:search',
         'implementation:search',
         'commit:search',
         'verification:search',
         'review:search',
+        'reverification:search',
         'integration:feature',
         'acceptance',
         'handoff',
@@ -154,6 +156,19 @@ describe('deterministic complete delivery routes', () => {
       expect(stages.find((s) => s.id === 'workspace:search')?.after).toContain('review:contract')
       expect(stages.find((s) => s.id === 'verification:search')?.after).toContain('commit:search')
       expect(stages.find((s) => s.id === 'integration:feature')?.after).toContain('review:search')
+      // Dependents wait for the reviewed head to be verified again, never for review alone.
+      expect(stages.find((s) => s.id === 'reverification:search')).toMatchObject({
+        kind: 'verification',
+        unit: 'search',
+        criteria: ['search'],
+        after: ['acceptance-definition', 'review:search'],
+      })
+      expect(stages.find((s) => s.id === 'workspace:search')?.after).toContain(
+        'reverification:contract',
+      )
+      expect(stages.find((s) => s.id === 'integration:feature')?.after).toContain(
+        'reverification:search',
+      )
       for (const kind of ['verification', 'review', 'commit'])
         expect(stages.find((s) => s.id === `${kind}:search`)?.criteria).toEqual(['search'])
       expect(stages.find((s) => s.id === 'handoff')?.after).toEqual(['acceptance'])

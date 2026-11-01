@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-review-reentry-verification
+    enforcers: [src/runner/route.ts#runnerRoute, src/runner/verification-stages.ts#attest, src/runner/verification-stages.ts#inspectAttestation, src/runner/verification-stages.ts#execute, src/runner/unit-readiness.ts#RunnerUnitReadiness, test/unit/runner/route.test.ts, test/unit/runner/verification-stages.test.ts, test/evals/runner/reverification.ts]
   - id: delivery-static-dispatch-preflight
     enforcers: [src/runner/stage-dispatcher.ts#preflight, src/runner/product-environments.ts#configured, src/runner/engine.ts#DeliveryRunner, test/unit/runner/stage-dispatcher.test.ts]
   - id: delivery-original-product-production

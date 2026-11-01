@@ -62,6 +62,7 @@
     "eval:runner-environment-phases": "node scripts/check-runner-environment-phases.mjs",
     "eval:runner-suite-continuation": "node scripts/check-runner-suite-continuation.mjs",
     "eval:runner-verification-continuation": "node scripts/check-runner-verification-continuation.mjs",
+    "eval:runner-reverification": "node scripts/check-runner-reverification.mjs",
     "eval:runner-native-history": "node scripts/check-runner-native-history.mjs",
     "eval:runner-assembly-readiness": "node scripts/check-runner-assembly-readiness.mjs",
     "eval:runner-feature-readiness": "node scripts/check-runner-feature-readiness.mjs",
