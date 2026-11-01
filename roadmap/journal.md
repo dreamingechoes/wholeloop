@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-01 · P6-22 · Bounded CI repair requests — in progress
+
+- Add pure failure classification, identified unadopted review feedback, the journal-derived push admission and typed, retained repair requests (ADR-0187). Only a trusted failure at the candidate is a code or test failure; `infrastructure` needs structured host evidence that no host supplies, so a guess never dismisses a failed check. Comments are never executed, and because no delegated decision covers adopting them, current feedback blocks the request. Issued pushes are counted from the journal against `ciPushes` (two by default), and the ledger already refuses a third with `ci-push-limit`.
+- Conservative refinement (ADR-0187): running a `repair` request means a new head re-entering every stage, which is the cross-invocation continuation P6-29 owns. That execution moves into P6-29's deliverables beside the integration and acceptance continuations. Until then a failed required check ends the run with its retained request.
+- Fifteen cases tick criteria one and three: classification and request tables, hostile comments, and a restart that keeps the push count and refuses a third push. Criterion two (fresh evidence for a changed implementation) stays open, so P6-22 is 🔄 and the counts are unchanged.
+- Markdown lint passes on 416 files. The complete check passes 3639 tests in 194 files, lint 1038, types, build, smoke, offline packaging on archive c826acfa3ac119cb830cd7bca39ff406ef4c2ec8f25345d85fd5facbd9f64566, docs 417, generators, harness 151 and Mermaid 36 in 533 seconds. Next: P6-23.
+
+---
+
 ## 2026-11-01 · P6-21 · Revision-bound CI observations — task complete
 
 - Add the `wholeloop/delivery-ci@1` observation with an appended compatibility fingerprint, the pure `ciVerdict`, the finite `RunnerCiObserver` and the `GithubCliCiHost` read path (ADR-0186). A required check passes only from its trusted issuer at the exact candidate, by its latest attempt, in a complete observation with observed protection. Pending, cancelled, skipped, neutral, missing, stale, spoofed and partial results and an empty required set never become success, and unreadable protection or reviews stay unknown. Waits poll every 15 seconds for at most 30 minutes inside the run deadline, end as settled, deadline or cancelled, never prompt, and retain each observation content-addressed in the run's store.

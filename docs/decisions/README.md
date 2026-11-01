@@ -197,6 +197,7 @@
 | [0184](./0184-unattended-research-host.md) | Unattended research host | Accepted | 2026-11-01 |
 | [0185](./0185-authorized-pr-publication.md) | Authorized pull request publication | Accepted | 2026-11-01 |
 | [0186](./0186-revision-bound-ci-observations.md) | Revision-bound CI observations | Accepted | 2026-11-01 |
+| [0187](./0187-bounded-ci-repair-requests.md) | Bounded CI repair requests | Accepted | 2026-11-01 |
 
 ## Lifecycle
 

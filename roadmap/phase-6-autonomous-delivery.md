@@ -563,7 +563,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-22 · Bounded CI and review-feedback repair
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-21, P6-19, P6-07
+**Status:** 🔄 · **Size:** M · **Depends on:** P6-21, P6-19, P6-07
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -573,13 +573,17 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] Default initial-plus-one-repair cycles are enforced across restart.
+- [x] Default initial-plus-one-repair cycles are enforced across restart.
 - [ ] Changed implementation receives new local/behavior/integration/remote evidence.
-- [ ] Untrusted comments cannot execute commands or widen scope; guessed flakiness cannot dismiss failed checks.
+- [x] Untrusted comments cannot execute commands or widen scope; guessed flakiness cannot dismiss failed checks.
 
 **Tests** — REL-03 and OPS-02–OPS-04: real local failed/fixed checks, hostile comments and bounded synthetic CI rounds.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/06-publication-ci-and-merge.md); building, review, publication, budgets.
+
+**Completed technical work** — Pure failure classification, identified unadopted review feedback, the journal-derived push admission and typed, retained repair requests ([ADR-0187](../docs/decisions/0187-bounded-ci-repair-requests.md)). Fifteen cases cover the classification and request tables, hostile comments, and a restart that keeps the push count and refuses a third push with `ci-push-limit`.
+
+**Remaining** — Running a `repair` request (a new head re-entering verification, review, integration, acceptance and publication with fresh evidence) is the cross-invocation continuation that P6-29 owns. The second criterion stays open until that continuation lands.
 
 ---
 
@@ -723,7 +727,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Goal** — Keep execution aligned when source intent or relevant repository state changes.
 
-**Deliverables** — Preview-only revision/impact command, explicit adoption, affected-worker fencing and deterministic evidence reuse/invalidation. Also, moved from P6-10 by the owner on 2026-11-01: continuation after an integration or acceptance repair, with its own ADR for the cross-invocation correction protocol that ADR-0154 records as missing. Until then a failed integration or acceptance stage ends the run honestly.
+**Deliverables** — Preview-only revision/impact command, explicit adoption, affected-worker fencing and deterministic evidence reuse/invalidation. Also, moved from P6-10 by the owner on 2026-11-01: continuation after an integration, acceptance or CI repair (the last moved from P6-22 by ADR-0187), with its own ADR for the cross-invocation correction protocol that ADR-0154 records as missing. Until then a failed integration or acceptance stage ends the run honestly.
 
 **Acceptance criteria:**
 

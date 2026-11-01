@@ -187,5 +187,9 @@ A `to-pr` route continues after acceptance with a publication stage and its hand
 
 CI observations are revision-bound: a required check counts only from its trusted issuer, at the exact candidate, by its latest attempt. Pending, cancelled, skipped, neutral, missing, stale and spoofed results never become success, and a partial page set, unreadable branch protection or an empty required set leaves the verdict unknown. Waiting polls every 15 seconds for at most 30 minutes inside the run deadline and never asks a person. Each observation is kept in the run's store as `wholeloop/delivery-ci@1`. See [ADR-0186](../decisions/0186-revision-bound-ci-observations.md).
 
+## Read a CI repair request
+
+A failed observation becomes a retained repair request: `repair` only for a trusted code or test failure within the push budget (the initial push plus one repair by default, counted from the journal), and `blocked` for cancelled, skipped, stale, spoofed or unreadable results, for an exhausted budget or for current review comments. Comments are kept with their identity and revision but never executed or adopted. Running a repair is not yet composed; until P6-29 adds the continuation, a failed required check ends the run with its request. See [ADR-0187](../decisions/0187-bounded-ci-repair-requests.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)
