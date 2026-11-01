@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-public-runner-host
+    enforcers: [src/runner/public-host.ts#RunnerPublicHost, src/runner/public-host.ts#publicRunnerIdentity, src/runner/public-host.ts#publicNativeRoles, src/cli/delivery-runner.ts#deliveryRunnerAsyncCommand, src/cli/delivery-runner.ts#deliveryForegroundChild, test/unit/runner/public-runner.test.ts]
   - id: delivery-research-dispatch-boundary
     enforcers: [src/runner/stage-dispatcher.ts#adapter, src/runner/stage-dispatcher.ts#preflight, src/runner/stage-dispatcher.ts#coverage, test/unit/runner/stage-dispatcher.test.ts]
   - id: delivery-recorded-human-decisions

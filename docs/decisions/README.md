@@ -193,6 +193,7 @@
 | [0180](./0180-trusted-native-bindings.md) | Trusted native bindings for unattended runs | Accepted | 2026-11-01 |
 | [0181](./0181-supervised-plans-require-exact-grants.md) | Supervised fixed dispatch requires exact-plan grants | Accepted | 2026-11-01 |
 | [0182](./0182-fresh-exact-grants-for-derived-supervised-plans.md) | Fresh exact-plan grants for derived supervised plans | Accepted | 2026-11-01 |
+| [0183](./0183-public-foreground-runner-host.md) | Public foreground runner host | Accepted | 2026-11-01 |
 
 ## Lifecycle
 

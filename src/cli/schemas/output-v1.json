@@ -11635,6 +11635,49 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": ["schema", "status", "preflight"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-runner-run@1"
+        },
+        "status": { "type": "object", "additionalProperties": true },
+        "preflight": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["available", "interactive", "humanRequired", "reason"],
+              "properties": {
+                "available": { "type": "boolean" },
+                "interactive": { "enum": ["disabled", "permitted", "unverified"] },
+                "humanRequired": { "type": "boolean" },
+                "reason": { "type": "string", "minLength": 1, "maxLength": 4096 }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "status", "recoveryProblems"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-runner-reconcile@1"
+        },
+        "status": { "type": "object", "additionalProperties": true },
+        "recoveryProblems": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": [
         "schema",
         "request",

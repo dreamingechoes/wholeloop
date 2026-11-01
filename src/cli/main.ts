@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { VERSION } from '../version.js'
 import { adapterRoot } from './adapter-root.js'
 import { parseArguments } from './arguments.js'
@@ -14,7 +15,7 @@ import { deliveryAssemblyCommand } from './delivery-assembly.js'
 import { deliveryEnvironmentRuntimeCommand } from './delivery-environment-runtime.js'
 import { deliveryPrivateAsyncCommand } from './delivery-private.js'
 import { deliveryRecoverCommand } from './delivery-recovery.js'
-import { deliveryRunnerCommand } from './delivery-runner.js'
+import { deliveryRunnerAsyncCommand, deliveryRunnerCommand } from './delivery-runner.js'
 import { discoveryCommand } from './discovery.js'
 import { docsCheck, docsNav, docsReference } from './docs.js'
 import { doctorCommand } from './doctor.js'
@@ -236,6 +237,8 @@ export async function runAsync(
       ((command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
         command.path === 'fanout run' ||
         command.path === 'delivery recover' ||
+        command.path === 'delivery run' ||
+        command.path === 'delivery reconcile' ||
         [
           'delivery integration-assembly-schema',
           'delivery integration-assemble',
@@ -321,6 +324,15 @@ export async function runAsync(
       return await deliveryPrivateAsyncCommand(parsed, root, json, io)
     if (command.path === 'delivery recover')
       return await deliveryRecoverCommand(parsed, root, json, io)
+    if (command.path === 'delivery run' || command.path === 'delivery reconcile')
+      return await deliveryRunnerAsyncCommand(
+        command.path,
+        parsed,
+        root,
+        json,
+        io,
+        fileURLToPath(import.meta.url),
+      )
     if (command.path === 'provider read-flags') return await flagReadCommand(parsed, root, json, io)
     if (command.path === 'launch dispatch')
       return await launchDispatchCommand(parsed, root, json, io)

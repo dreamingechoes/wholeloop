@@ -50,6 +50,26 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Request owned cancellation without asserting process termination',
   },
   {
+    path: 'delivery run',
+    arguments: '',
+    options: ['--digest <sha256>', '--bindings <path>', '--root <path>', '--store <path>'],
+    schema: 'wholeloop/delivery-runner-run@1',
+    summary: 'Run a prepared route in an owned foreground controller under the public fixed host',
+  },
+  {
+    path: 'delivery reconcile',
+    arguments: '',
+    options: [
+      '--digest <sha256>',
+      '--bindings <path>',
+      '--root <path>',
+      '--store <path>',
+      '--cancel',
+    ],
+    schema: 'wholeloop/delivery-runner-reconcile@1',
+    summary: 'Observe or cancel owned controller and stage work without replaying it',
+  },
+  {
     path: 'delivery human-decide',
     arguments: '',
     options: [

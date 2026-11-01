@@ -1,9 +1,9 @@
 # Prepare and control an owned delivery route
 
-> **TL;DR** — Prepare one durable controller request, inspect the full ordered route and exercise pause/resume/stop without launching a model. The internal engine now has an owned foreground transport; a complete terminal-driven implementation route is still being connected in P6-10.
+> **TL;DR** — Prepare one durable controller request, inspect the full ordered route, run and reconcile it from the terminal and exercise pause/resume/stop without launching a model. Native stages need explicitly bound clients and trusted runtime proof (P6-27).
 
 > [!NOTE]
-> **Status: 🚧 partial.** Schema, prepare, status and operator controls are available. Internal ownership, finite stage execution, checkpoint recovery and private native cancellation have automated coverage. The private foreground bootstrap is group/core/nonce-bound and consumed once. No public complete-route run/reconcile command or live native acceptance is claimed by this increment.
+> **Status: 🚧 partial.** Schema, prepare, status, operator controls and the public run/reconcile commands are available, with automated synthetic/reference-transport coverage. Native adapters join the public host only with trusted runtime proof (P6-27); no live native or hosted acceptance is claimed.
 
 ## Before you start
 
@@ -82,7 +82,18 @@ console.log('PASS: same-run controls preserve evidence and report cancellation h
 JS
 ```
 
-Pause fences future dispatch. Resume retains the same run, original grant, deadline and historical stage attempts; it refuses unresolved owner/process/effect reservations or stale current checkpoints. Stop requests cancellation and reports stopping until exact owned closure is observed. These controls never delete worktrees, signal a stored PID, renew a budget or claim that a remote effect was undone. The current public controls do not themselves start an execution/reconciliation host.
+Pause fences future dispatch. Resume retains the same run, original grant, deadline and historical stage attempts; it refuses unresolved owner/process/effect reservations or stale current checkpoints. Stop requests cancellation and reports stopping until exact owned closure is observed. These controls never delete worktrees, signal a stored PID, renew a budget or claim that a remote effect was undone.
+
+## Run and reconcile from the terminal
+
+Prepare the request with `host` set to the public host identity for your bindings document, then run it:
+
+```bash
+wl delivery run --digest <request> --store <store> --json
+wl delivery reconcile --digest <request> --store <store> --json
+```
+
+Without `--bindings`, no native client is trusted. A route that needs native clients ends before dispatch: blocked under none policy and paused otherwise, with the reason in the receipt's `preflight`. A `--bindings` file listing exact pinned clients is part of the host identity, so the request must be prepared for that same document. Even then the route stops with `public-host-native-runtime-unavailable` until P6-27 supplies trusted runtime proof. `reconcile --cancel` cancels owned controller and stage work after `stop` and confirms closure separately. See [ADR-0183](../decisions/0183-public-foreground-runner-host.md).
 
 ## Internal controller and recovery boundary
 
@@ -92,7 +103,7 @@ An initial none-policy research definition uses its research-plan delegation, wi
 
 The native wrapper retains private nonce-bound registration and outcome metadata after parent loss, drains broken pipes and permits only its own live wrapper to signal its group. A fresh observer checks registration, the exact outcome and actual group absence. Known closure with missing semantic output is not success. Unknown invocations stay reserved. A passed immutable result can recover a missing checkpoint or authorized derived-plan locator without repeating its host call; an unpublished result cannot be invented.
 
-Fixture routes and synthetic native processes test those mechanics. They establish neither real model containment nor actual application QA, PR creation or merge eligibility. Fixed domain-host wiring, owned foreground entrypoint and endpoint/reconciliation commands remain implementation work under [P6-10](../../roadmap/phase-6-autonomous-delivery.md#p6-10--local-delivery-runner-and-controls); manual acceptance is not blocking that work. [ADR-0113](../decisions/0113-owned-foreground-routes-and-native-recovery.md) records the boundary.
+Fixture routes and synthetic native processes test those mechanics. They establish neither real model containment nor actual application QA, PR creation or merge eligibility. The public run and reconcile commands now wire the owned foreground entrypoint to a fixed public host ([P6-10](../../roadmap/phase-6-autonomous-delivery.md#p6-10--local-delivery-runner-and-controls)); native stages join it with trusted runtime proof in P6-27. [ADR-0113](../decisions/0113-owned-foreground-routes-and-native-recovery.md) records the boundary.
 
 ## Repeat the model-free foreground control
 
@@ -124,7 +135,7 @@ The internal RunnerGitStages handler now binds an exact root request/plan/unit/s
 
 A fresh handler observes the same resource without another Git invocation, including a known closed workspace while paused. Missing/corrupt bindings stay unknown. Fresh stop requests address only the original private operation marker, even after revocation. Actual applied/closed Git effects establish no application QA, delegated acceptance or endpoint authority. [ADR-0119](../decisions/0119-runner-owned-git-stage-bindings.md) records the distinction.
 
-The model-free runner evaluation additionally drives two actual Git topics and their committed predecessor through the engine. All other semantic stages remain explicitly simulated; the resulting route stays paused without a certified endpoint. Fixed native model admission, full semantic host composition and public run/reconcile commands remain implementation work.
+The model-free runner evaluation additionally drives two actual Git topics and their committed predecessor through the engine. All other semantic stages remain explicitly simulated; the resulting route stays paused without a certified endpoint. Fixed native model admission and full semantic host composition need trusted runtime proof (P6-27); the public run/reconcile commands stop such routes before dispatch.
 
 ## Approve a definition before reserving its revision
 

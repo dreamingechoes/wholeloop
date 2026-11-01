@@ -8,7 +8,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ## Expanded 1.0 acceptance boundary
 
-[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 59 complete and 29 open (14 new implementation tasks, one implemented task awaiting Linux-host acceptance, plus the fourteen original open tasks).
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 61 complete and 27 open (13 new implementation tasks, plus the fourteen original open tasks).
 
 - [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
 - [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
@@ -23,6 +23,13 @@ OpenCode V1/V2 compatibility now has separate deterministic renderers and native
 Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 each fail with five invalid responses and one accepted response; the repository is unchanged. Bounded diagnostics establish missing envelope identities in those five JSON objects. ADR-0091 adds an exact native generation schema, preserving strict host validation. Preserve both failed rounds. The new compiled CLI gate-35be1f516f42cb8c on core 9ea3a298 now passes all six workers in actual Codex 0.163.0, with no missing coverage or repository edits. That fulfills P5-03's one-real-run criterion together with stubbed three-engine verdict/quorum parity; earlier failures and wider native checks remain unchanged.
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
+
+## Public runner checks (2026-11-01)
+
+P6-10 is complete on automated synthetic/reference-transport evidence: the compiled `wl delivery run` and `wl delivery reconcile` lifecycle, owned process-group cancellation and interactive-tool canaries pass on the Linux x64 VM. That evidence certifies neither a native client nor a hosted service.
+
+- [ ] A bound reference client passes its trusted runtime proof and runs a public route end to end (P6-27).
+- [ ] A hosted endpoint (PR, CI or merge) is reached by a public run (P6-20–P6-24 hosted trials).
 
 ## Delegated machine decision checks (2026-10-25)
 

@@ -381,6 +381,8 @@
     "schema:wholeloop/delegated-decision-request@1": "c4be317c0dfbbc0d9c66f4f0e53143b545fc313d2c39a39f4684556d9c4998f7",
     "schema:wholeloop/delegated-decision-rubric@1": "a2b0dfc98e37e63f877b4e79be0aef0c521f170f7aebc0319c981ad7237b5723",
     "output:wholeloop/delivery-runner-status@1": "ef9a3724a8f4ccb6d6ba23a7f7722bdd3b674da24e2cd8f4e38f2c6b738c3a04",
+    "output:wholeloop/delivery-runner-run@1": "30490b1bf4e4fb8a8a9ff415840147b16648badbcdfefbc1a358fcc9d14f6a49",
+    "output:wholeloop/delivery-runner-reconcile@1": "df779e088750b0995529956989aec264c6b5765a55e57be345445f99a1dc62d3",
     "output:wholeloop/delivery-runner-schema@1": "1dbc8650486ef28ab089db29581b2f343640f817500e362a5530311b8cd7983a",
     "schema:wholeloop/delivery-runner-event@1": "3278242f0baa75cd86ae3d5d84a28c782f2dd169cf11b61812033d5851f1ba1e",
     "schema:wholeloop/delivery-runner@1": "7e63a6c2fadc587fdcb19bf3f237f56705589468a338a001224bbb90e059aa86",

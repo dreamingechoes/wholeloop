@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-09, P6-11–P6-19, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-19, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 60 complete, fourteen original open tasks and 14 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 61 complete, fourteen original open tasks and 13 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -249,7 +249,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 ## P6-10 · Local delivery runner and controls
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P6-06, P6-07, P6-09, P6-34
+**Status:** ✅ · **Size:** M · **Depends on:** P6-06, P6-07, P6-09, P6-34
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -265,11 +265,11 @@ Root integration now executes pinned CLI/API, isolated-browser and private-evalu
 
 The internal environment backend can also capture original parent bounds across preflight, effect/resource admission and setup calls while keeping service lifetime separate. A distinct original runner preparation phase now owns preflight reads before a resource exists and retains later registered mutation owners against the captured request/candidate identity. Its producer recovers the exact original applied ready input through consumed budgeted artifact bytes and native outcomes, including after retirement, with historical readiness and no acceptance. Complete-route selection still requires composition. Recovery preserves original input/receipt bytes, native owners, deadlines and private cancellation nonces. Lost consumed bindings, stale candidates, unsupported capabilities and partial evidence cannot buy another execution or establish completion. Metadata inspection remains separate from live dispatch authority. Synthetic/reference transport evidence does not establish authenticated-model, independent Linux application-host or hosted acceptance.
 
-**Remaining technical work:**
+**Completed technical work:**
 
 The provisioning backend also retains a private copy of the original request across asynchronous preflight, preventing caller-owned substitutions from changing later effect/resource identity. This correction does not close root preparation or any item below. Delivery journal reads also reuse one validated replay for identical current segment bytes, so the composed product-environment route completes inside its unchanged original window; this is a cost correction, not new capability.
 
-- Public foreground run and reconcile commands over a fixed public host whose identity binds the trusted native bindings document (ADR-0180), working with the empty default and with explicit bindings.
+- Public foreground run and reconcile commands over a fixed public host whose identity binds the trusted native bindings document (ADR-0180, ADR-0183), working with the empty default and with explicit bindings.
 
 Owner decisions of 2026-11-01 settle the other items. Envelope-derived supervised plans and supervised definition approvals execute only under a fresh exact-plan grant (ADR-0182). Continuation after integration or acceptance repairs belongs to P6-29. Report-level research belongs to P6-33 (ADR-0179) and hosted endpoints to P6-20–P6-24; neither is a P6-10 closure condition.
 
@@ -277,13 +277,15 @@ Owner decisions of 2026-11-01 settle the other items. Envelope-derived supervise
 
 **Acceptance criteria:**
 
-- [ ] No execution starts without authority; existing supervised entrypoints remain unchanged.
-- [ ] Pause/stop affect owned work only and prevent later unauthorized effects.
-- [ ] None-policy routes emit no human prompt and terminate honestly on unsatisfied prerequisites.
+- [x] No execution starts without authority; existing supervised entrypoints remain unchanged.
+- [x] Pause/stop affect owned work only and prevent later unauthorized effects.
+- [x] None-policy routes emit no human prompt and terminate honestly on unsatisfied prerequisites.
 
 **Tests** — RUN-01–RUN-09 and DEC-01–DEC-05: compiled CLI lifecycle, process-group cancellation and interactive-tool canaries.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/02-durable-runner.md); getting-started, utilities, core CLI, troubleshooting.
+
+**Evidence** — The compiled `wl delivery run` and `wl delivery reconcile` commands drive the real engine in an owned foreground controller child. With the empty bindings default a none-policy route ends blocked and a supervised one paused, before dispatch and without asking anyone; with explicit bindings the route still stops, because no trusted runtime observer exists. Interactive-tool canaries on `PATH` record that no native client was launched, nothing waited for input and the run returned promptly. A different bindings document and a revoked grant are refused before any claim. Public stop and `reconcile --cancel` cancel only the owned waiting controller group: an unrelated process survives, and a later run is refused with no stage issued. This is synthetic/reference-transport evidence. It certifies neither a native client nor a hosted service; those checks stay open in manual verification and P6-27.
 
 ---
 

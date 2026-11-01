@@ -35,7 +35,8 @@ export const NATIVE_BINDINGS_DEFAULT: Readonly<NativeBindings> = Object.freeze({
   bindings: [],
 })
 
-function valid(value: unknown): value is NativeBindings {
+/** Closed shape: any unknown field invalidates the whole document. */
+export function validNativeBindings(value: unknown): value is NativeBindings {
   if (typeof value !== 'object' || value === null) return false
   const document = value as Record<string, unknown>
   if (
@@ -73,7 +74,7 @@ export function nativeBinding(
   bindings: unknown,
   request: { target: string; version: string; model: string; role: WorkerRole },
 ): NativeBindingDecision {
-  if (!valid(bindings)) return { bound: false, reason: 'invalid-bindings' }
+  if (!validNativeBindings(bindings)) return { bound: false, reason: 'invalid-bindings' }
   const pinned = REFERENCE_NATIVE_VERSIONS[request.target as keyof typeof REFERENCE_NATIVE_VERSIONS]
   if (
     !(NATIVE_DELIVERY_TARGETS as readonly string[]).includes(request.target) ||

@@ -2,6 +2,8 @@
 
 ⛔ `delivery-fixed-original-domain-dispatch`: dispatch only through installed fixed domain classes from the same store and resolve the kind from the original issued invocation and immutable plan revision. Copy registrations; reject altered contexts, foreign identities, structural hosts and unsupported research/publication without fallback. Keep original parent bounds and private cancellation after revocation. Registration coverage grants no native runtime availability, human approval, public complete-route execution or endpoint evidence by itself.
 
+⛔ `delivery-public-runner-host`: public run and reconcile use one fixed host whose identity binds the exact native bindings document. Refuse a different document, revoked grant or stopped run before any claim; compose no native adapter without trusted runtime proof, and end routes needing native clients in preflight without a prompt. Cancel only owned groups through private nonces.
+
 ⛔ `delivery-research-dispatch-boundary`: fixed dispatch sends only a unit's research stage to the fixed worker adapter. Never register or run report-level research without the research host, and refuse routes whose milestones hold research work before any dispatch; never drop research criteria to finish.
 
 ⛔ `delivery-recorded-human-decisions`: under permitted intervention, opted-in build-plan and acceptance stages publish the exact subject a person must judge and wait for input, and the plan stage passes only an exact-plan grant; only the operator command records the person's decision for that subject, never a worker, profile or delegated host. None-policy runs never publish or record one. Pass only on an accepted, unchanged subject; a reject stays blocked.

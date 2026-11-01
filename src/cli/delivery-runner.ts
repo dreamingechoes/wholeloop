@@ -1,6 +1,15 @@
 import { resolve } from 'node:path'
+import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'
+import { NATIVE_BINDINGS_DEFAULT, validNativeBindings } from '../delivery/native-bindings.js'
+import { DeliveryRunner } from '../runner/engine.js'
+import { OwnedForegroundRunner, receiveOwnedForeground } from '../runner/foreground.js'
 import { type RunnerHumanDecision, RunnerHumanDecisions } from '../runner/human-decisions.js'
+import {
+  RunnerPublicHost,
+  retainedPublicBindings,
+  retainPublicBindings,
+} from '../runner/public-host.js'
 import { DeliveryRunnerError } from '../runner/route.js'
 import event from '../runner/schemas/event-v1.json' with { type: 'json' }
 import facet from '../runner/schemas/facet-v1.json' with { type: 'json' }
@@ -102,4 +111,108 @@ export function deliveryRunnerCommand(
       EXIT.precondition,
     )
   }
+}
+
+/** The installed core is the only controller; bindings choose clients and never containment. */
+export async function deliveryRunnerAsyncCommand(
+  command: string,
+  { options }: ReturnType<typeof parseArguments>,
+  root: string,
+  json: boolean,
+  io: Io,
+  core: string,
+) {
+  const digest = options['--digest'],
+    file = options['--bindings'],
+    boundary = options['--root']
+  if (typeof digest !== 'string') throw new CliError('Provide --digest <sha256>', EXIT.input)
+  let bindings: unknown = NATIVE_BINDINGS_DEFAULT
+  if (typeof file === 'string')
+    try {
+      bindings = JSON.parse(
+        readSourceFile(typeof boundary === 'string' ? resolve(root, boundary) : root, file, 65536),
+      )
+    } catch {
+      throw new CliError('Provide a readable --bindings document', EXIT.input)
+    }
+  if (!validNativeBindings(bindings))
+    throw new CliError('Provide a valid wholeloop/native-bindings@1 document', EXIT.input)
+  try {
+    const store = new RunnerStore(
+        typeof options['--store'] === 'string' ? resolve(root, options['--store']) : undefined,
+      ),
+      identity = retainPublicBindings(store, bindings),
+      request = store.get(digest)
+    if (contractDigest(request.host) !== contractDigest(identity))
+      throw new DeliveryRunnerError('runner-host-binding')
+    const host = new RunnerPublicHost(store, bindings)
+    if (command === 'delivery reconcile') {
+      const { recoveryProblems, ...status } = await new DeliveryRunner(store).reconcile(
+        digest,
+        host,
+        { cancel: options['--cancel'] === true },
+      )
+      io.out(
+        JSON.stringify(
+          { schema: 'wholeloop/delivery-runner-reconcile@1', status, recoveryProblems },
+          null,
+          json ? undefined : 2,
+        ),
+      )
+      return recoveryProblems.length ? EXIT.precondition : EXIT.ok
+    }
+    // Read-only and deterministic: the controller child evaluates it again before dispatch.
+    let preflight: Awaited<ReturnType<RunnerPublicHost['preflight']>> | null = null
+    try {
+      preflight = await host.preflight(
+        request,
+        store.basis(request).plan,
+        store.inspect(digest).route,
+        new AbortController().signal,
+      )
+    } catch {
+      preflight = null
+    }
+    const abort = new AbortController(),
+      relay = () => abort.abort()
+    process.once('SIGINT', relay)
+    process.once('SIGTERM', relay)
+    try {
+      const { status } = await new OwnedForegroundRunner(store).run(digest, core, {
+        signal: abort.signal,
+      })
+      io.out(
+        JSON.stringify(
+          { schema: 'wholeloop/delivery-runner-run@1', status, preflight },
+          null,
+          json ? undefined : 2,
+        ),
+      )
+      return status.state === 'completed' ? EXIT.ok : EXIT.precondition
+    } finally {
+      process.off('SIGINT', relay)
+      process.off('SIGTERM', relay)
+    }
+  } catch (error) {
+    if (error instanceof CliError) throw error
+    throw new CliError(
+      `Delivery runner unavailable${error instanceof DeliveryRunnerError ? `: ${error.problem}` : ''}; retain original work and inspect the external store; contents omitted`,
+      EXIT.precondition,
+    )
+  }
+}
+
+/** Private controller mode: one bounded input, consumed once inside its owned group. */
+export async function deliveryForegroundChild(core: string) {
+  let text = ''
+  for await (const chunk of process.stdin) {
+    text += chunk
+    if (Buffer.byteLength(text) > 65536) return EXIT.input
+  }
+  const value = JSON.parse(text) as { store?: unknown },
+    status = await receiveOwnedForeground(value, core, (request) => {
+      const store = new RunnerStore(String(value.store))
+      return new RunnerPublicHost(store, retainedPublicBindings(store, request.host))
+    })
+  return status.state === 'completed' ? EXIT.ok : EXIT.precondition
 }
