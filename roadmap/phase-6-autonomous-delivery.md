@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-19, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-19, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 61 complete, fourteen original open tasks and 13 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 61 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 12 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -801,7 +801,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-33 · Complete unattended research host
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-10, P6-12, P6-34, P2-01
+**Status:** ⏸️ · **Size:** L · **Depends on:** P6-10, P6-12, P6-34, P2-01
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -811,13 +811,19 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] None-policy research needs no later human questions for angle selection, ambiguity resolution, challenge or final report acceptance.
-- [ ] Contradictory/missing sources remain cited conflicts/unknowns; load-bearing findings cannot be discarded to finish.
-- [ ] Research has no implementation/merge authority and remote sharing remains separately granted.
+- [x] None-policy research needs no later human questions for angle selection, ambiguity resolution, challenge or final report acceptance.
+- [x] Contradictory/missing sources remain cited conflicts/unknowns; load-bearing findings cannot be discarded to finish.
+- [x] Research has no implementation/merge authority and remote sharing remains separately granted.
 
 **Tests** — RSR-01–RSR-06 and EVAL-10–EVAL-11: hostile/conflicting source fixtures, checkpoint recovery and real reference-client research trials.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/10-unattended-decisions-and-research.md); research skill/protocol, providers, runner, core CLI.
+
+**Completed technical work** — The fixed research host `RunnerResearchStages` runs the report-level `research` stage and the research route's local `handoff` ([ADR-0184](../docs/decisions/0184-unattended-research-host.md)). It pins one research plan of at most eight angles, queries available angles with at most two repairs, examines every load-bearing claim with separate verifiers and counts only host-observed valid results. Source, claim and byte budgets, and a 30-minute wall deadline, apply. The brief is derived from stored entries alone and captured locally; the delegated `research-sources` decision judges its exact bytes. `NativeResearchWorkers` runs each source and examination as a read-only native purpose inside the stage's owned process scope. Two narrower choices are recorded in the ADR: supervised report research is refused, and research claims inside implementation milestones stay refused because integration assembles only code-bearing work.
+
+**Evidence** — Engine-driven cases on the synthetic transport complete a none-policy research route with zero prompts, including one where every source, refuter and decision is an owned synthetic native process. Further cases keep contradictions, identical excerpts and open questions under three uncertainty policies. Crashed, fixture and evidence-free sources and crashed refuters never become observations. Over-budget results are refused rather than trimmed. Cancellation and reconcile keep the stored sources and question. Hostile source text has no file, merge or publication effect. A rejected decision, a host without the adapter and a supervised route stop before completion.
+
+**Awaiting** — Real reference-client research trials (RSR-01 with a native client, EVAL-10 and EVAL-11 on the reference clients) need installed, signed-in native clients and real source providers, and the trusted runtime observers that P6-27 provides. Synthetic evidence does not certify a native client, a source provider or a model.
 
 ---
 

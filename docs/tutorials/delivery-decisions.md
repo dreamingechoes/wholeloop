@@ -3,7 +3,7 @@
 > **TL;DR** — An original private grant can delegate a named decision under a pinned purpose-specific rubric. A trusted host records the exact evidence, a machine judgment and independent challenge. None-policy limitations block without a human prompt; fixture judgments grant no actual execution authority.
 
 > [!NOTE]
-> **Status: ✅ implemented.** P6-34 policy, private rubric pins, decision records, current-plan readers and no-prompt fallbacks pass complete macOS/Linux checks. Full native delivery/research orchestration remains P6-10/P6-33. Policy preflight and synthetic host controls are not native-model certification. See [ADR-0112](../decisions/0112-private-delegation-and-independent-machine-decisions.md).
+> **Status: ✅ implemented.** P6-34 policy, private rubric pins, decision records, current-plan readers and no-prompt fallbacks pass complete macOS/Linux checks. The research host runs the research route on the synthetic transport; real native delivery and research trials remain open in P6-27 and P6-33. Policy preflight and synthetic host controls are not native-model certification. See [ADR-0112](../decisions/0112-private-delegation-and-independent-machine-decisions.md).
 
 ## Independent choices
 

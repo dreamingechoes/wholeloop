@@ -94,7 +94,14 @@ export function researchReport(
 
 export function researchBrief(events: readonly StateEvent[], subject: string, run: string): string {
   const { plan, results, votes } = researchState(events, subject, run)
-  const report = researchReport(plan, results, votes)
+  return renderResearchBrief(plan, researchReport(plan, results, votes))
+}
+
+/** Pure rendering of a synthesized report; the CLI workflow and the runner share it. */
+export function renderResearchBrief(
+  plan: ResearchPlan,
+  report: ReturnType<typeof researchReport>,
+): string {
   const renderClaim = (claim: (typeof report.claims)[number]) =>
     [
       `### ${claim.id}`,

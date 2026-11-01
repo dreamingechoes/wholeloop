@@ -47,6 +47,8 @@ export class RunnerDecisionStages {
     readonly store: RunnerStore,
     readonly identity: RunnerRequest['host'],
     readonly artifact?: { ref: string; sha256: string },
+    /** Research only: the exact owned source calls that precede its decision. */
+    readonly prefix?: readonly { invocation: string; evidence: string }[],
   ) {}
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation))
@@ -277,9 +279,10 @@ export class RunnerDecisionStages {
     const consumed = `delivery/runner-decision-claims/${record.invocation}.txt`
     if (existsSync(this.store.files.path(consumed)))
       throw new DeliveryRunnerError('decision-stage-missing-binding')
+    const research = context.stage.kind === 'research' && !context.stage.unit && !!this.prefix
     if (
-      record.runtime ||
-      new RunnerNativeScope(this.store.files, record.invocation).calls().length
+      !research &&
+      (record.runtime || new RunnerNativeScope(this.store.files, record.invocation).calls().length)
     ) {
       if (!['build-plan', 'definition'].includes(context.stage.kind))
         throw new DeliveryRunnerError('decision-stage-missing-binding')
@@ -302,6 +305,19 @@ export class RunnerDecisionStages {
         throw new DeliveryRunnerError('decision-stage-missing-binding')
       // This fences invocation only, never approval. Losing the descriptor must
       // not buy another decision key, even before the first native group starts.
+      // Research sources run in the same owned stage before their decision; only
+      // that exact closed prefix may precede it, never a foreign or later call.
+      if (research) {
+        const current = new RunnerNativeScope(this.store.files, record.invocation)
+          .inspect()
+          .map((call) => ({ invocation: call.invocation, evidence: call.observed.evidence }))
+        if (
+          record.runtime?.backend !== 'owned-core' ||
+          record.runtime.instance !== record.invocation ||
+          contractDigest(current) !== contractDigest(this.prefix)
+        )
+          throw new DeliveryRunnerError('decision-stage-production-changed')
+      }
       if (binding.production) {
         const current = new RunnerNativeScope(this.store.files, record.invocation)
           .inspect()

@@ -8,7 +8,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ## Expanded 1.0 acceptance boundary
 
-[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 61 complete and 27 open (13 new implementation tasks, plus the fourteen original open tasks).
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 61 complete and 27 open (12 new implementation tasks, one implemented tasks awaiting native or hosted acceptance, plus the fourteen original open tasks).
 
 - [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
 - [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
@@ -30,6 +30,13 @@ P6-10 is complete on automated synthetic/reference-transport evidence: the compi
 
 - [ ] A bound reference client passes its trusted runtime proof and runs a public route end to end (P6-27).
 - [ ] A hosted endpoint (PR, CI or merge) is reached by a public run (P6-20–P6-24 hosted trials).
+
+## Unattended research checks (2026-11-01)
+
+P6-33's research host completes a none-policy research route on the synthetic native transport: plan, sources, independent refuters, stored brief and delegated source decision, with no prompt. That evidence certifies no native client, real source provider or model.
+
+- [ ] A reference client completes a none-policy research route against real sources with zero interactive tool events (RSR-01, EVAL-10).
+- [ ] A reference-client research route with an unsatisfiable mandatory prerequisite returns a terminal blocked receipt within its deadline (EVAL-11).
 
 ## Delegated machine decision checks (2026-10-25)
 

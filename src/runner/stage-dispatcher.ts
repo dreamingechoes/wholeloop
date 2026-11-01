@@ -13,6 +13,7 @@ import { RunnerHandoffStages } from './handoff-stages.js'
 import { RunnerIntegrationStages } from './integration-stages.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments } from './product-environments.js'
+import { RunnerResearchStages } from './research-stages.js'
 import { RunnerReviewStages } from './review-stages.js'
 import { DeliveryRunnerError, type RunnerStage, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
@@ -31,6 +32,7 @@ export interface RunnerStageAdapters {
   integration: RunnerIntegrationStages
   acceptance: RunnerAcceptanceStages
   handoff: RunnerHandoffStages
+  research: RunnerResearchStages
 }
 const CLASSES = {
   definition: RunnerDefinitionStages,
@@ -44,6 +46,7 @@ const CLASSES = {
   integration: RunnerIntegrationStages,
   acceptance: RunnerAcceptanceStages,
   handoff: RunnerHandoffStages,
+  research: RunnerResearchStages,
 } as const
 
 /** Installed controller code registers domain adapters; source text never supplies a host. */
@@ -77,18 +80,22 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     )
       throw new DeliveryRunnerError('dispatcher-fixed-product-environments-required')
   }
-  private adapter(stage: Pick<RunnerStage, 'kind' | 'unit'>) {
+  private adapter(stage: Pick<RunnerStage, 'kind' | 'unit'>, plan: Readonly<DeliveryPlan>) {
     if (stage.kind === 'workspace' || stage.kind === 'commit') return this.adapters.git
     // A unit's research claim is worker production like implementation. The
-    // report-level research route belongs to the research host (P6-33).
-    if (stage.kind === 'research') return stage.unit ? this.adapters.implementation : undefined
+    // report-level research route, including its local report handoff, belongs
+    // to the research host.
+    if (stage.kind === 'research')
+      return stage.unit ? this.adapters.implementation : this.adapters.research
+    if (stage.kind === 'handoff' && plan.policy.endpoint === 'research-report')
+      return this.adapters.research
     if (stage.kind === 'publication') return undefined
     return this.adapters[stage.kind]
   }
   /** Registration coverage is not native/runtime availability or complete-route acceptance. */
   coverage(plan: DeliveryPlan) {
     const unsupported = runnerRoute(plan)
-      .filter((stage) => !this.adapter(stage))
+      .filter((stage) => !this.adapter(stage, plan))
       .map((stage) => stage.id)
     return { complete: unsupported.length === 0, unsupported }
   }
@@ -118,13 +125,17 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     } catch {
       return unavailable('dispatcher-preflight-original-route')
     }
-    // Report research and research claims as milestone evidence belong to the
-    // research host (P6-33); integration assembles only code-bearing work.
-    if (route.some((stage) => stage.kind === 'research' && !stage.unit))
+    if (route.some((stage) => stage.kind === 'research' && !stage.unit) && !this.adapters.research)
       return unavailable('dispatcher-research-host-required')
+    // Integration assembles only code-bearing work; research claims are not
+    // milestone evidence until integration can carry non-code results.
     if (
-      plan.milestones.some((milestone) =>
-        milestone.work.some((id) => plan.work.find((work) => work.id === id)?.role === 'research'),
+      route.some(
+        (stage) =>
+          stage.kind === 'integration' &&
+          plan.milestones
+            .find((milestone) => milestone.id === stage.milestone)
+            ?.work.some((id) => plan.work.find((work) => work.id === id)?.role === 'research'),
       )
     )
       return unavailable('dispatcher-research-milestone-unsupported')
@@ -143,24 +154,27 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     // People decide through recorded human decisions, never an interactive prompt.
     // Supervised definition approvals have no recorded-decision composition yet.
     if (plan.policy.intervention !== 'none')
-      return route.some((stage) => stage.kind === 'definition')
-        ? unavailable('dispatcher-supervised-definition-unavailable')
-        : // Envelope effects accept derived plans only through machine decisions.
-          this.store.lifecycle.authority.inspect(request.grant).grant.basis.kind !== 'plan'
-          ? unavailable('dispatcher-supervised-envelope-unavailable')
-          : route.some(
-                (stage) =>
-                  (stage.kind === 'plan' && !this.adapters.plan?.options.humans) ||
-                  (stage.kind === 'build-plan' && !this.adapters['build-plan']?.options.humans) ||
-                  (stage.kind === 'acceptance' && !this.adapters.acceptance?.options.humans),
-              )
-            ? unavailable('dispatcher-human-decisions-required')
-            : {
-                available: true,
-                interactive: 'disabled' as const,
-                humanRequired: true,
-                reason: 'dispatcher-recorded-human-decisions',
-              }
+      return route.some((stage) => stage.kind === 'research' && !stage.unit)
+        ? // Report research has no recorded-human source decision; it stays unattended-only.
+          unavailable('dispatcher-supervised-research-unavailable')
+        : route.some((stage) => stage.kind === 'definition')
+          ? unavailable('dispatcher-supervised-definition-unavailable')
+          : // Envelope effects accept derived plans only through machine decisions.
+            this.store.lifecycle.authority.inspect(request.grant).grant.basis.kind !== 'plan'
+            ? unavailable('dispatcher-supervised-envelope-unavailable')
+            : route.some(
+                  (stage) =>
+                    (stage.kind === 'plan' && !this.adapters.plan?.options.humans) ||
+                    (stage.kind === 'build-plan' && !this.adapters['build-plan']?.options.humans) ||
+                    (stage.kind === 'acceptance' && !this.adapters.acceptance?.options.humans),
+                )
+              ? unavailable('dispatcher-human-decisions-required')
+              : {
+                  available: true,
+                  interactive: 'disabled' as const,
+                  humanRequired: true,
+                  reason: 'dispatcher-recorded-human-decisions',
+                }
     return {
       available: true,
       interactive: 'disabled' as const,
@@ -187,7 +201,7 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
       throw new DeliveryRunnerError('dispatcher-original-stage-required')
     const basis = this.store.planning.getPlan(request.run, revision),
       stage = runnerRoute(basis.plan).find((stage) => stage.id === record.id),
-      adapter = stage && this.adapter(stage)
+      adapter = stage && this.adapter(stage, basis.plan)
     if (basis.digest !== record.basis || !stage || !adapter)
       throw new DeliveryRunnerError('dispatcher-unsupported-stage')
     return { stage, adapter }
@@ -256,7 +270,14 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     await adapter.stop(request, record, signal)
   }
   async endpoint(request: Readonly<RunnerRequest>, plan: DeliveryPlan, signal: AbortSignal) {
-    if (contractDigest(request.host) !== contractDigest(this.identity) || !this.adapters.handoff)
+    if (contractDigest(request.host) !== contractDigest(this.identity))
+      throw new DeliveryRunnerError('dispatcher-local-endpoint-unavailable')
+    if (plan.policy.endpoint === 'research-report') {
+      if (!this.adapters.research)
+        throw new DeliveryRunnerError('dispatcher-research-endpoint-unavailable')
+      return this.adapters.research.endpoint(request, plan, signal)
+    }
+    if (!this.adapters.handoff)
       throw new DeliveryRunnerError('dispatcher-local-endpoint-unavailable')
     return this.adapters.handoff.endpoint(request, plan, signal)
   }
