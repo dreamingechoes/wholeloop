@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-01 · P6-21 · Revision-bound CI observations — task complete
+
+- Add the `wholeloop/delivery-ci@1` observation with an appended compatibility fingerprint, the pure `ciVerdict`, the finite `RunnerCiObserver` and the `GithubCliCiHost` read path (ADR-0186). A required check passes only from its trusted issuer at the exact candidate, by its latest attempt, in a complete observation with observed protection. Pending, cancelled, skipped, neutral, missing, stale, spoofed and partial results and an empty required set never become success, and unreadable protection or reviews stay unknown. Waits poll every 15 seconds for at most 30 minutes inside the run deadline, end as settled, deadline or cancelled, never prompt, and retain each observation content-addressed in the run's store.
+- The validator has no nullable unions, so absent issuers, conclusions, strictness and review counts are optional fields rather than nulls.
+- Twenty-six cases tick the three criteria: a verdict table, fake-clock waits ending at the run deadline and at the 30-minute bound, retried unreadable reads, settled filtered protection, a refused other candidate, cancellation, and stub-executor pagination, issuer, attempt, approval, partial-set and denied-protection reads. Composing the wait into merge routes belongs to P6-23 and P6-24. No hosted code host was used; an unchecked manual-verification row keeps the GitHub read trial open.
+- P6-21 is ✅. The roadmap is now 63/88 overall: 23 expanded tasks complete, P6-33 awaiting native acceptance and ten pending. The first complete check stopped on Biome formatting of the new schema file; after the safe fix the fingerprint was unchanged. Markdown lint passes on 415 files. The complete check passes 3624 tests in 193 files, lint 1036, types, build, smoke, offline packaging on archive 8c6483376cd3a169952e229588ca13621fa0b72fc153fd86653a6eb71839c14c, docs 416, generators, harness 151 and Mermaid 36 in 537 seconds. Next: P6-22.
+
+---
+
 ## 2026-11-01 · P6-20 · Authorized pull request publication — task complete
 
 - Add the fixed publication adapter `RunnerPublicationStages` for the `publication` stage and the `to-pr` handoff, registered with the dispatcher (ADR-0185). It reads the current accepted product through the local handoff's proof, so delegated machine acceptance and a person's recorded acceptance both qualify, and the PR text names which one it is; machine acceptance is stated as not human testing and no `pr.tested` event is written. Per repository it issues `git.push`, `pr.create` and, only when granted, `pr.ready` through the existing effect ledger, reading the remote completely before each step. A foreign remote tip, an unowned open PR, duplicate owned PRs or an owned PR at another head stop publication without writing; lost responses are reconciled by reading. The endpoint is `ready-pr` or `draft-pr`, and `to-merge` routes are refused before dispatch.

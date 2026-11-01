@@ -169,7 +169,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 62 complete and 26 open: P6-01–P6-20, P6-26 and P6-34 are complete; P6-33 is implemented and await native or hosted acceptance, and 11 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 63 complete and 25 open: P6-01–P6-21, P6-26 and P6-34 are complete; P6-33 is implemented and await native or hosted acceptance, and 10 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Owner involvement |
 | --- | --- | --- |

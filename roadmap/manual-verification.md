@@ -8,7 +8,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 ## Expanded 1.0 acceptance boundary
 
-[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 62 complete and 26 open (11 new implementation tasks, one implemented tasks awaiting native or hosted acceptance, plus the fourteen original open tasks).
+[Phase 6](./phase-6-autonomous-delivery.md) adds 34 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the expanded roadmap now has 88 tasks, 63 complete and 25 open (10 new implementation tasks, one implemented tasks awaiting native or hosted acceptance, plus the fourteen original open tasks).
 
 - [x] Review and accept all new tasks for 1.0 and authorize sequential implementation (owner, 2026-10-24).
 - [ ] After implementation, observe actual no-intervention research/implementation, effective runtime containment and behavioral/integration proof at the specified reference-client/platform scope.
@@ -33,9 +33,10 @@ P6-10 is complete on automated synthetic/reference-transport evidence: the compi
 
 ## Pull request publication checks (2026-11-01)
 
-P6-20 publishes accepted candidates as owned PRs on a stub code host; the GitHub CLI host is checked only with a stub executor. That evidence certifies no hosted code host.
+P6-20 publishes accepted candidates as owned PRs on a stub code host, and P6-21 evaluates revision-bound CI observations; both GitHub CLI hosts are checked only with a stub executor. That evidence certifies no hosted code host.
 
 - [ ] On a disposable GitHub repository, a public `to-pr` run pushes without force, opens one owned draft, readies it when granted, and refuses a competing writer and a foreign PR without overwriting (REL-01, REL-06).
+- [ ] On the same repository, CI reads paginate real check runs, keep a same-name check from another app as `wrong-issuer` and report protection unknown for a token that cannot read it (REL-02, REL-04).
 
 ## Unattended research checks (2026-11-01)
 

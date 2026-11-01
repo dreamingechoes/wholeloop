@@ -196,6 +196,7 @@
 | [0183](./0183-public-foreground-runner-host.md) | Public foreground runner host | Accepted | 2026-11-01 |
 | [0184](./0184-unattended-research-host.md) | Unattended research host | Accepted | 2026-11-01 |
 | [0185](./0185-authorized-pr-publication.md) | Authorized pull request publication | Accepted | 2026-11-01 |
+| [0186](./0186-revision-bound-ci-observations.md) | Revision-bound CI observations | Accepted | 2026-11-01 |
 
 ## Lifecycle
 

@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-20, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 62 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 11 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 63 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 10 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -539,7 +539,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-21 · Revision-bound CI and protection observations
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-20
+**Status:** ✅ · **Size:** M · **Depends on:** P6-20
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -549,13 +549,15 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] Pending, cancelled, skipped, wrong-head, wrong-issuer and partial sets never satisfy required success.
-- [ ] Missing protection/review data remains unknown, including permission-filtered observations.
-- [ ] None-policy external waits terminate within the granted deadline without prompting a person.
+- [x] Pending, cancelled, skipped, wrong-head, wrong-issuer and partial sets never satisfy required success.
+- [x] Missing protection/review data remains unknown, including permission-filtered observations.
+- [x] None-policy external waits terminate within the granted deadline without prompting a person.
 
 **Tests** — REL-02 and REL-04: pagination, spoofed-context, moving-revision, denial and fake-clock CI fixtures.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/06-publication-ci-and-merge.md); code-host contracts, CI observation, troubleshooting.
+
+**Evidence** — The `wholeloop/delivery-ci@1` observation, the pure `ciVerdict`, the finite `RunnerCiObserver` and the `GithubCliCiHost` read path ([ADR-0186](../docs/decisions/0186-revision-bound-ci-observations.md)) are covered by table-driven verdict cases, fake-clock waits that end at the run deadline or the 30-minute bound without prompting, and stub-executor cases for pagination, spoofed issuers, moving revisions and denied protection. Composing the wait into merge routes belongs to P6-23 and P6-24. No hosted code host was used.
 
 ---
 

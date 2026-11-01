@@ -183,5 +183,9 @@ A different subject, a none-policy run or a conflicting second decision refuses.
 
 A `to-pr` route continues after acceptance with a publication stage and its handoff. Grant `git.push` and `pr.create`, and `pr.ready` only if the PR may leave draft. For each repository the adapter reads the remote, pushes the accepted head to its owned `wl/` topic without force, opens one draft whose body carries the run's marker and readies it when granted. The PR text says whether a person's recorded acceptance or delegated machine acceptance stands behind it; machine acceptance is never called human testing. A different remote tip, a PR it does not own, duplicate owned PRs or a changed head stop publication without writing, and a lost response is resolved by reading the remote. The endpoint is `ready-pr` or `draft-pr`; `to-merge` routes stay refused. Run npm run eval:runner-assembly-readiness -- --publication --retire-success for the Docker composition through a stub code host. See [ADR-0185](../decisions/0185-authorized-pr-publication.md).
 
+## Observe CI at the exact candidate
+
+CI observations are revision-bound: a required check counts only from its trusted issuer, at the exact candidate, by its latest attempt. Pending, cancelled, skipped, neutral, missing, stale and spoofed results never become success, and a partial page set, unreadable branch protection or an empty required set leaves the verdict unknown. Waiting polls every 15 seconds for at most 30 minutes inside the run deadline and never asks a person. Each observation is kept in the run's store as `wholeloop/delivery-ci@1`. See [ADR-0186](../decisions/0186-revision-bound-ci-observations.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

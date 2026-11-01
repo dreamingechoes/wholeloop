@@ -3,7 +3,7 @@
 > **TL;DR** — Publish the tested candidate under explicit authority, observe the actual PR/CI revision and repair within finite budgets. Conditional merge is an opt-in controller effect bound to current evidence and repository protections. A generic provider, green suite or unattended policy cannot enable it.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-20 publishes the accepted candidate as owned draft or ready PRs through the effect ledger, verified on a stub code host ([ADR-0185](../../../docs/decisions/0185-authorized-pr-publication.md)); hosted code-host semantics are unverified. CI observations, repair, eligibility and merge (P6-21–P6-24) remain design targets, and `to-merge` routes are refused. Current `open-pr` remains human-tested, draft-only and non-merging.
+> **Status: 🚧 partial.** P6-20 publishes the accepted candidate as owned draft or ready PRs through the effect ledger, verified on a stub code host ([ADR-0185](../../../docs/decisions/0185-authorized-pr-publication.md)); hosted code-host semantics are unverified. P6-21 adds revision-bound CI observations, a pure verdict and finite waits ([ADR-0186](../../../docs/decisions/0186-revision-bound-ci-observations.md)). Repair, eligibility and merge (P6-22–P6-24) remain design targets, and `to-merge` routes are refused. Current `open-pr` remains human-tested, draft-only and non-merging.
 
 ## Publication contract
 
