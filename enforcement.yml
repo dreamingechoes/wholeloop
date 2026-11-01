@@ -9,6 +9,8 @@ version: 1
 rules:
   - id: delivery-public-runner-host
     enforcers: [src/runner/public-host.ts#RunnerPublicHost, src/runner/public-host.ts#publicRunnerIdentity, src/runner/public-host.ts#publicNativeRoles, src/cli/delivery-runner.ts#deliveryRunnerAsyncCommand, src/cli/delivery-runner.ts#deliveryForegroundChild, test/unit/runner/public-runner.test.ts]
+  - id: delivery-merge-eligibility
+    enforcers: [src/runner/merge-eligibility.ts#mergeEligibility, src/runner/merge-eligibility.ts#pathMatches, src/runner/stage-dispatcher.ts#preflight, test/unit/runner/merge-eligibility.test.ts]
   - id: delivery-bounded-ci-repair
     enforcers: [src/runner/ci-repair.ts#classifyCiFailures, src/runner/ci-repair.ts#ciFeedback, src/runner/ci-repair.ts#ciRepairAdmission, src/runner/ci-repair.ts#ciRepairRequest, src/delivery/effect-events.ts#deliveryEffects, test/unit/runner/ci-repair.test.ts]
   - id: delivery-revision-bound-ci

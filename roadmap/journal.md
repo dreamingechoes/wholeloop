@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-01 · P6-23 · Conditional merge eligibility — task complete
+
+- Add the pure `mergeEligibility` evaluator returning `wholeloop/merge-eligibility@1` (ADR-0188): eligible only with an active `to-merge` grant naming `pr.ready`, `pr.merge`, the repository, target and method, a separate runtime allowance, current acceptance and gates, one open ready GitHub PR at the candidate, a passed revision-bound CI verdict with satisfied reviews, no conflict, undelivered dependency, stale base, sensitive path or forbidden request, strict server base checks and observations at most 60 seconds old. Gaps are unknown; the result expires 60 seconds after its oldest observation or at the grant's expiry. Only exact operator exceptions pass the denylist; merge queues are not inferred; other hosts report `unsupported-merge-host`.
+- Fifty table-driven cases tick the three criteria: the eligible baseline, 32 ineligible mutations (including green tests without a merge grant), 10 unknown mutations, exact path exceptions and the path matcher. No hosted code host was used.
+- P6-23 is ✅. The roadmap is now 64/88 overall: 24 expanded tasks complete, P6-33 awaiting native acceptance and nine pending, including P6-22 in progress. Markdown lint passes on 417 files. The complete check passes 3689 tests in 195 files, lint 1040, types, build, smoke, offline packaging on archive 5eacea2b0408650f9985ac6cb2639f52cbc54664da8ca30cd13d57d7cd2890d9, docs 418, generators, harness 151 and Mermaid 36 in 566 seconds. Next: P6-24.
+
+---
+
 ## 2026-11-01 · P6-22 · Bounded CI repair requests — in progress
 
 - Add pure failure classification, identified unadopted review feedback, the journal-derived push admission and typed, retained repair requests (ADR-0187). Only a trusted failure at the candidate is a code or test failure; `infrastructure` needs structured host evidence that no host supplies, so a guess never dismisses a failed check. Comments are never executed, and because no delegated decision covers adopting them, current feedback blocks the request. Issued pushes are counted from the journal against `ciPushes` (two by default), and the ledger already refuses a third with `ci-push-limit`.

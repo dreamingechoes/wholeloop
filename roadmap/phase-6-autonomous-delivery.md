@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 63 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 10 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 64 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 9 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -589,7 +589,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-23 · Conditional merge eligibility
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-20, P6-21, P6-19, P6-03
+**Status:** ✅ · **Size:** M · **Depends on:** P6-20, P6-21, P6-19, P6-03
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -599,13 +599,15 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] No merge permission is inferred from none intervention, autopilot or green tests.
-- [ ] Missing required reviews, changed grants, stale bases and unsupported server preconditions refuse eligibility.
-- [ ] The first required merge host is GitHub; other hosts advertise only independently implemented/observed capabilities.
+- [x] No merge permission is inferred from none intervention, autopilot or green tests.
+- [x] Missing required reviews, changed grants, stale bases and unsupported server preconditions refuse eligibility.
+- [x] The first required merge host is GitHub; other hosts advertise only independently implemented/observed capabilities.
 
 **Tests** — REL-02, REL-04–REL-05 and REL-07–REL-09: complete positive/negative eligibility tables and cross-repository policy cases.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/06-publication-ci-and-merge.md); merge policy, providers, compatibility.
+
+**Evidence** — The pure `mergeEligibility` evaluator ([ADR-0188](../docs/decisions/0188-conditional-merge-eligibility.md)) passes 50 table-driven cases: the eligible baseline and expiry, 32 ineligible mutations across authority, evidence, PR, checks, reviews, conflicts, dependencies, base, server binding, forbidden requests, freshness and host, 10 unknown mutations, exact sensitive-path exceptions and the path matcher. No hosted code host was used.
 
 ---
 

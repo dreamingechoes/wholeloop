@@ -191,5 +191,9 @@ CI observations are revision-bound: a required check counts only from its truste
 
 A failed observation becomes a retained repair request: `repair` only for a trusted code or test failure within the push budget (the initial push plus one repair by default, counted from the journal), and `blocked` for cancelled, skipped, stale, spoofed or unreadable results, for an exhausted budget or for current review comments. Comments are kept with their identity and revision but never executed or adopted. Running a repair is not yet composed; until P6-29 adds the continuation, a failed required check ends the run with its request. See [ADR-0187](../decisions/0187-bounded-ci-repair-requests.md).
 
+## Explain merge eligibility
+
+Merge eligibility is a pure explanation, not an action: `eligible`, `ineligible` or `unknown` with every reason and an expiry 60 seconds after the oldest observation. It needs an explicit `to-merge` grant with `pr.merge` and a runtime allowance, current acceptance and gates, one open ready GitHub PR at the candidate, passed revision-bound checks and reviews, strict server base checks, and no conflict, stale base, undelivered dependency, sensitive path or forbidden request such as an admin bypass. Unattended intervention and green tests never imply it. See [ADR-0188](../decisions/0188-conditional-merge-eligibility.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)
