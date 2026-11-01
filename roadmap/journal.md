@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-01 · P6-10 continuing — research dispatch boundary with P6-33
+
+- Draw the runner/research-host boundary at the stage. Fixed dispatch now sends a unit's `research:<unit>` stage to the fixed worker adapter, which already produces researcher claims without a workspace; the report-level research stage stays unregistered for the P6-33 host. Static preflight states both remaining limits before dispatch: research-report routes report dispatcher-research-host-required, and routes whose milestones hold research work report dispatcher-research-milestone-unsupported, because plan validation puts every unit in a milestone while integration assembles only code-bearing work. Move report-level research and research claims as milestone evidence into P6-33's deliverables, so P6-10 keeps no research item. Add ADR-0179, the delivery-research-dispatch-boundary rule and enforcers. P6-10 remains open at 60/88 overall and 20/34 expanded tasks complete.
+- A new dispatcher case runs a unit research claim through the fixed worker adapter with synthetic native processes, observes passed and host-observed, shows preflight refusing the route for its research milestone and shows coverage never including report-level research. Building a research-report run in the Git fixture needs a research-only grant, so the report-level case checks coverage on the derived route rather than a full preflight. Targeted vitest related runs pass 65 tests in two files, all 410 runner cases pass, and lint 1020, types, build, smoke, docs 409, generators, harness 151, Markdown and Mermaid pass. Next: the proposed trusted native binding default, then the closing complete check.
+
+---
+
 ## 2026-11-01 · P6-10 continuing — recorded human decisions for supervised routes
 
 - Add a recorded human decision. An opted-in stage publishes a version-one request naming the decision and the exact subject digest; only the new `wl delivery human-decide` operator command records a person's accept or reject for that subject while the stage is unresolved. Repeats are idempotent, a different decision refuses and none-policy runs can neither publish nor record one. With `humans` configured for the same store, the plan stage passes an exact-plan grant as owned metadata and waits for a person on an envelope-derived plan; build-plan offers only host-observed production; acceptance requires current whole-product readiness, retains that exact product binding and passes only while it is unchanged. Default adapters keep their refusals, so existing supervised guarantees and tests stand. The local handoff accepts a recorded human acceptance of the exact bound product and names the decision digest.

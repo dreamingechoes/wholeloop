@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import type { DeliveryPlan } from '../../../src/delivery/plan.js'
 import { DOCKER_REFERENCE_HELPER } from '../../../src/environment/docker-policy.js'
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
 import { DeliveryRunner } from '../../../src/runner/engine.js'
@@ -17,6 +18,7 @@ import { RunnerStore } from '../../../src/runner/store.js'
 import { runnerDefinitionFixture } from '../../support/runner-definition.js'
 import { runnerGitFixture } from '../../support/runner-git.js'
 import { runnerPlanFixture as setup } from '../../support/runner-plan.js'
+import { runnerWorkerComponents } from '../../support/runner-worker.js'
 
 describe('fixed original domain-stage dispatch', () => {
   it.each(['before', 'after'] as const)(
@@ -286,5 +288,73 @@ describe('static fixed-dispatch route preflight', () => {
         )
       },
       { singleUnit: true },
+    ))
+})
+
+describe('fixed dispatch of research work', () => {
+  const guidance = 'Pinned research guidance.\n'
+  const withResearchUnit = (plan: DeliveryPlan) => {
+    const first = plan.criteria[0]
+    if (!first) throw new Error('Fixture criterion required')
+    plan.criteria.push({
+      ...first,
+      id: 'background',
+      text: 'Record the cited background question for search.',
+    })
+    plan.work.push({
+      id: 'background',
+      role: 'research',
+      criteria: ['background'],
+      after: [],
+      consumes: [],
+      produces: [],
+    })
+    plan.milestones = plan.milestones.map((milestone) => ({
+      ...milestone,
+      work: [...milestone.work, 'background'],
+      criteria: [...milestone.criteria, 'background'],
+    }))
+  }
+  it('runs a unit research claim through the fixed worker adapter', () =>
+    runnerGitFixture(
+      async (input) => {
+        input.observe(await input.host.execute(input.dispatch('workspace:search')))
+        const { workers } = runnerWorkerComponents(input, 'complete', {
+            provenance: 'host-observed',
+            guidance,
+          }),
+          dispatcher = new RunnerStageDispatcher(input.store, input.request.host, {
+            implementation: workers,
+          }),
+          context = input.dispatch('research:background')
+        expect(dispatcher.coverage(context.plan).unsupported).not.toContain('research:background')
+        expect(await dispatcher.execute(context)).toMatchObject({
+          stage: 'research:background',
+          status: 'passed',
+          invocationState: 'stopped',
+          provenance: 'host-observed',
+        })
+        expect(
+          await dispatcher.preflight(
+            input.request,
+            input.store.basis(input.request).plan,
+            input.store.inspect(input.digest).route,
+            new AbortController().signal,
+          ),
+        ).toMatchObject({ available: false, reason: 'dispatcher-research-milestone-unsupported' })
+        // A research-report route has a report-level research stage, which only the
+        // research host may execute; worker registration never covers it.
+        const report: DeliveryPlan = {
+          ...context.plan,
+          policy: { ...context.plan.policy, endpoint: 'research-report' },
+        }
+        expect(runnerRoute(report).map((stage) => stage.id)).toEqual([
+          'plan',
+          'research',
+          'handoff',
+        ])
+        expect(dispatcher.coverage(report).unsupported).toEqual(['plan', 'research', 'handoff'])
+      },
+      { singleUnit: true, guidance, configure: withResearchUnit },
     ))
 })

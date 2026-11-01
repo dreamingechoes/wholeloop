@@ -14,12 +14,7 @@ import { RunnerIntegrationStages } from './integration-stages.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments } from './product-environments.js'
 import { RunnerReviewStages } from './review-stages.js'
-import {
-  DeliveryRunnerError,
-  type RunnerStage,
-  type RunnerStageKind,
-  runnerRoute,
-} from './route.js'
+import { DeliveryRunnerError, type RunnerStage, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 import { RunnerVerificationStages } from './verification-stages.js'
 import { RunnerWorkerStages } from './worker-stages.js'
@@ -82,15 +77,18 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     )
       throw new DeliveryRunnerError('dispatcher-fixed-product-environments-required')
   }
-  private adapter(kind: RunnerStageKind) {
-    if (kind === 'workspace' || kind === 'commit') return this.adapters.git
-    if (kind === 'research' || kind === 'publication') return undefined
-    return this.adapters[kind]
+  private adapter(stage: Pick<RunnerStage, 'kind' | 'unit'>) {
+    if (stage.kind === 'workspace' || stage.kind === 'commit') return this.adapters.git
+    // A unit's research claim is worker production like implementation. The
+    // report-level research route belongs to the research host (P6-33).
+    if (stage.kind === 'research') return stage.unit ? this.adapters.implementation : undefined
+    if (stage.kind === 'publication') return undefined
+    return this.adapters[stage.kind]
   }
   /** Registration coverage is not native/runtime availability or complete-route acceptance. */
   coverage(plan: DeliveryPlan) {
     const unsupported = runnerRoute(plan)
-      .filter((stage) => !this.adapter(stage.kind))
+      .filter((stage) => !this.adapter(stage))
       .map((stage) => stage.id)
     return { complete: unsupported.length === 0, unsupported }
   }
@@ -120,6 +118,16 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     } catch {
       return unavailable('dispatcher-preflight-original-route')
     }
+    // Report research and research claims as milestone evidence belong to the
+    // research host (P6-33); integration assembles only code-bearing work.
+    if (route.some((stage) => stage.kind === 'research' && !stage.unit))
+      return unavailable('dispatcher-research-host-required')
+    if (
+      plan.milestones.some((milestone) =>
+        milestone.work.some((id) => plan.work.find((work) => work.id === id)?.role === 'research'),
+      )
+    )
+      return unavailable('dispatcher-research-milestone-unsupported')
     // The engine cannot supply a caller selection, so each milestone needs its fixed input.
     if (
       route.some(
@@ -176,7 +184,7 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
       throw new DeliveryRunnerError('dispatcher-original-stage-required')
     const basis = this.store.planning.getPlan(request.run, revision),
       stage = runnerRoute(basis.plan).find((stage) => stage.id === record.id),
-      adapter = stage && this.adapter(stage.kind)
+      adapter = stage && this.adapter(stage)
     if (basis.digest !== record.basis || !stage || !adapter)
       throw new DeliveryRunnerError('dispatcher-unsupported-stage')
     return { stage, adapter }

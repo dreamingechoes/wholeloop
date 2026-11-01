@@ -81,7 +81,7 @@ The private root intent precedes claim; the original native assignment and rando
 
 A fresh controller reads only the journal-selected immutable receipt and validates original runtime/provenance, selected and copied inputs, captured artifacts, current candidate and actual process closure. It can recover while paused without resuming. Stop uses original private nonce channels, including after revocation. A successful worker stage establishes production of a candidate or research claim; behavioral QA, review and acceptance still follow separately.
 
-This composition is covered with actual synthetic native processes and fixture semantics. It does not certify authenticated client/model behavior or close P6-10: fixed complete-route configuration, semantic hosts, endpoint and public run/reconcile wiring remain in progress. See [ADR-0121](../decisions/0121-owned-worker-stage-bindings-and-recovery.md).
+The fixed stage dispatcher sends a unit's research stage to this same adapter. Report-level research and research claims inside milestones wait for the research host; fixed-dispatch preflight refuses those routes before dispatch ([ADR-0179](../decisions/0179-research-dispatch-boundary.md)). This composition is covered with actual synthetic native processes and fixture semantics. It does not certify authenticated client/model behavior or close P6-10: fixed complete-route configuration, semantic hosts, endpoint and public run/reconcile wiring remain in progress. See [ADR-0121](../decisions/0121-owned-worker-stage-bindings-and-recovery.md).
 
 ## Delegated stage decisions
 

@@ -272,7 +272,7 @@ The provisioning backend also retains a private copy of the original request acr
 - Complete-route configuration and runtime preflight, product-environment preparation, public foreground execution and endpoint/reconciliation commands.
 - Supervised definition approvals and remaining route-specific decision composition. Plan, build-plan and acceptance decisions can now be recorded by a person for supervised routes (ADR-0178).
 - Complete integration/acceptance invalidation and continuation after later repairs. Review-triggered corrections are now verified again by a fixed re-entry stage (ADR-0177).
-- Research-report production and complete unattended research route composition.
+- Unit research claims are dispatched through the fixed worker adapter; report-level research and research claims as milestone evidence move to P6-33 (ADR-0179).
 - Hosted endpoint composition with the publication/CI/conditional-merge work in P6-20–P6-24.
 
 These are implementation tasks. Original manual/account/native acceptance checks remain separate and do not block this technical work.
@@ -807,7 +807,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Goal** — Complete a research flow from one authorized request through challenged evidence and a stored brief.
 
-**Deliverables** — Runner integration for ResearchWorkflow/source operations, independent angles/refuters, synthesis, finite source/repair budgets and terminal report outcomes.
+**Deliverables** — Runner integration for ResearchWorkflow/source operations, independent angles/refuters, synthesis, finite source/repair budgets and terminal report outcomes. Also, moved from P6-10 by ADR-0179: the report-level research stage host and how unit research claims count toward milestone integration and acceptance; fixed dispatch already runs unit research claims and refuses both routes until then.
 
 **Acceptance criteria:**
 
