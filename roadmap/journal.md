@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-01 · P6-24 · Conditional merge execution — in progress
+
+- Add `RunnerMerger` over the effect ledger and `GithubCliMergeHost` (ADR-0189). Per repository the merger reads the PR first and reports a merge or queue entry made by someone else without claiming it. It then evaluates eligibility freshly and, only when it is current and eligible, issues one `pr.merge` intent with the expected head. The effect applies only when the run's own actor merged that head; a refusal or race is `ineligible` with `server-refused-merge`, a lost response is resolved by reading, and nothing is retried. Outcomes stay distinct, mixed results are `partial`, and no rollback is proposed. The GitHub host uses `gh pr merge --match-head-commit` and never `--admin`, `--auto` or `--delete-branch`.
+- Ten stub cases verify the three criteria at the component level. `to-merge` routes stay refused before dispatch: composing them needs complete reads of changed files, mergeability, discussion resolution, allowed methods and base currency, plus the CI wait and merge stage. Those steps and the separately authorized hosted protection and SHA trials remain, so P6-24 is 🔄; a new unchecked row records the hosted trial.
+- Markdown lint passes on 418 files. The complete check passes 3699 tests in 196 files, lint 1042, types, build, smoke, offline packaging on archive 02f11367bd72c42ab1913a8003c49c22c881e3ee288d98b3437b68a6c1f17bdd, docs 419, generators, harness 151 and Mermaid 36 in 560 seconds.
+
+---
+
 ## 2026-11-01 · P6-23 · Conditional merge eligibility — task complete
 
 - Add the pure `mergeEligibility` evaluator returning `wholeloop/merge-eligibility@1` (ADR-0188): eligible only with an active `to-merge` grant naming `pr.ready`, `pr.merge`, the repository, target and method, a separate runtime allowance, current acceptance and gates, one open ready GitHub PR at the candidate, a passed revision-bound CI verdict with satisfied reviews, no conflict, undelivered dependency, stale base, sensitive path or forbidden request, strict server base checks and observations at most 60 seconds old. Gaps are unknown; the result expires 60 seconds after its oldest observation or at the grant's expiry. Only exact operator exceptions pass the denylist; merge queues are not inferred; other hosts report `unsupported-merge-host`.

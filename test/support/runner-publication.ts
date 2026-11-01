@@ -68,14 +68,14 @@ export async function publicationFixture(
     target: RunnerPublicationTarget
     grant: string
   }) => Promise<void>,
-  options: { effects?: string[]; ready?: boolean } = {},
+  options: { effects?: string[]; ready?: boolean; endpoint?: 'to-pr' | 'to-merge' } = {},
 ) {
   await fixture(async ({ planning, plan, root }) => {
     git(root, ['remote', 'add', 'origin', 'https://github.com/fixture/app.git'])
     const repository = plan.repositories[0]
     if (!repository) throw new Error('Fixture repository required')
     repository.remote = { name: 'origin', url: 'https://github.com/fixture/app' }
-    plan.policy.endpoint = 'to-pr'
+    plan.policy.endpoint = options.endpoint ?? 'to-pr'
     const prepared = planning.preparePlan(plan),
       store = new RunnerStore(planning.sources.files.root),
       request = authorization(plan, prepared.digest)

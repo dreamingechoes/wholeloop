@@ -195,5 +195,9 @@ A failed observation becomes a retained repair request: `repair` only for a trus
 
 Merge eligibility is a pure explanation, not an action: `eligible`, `ineligible` or `unknown` with every reason and an expiry 60 seconds after the oldest observation. It needs an explicit `to-merge` grant with `pr.merge` and a runtime allowance, current acceptance and gates, one open ready GitHub PR at the candidate, passed revision-bound checks and reviews, strict server base checks, and no conflict, stale base, undelivered dependency, sensitive path or forbidden request such as an admin bypass. Unattended intervention and green tests never imply it. See [ADR-0188](../decisions/0188-conditional-merge-eligibility.md).
 
+## How a conditional merge behaves
+
+The merge executor merges a freshly eligible candidate through one recorded `pr.merge` intent, with `gh pr merge --match-head-commit` and the operator's method, and never with an admin bypass, auto-merge or branch deletion. A PR merged or queued by someone else is reported as such, a server refusal stops the run, a lost response is resolved by reading, and a mix of merged and unmerged repositories is reported as partial without a rollback. `to-merge` routes are not composed yet and are refused before dispatch. See [ADR-0189](../decisions/0189-conditional-merge-execution.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

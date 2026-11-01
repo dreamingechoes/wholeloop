@@ -5,6 +5,13 @@ import {
   executeCodehostCommand,
 } from '../pull-requests/codehost.js'
 import { type CiObservation, type RunnerCiHost, validateCiObservation } from './ci-observations.js'
+import type { MergeMethod } from './merge-eligibility.js'
+import {
+  assertMergeTarget,
+  type RunnerMergeHost,
+  type RunnerMergeRead,
+  type RunnerMergeTarget,
+} from './merge-execution.js'
 import type {
   RunnerCodeHost,
   RunnerPublicationTarget,
@@ -279,5 +286,84 @@ export class GithubCliCiHost implements RunnerCiHost {
     }
     validateCiObservation(observation)
     return observation
+  }
+}
+
+const METHOD_FLAG: Record<MergeMethod, string> = {
+  merge: '--merge',
+  squash: '--squash',
+  rebase: '--rebase',
+}
+/**
+ * GitHub merge through `gh pr merge` with `--match-head-commit`, so the server
+ * enforces the exact head. It never passes --admin, --auto or --delete-branch.
+ */
+export class GithubCliMergeHost implements RunnerMergeHost {
+  readonly provenance = 'host-observed' as const
+  constructor(readonly execute: CommandExecutor = executeCodehostCommand) {}
+  private repository(target: Readonly<RunnerMergeTarget>) {
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(target.remote))
+      throw new DeliveryRunnerError('publication-host-remote')
+    const repo = codehostRepository(target.path, target.remote)
+    if (repo.host !== 'github.com') throw new DeliveryRunnerError('publication-host-unsupported')
+    assertMergeTarget(target)
+    if (!target.pr.startsWith(`${repo.url}/pull/`))
+      throw new DeliveryRunnerError('publication-host-pull-request')
+    return repo
+  }
+  async actor(_signal?: AbortSignal) {
+    const value: unknown = JSON.parse(
+      await this.execute('gh', ['api', '--method', 'GET', 'user'], process.cwd()),
+    )
+    if (!isObject(value) || typeof value.login !== 'string' || !value.login)
+      throw new DeliveryRunnerError('publication-host-incomplete')
+    return value.login
+  }
+  async read(target: Readonly<RunnerMergeTarget>, _signal?: AbortSignal): Promise<RunnerMergeRead> {
+    const repo = this.repository(target),
+      number = target.pr.slice(`${repo.url}/pull/`.length)
+    let value: unknown
+    try {
+      value = JSON.parse(
+        await this.execute(
+          'gh',
+          ['api', '--hostname', repo.host, '--method', 'GET', `repos/${repo.path}/pulls/${number}`],
+          target.path,
+        ),
+      )
+    } catch {
+      throw new DeliveryRunnerError('publication-host-incomplete')
+    }
+    const head = isObject(value) && isObject(value.head) ? value.head.sha : undefined
+    if (!isObject(value) || typeof head !== 'string' || !SHA.test(head))
+      throw new DeliveryRunnerError('publication-host-incomplete')
+    const by = isObject(value.merged_by) ? value.merged_by.login : undefined
+    return {
+      state: value.merged === true ? 'merged' : value.state === 'open' ? 'open' : 'closed',
+      head,
+      ...(typeof value.merge_commit_sha === 'string' && value.merged === true
+        ? { mergeCommit: value.merge_commit_sha }
+        : {}),
+      ...(typeof by === 'string' ? { mergedBy: by } : {}),
+    }
+  }
+  async merge(target: Readonly<RunnerMergeTarget>, _signal?: AbortSignal) {
+    const repo = this.repository(target)
+    if (!SHA.test(target.head)) throw new DeliveryRunnerError('publication-host-head')
+    await this.execute(
+      'gh',
+      [
+        'pr',
+        'merge',
+        '--repo',
+        `${repo.host}/${repo.path}`,
+        METHOD_FLAG[target.method],
+        '--match-head-commit',
+        target.head,
+        '--',
+        target.pr,
+      ],
+      target.path,
+    )
   }
 }

@@ -613,7 +613,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-24 · Conditional merge execution and reconciliation
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-23, P6-22
+**Status:** 🔄 · **Size:** L · **Depends on:** P6-23, P6-22
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -623,13 +623,17 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] No admin bypass, protection edits, force operation or ordinary manifest can cause merge.
-- [ ] Races, expiry and lost responses preserve ineligible/pending states and never blindly retry.
-- [ ] Observed queued, externally merged, wholeloop-merged and partially delivered outcomes remain distinct.
+- [x] No admin bypass, protection edits, force operation or ordinary manifest can cause merge.
+- [x] Races, expiry and lost responses preserve ineligible/pending states and never blindly retry.
+- [x] Observed queued, externally merged, wholeloop-merged and partially delivered outcomes remain distinct.
 
 **Tests** — REL-04–REL-10 and EVAL-05/EVAL-08: synthetic CLI races plus separately authorized disposable hosted protection/SHA trials.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/06-publication-ci-and-merge.md); open-pr, sync, guards, merge receipts.
+
+**Completed technical work** — `RunnerMerger` over the effect ledger and `GithubCliMergeHost` ([ADR-0189](../docs/decisions/0189-conditional-merge-execution.md)). Ten stub cases verify the three criteria at the component level: expected-head merges, no effect for ineligible or expired eligibility, distinct external, queued, partial and own merges, lost-response reconciliation with one merge, no retry after a refusal, refusal without the merge effect, and exact `gh pr merge` arguments without bypass, auto-merge, force or branch deletion.
+
+**Remaining** — Composing `to-merge` routes needs complete reads of changed files, mergeability, discussion resolution, allowed methods and base currency for the eligibility input, plus the CI wait and merge stage in the dispatcher; until then those routes are refused before dispatch. The separately authorized disposable hosted protection and SHA trials (REL-10, EVAL-05, EVAL-08) need an owner-authorized hosted repository.
 
 ---
 

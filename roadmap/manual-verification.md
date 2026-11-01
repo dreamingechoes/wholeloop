@@ -36,6 +36,7 @@ P6-10 is complete on automated synthetic/reference-transport evidence: the compi
 P6-20 publishes accepted candidates as owned PRs on a stub code host, and P6-21 evaluates revision-bound CI observations; both GitHub CLI hosts are checked only with a stub executor. That evidence certifies no hosted code host.
 
 - [ ] On a disposable GitHub repository, a public `to-pr` run pushes without force, opens one owned draft, readies it when granted, and refuses a competing writer and a foreign PR without overwriting (REL-01, REL-06).
+- [ ] With separate merge authorization, a disposable protected repository rejects a merge whose head or base moved and accepts the exact-SHA merge, observed once (REL-10, EVAL-05, EVAL-08).
 - [ ] On the same repository, CI reads paginate real check runs, keep a same-name check from another app as `wrong-issuer` and report protection unknown for a token that cannot read it (REL-02, REL-04).
 
 ## Unattended research checks (2026-11-01)
