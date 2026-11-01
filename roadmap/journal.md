@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-01 · P6-10 owner decision proposed — trusted native bindings
+
+- Write the trusted native bindings decision as a Proposed record, `docs/decisions/0180-trusted-native-bindings.md`, with the most conservative default: trust no native client unless explicitly bound and never relax containment. It stays unindexed and unlinked until the owner settles it, as the documentation rules require for drafts. The owner's choice is recorded in manual verification with three options.
+- Implement only what that default allows: a deterministic evaluator for a closed `wholeloop/native-bindings@1` document whose built-in default is empty and frozen. A binding names one pinned reference target and version, one exact model and its roles; it has no field for sandbox, tools, network, credentials or interaction, and any extra field invalidates the whole document. A binding is necessary, never sufficient: existing runtime proof still defaults to unavailable. No command or runner path supplies bindings, so no unattended native launch becomes possible. P6-10 remains open at 60/88 overall and 20/34 expanded tasks complete.
+- Sixteen new cases refuse every client under the default, bind only exact pinned matches, refuse unpinned and expanded targets, and invalidate sandbox, tool, wildcard, unknown-role, duplicate, extra-field and other-schema documents. The complete check passes 3546 tests in 188 files (443.63 seconds), lint 1022/types/build/docs 410/harness 151/Markdown 409/Mermaid 36, generators, smoke and offline packaging on archive 270e5f54889a87337ec24c4f8890f296fd83e246344865429e95044083ad4b0e in 459 seconds.
+
+---
+
 ## 2026-11-01 · P6-10 continuing — research dispatch boundary with P6-33
 
 - Draw the runner/research-host boundary at the stage. Fixed dispatch now sends a unit's `research:<unit>` stage to the fixed worker adapter, which already produces researcher claims without a workspace; the report-level research stage stays unregistered for the P6-33 host. Static preflight states both remaining limits before dispatch: research-report routes report dispatcher-research-host-required, and routes whose milestones hold research work report dispatcher-research-milestone-unsupported, because plan validation puts every unit in a milestone while integration assembles only code-bearing work. Move report-level research and research claims as milestone evidence into P6-33's deliverables, so P6-10 keeps no research item. Add ADR-0179, the delivery-research-dispatch-boundary rule and enforcers. P6-10 remains open at 60/88 overall and 20/34 expanded tasks complete.
