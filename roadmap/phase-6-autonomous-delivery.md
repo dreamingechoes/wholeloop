@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 64 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 9 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 65 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 8 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -639,7 +639,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-25 · Operator timeline, diagnostics and recovery export
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-10, P6-14, P6-21, P6-24
+**Status:** ✅ · **Size:** M · **Depends on:** P6-10, P6-14, P6-21, P6-24
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -649,13 +649,15 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] Status distinguishes report/code/PR/queue/merge/partial/blocked outcomes and shows exact next permitted actions.
-- [ ] No prompt, credential, source payload or provider response is exported by default.
-- [ ] Recovery verifies bytes/rebinding and restores neither active claims nor execution grants on another host.
+- [x] Status distinguishes report/code/PR/queue/merge/partial/blocked outcomes and shows exact next permitted actions.
+- [x] No prompt, credential, source payload or provider response is exported by default.
+- [x] Recovery verifies bytes/rebinding and restores neither active claims nor execution grants on another host.
 
 **Tests** — OPS-05–OPS-07: deterministic replay, secret canaries, tampered bundles and source-store preservation.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/07-controls-and-observability.md); getting-started, troubleshooting, state and messaging.
+
+**Evidence** — `wl delivery report`, `wl delivery diagnostics`, `wl delivery recovery-export --include-private` and `wl delivery recovery-import` ([ADR-0190](../docs/decisions/0190-operator-report-diagnostics-and-recovery-bundles.md)) are covered by 19 cases: a read-only report with exact next actions, all thirteen outcome categories, diagnostics free of a planted secret canary, source text and owner, import refusals for missing, unknown and baseless rebindings, tampered and unlisted files and a repeat, an accepted import that leaves no live journal, authority or run, and compiled CLI cases for the private-export flag. The optional live event watch is not provided; the report and the existing `wl delivery events` pages cover inspection.
 
 ---
 

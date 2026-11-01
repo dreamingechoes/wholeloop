@@ -200,6 +200,7 @@
 | [0187](./0187-bounded-ci-repair-requests.md) | Bounded CI repair requests | Accepted | 2026-11-01 |
 | [0188](./0188-conditional-merge-eligibility.md) | Conditional merge eligibility | Accepted | 2026-11-01 |
 | [0189](./0189-conditional-merge-execution.md) | Conditional merge execution | Accepted | 2026-11-01 |
+| [0190](./0190-operator-report-diagnostics-and-recovery-bundles.md) | Operator report, diagnostics and recovery bundles | Accepted | 2026-11-01 |
 
 ## Lifecycle
 

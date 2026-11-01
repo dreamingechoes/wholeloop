@@ -11635,6 +11635,199 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "schema",
+        "run",
+        "state",
+        "outcome",
+        "category",
+        "endpoint",
+        "intervention",
+        "plan",
+        "grant",
+        "stages",
+        "effects",
+        "waits",
+        "unresolved",
+        "next",
+        "updatedAt"
+      ],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-report@1"
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "state": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": ["string", "null"]
+        },
+        "category": {
+          "enum": [
+            "report",
+            "code",
+            "pr",
+            "queue",
+            "merge",
+            "partial",
+            "blocked",
+            "failed",
+            "exhausted",
+            "stopped",
+            "in-progress"
+          ]
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "intervention": {
+          "type": "string"
+        },
+        "plan": {
+          "type": "object"
+        },
+        "grant": {
+          "type": ["object", "null"]
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "waits": {
+          "type": "object"
+        },
+        "unresolved": {
+          "type": "boolean"
+        },
+        "next": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "core", "run", "state", "outcome", "events", "effects", "excluded"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-diagnostics@1"
+        },
+        "core": {
+          "type": "string"
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "state": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": ["string", "null"]
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "excluded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "run", "manifest", "files", "bytes", "private", "authority"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-recovery-export@1"
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "manifest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "files": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "private": {
+          "const": true
+        },
+        "authority": {
+          "const": "not-restored"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "bundle", "run", "bindings", "authority", "claims"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-recovery-import@1"
+        },
+        "bundle": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "run": {
+          "type": "string",
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "authority": {
+          "const": "not-restored"
+        },
+        "claims": {
+          "const": "not-restored"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["schema", "status", "preflight"],
       "properties": {
         "schema": {

@@ -111,6 +111,10 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl delivery state-schema` | `wholeloop/delivery-state-schema@1` | Show delivery event, registered payload and projection contracts |
 | `wl delivery track` | `wholeloop/delivery-status@1` | Track a stored plan or envelope without granting authority or starting work |
 | `wl delivery status` | `wholeloop/delivery-status@1` | Replay authoritative delivery state independently of cached projections |
+| `wl delivery report` | `wholeloop/delivery-report@1` | Explain the outcome, waits, effects and exact next permitted actions read-only |
+| `wl delivery diagnostics` | `wholeloop/delivery-diagnostics@1` | Export redacted event categories and digests without private payloads |
+| `wl delivery recovery-export` | `wholeloop/delivery-recovery-export@1` | Write an explicit private recovery bundle with per-file checksums |
+| `wl delivery recovery-import` | `wholeloop/delivery-recovery-import@1` | Verify a recovery bundle and archive it without restoring claims or grants |
 | `wl delivery events` | `wholeloop/delivery-events@1` | Read bounded delivery event pages without changing legacy item history |
 | `wl delivery rebuild` | `wholeloop/delivery-rebuild@1` | Rebuild disposable delivery projections without restoring grants or effects |
 | `wl delivery authority-schema` | `wholeloop/delivery-authority-schema@1` | Show explicit operator authorization, revocation and worker request contracts |

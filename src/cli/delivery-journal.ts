@@ -7,6 +7,13 @@ import {
   DeliveryJournalError,
 } from '../delivery/events.js'
 import { DeliveryLifecycle } from '../delivery/lifecycle.js'
+import {
+  deliveryDiagnostics,
+  deliveryReport,
+  exportRecoveryBundle,
+  importRecoveryBundle,
+} from '../runner/operator-report.js'
+import { DeliveryRunnerError } from '../runner/route.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -54,8 +61,55 @@ export function deliveryJournalCommand(
       })
       return EXIT.ok
     }
+    const location = typeof store === 'string' ? resolve(root, store) : undefined
+    if (command === 'delivery recovery-import') {
+      const bundle = options['--bundle'],
+        rebind = options['--rebind']
+      if (typeof bundle !== 'string') throw new CliError('Provide --bundle <directory>', EXIT.input)
+      const bindings: Record<string, string> = {}
+      for (const entry of typeof rebind === 'string' ? rebind.split(',') : []) {
+        const [id, path] = [entry.slice(0, entry.indexOf('=')), entry.slice(entry.indexOf('=') + 1)]
+        if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(id) || !path || Object.hasOwn(bindings, id))
+          throw new CliError('Provide --rebind repository=path pairs', EXIT.input)
+        bindings[id] = resolve(root, path)
+      }
+      emit(
+        importRecoveryBundle(
+          resolve(root, bundle),
+          location ?? lifecycle.journal.files.root,
+          bindings,
+        ),
+      )
+      return EXIT.ok
+    }
     const run = options['--run']
     if (typeof run !== 'string') throw new CliError('Provide --run <delivery-id>', EXIT.input)
+    if (command === 'delivery report') {
+      emit(deliveryReport(location, run))
+      return EXIT.ok
+    }
+    if (command === 'delivery diagnostics') {
+      emit(deliveryDiagnostics(location, run))
+      return EXIT.ok
+    }
+    if (command === 'delivery recovery-export') {
+      const out = options['--out']
+      if (typeof out !== 'string') throw new CliError('Provide --out <directory>', EXIT.input)
+      // A recovery bundle carries private records; it is never produced implicitly.
+      if (options['--include-private'] !== true)
+        throw new CliError(
+          'A recovery bundle holds private records; pass --include-private to export it',
+          EXIT.input,
+        )
+      emit({
+        schema: 'wholeloop/delivery-recovery-export@1',
+        run,
+        ...exportRecoveryBundle(lifecycle.journal.files.root, run, resolve(root, out)),
+        private: true,
+        authority: 'not-restored',
+      })
+      return EXIT.ok
+    }
     if (command === 'delivery events') {
       journal.get(run)
       const after = integer('--after', 0, 0, Number.MAX_SAFE_INTEGER)
@@ -96,7 +150,8 @@ export function deliveryJournalCommand(
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error
-    if (error instanceof DeliveryJournalError) throw new CliError(error.message, EXIT.precondition)
+    if (error instanceof DeliveryJournalError || error instanceof DeliveryRunnerError)
+      throw new CliError(error.message, EXIT.precondition)
     throw new CliError(
       'Delivery journal failed; preserve the external store; contents omitted',
       EXIT.precondition,

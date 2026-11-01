@@ -154,6 +154,10 @@ export function deliveryCommand(
       'delivery status',
       'delivery events',
       'delivery rebuild',
+      'delivery report',
+      'delivery diagnostics',
+      'delivery recovery-export',
+      'delivery recovery-import',
     ].includes(command)
   )
     return deliveryJournalCommand(command, { options, positional: [] }, root, json, io)

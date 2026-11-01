@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-01 · P6-25 · Operator report, diagnostics and recovery bundles — task complete
+
+- Add `wl delivery report`, `wl delivery diagnostics`, `wl delivery recovery-export --include-private` and `wl delivery recovery-import` with four output contracts and appended compatibility fingerprints (ADR-0190). The report replays the journal read-only and gives one category per outcome, waits, effects, unresolved work and the exact next permitted commands. Diagnostics come from an allow-list of categories, digests and enumerated states and name what they exclude. A recovery bundle is written only on explicit private request, with per-file checksums. Import verifies every byte, refuses unlisted files, requires each repository to be rebound to a local repository holding its base, and archives the records under `delivery/imports` without touching the live journal, claims or grants.
+- Nineteen cases tick the three criteria, including a secret canary planted in a control reason that never reaches diagnostics, tamper and rebinding refusals, an import that leaves no live run or authority, and compiled CLI cases. The optional live event watch is not provided; the report and existing event pages cover inspection.
+- P6-25 is ✅. The roadmap is now 65/88 overall: 25 expanded tasks complete, P6-33 awaiting native acceptance and eight pending, including P6-22 and P6-24 in progress. Markdown lint passes on 419 files. The complete check passes 3722 tests in 197 files, lint 1044, types, build, smoke, offline packaging on archive 72656463e79d34a3a5a7261c53a025c5aa7f3e7dd17a5d0fb95a8c85db2f37f3, docs 420, generators, harness 151 and Mermaid 36 in 535 seconds. Next: P6-28.
+
+---
+
 ## 2026-11-01 · P6-24 · Conditional merge execution — in progress
 
 - Add `RunnerMerger` over the effect ledger and `GithubCliMergeHost` (ADR-0189). Per repository the merger reads the PR first and reports a merge or queue entry made by someone else without claiming it. It then evaluates eligibility freshly and, only when it is current and eligible, issues one `pr.merge` intent with the expected head. The effect applies only when the run's own actor merged that head; a refusal or race is `ineligible` with `server-refused-merge`, a lost response is resolved by reading, and nothing is retried. Outcomes stay distinct, mixed results are `partial`, and no rollback is proposed. The GitHub host uses `gh pr merge --match-head-commit` and never `--admin`, `--auto` or `--delete-branch`.

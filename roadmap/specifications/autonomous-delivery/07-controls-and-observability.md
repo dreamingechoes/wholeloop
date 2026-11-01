@@ -3,7 +3,7 @@
 > **TL;DR** — A long-running flow has finite work and effect limits, visible progress and inspectable reasons for every pause or terminal result. Usage is observed or unknown. Operators retain control without a mandatory web service.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-07 persistent budget admission, usage accounting and no-progress controls are implemented and process/fixture-tested. P6-25 timeline/control/report integration remains pending. Existing gate-round and worker-timeout limits are preserved.
+> **Status: 🚧 partial.** P6-07 persistent budget admission, usage accounting and no-progress controls are implemented and process/fixture-tested. P6-25 adds the read-only report with next permitted actions, allow-listed diagnostics and checksum-verified recovery bundles that import as inert archives ([ADR-0190](../../../docs/decisions/0190-operator-report-diagnostics-and-recovery-bundles.md)); a live event watch is not provided. Existing gate-round and worker-timeout limits are preserved.
 
 ## Implemented budget boundary
 

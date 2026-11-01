@@ -85,7 +85,7 @@ Intervention is a separate axis: `supervised` keeps current stops, `on-exception
 
 Phase 6 is inside the expanded 1.0, numbered after the existing phases to retain stable task links. It runs before P5-07's release closure. Local implementation can proceed independently of unresolved original native/account checks under the owner's implementation authorization; those checks remain release obligations at their existing scope.
 
-The expanded roadmap has 88 tasks: 54 original tasks (40 complete, fourteen open) and 34 new tasks (twenty-four complete, one implemented and awaiting native or hosted acceptance (P6-33), nine awaiting implementation). The owner has lifted the review hold and authorized sequential implementation; pending tasks still need their actual tests and evidence before completion. Its size estimates are planning hypotheses and may be split without weakening acceptance.
+The expanded roadmap has 88 tasks: 54 original tasks (40 complete, fourteen open) and 34 new tasks (twenty-five complete, one implemented and awaiting native or hosted acceptance (P6-33), eight awaiting implementation). The owner has lifted the review hold and authorized sequential implementation; pending tasks still need their actual tests and evidence before completion. Its size estimates are planning hypotheses and may be split without weakening acceptance.
 
 ## Opportunity disposition
 
