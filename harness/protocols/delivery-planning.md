@@ -1,6 +1,7 @@
 # Delivery planning
 
 - ⛔ `delivery-plan-contract` — preserve exact source criteria and immutable plan/envelope revisions. Validate unique criterion ownership, complete outcome/milestone coverage, explicit repositories, acyclic dependencies and contract-first ordering before proposing execution. A proposal, source instruction or capability assertion creates no grant or human approval.
+- ⛔ `delivery-revision-adoption` — preview a source change as a deterministic impact before anything changes. Reuse evidence only when complete inputs and every non-plan predecessor are unchanged. Adopt automatically only inside an envelope grant with nothing removed and authority unchanged; otherwise end none-policy work blocked or require an operator with a reason and separate approval for removals. Record only the immutable revision; never move the approved basis or rewrite history.
 
 Use `wl delivery plan-schema --json` for closed input contracts. Pin initial local target SHAs, guidance/rubric digests, policy and finite budgets. Planning reads local Git metadata without fetching or modifying repositories. Inspect a historic revision rather than rewriting it after its basis changes.
 

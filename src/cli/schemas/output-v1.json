@@ -11828,6 +11828,25 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": ["schema", "impact", "accepted", "record"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-revise@1"
+        },
+        "impact": {
+          "type": "object"
+        },
+        "accepted": {
+          "type": "boolean"
+        },
+        "record": {
+          "type": ["object", "null"]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["schema", "status", "preflight"],
       "properties": {
         "schema": {

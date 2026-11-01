@@ -6,13 +6,16 @@ import {
   DELIVERY_STATE_SCHEMA,
   DeliveryJournalError,
 } from '../delivery/events.js'
+import { readSourceFile } from '../delivery/input.js'
 import { DeliveryLifecycle } from '../delivery/lifecycle.js'
+import { DeliveryPlanError } from '../delivery/plan.js'
 import {
   deliveryDiagnostics,
   deliveryReport,
   exportRecoveryBundle,
   importRecoveryBundle,
 } from '../runner/operator-report.js'
+import { reviseDelivery } from '../runner/revision-impact.js'
 import { DeliveryRunnerError } from '../runner/route.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
@@ -84,6 +87,40 @@ export function deliveryJournalCommand(
     }
     const run = options['--run']
     if (typeof run !== 'string') throw new CliError('Provide --run <delivery-id>', EXIT.input)
+    if (command === 'delivery revise') {
+      const file = options['--file']
+      if (typeof file !== 'string') throw new CliError('Provide --file <plan.json>', EXIT.input)
+      let proposed: unknown
+      try {
+        proposed = JSON.parse(readSourceFile(root, file, 2 * 1024 * 1024))
+      } catch {
+        throw new CliError('Provide a readable proposed plan JSON file', EXIT.input)
+      }
+      const operator = options['--operator'],
+        reason = options['--reason'],
+        accepted = options['--accept'] === true
+      if (accepted && (typeof operator !== 'string' || typeof reason !== 'string'))
+        throw new CliError('Accepting a revision needs --operator and --reason', EXIT.input)
+      const result = reviseDelivery(
+        lifecycle,
+        run,
+        proposed,
+        accepted
+          ? {
+              operator: String(operator),
+              reason: String(reason),
+              approveRemovals: options['--approve-removals'] === true,
+            }
+          : undefined,
+      )
+      emit({
+        schema: 'wholeloop/delivery-revise@1',
+        impact: result.impact,
+        accepted: result.accepted,
+        record: result.accepted ? result.record : null,
+      })
+      return EXIT.ok
+    }
     if (command === 'delivery report') {
       emit(deliveryReport(location, run))
       return EXIT.ok
@@ -150,7 +187,11 @@ export function deliveryJournalCommand(
     return EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error
-    if (error instanceof DeliveryJournalError || error instanceof DeliveryRunnerError)
+    if (
+      error instanceof DeliveryJournalError ||
+      error instanceof DeliveryRunnerError ||
+      error instanceof DeliveryPlanError
+    )
       throw new CliError(error.message, EXIT.precondition)
     throw new CliError(
       'Delivery journal failed; preserve the external store; contents omitted',

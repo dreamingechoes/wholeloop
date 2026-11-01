@@ -155,6 +155,7 @@ export function deliveryCommand(
       'delivery events',
       'delivery rebuild',
       'delivery report',
+      'delivery revise',
       'delivery diagnostics',
       'delivery recovery-export',
       'delivery recovery-import',

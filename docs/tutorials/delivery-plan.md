@@ -142,5 +142,9 @@ For incomplete intent, definition.ready is false and definition.missing lists ac
 
 You have a reviewable immutable envelope and plan, with an explicit route and dependency waves. The private records live under the external state/delivery directory; retain the temporary directory to inspect or replay them in another terminal. This increment cannot authorize or run workers. Follow [Phase 6](../../roadmap/phase-6-autonomous-delivery.md) for grants, actual execution and expanded acceptance, or use the existing [small-change route](./small-change.md).
 
+## Preview and adopt a revision
+
+When the source changes, write the proposed next plan revision and preview it with `wl delivery revise --run <id> --file <plan.json>`. Nothing is written. The impact lists changed, added and removed criteria, removed outcomes, whether authority must be renewed, whether an envelope still covers it, which stages keep their evidence and why, and the workers and effects to fence or reconcile. Adopt it with `--accept --operator "Your Name" --reason "Why"`, adding `--approve-removals` when criteria or outcomes are dropped. Acceptance records only the immutable revision and its reason; the run keeps its approved basis until authority covering the new revision is tracked. A none-policy revision outside its envelope is refused. See [ADR-0192](../decisions/0192-revision-impact-and-explicit-adoption.md).
+
 <!-- docnav -->
 [◀ Delivery request intake](delivery-intake.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery authorization ▶](delivery-authorization.md)

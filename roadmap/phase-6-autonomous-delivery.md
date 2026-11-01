@@ -731,7 +731,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-29 · Requirement revision and evidence impact
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-02, P6-18, P6-20, P6-24
+**Status:** 🔄 · **Size:** M · **Depends on:** P6-02, P6-18, P6-20, P6-24
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -741,13 +741,17 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] New source content cannot silently replace approved intent or remove required outcomes.
-- [ ] Only pre-authorized in-envelope revisions proceed without another operator action; none-policy outside-envelope work ends blocked.
+- [x] New source content cannot silently replace approved intent or remove required outcomes.
+- [x] Only pre-authorized in-envelope revisions proceed without another operator action; none-policy outside-envelope work ends blocked.
 - [ ] Affected candidates/decisions/effects lose current eligibility while prior receipts remain historical.
 
 **Tests** — INT-03–INT-04 and INT-07, DEC-03–DEC-06: source/base/rubric changes during active workers and pending publication.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/05-integration-and-change-impact.md); specification, scopes, state, core CLI.
+
+**Completed technical work** — The pure `revisionImpact` calculation and preview-first `wl delivery revise` with explicit, reasoned adoption and separate approval for removals ([ADR-0192](../docs/decisions/0192-revision-impact-and-explicit-adoption.md)), covered by nine cases. The cross-invocation correction protocol is accepted as its own record ([ADR-0193](../docs/decisions/0193-cross-invocation-correction-protocol.md)).
+
+**Remaining** — Implementing ADR-0193: continuation requests for integration, acceptance and CI repairs, with reuse limited to stages the impact keeps and that still inspect as current. Its tests also demonstrate the third criterion end to end, with affected candidates, decisions and effects losing current eligibility after adoption while prior receipts stay historical. P6-22's second criterion depends on it.
 
 ---
 

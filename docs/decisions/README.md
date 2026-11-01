@@ -202,6 +202,8 @@
 | [0189](./0189-conditional-merge-execution.md) | Conditional merge execution | Accepted | 2026-11-01 |
 | [0190](./0190-operator-report-diagnostics-and-recovery-bundles.md) | Operator report, diagnostics and recovery bundles | Accepted | 2026-11-01 |
 | [0191](./0191-effect-boundary-fault-evaluation.md) | Effect-boundary fault evaluation | Accepted | 2026-11-01 |
+| [0192](./0192-revision-impact-and-explicit-adoption.md) | Revision impact and explicit adoption | Accepted | 2026-11-01 |
+| [0193](./0193-cross-invocation-correction-protocol.md) | Cross-invocation correction protocol | Accepted | 2026-11-01 |
 
 ## Lifecycle
 

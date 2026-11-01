@@ -566,6 +566,21 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Explain the outcome, waits, effects and exact next permitted actions read-only',
   },
   {
+    path: 'delivery revise',
+    arguments: '',
+    options: [
+      '--run <delivery-id>',
+      '--file <plan.json>',
+      '--accept',
+      '--operator <name>',
+      '--reason <text>',
+      '--approve-removals',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/delivery-revise@1',
+    summary: 'Preview a revision impact; record it only with explicit acceptance',
+  },
+  {
     path: 'delivery diagnostics',
     arguments: '',
     options: ['--run <delivery-id>', '--store <path>'],

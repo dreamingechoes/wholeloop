@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-01 · P6-29 · Revision impact and the correction protocol — in progress
+
+- Add the pure `revisionImpact` calculation and preview-first `wl delivery revise` with one new output contract and an appended fingerprint (ADR-0192). The impact lists changed, added and removed criteria, removed outcomes, authority renewal, envelope coverage, a reuse or invalidation reason for every route stage, and the attempts and effects to fence or reconcile. Reuse needs every complete input and non-plan predecessor unchanged, so a changed criterion cascades through the stages after the acceptance definitions while a milestone-only change keeps unit evidence. Acceptance needs an operator, a reason and separate approval for removals, refuses blocked and unadoptable revisions, and records only the immutable revision; the run's basis and journal do not move.
+- Write the cross-invocation correction protocol as its own record (ADR-0193), as the owner asked: an explicit continuation request names one predecessor and its retained failure, needs covering authority, counts budgets from the journal, reconciles predecessor effects first, reuses only stages the impact keeps that still inspect as current, and leaves the predecessor's receipt historical. Implementing it remains P6-29 work, and P6-22's second criterion depends on it.
+- Nine cases tick criteria one and two. Criterion three (affected candidates, decisions and effects losing current eligibility after adoption) stays open until the continuation tests demonstrate it end to end, so P6-29 is 🔄.
+- The first complete check found the generated commands reference stale; after `wl docs reference --kind commands --write` the rerun passed. Markdown lint passes on 422 files. The complete check passes 3804 tests in 199 files, lint 1050, types, build, smoke, offline packaging on archive f465d9fee267258d4b91c442d87cd0b3d065b53119fa63ddf46e08b6dfa442db, docs 423, generators, harness 151 and Mermaid 36 in 585 seconds. Next: P6-30.
+
+---
+
 ## 2026-11-01 · P6-28 · Effect-boundary fault evaluation — task complete
 
 - Add a fault table over the real effect ledger (ADR-0191) for all ten ledger operations under seven faults: a crash after prepare (recovered by a restarted ledger), a crash after issue, a lost response, an unavailable first read, a repeated observation, a denying host and revocation before issue. Every cell ends in its expected state with at most one write, refuses a second issue and re-observes without changing the journal. `npm run eval:runner-faults` runs the table and retains a report; it passed on the Linux x64 VM with 70 cells and no duplicate effect in 14 seconds.
