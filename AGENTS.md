@@ -24,6 +24,7 @@ Instructions for any coding agent (and any human) working **on this repository**
 4. Tick every acceptance criterion; run all local checks.
 5. Mark it ✅, add a journal entry, update status banners in the docs.
 6. A design change gets a new ADR in the same change.
+7. When a task needs a choice that counts as an implementation refinement (an internal design choice, which task owns a piece of work, a conservative default, a narrower scope), choose the most conservative option that keeps every safety and authority guarantee. Record it in an ADR, or in the journal if it is minor, and keep going. Stop only for: (a) choices that widen authority, containment, credentials or who can approve; (b) publication to npm, real pushes to external services, or real PR, CI or merge trials against a hosted service; (c) work that needs installed, signed-in native clients or real model accounts. For (a), apply the most conservative choice and leave the wider option as a Proposed ADR plus a row in manual verification. For (b) and (c), finish everything that can be built and tested with fixtures and leave only the acceptance evidence open in manual verification; neither is a reason to leave a task's implementation undone.
 
 ## Non-negotiables
 

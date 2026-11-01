@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-01 · Owner decisions for P6-10 recorded
+
+- Trusted native bindings: the owner accepted option 1, so ADR-0180 is Accepted and indexed. No native client is trusted unless explicitly listed, and a listing can never loosen containment. Proving real native clients is P6-27's job; P6-10's public run and reconcile commands must work with the empty default and with explicit bindings, tested with the synthetic/reference transport.
+- Supervised derived plans: the operator issues a fresh exact-plan grant for each envelope-derived plan; a person's recorded approval never becomes authority for later steps. Envelope-derived supervised routes and supervised definition approvals stay refused before dispatch. Recorded as ADR-0182, a new record because the repository refines accepted ADRs with new ones rather than amending them.
+- Repair continuation moves to P6-29's deliverables, with its own ADR for the cross-invocation correction protocol that ADR-0154 records as missing; until then a failed integration or acceptance stage ends the run honestly.
+- P6-10 closure: hosted endpoints (P6-20–P6-24) and report-level research (P6-33) are not closure conditions. P6-10 closes when its three acceptance criteria hold with automated evidence (compiled CLI lifecycle, process-group cancellation and interactive-tool canaries) using the synthetic/reference transport. That evidence certifies neither a native client nor a hosted service.
+- Add the owner's standing rule to AGENTS.md under "How to work a session": choose the most conservative option for implementation refinements and continue; stop only for widened authority, hosted or publication effects, or signed-in native clients, and even then finish everything testable with fixtures. Remove the three answered owner actions from manual verification.
+- Markdown lint passes on 411 files. The complete check passes 3545 tests in 188 files, lint 1022, types, build, smoke, offline packaging, docs 412, generators, harness 151 and Mermaid 36 in 553 seconds.
+
+---
+
 ## 2026-11-01 · Session close — re-entry, human decisions and research boundary
 
 - Completed on main: 4eb741b with 7a2a823 verifies the reviewed head again after a review correction (ADR-0177); 2aa2521 records human decisions for supervised routes (ADR-0178); d537719 dispatches unit research and refuses unfinishable research routes, moving report-level research to P6-33 (ADR-0179); 260d8e8 proposes refusing every native client unless explicitly bound, as an unindexed Proposed record; 4097135 corrects supervised dispatch to exact-plan grants (ADR-0181). P6-10 stays 🔄 at 60/88 overall and 20/34 expanded tasks complete, with no acceptance criterion ticked.

@@ -269,13 +269,11 @@ The internal environment backend can also capture original parent bounds across 
 
 The provisioning backend also retains a private copy of the original request across asynchronous preflight, preventing caller-owned substitutions from changing later effect/resource identity. This correction does not close root preparation or any item below. Delivery journal reads also reuse one validated replay for identical current segment bytes, so the composed product-environment route completes inside its unchanged original window; this is a cost correction, not new capability.
 
-- Complete-route configuration and runtime preflight, product-environment preparation, public foreground execution and endpoint/reconciliation commands.
-- Supervised envelope-derived plan and definition approvals, which need one derived-plan acceptance rule covering recorded human decisions in every effect check (ADR-0181). Build-plan and acceptance decisions can already be recorded by a person for supervised exact-plan routes (ADR-0178).
-- Complete integration/acceptance invalidation and continuation after later repairs. Review-triggered corrections are now verified again by a fixed re-entry stage (ADR-0177).
-- Unit research claims are dispatched through the fixed worker adapter; report-level research and research claims as milestone evidence move to P6-33 (ADR-0179).
-- Hosted endpoint composition with the publication/CI/conditional-merge work in P6-20–P6-24.
+- Public foreground run and reconcile commands over a fixed public host whose identity binds the trusted native bindings document (ADR-0180), working with the empty default and with explicit bindings.
 
-These are implementation tasks. Original manual/account/native acceptance checks remain separate and do not block this technical work.
+Owner decisions of 2026-11-01 settle the other items. Envelope-derived supervised plans and supervised definition approvals execute only under a fresh exact-plan grant (ADR-0182). Continuation after integration or acceptance repairs belongs to P6-29. Report-level research belongs to P6-33 (ADR-0179) and hosted endpoints to P6-20–P6-24; neither is a P6-10 closure condition.
+
+**Closure** — P6-10 closes when its three acceptance criteria hold with automated evidence: the compiled CLI lifecycle, process-group cancellation and interactive-tool canaries, using the synthetic/reference transport. That evidence certifies neither a native client nor a hosted service; those checks stay open in manual verification and in P6-27.
 
 **Acceptance criteria:**
 
@@ -719,7 +717,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Goal** — Keep execution aligned when source intent or relevant repository state changes.
 
-**Deliverables** — Preview-only revision/impact command, explicit adoption, affected-worker fencing and deterministic evidence reuse/invalidation.
+**Deliverables** — Preview-only revision/impact command, explicit adoption, affected-worker fencing and deterministic evidence reuse/invalidation. Also, moved from P6-10 by the owner on 2026-11-01: continuation after an integration or acceptance repair, with its own ADR for the cross-invocation correction protocol that ADR-0154 records as missing. Until then a failed integration or acceptance stage ends the run honestly.
 
 **Acceptance criteria:**
 

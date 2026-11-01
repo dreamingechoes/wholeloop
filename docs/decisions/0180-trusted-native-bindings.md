@@ -1,6 +1,6 @@
 # 0180 — Trusted native bindings for unattended runs
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-01
 
 ## Context
@@ -9,18 +9,18 @@ A public foreground run must launch native clients for planning, building, verif
 
 ## Decision
 
-Pending the owner's choice, adopt the most conservative default: trust no native client unless it is explicitly bound, and never relax containment.
+The owner accepted option 1 below on 2026-11-01: trust no native client unless it is explicitly bound, and never relax containment.
 
 - A closed `wholeloop/native-bindings@1` document lists explicit bindings. Each binding names one pinned reference target and version, one exact model and the worker roles it may serve. There are no wildcards, defaults or inheritance.
 - The built-in default document is empty, so every native client is refused as unbound.
 - A binding has no field for sandbox, tools, network, credentials or interaction. It can only narrow which client may be attempted, never widen what a launched client may do, and any extra field makes the whole document invalid rather than partly trusted.
 - A binding is necessary, not sufficient. Every launch still needs the existing trusted runtime proof, containment and owned-output checks, which default to unavailable.
 
-The implementation is limited to what this default allows: a deterministic evaluator and its refusal reasons. No command, configuration file or runner path supplies bindings yet, so no unattended native launch becomes possible.
+The public run and reconcile commands read a bindings document whose digest is part of the public host identity; the empty default applies when none is given. Bindings are evaluated before dispatch for every native role the route needs. Proving that a bound client actually satisfies its runtime boundary is P6-27's job; until a trusted runtime observer exists, bound native stages are still refused before launch.
 
-## Options for the owner
+## Options considered
 
-1. Accept this default and later add bindings case by case, for example one Codex model for builder and verifier roles after its native conformance passes.
+1. **Accepted.** Keep this default and later add bindings case by case, for example one Codex model for builder and verifier roles after its native conformance passes.
 2. Bind the reference Claude and Codex recipes for all roles once P0-03 conformance and P6-27 native trials pass.
 3. Defer unattended native execution entirely and keep fixed dispatch for supervised use.
 
