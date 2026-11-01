@@ -372,7 +372,7 @@ export class RunnerStore {
     if (!operator.trim()) throw new DeliveryRunnerError('missing-control-operator')
     if (operation === 'resume') {
       this.basis(request)
-      if (!['paused', 'stopped'].includes(state.state))
+      if (!['paused', 'stopped', 'waiting-input'].includes(state.state))
         throw new DeliveryRunnerError('resume-state')
       const record = this.record(digest)
       if (

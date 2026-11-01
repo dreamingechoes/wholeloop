@@ -9,6 +9,7 @@ import { RunnerDecisionStages } from './decision-stages.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerFeatureReadiness, type RunnerFeatureReadinessResult } from './feature-readiness.js'
+import { RunnerHumanDecisions } from './human-decisions.js'
 import { RunnerNativeScope } from './native-scope.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
@@ -20,6 +21,19 @@ export interface RunnerAcceptanceOptions {
     artifact: Readonly<{ ref: string; sha256: string }>,
   ): DecisionRequest[]
   host(process: NativeProcessRunner): NativeDelegatedDecisionHost
+  /** Opt-in: permitted intervention waits for recorded human decisions. */
+  humans?: RunnerHumanDecisions
+}
+/** The exact product a person is asked to accept; no artifact or judgment is captured. */
+interface AcceptanceHumanBinding {
+  version: 1
+  request: string
+  plan: string
+  stage: string
+  invocation: string
+  at: string
+  deadline: string
+  product: RunnerFeatureReadinessResult
 }
 interface AcceptanceOrigin {
   version: 1
@@ -63,6 +77,12 @@ export class RunnerAcceptanceStages {
       readiness.store.files.root !== store.files.root
     )
       throw new DeliveryRunnerError('acceptance-stage-fixed-product-reader-required')
+    if (
+      options.humans &&
+      (!(options.humans instanceof RunnerHumanDecisions) ||
+        options.humans.store.files.root !== store.files.root)
+    )
+      throw new DeliveryRunnerError('acceptance-stage-human-decisions-store')
   }
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation))
@@ -85,12 +105,13 @@ export class RunnerAcceptanceStages {
       contractDigest(request.host) !== contractDigest(this.options.identity)
     )
       throw new DeliveryRunnerError('acceptance-stage-original-binding')
-    const allowed =
-      basis.plan.policy.intervention === 'none' &&
-      grant.status === 'active' &&
-      grant.grant.decisions.includes('acceptance') &&
-      grant.grant.policy.delegations.some((entry) => entry.id === 'acceptance')
-    return { digest, basis, stage, allowed }
+    const supervised = !!this.options.humans && basis.plan.policy.intervention !== 'none',
+      allowed =
+        basis.plan.policy.intervention === 'none' &&
+        grant.status === 'active' &&
+        grant.grant.decisions.includes('acceptance') &&
+        grant.grant.policy.delegations.some((entry) => entry.id === 'acceptance')
+    return { digest, basis, stage, allowed, supervised }
   }
   private read(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
     const base = this.path(record.invocation)
@@ -149,8 +170,43 @@ export class RunnerAcceptanceStages {
       throw new DeliveryRunnerError('acceptance-stage-original-input-unavailable')
     return binding
   }
+  private readHuman(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    const path = `${this.path(record.invocation)}/human.json`
+    if (!existsSync(this.store.files.path(path))) return undefined
+    const binding = JSON.parse(
+      readSourceFile(this.store.files.root, path, 16384),
+    ) as AcceptanceHumanBinding
+    if (
+      Object.keys(binding).sort().join(',') !==
+        'at,deadline,invocation,plan,product,request,stage,version' ||
+      binding.version !== 1 ||
+      binding.request !== contractDigest(request) ||
+      binding.plan !== record.basis ||
+      binding.stage !== record.id ||
+      binding.invocation !== record.invocation ||
+      binding.product.status !== 'ready' ||
+      binding.product.provenance !== 'host-observed' ||
+      this.options.humans?.pending(request, record)?.subject !== productIdentity(binding.product)
+    )
+      throw new DeliveryRunnerError('acceptance-stage-human-binding')
+    return binding
+  }
   /** Original input identity is separate from the current acceptance verdict. */
   originalInput(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    if (this.context(request, record).supervised) {
+      const human = this.readHuman(request, record)
+      return human
+        ? {
+            product: structuredClone(human.product),
+            artifact: {
+              ref: `delivery/runner-human-decisions/${record.invocation}/request.json`,
+              sha256: productIdentity(human.product),
+            },
+            deadline: human.deadline,
+            evidence: contractDigest(human),
+          }
+        : undefined
+    }
     const binding = this.read(request, record)
     if (!binding) return undefined
     return {
@@ -191,6 +247,43 @@ export class RunnerAcceptanceStages {
       !['prepared', 'running'].includes(record.status)
     )
       throw new DeliveryRunnerError('acceptance-stage-context-binding')
+    if (pinned.supervised) {
+      const ready = await this.readiness.inspect(context.request)
+      current()
+      if (ready.status !== 'ready' || ready.provenance !== 'host-observed')
+        return this.inspect(context.request, record)
+      // Publishing what a person must accept is core metadata work, not a judgment.
+      if (!record.runtime)
+        context.started({
+          backend: 'owned-core',
+          instance: record.invocation,
+          worker: `pid-${process.pid}`,
+        })
+      current()
+      const started = this.store.stage(digest, record.id) ?? record,
+        human: AcceptanceHumanBinding = {
+          version: 1,
+          request: digest,
+          plan: record.basis,
+          stage: record.id,
+          invocation: record.invocation,
+          at: new Date().toISOString(),
+          deadline: context.deadline,
+          product: ready,
+        }
+      safeSourceText(JSON.stringify(human), 16384)
+      this.store.files.locked(() => {
+        const path = `${this.path(record.invocation)}/human.json`
+        if (!existsSync(this.store.files.path(path)))
+          this.store.files.atomic(path, `${JSON.stringify(human)}\n`)
+      })
+      const bound = JSON.parse(
+        readSourceFile(this.store.files.root, `${this.path(record.invocation)}/human.json`, 16384),
+      ) as AcceptanceHumanBinding
+      if (productIdentity(bound.product) === productIdentity(ready))
+        this.options.humans?.open(context.request, started, productIdentity(ready))
+      return this.inspect(context.request, this.store.stage(digest, record.id) ?? record)
+    }
     if (!pinned.allowed) return this.inspect(context.request, record)
     const base = this.path(record.invocation),
       original = this.read(context.request, record)
@@ -282,6 +375,7 @@ export class RunnerAcceptanceStages {
       invocationState: RunnerStageObservation['invocationState'] = 'unknown',
       decisions: string[] = []
     const proofs: unknown[] = []
+    if (this.context(request, record).supervised) return this.inspectHuman(request, record)
     try {
       const pinned = this.context(request, record),
         binding = this.read(request, record),
@@ -370,6 +464,73 @@ export class RunnerAcceptanceStages {
         status === 'passed'
           ? 'Complete current whole-product QA and its independent authorized acceptance decision pass; no human approval or publication is inferred.'
           : 'Original product inputs, bounded native acceptance and current independent decisions remain required; no human approval or replay is inferred.',
+    }
+  }
+  /** A person's recorded acceptance of the exact unchanged product, never an inferred one. */
+  private async inspectHuman(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+  ): Promise<RunnerStageObservation> {
+    let status: RunnerStageObservation['status'] = 'unknown',
+      provenance: RunnerStageObservation['provenance'] = 'fixture',
+      invocationState: RunnerStageObservation['invocationState'] = 'unknown'
+    const proofs: unknown[] = []
+    try {
+      const humans = this.options.humans
+      if (!humans) throw new DeliveryRunnerError('acceptance-stage-human-decisions-required')
+      const opened = humans.pending(request, record)
+      if (!opened) {
+        status = record.runtime ? 'unknown' : 'blocked'
+        invocationState = record.runtime ? 'unknown' : 'not-started'
+      } else {
+        const decision = humans.decided(request, record),
+          ready = await this.readiness.inspect(request),
+          after = humans.decided(request, record)
+        proofs.push({ opened, decision, ready })
+        invocationState = 'stopped'
+        provenance = 'host-observed'
+        const bound = this.readHuman(request, record),
+          current =
+            !!bound &&
+            ready.status === 'ready' &&
+            ready.provenance === 'host-observed' &&
+            productIdentity(ready) === opened.subject &&
+            contractDigest(decision ?? null) === contractDigest(after ?? null)
+        status = !decision
+          ? 'pending'
+          : decision.outcome === 'reject'
+            ? 'blocked'
+            : current && record.runtime
+              ? 'passed'
+              : 'unknown'
+        if (status === 'unknown') provenance = 'fixture'
+      }
+    } catch {
+      status = 'unknown'
+      provenance = 'fixture'
+    }
+    return {
+      schema: 'wholeloop/delivery-runner-stage-observation@1',
+      request: contractDigest(request),
+      plan: record.basis,
+      stage: record.id,
+      invocation: record.invocation,
+      status,
+      provenance,
+      invocationState,
+      decisions: [],
+      evidence: contractDigest({
+        request: contractDigest(request),
+        record: { id: record.id, invocation: record.invocation, basis: record.basis },
+        status,
+        proofs,
+      }),
+      reason:
+        status === 'passed'
+          ? 'A person accepted the exact current whole product; publication remains separate.'
+          : status === 'pending'
+            ? 'A person must accept or reject the exact current whole product.'
+            : 'The recorded human decision, its exact product or current QA is unavailable; nothing is inferred.',
     }
   }
   async stop(

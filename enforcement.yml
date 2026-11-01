@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-recorded-human-decisions
+    enforcers: [src/runner/human-decisions.ts#RunnerHumanDecisions, src/runner/human-decisions.ts#record, src/runner/acceptance-stages.ts#inspectHuman, src/runner/builder-planning-stages.ts#execute, src/runner/plan-stages.ts#execute, src/runner/handoff-stages.ts#proof, src/runner/engine.ts#DeliveryRunner, src/cli/delivery-runner.ts#deliveryRunnerCommand, test/unit/runner/cli.test.ts, test/unit/runner/engine.test.ts, test/unit/runner/builder-planning-stages.test.ts, test/unit/runner/plan-stages.test.ts, test/unit/runner/acceptance-stages.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-review-reentry-verification
     enforcers: [src/runner/route.ts#runnerRoute, src/runner/verification-stages.ts#attest, src/runner/verification-stages.ts#inspectAttestation, src/runner/verification-stages.ts#execute, src/runner/unit-readiness.ts#RunnerUnitReadiness, test/unit/runner/route.test.ts, test/unit/runner/verification-stages.test.ts, test/evals/runner/reverification.ts]
   - id: delivery-static-dispatch-preflight

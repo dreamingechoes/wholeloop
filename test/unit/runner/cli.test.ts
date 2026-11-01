@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import output from '../../../src/cli/schemas/output-v1.json' with { type: 'json' }
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { RunnerHumanDecisions } from '../../../src/runner/human-decisions.js'
 import type { RunnerRequest } from '../../../src/runner/store.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { authorization, fixture } from '../../support/delivery.js'
@@ -99,4 +100,81 @@ describe('public runner preparation and operator controls', () => {
       invoke(['delivery', 'runner-status', '--result', 'forged.json'], process.cwd()).code,
     ).toBe(4)
   })
+})
+
+describe('recorded human decisions through the operator command', () => {
+  it.each(['supervised', 'none'] as const)(
+    'records only the exact subject a waiting %s stage published',
+    async (intervention) => {
+      await fixture(({ planning, plan, dir }) => {
+        plan.policy.intervention = intervention
+        const store = new RunnerStore(planning.sources.files.root),
+          prepared = planning.preparePlan(plan),
+          grant = store.lifecycle.authority.authorize(authorization(plan, prepared.digest))
+        store.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
+        const request: RunnerRequest = {
+            schema: 'wholeloop/delivery-runner-request@1',
+            key: 'human',
+            run: plan.run,
+            revision: 1,
+            plan: prepared.digest,
+            grant: grant.grant.id,
+            host: { id: 'fixture', version: '1', configuration: 'a'.repeat(64) },
+            pollMs: 50,
+          },
+          digest = store.prepare(request).digest,
+          lease = store.claim(digest, `controller-${'a'.repeat(32)}`),
+          subject = 'c'.repeat(64),
+          decide = (outcome: string, selected = subject) =>
+            invoke(
+              [
+                'delivery',
+                'human-decide',
+                '--digest',
+                digest,
+                '--stage',
+                'plan',
+                '--decision',
+                'delivery-plan',
+                '--subject',
+                selected,
+                '--outcome',
+                outcome,
+                '--operator',
+                'Fixture Owner',
+                '--store',
+                store.files.root,
+              ],
+              dir,
+            )
+        store.append(lease, { action: 'dispatched', stage: 'plan', invocation: 'b'.repeat(64) })
+        const record = store.stage(digest, 'plan'),
+          humans = new RunnerHumanDecisions(store)
+        if (!record) throw new Error('Original issued stage required')
+        expect(decide('accept').code).toBe(3)
+        if (intervention === 'none') {
+          expect(() => humans.open(request, record, subject)).toThrow('human-decision-unavailable')
+          expect(humans.decided(request, record)).toBeUndefined()
+          return
+        }
+        humans.open(request, record, subject)
+        expect(decide('accept', 'd'.repeat(64)).code).toBe(3)
+        expect(humans.decided(request, record)).toBeUndefined()
+        const accepted = decide('accept')
+        expect(accepted.code).toBe(0)
+        expect(outputProblems(accepted.value)).toEqual([])
+        expect(accepted.value).toMatchObject({
+          schema: 'wholeloop/delivery-human-decision@1',
+          decision: 'delivery-plan',
+          subject,
+          outcome: 'accept',
+          by: 'Fixture Owner',
+        })
+        expect(decide('accept')).toEqual(accepted)
+        expect(decide('reject').code).toBe(3)
+        expect(humans.decided(request, record)).toEqual(accepted.value)
+        expect(() => humans.open(request, record, 'd'.repeat(64))).toThrow('human-decision-subject')
+      })
+    },
+  )
 })

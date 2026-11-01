@@ -19,6 +19,8 @@ interface AcceptedProduct {
   record: string
   evidence: string
   decisions: string[]
+  /** A recorded human acceptance replaces delegated decisions only where intervention is permitted. */
+  human?: string
   input: NonNullable<ReturnType<RunnerAcceptanceStages['originalInput']>>
 }
 interface HandoffOrigin {
@@ -79,13 +81,18 @@ export class RunnerHandoffStages {
     if (!input?.product.candidate)
       throw new DeliveryRunnerError('handoff-original-product-required')
     const observed = await this.acceptance.inspect(request, record),
-      after = this.acceptance.originalInput(request, record)
+      after = this.acceptance.originalInput(request, record),
+      human =
+        this.store.basis(request).plan.policy.intervention !== 'none'
+          ? this.acceptance.options.humans?.decided(request, record)
+          : undefined,
+      humanAccepted = human?.outcome === 'accept' && human.subject === input.artifact.sha256
     if (
       observed.status !== 'passed' ||
       observed.invocationState !== 'stopped' ||
       observed.provenance !== 'host-observed' ||
       observed.evidence !== record.evidence ||
-      !observed.decisions?.length ||
+      (!observed.decisions?.length && !humanAccepted) ||
       contractDigest(input) !== contractDigest(after) ||
       contractDigest(record) !== contractDigest(this.store.stage(digest, 'acceptance'))
     )
@@ -94,7 +101,8 @@ export class RunnerHandoffStages {
       invocation: record.invocation,
       record: contractDigest(record),
       evidence: observed.evidence,
-      decisions: [...observed.decisions],
+      decisions: [...(observed.decisions ?? [])],
+      ...(humanAccepted ? { human: contractDigest(human) } : {}),
       input,
     }
   }

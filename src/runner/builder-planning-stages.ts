@@ -11,6 +11,7 @@ import {
 import { RunnerDecisionStages } from './decision-stages.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
+import { RunnerHumanDecisions } from './human-decisions.js'
 import { RunnerNativeScope } from './native-scope.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
@@ -19,6 +20,8 @@ export interface RunnerBuilderPlanningOptions {
   production: RunnerArtifactOptions
   decision(context: RunnerStageContext, production: Readonly<RunnerArtifactResult>): DecisionRequest
   host(process: NativeProcessRunner): NativeDelegatedDecisionHost
+  /** Opt-in: permitted intervention waits for recorded human decisions. */
+  humans?: RunnerHumanDecisions
 }
 
 /** An observed proposal needs its own delegated judgment before a builder may run. */
@@ -29,6 +32,12 @@ export class RunnerBuilderPlanningStages {
     readonly store: RunnerStore,
     readonly options: RunnerBuilderPlanningOptions,
   ) {
+    if (
+      options.humans &&
+      (!(options.humans instanceof RunnerHumanDecisions) ||
+        options.humans.store.files.root !== store.files.root)
+    )
+      throw new DeliveryRunnerError('builder-planning-stage-human-decisions-store')
     this.artifacts = new RunnerArtifactStages(store, options.production)
     this.decisions = new RunnerDecisionStages(store, options.production.identity)
   }
@@ -64,6 +73,7 @@ export class RunnerBuilderPlanningStages {
     evidence: unknown,
     provenance: RunnerStageObservation['provenance'],
     decisions: string[] = [],
+    reason?: string,
   ): RunnerStageObservation {
     return {
       schema: 'wholeloop/delivery-runner-stage-observation@1',
@@ -77,9 +87,10 @@ export class RunnerBuilderPlanningStages {
       provenance,
       decisions,
       reason:
-        status === 'passed'
+        reason ??
+        (status === 'passed'
           ? 'The exact original builder plan has an independently supported delegated decision; implementation, QA and acceptance remain separate.'
-          : 'Retain the original proposal, decision and budgets; no builder launch or human approval is inferred.',
+          : 'Retain the original proposal, decision and budgets; no builder launch or human approval is inferred.'),
     }
   }
   async execute(context: RunnerStageContext): Promise<RunnerStageObservation> {
@@ -98,6 +109,22 @@ export class RunnerBuilderPlanningStages {
     )
       throw new DeliveryRunnerError('builder-planning-stage-not-current')
     const grant = this.store.lifecycle.authority.inspect(context.request.grant)
+    // Permitted intervention produces the same plan, then waits for a person to approve it.
+    const humans = this.options.humans
+    if (humans && context.plan.policy.intervention !== 'none' && grant.status === 'active') {
+      const produced = await this.artifacts.execute(context)
+      if (
+        produced.status === 'ready' &&
+        produced.provenance === 'host-observed' &&
+        produced.artifact
+      )
+        humans.open(
+          context.request,
+          this.store.stage(pinned.digest, record.id) ?? record,
+          produced.artifact.sha256,
+        )
+      return this.inspect(context.request, this.store.stage(pinned.digest, record.id) ?? record)
+    }
     if (
       context.plan.policy.intervention !== 'none' ||
       grant.status !== 'active' ||
@@ -153,6 +180,30 @@ export class RunnerBuilderPlanningStages {
         produced,
         produced.provenance,
       )
+    const humans = this.options.humans
+    if (humans && this.store.basis(request).plan.policy.intervention !== 'none') {
+      const opened = humans.pending(request, record),
+        decision = humans.decided(request, record),
+        closed = produced.invocationState === 'stopped'
+      return this.observation(
+        request,
+        record,
+        !closed || !opened || opened.subject !== produced.artifact?.sha256
+          ? 'unknown'
+          : !decision
+            ? 'pending'
+            : decision.outcome === 'accept'
+              ? 'passed'
+              : 'blocked',
+        closed ? 'stopped' : 'unknown',
+        { produced, opened: opened ?? null, decision: decision ?? null },
+        closed && opened ? 'host-observed' : 'fixture',
+        [],
+        decision?.outcome === 'accept'
+          ? 'A person approved the exact original builder plan; implementation and QA remain separate.'
+          : 'The exact builder plan awaits, or was refused, a recorded human approval; nothing is inferred.',
+      )
+    }
     const decision = await this.decisions.inspect(request, record),
       calls = new RunnerNativeScope(this.store.files, record.invocation).inspect(),
       closed = produced.invocationState === 'stopped' && decision.invocationState === 'stopped',

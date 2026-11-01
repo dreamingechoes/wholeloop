@@ -270,7 +270,7 @@ The internal environment backend can also capture original parent bounds across 
 The provisioning backend also retains a private copy of the original request across asynchronous preflight, preventing caller-owned substitutions from changing later effect/resource identity. This correction does not close root preparation or any item below. Delivery journal reads also reuse one validated replay for identical current segment bytes, so the composed product-environment route completes inside its unchanged original window; this is a cost correction, not new capability.
 
 - Complete-route configuration and runtime preflight, product-environment preparation, public foreground execution and endpoint/reconciliation commands.
-- Supervised/manual acceptance and remaining route-specific decision composition.
+- Supervised definition approvals and remaining route-specific decision composition. Plan, build-plan and acceptance decisions can now be recorded by a person for supervised routes (ADR-0178).
 - Complete integration/acceptance invalidation and continuation after later repairs. Review-triggered corrections are now verified again by a fixed re-entry stage (ADR-0177).
 - Research-report production and complete unattended research route composition.
 - Hosted endpoint composition with the publication/CI/conditional-merge work in P6-20–P6-24.

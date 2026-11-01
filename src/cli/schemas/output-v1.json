@@ -11635,6 +11635,38 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "schema",
+        "request",
+        "plan",
+        "stage",
+        "invocation",
+        "decision",
+        "subject",
+        "outcome",
+        "by",
+        "note",
+        "at"
+      ],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-human-decision@1"
+        },
+        "request": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "plan": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "stage": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "invocation": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "decision": { "enum": ["delivery-plan", "approve-build-plan", "acceptance"] },
+        "subject": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "outcome": { "enum": ["accept", "reject"] },
+        "by": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "note": { "type": "string", "maxLength": 4096 },
+        "at": { "type": "string", "minLength": 1, "maxLength": 64 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["schema", "contracts", "executed", "completeRouteAvailable"],
       "properties": {
         "schema": {

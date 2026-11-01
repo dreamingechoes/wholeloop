@@ -1,5 +1,6 @@
 import { resolve } from 'node:path'
 import { readSourceFile } from '../delivery/input.js'
+import { type RunnerHumanDecision, RunnerHumanDecisions } from '../runner/human-decisions.js'
 import { DeliveryRunnerError } from '../runner/route.js'
 import event from '../runner/schemas/event-v1.json' with { type: 'json' }
 import facet from '../runner/schemas/facet-v1.json' with { type: 'json' }
@@ -39,6 +40,31 @@ export function deliveryRunnerCommand(
     const store = new RunnerStore(
       typeof options['--store'] === 'string' ? resolve(root, options['--store']) : undefined,
     )
+    if (command === 'delivery human-decide') {
+      const value = (name: string) => {
+        const option = options[name]
+        if (typeof option !== 'string') throw new CliError(`Provide ${name}`, EXIT.input)
+        return option
+      }
+      const outcome = value('--outcome'),
+        decision = value('--decision')
+      if (!['accept', 'reject'].includes(outcome))
+        throw new CliError('Provide --outcome accept or reject', EXIT.input)
+      if (!['delivery-plan', 'approve-build-plan', 'acceptance'].includes(decision))
+        throw new CliError('Provide a supported --decision', EXIT.input)
+      // The operator command is the only human channel; workers cannot write this record.
+      const recorded = new RunnerHumanDecisions(store).record({
+        request: value('--digest'),
+        stage: value('--stage'),
+        decision: decision as RunnerHumanDecision,
+        subject: value('--subject'),
+        outcome: outcome as 'accept' | 'reject',
+        by: value('--operator'),
+        ...(typeof options['--note'] === 'string' ? { note: options['--note'] } : {}),
+      })
+      io.out(JSON.stringify(recorded, null, json ? undefined : 2))
+      return EXIT.ok
+    }
     let receipt: ReturnType<RunnerStore['inspect']>
     if (command === 'delivery runner-prepare') {
       const file = options['--file'],

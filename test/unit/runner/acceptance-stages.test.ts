@@ -6,6 +6,7 @@ import { sourceHash } from '../../../src/delivery/input.js'
 import { RunnerAcceptanceStages } from '../../../src/runner/acceptance-stages.js'
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
 import { RunnerFeatureReadiness } from '../../../src/runner/feature-readiness.js'
+import { RunnerHumanDecisions } from '../../../src/runner/human-decisions.js'
 import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.js'
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
@@ -227,3 +228,49 @@ it.each([
     )
   },
 )
+
+it('opens no supervised human acceptance until the complete current product is ready', async () => {
+  await runnerGitFixture(
+    async ({ store, request, dispatch }) => {
+      const context = dispatch('acceptance'),
+        humans = new RunnerHumanDecisions(store),
+        reader = new RunnerFeatureReadiness(
+          store,
+          new RunnerIntegrationStages(
+            store,
+            new RunnerAssemblyReadiness(store, new RunnerMilestoneReadiness(store, new Map())),
+          ),
+        ),
+        deny = () => {
+          throw new Error('Supervised acceptance never selects a delegated judgment')
+        },
+        stages = new RunnerAcceptanceStages(store, reader, {
+          identity: request.host,
+          requests: deny,
+          host: deny,
+          humans,
+        }),
+        before = contractDigest(store.lifecycle.journal.events())
+      expect(
+        () =>
+          new RunnerAcceptanceStages(store, reader, {
+            identity: request.host,
+            requests: deny,
+            host: deny,
+            humans: new RunnerHumanDecisions(new RunnerStore(store.files.path('foreign-state'))),
+          }),
+      ).toThrow('acceptance-stage-human-decisions-store')
+      expect(await stages.execute(context)).toMatchObject({
+        status: 'blocked',
+        invocationState: 'not-started',
+      })
+      const record = store.stage(contractDigest(request), 'acceptance')
+      if (!record) throw new Error('Original acceptance stage required')
+      expect(record.runtime).toBeUndefined()
+      expect(humans.pending(request, record)).toBeUndefined()
+      expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+      expect(contractDigest(store.lifecycle.journal.events())).toBe(before)
+    },
+    { singleUnit: true },
+  )
+})

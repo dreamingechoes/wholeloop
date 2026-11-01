@@ -46,6 +46,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl delivery pause` | `wholeloop/delivery-runner-status@1` | Pause dispatch without deleting owned work or renewing budgets |
 | `wl delivery resume` | `wholeloop/delivery-runner-status@1` | Resume the same run after original ownership is resolved |
 | `wl delivery stop` | `wholeloop/delivery-runner-status@1` | Request owned cancellation without asserting process termination |
+| `wl delivery human-decide` | `wholeloop/delivery-human-decision@1` | Record a person's decision on the exact subject a waiting stage published |
 | `wl delivery decision-schema` | `wholeloop/delegated-decision-schema@1` | Show delegated decision contracts without executing a host |
 | `wl delivery decision-pin` | `wholeloop/delegated-decision-pins@1` | Pin decision-specific rubrics from an active original private grant |
 | `wl delivery decision-preflight` | `wholeloop/delegated-decision-preflight@1` | Inspect delegation scope without certifying runtime capability |

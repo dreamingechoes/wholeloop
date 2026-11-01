@@ -139,12 +139,13 @@ export class DeliveryRunner {
             ),
           Math.min(5000, this.remaining(request)),
         )
+        // A person may decide later only where intervention is permitted;
+        // that stage then waits for input instead of prompting.
         if (
           !preflight.available ||
           !preflight.value.available ||
-          preflight.value.humanRequired ||
           (context.plan.policy.intervention === 'none' &&
-            preflight.value.interactive !== 'disabled')
+            (preflight.value.humanRequired || preflight.value.interactive !== 'disabled'))
         )
           return this.limit(
             lease,
@@ -245,7 +246,9 @@ export class DeliveryRunner {
                 ? 'failed'
                 : context.plan.policy.intervention === 'none'
                   ? 'blocked'
-                  : 'paused',
+                  : status === 'pending'
+                    ? 'waiting-input'
+                    : 'paused',
               `The ${stage.kind} stage is ${status}; retain its original invocation and evidence.`,
             )
           }
@@ -658,7 +661,7 @@ export class DeliveryRunner {
   }
   private limit(
     lease: RunnerLease,
-    to: 'blocked' | 'failed' | 'paused' | 'exhausted' | 'stopped',
+    to: 'blocked' | 'failed' | 'paused' | 'waiting-input' | 'exhausted' | 'stopped',
     reason: string,
   ) {
     const request = this.store.get(lease.request),
@@ -670,7 +673,7 @@ export class DeliveryRunner {
       this.store.lifecycle.transition(request.run, {
         to: target,
         reason,
-        ...(target === 'paused' ? {} : { outcome: target }),
+        ...(target === 'paused' || target === 'waiting-input' ? {} : { outcome: target }),
       })
     }
     return this.store.inspect(lease.request)

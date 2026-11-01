@@ -50,6 +50,22 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Request owned cancellation without asserting process termination',
   },
   {
+    path: 'delivery human-decide',
+    arguments: '',
+    options: [
+      '--digest <sha256>',
+      '--stage <id>',
+      '--decision <id>',
+      '--subject <sha256>',
+      '--outcome <accept|reject>',
+      '--operator <person>',
+      '--note <text>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/delivery-human-decision@1',
+    summary: "Record a person's decision on the exact subject a waiting stage published",
+  },
+  {
     path: 'delivery decision-schema',
     arguments: '',
     options: [],

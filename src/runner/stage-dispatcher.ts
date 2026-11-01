@@ -132,14 +132,24 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     if (!this.coverage(plan as DeliveryPlan).complete)
       return unavailable('dispatcher-unsupported-stage')
     if (signal.aborted) throw new DeliveryRunnerError('dispatcher-preflight-cancelled')
-    // Fixed adapters only compose explicitly delegated judgments.
+    // People decide through recorded human decisions, never an interactive prompt.
+    // Supervised definition approvals have no recorded-decision composition yet.
     if (plan.policy.intervention !== 'none')
-      return {
-        available: true,
-        interactive: 'unverified' as const,
-        humanRequired: true,
-        reason: 'dispatcher-supervised-decisions-unavailable',
-      }
+      return route.some((stage) => stage.kind === 'definition')
+        ? unavailable('dispatcher-supervised-definition-unavailable')
+        : route.some(
+              (stage) =>
+                (stage.kind === 'plan' && !this.adapters.plan?.options.humans) ||
+                (stage.kind === 'build-plan' && !this.adapters['build-plan']?.options.humans) ||
+                (stage.kind === 'acceptance' && !this.adapters.acceptance?.options.humans),
+            )
+          ? unavailable('dispatcher-human-decisions-required')
+          : {
+              available: true,
+              interactive: 'disabled' as const,
+              humanRequired: true,
+              reason: 'dispatcher-recorded-human-decisions',
+            }
     return {
       available: true,
       interactive: 'disabled' as const,

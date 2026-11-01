@@ -169,5 +169,15 @@ Run npm run eval:runner-assembly-readiness -- --dispatcher --retire-success to e
 
 The dispatcher is also a complete foreground runner host. Its preflight is static and effect-free: it binds the request's identity, current plan and exact derived route, requires a fixed product input for every integration milestone and an adapter for every stage, and reports a person required for supervised or on-exception plans. Only a fully covered none-policy route is available with interactive tools disabled. Native runtime proof and Docker availability remain observed per stage. See [ADR-0176](../decisions/0176-static-fixed-dispatch-route-preflight.md).
 
+## Record a person's decision on a supervised route
+
+Supervised and on-exception routes keep people at their decision points. When the plan, build-plan and acceptance adapters are configured with recorded human decisions, each publishes the exact subject a person must judge: the envelope-derived plan, the produced builder plan or the current whole product. An exact-plan grant needs no further plan decision. The stage reports pending and the run waits for input; nothing prompts. Record the decision with the operator command, naming the subject digest from the stage's request:
+
+```bash
+wl delivery human-decide --digest <request> --stage acceptance --decision acceptance --subject <sha256> --outcome accept --operator "Your Name" --note "Ran the exact product locally"
+```
+
+A different subject, a none-policy run or a conflicting second decision refuses. Reconcile then observes the stage, resume returns the same run to the queue, and the local handoff accepts the recorded human acceptance of that exact product. Run npm run eval:runner-assembly-readiness -- --human-acceptance --retire-success for the Docker composition through code-ready. See [ADR-0178](../decisions/0178-recorded-human-decisions-for-supervised-routes.md).
+
 <!-- docnav -->
 [◀ Integrated milestone candidates](delivery-integration-candidates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

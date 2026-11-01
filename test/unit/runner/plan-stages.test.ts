@@ -2,6 +2,7 @@ import { chmodSync, renameSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { RunnerHumanDecisions } from '../../../src/runner/human-decisions.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerNativeStage } from '../../../src/runner/native-stage.js'
 import { RunnerPlanStages } from '../../../src/runner/plan-stages.js'
@@ -166,4 +167,52 @@ describe('current immutable plan authorization', () => {
       expect(calls(f)).toEqual([])
     })
   })
+})
+
+describe('supervised plans with recorded human decisions', () => {
+  it('passes an exact-plan grant as owned metadata without asking a person again', async () => {
+    await setup(
+      async (f) => {
+        const humans = new RunnerHumanDecisions(f.store),
+          stages = new RunnerPlanStages(f.store, { ...f.options, humans })
+        expect(await stages.execute(f.context)).toMatchObject({
+          status: 'passed',
+          invocationState: 'stopped',
+          decisions: [],
+        })
+        expect(record(f).runtime?.backend).toBe('owned-core')
+        expect(humans.pending(f.context.request, record(f))).toBeUndefined()
+        expect(calls(f)).toEqual([])
+      },
+      { delegate: false, withinEnvelope: false },
+    )
+  })
+  it.each(['accept', 'reject'] as const)(
+    'waits for a person to %s the exact envelope-derived plan',
+    async (outcome) => {
+      await setup(
+        async (f) => {
+          const humans = new RunnerHumanDecisions(f.store),
+            stages = new RunnerPlanStages(f.store, { ...f.options, humans })
+          expect(await stages.execute(f.context)).toMatchObject({ status: 'pending' })
+          const opened = humans.pending(f.context.request, record(f))
+          if (!opened) throw new Error('Published human request required')
+          expect(opened.decision).toBe('delivery-plan')
+          humans.record({
+            request: contractDigest(f.context.request),
+            stage: record(f).id,
+            decision: 'delivery-plan',
+            subject: opened.subject,
+            outcome,
+            by: 'Fixture Owner',
+          })
+          expect(await stages.inspect(f.context.request, record(f))).toMatchObject({
+            status: outcome === 'accept' ? 'passed' : 'blocked',
+          })
+          expect(calls(f)).toEqual([])
+        },
+        { delegate: false },
+      )
+    },
+  )
 })

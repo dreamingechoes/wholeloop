@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -28,6 +29,7 @@ import { RunnerEnvironmentScope } from '../../../src/runner/environment-scope.js
 import { RunnerFeatureReadiness } from '../../../src/runner/feature-readiness.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
 import { RunnerHandoffStages } from '../../../src/runner/handoff-stages.js'
+import { RunnerHumanDecisions } from '../../../src/runner/human-decisions.js'
 import { RunnerIntegrationStages } from '../../../src/runner/integration-stages.js'
 import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
@@ -47,12 +49,13 @@ if (!destination) throw new Error('Supply an external report directory')
 const checks: string[] = []
 const productQaFailure = process.argv.includes('--product-qa-failure'),
   acceptanceReject = process.argv.includes('--acceptance-reject'),
+  humanAcceptance = process.argv.includes('--human-acceptance'),
   productProduction = process.argv.includes('--product-production'),
   productEnvironment = productProduction || process.argv.includes('--product-environment'),
   producerResult = productEnvironment || process.argv.includes('--producer-result'),
   provisionOwner = producerResult || process.argv.includes('--provision-owner'),
   fixedDispatcher = provisionOwner || process.argv.includes('--dispatcher'),
-  localHandoff = fixedDispatcher || process.argv.includes('--handoff'),
+  localHandoff = fixedDispatcher || humanAcceptance || process.argv.includes('--handoff'),
   acceptanceStage = localHandoff || acceptanceReject || process.argv.includes('--acceptance'),
   productQaApi = process.argv.includes('--product-qa-api'),
   browserMismatch = process.argv.includes('--product-qa-browser-failure'),
@@ -679,16 +682,65 @@ await runnerSuiteFixture(
         acceptanceContext.deadline = new Date(
           Math.min(Date.parse(acceptanceContext.deadline), Date.now() + 120000),
         ).toISOString()
-        const acceptance = new RunnerAcceptanceStages(
-            store,
-            new RunnerFeatureReadiness(store, host),
-            runnerAcceptanceOptions(store, request, acceptanceReject ? 'reject' : 'accept'),
-          ),
-          accepted = fixedDispatcher
-            ? await new RunnerStageDispatcher(store, request.host, { acceptance }).execute(
-                acceptanceContext,
-              )
-            : await acceptance.execute(acceptanceContext)
+        const humans = humanAcceptance ? new RunnerHumanDecisions(store) : undefined,
+          acceptance = new RunnerAcceptanceStages(store, new RunnerFeatureReadiness(store, host), {
+            ...runnerAcceptanceOptions(store, request, acceptanceReject ? 'reject' : 'accept'),
+            ...(humans ? { humans } : {}),
+          })
+        let accepted = fixedDispatcher
+          ? await new RunnerStageDispatcher(store, request.host, { acceptance }).execute(
+              acceptanceContext,
+            )
+          : await acceptance.execute(acceptanceContext)
+        if (humans) {
+          assert.equal(accepted.status, 'pending', JSON.stringify(accepted))
+          assert.equal(accepted.decisions?.length, 0)
+          observe(accepted)
+          const record = store.stage(digest, acceptanceContext.stage.id)
+          assert.ok(record)
+          const opened = humans.pending(request, record)
+          assert.ok(opened)
+          assert.equal(opened.decision, 'acceptance')
+          assert.deepEqual(
+            new RunnerNativeScope(store.files, acceptanceContext.invocation).calls(),
+            [],
+          )
+          const decide = (subject: string) =>
+            spawnSync(
+              process.execPath,
+              [
+                join(process.cwd(), 'dist/wl.mjs'),
+                'delivery',
+                'human-decide',
+                '--digest',
+                digest,
+                '--stage',
+                'acceptance',
+                '--decision',
+                'acceptance',
+                '--subject',
+                subject,
+                '--outcome',
+                'accept',
+                '--operator',
+                'Fixture Owner',
+                '--note',
+                'Ran the exact assembled product locally.',
+                '--store',
+                store.files.root,
+                '--json',
+              ],
+              { encoding: 'utf8' },
+            )
+          assert.equal(decide('0'.repeat(64)).status, 3)
+          assert.equal(humans.decided(request, record), undefined)
+          const recorded = decide(opened.subject)
+          assert.equal(recorded.status, 0, recorded.stderr)
+          accepted = await acceptance.inspect(request, record)
+          checks.push(
+            'supervised feature acceptance waits for a person to accept the exact current product through the operator command, launching no judgment and refusing a different product',
+          )
+        }
         assert.equal(
           accepted.status,
           acceptanceReject ? 'blocked' : 'passed',
@@ -696,41 +748,62 @@ await runnerSuiteFixture(
         )
         assert.equal(accepted.invocationState, 'stopped')
         assert.equal(accepted.provenance, 'host-observed')
-        assert.equal(accepted.decisions?.length, 1)
+        assert.equal(accepted.decisions?.length, humans ? 0 : 1)
         observe(accepted)
-        const calls = new RunnerNativeScope(store.files, acceptanceContext.invocation).inspect(),
-          before = contractDigest(store.lifecycle.journal.events()),
-          path = store.files.path(
-            `delivery/runner-acceptance/${acceptanceContext.invocation}/binding.json`,
-          ),
-          retained = `${path}.observed-original`,
-          record = store.stage(digest, acceptanceContext.stage.id)
-        assert.ok(record)
-        assert.ok(calls.length >= 2)
-        assert.ok(calls.every((call) => call.observed.invocationState === 'stopped'))
-        acceptance.options.requests = deny
-        acceptance.options.host = deny
-        assert.equal(existsSync(retained), false)
-        try {
-          renameSync(path, retained)
-          assert.equal((await acceptance.inspect(request, record)).status, 'unknown')
-        } finally {
-          renameSync(retained, path)
+        if (humans) {
+          const record = store.stage(digest, acceptanceContext.stage.id),
+            path = store.files.path(
+              `delivery/runner-acceptance/${acceptanceContext.invocation}/human.json`,
+            ),
+            before = contractDigest(store.lifecycle.journal.events())
+          assert.ok(record)
+          try {
+            renameSync(path, `${path}.observed-original`)
+            assert.equal((await acceptance.inspect(request, record)).status, 'unknown')
+          } finally {
+            renameSync(`${path}.observed-original`, path)
+          }
+          assert.deepEqual(await acceptance.inspect(request, record), accepted)
+          assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+          checks.push(
+            'a lost human product binding stays unknown; exact restoration recovers the same human acceptance without the journal changing',
+          )
         }
-        assert.deepEqual(await acceptance.inspect(request, record), accepted)
-        assert.deepEqual(
-          new RunnerNativeScope(store.files, acceptanceContext.invocation).inspect(),
-          calls,
-        )
-        assert.equal(contractDigest(store.lifecycle.journal.events()), before)
-        checks.push(
-          acceptanceReject
-            ? 'complete original product QA remains unaccepted after an independent delegated rejection, with closed original native owners and no human prompt'
-            : 'complete original product QA joins independent delegated acceptance under its original deadline without human approval or publication',
-        )
-        checks.push(
-          'a lost consumed acceptance input remains unknown; exact restoration recovers identical original decisions and native owners without selecting judgment or changing the journal',
-        )
+        if (!humans) {
+          const calls = new RunnerNativeScope(store.files, acceptanceContext.invocation).inspect(),
+            before = contractDigest(store.lifecycle.journal.events()),
+            path = store.files.path(
+              `delivery/runner-acceptance/${acceptanceContext.invocation}/binding.json`,
+            ),
+            retained = `${path}.observed-original`,
+            record = store.stage(digest, acceptanceContext.stage.id)
+          assert.ok(record)
+          assert.ok(calls.length >= 2)
+          assert.ok(calls.every((call) => call.observed.invocationState === 'stopped'))
+          acceptance.options.requests = deny
+          acceptance.options.host = deny
+          assert.equal(existsSync(retained), false)
+          try {
+            renameSync(path, retained)
+            assert.equal((await acceptance.inspect(request, record)).status, 'unknown')
+          } finally {
+            renameSync(retained, path)
+          }
+          assert.deepEqual(await acceptance.inspect(request, record), accepted)
+          assert.deepEqual(
+            new RunnerNativeScope(store.files, acceptanceContext.invocation).inspect(),
+            calls,
+          )
+          assert.equal(contractDigest(store.lifecycle.journal.events()), before)
+          checks.push(
+            acceptanceReject
+              ? 'complete original product QA remains unaccepted after an independent delegated rejection, with closed original native owners and no human prompt'
+              : 'complete original product QA joins independent delegated acceptance under its original deadline without human approval or publication',
+          )
+          checks.push(
+            'a lost consumed acceptance input remains unknown; exact restoration recovers identical original decisions and native owners without selecting judgment or changing the journal',
+          )
+        }
         console.log(`Original feature acceptance observed: ${accepted.status}`)
         if (localHandoff) {
           const handoffContext = dispatch('handoff')
@@ -1050,7 +1123,6 @@ await runnerSuiteFixture(
   {
     backend: 'docker',
     production: true,
-    unattended: true,
     exit: 0,
     retain: true,
     productQa,
@@ -1061,7 +1133,9 @@ await runnerSuiteFixture(
     privateMismatch,
     productQaBrowser,
     browserMismatch,
-    acceptanceStage,
+    acceptanceStage: acceptanceStage && !humanAcceptance,
+    // Supervised acceptance keeps permitted intervention; every other mode stays unattended.
+    unattended: !humanAcceptance,
   },
 )
 const report = {

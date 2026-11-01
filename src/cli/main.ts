@@ -113,7 +113,9 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       return delegatedDecisionsCommand(command.path, parsed, root, json, io)
     if (
       command.path.startsWith('delivery runner-') ||
-      ['delivery pause', 'delivery resume', 'delivery stop'].includes(command.path)
+      ['delivery pause', 'delivery resume', 'delivery stop', 'delivery human-decide'].includes(
+        command.path,
+      )
     )
       return deliveryRunnerCommand(command.path, parsed, root, json, io)
     if (command.path.startsWith('delivery '))

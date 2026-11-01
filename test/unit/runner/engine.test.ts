@@ -237,3 +237,86 @@ describe('foreground runner refusals preserve truthful execution state', () => {
     })
   })
 })
+
+describe('recorded human decisions wait for input only where intervention is permitted', () => {
+  const ready = (humanRequired: boolean) => async () => ({
+    available: true,
+    interactive: 'disabled' as const,
+    humanRequired,
+    reason: 'Fixture route that records people outside the controller.',
+  })
+  it('blocks a none-policy route that would need a person before any dispatch', async () => {
+    await setup(async (store, request, host) => {
+      const prepared = store.prepare(request),
+        execute = vi.fn(host.execute)
+      const result = await new DeliveryRunner(store).run(prepared.digest, {
+        ...host,
+        preflight: ready(true),
+        execute,
+      })
+      expect(result).toMatchObject({ state: 'blocked', outcome: 'blocked' })
+      expect(execute).not.toHaveBeenCalled()
+      expect(store.record(prepared.digest).stages).toEqual([])
+    }, true)
+  })
+  it('waits for input on a pending supervised decision, then reconciles and resumes the same run', async () => {
+    await setup(async (store, request, host) => {
+      const prepared = store.prepare(request),
+        digest = prepared.digest
+      let decided = false
+      const observation = (
+        context: { stage: { id: string }; invocation: string; plan: unknown },
+        status: 'passed' | 'pending' | 'blocked',
+      ) => ({
+        schema: 'wholeloop/delivery-runner-stage-observation@1' as const,
+        request: digest,
+        plan: contractDigest(context.plan),
+        stage: context.stage.id,
+        invocation: context.invocation,
+        status,
+        invocationState: status === 'blocked' ? ('not-started' as const) : ('stopped' as const),
+        evidence: contractDigest({ status }),
+        provenance: 'host-observed' as const,
+        reason: `Fixture ${status} observation.`,
+      })
+      const human: DeliveryRunnerHost = {
+          ...host,
+          preflight: ready(true),
+          execute: async (context) => {
+            if (context.stage.id !== 'plan') return observation(context, 'blocked')
+            context.started({
+              backend: 'owned-core',
+              instance: context.invocation,
+              worker: `pid-${process.pid}`,
+            })
+            return observation(context, 'pending')
+          },
+          inspect: async (input, record) =>
+            observation(
+              {
+                stage: { id: record.id },
+                invocation: record.invocation,
+                plan: store.basis(input).plan,
+              },
+              decided ? 'passed' : 'pending',
+            ),
+        },
+        runner = new DeliveryRunner(store)
+      const waiting = await runner.run(digest, human)
+      expect(waiting).toMatchObject({ state: 'waiting-input', outcome: null })
+      expect(store.stage(digest, 'plan')?.status).toBe('pending')
+      expect(await runner.run(digest, human)).toMatchObject({ state: 'waiting-input' })
+      expect(() => store.control(digest, 'resume', 'Owner')).toThrow('unresolved-runner-ownership')
+      decided = true
+      await runner.reconcile(digest, human)
+      expect(store.stage(digest, 'plan')?.status).toBe('passed')
+      store.control(digest, 'resume', 'Owner')
+      const next = await runner.run(digest, human)
+      expect(next.state).toBe('paused')
+      expect(store.record(digest).stages.map((stage) => [stage.id, stage.status])).toEqual([
+        ['plan', 'passed'],
+        ['acceptance-definition', 'blocked'],
+      ])
+    })
+  })
+})

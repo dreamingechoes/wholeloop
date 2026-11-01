@@ -5,6 +5,7 @@ import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { RunnerArtifactStages } from '../../../src/runner/artifact-stages.js'
 import { RunnerBuilderPlanningStages } from '../../../src/runner/builder-planning-stages.js'
 import { RunnerDecisionStages } from '../../../src/runner/decision-stages.js'
+import { RunnerHumanDecisions } from '../../../src/runner/human-decisions.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerNativeStage } from '../../../src/runner/native-stage.js'
 import { runnerBuilderPlanningFixture as setup } from '../../support/runner-builder-planning.js'
@@ -243,5 +244,80 @@ describe('owned builder plans precede their delegated approval', () => {
         new RunnerNativeScope(fixture.store.files, fixture.context.invocation).calls(),
       ).toEqual([])
     })
+  })
+})
+
+describe('supervised builder plans wait for a recorded human approval', () => {
+  it.each(['accept', 'reject'] as const)(
+    "records only a person's %s decision on the exact produced plan",
+    async (outcome) => {
+      await setup(
+        async (f) => {
+          const humans = new RunnerHumanDecisions(f.store),
+            stages = new RunnerBuilderPlanningStages(f.store, {
+              ...f.options,
+              humans,
+              host: () => {
+                throw new Error('Supervised plans never construct a delegated judgment')
+              },
+            }),
+            waiting = await stages.execute(f.context)
+          expect(waiting).toMatchObject({
+            status: 'pending',
+            invocationState: 'stopped',
+            provenance: 'host-observed',
+            decisions: [],
+          })
+          const original = record(f),
+            opened = humans.pending(f.context.request, original)
+          if (!opened) throw new Error('Published human request required')
+          expect(opened.decision).toBe('approve-build-plan')
+          expect(() =>
+            humans.record({
+              request: contractDigest(f.context.request),
+              stage: original.id,
+              decision: 'approve-build-plan',
+              subject: 'f'.repeat(64),
+              outcome,
+              by: 'Fixture Owner',
+            }),
+          ).toThrow('human-decision-subject')
+          expect(await stages.inspect(f.context.request, original)).toMatchObject({
+            status: 'pending',
+          })
+          humans.record({
+            request: contractDigest(f.context.request),
+            stage: original.id,
+            decision: 'approve-build-plan',
+            subject: opened.subject,
+            outcome,
+            by: 'Fixture Owner',
+          })
+          expect(await stages.inspect(f.context.request, original)).toMatchObject({
+            status: outcome === 'accept' ? 'passed' : 'blocked',
+            decisions: [],
+          })
+          // Default adapters keep supervised plans out of production entirely.
+          expect(
+            await new RunnerBuilderPlanningStages(f.store, f.options).inspect(
+              f.context.request,
+              original,
+            ),
+          ).not.toMatchObject({ status: 'passed' })
+        },
+        { delegate: false, provenance: 'host-observed' },
+      )
+    },
+  )
+  it('asks no person to approve fixture-only production', async () => {
+    await setup(
+      async (f) => {
+        const humans = new RunnerHumanDecisions(f.store),
+          stages = new RunnerBuilderPlanningStages(f.store, { ...f.options, humans })
+        expect(await stages.execute(f.context)).not.toMatchObject({ status: 'passed' })
+        expect(humans.pending(f.context.request, record(f))).toBeUndefined()
+      },
+      { delegate: false },
+    )
   })
 })
