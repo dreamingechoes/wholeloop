@@ -81,14 +81,15 @@ export class RunnerPlanStages {
             grant.grant.decisions.includes(item.id) &&
             grant.grant.policy.delegations.some((d) => d.id === item.id),
         )
-    // Permitted intervention: an exact-plan grant already names these bytes; an
-    // envelope-derived plan waits for a person's recorded acceptance instead.
+    // Permitted intervention: an exact-plan grant already names these bytes. Effects
+    // under an envelope grant accept a derived plan only through current machine
+    // decisions, so a person's acceptance there could not authorize later stages.
     const supervised =
-        !!this.options.humans &&
-        prepared.plan.policy.intervention !== 'none' &&
-        grant.status === 'active',
-      human = supervised && grant.grant.basis.kind === 'envelope'
-    return { prepared, stage, artifact, required, allowed, grant, supervised, human }
+      !!this.options.humans &&
+      prepared.plan.policy.intervention !== 'none' &&
+      grant.status === 'active' &&
+      grant.grant.basis.kind === 'plan'
+    return { prepared, stage, artifact, required, allowed, grant, supervised }
   }
   async execute(context: RunnerStageContext): Promise<RunnerStageObservation> {
     const record = this.store.stage(contractDigest(context.request), context.stage.id)
@@ -118,12 +119,6 @@ export class RunnerPlanStages {
         worker: `pid-${process.pid}`,
       })
     }
-    if (pinned.human)
-      this.options.humans?.open(
-        context.request,
-        this.store.stage(contractDigest(context.request), record.id) ?? record,
-        pinned.artifact.sha256,
-      )
     if (
       pinned.allowed &&
       pinned.required.length &&
@@ -168,22 +163,8 @@ export class RunnerPlanStages {
       record.runtime?.backend === 'owned-core' &&
       record.runtime.instance === record.invocation &&
       /^pid-[1-9][0-9]*$/.test(record.runtime.worker)
-    if (pinned.supervised && closed) {
-      if (!pinned.human) status = owned ? 'passed' : 'unknown'
-      else {
-        const opened = this.options.humans?.pending(request, record),
-          decision = this.options.humans?.decided(request, record)
-        evidence = { artifact: pinned.artifact, opened: opened ?? null, decision: decision ?? null }
-        status =
-          !owned || opened?.subject !== pinned.artifact.sha256
-            ? 'unknown'
-            : !decision
-              ? 'pending'
-              : decision.outcome === 'accept'
-                ? 'passed'
-                : 'blocked'
-      }
-    } else if (pinned.allowed && closed) {
+    if (pinned.supervised && closed) status = owned ? 'passed' : 'unknown'
+    else if (pinned.allowed && closed) {
       if (!pinned.required.length) {
         // Exact-plan authorization already names these immutable bytes. A foreign
         // native prefix must not be laundered through that mechanical shortcut.
@@ -224,12 +205,8 @@ export class RunnerPlanStages {
       decisions,
       reason:
         status === 'passed'
-          ? pinned.human
-            ? 'A person accepted the exact envelope-derived plan; implementation and product acceptance remain separate.'
-            : 'The current immutable delivery plan is authorized by its exact grant or required independent decisions; no new revision, implementation or product acceptance is inferred.'
-          : status === 'pending'
-            ? 'A person must accept or reject the exact envelope-derived plan.'
-            : 'Retain the exact pinned plan and original decisions; no new revision, human approval or repeated judgment is inferred.',
+          ? 'The current immutable delivery plan is authorized by its exact grant or required independent decisions; no new revision, implementation or product acceptance is inferred.'
+          : 'Retain the exact pinned plan and original decisions; no new revision, human approval or repeated judgment is inferred.',
     }
   }
   async stop(

@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-01 · P6-10 correction — supervised dispatch requires exact-plan grants
+
+- Find a defect in the recorded-human-decisions increment: the supervised plan stage could pass an envelope-derived plan on a person's `delivery-plan` acceptance, but workspace allocation, worker context, provisioning, assembly and the acceptance store accept derived plans only through current machine decisions, so the next effect would refuse after spending budget. Narrow the composition: the opted-in plan stage passes only exact-plan grants and opens no human request under an envelope grant, and fixed-dispatch preflight reports dispatcher-supervised-envelope-unavailable before any dispatch. Build-plan and acceptance decisions are unchanged; the `delivery-plan` identity stays in the closed record and output contract. Add ADR-0181 and correct the tutorial, protocol rule and specification. P6-10 remains open at 60/88 overall and 20/34 expanded tasks complete.
+- Replace the two envelope plan-stage cases added in that increment with one stricter case expecting refusal with no human request, runtime or native call; the exact-plan case still passes. Targeted vitest related runs pass 76 tests in three files, all 409 runner cases pass, and every fast repository check passes. The supervised Docker evaluation uses an exact-plan grant and is unaffected. Remaining supervised work: one derived-plan acceptance rule that every effect check reads, covering a person's recorded acceptance of the exact plan digest.
+
+---
+
 ## 2026-11-01 · P6-10 owner decision proposed — trusted native bindings
 
 - Write the trusted native bindings decision as a Proposed record, `docs/decisions/0180-trusted-native-bindings.md`, with the most conservative default: trust no native client unless explicitly bound and never relax containment. It stays unindexed and unlinked until the owner settles it, as the documentation rules require for drafts. The owner's choice is recorded in manual verification with three options.

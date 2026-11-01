@@ -187,32 +187,20 @@ describe('supervised plans with recorded human decisions', () => {
       { delegate: false, withinEnvelope: false },
     )
   })
-  it.each(['accept', 'reject'] as const)(
-    'waits for a person to %s the exact envelope-derived plan',
-    async (outcome) => {
-      await setup(
-        async (f) => {
-          const humans = new RunnerHumanDecisions(f.store),
-            stages = new RunnerPlanStages(f.store, { ...f.options, humans })
-          expect(await stages.execute(f.context)).toMatchObject({ status: 'pending' })
-          const opened = humans.pending(f.context.request, record(f))
-          if (!opened) throw new Error('Published human request required')
-          expect(opened.decision).toBe('delivery-plan')
-          humans.record({
-            request: contractDigest(f.context.request),
-            stage: record(f).id,
-            decision: 'delivery-plan',
-            subject: opened.subject,
-            outcome,
-            by: 'Fixture Owner',
-          })
-          expect(await stages.inspect(f.context.request, record(f))).toMatchObject({
-            status: outcome === 'accept' ? 'passed' : 'blocked',
-          })
-          expect(calls(f)).toEqual([])
-        },
-        { delegate: false },
-      )
-    },
-  )
+  it('refuses an envelope-derived plan, which only machine decisions can authorize downstream', async () => {
+    await setup(
+      async (f) => {
+        const humans = new RunnerHumanDecisions(f.store),
+          stages = new RunnerPlanStages(f.store, { ...f.options, humans })
+        expect(await stages.execute(f.context)).toMatchObject({
+          status: 'blocked',
+          invocationState: 'not-started',
+        })
+        expect(humans.pending(f.context.request, record(f))).toBeUndefined()
+        expect(record(f).runtime).toBeUndefined()
+        expect(calls(f)).toEqual([])
+      },
+      { delegate: false },
+    )
+  })
 })

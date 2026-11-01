@@ -145,19 +145,22 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     if (plan.policy.intervention !== 'none')
       return route.some((stage) => stage.kind === 'definition')
         ? unavailable('dispatcher-supervised-definition-unavailable')
-        : route.some(
-              (stage) =>
-                (stage.kind === 'plan' && !this.adapters.plan?.options.humans) ||
-                (stage.kind === 'build-plan' && !this.adapters['build-plan']?.options.humans) ||
-                (stage.kind === 'acceptance' && !this.adapters.acceptance?.options.humans),
-            )
-          ? unavailable('dispatcher-human-decisions-required')
-          : {
-              available: true,
-              interactive: 'disabled' as const,
-              humanRequired: true,
-              reason: 'dispatcher-recorded-human-decisions',
-            }
+        : // Envelope effects accept derived plans only through machine decisions.
+          this.store.lifecycle.authority.inspect(request.grant).grant.basis.kind !== 'plan'
+          ? unavailable('dispatcher-supervised-envelope-unavailable')
+          : route.some(
+                (stage) =>
+                  (stage.kind === 'plan' && !this.adapters.plan?.options.humans) ||
+                  (stage.kind === 'build-plan' && !this.adapters['build-plan']?.options.humans) ||
+                  (stage.kind === 'acceptance' && !this.adapters.acceptance?.options.humans),
+              )
+            ? unavailable('dispatcher-human-decisions-required')
+            : {
+                available: true,
+                interactive: 'disabled' as const,
+                humanRequired: true,
+                reason: 'dispatcher-recorded-human-decisions',
+              }
     return {
       available: true,
       interactive: 'disabled' as const,

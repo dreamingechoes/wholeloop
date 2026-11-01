@@ -4,7 +4,7 @@
 
 ⛔ `delivery-research-dispatch-boundary`: fixed dispatch sends only a unit's research stage to the fixed worker adapter. Never register or run report-level research without the research host, and refuse routes whose milestones hold research work before any dispatch; never drop research criteria to finish.
 
-⛔ `delivery-recorded-human-decisions`: under permitted intervention, opted-in plan, build-plan and acceptance stages publish the exact subject a person must judge and wait for input; only the operator command records the person's decision for that subject, never a worker, profile or delegated host. None-policy runs never publish or record one. Pass only on an accepted, unchanged subject; a reject stays blocked.
+⛔ `delivery-recorded-human-decisions`: under permitted intervention, opted-in build-plan and acceptance stages publish the exact subject a person must judge and wait for input, and the plan stage passes only an exact-plan grant; only the operator command records the person's decision for that subject, never a worker, profile or delegated host. None-policy runs never publish or record one. Pass only on an accepted, unchanged subject; a reject stays blocked.
 
 ⛔ `delivery-review-reentry-verification`: implementation units end with a re-entry verification after review. Attest only an original verification that still reopens as passed at the exact current head, with no new work; otherwise verify the reviewed head afresh on its own subject and environment, leaving the original run and budget unchanged. Never borrow a verdict for changed bytes or restart corrections from the re-entry. Readiness prefers a passed re-entry.
 

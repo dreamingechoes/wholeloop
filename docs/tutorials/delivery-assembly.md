@@ -171,7 +171,7 @@ The dispatcher is also a complete foreground runner host. Its preflight is stati
 
 ## Record a person's decision on a supervised route
 
-Supervised and on-exception routes keep people at their decision points. When the plan, build-plan and acceptance adapters are configured with recorded human decisions, each publishes the exact subject a person must judge: the envelope-derived plan, the produced builder plan or the current whole product. An exact-plan grant needs no further plan decision. The stage reports pending and the run waits for input; nothing prompts. Record the decision with the operator command, naming the subject digest from the stage's request:
+Supervised and on-exception routes keep people at their decision points. When the plan, build-plan and acceptance adapters are configured with recorded human decisions, the build-plan and acceptance stages publish the exact subject a person must judge: the produced builder plan or the current whole product. The plan stage passes only an exact-plan grant, which already names the plan; envelope-derived plans stay refused until derived-plan authority accepts recorded human decisions ([ADR-0181](../decisions/0181-supervised-plans-require-exact-grants.md)). The stage reports pending and the run waits for input; nothing prompts. Record the decision with the operator command, naming the subject digest from the stage's request:
 
 ```bash
 wl delivery human-decide --digest <request> --stage acceptance --decision acceptance --subject <sha256> --outcome accept --operator "Your Name" --note "Ran the exact product locally"
