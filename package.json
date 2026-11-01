@@ -68,6 +68,7 @@
     "eval:runner-feature-readiness": "node scripts/check-runner-feature-readiness.mjs",
     "eval:runner-review": "node scripts/check-runner-review.mjs",
     "eval:runner-repairs": "node scripts/check-runner-repairs.mjs",
+    "eval:runner-faults": "node scripts/check-runner-faults.mjs",
     "eval:runner-definitions": "node scripts/check-runner-definitions.mjs",
     "eval:runner": "node scripts/check-runner.mjs",
     "eval:native-boundary": "node scripts/check-native-boundary.mjs"

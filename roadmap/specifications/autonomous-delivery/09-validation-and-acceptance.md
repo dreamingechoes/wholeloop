@@ -3,7 +3,7 @@
 > **TL;DR** — Validate the complete product route, recovery behavior and actual boundaries. Keep deterministic tests, synthetic native processes, local backend execution, real model runs and hosted effects as separate evidence classes. Native, interruption and hosted checks retain their own evidence requirements.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-26 original catalogs, private pinned standards, immutable external Git seeds and model-free controls are implemented and verified on macOS/Linux. Actual Chromium persistence controls have separate local backend evidence. P6-27–P6-28 and P6-32 remain accepted targets; native-model and hosted acceptance are not established by these controls. See the [fixture guide](../../../docs/tutorials/delivery-evaluation-fixtures.md).
+> **Status: 🚧 partial.** P6-26 original catalogs, private pinned standards, immutable external Git seeds and model-free controls are implemented and verified on macOS/Linux. Actual Chromium persistence controls have separate local backend evidence. P6-28 adds a retained fault table over every effect boundary with no duplicate effect ([ADR-0191](../../../docs/decisions/0191-effect-boundary-fault-evaluation.md)). P6-27 and P6-32 remain accepted targets; native-model and hosted acceptance are not established by these controls. See the [fixture guide](../../../docs/tutorials/delivery-evaluation-fixtures.md).
 
 ## Required scenarios
 

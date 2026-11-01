@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-01 · P6-28 · Effect-boundary fault evaluation — task complete
+
+- Add a fault table over the real effect ledger (ADR-0191) for all ten ledger operations under seven faults: a crash after prepare (recovered by a restarted ledger), a crash after issue, a lost response, an unavailable first read, a repeated observation, a denying host and revocation before issue. Every cell ends in its expected state with at most one write, refuses a second issue and re-observes without changing the journal. `npm run eval:runner-faults` runs the table and retains a report; it passed on the Linux x64 VM with 70 cells and no duplicate effect in 14 seconds.
+- Unit cases refuse a fenced worker's late completion and its stale-attempt effect while another run's events stay identical, and capture a checkpoint once across a restart. The ledger refuses fencing a started attempt, so the scenario stops the worker first, as a controller does. None-policy terminal behavior and actual controller interruption keep their existing public-runner, research, engine, foreground and process-recovery evidence.
+- P6-28 is ✅. The roadmap is now 66/88 overall: 26 expanded tasks complete, P6-33 awaiting native acceptance and seven pending, including P6-22 and P6-24 in progress. Markdown lint passes on 420 files. The complete check passes 3794 tests in 198 files, lint 1048, types, build, smoke, offline packaging on archive 944d7a87b95fb6071566de65b2ef7e48f41159382107582e8b18417ee2a19e74, docs 421, generators, harness 151 and Mermaid 36 in 557 seconds. Next: P6-29.
+
+---
+
 ## 2026-11-01 · P6-25 · Operator report, diagnostics and recovery bundles — task complete
 
 - Add `wl delivery report`, `wl delivery diagnostics`, `wl delivery recovery-export --include-private` and `wl delivery recovery-import` with four output contracts and appended compatibility fingerprints (ADR-0190). The report replays the journal read-only and gives one category per outcome, waits, effects, unresolved work and the exact next permitted commands. Diagnostics come from an allow-list of categories, digests and enumerated states and name what they exclude. A recovery bundle is written only on explicit private request, with per-file checksums. Import verifies every byte, refuses unlisted files, requires each repository to be rebound to a local repository holding its base, and archives the records under `delivery/imports` without touching the live journal, claims or grants.

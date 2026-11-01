@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 65 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 8 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 66 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 7 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -707,7 +707,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-28 · Crash, race and autonomy failure evaluations
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-26, P6-10, P6-06, P6-24
+**Status:** ✅ · **Size:** M · **Depends on:** P6-26, P6-10, P6-06, P6-24
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -717,13 +717,15 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] Every checkpoint/effect boundary has a retained fail/recover result with no duplicate effect.
-- [ ] Stale workers cannot complete or publish, and unrelated processes/resources remain unchanged.
-- [ ] None-policy missing facts/permissions/human requirements terminate honestly instead of waiting interactively.
+- [x] Every checkpoint/effect boundary has a retained fail/recover result with no duplicate effect.
+- [x] Stale workers cannot complete or publish, and unrelated processes/resources remain unchanged.
+- [x] None-policy missing facts/permissions/human requirements terminate honestly instead of waiting interactively.
 
 **Tests** — EVAL-04–EVAL-07 and EVAL-11, RUN-03–RUN-05: deterministic fault hosts plus actual controller/worker/backend interruption.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/09-validation-and-acceptance.md); recovery, eval limitations, troubleshooting.
+
+**Evidence** — A fault table over the real effect ledger ([ADR-0191](../docs/decisions/0191-effect-boundary-fault-evaluation.md)) runs all ten ledger operations under seven faults: a crash after prepare or issue, a lost response, an unavailable read, a repeated observation, a denying host and revocation before issue. All 70 cells end in their expected state with at most one write, refuse a second issue and re-observe without changing the journal. `npm run eval:runner-faults` passed and retained its report. Unit cases refuse a fenced worker's late completion and stale-attempt effect while another run's events stay identical, and capture a checkpoint once across a restart. None-policy terminal behavior rests on the existing public-runner, research and engine cases, and actual controller interruption on the foreground and process-recovery cases. The synthetic remote certifies ledger semantics only.
 
 ---
 
