@@ -88,6 +88,7 @@ export const DELIVERY_STATES = [
 export type DeliveryState = (typeof DELIVERY_STATES)[number]
 export type DeliveryOutcome =
   | 'research-report-complete'
+  | 'learning-recorded'
   | 'completed-with-unknowns'
   | 'code-ready'
   | 'draft-pr'

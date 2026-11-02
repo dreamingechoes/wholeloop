@@ -406,7 +406,8 @@ export class RunnerDecisionStages {
             context.required.some(
               (required) =>
                 required.id === item.record.request.decision &&
-                required.outcome === item.record.judgment.outcome,
+                (required.outcome === undefined ||
+                  required.outcome === item.record.judgment.outcome),
             ),
         ),
       fixture = receipts.some(

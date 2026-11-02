@@ -741,7 +741,8 @@ export class DeliveryRunner {
             decision.request.plan === context.digest &&
             decision.request.decision === requiredDecision.id &&
             decision.grantDigest === context.authority.digest &&
-            decision.judgment.outcome === requiredDecision.outcome
+            (requiredDecision.outcome === undefined ||
+              decision.judgment.outcome === requiredDecision.outcome)
           )
         } catch {
           return false
@@ -757,6 +758,7 @@ export class DeliveryRunner {
     const plan = this.store.basis(request).plan
     const outcomes: Record<DeliveryPlan['policy']['endpoint'], DeliveryOutcome[]> = {
       'research-report': ['research-report-complete', 'completed-with-unknowns'],
+      'learning-observation': ['learning-recorded', 'completed-with-unknowns'],
       'local-handoff': ['code-ready'],
       'to-pr': ['draft-pr', 'ready-pr'],
       'to-merge': ['merged'],

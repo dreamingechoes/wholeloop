@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-02 · P6-30 · Learning observation runs — in progress
+
+- The owner chose to execute each scheduled observation as its own delivery run (ADR-0200) rather than outside the runner. A new `learning-observation` endpoint routes `plan → observation → handoff` and completes as `learning-recorded` or `completed-with-unknowns`. `plan.observation` names exactly one scheduled key; preparing the plan admits only a key `wl measure tick` scheduled and has not settled, with the same subject and checkpoint. The plan carries research-role, repository-free work only, and must be defined up front.
+- Authority: the endpoint's effect ceiling is `source.read` and `report.write`. Unattended observation stages require a delegated `learning-outcome` decision. Decision requirements may now omit their outcome, meaning any outcome the decision allows; existing requirements keep exact outcomes.
+- Contract changes are additive on the unreleased v1 candidate across plan, envelope, grant, registration, state, control, native-purpose, worker-assignment and runner-status, with updated fingerprints. Eight route cases. The observation host and the local scheduler replay remain, so the dispatcher reports these routes unsupported; P6-30 stays 🔄.
+- Markdown lint passes on 430 files. The complete check passes 3874 tests in 205 files, lint 1062, types, build, smoke, offline packaging on archive 4223e373a99f0d7b48970e4798833bf2dc964816a5f9c508ae58d4947fc43055, docs 431, generators, harness 151 and Mermaid 36 in 814 seconds. Next: the observation host.
+
+---
+
 ## 2026-11-02 · P6-24 · Composed conditional merge routes — awaiting hosted trials
 
 - Compose `to-merge` routes as `publication`, `ci`, `merge` and `handoff` (ADR-0199). The operator's merge policy (method, trusted required checks, denylist and exceptions) is a new optional `plan.policy.merge`. It is required for `to-merge` and refused elsewhere, and every grant binds it. The CI stage waits finitely for revision-bound checks at the published head and keeps a typed repair request on failure. The merge stage recomputes eligibility immediately before each single expected-head merge from: this request's gates; a fresh CI read; and complete pull-request facts from the new `GithubCliMergeFactsHost`, where each unreadable fact is unknown. Handoff and the `merged` endpoint accept only the run's own exact-head merge.

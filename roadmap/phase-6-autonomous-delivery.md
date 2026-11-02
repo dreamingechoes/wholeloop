@@ -789,7 +789,9 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Completed technical work** — Deterministic due-observation identities, at-most-once `wl measure tick` scheduling in the external store, single policy settlement of unknowns and effect-free machine learning recommendations ([ADR-0194](../docs/decisions/0194-scheduled-observations-and-learning-recommendations.md)). Fourteen cases verify the three criteria at the component level.
 
-**Remaining** — Composing the scheduled queue with the delivery runner: admitting a scheduled observation as read-only runner work, running its MCP-first reads and recording the delegated `learning-outcome` decision. The tests line also asks for actual local scheduler replay and grounding fixtures through that path.
+**Composition so far** — Each scheduled observation becomes its own read-only delivery run ([ADR-0200](../docs/decisions/0200-learning-observation-runs.md)). A `learning-observation` endpoint routes `plan → observation → handoff`; its plan names exactly one scheduled, unsettled key, and planning refuses any other. Its grant may only read and report, and unattended runs require a delegated `learning-outcome` decision that any of its four outcomes satisfies. Eight route cases cover the route, refusals, admission and the read-only ceiling.
+
+**Remaining** — The observation host: MCP-first reads through an installed read host, single settlement, the delegated decision through the fixed decision stages, the effect-free recommendation handoff, and the actual local scheduler replay with grounding fixtures. Until it exists the dispatcher reports these routes unsupported at static preflight.
 
 ---
 

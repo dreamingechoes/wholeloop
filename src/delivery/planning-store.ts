@@ -65,6 +65,27 @@ export class DeliveryPlanning {
           )
             throw new DeliveryPlanError('subject-mismatch')
         }
+      // ADR-0200: only an observation `wl measure tick` actually scheduled, and not
+      // yet settled, can become runner work; its identity is never invented here.
+      if (plan.observation) {
+        const files = this.sources.files,
+          base = `learning/scheduled/${plan.observation.key}`,
+          scheduled = files.read(`${base}.json`)
+        let record: { schema?: string; key?: string; subject?: string; checkpoint?: string }
+        try {
+          record = JSON.parse(scheduled ?? '')
+        } catch {
+          throw new DeliveryPlanError('unscheduled-observation')
+        }
+        if (
+          record.schema !== 'wholeloop/learning-observation@1' ||
+          record.key !== plan.observation.key ||
+          record.subject !== plan.observation.subject ||
+          record.checkpoint !== plan.observation.checkpoint ||
+          files.read(`${base}.result.json`) !== undefined
+        )
+          throw new DeliveryPlanError('unscheduled-observation')
+      }
       this.write(path, 'plan', plan)
       return this.receipt(plan, digest)
     })

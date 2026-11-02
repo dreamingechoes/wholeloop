@@ -150,7 +150,7 @@
       "properties": {
         "endpoint": {
           "type": "string",
-          "enum": ["research-report", "local-handoff", "to-pr", "to-merge"]
+          "enum": ["research-report", "learning-observation", "local-handoff", "to-pr", "to-merge"]
         },
         "intervention": {
           "type": "string",

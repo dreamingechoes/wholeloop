@@ -209,6 +209,7 @@
 | [0196](./0196-maintenance-commands-and-recurring-delivery-intake.md) | Maintenance commands and recurring delivery intake | Accepted | 2026-11-02 |
 | [0197](./0197-correction-revisions-and-stage-reuse.md) | Correction revisions and stage reuse | Accepted | 2026-11-02 |
 | [0199](./0199-composed-conditional-merge-routes.md) | Composed conditional merge routes | Accepted | 2026-11-02 |
+| [0200](./0200-learning-observation-runs.md) | Learning observation runs | Accepted | 2026-11-02 |
 
 ## Lifecycle
 

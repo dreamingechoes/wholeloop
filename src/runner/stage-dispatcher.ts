@@ -105,6 +105,10 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     // ADR-0197: no fixed correction producer is registered yet, so a continuation
     // route is reported unsupported by static preflight rather than half-run.
     if (stage.kind === 'correction') return undefined
+    // ADR-0200: no fixed observation host is registered yet; the route and its
+    // report handoff stay unsupported at static preflight rather than local-handed-off.
+    if (stage.kind === 'observation' || plan.policy.endpoint === 'learning-observation')
+      return undefined
     return this.adapters[stage.kind]
   }
   /** Registration coverage is not native/runtime availability or complete-route acceptance. */

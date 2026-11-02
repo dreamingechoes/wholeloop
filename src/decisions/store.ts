@@ -219,13 +219,15 @@ export class DelegatedDecisions {
       const required: DecisionId[] =
         plan.policy.endpoint === 'research-report'
           ? ['research-plan', 'research-sources']
-          : [
-              'approve-build-plan',
-              'acceptance',
-              ...(!plan.definition.ready
-                ? (['frame-outcome', 'approve-spec', 'approve-scopes'] as const)
-                : []),
-            ]
+          : plan.policy.endpoint === 'learning-observation'
+            ? ['learning-outcome']
+            : [
+                'approve-build-plan',
+                'acceptance',
+                ...(!plan.definition.ready
+                  ? (['frame-outcome', 'approve-spec', 'approve-scopes'] as const)
+                  : []),
+              ]
       if (grant.basis.kind === 'envelope') required.push('delivery-plan')
       for (const id of required)
         if (!grant.decisions.includes(id)) problems.push(`undelegated:${id}`)

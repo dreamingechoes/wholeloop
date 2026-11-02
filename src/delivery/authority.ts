@@ -230,6 +230,8 @@ export class DeliveryAuthority {
       throw new DeliveryAuthorityError('duplicate-scope')
     const ceiling: Record<DeliveryBasis['policy']['endpoint'], readonly DeliveryEffect[]> = {
       'research-report': ['source.read', 'report.write'],
+      // ADR-0200: an observation reads and reports; it changes no code, flag or service.
+      'learning-observation': ['source.read', 'report.write'],
       'local-handoff': [
         'source.read',
         'report.write',
@@ -262,7 +264,7 @@ export class DeliveryAuthority {
         throw new DeliveryAuthorityError('missing-effect-remote')
     }
     if (
-      basis.policy.endpoint !== 'research-report' &&
+      !['research-report', 'learning-observation'].includes(basis.policy.endpoint) &&
       basis.repositories.some(
         (repo) => !request.repositories.some((scope) => scope.repository === repo.id),
       )

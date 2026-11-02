@@ -28,7 +28,7 @@ export const DELIVERY_DECISIONS = [
   'ramp-assessment',
 ] as const
 export interface DeliveryPolicy {
-  endpoint: 'research-report' | 'local-handoff' | 'to-pr' | 'to-merge'
+  endpoint: 'research-report' | 'learning-observation' | 'local-handoff' | 'to-pr' | 'to-merge'
   intervention: 'supervised' | 'on-exception' | 'none'
   uncertainty:
     | 'investigate'
@@ -125,6 +125,8 @@ export interface DeliveryPlan extends DeliveryBasis {
     after: string[]
     procedure: string
   }[]
+  /** ADR-0200: the one scheduled observation a `learning-observation` plan executes. */
+  observation?: { key: string; subject: string; checkpoint: string }
   /** Cross-invocation corrections, oldest first; each names the retained failure it repairs. */
   corrections?: DeliveryCorrection[]
 }
@@ -234,7 +236,10 @@ function basis(value: DeliveryBasis, source: SourceSnapshot): void {
     value.budgets.attemptMs > value.budgets.wallTimeMs
   )
     throw new DeliveryPlanError('inconsistent-budget')
-  if (value.policy.endpoint !== 'research-report' && !value.repositories.length)
+  if (
+    !['research-report', 'learning-observation'].includes(value.policy.endpoint) &&
+    !value.repositories.length
+  )
     throw new DeliveryPlanError('missing-repository')
   for (const repo of value.repositories) {
     if (!isAbsolute(repo.root) || /[\r\n\0]/.test(repo.root) || repo.root !== resolve(repo.root))
@@ -335,7 +340,7 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
     references(unit.after, work, 'unknown-dependency')
     references(unit.consumes, contracts, 'unknown-contract')
     if (
-      plan.policy.endpoint === 'research-report' &&
+      ['research-report', 'learning-observation'].includes(plan.policy.endpoint) &&
       (unit.role !== 'research' || unit.produces.length)
     )
       throw new DeliveryPlanError('research-code-work')
@@ -418,10 +423,19 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
     )
       throw new DeliveryPlanError('milestone-order')
   }
+  // ADR-0200: an observation plan executes exactly one scheduled observation and is
+  // defined up front; nothing else may carry the link.
+  if ((plan.policy.endpoint === 'learning-observation') !== (plan.observation !== undefined))
+    throw new DeliveryPlanError('observation-link')
+  if (plan.observation && !plan.definition.ready)
+    throw new DeliveryPlanError('observation-definition')
   if (plan.corrections) {
     // A correction is always a revision of an executed plan and stays inside the
     // finite repair budget; its stage must be one this plan's route actually has.
-    if (plan.revision === 1 || plan.policy.endpoint === 'research-report')
+    if (
+      plan.revision === 1 ||
+      ['research-report', 'learning-observation'].includes(plan.policy.endpoint)
+    )
       throw new DeliveryPlanError('correction-basis')
     if (plan.corrections.length > plan.budgets.integrationRepairs)
       throw new DeliveryPlanError('correction-budget')
@@ -488,7 +502,9 @@ export function deliveryPlanRoute(plan: DeliveryPlan) {
     }
   }
   return {
-    next: plan.policy.endpoint === 'research-report' ? 'research' : 'build',
+    next: ['research-report', 'learning-observation'].includes(plan.policy.endpoint)
+      ? 'research'
+      : 'build',
     reason: 'explicit-criteria',
   }
 }

@@ -172,7 +172,7 @@
       "properties": {
         "endpoint": {
           "type": "string",
-          "enum": ["research-report", "local-handoff", "to-pr", "to-merge"]
+          "enum": ["research-report", "learning-observation", "local-handoff", "to-pr", "to-merge"]
         },
         "intervention": {
           "type": "string",
@@ -668,6 +668,27 @@
             "type": "string",
             "pattern": "^[a-f0-9]{64}$"
           }
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "subject", "checkpoint"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "checkpoint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
         }
       }
     }

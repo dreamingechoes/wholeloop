@@ -20,6 +20,7 @@ export type RunnerStageKind =
   | 'ci'
   | 'merge'
   | 'research'
+  | 'observation'
   | 'handoff'
 export interface RunnerStage {
   id: string
@@ -29,13 +30,17 @@ export interface RunnerStage {
   milestone?: string
   criteria: string[]
 }
-/** Required judgments follow the selected route; they never create delegated authority. */
+/**
+ * Required judgments follow the selected route; they never create delegated
+ * authority. A requirement without an outcome accepts any outcome its decision
+ * allows: a learning recommendation may keep, iterate, kill or unflag.
+ */
 export function runnerDecisionRequirements(
   plan: DeliveryPlan,
   stage: Pick<RunnerStage, 'kind'>,
   basis: 'plan' | 'envelope',
-): { id: DecisionId; outcome: DecisionOutcome }[] {
-  const required: { id: DecisionId; outcome: DecisionOutcome }[] = []
+): { id: DecisionId; outcome?: DecisionOutcome }[] {
+  const required: { id: DecisionId; outcome?: DecisionOutcome }[] = []
   if (stage.kind === 'plan' && basis === 'envelope')
     required.push({ id: 'delivery-plan', outcome: 'accept' })
   if (plan.policy.intervention === 'none') {
@@ -57,6 +62,7 @@ export function runnerDecisionRequirements(
       required.push({ id: 'research-plan', outcome: 'accept' })
     if (stage.kind === 'research' && plan.policy.endpoint === 'research-report')
       required.push({ id: 'research-sources', outcome: 'accept' })
+    if (stage.kind === 'observation') required.push({ id: 'learning-outcome' })
   }
   return required
 }
@@ -85,6 +91,22 @@ export function runnerRoute(plan: DeliveryPlan): RunnerStage[] {
     return stages
   }
   add('plan', 'plan', [], [])
+  // ADR-0200: one scheduled observation, read-only, then its local report.
+  if (plan.policy.endpoint === 'learning-observation') {
+    add(
+      'observation',
+      'observation',
+      ['plan'],
+      plan.criteria.map((c) => c.id),
+    )
+    add(
+      'handoff',
+      'handoff',
+      ['observation'],
+      plan.criteria.map((c) => c.id),
+    )
+    return stages
+  }
   if (plan.policy.endpoint === 'research-report') {
     add(
       'research',

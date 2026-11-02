@@ -4,7 +4,7 @@ import { contractDigest } from '../contracts/compatibility.js'
 import type { BrokerBoundary } from './broker.js'
 import type { BudgetLimits } from './budget-events.js'
 import { rejectSourceCredentials, safeSourceText } from './input.js'
-import { validateDeliveryShape } from './plan.js'
+import { type DeliveryPolicy, validateDeliveryShape } from './plan.js'
 import assignmentSchema from './schemas/worker-assignment-v1.json' with { type: 'json' }
 import executionSchema from './schemas/worker-execution-v1.json' with { type: 'json' }
 import resultSchema from './schemas/worker-result-v1.json' with { type: 'json' }
@@ -64,7 +64,7 @@ export interface WorkerAssignment {
   grantDigest: string
   source: string
   brief: string
-  endpoint: 'research-report' | 'local-handoff' | 'to-pr' | 'to-merge'
+  endpoint: DeliveryPolicy['endpoint']
   intervention: 'supervised' | 'on-exception' | 'none'
   environment: { id: string; recipe: string; boundary: string }
   candidates: { repository: string; head: string; snapshot: string }[]

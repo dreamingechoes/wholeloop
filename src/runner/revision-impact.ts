@@ -130,6 +130,7 @@ export function revisionImpact(input: {
         'merge',
         'handoff',
         'research',
+        'observation',
       ].includes(stage.kind) &&
       contractDigest(current.criteria) !== contractDigest(proposed.criteria)
     )

@@ -24,6 +24,7 @@ export type OutcomeCategory =
   | 'in-progress'
 const CATEGORY: Record<DeliveryOutcome, OutcomeCategory> = {
   'research-report-complete': 'report',
+  'learning-recorded': 'report',
   'completed-with-unknowns': 'report',
   'code-ready': 'code',
   'draft-pr': 'pr',

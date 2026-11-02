@@ -130,6 +130,7 @@ function control(state: DeliveryProjection, payload: ControlPayload): void {
   if (payload.to === 'completed') {
     const outcomes = {
       'research-report': ['research-report-complete', 'completed-with-unknowns'],
+      'learning-observation': ['learning-recorded', 'completed-with-unknowns'],
       'local-handoff': ['code-ready'],
       'to-pr': ['draft-pr', 'ready-pr'],
       'to-merge': ['merged'],
