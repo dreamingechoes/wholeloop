@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-02 · P6-30 · Learning observation host — complete
+
+- Register `RunnerObservationStages` for the observation stage and the `learning-observation` handoff (ADR-0201). Reads go through the client's MCP connection via `clientProviderHost`, never an HTTP bridge, at most 64 `source.*.query` reads, each needing a grant read rule scoped to the observed subject. Unserved or refused reads stay unknown. Readings are stored before `ObservationSchedule.settle` records the outcome once, now naming the run and invocation in `by`; an interrupted read settles nothing. The native judge and challenger decide `learning-outcome` over the exact brief through the fixed decision stages with an empty owned prefix. The handoff stores the effect-free recommendation as a run artifact. Supervised observation routes are refused at static preflight (conservative refinement, as for report research).
+- Bug found while testing: a recommendation's proposal field was `authorization`, which the run's credential scan correctly refuses as an `authorization: <token>` header, so every `iterate`, `kill` and `unflag` recommendation was unstorable. It is now `authority`; the record was never a published contract.
+- Eight engine-driven cases cover a complete none-policy run, unknowns under both contracts, an ungranted read, a `kill` proposal, an interrupted read and the supervised refusal. A scheduler replay runs the built `wl measure tick` twice as separate processes at fixed times and then completes the run. Assumption: replaying the firings is the "actual local scheduler replay"; no cron or launchd daemon was installed. No real MCP server, provider or model was used. P6-30 is ✅; the roadmap is 68/88.
+- Markdown lint passes on 431 files. The complete check passes 3882 tests in 206 files, lint 1065, types, build, smoke, offline packaging on archive c4f5a128c98844189234baf218cc443c05e0a359b0fba286ea05108f19153476, docs 432, generators, harness 151 and Mermaid 36 in 843 seconds.
+- Next: P6-27, which needs the owner's native clients and accounts; P6-29's producer and P6-22's second criterion are built with it.
+
+---
+
 ## 2026-11-02 · P6-30 · Learning observation runs — in progress
 
 - The owner chose to execute each scheduled observation as its own delivery run (ADR-0200) rather than outside the runner. A new `learning-observation` endpoint routes `plan → observation → handoff` and completes as `learning-recorded` or `completed-with-unknowns`. `plan.observation` names exactly one scheduled key; preparing the plan admits only a key `wl measure tick` scheduled and has not settled, with the same subject and checkpoint. The plan carries research-role, repository-free work only, and must be defined up front.

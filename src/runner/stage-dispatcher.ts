@@ -12,6 +12,7 @@ import { RunnerGitStages } from './git-stages.js'
 import { RunnerHandoffStages } from './handoff-stages.js'
 import { RunnerIntegrationStages } from './integration-stages.js'
 import { RunnerCiStages, RunnerMergeStages } from './merge-stages.js'
+import { RunnerObservationStages } from './observation-stages.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments } from './product-environments.js'
 import { RunnerPublicationStages } from './publication-stages.js'
@@ -35,6 +36,7 @@ export interface RunnerStageAdapters {
   acceptance: RunnerAcceptanceStages
   handoff: RunnerHandoffStages
   research: RunnerResearchStages
+  observation: RunnerObservationStages
   publication: RunnerPublicationStages
   ci: RunnerCiStages
   merge: RunnerMergeStages
@@ -52,6 +54,7 @@ const CLASSES = {
   acceptance: RunnerAcceptanceStages,
   handoff: RunnerHandoffStages,
   research: RunnerResearchStages,
+  observation: RunnerObservationStages,
   publication: RunnerPublicationStages,
   ci: RunnerCiStages,
   merge: RunnerMergeStages,
@@ -105,10 +108,12 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     // ADR-0197: no fixed correction producer is registered yet, so a continuation
     // route is reported unsupported by static preflight rather than half-run.
     if (stage.kind === 'correction') return undefined
-    // ADR-0200: no fixed observation host is registered yet; the route and its
-    // report handoff stay unsupported at static preflight rather than local-handed-off.
-    if (stage.kind === 'observation' || plan.policy.endpoint === 'learning-observation')
-      return undefined
+    // ADR-0201: the observation host owns the observation and its recommendation handoff.
+    if (
+      stage.kind === 'observation' ||
+      (stage.kind === 'handoff' && plan.policy.endpoint === 'learning-observation')
+    )
+      return this.adapters.observation
     return this.adapters[stage.kind]
   }
   /** Registration coverage is not native/runtime availability or complete-route acceptance. */
@@ -146,6 +151,8 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     }
     if (route.some((stage) => stage.kind === 'research' && !stage.unit) && !this.adapters.research)
       return unavailable('dispatcher-research-host-required')
+    if (route.some((stage) => stage.kind === 'observation') && !this.adapters.observation)
+      return unavailable('dispatcher-observation-host-required')
     // Integration assembles only code-bearing work; research claims are not
     // milestone evidence until integration can carry non-code results.
     if (
@@ -176,27 +183,31 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     // People decide through recorded human decisions, never an interactive prompt.
     // Supervised definition approvals have no recorded-decision composition yet.
     if (plan.policy.intervention !== 'none')
-      return route.some((stage) => stage.kind === 'research' && !stage.unit)
-        ? // Report research has no recorded-human source decision; it stays unattended-only.
-          unavailable('dispatcher-supervised-research-unavailable')
-        : route.some((stage) => stage.kind === 'definition')
-          ? unavailable('dispatcher-supervised-definition-unavailable')
-          : // Envelope effects accept derived plans only through machine decisions.
-            this.store.lifecycle.authority.inspect(request.grant).grant.basis.kind !== 'plan'
-            ? unavailable('dispatcher-supervised-envelope-unavailable')
-            : route.some(
-                  (stage) =>
-                    (stage.kind === 'plan' && !this.adapters.plan?.options.humans) ||
-                    (stage.kind === 'build-plan' && !this.adapters['build-plan']?.options.humans) ||
-                    (stage.kind === 'acceptance' && !this.adapters.acceptance?.options.humans),
-                )
-              ? unavailable('dispatcher-human-decisions-required')
-              : {
-                  available: true,
-                  interactive: 'disabled' as const,
-                  humanRequired: true,
-                  reason: 'dispatcher-recorded-human-decisions',
-                }
+      return route.some((stage) => stage.kind === 'observation')
+        ? // A learning outcome has no recorded-human composition here; people use decide-next.
+          unavailable('dispatcher-supervised-observation-unavailable')
+        : route.some((stage) => stage.kind === 'research' && !stage.unit)
+          ? // Report research has no recorded-human source decision; it stays unattended-only.
+            unavailable('dispatcher-supervised-research-unavailable')
+          : route.some((stage) => stage.kind === 'definition')
+            ? unavailable('dispatcher-supervised-definition-unavailable')
+            : // Envelope effects accept derived plans only through machine decisions.
+              this.store.lifecycle.authority.inspect(request.grant).grant.basis.kind !== 'plan'
+              ? unavailable('dispatcher-supervised-envelope-unavailable')
+              : route.some(
+                    (stage) =>
+                      (stage.kind === 'plan' && !this.adapters.plan?.options.humans) ||
+                      (stage.kind === 'build-plan' &&
+                        !this.adapters['build-plan']?.options.humans) ||
+                      (stage.kind === 'acceptance' && !this.adapters.acceptance?.options.humans),
+                  )
+                ? unavailable('dispatcher-human-decisions-required')
+                : {
+                    available: true,
+                    interactive: 'disabled' as const,
+                    humanRequired: true,
+                    reason: 'dispatcher-recorded-human-decisions',
+                  }
     return {
       available: true,
       interactive: 'disabled' as const,
@@ -298,6 +309,11 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
       if (!this.adapters.research)
         throw new DeliveryRunnerError('dispatcher-research-endpoint-unavailable')
       return this.adapters.research.endpoint(request, plan, signal)
+    }
+    if (plan.policy.endpoint === 'learning-observation') {
+      if (!this.adapters.observation)
+        throw new DeliveryRunnerError('dispatcher-observation-endpoint-unavailable')
+      return this.adapters.observation.endpoint(request, plan, signal)
     }
     if (plan.policy.endpoint === 'to-pr') {
       if (!this.adapters.publication)

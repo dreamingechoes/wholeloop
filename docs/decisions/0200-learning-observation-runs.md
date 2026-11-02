@@ -34,3 +34,5 @@ Route cases cover:
 - admission refused for an unscheduled, mismatched or settled observation;
 - the read-only grant ceiling;
 - static unsupported coverage.
+
+[ADR-0201](./0201-learning-observation-host.md) registers the observation host.

@@ -15,6 +15,8 @@ rules:
     enforcers: [src/learning/maintenance.ts#maintenanceInspection, src/learning/maintenance.ts#maintenanceProposalInput, src/learning/maintenance.ts#recurringEnvelope, src/learning/maintenance-intake.ts#admitMaintenanceProposals, src/learning/maintenance-intake.ts#maintenanceSourceRequest, src/cli/maintenance.ts#maintenanceCommand, test/unit/learning/maintenance-intake.test.ts]
   - id: learning-observation-runs
     enforcers: [src/delivery/plan.ts#validateDeliveryPlan, src/delivery/planning-store.ts#DeliveryPlanning, src/delivery/authority.ts#DeliveryAuthority, src/runner/route.ts#runnerRoute, src/runner/route.ts#runnerDecisionRequirements, src/runner/stage-dispatcher.ts#RunnerStageDispatcher, test/unit/runner/observation-route.test.ts]
+  - id: learning-observation-host
+    enforcers: [src/runner/observation-stages.ts#RunnerObservationStages, src/learning/scheduler.ts#ObservationSchedule, src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/stage-dispatcher.ts#RunnerStageDispatcher, test/unit/runner/observation-stages.test.ts]
   - id: learning-scheduled-observations
     enforcers: [src/learning/scheduler.ts#dueObservations, src/learning/scheduler.ts#ObservationSchedule, src/learning/scheduler.ts#observationOutcome, src/learning/scheduler.ts#learningRecommendation, src/cli/impact.ts#impactCommand, test/unit/learning/scheduler.test.ts]
   - id: delivery-revision-adoption

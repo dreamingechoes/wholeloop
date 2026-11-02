@@ -16,6 +16,19 @@ export interface DueObservation {
   source: string
   policy: string
 }
+/** The key a scheduled record must carry; recomputing it detects an edited record. */
+export const observationKey = (
+  identity: Pick<DueObservation, 'subject' | 'checkpoint' | 'launchedAt' | 'source' | 'policy'>,
+) =>
+  digest({
+    subject: identity.subject,
+    checkpoint: identity.checkpoint,
+    launchedAt: identity.launchedAt,
+    source: identity.source,
+    policy: identity.policy,
+  })
+/** A measurement source's identity as `dueObservations` binds it. */
+export const observationSource = (source: unknown) => digest(source)
 
 /**
  * Pure. The identity binds subject, launch anchor, measurement source, checkpoint
@@ -42,10 +55,10 @@ export function dueObservations(
         subject,
         checkpoint: checkpoint.key,
         launchedAt: record.plan.launchedAt,
-        source: digest(record.plan.source),
+        source: observationSource(record.plan.source),
         policy: digest(policy),
       }
-      due.push({ key: digest(identity), due: checkpoint.due, ...identity })
+      due.push({ key: observationKey(identity), due: checkpoint.due, ...identity })
     }
   }
   return due
@@ -65,6 +78,17 @@ export function observationOutcome(
     : 'blocked'
 }
 
+export interface ObservationSettlement {
+  schema: 'wholeloop/learning-observation-result@1'
+  key: string
+  outcome: ObservationOutcome
+  unknown: string[]
+  metrics: string
+  effects: 'not-performed'
+  by?: { run: string; invocation: string }
+}
+/** The digest a settlement binds; a runner compares it with the reads it stored. */
+export const observationEvidence = (metrics: readonly ImpactObservation[]) => digest(metrics)
 /** Durable, at-most-once scheduling in the external store; it performs no read itself. */
 export class ObservationSchedule {
   constructor(readonly files: StoreFiles) {}
@@ -89,24 +113,42 @@ export class ObservationSchedule {
       })
     return { scheduled, deduped }
   }
-  /** One settlement per observation; a repeated or changed result is refused. */
+  /** The scheduled record, or undefined when the key was never scheduled. */
+  scheduled(key: string): (DueObservation & { schema: string; state: string }) | undefined {
+    const text = this.files.read(this.path(key))
+    if (text === undefined) return undefined
+    return JSON.parse(text)
+  }
+  /** The settlement, or undefined while the observation is still open. */
+  settlement(key: string): ObservationSettlement | undefined {
+    const text = this.files.read(this.path(key).replace(/\.json$/, '.result.json'))
+    if (text === undefined) return undefined
+    return JSON.parse(text)
+  }
+  /**
+   * One settlement per observation; a repeated or changed result is refused. A
+   * runner names itself in `by`, so a later inspection can tell its own
+   * settlement from another run's identical one.
+   */
   settle(
     key: string,
     metrics: readonly ImpactObservation[],
     intervention: 'supervised' | 'on-exception' | 'none',
     contract: 'complete-with-unknowns' | 'blocked',
+    by?: { run: string; invocation: string },
   ) {
     const path = this.path(key).replace(/\.json$/, '.result.json')
     if (!existsSync(this.files.path(this.path(key))))
       throw new Error('Observation is not scheduled')
     const outcome = observationOutcome(metrics, intervention, contract),
-      record = {
+      record: ObservationSettlement = {
         schema: 'wholeloop/learning-observation-result@1',
         key,
         outcome,
         unknown: metrics.filter((metric) => metric.status === 'unknown').map((metric) => metric.id),
         metrics: digest(metrics),
         effects: 'not-performed',
+        ...(by ? { by: { run: by.run, invocation: by.invocation } } : {}),
       }
     this.files.locked(() => {
       if (existsSync(this.files.path(path))) throw new Error('Observation is already settled')
@@ -154,7 +196,9 @@ export function learningRecommendation(input: {
       work: 'not-closed' as const,
     },
     ...(input.outcome === 'iterate' || input.outcome === 'kill' || input.outcome === 'unflag'
-      ? { proposal: { kind: 'implementation', authorization: 'separate-run-required' as const } }
+      ? // Not `authorization`: a recommendation stored as a run artifact must not trip the
+        // credential scan for `authorization: <token>` headers.
+        { proposal: { kind: 'implementation', authority: 'separate-run-required' as const } }
       : {}),
   }
 }

@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 67 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 5 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 68 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 4 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -769,7 +769,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-30 · Scheduled impact and learning execution
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P6-10, P4-03, P4-04, P4-06
+**Status:** ✅ · **Size:** M · **Depends on:** P6-10, P4-03, P4-04, P4-06
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -789,11 +789,15 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Completed technical work** — Deterministic due-observation identities, at-most-once `wl measure tick` scheduling in the external store, single policy settlement of unknowns and effect-free machine learning recommendations ([ADR-0194](../docs/decisions/0194-scheduled-observations-and-learning-recommendations.md)). Fourteen cases verify the three criteria at the component level.
 
-**Composition so far** — Each scheduled observation becomes its own read-only delivery run ([ADR-0200](../docs/decisions/0200-learning-observation-runs.md)). A `learning-observation` endpoint routes `plan → observation → handoff`; its plan names exactly one scheduled, unsettled key, and planning refuses any other. Its grant may only read and report, and unattended runs require a delegated `learning-outcome` decision that any of its four outcomes satisfies. Eight route cases cover the route, refusals, admission and the read-only ceiling.
+**Composition** — Each scheduled observation becomes its own read-only delivery run ([ADR-0200](../docs/decisions/0200-learning-observation-runs.md)). A `learning-observation` endpoint routes `plan → observation → handoff`; its plan names exactly one scheduled, unsettled key, and planning refuses any other. Its grant may only read and report, and unattended runs require a delegated `learning-outcome` decision that any of its four outcomes satisfies. The fixed `RunnerObservationStages` host executes it ([ADR-0201](../docs/decisions/0201-learning-observation-host.md)):
 
-**Remaining** — The observation host: MCP-first reads through an installed read host, single settlement, the delegated decision through the fixed decision stages, the effect-free recommendation handoff, and the actual local scheduler replay with grounding fixtures. Until it exists the dispatcher reports these routes unsupported at static preflight.
+- reads go through the client's MCP connection, never an HTTP bridge, and only within grant read rules scoped to the observed subject; an unserved or refused read stays unknown;
+- the readings are stored before the observation is settled once in the run's name, and an interrupted read settles nothing;
+- the native judge and challenger decide `learning-outcome` over the exact observation brief, which names every unknown reading;
+- the handoff stores the effect-free recommendation as a run artifact;
+- supervised observation routes are refused at static preflight.
 
----
+**Evidence** — Eight route cases from ADR-0200 and eight engine-driven host cases with a synthetic client MCP host and synthetic native judge processes. The host cases cover: a complete none-policy run with no prompt and two MCP reads; completion with unknowns only when allowed; blocking without a decision for a missing tool or an ungranted read; a `kill` recommendation that carries a separately authorized proposal; an interrupted read that leaves the observation open; the supervised refusal; and a scheduler replay. In the replay, the built CLI runs `wl measure tick` twice as separate processes, as a crontab entry would; it schedules once and deduplicates once, and the run completes. No cron or launchd daemon was installed, no real MCP server or provider was read, and the judges certify no model.
 
 ## P6-31 · Maintenance proposals and bounded recurring envelopes
 

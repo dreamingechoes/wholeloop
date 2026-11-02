@@ -47,7 +47,7 @@ export class RunnerDecisionStages {
     readonly store: RunnerStore,
     readonly identity: RunnerRequest['host'],
     readonly artifact?: { ref: string; sha256: string },
-    /** Research only: the exact owned source calls that precede its decision. */
+    /** Research and observation only: the exact owned calls that precede the decision. */
     readonly prefix?: readonly { invocation: string; evidence: string }[],
   ) {}
   private path(invocation: string) {
@@ -279,7 +279,12 @@ export class RunnerDecisionStages {
     const consumed = `delivery/runner-decision-claims/${record.invocation}.txt`
     if (existsSync(this.store.files.path(consumed)))
       throw new DeliveryRunnerError('decision-stage-missing-binding')
-    const research = context.stage.kind === 'research' && !context.stage.unit && !!this.prefix
+    // Report research and a learning observation run owned work in the same stage
+    // before their decision; only that exact closed prefix may precede it.
+    const research =
+      ((context.stage.kind === 'research' && !context.stage.unit) ||
+        context.stage.kind === 'observation') &&
+      !!this.prefix
     if (
       !research &&
       (record.runtime || new RunnerNativeScope(this.store.files, record.invocation).calls().length)

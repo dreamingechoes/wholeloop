@@ -107,5 +107,7 @@ Digest planning is local. Explicit SDK dispatchImpactDigest creates comms.draft 
 
 An external scheduler such as cron can run `wl measure tick --for <scope-id,...>` as often as it likes. Each due checkpoint is scheduled once, identified by its scope, launch, measurement source and observation policy; a relaunch or a changed plan schedules new work, and nothing is read while scheduling. Readings still go through `measure requests` and `measure observe`. Unknown values stay unknown: an unattended run ends completed-with-unknowns only when its contract allows it, and is blocked otherwise. A machine learning recommendation names every unknown and counterargument and never changes flags, deploys, sends messages or closes work. See [ADR-0194](../../decisions/0194-scheduled-observations-and-learning-recommendations.md).
 
+Each scheduled checkpoint can then run as its own read-only `learning-observation` delivery run under an exact-plan grant whose read rules name the scope. The run reads through your client's MCP connection, never an HTTP bridge, settles the checkpoint once, and asks the delegated `learning-outcome` judges for a recommendation that changes nothing. Supervised runs are refused; use `measure` and `decide-next` yourself instead. See [ADR-0200](../../decisions/0200-learning-observation-runs.md) and [ADR-0201](../../decisions/0201-learning-observation-host.md).
+
 <!-- docnav -->
 [◀ ramp-exposure](../rollout/ramp-exposure.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [decide-next ▶](decide-next.md)
