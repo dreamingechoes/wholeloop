@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Native evaluation campaign inputs — recorded
+
+- The owner fixed the campaign inputs in [manual verification](./manual-verification.md#native-evaluation-campaign-inputs-2026-11-03). Reference clients are Claude Code 2.1.316 on `claude-opus-5-5` and Codex 0.166.0 on `gpt-6.1-sol` with high effort, both observed installed and signed in. The exact model ID replaces the `opus` alias, which can move between trials.
+- Budget per trial is wall time and attempts only. Both accounts are the smallest subscription tiers, which meter no enforceable token or currency cap. A Claude EVAL-10 pilot sizes the campaign first, and Codex trials wait for its weekly quota reset.
+- Hosted trials use a private `dreamingechoes/wholeloop-trials`, authorized for creation, protection of `main`, non-force pushes, owned PRs and exact-revision merges. Receipts stay self-contained because the repository may be deleted. GitHub Free protects branches only on public repositories, so merge trials may wait for the owner's choice; protection is never faked.
+- Research trials read only the public web and the trial repository. Docker 29.9.2 answers on a Linux aarch64 daemon. The envelope-grant continuation draft stays Proposed.
+- Docs-only change; the complete check runs before the commit. Next: build the P6-27 live evaluation host together with P6-29's seeded correction producer.
+
+---
+
 ## 2026-11-02 · P6-30 · Learning observation host — complete
 
 - Register `RunnerObservationStages` for the observation stage and the `learning-observation` handoff (ADR-0201). Reads go through the client's MCP connection via `clientProviderHost`, never an HTTP bridge, at most 64 `source.*.query` reads, each needing a grant read rule scoped to the observed subject. Unserved or refused reads stay unknown. Readings are stored before `ObservationSchedule.settle` records the outcome once, now naming the run and invocation in `by`; an interrupted read settles nothing. The native judge and challenger decide `learning-outcome` over the exact brief through the fixed decision stages with an empty owned prefix. The handoff stores the effect-free recommendation as a run artifact. Supervised observation routes are refused at static preflight (conservative refinement, as for report research).

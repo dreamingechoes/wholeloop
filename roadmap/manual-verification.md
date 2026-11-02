@@ -31,6 +31,24 @@ P6-10 is complete on automated synthetic/reference-transport evidence: the compi
 - [ ] A bound reference client passes its trusted runtime proof and runs a public route end to end (P6-27).
 - [ ] A hosted endpoint (PR, CI or merge) is reached by a public run (P6-20–P6-24 hosted trials).
 
+## Native evaluation campaign inputs (2026-11-03)
+
+The owner fixed the reference clients for the whole P6-27 campaign, so its three trials per scenario stay comparable. Both clients were observed installed and signed in on the macOS arm64 development host; each trial receipt still records the version and model it actually observed.
+
+| Client | Version | Binary | Account | Model |
+| --- | --- | --- | --- | --- |
+| Claude Code | 2.1.316 (native installer, auto-update off) | `claude` | claude.ai subscription | `claude-opus-5-5`, exact ID rather than the `opus` alias, which can move |
+| Codex | 0.166.0 (Homebrew cask) | `codex` | ChatGPT subscription | `gpt-6.1-sol`, reasoning effort `high` |
+
+A Homebrew cask cannot be pinned, so no general `brew upgrade` runs during the campaign. A trial that observes another version or model is reported separately, not counted toward the three.
+
+- [x] Reference clients installed, signed in, versions and models fixed (owner, 2026-11-03).
+- [x] Per-trial budget fixed: wall-time and attempt limits only (owner, 2026-11-03). Both accounts are the smallest subscription tiers (Claude Pro, ChatGPT Plus), which meter no reliable token or currency cap, so no hard token or currency limit is declared that the runner could not enforce; each receipt keeps the usage its client reports.
+- [x] Research trial sources fixed (owner, 2026-11-03): the public web through each client's own search and fetch tools, and the trial repository's files. No account-bound provider is connected, so research trials need no new credential and read nothing private.
+- [ ] Pilot: one Claude research trial (EVAL-10) measures quota use and duration before the campaign is sized. Codex trials wait for its weekly quota reset; an attempt stopped by an exhausted subscription window is reported as a failed trial, not retried silently.
+- [x] Hosted trial repository and authorization fixed (owner, 2026-11-03): private `dreamingechoes/wholeloop-trials` on the owner's personal account, created only for these trials. The owner authorizes, for that repository alone, creating it with a trivial fixture application and CI workflow, protecting `main` (pull request and CI check required), and non-force pushes, owned PRs, readying and exact-revision merges by public runs. After the campaign it stays private until wholeloop itself is published; the owner then either makes it public as reviewable trial evidence, after its PR texts and logs are reviewed for personal data, or deletes it. Every receipt is therefore self-contained (revisions, check names, sanitized responses) and never depends on a PR link staying reachable.
+- [ ] Branch protection is available on that private repository. GitHub Free offers protected branches and rulesets only on public repositories; if the API refuses protection on creation, merge trials (REL-10, EVAL-08) wait for the owner to choose a paid plan or making the repository public, and no protection is faked.
+
 ## Pull request publication checks (2026-11-01)
 
 P6-20 publishes accepted candidates as owned PRs on a stub code host, and P6-21 evaluates revision-bound CI observations; both GitHub CLI hosts are checked only with a stub executor. That evidence certifies no hosted code host.
