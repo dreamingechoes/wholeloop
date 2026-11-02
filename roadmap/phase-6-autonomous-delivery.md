@@ -757,7 +757,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-30 · Scheduled impact and learning execution
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-10, P4-03, P4-04, P4-06
+**Status:** 🔄 · **Size:** M · **Depends on:** P6-10, P4-03, P4-04, P4-06
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -767,13 +767,17 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] Two due ticks schedule one observation for the same launch/checkpoint revision.
-- [ ] Missing access remains unknown; none-policy completion/blocking follows its initial evidence contract.
-- [ ] No learning decision changes production flags, deploys, sends messages or silently closes unmeasured work.
+- [x] Two due ticks schedule one observation for the same launch/checkpoint revision.
+- [x] Missing access remains unknown; none-policy completion/blocking follows its initial evidence contract.
+- [x] No learning decision changes production flags, deploys, sends messages or silently closes unmeasured work.
 
 **Tests** — LEARN-01–LEARN-04 and EVAL-12: fake clocks, grounding fixtures and actual local scheduler replay.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/08-learning-and-maintenance.md); measure-impact, decide-next, utilities.
+
+**Completed technical work** — Deterministic due-observation identities, at-most-once `wl measure tick` scheduling in the external store, single policy settlement of unknowns and effect-free machine learning recommendations ([ADR-0194](../docs/decisions/0194-scheduled-observations-and-learning-recommendations.md)). Fourteen cases verify the three criteria at the component level.
+
+**Remaining** — Composing the scheduled queue with the delivery runner: admitting a scheduled observation as read-only runner work, running its MCP-first reads and recording the delegated `learning-outcome` decision. The tests line also asks for actual local scheduler replay and grounding fixtures through that path.
 
 ---
 

@@ -2,11 +2,13 @@ import { readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import type { ImpactLayout, QualitativeQuery } from '../impact/contracts.js'
 import { impactDigest } from '../impact/digest.js'
+import { configuredCheckpoints } from '../impact/schedule.js'
 import eventsSchema from '../impact/schemas/events-v1.json' with { type: 'json' }
 import { impactReadRequests, impactResponseHost } from '../impact/transcript.js'
 import { ImpactWorkflow } from '../impact/workflow.js'
 import type { MeasurementPlan } from '../launch/measurement.js'
 import measurementSchema from '../launch/schemas/measurement-v1.json' with { type: 'json' }
+import { dueObservations, ObservationSchedule } from '../learning/scheduler.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
@@ -73,7 +75,20 @@ export async function impactCommand(
   } else if (command === 'measure complete')
     payload = { schema: 'wholeloop/impact-complete@1', ...workflow.complete(subject ?? '') }
   else if (command === 'measure schedule') payload = workflow.schedule(subject ?? '')
-  else if (command === 'measure digest')
+  else if (command === 'measure tick') {
+    const at = value('--at') ?? new Date().toISOString()
+    if (!Number.isFinite(Date.parse(at))) throw new CliError('Provide --at <iso-time>')
+    const config = engine.config(),
+      due = dueObservations(
+        engine.store.events(),
+        (subject ?? '').split(','),
+        configuredCheckpoints(config),
+        new Date(Date.parse(at)).toISOString(),
+        { checkpoints: configuredCheckpoints(config), learn: config.learn ?? null },
+      ),
+      result = new ObservationSchedule(engine.store.files).tick(due)
+    payload = { schema: 'wholeloop/impact-tick@1', at, due, ...result, reads: 'not-performed' }
+  } else if (command === 'measure digest')
     payload = impactDigest(engine.store.events(), subject?.split(','))
   else
     payload = {

@@ -9,6 +9,8 @@ version: 1
 rules:
   - id: delivery-public-runner-host
     enforcers: [src/runner/public-host.ts#RunnerPublicHost, src/runner/public-host.ts#publicRunnerIdentity, src/runner/public-host.ts#publicNativeRoles, src/cli/delivery-runner.ts#deliveryRunnerAsyncCommand, src/cli/delivery-runner.ts#deliveryForegroundChild, test/unit/runner/public-runner.test.ts]
+  - id: learning-scheduled-observations
+    enforcers: [src/learning/scheduler.ts#dueObservations, src/learning/scheduler.ts#ObservationSchedule, src/learning/scheduler.ts#observationOutcome, src/learning/scheduler.ts#learningRecommendation, src/cli/impact.ts#impactCommand, test/unit/learning/scheduler.test.ts]
   - id: delivery-revision-adoption
     enforcers: [src/runner/revision-impact.ts#revisionImpact, src/runner/revision-impact.ts#reviseDelivery, src/cli/delivery-journal.ts#deliveryJournalCommand, test/unit/runner/revision-impact.test.ts]
   - id: delivery-operator-visibility

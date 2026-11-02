@@ -160,6 +160,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl measure format` | `wholeloop/impact-report@1` | Apply a repository-guided layout without rewriting measured values |
 | `wl measure complete` | `wholeloop/impact-complete@1` | Store the canonical checkpoint report with traceable values |
 | `wl measure report` | `wholeloop/impact-report@1` | Show query-linked measurements, verdicts and qualitative signals |
+| `wl measure tick` | `wholeloop/impact-tick@1` | Schedule each due checkpoint observation once in the external store |
 | `wl measure schedule` | `wholeloop/impact-schedule@1` | List checkpoint due dates, missing offsets and measured status |
 | `wl measure digest` | `wholeloop/impact-digest@1` | Prepare an unsent impact digest and per-scope comment bodies |
 | `wl measure schema` | `wholeloop/impact-schema@1` | Print measurement, qualitative query and report layout contracts |

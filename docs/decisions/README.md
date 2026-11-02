@@ -204,6 +204,7 @@
 | [0191](./0191-effect-boundary-fault-evaluation.md) | Effect-boundary fault evaluation | Accepted | 2026-11-01 |
 | [0192](./0192-revision-impact-and-explicit-adoption.md) | Revision impact and explicit adoption | Accepted | 2026-11-01 |
 | [0193](./0193-cross-invocation-correction-protocol.md) | Cross-invocation correction protocol | Accepted | 2026-11-01 |
+| [0194](./0194-scheduled-observations-and-learning-recommendations.md) | Scheduled observations and learning recommendations | Accepted | 2026-11-01 |
 
 ## Lifecycle
 

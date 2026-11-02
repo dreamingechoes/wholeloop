@@ -11847,6 +11847,42 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": ["schema", "at", "due", "scheduled", "deduped", "reads"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/impact-tick@1"
+        },
+        "at": {
+          "type": "string"
+        },
+        "due": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "scheduled": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "deduped": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "reads": {
+          "const": "not-performed"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["schema", "status", "preflight"],
       "properties": {
         "schema": {

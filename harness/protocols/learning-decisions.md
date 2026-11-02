@@ -4,5 +4,6 @@
 - ⛔ `learning-iteration-link` — Iterate requires a real open framing draft linked to the decision evidence, with complete framing sections and unresolved questions labelled with answerers. Do not claim that the revised hypothesis was validated.
 - ⛔ `learning-closure` — A canonical completed decision closes its scope. An initiative can close only when every scope has a completed learning decision; generic closure and manually closed siblings cannot bypass that requirement.
 - ⛔ `learning-proposals-only` — Flag disablement/removal and code cleanup remain explicit proposals. This workflow has no flag, code mutation or publication host.
+- ⛔ `learning-scheduled-observations` — schedule each due checkpoint once by subject, launch, source and policy identity; never read or prompt while scheduling. Unknown stays unknown: none-policy observations end completed-with-unknowns only when the contract allows it, otherwise blocked. Machine recommendations name every unknown and counterargument and never change flags, deploy, message, remove code or close work.
 
 Self-reported evidence stays labelled; it is not a measured checkpoint. Counter- argument quality, real client isolation and actual follow-up execution need review.

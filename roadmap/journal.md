@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-02 · P6-30 · Scheduled observations and learning recommendations — in progress
+
+- Add deterministic due-observation identities (subject, checkpoint, launch, measurement-source digest and observation-policy digest), at-most-once scheduling in the external store through `wl measure tick` with one new output contract and an appended fingerprint, single policy settlement of unknowns, and effect-free machine learning recommendations that name every unknown and counterargument (ADR-0194). Scheduling performs no read and no prompt; readings still go through the existing MCP-first `measure requests` and `measure observe`.
+- Fourteen cases verify the three criteria at the component level. Composing the scheduled queue with the delivery runner, recording the delegated `learning-outcome` decision and replaying an actual local scheduler remain, so P6-30 is 🔄.
+- Markdown lint passes on 423 files. The complete check passes 3819 tests in 200 files, lint 1052, types, build, smoke, offline packaging on archive ab5e036e7e8136dea1af5b4d3c6620225d36b0601c12a4bc4d582be4579ddebc, docs 424, generators, harness 151 and Mermaid 36 in 571 seconds. Next: P6-31.
+
+---
+
 ## 2026-11-01 · P6-29 · Revision impact and the correction protocol — in progress
 
 - Add the pure `revisionImpact` calculation and preview-first `wl delivery revise` with one new output contract and an appended fingerprint (ADR-0192). The impact lists changed, added and removed criteria, removed outcomes, authority renewal, envelope coverage, a reuse or invalidation reason for every route stage, and the attempts and effects to fence or reconcile. Reuse needs every complete input and non-plan predecessor unchanged, so a changed criterion cascades through the stages after the acceptance definitions while a milestone-only change keeps unit evidence. Acceptance needs an operator, a reason and separate approval for removals, refuses blocked and unadoptable revisions, and records only the immutable revision; the run's basis and journal do not move.

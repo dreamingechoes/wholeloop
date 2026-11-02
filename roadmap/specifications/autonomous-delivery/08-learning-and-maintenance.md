@@ -3,7 +3,7 @@
 > **TL;DR** — Reuse the runner to execute due observations and prepare bounded follow-up work. Separate observed results, causal interpretation and authority to change the product. A maintenance proposal is not an automatically authorized implementation.
 
 > [!NOTE]
-> **Status: 📐 design.** Accepted design target for P6-30–P6-31. Existing measurement plans and human learning outcomes remain unchanged outside an explicitly delegated policy.
+> **Status: 🚧 partial.** P6-30 adds at-most-once scheduling of due observations, policy settlement of unknowns and effect-free machine learning recommendations ([ADR-0194](../../../docs/decisions/0194-scheduled-observations-and-learning-recommendations.md)); composing them with the runner remains. P6-31 is an accepted design target. Existing measurement plans and human learning outcomes remain unchanged outside an explicitly delegated policy.
 
 ## Due observations
 

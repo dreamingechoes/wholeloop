@@ -927,6 +927,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Show query-linked measurements, verdicts and qualitative signals',
   },
   {
+    path: 'measure tick',
+    arguments: '',
+    options: ['--for <id,...>', '--at <iso-time>'],
+    schema: 'wholeloop/impact-tick@1',
+    summary: 'Schedule each due checkpoint observation once in the external store',
+  },
+  {
     path: 'measure schedule',
     arguments: '',
     options: ['--for <id>'],
