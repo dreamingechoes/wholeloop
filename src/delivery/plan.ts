@@ -43,6 +43,17 @@ export interface DeliveryPolicy {
     evidence: string[]
     fallback: DeliveryPolicy['uncertainty']
   }[]
+  /**
+   * ADR-0199: the operator's merge policy, required for `to-merge` and refused
+   * elsewhere. It is part of the policy every grant binds, so no worker can edit
+   * the method, required checks, denylist or exceptions.
+   */
+  merge?: {
+    method: 'merge' | 'squash' | 'rebase'
+    checks: { required: { name: string; issuer: string }[] }
+    denylist: string[]
+    exceptions: string[]
+  }
 }
 export const DEFAULT_DELIVERY_BUDGETS = {
   wallTimeMs: 4 * 60 * 60 * 1000,
@@ -199,6 +210,16 @@ function basis(value: DeliveryBasis, source: SourceSnapshot): void {
   )
   for (const delegation of value.policy.delegations)
     unique(delegation.evidence, 'duplicate-decision-evidence')
+  if ((value.policy.endpoint === 'to-merge') !== (value.policy.merge !== undefined))
+    throw new DeliveryPlanError('merge-policy')
+  if (value.policy.merge) {
+    unique(
+      value.policy.merge.checks.required.map((entry) => entry.name),
+      'duplicate-merge-check',
+    )
+    // An exception is only meaningful for a path the denylist would refuse.
+    unique(value.policy.merge.exceptions, 'duplicate-merge-exception')
+  }
   for (const entry of value.guidance) {
     if (!knownSlot(entry.slot)) throw new DeliveryPlanError('unknown-guidance-slot')
     if (entry.repository !== undefined)

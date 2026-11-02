@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 67 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 6 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 67 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 5 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -613,7 +613,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-24 · Conditional merge execution and reconciliation
 
-**Status:** 🔄 · **Size:** L · **Depends on:** P6-23, P6-22
+**Status:** ⏸️ · **Size:** L · **Depends on:** P6-23, P6-22
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -633,7 +633,11 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Completed technical work** — `RunnerMerger` over the effect ledger and `GithubCliMergeHost` ([ADR-0189](../docs/decisions/0189-conditional-merge-execution.md)). Ten stub cases verify the three criteria at the component level: expected-head merges, no effect for ineligible or expired eligibility, distinct external, queued, partial and own merges, lost-response reconciliation with one merge, no retry after a refusal, refusal without the merge effect, and exact `gh pr merge` arguments without bypass, auto-merge, force or branch deletion.
 
-**Remaining** — Composing `to-merge` routes needs complete reads of changed files, mergeability, discussion resolution, allowed methods and base currency for the eligibility input, plus the CI wait and merge stage in the dispatcher; until then those routes are refused before dispatch. The separately authorized disposable hosted protection and SHA trials (REL-10, EVAL-05, EVAL-08) need an owner-authorized hosted repository.
+**Composed route** — `to-merge` routes run as publication, `ci`, `merge` and `handoff` ([ADR-0199](../docs/decisions/0199-composed-conditional-merge-routes.md)). The operator's merge policy (method, trusted required checks, denylist and exceptions) lives in `plan.policy.merge`, so the grant binds it. The CI stage waits finitely for revision-bound checks at the published head and keeps a typed repair request on failure. Immediately before each single expected-head merge, the merge stage recomputes eligibility from: this request's passed gates; one fresh CI read; and complete pull-request facts from `GithubCliMergeFactsHost` (files, every discussion page, mergeability, allowed methods and base currency, each unknown when unreadable). The handoff and the `merged` endpoint accept only the run's own exact-head merge. The dispatcher refuses the route at static preflight unless its merge stages carry an explicit runtime allowance; the public host composes none.
+
+**Evidence** — Eleven dispatcher-composed cases on stub hosts: route order and the runtime refusal; passing CI, one exact-head merge, the handoff and the endpoint, with no second merge on re-inspection; a CI failure that keeps its repair request and never reaches the merge; seven refusals with no merge; and someone else's merge, never handed off. A mutation that forces eligibility fails all seven refusals. Four stub-executor cases cover complete pagination and unknown facts.
+
+**Awaiting** — The separately authorized disposable hosted protection and exact-SHA trials (REL-10, EVAL-05, EVAL-08) need an owner-authorized hosted repository and a controller that installs the merge stages with the runtime allowance. No hosted code host was used.
 
 ---
 

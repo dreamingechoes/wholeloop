@@ -17,6 +17,8 @@ export type RunnerStageKind =
   | 'integration'
   | 'acceptance'
   | 'publication'
+  | 'ci'
+  | 'merge'
   | 'research'
   | 'handoff'
 export interface RunnerStage {
@@ -177,10 +179,32 @@ export function runnerRoute(plan: DeliveryPlan): RunnerStage[] {
       ['acceptance'],
       plan.criteria.map((c) => c.id),
     )
+  // ADR-0199: a merge waits for revision-bound CI at the published head, then
+  // re-evaluates eligibility immediately before its single expected-head merge.
+  if (plan.policy.endpoint === 'to-merge') {
+    add(
+      'ci',
+      'ci',
+      ['publication'],
+      plan.criteria.map((c) => c.id),
+    )
+    add(
+      'merge',
+      'merge',
+      ['ci'],
+      plan.criteria.map((c) => c.id),
+    )
+  }
   add(
     'handoff',
     'handoff',
-    [plan.policy.endpoint === 'local-handoff' ? 'acceptance' : 'publication'],
+    [
+      plan.policy.endpoint === 'local-handoff'
+        ? 'acceptance'
+        : plan.policy.endpoint === 'to-merge'
+          ? 'merge'
+          : 'publication',
+    ],
     plan.criteria.map((c) => c.id),
   )
   return stages

@@ -27,6 +27,27 @@ export interface RunnerMergeHost {
   read(target: Readonly<RunnerMergeTarget>, signal: AbortSignal): Promise<RunnerMergeRead>
   merge(target: Readonly<RunnerMergeTarget>, signal: AbortSignal): Promise<void>
 }
+/**
+ * Complete current pull-request facts for eligibility (ADR-0199). A read that
+ * is incomplete, paginated beyond its bound or denied is `unknown`, never an
+ * empty list or a guessed boolean.
+ */
+export interface RunnerMergeFacts {
+  state: 'open' | 'closed' | 'merged'
+  draft: boolean
+  head: string
+  base: string
+  mergeable: boolean | 'unknown'
+  files: string[] | 'unknown'
+  unresolvedDiscussions: number | 'unknown'
+  allowedMethods: MergeMethod[] | 'unknown'
+  baseCurrent: boolean | 'unknown'
+  observedAt: string
+}
+export interface RunnerMergeFactsHost {
+  readonly provenance: 'fixture' | 'host-observed'
+  facts(target: Readonly<RunnerMergeTarget>, signal: AbortSignal): Promise<RunnerMergeFacts>
+}
 export type RepositoryMergeOutcome =
   | 'merged'
   | 'externally-merged'

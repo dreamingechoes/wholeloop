@@ -208,6 +208,7 @@
 | [0195](./0195-maintenance-proposals-and-recurring-admission.md) | Maintenance proposals and recurring admission | Accepted | 2026-11-02 |
 | [0196](./0196-maintenance-commands-and-recurring-delivery-intake.md) | Maintenance commands and recurring delivery intake | Accepted | 2026-11-02 |
 | [0197](./0197-correction-revisions-and-stage-reuse.md) | Correction revisions and stage reuse | Accepted | 2026-11-02 |
+| [0199](./0199-composed-conditional-merge-routes.md) | Composed conditional merge routes | Accepted | 2026-11-02 |
 
 ## Lifecycle
 

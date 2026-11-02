@@ -21,6 +21,8 @@ rules:
     enforcers: [src/runner/continuation.ts#continueDelivery, src/delivery/reducer.ts#continuationAdmission, src/delivery/lifecycle.ts#DeliveryLifecycle, src/runner/engine.ts#DeliveryRunner, src/runner/events.ts#reduceRunner, src/runner/route.ts#runnerRoute, src/cli/delivery-journal.ts#deliveryJournalCommand, test/unit/runner/continuation.test.ts]
   - id: delivery-operator-visibility
     enforcers: [src/runner/operator-report.ts#deliveryReport, src/runner/operator-report.ts#nextActions, src/runner/operator-report.ts#deliveryDiagnostics, src/runner/operator-report.ts#exportRecoveryBundle, src/runner/operator-report.ts#importRecoveryBundle, src/cli/delivery-journal.ts#deliveryJournalCommand, test/unit/runner/operator-report.test.ts]
+  - id: delivery-merge-route
+    enforcers: [src/runner/merge-stages.ts#RunnerCiStages, src/runner/merge-stages.ts#RunnerMergeStages, src/runner/publication-host.ts#GithubCliMergeFactsHost, src/runner/publication-stages.ts#RunnerPublicationStages, src/runner/stage-dispatcher.ts#RunnerStageDispatcher, src/runner/route.ts#runnerRoute, src/delivery/plan.ts#validateDeliveryPlan, test/unit/runner/merge-stages.test.ts, test/unit/runner/merge-execution.test.ts]
   - id: delivery-conditional-merge
     enforcers: [src/runner/merge-execution.ts#RunnerMerger, src/runner/publication-host.ts#GithubCliMergeHost, src/delivery/effects.ts#DeliveryEffects, test/unit/runner/merge-execution.test.ts]
   - id: delivery-merge-eligibility

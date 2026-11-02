@@ -126,6 +126,8 @@ export function revisionImpact(input: {
         'acceptance-definition',
         'acceptance',
         'publication',
+        'ci',
+        'merge',
         'handoff',
         'research',
       ].includes(stage.kind) &&

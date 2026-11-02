@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import type { MergeEligibility } from '../../../src/runner/merge-eligibility.js'
 import {
+  type RunnerMergeFacts,
   type RunnerMergeHost,
   type RunnerMergeRead,
   RunnerMerger,
   type RunnerMergeTarget,
 } from '../../../src/runner/merge-execution.js'
-import { GithubCliMergeHost } from '../../../src/runner/publication-host.js'
+import {
+  GithubCliMergeFactsHost,
+  GithubCliMergeHost,
+} from '../../../src/runner/publication-host.js'
 import { fixture, git } from '../../support/delivery.js'
 import { publicationFixture } from '../../support/runner-publication.js'
 
@@ -244,4 +248,102 @@ describe('GitHub CLI merge host (stub executor)', () => {
         host.merge({ ...target, pr: 'https://github.com/other/app/pull/7' }),
       ).rejects.toThrow('publication-host-pull-request')
     }))
+})
+
+describe('GitHub CLI merge facts (stub executor)', () => {
+  const pages = (overrides: Record<string, unknown> = {}) => {
+    const thread = (resolved: boolean) => ({ isResolved: resolved })
+    return (args: readonly string[]) => {
+      const endpoint = args.at(-1) ?? ''
+      if (args[1] === 'graphql') {
+        const second = args.includes('after=cursor-1')
+        return {
+          data: {
+            repository: {
+              pullRequest: {
+                reviewThreads: {
+                  nodes: second ? [thread(false)] : [thread(true), thread(false)],
+                  pageInfo: second
+                    ? { hasNextPage: false, endCursor: null }
+                    : { hasNextPage: true, endCursor: 'cursor-1' },
+                },
+              },
+            },
+          },
+        }
+      }
+      if (endpoint.endsWith('/pulls/7'))
+        return {
+          state: 'open',
+          draft: false,
+          merged: false,
+          mergeable: true,
+          changed_files: 101,
+          head: { sha: 'b'.repeat(40) },
+          base: { ref: 'main' },
+          ...(overrides.pull as object),
+        }
+      if (endpoint.includes('/pulls/7/files'))
+        return Array.from({ length: endpoint.endsWith('page=1') ? 100 : 1 }, (_, index) => ({
+          filename: `src/${endpoint.endsWith('page=1') ? index : 100}.ts`,
+        }))
+      if (endpoint.includes('/compare/')) return { behind_by: 0, ...(overrides.compare as object) }
+      return {
+        allow_merge_commit: false,
+        allow_squash_merge: true,
+        allow_rebase_merge: false,
+        ...(overrides.repo as object),
+      }
+    }
+  }
+  const run = async (overrides: Record<string, unknown> = {}) => {
+    let facts: RunnerMergeFacts | undefined
+    await fixture(async ({ root }) => {
+      git(root, ['remote', 'add', 'origin', 'https://github.com/fixture/app.git'])
+      const respond = pages(overrides),
+        host = new GithubCliMergeFactsHost(async (_binary, args) => JSON.stringify(respond(args)))
+      facts = await host.facts(
+        {
+          repository: 'app',
+          path: root,
+          remote: 'origin',
+          branch: 'wl/integration-1',
+          base: 'main',
+          head: 'b'.repeat(40),
+          pr: 'https://github.com/fixture/app/pull/7',
+          method: 'squash',
+        },
+        new AbortController().signal,
+      )
+    })
+    return facts
+  }
+  it('reads every changed file, every discussion page, methods and base currency', async () => {
+    const facts = await run()
+    expect(facts).toMatchObject({
+      state: 'open',
+      draft: false,
+      mergeable: true,
+      unresolvedDiscussions: 2,
+      allowedMethods: ['squash'],
+      baseCurrent: true,
+    })
+    expect(facts?.files).toHaveLength(101)
+  })
+  it.each([
+    ['a file list shorter than the PR reports', { pull: { changed_files: 150 } }, 'files'],
+    [
+      'settings hidden without push access',
+      { repo: { allow_squash_merge: undefined } },
+      'allowedMethods',
+    ],
+    ['pending mergeability', { pull: { mergeable: null } }, 'mergeable'],
+    ['an unreadable comparison', { compare: { behind_by: 'x' } }, 'baseCurrent'],
+  ])('reports %s as unknown, never as empty', async (_name, overrides, field) => {
+    const facts = await run(overrides)
+    expect(facts?.[field as keyof RunnerMergeFacts]).toBe('unknown')
+  })
+  it('reports a base the head is behind as not current', async () => {
+    expect((await run({ compare: { behind_by: 3 } }))?.baseCurrent).toBe(false)
+  })
 })

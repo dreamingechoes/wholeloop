@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-02 · P6-24 · Composed conditional merge routes — awaiting hosted trials
+
+- Compose `to-merge` routes as `publication`, `ci`, `merge` and `handoff` (ADR-0199). The operator's merge policy (method, trusted required checks, denylist and exceptions) is a new optional `plan.policy.merge`. It is required for `to-merge` and refused elsewhere, and every grant binds it. The CI stage waits finitely for revision-bound checks at the published head and keeps a typed repair request on failure. The merge stage recomputes eligibility immediately before each single expected-head merge from: this request's gates; a fresh CI read; and complete pull-request facts from the new `GithubCliMergeFactsHost`, where each unreadable fact is unknown. Handoff and the `merged` endpoint accept only the run's own exact-head merge.
+- Conservative choices recorded in ADR-0199: the dispatcher refuses a merge route at static preflight unless the installed merge stages carry an explicit runtime allowance; the public `wl delivery run` host still composes no publication or merge stages; re-verification counts as refutation in the eligibility evidence.
+- Contract changes are additive on the unreleased v1 candidate: `policy.merge` in the plan, envelope, grant and their outputs, and the `ci` and `merge` stage kinds. Fingerprints are updated with that reason. Existing tests that relied on the old refusal now check the runtime refusal and the new route order.
+- Eleven dispatcher-composed stub cases and four stub-executor cases. A mutation that forces eligibility fails all seven refusal cases. P6-24 is ⏸️ awaiting the separately authorized hosted protection and exact-SHA trials (REL-10, EVAL-05, EVAL-08).
+- Markdown lint passes on 429 files. The complete check passes 3866 tests in 204 files, lint 1061, types, build, smoke, offline packaging on archive a174cee3bcd690875be0331c17d5cc409bdc4e98222dfa04912a0ac4e83d4ae9, docs 430, generators, harness 151 and Mermaid 36 in 809 seconds. Next: P6-30.
+
+---
+
 ## 2026-11-02 · P6-29 · Correction producer design — deferred to P6-27
 
 - Owned workspaces and commit receipts are valid evidence only under the run's current grant and basis; `validateOwnedWorkspaceCommit` enforces this even in its historical mode. Because every continuation needs a new exact-plan grant, owned resources from the failed run cannot be current evidence for it. A first attempt to read them across requests failed on exactly that invariant and was discarded without a commit.

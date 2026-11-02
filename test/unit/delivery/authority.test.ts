@@ -12,7 +12,14 @@ import {
   type TrustedBrokerRuntime,
 } from '../../../src/delivery/broker.js'
 import type { DeliveryPlan } from '../../../src/delivery/plan.js'
-import { authorization, entry, envelope, fixture, git } from '../../support/delivery.js'
+import {
+  authorization,
+  entry,
+  envelope,
+  fixture,
+  git,
+  mergePolicy,
+} from '../../support/delivery.js'
 import { environmentNames } from '../../support/platform.js'
 
 const at = '2026-10-24T10:00:00.000Z'
@@ -243,6 +250,7 @@ describe('explicit delivery authority (AUTH-03–AUTH-08)', () => {
         url: 'https://github.com/example/tasks',
       }
       plan.policy.endpoint = 'to-merge'
+      plan.policy.merge = mergePolicy()
       const prepared = planning.preparePlan(plan)
       const authority = new DeliveryAuthority(planning.sources.files.root, () => at)
       const request = authorization(plan, prepared.digest)

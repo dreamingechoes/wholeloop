@@ -8,7 +8,7 @@ import {
   type RunnerPullRequest,
 } from '../../src/runner/publication-stages.js'
 import { RunnerStore } from '../../src/runner/store.js'
-import { authorization, fixture, git } from './delivery.js'
+import { authorization, fixture, git, mergePolicy } from './delivery.js'
 
 type Step = 'push' | 'create' | 'ready'
 /** An in-memory stub code host: no network, account or hosted semantics are certified. */
@@ -76,6 +76,7 @@ export async function publicationFixture(
     if (!repository) throw new Error('Fixture repository required')
     repository.remote = { name: 'origin', url: 'https://github.com/fixture/app' }
     plan.policy.endpoint = options.endpoint ?? 'to-pr'
+    if (plan.policy.endpoint === 'to-merge') plan.policy.merge = mergePolicy()
     const prepared = planning.preparePlan(plan),
       store = new RunnerStore(planning.sources.files.root),
       request = authorization(plan, prepared.digest)

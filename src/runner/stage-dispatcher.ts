@@ -11,6 +11,7 @@ import type { RunnerStageRecord } from './events.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerHandoffStages } from './handoff-stages.js'
 import { RunnerIntegrationStages } from './integration-stages.js'
+import { RunnerCiStages, RunnerMergeStages } from './merge-stages.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments } from './product-environments.js'
 import { RunnerPublicationStages } from './publication-stages.js'
@@ -35,6 +36,8 @@ export interface RunnerStageAdapters {
   handoff: RunnerHandoffStages
   research: RunnerResearchStages
   publication: RunnerPublicationStages
+  ci: RunnerCiStages
+  merge: RunnerMergeStages
 }
 const CLASSES = {
   definition: RunnerDefinitionStages,
@@ -50,6 +53,8 @@ const CLASSES = {
   handoff: RunnerHandoffStages,
   research: RunnerResearchStages,
   publication: RunnerPublicationStages,
+  ci: RunnerCiStages,
+  merge: RunnerMergeStages,
 } as const
 
 /** Installed controller code registers domain adapters; source text never supplies a host. */
@@ -92,11 +97,10 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
       return stage.unit ? this.adapters.implementation : this.adapters.research
     if (stage.kind === 'handoff' && plan.policy.endpoint === 'research-report')
       return this.adapters.research
-    // Draft or ready PR publication and its endpoint handoff; merging is not composed.
-    if (plan.policy.endpoint === 'to-merge' && ['publication', 'handoff'].includes(stage.kind))
-      return undefined
+    // A to-pr handoff closes the publication; a to-merge handoff closes the merge (ADR-0199).
     if (stage.kind === 'handoff' && plan.policy.endpoint === 'to-pr')
       return this.adapters.publication
+    if (stage.kind === 'handoff' && plan.policy.endpoint === 'to-merge') return this.adapters.merge
     if (stage.kind === 'publication') return this.adapters.publication
     // ADR-0197: no fixed correction producer is registered yet, so a continuation
     // route is reported unsupported by static preflight rather than half-run.
@@ -150,8 +154,9 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
       )
     )
       return unavailable('dispatcher-research-milestone-unsupported')
-    // Conditional merge needs revision-bound CI and eligibility observations first.
-    if (plan.policy.endpoint === 'to-merge') return unavailable('dispatcher-merge-unavailable')
+    // A merge also needs the installed runtime allowance, separate from plan and grant.
+    if (plan.policy.endpoint === 'to-merge' && !this.adapters.merge?.options.runtime.allowsMerge)
+      return unavailable('dispatcher-merge-runtime-denied')
     // The engine cannot supply a caller selection, so each milestone needs its fixed input.
     if (
       route.some(
@@ -295,8 +300,11 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
         throw new DeliveryRunnerError('dispatcher-publication-endpoint-unavailable')
       return this.adapters.publication.endpoint(request, plan, signal)
     }
-    if (plan.policy.endpoint === 'to-merge')
-      throw new DeliveryRunnerError('dispatcher-merge-endpoint-unavailable')
+    if (plan.policy.endpoint === 'to-merge') {
+      if (!this.adapters.merge)
+        throw new DeliveryRunnerError('dispatcher-merge-endpoint-unavailable')
+      return this.adapters.merge.endpoint(request, plan, signal)
+    }
     if (!this.adapters.handoff)
       throw new DeliveryRunnerError('dispatcher-local-endpoint-unavailable')
     return this.adapters.handoff.endpoint(request, plan, signal)

@@ -8,6 +8,8 @@ import { type CiObservation, type RunnerCiHost, validateCiObservation } from './
 import type { MergeMethod } from './merge-eligibility.js'
 import {
   assertMergeTarget,
+  type RunnerMergeFacts,
+  type RunnerMergeFactsHost,
   type RunnerMergeHost,
   type RunnerMergeRead,
   type RunnerMergeTarget,
@@ -365,5 +367,146 @@ export class GithubCliMergeHost implements RunnerMergeHost {
       ],
       target.path,
     )
+  }
+}
+
+const THREADS = `query($owner:String!,$name:String!,$number:Int!,$after:String){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100,after:$after){nodes{isResolved}pageInfo{hasNextPage endCursor}}}}}`
+/**
+ * Complete pull-request facts through `gh` (ADR-0199). Each fact is read on its
+ * own: one that is denied, malformed or beyond its page bound becomes unknown
+ * and keeps the candidate from merging, while the others stay observed.
+ */
+export class GithubCliMergeFactsHost implements RunnerMergeFactsHost {
+  readonly provenance = 'host-observed' as const
+  constructor(readonly execute: CommandExecutor = executeCodehostCommand) {}
+  async facts(
+    target: Readonly<RunnerMergeTarget>,
+    _signal?: AbortSignal,
+  ): Promise<RunnerMergeFacts> {
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(target.remote))
+      throw new DeliveryRunnerError('publication-host-remote')
+    const repo = codehostRepository(target.path, target.remote)
+    if (repo.host !== 'github.com') throw new DeliveryRunnerError('publication-host-unsupported')
+    assertMergeTarget(target)
+    if (!target.pr.startsWith(`${repo.url}/pull/`))
+      throw new DeliveryRunnerError('publication-host-pull-request')
+    const number = target.pr.slice(`${repo.url}/pull/`.length),
+      [owner, name] = repo.path.split('/'),
+      json = async (args: string[]) => {
+        const output = await this.execute('gh', args, target.path)
+        try {
+          return JSON.parse(output) as unknown
+        } catch {
+          throw new DeliveryRunnerError('publication-host-incomplete')
+        }
+      },
+      api = (endpoint: string) =>
+        json(['api', '--hostname', repo.host, '--method', 'GET', `repos/${repo.path}/${endpoint}`])
+    const pull = await api(`pulls/${number}`),
+      head = isObject(pull) && isObject(pull.head) ? pull.head.sha : undefined,
+      base = isObject(pull) && isObject(pull.base) ? pull.base.ref : undefined
+    if (
+      !isObject(pull) ||
+      typeof head !== 'string' ||
+      !SHA.test(head) ||
+      typeof base !== 'string' ||
+      typeof pull.draft !== 'boolean'
+    )
+      throw new DeliveryRunnerError('publication-host-incomplete')
+    const unknown = async <T>(read: () => Promise<T>): Promise<T | 'unknown'> => {
+      try {
+        return await read()
+      } catch {
+        return 'unknown'
+      }
+    }
+    const files = await unknown(async () => {
+        const total = pull.changed_files
+        if (typeof total !== 'number' || total > 3000) throw new Error()
+        const names: string[] = []
+        for (let page = 1; names.length < total && page <= 30; page++) {
+          const value = await api(`pulls/${number}/files?per_page=100&page=${page}`)
+          if (!Array.isArray(value) || !value.length) throw new Error()
+          for (const entry of value)
+            if (isObject(entry) && typeof entry.filename === 'string') names.push(entry.filename)
+            else throw new Error()
+        }
+        if (names.length !== total) throw new Error()
+        return names.sort()
+      }),
+      unresolvedDiscussions = await unknown(async () => {
+        let after: string | undefined,
+          open = 0
+        for (let page = 0; page < 10; page++) {
+          const value = await json([
+            'api',
+            'graphql',
+            '--hostname',
+            repo.host,
+            '-f',
+            `query=${THREADS}`,
+            '-F',
+            `owner=${owner}`,
+            '-F',
+            `name=${name}`,
+            '-F',
+            `number=${number}`,
+            ...(after ? ['-f', `after=${after}`] : []),
+          ])
+          const threads =
+            isObject(value) &&
+            isObject(value.data) &&
+            isObject(value.data.repository) &&
+            isObject(value.data.repository.pullRequest)
+              ? value.data.repository.pullRequest.reviewThreads
+              : undefined
+          if (!isObject(threads) || !Array.isArray(threads.nodes) || !isObject(threads.pageInfo))
+            throw new Error()
+          for (const node of threads.nodes)
+            if (!isObject(node) || typeof node.isResolved !== 'boolean') throw new Error()
+            else if (!node.isResolved) open++
+          if (threads.pageInfo.hasNextPage !== true) return open
+          if (typeof threads.pageInfo.endCursor !== 'string') throw new Error()
+          after = threads.pageInfo.endCursor
+        }
+        throw new Error()
+      }),
+      allowedMethods = await unknown(async () => {
+        const value = await json([
+          'api',
+          '--hostname',
+          repo.host,
+          '--method',
+          'GET',
+          `repos/${repo.path}`,
+        ])
+        if (!isObject(value)) throw new Error()
+        const flags: [MergeMethod, unknown][] = [
+          ['merge', value.allow_merge_commit],
+          ['squash', value.allow_squash_merge],
+          ['rebase', value.allow_rebase_merge],
+        ]
+        // Without push access GitHub omits these settings; that is unknown, not "none".
+        if (flags.some(([, flag]) => typeof flag !== 'boolean')) throw new Error()
+        return flags.filter(([, flag]) => flag === true).map(([method]) => method)
+      }),
+      baseCurrent = await unknown(async () => {
+        const value = await api(`compare/${encodeURIComponent(base)}...${head}`)
+        if (!isObject(value) || typeof value.behind_by !== 'number') throw new Error()
+        return value.behind_by === 0
+      })
+    return {
+      state: pull.merged === true ? 'merged' : pull.state === 'open' ? 'open' : 'closed',
+      draft: pull.draft,
+      head,
+      base,
+      // GitHub computes mergeability asynchronously and reports null meanwhile.
+      mergeable: typeof pull.mergeable === 'boolean' ? pull.mergeable : 'unknown',
+      files,
+      unresolvedDiscussions,
+      allowedMethods,
+      baseCurrent,
+      observedAt: new Date().toISOString(),
+    }
   }
 }

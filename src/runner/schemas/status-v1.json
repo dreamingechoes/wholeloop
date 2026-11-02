@@ -229,6 +229,8 @@
               "integration",
               "acceptance",
               "publication",
+              "ci",
+              "merge",
               "research",
               "handoff"
             ]

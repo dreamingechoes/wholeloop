@@ -14,7 +14,7 @@ import {
 import { runnerRoute } from '../../../src/runner/route.js'
 import { RunnerStageDispatcher } from '../../../src/runner/stage-dispatcher.js'
 import type { RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
-import { git } from '../../support/delivery.js'
+import { git, mergePolicy } from '../../support/delivery.js'
 import { runnerGitFixture } from '../../support/runner-git.js'
 import { StubCodeHost, publicationFixture as setup } from '../../support/runner-publication.js'
 
@@ -269,7 +269,7 @@ describe('publication stage composition', () => {
         },
       },
     ))
-  it('refuses conditional merge routes before any dispatch', () =>
+  it('refuses merge routes without an installed merge runtime before any dispatch', () =>
     runnerGitFixture(
       async ({ store, request, digest }) => {
         const host = new StubCodeHost(),
@@ -283,14 +283,15 @@ describe('publication stage composition', () => {
             store.inspect(digest).route,
             new AbortController().signal,
           ),
-        ).toMatchObject({ available: false, reason: 'dispatcher-merge-unavailable' })
-        expect(dispatcher.coverage(store.basis(request).plan).unsupported).toEqual(
-          expect.arrayContaining(['publication', 'handoff']),
-        )
+        ).toMatchObject({ available: false, reason: 'dispatcher-merge-runtime-denied' })
+        const unsupported = dispatcher.coverage(store.basis(request).plan).unsupported
+        expect(unsupported).toEqual(expect.arrayContaining(['ci', 'merge', 'handoff']))
+        expect(unsupported).not.toContain('publication')
       },
       {
         configure: (plan) => {
           plan.policy.endpoint = 'to-merge'
+          plan.policy.merge = mergePolicy()
           remote(plan)
         },
       },

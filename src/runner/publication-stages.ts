@@ -394,7 +394,9 @@ export class RunnerPublicationStages {
       record.basis !== basis.digest ||
       !stage ||
       !['publication', 'handoff'].includes(stage.kind) ||
-      basis.plan.policy.endpoint !== 'to-pr' ||
+      !['to-pr', 'to-merge'].includes(basis.plan.policy.endpoint) ||
+      // A merge route's handoff belongs to the merge stages (ADR-0199).
+      (stage.kind === 'handoff' && basis.plan.policy.endpoint !== 'to-pr') ||
       contractDigest(request.host) !== contractDigest(this.options.identity)
     )
       throw new DeliveryRunnerError('publication-stage-binding')
@@ -468,7 +470,12 @@ export class RunnerPublicationStages {
     }
     current()
     const grant = this.store.lifecycle.authority.inspect(context.request.grant).grant
-    if (!grant.effects.includes('git.push') || !grant.effects.includes('pr.create'))
+    if (
+      !grant.effects.includes('git.push') ||
+      !grant.effects.includes('pr.create') ||
+      // A merge needs a ready PR, so its route never publishes a draft only.
+      (pinned.basis.plan.policy.endpoint === 'to-merge' && !grant.effects.includes('pr.ready'))
+    )
       throw new DeliveryRunnerError('publication-stage-authority')
     const candidate = accepted.input.product.candidate
     if (!candidate) throw new DeliveryRunnerError('publication-complete-candidate-required')
@@ -536,6 +543,42 @@ export class RunnerPublicationStages {
       status: stopped ? ('blocked' as const) : ('unknown' as const),
       invocationState: stopped ? ('stopped' as const) : ('unknown' as const),
       evidence,
+    }
+  }
+  /**
+   * ADR-0199: the current passed publication of this request, with each
+   * repository's one owned open PR at the published head. Anything else is
+   * undefined; a merge or CI stage never guesses which PR is its own.
+   */
+  async published(request: Readonly<RunnerRequest>, signal: AbortSignal) {
+    const record = this.store.stage(contractDigest(request), 'publication')
+    if (record?.status !== 'passed' || !record.evidence) return undefined
+    const observed = await this.observePublication(request, record),
+      binding = this.read(request, record)
+    if (
+      observed.status !== 'passed' ||
+      contractDigest(observed.evidence) !== record.evidence ||
+      !binding
+    )
+      return undefined
+    const targets: (RunnerPublicationTarget & { pr: string })[] = []
+    for (const target of binding.targets) {
+      const marker = publicationMarker(request.run, target.repository),
+        mine = (await this.options.host.pullRequests(target, signal)).filter(
+          (pr) =>
+            pr.branch === target.branch &&
+            pr.base === target.base &&
+            pr.body.includes(marker) &&
+            pr.state === 'open',
+        )
+      if (mine.length !== 1 || mine[0]?.sha !== target.head) return undefined
+      targets.push({ ...target, pr: mine[0].url })
+    }
+    return {
+      invocation: record.invocation,
+      evidence: record.evidence,
+      ready: binding.ready,
+      targets,
     }
   }
   private outcome(request: Readonly<RunnerRequest>): RunnerPublicationOutcome | undefined {

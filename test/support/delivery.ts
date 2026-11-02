@@ -170,6 +170,15 @@ export function envelope(plan: DeliveryPlan): DeliveryEnvelope {
   }
 }
 
+/** An operator merge policy for `to-merge` fixtures; trusted issuers are synthetic. */
+export function mergePolicy(): NonNullable<DeliveryPlan['policy']['merge']> {
+  return {
+    method: 'squash',
+    checks: { required: [{ name: 'test', issuer: 'github-app:15368' }] },
+    denylist: ['.github/**', 'enforcement.yml'],
+    exceptions: [],
+  }
+}
 export function authorization(plan: DeliveryPlan, digest: string): AuthorizationRequest {
   return {
     schema: 'wholeloop/delivery-authorization-request@1',

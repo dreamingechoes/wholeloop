@@ -177,17 +177,25 @@ describe('deterministic complete delivery routes', () => {
       )
     })
   })
-  it.each(['to-pr', 'to-merge'] as const)(
-    'requires publication after full acceptance for %s',
-    async (endpoint) => {
-      await fixture(({ plan }) => {
-        plan.policy.endpoint = endpoint
-        const route = runnerRoute(plan)
-        expect(route.find((s) => s.id === 'publication')?.after).toEqual(['acceptance'])
-        expect(route.find((s) => s.id === 'handoff')?.after).toEqual(['publication'])
-      })
-    },
-  )
+  it('requires publication after full acceptance for to-pr', async () => {
+    await fixture(({ plan }) => {
+      plan.policy.endpoint = 'to-pr'
+      const route = runnerRoute(plan)
+      expect(route.find((s) => s.id === 'publication')?.after).toEqual(['acceptance'])
+      expect(route.find((s) => s.id === 'handoff')?.after).toEqual(['publication'])
+      expect(route.some((s) => ['ci', 'merge'].includes(s.kind))).toBe(false)
+    })
+  })
+  it('waits for CI and merges after publication for to-merge (ADR-0199)', async () => {
+    await fixture(({ plan }) => {
+      plan.policy.endpoint = 'to-merge'
+      const route = runnerRoute(plan)
+      expect(route.find((s) => s.id === 'publication')?.after).toEqual(['acceptance'])
+      expect(route.find((s) => s.id === 'ci')?.after).toEqual(['publication'])
+      expect(route.find((s) => s.id === 'merge')?.after).toEqual(['ci'])
+      expect(route.find((s) => s.id === 'handoff')?.after).toEqual(['merge'])
+    })
+  })
   it('keeps research separate and cannot silently make an incomplete definition ready', async () => {
     await fixture(({ plan }) => {
       plan.policy.endpoint = 'research-report'
