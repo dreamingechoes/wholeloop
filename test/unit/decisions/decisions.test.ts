@@ -305,6 +305,28 @@ describe('explicit delegated decisions', () => {
       )
     })
   })
+  it('makes a decision stale once a later plan revision is adopted, keeping its record', async () => {
+    await setup(async ({ decisions, request }) => {
+      const result = await decisions.decide(request, host()),
+        lifecycle = decisions.budgets.lifecycle,
+        planning = lifecycle.authority.planning,
+        first = planning.getPlan(request.run, 1),
+        next = planning.preparePlan({ ...first.plan, revision: 2, previous: first.digest }),
+        grant = lifecycle.authority.authorize({
+          ...authorization(next.plan, next.digest),
+          id: 'authorization-fedcba9876543210',
+          decisions: [request.decision],
+        })
+      expect(decisions.inspect(result.digest).status).toBe(result.status)
+      lifecycle.track({ run: request.run, revision: 2, grant: grant.grant.id })
+      // The decision judged revision 1; adopting revision 2 ends its current
+      // applicability without rewriting the historical record (P6-29, INT-07).
+      expect(decisions.inspect(result.digest)).toMatchObject({
+        status: 'stale',
+        record: result.record,
+      })
+    })
+  })
   it('refuses a changed original rubric and a forged record', async () => {
     await setup(async ({ decisions, request }) => {
       const result = await decisions.decide(request, host()),

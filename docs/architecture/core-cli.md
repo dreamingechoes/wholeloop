@@ -113,6 +113,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl delivery status` | `wholeloop/delivery-status@1` | Replay authoritative delivery state independently of cached projections |
 | `wl delivery report` | `wholeloop/delivery-report@1` | Explain the outcome, waits, effects and exact next permitted actions read-only |
 | `wl delivery revise` | `wholeloop/delivery-revise@1` | Preview a revision impact; record it only with explicit acceptance |
+| `wl delivery continue` | `wholeloop/delivery-continue@1` | Preview a correction revision for a retained failure; record it only when accepted |
 | `wl delivery diagnostics` | `wholeloop/delivery-diagnostics@1` | Export redacted event categories and digests without private payloads |
 | `wl delivery recovery-export` | `wholeloop/delivery-recovery-export@1` | Write an explicit private recovery bundle with per-file checksums |
 | `wl delivery recovery-import` | `wholeloop/delivery-recovery-import@1` | Verify a recovery bundle and archive it without restoring claims or grants |

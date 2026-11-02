@@ -112,6 +112,8 @@ export interface RegistrationPayload {
   units: { id: string; role: 'contract' | 'implementation' | 'research'; repository?: string }[]
   previous?: string
   envelope?: string
+  /** ADR-0197: the retained failure a correction revision continues from. */
+  continues?: { request: string; stage: string; failure: string }
 }
 export interface GrantPayload {
   schema: 'wholeloop/delivery-grant-event@1'

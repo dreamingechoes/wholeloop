@@ -11527,6 +11527,15 @@
               "observation": {
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
+              },
+              "origin": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["request", "basis"],
+                "properties": {
+                  "request": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                  "basis": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                }
               }
             },
             "required": ["id", "invocation", "status", "sequence", "generation", "basis"]
@@ -11558,6 +11567,7 @@
                   "verification",
                   "review",
                   "commit",
+                  "correction",
                   "integration",
                   "acceptance",
                   "publication",
@@ -11698,6 +11708,10 @@
           "items": {
             "type": "object"
           }
+        },
+        "continuations": {
+          "type": "array",
+          "items": { "type": "object" }
         },
         "effects": {
           "type": "array",
@@ -11841,6 +11855,106 @@
         },
         "record": {
           "type": ["object", "null"]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "admission", "impact", "accepted", "record", "next"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-continue@1"
+        },
+        "admission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema",
+            "run",
+            "predecessor",
+            "stage",
+            "unit",
+            "origin",
+            "failure",
+            "repairs",
+            "status",
+            "reasons",
+            "authority"
+          ],
+          "properties": {
+            "schema": {
+              "const": "wholeloop/delivery-continuation-admission@1"
+            },
+            "run": {
+              "type": "string",
+              "pattern": "^delivery-[a-f0-9]{16}$"
+            },
+            "predecessor": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "stage": {
+              "type": "string"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "origin": {
+              "enum": ["integration", "acceptance", null]
+            },
+            "failure": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "repairs": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["used", "limit"],
+              "properties": {
+                "used": {
+                  "type": "integer"
+                },
+                "limit": {
+                  "type": "integer"
+                }
+              }
+            },
+            "status": {
+              "enum": ["admissible", "refused"]
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "authority": {
+              "const": "new-exact-plan-grant-required"
+            }
+          }
+        },
+        "impact": {
+          "type": ["object", "null"]
+        },
+        "accepted": {
+          "type": "boolean"
+        },
+        "record": {
+          "type": ["object", "null"]
+        },
+        "next": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

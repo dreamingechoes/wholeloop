@@ -13,6 +13,7 @@ export type RunnerStageKind =
   | 'verification'
   | 'review'
   | 'commit'
+  | 'correction'
   | 'integration'
   | 'acceptance'
   | 'publication'
@@ -123,15 +124,23 @@ export function runnerRoute(plan: DeliveryPlan): RunnerStage[] {
         )
         continue
       }
-      for (const kind of [
-        'workspace',
-        'build-plan',
-        'implementation',
-        'commit',
-        'verification',
-        'review',
-      ] as const) {
-        const stage = `${kind}:${id}`
+      // ADR-0197: each recorded correction re-enters the unit after its original
+      // commit, so every stage that consumes the changed head has new inputs.
+      const corrections = (plan.corrections ?? []).filter((entry) => entry.unit === id)
+      const chain: [string, RunnerStageKind][] = [
+        ['workspace', 'workspace'],
+        ['build-plan', 'build-plan'],
+        ['implementation', 'implementation'],
+        ['commit', 'commit'],
+        ...corrections.map((_, index): [string, RunnerStageKind] => [
+          `correction-${index + 1}`,
+          'correction',
+        ]),
+        ['verification', 'verification'],
+        ['review', 'review'],
+      ]
+      for (const [name, kind] of chain) {
+        const stage = `${name}:${id}`
         add(stage, kind, [...new Set(['acceptance-definition', ...previous])], work.criteria, {
           unit: id,
         })

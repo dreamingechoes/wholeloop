@@ -581,6 +581,22 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Preview a revision impact; record it only with explicit acceptance',
   },
   {
+    path: 'delivery continue',
+    arguments: '',
+    options: [
+      '--run <delivery-id>',
+      '--request <sha256>',
+      '--stage <stage-id>',
+      '--unit <work-id>',
+      '--accept',
+      '--operator <name>',
+      '--reason <text>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/delivery-continue@1',
+    summary: 'Preview a correction revision for a retained failure; record it only when accepted',
+  },
+  {
     path: 'delivery diagnostics',
     arguments: '',
     options: ['--run <delivery-id>', '--store <path>'],

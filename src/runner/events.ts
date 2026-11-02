@@ -25,9 +25,11 @@ export interface RunnerPayload {
     | 'observed'
     | 'released'
     | 'recovered'
+    | 'reused'
   basis: string
   request: string
   previous?: string
+  origin?: string
   observation?: string
   controller?: string
   generation?: number
@@ -51,6 +53,16 @@ export interface RunnerStageRecord {
   provenance?: 'fixture' | 'host-observed'
   reason?: string
   sequence: number
+  /** Set only on a reused record: the request and basis that originally observed it. */
+  origin?: { request: string; basis: string }
+}
+/** A correction revision registered on a failed or blocked run (ADR-0197). */
+export interface RunnerContinuation {
+  revision: number
+  request: string
+  stage: string
+  failure: string
+  sequence: number
 }
 export interface RunnerRecord {
   request: string
@@ -65,6 +77,7 @@ export interface RunnerRecord {
 export interface RunnerFacet {
   schema: 'wholeloop/delivery-runner@1'
   records: RunnerRecord[]
+  continuations?: RunnerContinuation[]
 }
 export function deliveryRunner(state: DeliveryProjection): RunnerFacet {
   let facet = state.facets.find((f) => f.schema === 'wholeloop/delivery-runner@1')
@@ -106,6 +119,19 @@ export function reduceRunner(
     ],
     released: ['controller', 'generation', 'reason'],
     recovered: ['controller', 'generation', 'status', 'evidence', 'provenance', 'reason'],
+    reused: [
+      'controller',
+      'generation',
+      'stage',
+      'invocation',
+      'status',
+      'evidence',
+      'provenance',
+      'reason',
+      'observation',
+      'previous',
+      'origin',
+    ],
   }
   if (
     Object.keys(payload).some(
@@ -186,6 +212,55 @@ export function reduceRunner(
   if (payload.action === 'released') {
     if (!payload.reason) throw new DeliveryJournalError('runner-release-reason')
     record.ownership = 'released'
+    record.sequence = event.sequence
+    return
+  }
+  if (payload.action === 'reused') {
+    // A reused stage is the original passed record of a continuation's predecessor,
+    // re-inspected by the controller; it never replaces a stage already issued here.
+    const continuation = facet.continuations?.at(-1)
+    if (
+      !payload.stage ||
+      !payload.invocation ||
+      !payload.origin ||
+      !payload.previous ||
+      payload.status !== 'passed' ||
+      !payload.evidence ||
+      !payload.provenance ||
+      !payload.reason ||
+      record.ownership !== 'active' ||
+      !['queued', 'running'].includes(state.state) ||
+      !continuation ||
+      state.basis.revision !== continuation.revision ||
+      !state.plans.some((plan) => plan.digest === payload.previous) ||
+      payload.previous === record.basis ||
+      record.stages.some((stage) => stage.id === payload.stage && stage.basis === record.basis)
+    )
+      throw new DeliveryJournalError('runner-stage-reuse')
+    const origin = facet.records
+      .find((entry) => entry.request === payload.origin)
+      ?.stages.findLast(
+        (stage) =>
+          stage.id === payload.stage &&
+          stage.basis === payload.previous &&
+          stage.invocation === payload.invocation &&
+          stage.status === 'passed',
+      )
+    if (!origin || origin.evidence !== payload.evidence || origin.provenance !== payload.provenance)
+      throw new DeliveryJournalError('runner-stage-reuse-origin')
+    record.stages.push({
+      id: payload.stage,
+      invocation: payload.invocation,
+      generation: record.generation,
+      basis: record.basis,
+      status: 'passed',
+      evidence: payload.evidence,
+      provenance: payload.provenance,
+      reason: payload.reason,
+      sequence: event.sequence,
+      ...(payload.observation ? { observation: payload.observation } : {}),
+      origin: { request: payload.origin, basis: payload.previous },
+    })
     record.sequence = event.sequence
     return
   }

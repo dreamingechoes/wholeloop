@@ -664,6 +664,7 @@ The adapter criterion stays unchecked; it does not block dependent local rollout
 | P0-06 | Optionally enable the local hook with `npm run hooks:install`; preserve any existing hook chain | A real hook was exercised in a temporary git repository; this checkout's Git configuration was not changed |
 | CI | Run the updated workflow on Linux/macOS, including Node 20 runtime and a PR containing a rejected message | Local checks also passed on macOS arm64 / Node 24.22.0; no remote CI run or push was performed |
 | P1-03 | Optionally exercise forced interruption during a store write, preserve the journal, inspect the lock owner and rebuild after recovery | Concurrent processes, failed batches, malformed journals, symlinks and byte-identical rebuild are tested; physical power loss is not |
+| P6-29 | Decide whether a `none` run may continue after a repairable failure under its still-active envelope grant. The draft `docs/decisions/0198-envelope-grant-continuation.md` (status Proposed) would allow it inside the envelope and repair budget. Accept, amend or reject it, then set its status and index it | Every correction revision needs a new exact-plan grant from an operator; the journal refuses the failed run's grant and any envelope grant |
 
 ## Provider validation still pending
 

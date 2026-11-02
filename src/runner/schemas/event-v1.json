@@ -19,7 +19,8 @@
         "released",
         "recovered",
         "continued",
-        "registered"
+        "registered",
+        "reused"
       ]
     },
     "basis": {
@@ -96,6 +97,10 @@
       "pattern": "^[a-f0-9]{64}$"
     },
     "observation": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "origin": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
     }

@@ -71,6 +71,19 @@ export function nextActions(
   if (state.state === 'stopping') actions.push(...each('reconcile', ' --cancel'))
   if (unresolved || ['running', 'waiting-external'].includes(state.state))
     actions.push(...each('reconcile'))
+  // ADR-0197: a retained integration or acceptance failure may be continued by a
+  // correction revision; the preview names the failure, the owning unit is chosen.
+  if (['failed', 'blocked'].includes(state.state))
+    for (const record of deliveryRunner(state).records)
+      for (const stage of record.stages)
+        if (
+          stage.basis === state.basis.digest &&
+          ['failed', 'blocked'].includes(stage.status) &&
+          (stage.id === 'acceptance' || stage.id.startsWith('integration:'))
+        )
+          actions.push(
+            `wl delivery continue --run ${state.run} --request ${record.request} --stage ${stage.id} --unit <work-id>`,
+          )
   return [...new Set(actions)]
 }
 
@@ -115,8 +128,16 @@ export function deliveryReport(root: string | undefined, run: string) {
         request: record.request,
         id: stage.id,
         status: stage.status,
+        ...(stage.origin ? { reusedFrom: stage.origin.request } : {}),
       })),
     ),
+    // Each correction revision names the failure it continues from (ADR-0193).
+    continuations: (deliveryRunner(state).continuations ?? []).map((entry) => ({
+      revision: entry.revision,
+      predecessor: entry.request,
+      stage: entry.stage,
+      failure: entry.failure,
+    })),
     effects: effects.map((effect) => ({
       operation: effect.intent.operation,
       status: effect.status,

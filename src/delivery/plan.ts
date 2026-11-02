@@ -114,6 +114,16 @@ export interface DeliveryPlan extends DeliveryBasis {
     after: string[]
     procedure: string
   }[]
+  /** Cross-invocation corrections, oldest first; each names the retained failure it repairs. */
+  corrections?: DeliveryCorrection[]
+}
+/** ADR-0197: the owning unit is named, never guessed from failure text. */
+export interface DeliveryCorrection {
+  unit: string
+  origin: 'integration' | 'acceptance'
+  request: string
+  stage: string
+  failure: string
 }
 export class DeliveryPlanError extends Error {
   constructor(readonly problem: string) {
@@ -386,6 +396,32 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
       )
     )
       throw new DeliveryPlanError('milestone-order')
+  }
+  if (plan.corrections) {
+    // A correction is always a revision of an executed plan and stays inside the
+    // finite repair budget; its stage must be one this plan's route actually has.
+    if (plan.revision === 1 || plan.policy.endpoint === 'research-report')
+      throw new DeliveryPlanError('correction-basis')
+    if (plan.corrections.length > plan.budgets.integrationRepairs)
+      throw new DeliveryPlanError('correction-budget')
+    unique(
+      plan.corrections.map((entry) => entry.failure),
+      'duplicate-correction',
+    )
+    for (const correction of plan.corrections) {
+      const unit = plan.work.find((entry) => entry.id === correction.unit)
+      if (!unit || unit.role === 'research') throw new DeliveryPlanError('correction-unit')
+      if (
+        correction.origin === 'acceptance'
+          ? correction.stage !== 'acceptance'
+          : !plan.milestones.some(
+              (milestone) =>
+                correction.stage === `integration:${milestone.id}` &&
+                milestone.work.includes(correction.unit),
+            )
+      )
+        throw new DeliveryPlanError('correction-stage')
+    }
   }
   return plan
 }

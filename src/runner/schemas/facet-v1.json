@@ -122,6 +122,21 @@
                 "observation": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{64}$"
+                },
+                "origin": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["request", "basis"],
+                  "properties": {
+                    "request": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "basis": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    }
+                  }
                 }
               },
               "required": ["id", "invocation", "status", "sequence", "generation", "basis"]
@@ -165,6 +180,39 @@
         "required": ["request", "basis", "sequence", "ownership", "generation", "stages"]
       },
       "maxItems": 1000
+    },
+    "continuations": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["revision", "request", "stage", "failure", "sequence"],
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 9007199254740991
+          },
+          "request": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "stage": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9:_-]{0,255}$",
+            "maxLength": 256
+          },
+          "failure": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
     }
   },
   "required": ["schema", "records"]

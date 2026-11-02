@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-02 · P6-29 · Correction revisions and stage reuse — in progress
+
+- Implement the continuation of ADR-0193 as a correction revision (ADR-0197). `wl delivery continue` previews, and records only when accepted, the next plan revision with a `corrections` entry: owning unit, origin, predecessor request, failed stage and exact failure digest. The reducer reopens a `failed` or `blocked` run only for that retained integration or acceptance failure, within the journal-derived `integrationRepairs` budget, after every stage, attempt and effect is resolved. The route adds `correction-N:<unit>` before the unit's verification. The controller reuses a predecessor stage only when the revision impact keeps it, it needs no delegated decision, its predecessors were reused and the host re-inspects the original with the same evidence; everything else runs again. The report lists the continue action and the chain.
+- Authority choice, decided by the owner in this session: every continuation needs a new exact-plan grant, and the journal refuses the failed run's grant and any envelope grant. The wider option for unattended `none` runs is a Proposed draft, `docs/decisions/0198-envelope-grant-continuation.md`, with a row under owner actions in manual verification.
+- Contract changes are additive on the unreleased v1 candidate (ADR-0066): optional `corrections` in the plan, `continues` in registration, the `reused` runner action and `origin`, runner-facet `continuations`, the `correction` stage kind, report `continuations` and one new output, `wholeloop/delivery-continue@1`. Their fingerprints are updated with that reason.
+- P6-29's third criterion is ticked on engine evidence with a synthetic controller host, plus a decision case for staleness after adoption. Mutation checks confirm that the new-grant rule and evidence re-inspection are load-bearing. The fixed dispatcher has no correction producer yet and reports such routes unsupported at static preflight, so P6-29 stays 🔄 and P6-22's second criterion stays open.
+- Markdown lint passes on 428 files. The complete check passes 3849 tests in 203 files, lint 1059, types, build, smoke, offline packaging on archive b5ab7ccda91e4ec8ca731e9f54e95f524accbfa847b155e28ebbbdf78cd2be2f, docs 429, generators, harness 151 and Mermaid 36 in 885 seconds. Next: the fixed correction producer for P6-29.
+
+---
+
 ## 2026-11-02 · P6-31 · Maintenance commands and recurring delivery intake — complete
 
 - Add `wl maintenance inspect`, `propose`, `proposals`, `dismiss` and `admit` with five versioned outputs and closed, bounded input shapes (ADR-0196). `propose` runs the pinned inspection itself, so a finding never comes from a supplied file. `admit` re-runs the operator's pinned inspections, admits only current proposals within the envelope, and captures each admitted proposal once as its own inline delivery source with mapped criteria. It writes a `wholeloop/maintenance-admission@1` record and creates no plan, journal entry, queue entry or grant.

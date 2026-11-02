@@ -98,6 +98,9 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     if (stage.kind === 'handoff' && plan.policy.endpoint === 'to-pr')
       return this.adapters.publication
     if (stage.kind === 'publication') return this.adapters.publication
+    // ADR-0197: no fixed correction producer is registered yet, so a continuation
+    // route is reported unsupported by static preflight rather than half-run.
+    if (stage.kind === 'correction') return undefined
     return this.adapters[stage.kind]
   }
   /** Registration coverage is not native/runtime availability or complete-route acceptance. */

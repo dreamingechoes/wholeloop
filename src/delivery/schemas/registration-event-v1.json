@@ -82,6 +82,26 @@
     "envelope": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "continues": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request", "stage", "failure"],
+      "properties": {
+        "request": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "stage": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9:_-]{0,255}$",
+          "maxLength": 256
+        },
+        "failure": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
     }
   }
 }

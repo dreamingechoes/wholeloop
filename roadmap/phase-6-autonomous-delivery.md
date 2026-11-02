@@ -583,7 +583,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Completed technical work** — Pure failure classification, identified unadopted review feedback, the journal-derived push admission and typed, retained repair requests ([ADR-0187](../docs/decisions/0187-bounded-ci-repair-requests.md)). Fifteen cases cover the classification and request tables, hostile comments, and a restart that keeps the push count and refuses a third push with `ci-push-limit`.
 
-**Remaining** — Running a `repair` request (a new head re-entering verification, review, integration, acceptance and publication with fresh evidence) is the cross-invocation continuation that P6-29 owns. The second criterion stays open until that continuation lands.
+**Remaining** — Running a `repair` request (a new head re-entering verification, review, integration, acceptance and publication with fresh evidence) is the cross-invocation continuation that P6-29 owns. P6-29 now records correction revisions, reopens a failed run only under a new exact-plan grant and reruns every stage that consumes the changed head ([ADR-0197](../docs/decisions/0197-correction-revisions-and-stage-reuse.md)). The second criterion stays open until the fixed correction producer runs and a CI stage exists to originate a continuation.
 
 ---
 
@@ -743,15 +743,23 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 - [x] New source content cannot silently replace approved intent or remove required outcomes.
 - [x] Only pre-authorized in-envelope revisions proceed without another operator action; none-policy outside-envelope work ends blocked.
-- [ ] Affected candidates/decisions/effects lose current eligibility while prior receipts remain historical.
+- [x] Affected candidates/decisions/effects lose current eligibility while prior receipts remain historical.
 
 **Tests** — INT-03–INT-04 and INT-07, DEC-03–DEC-06: source/base/rubric changes during active workers and pending publication.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/05-integration-and-change-impact.md); specification, scopes, state, core CLI.
 
-**Completed technical work** — The pure `revisionImpact` calculation and preview-first `wl delivery revise` with explicit, reasoned adoption and separate approval for removals ([ADR-0192](../docs/decisions/0192-revision-impact-and-explicit-adoption.md)), covered by nine cases. The cross-invocation correction protocol is accepted as its own record ([ADR-0193](../docs/decisions/0193-cross-invocation-correction-protocol.md)).
+**Completed technical work** — The pure `revisionImpact` calculation and preview-first `wl delivery revise` with explicit, reasoned adoption and separate approval for removals ([ADR-0192](../docs/decisions/0192-revision-impact-and-explicit-adoption.md)), covered by nine cases. The cross-invocation correction protocol is accepted as its own record ([ADR-0193](../docs/decisions/0193-cross-invocation-correction-protocol.md)). Its continuation is implemented as a correction revision ([ADR-0197](../docs/decisions/0197-correction-revisions-and-stage-reuse.md)):
 
-**Remaining** — Implementing ADR-0193: continuation requests for integration, acceptance and CI repairs, with reuse limited to stages the impact keeps and that still inspect as current. Its tests also demonstrate the third criterion end to end, with affected candidates, decisions and effects losing current eligibility after adoption while prior receipts stay historical. P6-22's second criterion depends on it.
+- `wl delivery continue` previews and, when accepted, records the next revision with a `corrections` entry naming the retained failure and the owning unit.
+- The journal reopens a `failed` or `blocked` run only for that exact retained failure, within the journal-derived repair budget, and only under a new exact-plan grant; the failed run's grant and any envelope grant are refused.
+- The route adds `correction-N:<unit>` before the unit's verification.
+- The controller reuses only stages that the impact keeps, that need no delegated decision, whose predecessors were reused and whose original still inspects with the same evidence.
+- The operator report lists the continue action and the continuation chain.
+
+**Evidence** — Engine cases on a synthetic controller host: a failed integration is previewed without writing; the failed run's grant and a fresh envelope grant are refused; reopening under a new grant records the chain; exactly workspace, build plan, implementation, commit and acceptance definition are reused while every downstream stage runs again and the predecessor's failure stays historical; a stale original forces its dependents to run again; pending effects and a spent repair budget refuse the continuation; compiled CLI preview and acceptance pass. A decision case shows that a delegated decision becomes stale once a later revision is adopted, keeping its record. Mutation checks confirm that the new-grant rule and evidence re-inspection are each load-bearing.
+
+**Remaining** — The fixed correction producer: a dispatcher adapter that runs the repair builder from the failure evidence on the owned topic and commits the new head, plus cross-request reads of reused workspace and commit records in the git, readiness and handoff adapters. Until then the dispatcher reports a continuation route unsupported at static preflight. A CI-origin continuation needs the CI stage that P6-24 adds. Whether a `none` run may continue under its envelope grant is an owner decision, `docs/decisions/0198-envelope-grant-continuation.md` (status Proposed). P6-22's second criterion depends on the producer.
 
 ---
 

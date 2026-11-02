@@ -6,11 +6,17 @@ import { safeSourceText } from '../delivery/input.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { boundedRecoveryCall } from '../delivery/read-retry.js'
-import type { RunnerRuntime, RunnerStageRecord } from './events.js'
+import { deliveryRunner, type RunnerRuntime, type RunnerStageRecord } from './events.js'
 import { ForegroundOwner } from './foreground-owner.js'
 import { ManagedRunnerProcess } from './native-process.js'
 import { RunnerNativeScope } from './native-scope.js'
-import { DeliveryRunnerError, type RunnerStage, runnerDecisionRequirements } from './route.js'
+import { revisionImpact } from './revision-impact.js'
+import {
+  DeliveryRunnerError,
+  type RunnerStage,
+  runnerDecisionRequirements,
+  runnerRoute,
+} from './route.js'
 import observationSchema from './schemas/stage-observation-v1.json' with { type: 'json' }
 import type { RunnerLease, RunnerRequest, RunnerStore } from './store.js'
 
@@ -161,6 +167,12 @@ export class DeliveryRunner {
             context.plan.policy.intervention === 'none' ? 'blocked' : 'paused',
             'Reconcile the original issued stage before any further dispatch.',
           )
+        if (!(await this.reuse(lease, host, context)))
+          return this.limit(
+            lease,
+            context.plan.policy.intervention === 'none' ? 'blocked' : 'paused',
+            'The continuation names no retained predecessor request for its revision.',
+          )
         // A crash after the immutable result event can precede checkpoint publication
         // or plan adoption. Recover only those locators, never repeat the host call.
         try {
@@ -170,8 +182,8 @@ export class DeliveryRunner {
             const value = this.store.observation(digest, record) as RunnerStageObservation
             validateDeliveryShape(value, observationSchema)
             if (
-              value.request !== digest ||
-              value.plan !== context.digest ||
+              value.request !== (record.origin?.request ?? digest) ||
+              value.plan !== (record.origin?.basis ?? context.digest) ||
               value.stage !== stage.id ||
               value.invocation !== record.invocation ||
               value.status !== 'passed' ||
@@ -179,7 +191,9 @@ export class DeliveryRunner {
               !this.decisions(lease, stage, value)
             )
               throw new DeliveryRunnerError('retained-stage-observation-binding')
-            this.checkpoint(lease, stage, record.invocation, record.observation ?? '')
+            // A reused record's checkpoint was published by its original request.
+            if (!record.origin)
+              this.checkpoint(lease, stage, record.invocation, record.observation ?? '')
             if (stage.kind === 'definition') {
               if (!value.derivedPlan) throw new DeliveryRunnerError('missing-derived-plan')
               this.store.adopt(lease, value.derivedPlan)
@@ -448,6 +462,104 @@ export class DeliveryRunner {
     return { ...this.store.inspect(digest), recoveryProblems: [...new Set(problems)] }
   }
 
+  /**
+   * ADR-0197: a continuation reuses a predecessor stage only when the revision
+   * impact keeps it, it needs no delegated decision, every predecessor stage it
+   * depends on was itself reused, and the original record still inspects with
+   * the same evidence. Anything else runs again under a fresh invocation.
+   */
+  private async reuse(
+    lease: RunnerLease,
+    host: DeliveryRunnerHost,
+    context: ReturnType<RunnerStore['basis']>,
+  ): Promise<boolean> {
+    const request = this.store.get(lease.request),
+      state = this.store.lifecycle.journal.get(request.run),
+      facet = deliveryRunner(state),
+      continuation = facet.continuations?.at(-1)
+    if (!continuation || continuation.revision !== context.plan.revision) return true
+    const predecessor = facet.records.find((entry) => entry.request === continuation.request)
+    if (!predecessor) return false
+    const previous = this.store.planning.getPlan(request.run, context.plan.revision - 1),
+      impact = revisionImpact({
+        state,
+        current: previous.plan,
+        proposed: context.plan,
+        grant: context.authority.grant.basis.kind,
+      }),
+      reused = new Set<string>(),
+      route = runnerRoute(context.plan)
+    for (const stage of route) {
+      const own = this.store.record(lease.request)
+      if (own.stages.some((entry) => entry.id === stage.id && entry.basis === context.digest)) {
+        if (own.stages.some((entry) => entry.id === stage.id && entry.origin)) reused.add(stage.id)
+        continue
+      }
+      if (
+        impact.stages.find((entry) => entry.id === stage.id)?.decision !== 'reuse' ||
+        runnerDecisionRequirements(context.plan, stage, context.authority.grant.basis.kind)
+          .length ||
+        stage.after.some(
+          (id) => route.find((item) => item.id === id)?.kind !== 'plan' && !reused.has(id),
+        )
+      )
+        continue
+      const prior = predecessor.stages.findLast(
+        (entry) =>
+          entry.id === stage.id && entry.basis === previous.digest && entry.status === 'passed',
+      )
+      if (!prior?.evidence || !prior.provenance) continue
+      const owner = prior.origin?.request ?? predecessor.request,
+        basis = prior.origin?.basis ?? previous.digest,
+        original = facet.records
+          .find((entry) => entry.request === owner)
+          ?.stages.findLast(
+            (entry) =>
+              entry.id === stage.id &&
+              entry.basis === basis &&
+              entry.invocation === prior.invocation &&
+              entry.status === 'passed',
+          )
+      if (!original) continue
+      const observed = await boundedRecoveryCall(
+        (signal) =>
+          host.inspect(structuredClone(this.store.get(owner)), structuredClone(original), signal),
+        5000,
+      )
+      if (!observed.available) continue
+      try {
+        validateDeliveryShape(observed.value, observationSchema)
+      } catch {
+        continue
+      }
+      const value = observed.value
+      if (
+        value.request !== owner ||
+        value.plan !== basis ||
+        value.stage !== stage.id ||
+        value.invocation !== original.invocation ||
+        value.status !== 'passed' ||
+        value.invocationState !== 'stopped' ||
+        value.provenance !== original.provenance ||
+        value.evidence !== original.evidence
+      )
+        continue
+      this.store.append(lease, {
+        action: 'reused',
+        stage: stage.id,
+        invocation: original.invocation,
+        status: 'passed',
+        evidence: original.evidence ?? value.evidence,
+        provenance: value.provenance,
+        reason: 'Unchanged complete inputs; the original observation still inspects as current.',
+        previous: basis,
+        origin: owner,
+        ...(original.observation ? { observation: original.observation } : {}),
+      })
+      reused.add(stage.id)
+    }
+    return true
+  }
   private remaining(request: RunnerRequest): number {
     const budget = this.store.budgets.inspect(request.run),
       grant = this.store.lifecycle.authority.inspect(request.grant)

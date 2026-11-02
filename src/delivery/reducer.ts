@@ -1,5 +1,5 @@
 import { contractDigest } from '../contracts/compatibility.js'
-import { reduceRunner } from '../runner/events.js'
+import { deliveryRunner, reduceRunner } from '../runner/events.js'
 import { findBudget, reduceDeliveryBudget } from './budget-events.js'
 import { reduceDeliveryCheckpoint } from './checkpoint-events.js'
 import { reduceDeliveryEffect } from './effect-events.js'
@@ -11,6 +11,7 @@ import {
   DeliveryJournalError,
   type DeliveryProjection,
   type DeliveryState,
+  type RegistrationPayload,
   validateDeliveryEvent,
   validateDeliveryProjection,
 } from './events.js'
@@ -60,6 +61,37 @@ const EDGES: Record<DeliveryState, readonly DeliveryState[]> = {
   blocked: [],
 }
 const ACTIVE = new Set(['claimed', 'started', 'stopping'])
+/**
+ * The named predecessor request must hold the exact failed or blocked
+ * integration or acceptance observation, the run must have no effect awaiting
+ * reconciliation, and the journal-derived repair budget must remain.
+ */
+function continuationAdmission(
+  state: DeliveryProjection,
+  continues: NonNullable<RegistrationPayload['continues']>,
+) {
+  const facet = deliveryRunner(state),
+    record = facet.records.find((entry) => entry.request === continues.request),
+    stage = record?.stages.findLast((entry) => entry.id === continues.stage)
+  if (
+    !record ||
+    !stage ||
+    stage.basis !== state.basis.digest ||
+    !['failed', 'blocked'].includes(stage.status) ||
+    stage.evidence !== continues.failure ||
+    !(continues.stage === 'acceptance' || continues.stage.startsWith('integration:')) ||
+    ['active', 'unknown'].includes(record.ownership) ||
+    record.stages.some((entry) =>
+      ['prepared', 'running', 'pending', 'unknown'].includes(entry.status),
+    )
+  )
+    throw new DeliveryJournalError('continuation-failure')
+  const budget = findBudget(state),
+    used = (budget?.counters.length ?? 0) + (facet.continuations?.length ?? 0)
+  if (!budget?.limits || used >= budget.limits.integrationRepairs)
+    throw new DeliveryJournalError('continuation-budget-exhausted')
+  return { ...continues }
+}
 export function deliveryAttempts(state: DeliveryProjection): AttemptsFacet {
   const facet = state.facets.find((entry) => entry.schema === 'wholeloop/delivery-attempts@1')
   if (!facet) throw new DeliveryJournalError('missing-attempt-facet')
@@ -172,9 +204,16 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
         }
         states.set(event.run, state)
       } else {
+        // ADR-0197: only a correction revision naming a retained failure may follow a
+        // failed or blocked run; completed and exhausted runs never continue.
+        const continuation = payload.continues
+          ? continuationAdmission(state, payload.continues)
+          : undefined
         if (
           payload.basis.kind !== 'plan' ||
-          ['completed', 'failed', 'exhausted', 'blocked'].includes(state.state) ||
+          (continuation
+            ? !['failed', 'blocked'].includes(state.state)
+            : ['completed', 'failed', 'exhausted', 'blocked'].includes(state.state)) ||
           active(state) ||
           state.facets
             .find((facet) => facet.schema === 'wholeloop/delivery-effects@1')
@@ -193,6 +232,13 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
         state.policy = structuredClone(payload.policy)
         state.units = structuredClone(payload.units)
         state.plans.push({ revision: payload.basis.revision ?? 1, digest: payload.basis.digest })
+        if (continuation) {
+          const facet = deliveryRunner(state)
+          facet.continuations = [
+            ...(facet.continuations ?? []),
+            { ...continuation, revision: payload.basis.revision ?? 1, sequence: event.sequence },
+          ]
+        }
         if (payload.envelope) state.envelope = payload.envelope
         state.state = 'planned'
         delete state.grant
@@ -216,6 +262,14 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
             throw new DeliveryJournalError('revived-grant')
           if (state.grant && state.grant.id !== payload.id && active(state))
             throw new DeliveryJournalError('active-attempt-grant')
+          // A continuation is always started under a new exact-plan grant, never by
+          // an earlier or envelope grant that outlived the failed run (ADR-0197).
+          if (
+            deliveryRunner(state).continuations?.at(-1)?.revision === state.basis.revision &&
+            state.grant?.id !== payload.id &&
+            (prior || payload.basis !== state.basis.digest)
+          )
+            throw new DeliveryJournalError('continuation-requires-new-grant')
           if (state.grant?.id === payload.id && state.grant.digest !== payload.digest)
             throw new DeliveryJournalError('changed-grant')
           if (

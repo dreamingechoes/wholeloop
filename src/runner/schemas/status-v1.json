@@ -185,6 +185,15 @@
           "observation": {
             "type": "string",
             "pattern": "^[a-f0-9]{64}$"
+          },
+          "origin": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["request", "basis"],
+            "properties": {
+              "request": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "basis": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+            }
           }
         },
         "required": ["id", "invocation", "status", "sequence", "generation", "basis"]
@@ -216,6 +225,7 @@
               "verification",
               "review",
               "commit",
+              "correction",
               "integration",
               "acceptance",
               "publication",

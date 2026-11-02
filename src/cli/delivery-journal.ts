@@ -9,6 +9,7 @@ import {
 import { readSourceFile } from '../delivery/input.js'
 import { DeliveryLifecycle } from '../delivery/lifecycle.js'
 import { DeliveryPlanError } from '../delivery/plan.js'
+import { continueDelivery } from '../runner/continuation.js'
 import {
   deliveryDiagnostics,
   deliveryReport,
@@ -118,6 +119,47 @@ export function deliveryJournalCommand(
         impact: result.impact,
         accepted: result.accepted,
         record: result.accepted ? result.record : null,
+      })
+      return EXIT.ok
+    }
+    if (command === 'delivery continue') {
+      const value = (name: string, hint: string) => {
+        const option = options[name]
+        if (typeof option !== 'string' || !option.trim())
+          throw new CliError(`Provide ${name} <${hint}>`, EXIT.input)
+        return option
+      }
+      const input = {
+          request: value('--request', 'sha256'),
+          stage: value('--stage', 'stage-id'),
+          unit: value('--unit', 'work-id'),
+        },
+        accepted = options['--accept'] === true
+      if (!/^[a-f0-9]{64}$/.test(input.request))
+        throw new CliError('Provide --request <sha256>', EXIT.input)
+      const result = continueDelivery(
+        lifecycle,
+        run,
+        input,
+        accepted
+          ? { operator: value('--operator', 'name'), reason: value('--reason', 'text') }
+          : undefined,
+      )
+      emit({
+        schema: 'wholeloop/delivery-continue@1',
+        admission: result.admission,
+        impact: result.impact,
+        accepted: result.accepted,
+        record: result.accepted ? result.record : null,
+        // The reducer refuses the failed run's grant and any envelope grant here.
+        next: result.accepted
+          ? [
+              `wl delivery authorize --file <operator-request.json> (exact plan ${result.record.digest})`,
+              `wl delivery track --run ${run} --revision ${result.record.revision} --grant <new-authorization-id>`,
+              'wl delivery runner-prepare --file <continuation-request.json>',
+              'wl delivery run --digest <continuation-request-digest>',
+            ]
+          : [],
       })
       return EXIT.ok
     }

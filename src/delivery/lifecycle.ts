@@ -55,6 +55,20 @@ export class DeliveryLifecycle {
         limits = plan.budgets
         if (plan.envelope)
           checkPlanEnvelope(plan, this.authority.planning.getEnvelope(plan.envelope).envelope)
+        // A correction revision keeps every earlier correction and adds at most one;
+        // the new one is what the journal must find as a retained failure (ADR-0197).
+        const earlier =
+            plan.revision > 1
+              ? (this.authority.planning.getPlan(input.run, plan.revision - 1).plan.corrections ??
+                [])
+              : [],
+          corrections = plan.corrections ?? []
+        if (
+          corrections.length - earlier.length > 1 ||
+          contractDigest(corrections.slice(0, earlier.length)) !== contractDigest(earlier)
+        )
+          throw new DeliveryJournalError('correction-history')
+        const added = corrections.length > earlier.length ? corrections.at(-1) : undefined
         registration = {
           schema: 'wholeloop/delivery-registration-event@1',
           basis: { kind: 'plan', digest: receipt.digest, revision: plan.revision },
@@ -71,6 +85,11 @@ export class DeliveryLifecycle {
           })),
           ...(plan.previous ? { previous: plan.previous } : {}),
           ...(plan.envelope ? { envelope: plan.envelope } : {}),
+          ...(added
+            ? {
+                continues: { request: added.request, stage: added.stage, failure: added.failure },
+              }
+            : {}),
         }
       }
       const current = view().get(input.run)
