@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-02 · P6-29 · Correction producer design — deferred to P6-27
+
+- Owned workspaces and commit receipts are valid evidence only under the run's current grant and basis; `validateOwnedWorkspaceCommit` enforces this even in its historical mode. Because every continuation needs a new exact-plan grant, owned resources from the failed run cannot be current evidence for it. A first attempt to read them across requests failed on exactly that invariant and was discarded without a commit.
+- The owner chose, from three options, the design that keeps the invariant. The corrected unit gets a workspace seeded at its failed head under the new grant; every other unit feeding a stage that runs again gets a seeded candidate at its existing head and is re-verified; original stages are history only. Relaxing the invariant for an older grant of the same run was rejected.
+- Because the producer needs a seeded-candidate notion across every commit-receipt consumer and can only be exercised for real by native clients, the owner deferred it to P6-27. The design is recorded in ADR-0197 and the phase file. P6-29 stays 🔄 and P6-22's second criterion stays open. Next: P6-24.
+
+---
+
 ## 2026-11-02 · P6-29 · Correction revisions and stage reuse — in progress
 
 - Implement the continuation of ADR-0193 as a correction revision (ADR-0197). `wl delivery continue` previews, and records only when accepted, the next plan revision with a `corrections` entry: owning unit, origin, predecessor request, failed stage and exact failure digest. The reducer reopens a `failed` or `blocked` run only for that retained integration or acceptance failure, within the journal-derived `integrationRepairs` budget, after every stage, attempt and effect is resolved. The route adds `correction-N:<unit>` before the unit's verification. The controller reuses a predecessor stage only when the revision impact keeps it, it needs no delegated decision, its predecessors were reused and the host re-inspects the original with the same evidence; everything else runs again. The report lists the continue action and the chain.

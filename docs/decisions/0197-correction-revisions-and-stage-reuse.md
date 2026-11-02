@@ -29,9 +29,19 @@
   - the host re-inspects the original invocation and returns the same passed evidence.
 
   A reused stage is journalled as a `reused` runner event that names its originating request and basis. It counts only for the new basis, and every other stage runs again under a fresh invocation.
-- **Producer not yet registered.** The fixed dispatcher has no correction producer yet. It reports a continuation route unsupported at static preflight instead of running part of it. Adapters that read a reused record across requests, and the repair builder that produces the corrected head, remain P6-29 work. A CI-origin continuation needs the CI stage that P6-24 adds.
+- **Producer not yet registered.** The fixed dispatcher has no correction producer yet. It reports a continuation route unsupported at static preflight instead of running part of it. A CI-origin continuation also needs the CI stage that P6-24 adds.
 
 The plan, registration event, runner event, runner facet, runner status and report contracts gain optional fields and one stage kind. They are additive changes to the unreleased v1 candidate ([ADR-0066](./0066-v1-compatibility-baseline-and-deprecation.md)), and their fingerprints are updated in the same change.
+
+## Producer design
+
+Owned workspaces and commit receipts are valid evidence only under the run's current grant and basis. `validateOwnedWorkspaceCommit` enforces this even when it audits history. Since every continuation has a new grant, nothing owned under the old grant can count as current evidence for it. The producer therefore follows these rules:
+
+- **Seeded workspace.** The corrected unit gets a new owned workspace under the new grant, seeded at the head that failed. That head is checked as a Git object against the old receipt's hash and must descend from the declared base. The repair builder works there from the failure evidence alone and commits through owned effects.
+- **Seeded candidates.** Every other code unit feeding a stage that runs again gets a candidate under the new grant, fixed at its existing head. Its quality checks run again on that candidate.
+- **History only.** Original stages count only as history, never as current candidate evidence. The commit-receipt invariant stays unchanged.
+
+This requires a seeded-candidate notion in the workspace contract and in every consumer that today expects a commit receipt: verification, review, native gates, readiness, integration and repairs. Relaxing the receipt invariant for an older grant of the same run was rejected as a weaker evidence rule. The owner chose to build the producer together with P6-27, when native reference clients can exercise it with real evidence.
 
 ## Alternatives rejected
 
