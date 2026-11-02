@@ -4,6 +4,24 @@
 
 ---
 
+## 2026-11-02 · Session close — Phase 6 through the dependency order
+
+- Completed on main in this session: P6-10 (48444eb), P6-33 awaiting native trials (d860ee0), P6-20 (cd75c59), P6-21 (7dd8700), P6-22 in progress (08d4489), P6-23 (cba6953), P6-24 in progress (fbcb35b), P6-25 (65f82d3), P6-28 (b5ab119), P6-29 in progress (1082952), P6-30 in progress (0fc2668) and P6-31 in progress (779f373). The roadmap is 66/88 overall: 26 expanded tasks complete, P6-33 awaiting native acceptance, five in progress and two not started.
+- Every commit ran Markdown lint and the complete check first; results are in each entry. The last complete check passed 3828 tests in 201 files. The Docker daemon started for the publication evaluation is stopped, no wl- container, network or volume remains, and the 34 temporary test and evaluation directories under /tmp were removed. The container's injected GIT_CONFIG_COUNT URL rewrites were unset before every check run.
+
+What remains, and why:
+
+- **Native clients (owner action: installed, signed-in clients and model accounts).** P6-27, not started by instruction. P6-33's real reference-client research trials (RSR-01 native, EVAL-10, EVAL-11). The bound-client row under Public runner checks. The public host composes no adapter until P6-27's trusted runtime observers exist.
+- **Hosted trials (owner authorization for a disposable hosted repository).** The P6-20 publication trial, the P6-21 CI read trial, the P6-24 protected-merge and exact-SHA trial (REL-10, EVAL-05, EVAL-08), and the hosted-endpoint row under Public runner checks. Every code-host path here ran only against stub hosts and stub executors.
+- **Technical work still doable without owner action, not finished in this session.**
+  - P6-29: implementing the cross-invocation correction protocol (ADR-0193), whose tests also close P6-29's third criterion and P6-22's second.
+  - P6-24: composing `to-merge` routes, with complete reads of changed files, mergeability, discussion resolution, allowed methods and base currency, plus the CI wait and merge stage.
+  - P6-30: composing scheduled observations with the runner and the delegated `learning-outcome` decision, and replaying an actual local scheduler.
+  - P6-31: CLI commands for inspections, proposals and dismissals, and runner admission.
+- **Blocked by dependencies.** P6-32 needs P6-27, P6-29, P6-30, P6-31 and P6-33 (and P5-06) first. The original parked tasks (P0-01, P0-03, P0-07, P1-10, P1-11, P1-13, P1-14, P3-08, P4-01, P5-01, P5-02, P5-04, P5-05 and P5-07) were skipped by instruction.
+
+---
+
 ## 2026-11-02 · P6-31 · Maintenance proposals and recurring admission — in progress
 
 - Add pinned local inspections run without a shell, immutable `wholeloop/maintenance-proposal@1` records with deduplication, retained dismissals and evidence expiry, protected-path refusal for policy, agent instructions, harness guidance, CI configuration, rubrics, budgets, evaluations and compatibility fixtures, and bounded recurring admission with independent run identities that still need separate exact-plan grants (ADR-0195). Proposals change no code and write no tracker; merge endpoints are never admitted.
