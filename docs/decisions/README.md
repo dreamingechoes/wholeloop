@@ -205,6 +205,7 @@
 | [0192](./0192-revision-impact-and-explicit-adoption.md) | Revision impact and explicit adoption | Accepted | 2026-11-01 |
 | [0193](./0193-cross-invocation-correction-protocol.md) | Cross-invocation correction protocol | Accepted | 2026-11-01 |
 | [0194](./0194-scheduled-observations-and-learning-recommendations.md) | Scheduled observations and learning recommendations | Accepted | 2026-11-01 |
+| [0195](./0195-maintenance-proposals-and-recurring-admission.md) | Maintenance proposals and recurring admission | Accepted | 2026-11-02 |
 
 ## Lifecycle
 

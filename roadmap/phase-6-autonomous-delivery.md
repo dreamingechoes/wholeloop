@@ -783,7 +783,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-31 · Maintenance proposals and bounded recurring envelopes
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-30, P6-29
+**Status:** 🔄 · **Size:** M · **Depends on:** P6-30, P6-29
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -793,13 +793,17 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Acceptance criteria:**
 
-- [ ] A finding creates a proposal with source/base/criteria/tests, not an implicit code or tracker mutation.
-- [ ] Agents cannot silently edit policies, guidance, budgets or their own evaluation standards.
-- [ ] Recurring authorization enforces per-run and aggregate limits and creates independent auditable run identities.
+- [x] A finding creates a proposal with source/base/criteria/tests, not an implicit code or tracker mutation.
+- [x] Agents cannot silently edit policies, guidance, budgets or their own evaluation standards.
+- [x] Recurring authorization enforces per-run and aggregate limits and creates independent auditable run identities.
 
 **Tests** — LEARN-05–LEARN-06 and EVAL-12: repeated findings, stale evidence, actual local tool inspection and self-authorization attacks.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/08-learning-and-maintenance.md); learning, configuration, maintenance examples.
+
+**Completed technical work** — Pinned local inspections, immutable deduplicated proposals with retained dismissals and evidence expiry, protected-path refusal and bounded recurring admission with independent run identities ([ADR-0195](../docs/decisions/0195-maintenance-proposals-and-recurring-admission.md)). Nine cases, including an actual `git grep` inspection, verify the three criteria at the component level.
+
+**Remaining** — CLI commands for inspections, proposals and dismissals, and composing recurring admission with the delivery runner so that an admitted proposal starts its own run under a separate grant.
 
 ---
 

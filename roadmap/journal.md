@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-02 · P6-31 · Maintenance proposals and recurring admission — in progress
+
+- Add pinned local inspections run without a shell, immutable `wholeloop/maintenance-proposal@1` records with deduplication, retained dismissals and evidence expiry, protected-path refusal for policy, agent instructions, harness guidance, CI configuration, rubrics, budgets, evaluations and compatibility fixtures, and bounded recurring admission with independent run identities that still need separate exact-plan grants (ADR-0195). Proposals change no code and write no tracker; merge endpoints are never admitted.
+- Nine cases, including an actual `git grep` inspection, verify the three criteria at the component level. CLI commands and composing admission with the delivery runner remain, so P6-31 is 🔄.
+- The first complete check failed one existing case, `test/unit/state/store.test.ts` "serializes concurrent processes without lost events or corrupt projections": one of twelve concurrent `wl state create` processes exited non-zero under full-suite load, while the case passed five of five times on its own. The store lock waits 5 seconds; the deadline and assertions are unchanged. The complete rerun passed. Markdown lint passes on 424 files, and the rerun passes 3828 tests in 201 files, lint 1054, types, build, smoke, offline packaging on archive 437005513e78d942f07b35c092f8aff16efe9d3e9a6a50716108168f305d8f2a, docs 425, generators, harness 151 and Mermaid 36 in 554 seconds. Next: P6-32.
+
+---
+
 ## 2026-11-02 · P6-30 · Scheduled observations and learning recommendations — in progress
 
 - Add deterministic due-observation identities (subject, checkpoint, launch, measurement-source digest and observation-policy digest), at-most-once scheduling in the external store through `wl measure tick` with one new output contract and an appended fingerprint, single policy settlement of unknowns, and effect-free machine learning recommendations that name every unknown and counterargument (ADR-0194). Scheduling performs no read and no prompt; readings still go through the existing MCP-first `measure requests` and `measure observe`.
