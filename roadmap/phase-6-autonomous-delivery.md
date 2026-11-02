@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-33 is implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 66 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 7 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 67 complete, fourteen original open tasks, one implemented tasks awaiting native or hosted acceptance and 6 new pending implementation tasks.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -783,7 +783,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-31 · Maintenance proposals and bounded recurring envelopes
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P6-30, P6-29
+**Status:** ✅ · **Size:** M · **Depends on:** P6-30, P6-29
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -801,9 +801,9 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/08-learning-and-maintenance.md); learning, configuration, maintenance examples.
 
-**Completed technical work** — Pinned local inspections, immutable deduplicated proposals with retained dismissals and evidence expiry, protected-path refusal and bounded recurring admission with independent run identities ([ADR-0195](../docs/decisions/0195-maintenance-proposals-and-recurring-admission.md)). Nine cases, including an actual `git grep` inspection, verify the three criteria at the component level.
+**Completed technical work** — Pinned local inspections, immutable deduplicated proposals with retained dismissals and evidence expiry, protected-path refusal and bounded recurring admission with independent run identities ([ADR-0195](../docs/decisions/0195-maintenance-proposals-and-recurring-admission.md)). Nine cases, including an actual `git grep` inspection, verify the three criteria at the component level. `wl maintenance inspect`, `propose`, `proposals`, `dismiss` and `admit` expose them ([ADR-0196](../docs/decisions/0196-maintenance-commands-and-recurring-delivery-intake.md)). A finding always comes from a fresh run of the pinned inspection. Admission re-checks currency and captures each admitted proposal once as its own delivery source with mapped criteria. It creates no plan, queue entry or grant, so the run still needs its own plan and exact-plan grant.
 
-**Remaining** — CLI commands for inspections, proposals and dismissals, and composing recurring admission with the delivery runner so that an admitted proposal starts its own run under a separate grant.
+**Evidence** — Eight compiled-CLI and component cases (EVAL-12 for maintenance): an actual `git grep` finding becomes one proposal, then a duplicate and a retained dismissal; a fresh run with no finding records nothing; invalid inspections are refused without echoing input; one admission per key maps its criteria and writes no plan or journal; stale evidence, an unpinned inspection and a merge envelope are refused; and a competing admission recorded during inspection makes the command write nothing.
 
 ---
 

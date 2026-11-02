@@ -11883,6 +11883,221 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": ["schema", "inspection", "finding", "effects"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/maintenance-inspection@1"
+        },
+        "inspection": {
+          "type": "string"
+        },
+        "finding": {
+          "type": ["object", "null"]
+        },
+        "effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "tracker"],
+          "properties": {
+            "code": {
+              "const": "not-changed"
+            },
+            "tracker": {
+              "const": "not-written"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "status", "key"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/maintenance-propose@1"
+        },
+        "status": {
+          "enum": ["recorded", "duplicate", "dismissed", "no-finding"]
+        },
+        "key": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "protected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "tracker"],
+          "properties": {
+            "code": {
+              "const": "not-changed"
+            },
+            "tracker": {
+              "const": "not-written"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "proposals", "currency"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/maintenance-proposals@1"
+        },
+        "proposals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "key",
+              "inspection",
+              "category",
+              "repository",
+              "base",
+              "behavior",
+              "protected",
+              "status"
+            ],
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "inspection": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "base": {
+                "type": "string"
+              },
+              "behavior": {
+                "type": "string"
+              },
+              "protected": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "enum": ["open", "dismissed"]
+              },
+              "dismissal": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "currency": {
+          "const": "not-inspected"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "key", "status", "operator"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/maintenance-dismissal@1"
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "const": "dismissed"
+        },
+        "operator": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "at", "envelope", "results", "grant", "execution", "next"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/maintenance-admit@1"
+        },
+        "at": {
+          "type": "string"
+        },
+        "envelope": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["key", "admitted", "reasons"],
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "admitted": {
+                "type": "boolean"
+              },
+              "reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "run": {
+                "type": "string",
+                "pattern": "^delivery-[a-f0-9]{16}$"
+              },
+              "source": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "grant": {
+          "const": "separate-exact-plan-grant-required"
+        },
+        "execution": {
+          "const": "not-started"
+        },
+        "next": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["schema", "status", "preflight"],
       "properties": {
         "schema": {

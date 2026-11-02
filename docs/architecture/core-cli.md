@@ -154,6 +154,11 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl learn complete` | `wholeloop/learning-complete@1` | Recover canonical decision completion and conditional closure |
 | `wl learn report` | `wholeloop/learning-report@1` | Show evidence, the counterargument and proposed follow-up |
 | `wl learn schema` | `wholeloop/learning-schema@1` | Print counterargument, reported-evidence and iteration contracts |
+| `wl maintenance inspect` | `wholeloop/maintenance-inspection@1` | Run one pinned local inspection read-only and show its finding |
+| `wl maintenance propose` | `wholeloop/maintenance-propose@1` | Record a proposal for a freshly inspected finding without changing code |
+| `wl maintenance proposals` | `wholeloop/maintenance-proposals@1` | List recorded maintenance proposals and retained dismissals |
+| `wl maintenance dismiss` | `wholeloop/maintenance-dismissal@1` | Dismiss a proposal with an operator and reason so it does not return |
+| `wl maintenance admit` | `wholeloop/maintenance-admit@1` | Admit current proposals within an operator envelope as separate delivery sources |
 | `wl measure begin [<description>]` | `wholeloop/impact-begin@1` | Pin a due checkpoint and its exact measurement plan |
 | `wl measure requests` | `wholeloop/impact-read-requests@1` | Plan exact source reads without querying services |
 | `wl measure observe` | `wholeloop/impact-report@1` | Record normalized observations and preserve missing datapoints as unknown |

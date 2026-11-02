@@ -876,6 +876,46 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Print counterargument, reported-evidence and iteration contracts',
   },
   {
+    path: 'maintenance inspect',
+    arguments: '',
+    options: ['--file <inspection.json>'],
+    schema: 'wholeloop/maintenance-inspection@1',
+    summary: 'Run one pinned local inspection read-only and show its finding',
+  },
+  {
+    path: 'maintenance propose',
+    arguments: '',
+    options: ['--inspection <inspection.json>', '--file <proposal.json>', '--store <path>'],
+    schema: 'wholeloop/maintenance-propose@1',
+    summary: 'Record a proposal for a freshly inspected finding without changing code',
+  },
+  {
+    path: 'maintenance proposals',
+    arguments: '',
+    options: ['--store <path>'],
+    schema: 'wholeloop/maintenance-proposals@1',
+    summary: 'List recorded maintenance proposals and retained dismissals',
+  },
+  {
+    path: 'maintenance dismiss',
+    arguments: '',
+    options: ['--key <sha256>', '--operator <name>', '--reason <text>', '--store <path>'],
+    schema: 'wholeloop/maintenance-dismissal@1',
+    summary: 'Dismiss a proposal with an operator and reason so it does not return',
+  },
+  {
+    path: 'maintenance admit',
+    arguments: '',
+    options: [
+      '--envelope <envelope.json>',
+      '--inspections <inspections.json>',
+      '--at <iso-time>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/maintenance-admit@1',
+    summary: 'Admit current proposals within an operator envelope as separate delivery sources',
+  },
+  {
     path: 'measure begin',
     arguments: '[<description>]',
     options: [

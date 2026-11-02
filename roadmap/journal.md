@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-02 · P6-31 · Maintenance commands and recurring delivery intake — complete
+
+- Add `wl maintenance inspect`, `propose`, `proposals`, `dismiss` and `admit` with five versioned outputs and closed, bounded input shapes (ADR-0196). `propose` runs the pinned inspection itself, so a finding never comes from a supplied file. `admit` re-runs the operator's pinned inspections, admits only current proposals within the envelope, and captures each admitted proposal once as its own inline delivery source with mapped criteria. It writes a `wholeloop/maintenance-admission@1` record and creates no plan, journal entry, queue entry or grant.
+- Implementation refinement, recorded in ADR-0196: "an admitted proposal starts its own run" is read as starting the run's intake. Planning and the exact-plan grant remain operator actions, which is the conservative reading that keeps every authority guarantee.
+- Eight compiled-CLI and component cases cover the remaining work and EVAL-12 for maintenance, including a competing admission injected during inspection that makes the command write nothing. A new tutorial was executed end to end against the built CLI. P6-31 is ✅; the roadmap is 67/88.
+- Local environment: before this session, `test/unit/conformance/nightly.test.ts` failed on this Mac because `/usr/bin/git` exited 69 until the Xcode license was accepted. It passes now.
+- Markdown lint passes on 426 files. The complete check passes 3841 tests in 202 files, lint 1057, types, build, smoke, offline packaging on archive 2c662f7accec69cc8945caa63baf937db3f66e6351949eba726459774e21ef6c, docs 427, generators, harness 151 and Mermaid 36 in 763 seconds. Next: P6-29.
+
+---
+
 ## 2026-11-02 · Session close — Phase 6 through the dependency order
 
 - Completed on main in this session: P6-10 (2fe7038), P6-33 awaiting native trials (55d86f9), P6-20 (c99a656), P6-21 (e1d87c8), P6-22 in progress (978d464), P6-23 (ab96be8), P6-24 in progress (a4a4e76), P6-25 (7596e8b), P6-28 (d3de970), P6-29 in progress (91c1832), P6-30 in progress (419b192) and P6-31 in progress (7b7097a). The roadmap is 66/88 overall: 26 expanded tasks complete, P6-33 awaiting native acceptance, five in progress and two not started.

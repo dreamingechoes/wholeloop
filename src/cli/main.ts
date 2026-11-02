@@ -40,6 +40,7 @@ import { launchCommand } from './launch.js'
 import { launchDispatchCommand } from './launch-dispatch.js'
 import { learningCommand } from './learning.js'
 import { mailboxCommand } from './mailbox.js'
+import { maintenanceCommand } from './maintenance.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
 import { providerPlanCommand } from './provider-plan.js'
@@ -127,6 +128,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (command.path === 'release preflight') return releasePreflightCommand(parsed, root, json, io)
     if (command.path.startsWith('learn '))
       return learningCommand(command.path, parsed, root, json, io)
+    if (command.path.startsWith('maintenance '))
+      return maintenanceCommand(command.path, parsed, root, json, io)
     if (command.path === 'launch dispatch')
       throw new CliError('This command requires the asynchronous dispatcher')
     if (command.path.startsWith('launch '))

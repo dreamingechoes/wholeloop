@@ -11,6 +11,8 @@ rules:
     enforcers: [src/runner/public-host.ts#RunnerPublicHost, src/runner/public-host.ts#publicRunnerIdentity, src/runner/public-host.ts#publicNativeRoles, src/cli/delivery-runner.ts#deliveryRunnerAsyncCommand, src/cli/delivery-runner.ts#deliveryForegroundChild, test/unit/runner/public-runner.test.ts]
   - id: learning-maintenance-proposals
     enforcers: [src/learning/maintenance.ts#inspectRepository, src/learning/maintenance.ts#maintenanceProposal, src/learning/maintenance.ts#MaintenanceProposals, src/learning/maintenance.ts#recurringAdmission, test/unit/learning/maintenance.test.ts]
+  - id: learning-maintenance-intake
+    enforcers: [src/learning/maintenance.ts#maintenanceInspection, src/learning/maintenance.ts#maintenanceProposalInput, src/learning/maintenance.ts#recurringEnvelope, src/learning/maintenance-intake.ts#admitMaintenanceProposals, src/learning/maintenance-intake.ts#maintenanceSourceRequest, src/cli/maintenance.ts#maintenanceCommand, test/unit/learning/maintenance-intake.test.ts]
   - id: learning-scheduled-observations
     enforcers: [src/learning/scheduler.ts#dueObservations, src/learning/scheduler.ts#ObservationSchedule, src/learning/scheduler.ts#observationOutcome, src/learning/scheduler.ts#learningRecommendation, src/cli/impact.ts#impactCommand, test/unit/learning/scheduler.test.ts]
   - id: delivery-revision-adoption
