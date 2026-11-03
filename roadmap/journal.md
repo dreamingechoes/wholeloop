@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Claude research trials, second batch — in progress
+
+- After a fresh sign-in, three EVAL-10 trials on code 6809993 gave one pass and two failures. Trial 1 completed with outcome `completed-with-unknowns`: 867 s, no human wait, 29 launches, both delegated decisions accepted and supported, twelve cited claims, no refutation, four open questions and 58,123 output tokens. Trial 2 passed its plan, then its research launches exited `permission-denied` and the route ended blocked after 721 s. Trial 3 was blocked within 3 s with zero tokens.
+- The account's Claude Pro usage limit, which the owner's interactive session shares, was reached during trial 2. That is the likely cause; the client output is retained only as hashes, so it is unverified. No credential file appeared. Failed trials are reported, not retried silently.
+
+---
+
 ## 2026-11-03 · P6-27 · Claude trials stopped by a token refresh — in progress
 
 - The owner approved three EVAL-10 trials on Claude Code 2.1.316 (code 183b4a0). None reached the model. The first was admitted, exited `permission-denied` with zero tokens, and the client wrote `.credentials.json` into its client home; the observer refused the other two for that file. The likely cause, unverified, is a token refresh that could not write the read-only Keychain inside the profile.
