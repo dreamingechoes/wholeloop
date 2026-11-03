@@ -7,7 +7,7 @@
 ## 2026-11-03 · P6-27 · Developer-tools prompt from contained launches — in progress
 
 - The owner kept seeing macOS ask to install the command line developer tools during the Claude trials. Inside the profile `/var/select/developer_dir` is unreadable, so every launch's `/usr/bin/git` call asked the GUI session to install them. The profile now denies that request: Git stays unavailable inside the profile and no prompt appears. A real `sandbox-exec` case covers it; the case was not run with the deny removed, which would show the prompt again.
-- Second fresh batch: trial 1 completed (1113 s, 32 launches, 71,677 output tokens, no human wait). At 80% of the five-hour usage window the owner's budget would not cover trial 3, so its loop was stopped before it started; trial 2 was left to finish.
+- Second fresh batch: trial 1 completed (1113 s, 32 launches, 71,677 output tokens, no human wait). At 80% of the five-hour usage window the owner's budget would not cover trial 3, so its loop was stopped before it started; trial 2 was left to finish and also completed with unknowns (995 s, 29 launches, 64,972 output tokens, no human wait). This batch has two of three passes; the third runs in the next usage window.
 
 ---
 
