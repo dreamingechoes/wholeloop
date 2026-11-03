@@ -218,6 +218,10 @@ export class DeliveryQueue {
                 deliveryAttempts(state).records.some(
                   (record) =>
                     slot(record) === slot(entry) &&
+                    // ADR-0208: an earlier revision's settled attempt is history;
+                    // a continuation reopens only once none is unresolved, and
+                    // the journal cannot fence across bases.
+                    record.basis === state.basis.digest &&
                     !ACTIVE.has(record.state) &&
                     record.state !== 'fenced',
                 )

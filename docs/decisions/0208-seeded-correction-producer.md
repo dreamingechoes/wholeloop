@@ -76,3 +76,25 @@ A hybrid run uses real Git stages and synthetic stages for the rest. Its first r
 - commits an empty owned commit on top of it, whose parent is that head.
 
 It also found that the creation observer still expected the declared base, so every seeded creation was recorded as `binding-mismatch`. The observer now expects the seed head. Increment 1's case missed this because it checked the topic's HEAD rather than the observed effect, and it now checks the workspace status too. Removing either fix fails the cases.
+
+**Increment 3.** The fixed dispatcher now registers `RunnerCorrectionStages` for `correction-N:<unit>`. The stage works like this:
+
+1. It names the unit's N-th recorded correction and reads the predecessor's retained failure: the failed stage, its evidence digest and its reason. For an integration origin it also reads the failed product cases from the integration proof. A public case gives its pinned actions, assertion descriptions and failure conditions. A private evaluator case gives only its id and status.
+2. It fences the unit's builder attempt from this revision, requeues it with a correction task carrying that feedback, and launches it in the seeded workspace through the fixed observer.
+3. The controller commits the result through owned effects. The unit's candidate, which every QA stage reads, then resolves to that commit while it stays the workspace head.
+
+Writing the stage exposed a queue rule that blocked every continuation. Any settled, unfenced attempt in a slot refused new claims, and the journal cannot fence an attempt of an earlier basis. The rule now counts only attempts on the current basis. That is safe: a continuation only reopens once no attempt, stage or effect is unresolved (ADR-0197), and an earlier basis can never produce current evidence.
+
+The hybrid case runs a real builder and real Git stages and synthetic stages for the rest:
+
+- the first run builds the unit and fails integration;
+- the continuation seeds the workspace, rebuilds without changes (an empty owned commit) and runs `correction-1` with the recorded failure;
+- QA then reads the corrected bytes, with the failed head two commits below.
+
+Removing the candidate fallback or the queue change fails the case.
+
+Not covered yet:
+
+- **Hiding private cases in the feedback.** This needs a real integration proof with a private case, so it has no dedicated case yet.
+- **Acceptance-origin corrections.** They carry only the stage reason and evidence for now.
+- **A verification repair on top of a correction.** It is not supported: its repair chain would root at the correction's commit and lease, so it blocks honestly.

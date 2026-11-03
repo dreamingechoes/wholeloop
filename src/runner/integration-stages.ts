@@ -245,6 +245,41 @@ export class RunnerIntegrationStages {
     }
     return this.inspect(context.request, this.store.stage(digest, record.id) ?? record)
   }
+  /**
+   * What a correction builder may learn of a failed integration (ADR-0208):
+   * each product case's id and status, and for a public case its pinned
+   * actions, assertion descriptions and failure conditions. A private
+   * evaluator case gives its id and status only, never its objective.
+   */
+  failedCases(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    const original = this.read(request, record)
+    if (!original) throw new DeliveryRunnerError('integration-stage-original-unresolved')
+    const retained = JSON.parse(
+        readSourceFile(this.store.files.root, `${this.path(record.invocation)}/report.json`, 1024),
+      ) as { artifact: string },
+      proof = observedIntegrationVerification(
+        this.store.files.root,
+        original.binding.selection,
+        retained.artifact,
+      ),
+      plan = new IntegrationVerification(this.store.files.root).acceptance.get(
+        proof.report.acceptancePlan,
+      ).plan
+    return proof.cases.map(({ result }) => {
+      const definition = plan.cases.find((test) => test.id === result.case)
+      return {
+        case: result.case,
+        status: result.status,
+        ...(definition && rootIntegrationCaseOwner(definition) !== 'evaluator-container'
+          ? {
+              actions: definition.actions,
+              assertions: definition.assertions.map(({ id, description }) => ({ id, description })),
+              failureConditions: definition.failureConditions,
+            }
+          : {}),
+      }
+    })
+  }
   async inspect(
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,

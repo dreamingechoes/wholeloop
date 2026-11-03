@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-03 · P6-29 · Correction stage — in progress
+
+- The fixed dispatcher registers `RunnerCorrectionStages` (ADR-0208, increment 3). The stage reads the predecessor's retained failure, including failed product cases for an integration origin, with private evaluator cases reduced to their id and status. It then fences and requeues the unit's builder with a correction task and has the controller commit the result. The unit's candidate resolves to that commit for every QA stage.
+- Writing it exposed a queue rule that blocked every continuation: a settled attempt of an earlier basis kept its slot closed, and the journal cannot fence across bases. Slot admission now counts only current-basis attempts. A continuation only reopens with nothing unresolved.
+- A hybrid case with a real builder and real Git runs build, failed integration, continuation and correction; QA reads the corrected bytes. Removing the candidate fallback or the queue change fails it.
+- Not covered yet: a dedicated test that private cases are hidden, richer acceptance-origin feedback, and verification repairs on top of a correction, which block honestly.
+- Next: public composition and a synthetic continuation run.
+
+---
+
 ## 2026-11-03 · P6-29 · Seeded workspaces in continuations — in progress
 
 - A continuation no longer reuses workspace, commit or acceptance-definition stages: their records are bound to the earlier grant or revision. Every stage depends on them, so an implementation continuation runs its whole route again. The ADR-0197 cases now assert that (ADR-0208, increment 2).

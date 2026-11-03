@@ -5,6 +5,7 @@ import type { IntegrationVerificationRequest } from '../integration/verification
 import { RunnerAcceptanceDefinitionStages } from './acceptance-definition-stages.js'
 import { RunnerAcceptanceStages } from './acceptance-stages.js'
 import { RunnerBuilderPlanningStages } from './builder-planning-stages.js'
+import { RunnerCorrectionStages } from './correction-stages.js'
 import { RunnerDefinitionStages } from './definition-stages.js'
 import type { DeliveryRunnerHost, RunnerStageContext } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
@@ -30,6 +31,7 @@ export interface RunnerStageAdapters {
   git: RunnerGitStages
   'build-plan': RunnerBuilderPlanningStages
   implementation: RunnerWorkerStages
+  correction: RunnerCorrectionStages
   verification: RunnerVerificationStages
   review: RunnerReviewStages
   integration: RunnerIntegrationStages
@@ -48,6 +50,7 @@ const CLASSES = {
   git: RunnerGitStages,
   'build-plan': RunnerBuilderPlanningStages,
   implementation: RunnerWorkerStages,
+  correction: RunnerCorrectionStages,
   verification: RunnerVerificationStages,
   review: RunnerReviewStages,
   integration: RunnerIntegrationStages,
@@ -105,9 +108,9 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
       return this.adapters.publication
     if (stage.kind === 'handoff' && plan.policy.endpoint === 'to-merge') return this.adapters.merge
     if (stage.kind === 'publication') return this.adapters.publication
-    // ADR-0197: no fixed correction producer is registered yet, so a continuation
-    // route is reported unsupported by static preflight rather than half-run.
-    if (stage.kind === 'correction') return undefined
+    // ADR-0208: a continuation route needs the fixed correction producer; without
+    // one registered, static preflight reports the route unsupported.
+    if (stage.kind === 'correction') return this.adapters.correction
     // ADR-0201: the observation host owns the observation and its recommendation handoff.
     if (
       stage.kind === 'observation' ||

@@ -178,6 +178,9 @@ export class RunnerGitStages {
       !committed.receipt ||
       committed.record.request.workspace !== allocation.digest
     ) {
+      // ADR-0208: a passed correction committed on top of the unit's commit.
+      const corrected = this.corrected(request, unit, allocation.digest)
+      if (corrected) return { allocation, receipt: corrected }
       if (
         !(correction instanceof RunnerRepairCommits) ||
         correction.store.files.root !== this.store.files.root
@@ -192,6 +195,39 @@ export class RunnerGitStages {
     )
       throw new DeliveryRunnerError('git-stage-candidate-not-current')
     return { allocation, receipt: committed.receipt }
+  }
+  /**
+   * The latest passed `correction-N:<unit>` commit of this request, when it is
+   * still the workspace's current head. A verification repair on top of a
+   * correction is not supported yet, so a moved head finds nothing here.
+   */
+  private corrected(request: Readonly<RunnerRequest>, unit: string, workspace: string) {
+    const record = this.store
+      .record(contractDigest(request))
+      .stages.filter(
+        (stage) =>
+          stage.status === 'passed' &&
+          !stage.origin &&
+          new RegExp(`^correction-[1-9][0-9]*:${unit}$`).test(stage.id),
+      )
+      .at(-1)
+    const path = record && `delivery/runner-corrections/${record.invocation}/commit.txt`
+    if (!path || !existsSync(this.store.files.path(path))) return undefined
+    const observed = this.commits.inspect(readSourceFile(this.store.files.root, path, 128).trim())
+    if (
+      observed.status !== 'committed' ||
+      !observed.current ||
+      !observed.receipt ||
+      observed.record.request.workspace !== workspace
+    )
+      return undefined
+    const tree = this.workspaces.get(workspace).repository.path
+    if (
+      candidateFiles(tree).digest !== observed.receipt.files ||
+      candidateIndex(tree) !== observed.receipt.index
+    )
+      return undefined
+    return observed.receipt
   }
   private async parts(
     request: Readonly<RunnerRequest>,
