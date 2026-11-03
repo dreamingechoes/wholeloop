@@ -85,6 +85,24 @@ describe('public to-pr composition (ADR-0207)', () => {
           'handoff',
         ])
         expect(coverage.complete).toBe(true)
+        // A continuation route adds correction-1 and is covered as a whole (ADR-0208).
+        const continuation = {
+          ...plan,
+          revision: 2,
+          corrections: [
+            {
+              unit: 'search',
+              origin: 'integration' as const,
+              request: 'a'.repeat(64),
+              stage: 'integration:feature',
+              failure: 'b'.repeat(64),
+            },
+          ],
+        }
+        expect(runnerRoute(continuation).some((stage) => stage.id === 'correction-1:search')).toBe(
+          true,
+        )
+        expect((host as RunnerStageDispatcher).coverage(continuation).complete).toBe(true)
         expect(
           await host?.preflight(request, plan, stages, new AbortController().signal),
         ).toMatchObject({ available: true, interactive: 'disabled' })

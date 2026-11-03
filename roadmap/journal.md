@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-03 · P6-29 · Public continuation run — in progress
+
+- The public `to-pr` composition registers the correction adapter, so a continuation route is covered as a whole (ADR-0208, increment 4).
+- New `eval:public-continuation` uses the real engine, real Docker QA and real Git with a synthetic client behind the real Codex observer. The first run's product QA fails. The operator retires that run's environments, records the correction revision and grants it. The second run seeds the unit at the failed head, rebuilds, corrects from the retained failure and completes `ready-pr` with the corrected bytes published.
+- It found that the failed-case reader required the current basis (it now checks the original binding against the record's own basis), and that a failed run's live environments block the continuation's capacity. Retiring them stays an explicit owner action.
+- The development loop now has `npm run check:fast` per commit and the full `npm run check` before any push and at task close, both ending in one `CHECK PASS` or `CHECK FAIL (<step>)` line. The owner approved this change of working rule today.
+
+---
+
 ## 2026-11-03 · P6-29 · Correction stage — in progress
 
 - The fixed dispatcher registers `RunnerCorrectionStages` (ADR-0208, increment 3). The stage reads the predecessor's retained failure, including failed product cases for an integration origin, with private evaluator cases reduced to their id and status. It then fences and requeues the unit's builder with a correction task and has the controller commit the result. The unit's candidate resolves to that commit for every QA stage.

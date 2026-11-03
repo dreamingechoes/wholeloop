@@ -252,8 +252,23 @@ export class RunnerIntegrationStages {
    * evaluator case gives its id and status only, never its objective.
    */
   failedCases(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
-    const original = this.read(request, record)
-    if (!original) throw new DeliveryRunnerError('integration-stage-original-unresolved')
+    // History, not current evidence: the failed record belongs to an earlier
+    // basis, so the original binding is checked against it directly.
+    const base = this.path(record.invocation)
+    if (!existsSync(this.store.files.path(`${base}/binding.json`)))
+      throw new DeliveryRunnerError('integration-stage-original-unresolved')
+    const binding = JSON.parse(
+      readSourceFile(this.store.files.root, `${base}/binding.json`, 65536),
+    ) as IntegrationStageBinding
+    acceptanceShape(binding.selection, INTEGRATION_VERIFICATION_SCHEMA)
+    if (
+      binding.request !== contractDigest(request) ||
+      binding.plan !== record.basis ||
+      binding.stage !== record.id ||
+      binding.invocation !== record.invocation
+    )
+      throw new DeliveryRunnerError('integration-stage-original-binding')
+    const original = { binding }
     const retained = JSON.parse(
         readSourceFile(this.store.files.root, `${this.path(record.invocation)}/report.json`, 1024),
       ) as { artifact: string },

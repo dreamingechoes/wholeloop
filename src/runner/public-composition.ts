@@ -35,6 +35,7 @@ import { RunnerAcceptanceStages } from './acceptance-stages.js'
 import type { RunnerArtifactInput } from './artifact-attempts.js'
 import { RunnerAssemblyReadiness } from './assembly-readiness.js'
 import { RunnerBuilderPlanningStages } from './builder-planning-stages.js'
+import { RunnerCorrectionStages } from './correction-stages.js'
 import type { RunnerStageContext } from './engine.js'
 import { RunnerFeatureReadiness } from './feature-readiness.js'
 import { RunnerGitStages } from './git-stages.js'
@@ -54,7 +55,7 @@ import type { RunnerRequest, RunnerStore } from './store.js'
 import { RunnerUnitEnvironments } from './unit-environments.js'
 import { RunnerUnitReadiness } from './unit-readiness.js'
 import { RunnerVerificationStages } from './verification-stages.js'
-import { RunnerWorkerStages } from './worker-stages.js'
+import { type RunnerWorkerOptions, RunnerWorkerStages } from './worker-stages.js'
 
 /** Routes the public host composes so far; every other route stays unsupported. */
 const COMPOSED = ['research-report', 'to-pr']
@@ -622,6 +623,17 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
       ),
     ),
     integration = new RunnerIntegrationStages(store, assembly),
+    builder: RunnerWorkerOptions = {
+      identity: request.host,
+      native: building.base,
+      boundary: (process, workspace) => building.observer(process, workspace),
+      context: (_context, workspace) => ({
+        ...(workspace ? { workspace } : {}),
+        environment,
+        ...guidance,
+      }),
+      admit,
+    },
     acceptance = new RunnerAcceptanceStages(store, new RunnerFeatureReadiness(store, integration), {
       identity: request.host,
       requests: decide,
@@ -646,17 +658,10 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
         },
         host,
       }),
-      implementation: new RunnerWorkerStages(store, queue(), {
-        identity: request.host,
-        native: building.base,
-        boundary: (process, workspace) => building.observer(process, workspace),
-        context: (_context, workspace) => ({
-          ...(workspace ? { workspace } : {}),
-          environment,
-          ...guidance,
-        }),
-        admit,
-      }),
+      implementation: new RunnerWorkerStages(store, queue(), builder),
+      // ADR-0208: a continuation's correction reruns the unit's builder with
+      // the retained failure; integration supplies its failed product cases.
+      correction: new RunnerCorrectionStages(store, queue(), builder, integration),
       verification,
       review,
       integration,

@@ -98,3 +98,18 @@ Not covered yet:
 - **Hiding private cases in the feedback.** This needs a real integration proof with a private case, so it has no dedicated case yet.
 - **Acceptance-origin corrections.** They carry only the stage reason and evidence for now.
 - **A verification repair on top of a correction.** It is not supported: its repair chain would root at the correction's commit and lease, so it blocks honestly.
+
+**Increment 4.** The public `to-pr` composition registers the correction adapter, with the integration stages supplying failed product cases, so a continuation route is covered as a whole.
+
+New `npm run eval:public-continuation` runs the real engine:
+
+1. The first none-policy run builds a service whose status is wrong, and real Docker product QA fails integration.
+2. As an operator would, the evaluation retires that run's environments, records the correction revision and opens it with a new exact-plan grant.
+3. The second run seeds the unit at exactly the failed head, rebuilds it with an empty owned commit and corrects it from the retained failure.
+4. The second run passes unit and product QA and completes `ready-pr`. The published head carries the corrected status, and every environment is retired.
+
+Three defects surfaced on the way:
+
+- **The failed-case reader required the record to be on the current basis.** A predecessor's record never is, so the reader now checks the original binding against that record's own basis.
+- **The failed run's environments still held Docker capacity.** The continuation's unit environment was refused as `reserved-capacity-unavailable`. Those environments are evidence under the earlier grant, and retiring them is an explicit owner action that keeps their observations. A continuation does not retire them by itself, so the operator retires them before continuing.
+- **The fixture's failure had to live outside recipe-pinned bytes.** A correction that changed a pinned file would invalidate the recipe, and integration would refuse it. A correction is therefore limited to bytes the recipe does not pin, or the operator prepares a new recipe.

@@ -29,9 +29,14 @@ export const RUBRIC = 'Review the exact diff for correctness and scope.\n',
  * reports what the profile's own write roots allow for the workspace witness,
  * so a builder's workspace write is observed only when the recipe grants it.
  * Gate workers report the unit clean and refuters refute. It certifies no
- * client, model or containment.
+ * client, model or containment. In correction mode an ordinary build writes a
+ * wrong service status, so product QA fails until a correction task writes the
+ * right one (ADR-0208).
  */
-export const SYNTHETIC_CODEX = (log: string) => `#!${process.execPath}
+export const SYNTHETIC_CODEX = (
+  log: string,
+  mode: 'pass' | 'correction' = 'pass',
+) => `#!${process.execPath}
 const args=process.argv.slice(2),fs=require('node:fs'),path=require('node:path'),conf=args.join(' ');
 fs.appendFileSync(${JSON.stringify(log)},JSON.stringify(args.filter(a=>!a.startsWith('{')&&a.length<200))+'\\n');
 const writes=[...conf.matchAll(/"([^"]+)"="write"/g)].map(m=>m[1]);
@@ -45,7 +50,7 @@ console.log(JSON.stringify({nonce:v.nonce,read:fs.readFileSync(v.read,'utf8')===
 const payload=JSON.parse(input),a=payload.assignment;let b={};try{b=JSON.parse(a.brief)}catch{}
 const emit=(ref,text)=>{const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic output.',artifacts:[{ref,kind:'report',text}],criteria:[],findings:[],unknowns:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(proposal)}}));console.log(JSON.stringify({type:'turn.completed'}))};
-if(a.identity.role==='builder'){const ws=writes.find(p=>!p.startsWith(process.cwd()));fs.writeFileSync(path.join(ws,'app.txt'),'Synthetic public implementation.\\n');emit('artifacts/report.txt','Synthetic builder report.\\n');return}
+if(a.identity.role==='builder'){const ws=writes.find(p=>!p.startsWith(process.cwd())),repair=b.task&&b.task.kind==='repair';fs.writeFileSync(path.join(ws,'app.txt'),'Synthetic public implementation.\\n');fs.writeFileSync(path.join(ws,'status.txt'),repair||${JSON.stringify(mode)}==='pass'?'public fixture':'broken');emit('artifacts/report.txt','Synthetic builder report.\\n');return}
 const gate=(payload.inputs||[]).find(i=>i.artifact&&i.artifact.ref==='artifacts/gate-input.json');
 if(gate){const input=JSON.parse(gate.content),report=a.identity.role==='refuter'?{finding:input.assignment.finding,verifier:input.assignment.verifier,outcome:'refute',reason:'Synthetic counterexample.',evidence:['Synthetic observation.']}:{unit:input.assignment.id,status:'ok',evidence:['Synthetic inspection of the candidate.'],findings:[]};emit('artifacts/gate.json',JSON.stringify(report));return}
 const id=b.response&&b.response.$id;
@@ -116,7 +121,7 @@ export function toPr(plan: DeliveryPlan, files: StoreFiles, remote: 'https' | 's
 }
 
 const APP =
-    "require('node:http').createServer((_q,r)=>{r.setHeader('content-type','application/json');r.end(JSON.stringify({status:'public fixture'}))}).listen(3000,'0.0.0.0')\n",
+    "const fs=require('node:fs');require('node:http').createServer((_q,r)=>{r.setHeader('content-type','application/json');r.end(JSON.stringify({status:fs.readFileSync('/workspace/app/status.txt','utf8')}))}).listen(3000,'0.0.0.0')\n",
   CHECK = "process.stdout.write('observed public suite\\n')\n",
   PACKAGE = JSON.stringify({ private: true, scripts: { check: 'node suite.cjs' } })
 /** The committed application, declared suite and rubric every public to-pr fixture seeds. */
