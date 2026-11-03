@@ -213,6 +213,7 @@
 | [0201](./0201-learning-observation-host.md) | Learning observation host | Accepted | 2026-11-02 |
 | [0202](./0202-campaign-reference-client-versions.md) | Campaign reference client versions | Accepted | 2026-11-03 |
 | [0203](./0203-contained-claude-code-boundary.md) | Contained Claude Code boundary | Accepted | 2026-11-03 |
+| [0204](./0204-research-web-reads.md) | Research web reads | Accepted | 2026-11-03 |
 
 ## Lifecycle
 

@@ -38,6 +38,7 @@ export class RunnerResearchAttempts extends NativeReadOnlyAttempts<ResearchWorke
     context: WorkerAssignment['context']
     provenance: 'fixture' | 'host-observed'
     deadline: string
+    web?: boolean
   }) {
     return this.claimAttempt({
       ...input,
@@ -130,11 +131,18 @@ export class NativeResearchWorkers implements RunnerResearchWorkers {
         throw new DeliveryRunnerError('research-worker-input-conflict')
       if (previous === undefined) files.atomic(`${root}/artifacts/research-inputs.json`, body)
     })
+    // Only the built-in native-web angle reads the public web, and a claim
+    // examiner only when its evidence cites a web page it must re-read.
+    const web =
+      'angle' in job
+        ? job.angle.provider === 'native-web' && job.angle.capability === 'source.web'
+        : job.claim.evidence.some((item) => /^https?:\/\//.test(item.ref))
     const lease = this.attempts.claim({
       run: this.options.run,
       grant: this.options.grant,
       kind,
       key: job.key,
+      web,
       brief: JSON.stringify({
         purpose:
           kind === 'angle'

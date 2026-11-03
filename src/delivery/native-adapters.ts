@@ -123,8 +123,12 @@ export function nativeDeliveryRecipe(input: {
   const files = new Map<string, string>()
   let args: string[]
   if (input.target === 'claude') {
-    const tools =
-      input.assignment.tools.workspace === 'write' ? 'Read,Glob,Grep,Edit,Write' : 'Read,Glob,Grep'
+    // Restricted mode drops WebFetch unless --tools names it; only a research
+    // job's assignment carries web reads (ADR-0204).
+    const tools = [
+      input.assignment.tools.workspace === 'write' ? 'Read,Glob,Grep,Edit,Write' : 'Read,Glob,Grep',
+      ...(input.assignment.tools.web === 'read' ? ['WebSearch,WebFetch'] : []),
+    ].join(',')
     args = [
       '--print',
       '--output-format',
@@ -202,7 +206,7 @@ export function nativeDeliveryRecipe(input: {
       'skills.bundled.enabled': false,
       'skills.include_instructions': false,
       'tools.view_image': false,
-      web_search: 'disabled',
+      web_search: input.assignment.tools.web === 'read' ? 'live' : 'disabled',
       mcp_servers: {},
       project_doc_max_bytes: 0,
       'shell_environment_policy.inherit': 'none',

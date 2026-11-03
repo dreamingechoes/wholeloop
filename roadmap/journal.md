@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Research web reads — in progress
+
+- Found while preparing the public host: a native research worker is told to query its source angle, but every recipe removed web tools. A public-web research trial could therefore only return open questions. The owner chose public-web research through each client's own tools. ADR-0204 adds an optional `web: 'read'` assignment tool. The validator admits it only for research angle and claim cells, and the controller sets it for `native-web` angles and for examiners of `http(s)` citations. Claude Code gets `WebSearch,WebFetch` under restricted mode, and Codex gets `web_search = "live"` with command network still disabled. `live` is one of the four values the installed Codex accepts.
+- Worker-assignment and native-purpose schemas gain the optional field, and their two fingerprints are updated. Three new cases cover the validator, both recipes and a native research run. No real web read has run yet.
+- Next: public host composition for the research route.
+
+---
+
 ## 2026-11-03 · P6-27 · Contained Claude Code boundary — in progress
 
 - Claude Code had no boundary observer, so no Claude stage could be admitted. Two observations on 2.1.316 shaped the fix. First, the client reads its login from the macOS Keychain, which needs the real home and `USER`, so the per-assignment home made every launch unauthenticated; this had gone unseen because only synthetic clients ran. Second, the client has no policy-only probe.

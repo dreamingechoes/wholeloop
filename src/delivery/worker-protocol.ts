@@ -56,6 +56,8 @@ export interface WorkerTools {
   broker: string[]
   askUser: false
   interactive: false
+  /** The client's own read-only web search and fetch, for a research job only (ADR-0204). */
+  web?: 'read'
 }
 export interface WorkerAssignment {
   schema: 'wholeloop/delivery-worker-assignment@1'
@@ -125,9 +127,10 @@ const METHODS: Record<WorkerRole, string[]> = {
   planner: [],
   challenger: [],
 }
-export function workerTools(role: WorkerRole): WorkerTools {
+export function workerTools(role: WorkerRole, web = false): WorkerTools {
   if (!Object.hasOwn(METHODS, role)) throw new WorkerProtocolError('role')
   return {
+    ...(web ? { web: 'read' as const } : {}),
     workspace:
       role === 'builder'
         ? 'write'
@@ -171,7 +174,17 @@ export function validateWorkerAssignment(value: unknown): asserts value is Worke
   const { assignment: digest, ...body } = assignment
   const identity = assignment.identity
   if (digest !== contractDigest(body)) throw new WorkerProtocolError('assignment-digest')
-  if (contractDigest(assignment.tools) !== contractDigest(workerTools(identity.role)))
+  // Web reads exist only for an owned research job, whose cell the research
+  // attempts derive from the job key; no other role or cell can ask for them.
+  const web = assignment.tools.web === 'read'
+  if (
+    contractDigest(assignment.tools) !== contractDigest(workerTools(identity.role, web)) ||
+    (web &&
+      !(
+        (identity.role === 'planner' && identity.cell?.startsWith('research:angle:')) ||
+        (identity.role === 'challenger' && identity.cell?.startsWith('research:claim:'))
+      ))
+  )
     throw new WorkerProtocolError('role-tools')
   if (
     (identity.revision === 0 && !['planner', 'challenger'].includes(identity.role)) ||
@@ -209,11 +222,12 @@ export function validateWorkerAssignment(value: unknown): asserts value is Worke
 }
 export function createWorkerAssignment(
   input: Omit<WorkerAssignment, 'schema' | 'assignment' | 'tools'>,
+  options: { web?: boolean } = {},
 ): WorkerAssignment {
   const body = {
     ...structuredClone(input),
     schema: 'wholeloop/delivery-worker-assignment@1' as const,
-    tools: workerTools(input.identity.role),
+    tools: workerTools(input.identity.role, options.web === true),
   }
   const assignment = { ...body, assignment: contractDigest(body) }
   validateWorkerAssignment(assignment)

@@ -127,6 +127,47 @@ describe('unattended research route (P6-33)', () => {
       { native: true },
     )
   })
+  it('grants web reads only to the native-web angle and to examiners of web citations (ADR-0204)', async () => {
+    await setup(
+      async ({ store, digest, dispatcher }) => {
+        const receipt = await new DeliveryRunner(store).run(digest, dispatcher)
+        expect(receipt).toMatchObject({ state: 'completed' })
+        // Every research lease the attempts wrote, keyed by its cell kind and tools.
+        const leases: { cell: string; web: unknown }[] = []
+        const walk = (path: string) => {
+          for (const entry of readdirSync(path, { withFileTypes: true })) {
+            const full = join(path, entry.name)
+            if (entry.isDirectory()) walk(full)
+            else if (entry.name.endsWith('.json')) {
+              const text = readSourceFile(
+                store.files.root,
+                full.slice(store.files.root.length + 1),
+                8 * 1024 * 1024,
+              )
+              if (!text.includes('"cell":"research:')) continue
+              const value = JSON.parse(text) as {
+                assignment?: { identity: { cell: string }; tools: { web?: string } }
+              }
+              if (typeof value.assignment === 'object' && value.assignment?.identity?.cell)
+                leases.push({
+                  cell: value.assignment.identity.cell,
+                  web: value.assignment.tools.web,
+                })
+            }
+          }
+        }
+        walk(store.files.root)
+        const angles = leases.filter((lease) => lease.cell.startsWith('research:angle:'))
+        expect(angles).toHaveLength(2)
+        expect(angles.filter((lease) => lease.web === 'read')).toHaveLength(1)
+        // The synthetic claims cite https pages, so each examiner may re-read them.
+        const claims = leases.filter((lease) => lease.cell.startsWith('research:claim:'))
+        expect(claims.length).toBeGreaterThan(0)
+        expect(claims.every((lease) => lease.web === 'read')).toBe(true)
+      },
+      { native: true, angles: [angle('native-web'), angle('forum')] },
+    )
+  })
   it.each([
     ['complete-with-unknowns', 'completed', 'completed-with-unknowns', 'unknowns'],
     ['blocked', 'blocked', 'blocked', 'blocked'],

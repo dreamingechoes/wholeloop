@@ -52,6 +52,8 @@ interface NativeReadOnlyClaim<L> {
   context: WorkerContext[]
   provenance: 'fixture' | 'host-observed'
   deadline?: string
+  /** The client's read-only web tools; the assignment validator admits them for research cells only. */
+  web?: boolean
   authorize(grant: DeliveryGrant, basis: DeliveryPlan | DeliveryEnvelope): void
   create(assignment: WorkerAssignment): L
 }
@@ -142,30 +144,33 @@ export abstract class NativeReadOnlyAttempts<L extends NativeReadOnlyLease> {
           throw new DeliveryJournalError('purpose-deadline')
         deadline = new Date(Math.min(time, Date.parse(deadline))).toISOString()
       }
-      const assignment = createWorkerAssignment({
-        identity: {
-          run: state.run,
-          plan: state.basis.digest,
-          revision: state.basis.revision ?? 0,
-          role: input.role,
-          attempt,
-          generation: 1,
-          cell,
+      const assignment = createWorkerAssignment(
+        {
+          identity: {
+            run: state.run,
+            plan: state.basis.digest,
+            revision: state.basis.revision ?? 0,
+            role: input.role,
+            attempt,
+            generation: 1,
+            cell,
+          },
+          grantDigest: grant.digest,
+          source: state.source,
+          brief: input.brief,
+          endpoint: basis.policy.endpoint,
+          intervention: basis.policy.intervention,
+          environment: input.environment,
+          candidates: [],
+          criteria: [],
+          findings: [],
+          contracts: [],
+          context: input.context,
+          deadline,
+          limits: budget.limits,
         },
-        grantDigest: grant.digest,
-        source: state.source,
-        brief: input.brief,
-        endpoint: basis.policy.endpoint,
-        intervention: basis.policy.intervention,
-        environment: input.environment,
-        candidates: [],
-        criteria: [],
-        findings: [],
-        contracts: [],
-        context: input.context,
-        deadline,
-        limits: budget.limits,
-      })
+        { web: input.web === true },
+      )
       workerResumePack(assignment, (artifact) =>
         readSourceBytes(contextRoot, artifact.ref, 1024 * 1024),
       )

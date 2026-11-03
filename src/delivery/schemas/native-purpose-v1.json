@@ -334,6 +334,10 @@
               "type": "boolean",
               "const": false
             },
+            "web": {
+              "type": "string",
+              "const": "read"
+            },
             "interactive": {
               "type": "boolean",
               "const": false
