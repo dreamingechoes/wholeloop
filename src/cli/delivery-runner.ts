@@ -195,14 +195,19 @@ export async function deliveryRunnerAsyncCommand(
       return recoveryProblems.length ? EXIT.precondition : EXIT.ok
     }
     // Read-only and deterministic: the controller child evaluates it again before dispatch.
+    // With a runtime, only the bundle can compose the host, so this core's view
+    // would report a composed route as unavailable; the child's verdict is in
+    // the status instead (ADR-0206).
+    const bundle = controllerBundle(core)
     let preflight: Awaited<ReturnType<RunnerPublicHost['preflight']>> | null = null
     try {
-      preflight = await host.preflight(
-        request,
-        store.basis(request).plan,
-        store.inspect(digest).route,
-        new AbortController().signal,
-      )
+      if (!(bundle && runtime))
+        preflight = await host.preflight(
+          request,
+          store.basis(request).plan,
+          store.inspect(digest).route,
+          new AbortController().signal,
+        )
     } catch {
       preflight = null
     }
@@ -212,13 +217,9 @@ export async function deliveryRunnerAsyncCommand(
     process.once('SIGTERM', relay)
     try {
       // The verified controller bundle, when installed, is the owned child.
-      const { status } = await new OwnedForegroundRunner(store).run(
-        digest,
-        controllerBundle(core) ?? core,
-        {
-          signal: abort.signal,
-        },
-      )
+      const { status } = await new OwnedForegroundRunner(store).run(digest, bundle ?? core, {
+        signal: abort.signal,
+      })
       io.out(
         JSON.stringify(
           { schema: 'wholeloop/delivery-runner-run@1', status, preflight },

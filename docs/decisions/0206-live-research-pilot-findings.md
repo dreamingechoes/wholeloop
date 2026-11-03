@@ -33,6 +33,20 @@ That report did not yet carry client-reported usage, so the pilot's quota cost i
 
 A native receipt now carries an optional `usage`, marked `client-reported`. It holds input, output, cache-read and cache-creation tokens, plus the client's own cost estimate in millionths of a dollar when the client gives one. Claude's figures come from its JSON result; Codex's are the sum of its `turn.completed` events. Malformed or missing reports yield no usage rather than a guess. A trial report sums them per run and counts the launches that reported nothing. This is evidence for sizing the campaign, never a budget: the plans are subscriptions that the runner cannot meter or enforce. The `delivery-native-run@1` schema gains the optional field, an additive change with an updated fingerprint.
 
+## Diagnostic repeat
+
+The owner approved one repeat after the fixes above, as a diagnostic that does not count toward the three required trials. It ran on the same client, model and question and **completed**:
+
+- 968 seconds, no human wait, 26 native launches, all successful and host-observed: the plan judge and its challenger, one `native-web` source worker, three verifiers for each of seven load-bearing claims, and the source judge and its challenger.
+- Both delegated decisions accepted, and both challengers supported them. The route ended `completed-with-unknowns` with no problem.
+- The brief keeps eight claims cited from the official Claude Code and Codex documentation, no refutation, and five open questions. The one claim that is not load-bearing reads as not independently examined.
+- Client-reported usage: 140 input, 64,581 output, 805,764 cache-read and 621,401 cache-creation tokens. The client's own cost estimate is 6.62 USD at API rates; the Pro subscription does not bill it, but it sizes a trial against the subscription's windows.
+
+Two findings from it:
+
+- **The run receipt reported the core's preflight.** With a runtime document only the controller bundle composes the host, so the core's own preflight said `public-host-native-runtime-unavailable` beside a completed route. The core now reports no preflight when the bundle runs with a runtime; the child evaluates it before dispatch and the status carries the result. A compiled-CLI case fails without the change.
+- **Excerpts may be paraphrased.** The source worker noted in an open question that its excerpts came from the client's fetch tool, which summarizes pages, not from raw page bytes. The brief keeps that open, which is the honest outcome. Excerpt fidelity against the raw source is not established by these trials.
+
 ## Alternatives rejected
 
 - Accepting any uncertainty ID would widen what a machine decision may accept, which only the owner can choose.

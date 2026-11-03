@@ -204,6 +204,8 @@ describe('public foreground run and reconcile (P6-10)', () => {
         // The fixture plan is an implementation route; only research is composed.
         expect(result.code, result.errors).toBe(3)
         expect(result.value.status).toMatchObject({ state: 'blocked', stages: [] })
+        // The core cannot compose this host, so it reports no preflight of its own.
+        expect(result.value.preflight).toBeNull()
         expect(existsSync(canary)).toBe(false)
         const records = readdirSync(store.files.path('delivery/runner-foreground')),
           invocation = JSON.parse(

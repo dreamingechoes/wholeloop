@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-03 · P6-27 · EVAL-10 diagnostic repeat — in progress
+
+- The owner approved one repeat as a diagnostic, not one of the three required trials. It completed: 968 s, no human wait, 26 successful Claude launches, both delegated decisions accepted and supported by their challengers, `completed-with-unknowns`. The brief keeps eight cited claims and five open questions. Client-reported usage: 64,581 output tokens and a 6.62 USD client estimate at API rates (ADR-0206).
+- The run receipt printed the core's preflight, `public-host-native-runtime-unavailable`, beside the completed route: only the bundle composes a host with a runtime. The core now reports no preflight in that case. A compiled-CLI case fails without the change.
+- The source worker flagged that fetched excerpts come from the client's summarizing fetch tool, not raw bytes. It stays an open question in the brief.
+- Next: the implementation-to-PR route and P6-29's producer, then the three Claude research trials on the final code.
+
+---
+
 ## 2026-11-03 · P6-27 · EVAL-10 pilot findings — in progress
 
 - Three more defects found by the pilot, recorded in ADR-0206:
