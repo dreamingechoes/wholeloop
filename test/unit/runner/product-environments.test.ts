@@ -264,6 +264,9 @@ describe('original milestone assembly and candidate production', () => {
     'no-acceptance',
     'extra-field',
     'helperImage',
+    'pinned-with-acceptance',
+    'pinned-acceptance-id',
+    'pinned-other-value',
   ] as const)('rejects malformed %s production before selection', (mode) =>
     runnerGitFixture(
       async ({ store }) => {
@@ -279,6 +282,18 @@ describe('original milestone assembly and candidate production', () => {
         if (mode === 'no-acceptance') acceptance.kind = 'data'
         if (mode === 'extra-field') Object.assign(selected, { assembly: 'b'.repeat(64) })
         if (mode === 'helperImage') selected.helperImage = 'node:latest'
+        // ADR-0207: a pinned acceptance is resolved later, so none may be given
+        // and its identifier stays reserved.
+        if (mode === 'pinned-with-acceptance') selected.acceptance = 'pinned'
+        if (mode === 'pinned-acceptance-id') {
+          selected.acceptance = 'pinned'
+          acceptance.kind = 'data'
+        }
+        if (mode === 'pinned-other-value')
+          Object.assign(selected, {
+            acceptance: 'latest',
+            inputs: [{ ...acceptance, kind: 'data', id: 'db' }],
+          })
         const before = contractDigest(store.lifecycle.journal.events())
         expect(
           () =>
@@ -294,6 +309,25 @@ describe('original milestone assembly and candidate production', () => {
       { singleUnit: true },
     ),
   )
+  it('accepts a pinned acceptance with no static acceptance input', () =>
+    runnerGitFixture(
+      async ({ store }) => {
+        const selected = production('f'.repeat(64)),
+          [acceptance] = selected.inputs
+        if (!acceptance) throw new Error('Original acceptance input required')
+        selected.acceptance = 'pinned'
+        selected.inputs = [{ ...acceptance, id: 'db', kind: 'data' }]
+        expect(
+          new RunnerProductEnvironments(
+            store,
+            reader(store),
+            new Map([['feature', selected]]),
+            deny,
+          ).configured('feature'),
+        ).toBe(true)
+      },
+      { singleUnit: true },
+    ))
   it.each([
     'cancelled',
     'fenced',

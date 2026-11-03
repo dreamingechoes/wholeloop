@@ -398,7 +398,9 @@ export class RunnerAcceptanceStages {
           closed = new RunnerNativeScope(this.store.files, record.invocation).inspect()
         proofs.push({ binding, ready, decision, after, closed })
         // A stopped reviewer can still have finished after its parent expired.
-        // Only the original within-window outcome can support acceptance.
+        // Only the original within-window outcome can support acceptance. A
+        // trusted observer's owned cancellation control is stopped by design
+        // (ADR-0207); a cancelled judge still leaves its decision unready.
         const bounded = closed.every((call) => {
           const outcome = JSON.parse(
             readSourceFile(
@@ -409,9 +411,9 @@ export class RunnerAcceptanceStages {
           ) as { at: string }
           return (
             call.observed.invocationState === 'stopped' &&
-            call.observed.code === 0 &&
-            !call.observed.signal &&
-            call.observed.reason === 'finished' &&
+            (call.observed.reason === 'finished'
+              ? call.observed.code === 0 && !call.observed.signal
+              : call.observed.reason === 'cancelled') &&
             Number.isFinite(Date.parse(outcome.at)) &&
             new Date(outcome.at).toISOString() === outcome.at &&
             outcome.at >= binding.at &&

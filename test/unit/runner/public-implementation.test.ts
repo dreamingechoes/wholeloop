@@ -11,11 +11,12 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type { NativeRuntime } from '../../../src/delivery/native-runtime.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
-import { composePublicHost } from '../../../src/runner/public-composition.js'
+import { composePublicHost, runtimeGithub } from '../../../src/runner/public-composition.js'
 import { runnerRoute } from '../../../src/runner/route.js'
 import { RunnerStageDispatcher } from '../../../src/runner/stage-dispatcher.js'
 import {
   publicBindings as bindings,
+  DELEGATED,
   prepareSuiteRecipe,
   REPOSITORY,
   SEED,
@@ -25,7 +26,25 @@ import {
 import { runnerGitFixture } from '../../support/runner-git.js'
 
 describe('public to-pr composition (ADR-0207)', () => {
-  it('composes the route through re-verification and leaves later stages unsupported', async () => {
+  it('runs the runtime gh binary and leaves git to the core', async () => {
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-public-gh-'))),
+      log = join(dir, 'gh.log')
+    writeFileSync(
+      join(dir, 'gh'),
+      `#!${process.execPath}\nrequire('node:fs').writeFileSync(${JSON.stringify(log)},JSON.stringify(process.argv.slice(2)))\nconsole.log('{}')\n`,
+    )
+    chmodSync(join(dir, 'gh'), 0o700)
+    const execute = runtimeGithub(join(dir, 'gh'))
+    await execute('gh', ['pr', 'ready', '--', 'https://github.com/fixture/app/pull/1'], dir)
+    expect(JSON.parse(readFileSync(log, 'utf8'))).toEqual([
+      'pr',
+      'ready',
+      '--',
+      'https://github.com/fixture/app/pull/1',
+    ])
+    expect(await execute('git', ['--version'], dir)).toMatch(/^git version /)
+  })
+  it('composes the whole route and nothing without a code host', async () => {
     await runnerGitFixture(
       async ({ store, request, root }) => {
         const plan = store.basis(request).plan,
@@ -36,6 +55,7 @@ describe('public to-pr composition (ADR-0207)', () => {
               { target: 'codex', client: '/opt/fixture/codex', store: '/opt/fixture/home' },
             ],
             repositories: [REPOSITORY(recipe)],
+            codeHost: { kind: 'github-cli', client: '/opt/fixture/gh' },
           },
           stages = runnerRoute(plan),
           host = composePublicHost({
@@ -47,7 +67,6 @@ describe('public to-pr composition (ADR-0207)', () => {
           })
         expect(host).toBeInstanceOf(RunnerStageDispatcher)
         const coverage = (host as RunnerStageDispatcher).coverage(plan)
-        expect(coverage.complete).toBe(false)
         expect(
           stages.filter((stage) => !coverage.unsupported.includes(stage.id)).map((s) => s.id),
         ).toEqual([
@@ -60,12 +79,42 @@ describe('public to-pr composition (ADR-0207)', () => {
           'verification:search',
           'review:search',
           'reverification:search',
+          'integration:feature',
+          'acceptance',
+          'publication',
+          'handoff',
         ])
+        expect(coverage.complete).toBe(true)
         expect(
           await host?.preflight(request, plan, stages, new AbortController().signal),
-        ).toMatchObject({ available: false })
-        // No repository inputs, no builder binding, or a guidance pin whose bytes
-        // differ, composes nothing.
+        ).toMatchObject({ available: true, interactive: 'disabled' })
+        const { codeHost: _codeHost, ...withoutGithub } = runtime
+        expect(
+          composePublicHost({
+            store,
+            request,
+            plan,
+            stages,
+            configuration: { bindings, runtime: withoutGithub },
+          }),
+        ).toBeUndefined()
+        // A recipe with data volumes, no repository inputs, no builder binding,
+        // or a guidance pin whose bytes differ, composes nothing.
+        expect(
+          composePublicHost({
+            store,
+            request,
+            plan,
+            stages,
+            configuration: {
+              bindings,
+              runtime: {
+                ...runtime,
+                repositories: [REPOSITORY(prepareSuiteRecipe(store.files.root, root, true))],
+              },
+            },
+          }),
+        ).toBeUndefined()
         expect(
           composePublicHost({
             store,
@@ -113,7 +162,7 @@ describe('public to-pr composition (ADR-0207)', () => {
       {
         singleUnit: true,
         seed: SEED,
-        decisions: ['approve-build-plan'],
+        decisions: [...DELEGATED],
         configure: (plan, files) => toPr(plan, files),
       },
     )
@@ -143,7 +192,11 @@ describe('public to-pr composition (ADR-0207)', () => {
             stages: runnerRoute(plan),
             configuration: {
               bindings,
-              runtime: { ...runtime, repositories: [REPOSITORY(recipe)] },
+              runtime: {
+                ...runtime,
+                repositories: [REPOSITORY(recipe)],
+                codeHost: { kind: 'github-cli', client: '/opt/fixture/gh' },
+              },
             },
           })
         if (!host) throw new Error('The front of the route must compose')
@@ -188,7 +241,7 @@ describe('public to-pr composition (ADR-0207)', () => {
       {
         singleUnit: true,
         seed: SEED,
-        decisions: ['approve-build-plan'],
+        decisions: [...DELEGATED],
         configure: (plan, files) => toPr(plan, files),
       },
     )

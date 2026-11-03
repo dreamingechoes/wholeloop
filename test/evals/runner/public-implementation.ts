@@ -8,6 +8,7 @@ import { EnvironmentResources } from '../../../src/environment/runtime.js'
 import { composePublicHost } from '../../../src/runner/public-composition.js'
 import { runnerRoute } from '../../../src/runner/route.js'
 import {
+  DELEGATED,
   prepareSuiteRecipe,
   publicBindings,
   REPOSITORY,
@@ -18,9 +19,10 @@ import {
 import { runnerGitFixture } from '../../support/runner-git.js'
 
 /**
- * ADR-0207, increment 4: the composed public to-pr host runs plan through
- * re-verification with a synthetic client behind the real Codex observer and
- * real Docker unit QA. It certifies no model, containment or product.
+ * ADR-0207, increments 4 and 5: the composed public to-pr host runs plan
+ * through acceptance with a synthetic client behind the real Codex observer and
+ * real Docker unit and product QA. It certifies no model, containment or
+ * product; acceptance is a synthetic delegated decision.
  */
 const destination = process.argv[2]
 if (!destination) throw new Error('Provide an external evidence directory')
@@ -30,7 +32,7 @@ const dir = realpathSync(destination),
   report = {
     status: 'failed',
     scope:
-      'Composed public to-pr host from plan to re-verification: synthetic native client behind the real Codex observer, real owned Docker unit QA. No model, containment, integration, acceptance or publication is certified.',
+      'Composed public to-pr host from plan to acceptance: synthetic native client behind the real Codex observer, real owned Docker unit and product QA. No model, containment or publication is certified, and acceptance is a synthetic delegated decision.',
     stages: [] as { id: string; status: string; provenance: string }[],
     launches: 0,
     environments: [] as { id: string; retirement: string }[],
@@ -54,6 +56,8 @@ try {
             { target: 'codex', client: join(dir, 'bin', 'codex'), store: join(dir, 'codex-home') },
           ],
           repositories: [REPOSITORY(recipe)],
+          // Publication is not dispatched here; the binary is never run.
+          codeHost: { kind: 'github-cli', client: join(dir, 'bin', 'gh') },
         },
         plan = store.basis(request).plan,
         host = composePublicHost({
@@ -63,7 +67,7 @@ try {
           stages: runnerRoute(plan),
           configuration: { bindings: publicBindings, runtime },
         })
-      if (!host) throw new Error('The route through re-verification must compose')
+      if (!host) throw new Error('The route through acceptance must compose')
       for (const id of [
         'plan',
         'acceptance-definition',
@@ -74,6 +78,8 @@ try {
         'verification:search',
         'review:search',
         'reverification:search',
+        'integration:feature',
+        'acceptance',
       ]) {
         const context = dispatch(id),
           observed = await host.execute(context)
@@ -89,12 +95,13 @@ try {
       // Every launch, gate workers included, was preceded by the observer's controls.
       assert.equal(calls.filter((args) => args.includes('sandbox')).length, 2 * report.launches)
       assert.equal(calls.filter((args) => args.includes('login')).length, report.launches)
-      const resources = new EnvironmentResources(store.files),
-        owned = resources
-          .list()
-          .filter((entry) => entry.record.run === request.run && entry.record.recipe === recipe)
-      // The original verification provisioned one; the re-entry attested the same head.
-      assert.equal(owned.length, 1)
+      const owned = new EnvironmentResources(store.files)
+        .list()
+        .filter((entry) => entry.record.run === request.run)
+      // One unit environment (the re-entry attested the same head) and one
+      // product environment for the integrated milestone.
+      assert.equal(owned.filter((entry) => entry.record.recipe === recipe).length, 1)
+      assert.equal(owned.length, 2)
       for (const entry of owned) {
         const item = { id: entry.record.id, retirement: 'not-requested' }
         if (process.argv.includes('--retire-success')) {
@@ -118,7 +125,7 @@ try {
       stageBudget: 'plan',
       retain: true,
       seed: SEED,
-      decisions: ['approve-build-plan'],
+      decisions: [...DELEGATED],
       configure: (plan, files) => toPr(plan, files),
     },
   )

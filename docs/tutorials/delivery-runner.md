@@ -102,7 +102,7 @@ wl delivery runner-host --bindings bindings.json --runtime runtime.json --json
 }
 ```
 
-An implementation route also needs two optional fields ([ADR-0207](../decisions/0207-public-implementation-route-composition.md)). `codeHost` names the absolute path of the `gh` binary that publication runs; it is never resolved through `PATH`. `repositories` has one entry per plan repository: the digest of an environment recipe already prepared in the store, a digest-pinned helper image, and the suite, meaning the declared command refs, the recipe command each one runs, and a timeout. They grant nothing; the plan's exact grant still decides what may be touched. The public host does not compose that route yet, so a `to-pr` route still stops before dispatch.
+An implementation route also needs two optional fields ([ADR-0207](../decisions/0207-public-implementation-route-composition.md)). `codeHost` names the absolute path of the `gh` binary that publication runs; it is never resolved through `PATH`. `repositories` has one entry per plan repository: the digest of an environment recipe already prepared in the store, a digest-pinned helper image, and the suite, meaning the declared command refs, the recipe command each one runs, and a timeout. They grant nothing; the plan's exact grant still decides what may be touched. With both fields, the controller bundle composes the whole `to-pr` route; without them it stops before dispatch. No hosted trial has run yet.
 
 Prepare the request with `host` set to that identity, then run and reconcile it with the same documents:
 

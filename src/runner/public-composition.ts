@@ -25,16 +25,26 @@ import { DeliverySources } from '../delivery/source.js'
 import type { WorkerAssignment, WorkerContext, WorkerRole } from '../delivery/worker-protocol.js'
 import { EnvironmentRecipes } from '../environment/recipe-store.js'
 import { FlowEngine } from '../flow/engine.js'
+import { integrationScope } from '../integration/contracts.js'
+import { type CommandExecutor, executeCodehostCommand } from '../pull-requests/codehost.js'
 import { canonicalPath } from '../state/paths.js'
 import { StateStore } from '../state/store.js'
 import { gitBytes } from '../worktrees/git.js'
 import { RunnerAcceptanceDefinitionStages } from './acceptance-definition-stages.js'
+import { RunnerAcceptanceStages } from './acceptance-stages.js'
 import type { RunnerArtifactInput } from './artifact-attempts.js'
+import { RunnerAssemblyReadiness } from './assembly-readiness.js'
 import { RunnerBuilderPlanningStages } from './builder-planning-stages.js'
 import type { RunnerStageContext } from './engine.js'
+import { RunnerFeatureReadiness } from './feature-readiness.js'
 import { RunnerGitStages } from './git-stages.js'
+import { RunnerIntegrationStages } from './integration-stages.js'
+import { RunnerMilestoneReadiness } from './milestone-readiness.js'
 import { RunnerPlanStages } from './plan-stages.js'
+import { RunnerProductEnvironments, type RunnerProductProduction } from './product-environments.js'
 import type { PublicHostComposer } from './public-host.js'
+import { GithubCliCodeHost } from './publication-host.js'
+import { RunnerPublicationStages } from './publication-stages.js'
 import { RunnerResearchStages } from './research-stages.js'
 import { NativeResearchWorkers, RunnerResearchAttempts } from './research-workers.js'
 import { RunnerReviewStages } from './review-stages.js'
@@ -42,6 +52,7 @@ import { DeliveryRunnerError, runnerDecisionRequirements } from './route.js'
 import { RunnerStageDispatcher } from './stage-dispatcher.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 import { RunnerUnitEnvironments } from './unit-environments.js'
+import { RunnerUnitReadiness } from './unit-readiness.js'
 import { RunnerVerificationStages } from './verification-stages.js'
 import { RunnerWorkerStages } from './worker-stages.js'
 
@@ -173,6 +184,90 @@ function guidanceContext(store: RunnerStore, plan: Readonly<DeliveryPlan>) {
   return { contextRoot: store.files.path(root), context }
 }
 
+/**
+ * One product production per milestone (ADR-0207). Its inputs are pinned as
+ * store files: per repository, the verify policy (the runtime suite and
+ * recipe) and the review policy (the plan's pinned rubric bytes). The recipe
+ * is the milestone repositories' shared runtime recipe, repairs are owned by
+ * the integration, and the acceptance input is the plan pinned for the
+ * revision. A recipe with data volumes, repositories with different recipes
+ * or a repository without a pinned rubric leave the route unsupported.
+ */
+function productInputs(
+  store: RunnerStore,
+  plan: Readonly<DeliveryPlan>,
+  runtime: Readonly<NativeRuntime>,
+) {
+  const recipes = new EnvironmentRecipes(store.files.root),
+    products = new Map<string, RunnerProductProduction>(),
+    asset = (body: string | Buffer) => {
+      const sha256 = createHash('sha256').update(body).digest('hex'),
+        ref = `delivery/public-integration-inputs/${sha256}.txt`
+      if (!existsSync(store.files.path(ref))) store.files.atomic(ref, body)
+      return { ref, sha256 }
+    }
+  for (const milestone of plan.milestones) {
+    let scope: ReturnType<typeof integrationScope>
+    try {
+      scope = integrationScope(plan as DeliveryPlan, milestone.id)
+    } catch {
+      return undefined
+    }
+    const entries = scope.repositories.map((id) => nativeRuntimeRepository(runtime, id)),
+      [first] = entries
+    if (!first || entries.some((entry) => !entry || entry.recipe !== first.recipe)) return undefined
+    try {
+      if (recipes.get(first.recipe).recipe.data.length) return undefined
+    } catch {
+      return undefined
+    }
+    const inputs: RunnerProductProduction['inputs'] = []
+    for (const repository of scope.repositories) {
+      const entry = nativeRuntimeRepository(runtime, repository),
+        index = plan.guidance.findIndex(
+          (pin) => pin.slot === 'review.rubric' && pin.repository === repository,
+        )
+      if (!entry || index < 0) return undefined
+      // The rubric bytes guidanceContext already verified against their pin.
+      const rubric = readSourceFile(
+        store.files.root,
+        `delivery/public-guidance/${contractDigest(plan.guidance)}/artifacts/guidance-${index}.txt`,
+        256 * 1024,
+      )
+      inputs.push(
+        {
+          id: `${repository}-verify`,
+          kind: 'gate-policy',
+          repository,
+          gate: 'verify',
+          ...asset(JSON.stringify({ recipe: entry.recipe, suite: entry.suite })),
+          after: ['recipe'],
+        },
+        {
+          id: `${repository}-review`,
+          kind: 'gate-policy',
+          repository,
+          gate: 'review',
+          ...asset(rubric),
+          after: ['recipe'],
+        },
+      )
+    }
+    products.set(milestone.id, {
+      helperImage: first.helperImage,
+      recipe: first.recipe,
+      inputs,
+      repairOwners: scope.criteria.map((criterion) => ({
+        criterion,
+        kind: 'integration' as const,
+        id: milestone.id,
+      })),
+      acceptance: 'pinned',
+    })
+  }
+  return products
+}
+
 /** Evidence is the exact stored artifact bytes; anything else stays unknown. */
 function evidenceHost(store: RunnerStore) {
   return {
@@ -283,6 +378,15 @@ export const composePublicHost: PublicHostComposer = (input) => {
       host,
     }),
   })
+}
+
+/**
+ * Runs `gh` as the runtime's absolute binary, never a PATH lookup (ADR-0205).
+ * Git keeps the core's own resolution, as every other Git effect does.
+ */
+export function runtimeGithub(client: string): CommandExecutor {
+  return (binary, args, cwd, input) =>
+    executeCodehostCommand(binary === 'gh' ? client : binary, args, cwd, input)
 }
 
 /**
@@ -412,11 +516,11 @@ function unitRepository(
 }
 
 /**
- * The to-pr route (ADR-0207). Composed so far: plan, acceptance definition,
- * workspace, build plan, implementation, commit, verification, review and
- * re-verification. Integration and later stages have no adapter yet, so the
- * dispatcher reports the route unsupported before any dispatch; nothing runs
- * half a route.
+ * The to-pr route (ADR-0207): plan, acceptance definition,
+ * workspace, build plan, implementation, commit, verification, review,
+ * re-verification, integration, acceptance, publication and its handoff:
+ * the whole route. A runtime without a code host, or anything another helper
+ * refuses, composes nothing, so no part of the route runs.
  */
 const composeImplementation: PublicHostComposer = ({ store, request, plan, configuration }) => {
   const { bindings, runtime } = configuration,
@@ -428,9 +532,13 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
     building = builders && publicNativeParts(store, builders, runtime, 'inline-proposal'),
     gating = gates && publicNativeParts(store, gates, runtime, 'inline-proposal'),
     guidance = guidanceContext(store, plan),
-    cases = suiteCases(store, plan, runtime)
+    cases = suiteCases(store, plan, runtime),
+    products = guidance && productInputs(store, plan, runtime),
+    codeHost = runtime.codeHost
   if (
+    !codeHost ||
     !cases ||
+    !products ||
     !judging ||
     !building ||
     !gating ||
@@ -471,38 +579,13 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
         ? { ready: true, provenance: 'host-observed', evidence: admitted }
         : { ready: false, reason: 'capability-unavailable' },
     engine = publicEngine(store, plan, runtime),
-    acceptance = new RunnerAcceptanceDefinitionStages(store, definition),
+    definitions = new RunnerAcceptanceDefinitionStages(store, definition),
     gate = (process: NativeProcessRunner, workspace: string) => ({
       native: { ...gating.base, process, host: gating.observer(process, workspace) },
       context: () => ({ workspace, environment, ...guidance }),
       admit,
     })
-  return new RunnerStageDispatcher(store, request.host, {
-    plan: new RunnerPlanStages(store, { identity: request.host, requests: decide, host }),
-    'acceptance-definition': acceptance,
-    git: new RunnerGitStages(store),
-    'build-plan': new RunnerBuilderPlanningStages(store, {
-      production,
-      decision: (context, produced) => {
-        if (!produced.artifact) throw new DeliveryRunnerError('public-build-plan-artifact-required')
-        const [first] = decide(context, produced.artifact)
-        if (!first) throw new DeliveryRunnerError('public-build-plan-decision-required')
-        return first
-      },
-      host,
-    }),
-    implementation: new RunnerWorkerStages(store, queue(), {
-      identity: request.host,
-      native: building.base,
-      boundary: (process, workspace) => building.observer(process, workspace),
-      context: (_context, workspace) => ({
-        ...(workspace ? { workspace } : {}),
-        environment,
-        ...guidance,
-      }),
-      admit,
-    }),
-    verification: new RunnerVerificationStages(store, {
+  const verification = new RunnerVerificationStages(store, {
       identity: request.host,
       engine,
       gate,
@@ -525,6 +608,65 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
       },
       environments: new RunnerUnitEnvironments(store, runtime.repositories ?? []),
     }),
-    review: new RunnerReviewStages(store, { identity: request.host, engine, gate }),
-  })
+    review = new RunnerReviewStages(store, { identity: request.host, engine, gate }),
+    // Every implementation unit is read through the same fixed gate readers.
+    assembly = new RunnerAssemblyReadiness(
+      store,
+      new RunnerMilestoneReadiness(
+        store,
+        new Map(
+          plan.work
+            .filter((work) => work.role !== 'research')
+            .map((work) => [work.id, new RunnerUnitReadiness(verification, review)]),
+        ),
+      ),
+    ),
+    integration = new RunnerIntegrationStages(store, assembly),
+    acceptance = new RunnerAcceptanceStages(store, new RunnerFeatureReadiness(store, integration), {
+      identity: request.host,
+      requests: decide,
+      host,
+    }),
+    github = runtimeGithub(codeHost.client)
+  return new RunnerStageDispatcher(
+    store,
+    request.host,
+    {
+      plan: new RunnerPlanStages(store, { identity: request.host, requests: decide, host }),
+      'acceptance-definition': definitions,
+      git: new RunnerGitStages(store),
+      'build-plan': new RunnerBuilderPlanningStages(store, {
+        production,
+        decision: (context, produced) => {
+          if (!produced.artifact)
+            throw new DeliveryRunnerError('public-build-plan-artifact-required')
+          const [first] = decide(context, produced.artifact)
+          if (!first) throw new DeliveryRunnerError('public-build-plan-decision-required')
+          return first
+        },
+        host,
+      }),
+      implementation: new RunnerWorkerStages(store, queue(), {
+        identity: request.host,
+        native: building.base,
+        boundary: (process, workspace) => building.observer(process, workspace),
+        context: (_context, workspace) => ({
+          ...(workspace ? { workspace } : {}),
+          environment,
+          ...guidance,
+        }),
+        admit,
+      }),
+      verification,
+      review,
+      integration,
+      acceptance,
+      // The to-pr handoff also belongs to the publication adapter.
+      publication: new RunnerPublicationStages(store, acceptance, {
+        identity: request.host,
+        host: new GithubCliCodeHost(github),
+      }),
+    },
+    new RunnerProductEnvironments(store, assembly, products),
+  )
 }

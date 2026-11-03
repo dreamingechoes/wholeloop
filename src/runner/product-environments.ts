@@ -39,6 +39,13 @@ export interface RunnerProductProduction {
   recipe: string
   inputs: IntegrationInput[]
   repairOwners: IntegrationRequest['repairOwners']
+  /**
+   * `pinned`: the acceptance input is the one plan pinned for the run
+   * revision, resolved when the milestone is produced (ADR-0207). A host
+   * composed before its acceptance definition ran cannot know that digest,
+   * and the acceptance store allows exactly one plan per revision.
+   */
+  acceptance?: 'pinned'
 }
 interface ProductionBinding {
   version: 1
@@ -111,7 +118,11 @@ export class RunnerProductEnvironments {
   private production(input: RunnerProductProduction) {
     const id = /^[a-z][a-z0-9_-]{0,63}$/
     if (
-      Object.keys(input).sort().join(',') !== 'helperImage,inputs,recipe,repairOwners' ||
+      Object.keys(input).sort().join(',') !==
+        (input.acceptance === undefined
+          ? 'helperImage,inputs,recipe,repairOwners'
+          : 'acceptance,helperImage,inputs,recipe,repairOwners') ||
+      (input.acceptance !== undefined && input.acceptance !== 'pinned') ||
       !/^[a-f0-9]{64}$/.test(input.recipe) ||
       input.helperImage.length > 512 ||
       !/^[a-z0-9][a-z0-9./:_-]*@sha256:[a-f0-9]{64}$/.test(input.helperImage) ||
@@ -123,11 +134,13 @@ export class RunnerProductEnvironments {
         (entry) =>
           !id.test(entry?.id ?? '') ||
           entry.id === 'recipe' ||
+          (input.acceptance === 'pinned' && entry.id === 'acceptance') ||
           !['acceptance', 'data', 'gate-policy'].includes(entry.kind) ||
           !/^[a-f0-9]{64}$/.test(entry.sha256 ?? '') ||
           !Array.isArray(entry.after),
       ) ||
-      input.inputs.filter((entry) => entry.kind === 'acceptance').length !== 1 ||
+      input.inputs.filter((entry) => entry.kind === 'acceptance').length !==
+        (input.acceptance === 'pinned' ? 0 : 1) ||
       !Array.isArray(input.repairOwners) ||
       input.repairOwners.length > 256
     )
@@ -159,6 +172,23 @@ export class RunnerProductEnvironments {
       inputs: [
         ...structuredClone(input.inputs),
         { id: 'recipe', kind: 'recipe', ref: recipe, sha256: recipe, after: [] },
+        ...(input.acceptance === 'pinned'
+          ? [
+              (() => {
+                const digest = new DeliveryAcceptance(this.store.files.root).pinnedFor(
+                  plan.run,
+                  plan.revision,
+                ).digest
+                return {
+                  id: 'acceptance',
+                  kind: 'acceptance' as const,
+                  ref: digest,
+                  sha256: digest,
+                  after: ['recipe'],
+                }
+              })(),
+            ]
+          : []),
       ],
       repairOwners: structuredClone(input.repairOwners),
     }

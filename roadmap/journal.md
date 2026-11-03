@@ -4,6 +4,22 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Public to-pr publication — in progress
+
+- Publication and the `to-pr` handoff are composed with the fixed `GithubCliCodeHost`, whose executor runs the runtime's absolute `gh` (ADR-0207, increment 6). The whole route is now covered and passes static preflight; a runtime without a code host composes nothing. A unit case checks the executor's exact `gh` arguments against a synthetic binary.
+- Publication itself has not run: `git remote get-url` expands `insteadOf`, so a local remote cannot sit behind a GitHub URL. The complete synthetic run will use an SSH-form remote served from a local bare repository through `GIT_SSH_COMMAND`.
+
+---
+
+## 2026-11-03 · P6-27 · Public to-pr integration and acceptance — in progress
+
+- Integration and acceptance are composed (ADR-0207, increment 5). Each milestone gets a deterministic product production: per-repository verify and review policies pinned as store files, the shared runtime recipe and integration-owned repairs. A product production may now take `acceptance: "pinned"`, which resolves the plan pinned for the revision when the milestone is produced, because a host is composed before its acceptance definition runs.
+- The real run found that the acceptance stage required every call in its native scope to finish with exit zero. Real observers add an owned cancellation control to each launch, stopped with SIGTERM by design. A cancelled call within the original window no longer fails acceptance. A finished call must still exit zero, and a cancelled judge still leaves its decision unready.
+- `eval:public-implementation` passes all eleven stages from plan to acceptance with real Docker unit and product QA, fourteen launches and both environments retired. The existing `eval:runner-assembly-readiness` still passes. Four new validation cases cover the production and composition refusals.
+- Next: publication through the runtime's `gh`.
+
+---
+
 ## 2026-11-03 · P6-27 · Public to-pr gates — in progress
 
 - Verification, review and re-verification are composed (ADR-0207, increment 4). Gates launch read only through the fixed observer built for the unit workspace. Each gate's flow engine is configured only from a store-owned file: `verify.suite` is bound to the runtime's suite and `review.rubric` to the plan's pinned rubric. Its home is an empty store directory, so the owner's own configuration is never read.

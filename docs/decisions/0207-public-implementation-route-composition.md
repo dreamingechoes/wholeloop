@@ -148,3 +148,43 @@ Verification:
 - **Unit cases.** The appended plan pins with both cases, and a produced case with the controller's id blocks the plan. If the explicit collision check is removed, the plan is still refused as a duplicate case; the check only makes the reason specific.
 - **`npm run eval:public-implementation`.** It runs real Docker and a synthetic client behind the real Codex observer. All nine stages from plan to re-verification pass: twelve launches, each preceded by two sandbox controls and one login check. The unit verification provisions one environment and the re-verification attests the same head without another, after which the environment is retired.
 - **The first Docker run found the case-timeout defect.** A case limited to the command's own 5 s was cancelled during container setup.
+
+### Integration and acceptance (increment 5)
+
+The composer derives one product production per milestone. Its inputs are pinned as store files:
+
+- per repository, a verify policy (the runtime suite and recipe) and a review policy (the plan's pinned rubric bytes);
+- the milestone repositories' shared runtime recipe;
+- integration-owned repair for every milestone criterion.
+
+All units are read through the same fixed gate readers, and the delegated `acceptance` decision is judged like the others.
+
+The acceptance input is the plan the acceptance-definition stage pinned. A host is composed before that stage runs, so a product production can now say `acceptance: "pinned"`. The plan pinned for the run revision is then resolved when the milestone is produced. With `pinned`, a static acceptance input or the `acceptance` id is refused. This is a fixed rule, not the arbitrary selector callback that ADR-0173 rejected.
+
+Three cases leave the route unsupported:
+
+- a recipe with data volumes, because nothing supplies their seeds;
+- a milestone whose repositories have different recipes;
+- a repository without a pinned rubric.
+
+The real run found a defect in the acceptance stage. It required every call in its native scope to have finished with exit zero. Through a real observer, each launch also includes the observer's owned cancellation control, which is stopped with SIGTERM by design. Fixture observers never make that call. The stage now requires every call to be stopped with its outcome inside the original window: a finished call must still exit zero, and a cancelled call no longer fails acceptance. A judge cancelled that way still leaves its decision without a result, so acceptance stays not-ready.
+
+Verification:
+
+- **Validation.** Three new product-production cases are refused (a pinned plan with a static acceptance input, the reserved id, another value), and the pinned form is accepted. A data-volume recipe composes nothing.
+- **`npm run eval:public-implementation`.** It now passes all eleven stages from plan to acceptance with real Docker unit and product QA: fourteen launches, each preceded by its controls. It retires both the unit environment and the product environment.
+- **Regressions.** `npm run eval:runner-assembly-readiness -- --retire-success` still passes with fixture observers.
+
+### Publication (increment 6)
+
+Publication and the `to-pr` handoff go through `RunnerPublicationStages` with the fixed `GithubCliCodeHost`. Its executor runs `gh` as the runtime's absolute `codeHost.client`. Git keeps the core's own resolution, as every other Git effect does. A runtime without `codeHost` composes nothing.
+
+The composer now covers the whole route, so a `to-pr` route passes static preflight with interactive tools disabled. Every native launch still needs its own observation.
+
+Verification:
+
+- a unit case runs the executor against a synthetic `gh` and checks its exact arguments, and checks that `git` still resolves;
+- the coverage case shows every stage supported and preflight available;
+- a runtime without a code host composes nothing.
+
+Publication has not run yet. Git expands `insteadOf` rewrites in `remote get-url`, which the code host reads to name the GitHub repository, so a local bare remote cannot sit behind a GitHub URL. Increment 7 therefore uses an SSH-form GitHub remote whose transport a disposable `GIT_SSH_COMMAND` serves from a local bare repository, with a synthetic `gh`.

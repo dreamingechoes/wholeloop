@@ -49,7 +49,7 @@ if(a.identity.role==='builder'){const ws=writes.find(p=>!p.startsWith(process.cw
 const gate=(payload.inputs||[]).find(i=>i.artifact&&i.artifact.ref==='artifacts/gate-input.json');
 if(gate){const input=JSON.parse(gate.content),report=a.identity.role==='refuter'?{finding:input.assignment.finding,verifier:input.assignment.verifier,outcome:'refute',reason:'Synthetic counterexample.',evidence:['Synthetic observation.']}:{unit:input.assignment.id,status:'ok',evidence:['Synthetic inspection of the candidate.'],findings:[]};emit('artifacts/gate.json',JSON.stringify(report));return}
 const id=b.response&&b.response.$id;
-if(id==='wholeloop/acceptance-plan@1'){emit('artifacts/production.json',JSON.stringify({schema:id,run:a.identity.run,revision:b.plan.revision,plan:a.identity.plan,source:b.plan.source,cases:[{id:'find-title',criteria:['search'],owner:'machine',applicability:'applicable',rationale:'Exercise the exact agreed search criterion.',initial:'Two seeded tasks have distinct titles.',actions:['Search for the second task title.'],assertions:[{id:'matching-ids',description:'Return the matching task ID.',subject:'json',operator:'equals',path:'/ids',expected:'["task-2"]'}],failureConditions:['Missing or extra IDs fail the case.'],runner:{kind:'api',capability:'http.request',input:'{"method":"GET","path":"/tasks?title=Second"}'},fixture:{ref:'fixture:two-tasks',sha256:'b'.repeat(64)},timeoutMs:5000}],retention:{reviewAfterMs:86400000,expiryAction:'retain'}}));return}
+if(id==='wholeloop/acceptance-plan@1'){emit('artifacts/production.json',JSON.stringify({schema:id,run:a.identity.run,revision:b.plan.revision,plan:a.identity.plan,source:b.plan.source,cases:[{id:'product-api',criteria:b.plan.criteria.map(c=>c.id),owner:'machine',applicability:'applicable',rationale:'Observe the assembled application through its public HTTP endpoint.',initial:'The assembled application is ready.',actions:b.plan.milestones.map(m=>m.procedure),assertions:[{id:'response',description:'The assembled service returns its status.',subject:'json',operator:'equals',path:'/status',expected:'"public fixture"'}],failureConditions:['A different response fails the product check.'],runner:{kind:'api',capability:'http.request',input:JSON.stringify({schema:'wholeloop/behavior-input@1',kind:'api',service:'web',port:3000,steps:[{id:'read',kind:'request',method:'GET',path:'/'}]})},fixture:{ref:'fixture:public-service',sha256:'b'.repeat(64)},timeoutMs:60000}],retention:{reviewAfterMs:86400000,expiryAction:'retain'}}));return}
 if(id==='wholeloop/builder-plan@1'){emit('artifacts/production.json',JSON.stringify({schema:id,steps:['Implement title filtering in the declared task entrypoint.'],tests:['Search seeded titles and assert exact matching task IDs.'],assumptions:[]}));return}
 const inner=JSON.parse(payload.inputs[0].content),output={schema:id,basis:inner.basis,rationale:'Synthetic judgment of the exact produced plan.',uncertainties:[]};
 if(a.identity.role==='planner')output.outcome='accept';else{output.judgment=b.judgment;output.verdict='supported'}
@@ -69,6 +69,9 @@ export const REPOSITORY = (recipe: string, repository = 'app') => ({
   },
 })
 
+/** Decisions a none-policy to-pr route delegates; the fixture grant names exactly these. */
+export const DELEGATED = ['approve-build-plan', 'acceptance'] as const
+
 export function toPr(plan: DeliveryPlan, files: StoreFiles, rubric = RUBRIC) {
   plan.policy.endpoint = 'to-pr'
   plan.policy.intervention = 'none'
@@ -85,28 +88,28 @@ export function toPr(plan: DeliveryPlan, files: StoreFiles, rubric = RUBRIC) {
       repository: 'app',
     },
   ]
-  const text = JSON.stringify({
-    schema: 'wholeloop/delegated-decision-rubric@1',
-    decision: 'approve-build-plan',
-    purpose: 'Accept a builder plan only when it implements the pinned criteria.',
-    rules: [{ id: 'scope', text: 'Preserve the approved scope and source.' }],
-    outcomes: ['accept', 'reject'],
-    unknowns: { allowed: [], defaults: [] },
-    timeoutMs: 10000,
-  })
-  files.atomic('rubrics/approve-build-plan.json', text)
-  plan.policy.delegations = [
-    {
-      id: 'approve-build-plan',
-      rubric: { ref: 'rubrics/approve-build-plan.json', sha256: sourceHash(text) },
+  plan.policy.delegations = DELEGATED.map((id) => {
+    const text = JSON.stringify({
+      schema: 'wholeloop/delegated-decision-rubric@1',
+      decision: id,
+      purpose: 'Accept only evidence that satisfies the pinned criteria.',
+      rules: [{ id: 'scope', text: 'Preserve the approved scope and source.' }],
+      outcomes: ['accept', 'reject'],
+      unknowns: { allowed: [], defaults: [] },
+      timeoutMs: 10000,
+    })
+    files.atomic(`rubrics/${id}.json`, text)
+    return {
+      id,
+      rubric: { ref: `rubrics/${id}.json`, sha256: sourceHash(text) },
       evidence: ['production'],
-      fallback: 'blocked',
-    },
-  ]
+      fallback: 'blocked' as const,
+    }
+  })
 }
 
 const APP =
-    "require('node:http').createServer((_q,r)=>r.end('public fixture')).listen(3000,'0.0.0.0')\n",
+    "require('node:http').createServer((_q,r)=>{r.setHeader('content-type','application/json');r.end(JSON.stringify({status:'public fixture'}))}).listen(3000,'0.0.0.0')\n",
   CHECK = "process.stdout.write('observed public suite\\n')\n",
   PACKAGE = JSON.stringify({ private: true, scripts: { check: 'node suite.cjs' } })
 /** The committed application, declared suite and rubric every public to-pr fixture seeds. */
@@ -118,8 +121,14 @@ export const SEED = {
 }
 
 /** Pins (never provisions) the recipe whose `suite` test command runs the declared check. */
-export function prepareSuiteRecipe(storeRoot: string, root: string) {
+export function prepareSuiteRecipe(storeRoot: string, root: string, data = false) {
   const recipe = environmentRecipe(root, APP, process.arch === 'x64' ? 'amd64' : 'arm64')
+  // Product QA has no source for data seeds, so the public route refuses data volumes.
+  if (!data) {
+    recipe.data = []
+    for (const service of recipe.services)
+      service.mounts = service.mounts.filter((mount) => mount.kind !== 'data')
+  }
   recipe.files.push(
     {
       id: 'package',
