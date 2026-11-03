@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Implementation route inputs — in progress
+
+- ADR-0207 designs the public composition of the `to-pr` route. Every stage has a tested adapter, but three inputs had no producer in the public path: the unit's QA environment, the suite selection and the integration product inputs. Publication also needed a `gh` binary that is not resolved through `PATH`.
+- The runtime document gains optional `codeHost` (the `gh` path) and `repositories` (a store-prepared recipe digest, a digest-pinned helper image and the suite refs, mapping and timeout per plan repository). Both are digested into the host identity and grant nothing. A runtime without them keeps its identity. Sixteen rejected shapes are covered; removing the ref-to-mapping rule fails the case.
+- Next: unit environment preparation inside the verification invocation.
+
+---
+
 ## 2026-11-03 · P6-27 · EVAL-10 diagnostic repeat — in progress
 
 - The owner approved one repeat as a diagnostic, not one of the three required trials. It completed: 968 s, no human wait, 26 successful Claude launches, both delegated decisions accepted and supported by their challengers, `completed-with-unknowns`. The brief keeps eight cited claims and five open questions. Client-reported usage: 64,581 output tokens and a 6.62 USD client estimate at API rates (ADR-0206).

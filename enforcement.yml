@@ -41,6 +41,8 @@ rules:
     enforcers: [src/runner/research-stages.ts#RunnerResearchStages, src/runner/research-stages.ts#researchSynthesis, src/runner/research-workers.ts#NativeResearchWorkers, src/runner/research-workers.ts#RunnerResearchAttempts, src/runner/decision-stages.ts#execute, test/unit/runner/research-stages.test.ts]
   - id: delivery-public-controller-bundle
     enforcers: [src/runner/controller-bundle.ts#controllerBundle, src/runner/public-host.ts#RunnerPublicHost, src/runner/public-composition.ts#composePublicHost, src/delivery/native-runtime.ts#validNativeRuntime, test/unit/runner/public-runner.test.ts, test/unit/runner/public-composition.test.ts]
+  - id: delivery-public-implementation-inputs
+    enforcers: [src/delivery/native-runtime.ts#validNativeRuntime, src/delivery/native-runtime.ts#nativeRuntimeRepository, test/unit/runner/public-composition.test.ts]
   - id: delivery-research-web-reads
     enforcers: [src/delivery/worker-protocol.ts#validateWorkerAssignment, src/runner/research-workers.ts#NativeResearchWorkers, src/delivery/native-adapters.ts#nativeDeliveryRecipe, test/unit/delivery/research-web.test.ts, test/unit/runner/research-stages.test.ts]
   - id: delivery-research-dispatch-boundary

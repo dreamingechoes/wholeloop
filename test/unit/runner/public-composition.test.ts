@@ -76,6 +76,64 @@ describe('public host composition (ADR-0205)', () => {
       expect(validNativeRuntime({ ...runtime, clients: [changed] })).toBe(false)
     expect(validNativeRuntime({ ...runtime, clients: [client, client] })).toBe(false)
   })
+  it('accepts pinned repository inputs and a fixed code host, and nothing looser (ADR-0207)', () => {
+    const repository = {
+        repository: 'app',
+        recipe: 'a'.repeat(64),
+        helperImage: `node@sha256:${'b'.repeat(64)}`,
+        suite: {
+          refs: ['package.json#check'],
+          mapping: { 'package.json#check': 'suite' },
+          timeoutMs: 120000,
+        },
+      },
+      full: NativeRuntime = {
+        ...runtime,
+        codeHost: { kind: 'github-cli', client: '/opt/fixture/bin/gh' },
+        repositories: [repository],
+      }
+    expect(validNativeRuntime(full)).toBe(true)
+    const suite = repository.suite
+    for (const changed of [
+      { ...full, codeHost: { kind: 'github-cli', client: 'gh' } },
+      { ...full, codeHost: { kind: 'gitlab-cli', client: '/opt/fixture/bin/glab' } },
+      { ...full, codeHost: { kind: 'github-cli', client: '/opt/fixture/bin/gh', token: 'x' } },
+      { ...full, repositories: [] },
+      { ...full, repositories: [repository, repository] },
+      { ...full, repositories: [{ ...repository, repository: 'App' }] },
+      { ...full, repositories: [{ ...repository, recipe: 'a'.repeat(63) }] },
+      { ...full, repositories: [{ ...repository, helperImage: 'node:22' }] },
+      { ...full, repositories: [{ ...repository, extra: true }] },
+      { ...full, repositories: [{ ...repository, suite: { ...suite, refs: [] } }] },
+      { ...full, repositories: [{ ...repository, suite: { ...suite, mapping: {} } }] },
+      {
+        ...full,
+        repositories: [
+          {
+            ...repository,
+            suite: { ...suite, mapping: { ...suite.mapping, 'package.json#lint': 'lint' } },
+          },
+        ],
+      },
+      {
+        ...full,
+        repositories: [
+          { ...repository, suite: { ...suite, mapping: { 'package.json#check': 'Suite' } } },
+        ],
+      },
+      { ...full, repositories: [{ ...repository, suite: { ...suite, timeoutMs: 99 } }] },
+      { ...full, repositories: [{ ...repository, suite: { ...suite, timeoutMs: 600001 } }] },
+      { ...full, environments: [] },
+    ])
+      expect(validNativeRuntime(changed), JSON.stringify(changed)).toBe(false)
+    // The new fields are part of the host; a runtime without them keeps its identity.
+    expect(publicRunnerIdentity(bindings, full).configuration).not.toBe(
+      publicRunnerIdentity(bindings, runtime).configuration,
+    )
+    expect(publicRunnerIdentity(bindings, runtime).configuration).toBe(
+      contractDigest({ schema: 'wholeloop/delivery-public-host@1', bindings, runtime }),
+    )
+  })
   it('keeps a bindings-only identity and binds a runtime document into a new one', () => {
     expect(publicRunnerIdentity(bindings)).toEqual({
       id: 'wholeloop-fixed-dispatch',
