@@ -35,7 +35,7 @@ The plan, registration event, runner event, runner facet, runner status and repo
 
 ## Producer design
 
-> [ADR-0208](./0208-seeded-correction-producer.md) replaces the seeded-candidate part of this design: under a `none` policy every unit is seeded and its chain runs again, because a build plan decision is never carried into a new revision.
+> [ADR-0208](./0208-seeded-correction-producer.md) replaces the seeded-candidate part of this design: under a `none` policy every unit is seeded and its chain runs again, because a build plan decision is never carried into a new revision. It also stops the reuse of workspace, commit and acceptance-definition stages, whose records are bound to the earlier grant or revision, so an implementation continuation reuses nothing.
 
 Owned workspaces and commit receipts are valid evidence only under the run's current grant and basis. `validateOwnedWorkspaceCommit` enforces this even when it audits history. Since every continuation has a new grant, nothing owned under the old grant can count as current evidence for it. The producer therefore follows these rules:
 

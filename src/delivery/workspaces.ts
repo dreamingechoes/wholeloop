@@ -484,7 +484,7 @@ export class DeliveryWorkspaces {
           this.owned(record, head)
           if (
             step.operation === 'workspace.create'
-              ? head !== repo.base
+              ? head !== (record.seed?.head ?? repo.base)
               : !step.part ||
                 !ancestor(repo.root, step.expectedHead, head) ||
                 !ancestor(repo.root, step.part.head, head)

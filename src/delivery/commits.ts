@@ -227,6 +227,9 @@ export class DeliveryCommits {
           ? ['add', '--all', '--', '.']
           : [
               'commit',
+              // ADR-0208: a seeded unit whose builder changed nothing on top of
+              // the previous head still records its own owned commit.
+              ...(allocation.seed ? ['--allow-empty'] : []),
               '--no-verify',
               '--no-gpg-sign',
               '--cleanup=verbatim',

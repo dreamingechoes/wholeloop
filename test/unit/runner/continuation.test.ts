@@ -164,7 +164,7 @@ describe('cross-invocation correction (ADR-0193, ADR-0197)', () => {
         ),
       ).toThrow('continuation-not-admissible')
     }))
-  it('reopens only under a new exact-plan grant and reuses only unchanged stages', () =>
+  it('reopens only under a new exact-plan grant and runs grant-bound stages again', () =>
     setup(async ({ store, plan, request }) => {
       const { synthetic, prepared, result } = await failedRun(store, request),
         failure = result.stages.find((stage) => stage.id.startsWith('integration:'))
@@ -213,30 +213,12 @@ describe('cross-invocation correction (ADR-0193, ADR-0197)', () => {
           grant: grant.grant.id,
         }),
         continued = await new DeliveryRunner(store).run(successor.digest, synthetic.host)
-      const reused = continued.stages.filter((stage) => stage.origin).map((stage) => stage.id)
-      expect(reused.sort()).toEqual(
-        [
-          'acceptance-definition',
-          'build-plan:search',
-          'commit:search',
-          'implementation:search',
-          'workspace:search',
-        ].sort(),
-      )
-      expect(synthetic.executed).toEqual(
-        runnerRoute(next.plan)
-          .map((stage) => stage.id)
-          .filter((id) => !reused.includes(id)),
-      )
+      // ADR-0208: workspace, commit and acceptance-definition records are bound
+      // to the earlier grant and revision, and every stage depends on them, so
+      // nothing is reused and the whole route runs under the new grant.
+      expect(continued.stages.filter((stage) => stage.origin)).toEqual([])
+      expect(synthetic.executed).toEqual(runnerRoute(next.plan).map((stage) => stage.id))
       expect(continued.stages.every((stage) => stage.status === 'passed')).toBe(true)
-      expect(
-        continued.stages
-          .filter((stage) => stage.origin)
-          .every(
-            (stage) =>
-              stage.origin?.request === prepared.digest && stage.origin.basis === request.plan,
-          ),
-      ).toBe(true)
       // The predecessor's records stay historical: its failure is unchanged and
       // nothing it observed counts for the new basis except explicit reuse.
       const predecessor = deliveryRunner(store.lifecycle.journal.get(plan.run)).records.find(
@@ -249,7 +231,7 @@ describe('cross-invocation correction (ADR-0193, ADR-0197)', () => {
       })
       expect(predecessor?.stages.every((stage) => stage.basis === request.plan)).toBe(true)
     }))
-  it('runs a stage again when its original no longer inspects as current', () =>
+  it('never reuses grant- or revision-bound stages, even when their originals inspect as current', () =>
     setup(async ({ store, plan, request }) => {
       const { synthetic, prepared, result } = await failedRun(store, request),
         failure = result.stages.find((stage) => stage.id.startsWith('integration:'))
@@ -266,7 +248,6 @@ describe('cross-invocation correction (ADR-0193, ADR-0197)', () => {
         })
       store.lifecycle.track({ run: plan.run, revision: 2, grant: grant.grant.id })
       synthetic.state.failing = false
-      synthetic.state.stale.add('build-plan:search')
       synthetic.executed.length = 0
       const successor = store.prepare({
           ...request,
@@ -276,14 +257,10 @@ describe('cross-invocation correction (ADR-0193, ADR-0197)', () => {
           grant: grant.grant.id,
         }),
         continued = await new DeliveryRunner(store).run(successor.digest, synthetic.host)
-      // Everything depending on the stale stage runs again too.
-      expect(continued.stages.filter((stage) => stage.origin).map((stage) => stage.id)).toEqual([
-        'acceptance-definition',
-        'workspace:search',
-      ])
-      expect(synthetic.executed).toContain('build-plan:search')
-      expect(synthetic.executed).toContain('implementation:search')
-      expect(synthetic.executed).toContain('commit:search')
+      // Every original still inspects with its evidence, yet these run again.
+      expect(continued.stages.filter((stage) => stage.origin)).toEqual([])
+      for (const id of ['acceptance-definition', 'workspace:search', 'commit:search'])
+        expect(synthetic.executed).toContain(id)
     }))
   it('refuses an envelope grant, pending effects and an exhausted repair budget', () =>
     setup(

@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-03 · P6-29 · Seeded workspaces in continuations — in progress
+
+- A continuation no longer reuses workspace, commit or acceptance-definition stages: their records are bound to the earlier grant or revision. Every stage depends on them, so an implementation continuation runs its whole route again. The ADR-0197 cases now assert that (ADR-0208, increment 2).
+- In a continuation the Git workspace stage seeds the unit's new workspace from the predecessor request's own commit stage. A seeded unit whose builder changes nothing commits with `--allow-empty`, so it keeps an owned commit; normal workspaces are unchanged.
+- A hybrid run (real Git stages, synthetic everything else) fails integration, continues under a new grant and starts the new topic at exactly the failed head with an empty owned commit on top. It also found that the creation observer expected the declared base, so every seeded creation was `binding-mismatch`; increment 1's case now checks the observed status too. Removing either fix fails the cases.
+- Next: the `correction` stage adapter.
+
+---
+
 ## 2026-11-03 · P6-29 · Seeded correction workspaces — in progress
 
 - ADR-0208 designs the correction producer for `none` policies. ADR-0197 gave units other than the corrected one a seeded candidate that skips implementation, but under `none` the build plan's delegated decision is never carried into a new revision, so it and the builder run again. Git records are bound to their grant, so no workspace or commit stage can be reused, and the acceptance plan belongs to one revision. Every unit is therefore seeded at its committed head and its chain runs again under the new grant; no decision rule is relaxed.

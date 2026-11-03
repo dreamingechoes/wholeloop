@@ -65,3 +65,14 @@ Each increment adds its own cases.
 - an unknown commit record, a seed for a plan that has no previous revision, and a seeded unit with predecessor parts are refused before any effect.
 
 The seed is read as history from the old topic's latest applied, host-observed commit effect, because the original grant is inactive by design. The workspace request, record and status contracts gain the optional `seed`, an additive change with updated fingerprints.
+
+**Increment 2.** The engine's reuse rule now skips workspace, commit and acceptance-definition stages. Every stage depends on them, so an implementation continuation runs its whole route again under the new grant. The ADR-0197 continuation cases now assert exactly that, including when every original still inspects as current.
+
+In a continuation, the Git workspace stage finds the predecessor request's own `commit:<unit>` stage and passes its commit record as the seed. A reused commit stage cannot exist, so the seed always names the predecessor's own commit. A builder pass that changes nothing on top of the seed is committed with `--allow-empty`, for seeded workspaces only, so the unit keeps an owned commit of its own. A normal workspace still fails a commit with nothing in it.
+
+A hybrid run uses real Git stages and synthetic stages for the rest. Its first run edits the unit and fails integration. The continuation, under a new grant, then:
+
+- allocates a new topic seeded at exactly the failed head;
+- commits an empty owned commit on top of it, whose parent is that head.
+
+It also found that the creation observer still expected the declared base, so every seeded creation was recorded as `binding-mismatch`. The observer now expects the seed head. Increment 1's case missed this because it checked the topic's HEAD rather than the observed effect, and it now checks the workspace status too. Removing either fix fails the cases.

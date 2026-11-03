@@ -499,6 +499,10 @@ export class DeliveryRunner {
         continue
       }
       if (
+        // ADR-0208: Git records are bound to the grant that created them and an
+        // acceptance plan to its revision, so a continuation, which always has
+        // a new grant and revision, never reuses them.
+        ['workspace', 'commit', 'acceptance-definition'].includes(stage.kind) ||
         impact.stages.find((entry) => entry.id === stage.id)?.decision !== 'reuse' ||
         runnerDecisionRequirements(context.plan, stage, context.authority.grant.basis.kind)
           .length ||

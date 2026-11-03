@@ -9,7 +9,7 @@ import { DeliveryWorkspaces } from '../delivery/workspaces.js'
 import type { IntegrationPart } from '../integration/contracts.js'
 import type { AssemblyGitControl } from '../integration/git-process.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
-import type { RunnerStageRecord } from './events.js'
+import { deliveryRunner, type RunnerStageRecord } from './events.js'
 import { RunnerRepairCommits } from './repair-commits.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import bindingSchema from './schemas/git-binding-v1.json' with { type: 'json' }
@@ -136,6 +136,25 @@ export class RunnerGitStages {
     const binding = this.read(request, stage)
     if (!binding) throw new DeliveryRunnerError('git-stage-missing-resource')
     return binding
+  }
+  /**
+   * In a correction continuation the unit's new workspace starts at the head
+   * its predecessor request committed (ADR-0208). The workspace store checks
+   * the seed; here it is only located, from the predecessor's own commit stage.
+   */
+  private seed(request: Readonly<RunnerRequest>, plan: DeliveryPlan, unit: string) {
+    const continuation = deliveryRunner(
+      this.store.lifecycle.journal.get(request.run),
+    ).continuations?.find((entry) => entry.revision === plan.revision)
+    if (!continuation) return {}
+    const predecessor = this.store.get(continuation.request),
+      record = this.store.stage(continuation.request, `commit:${unit}`)
+    // Commit stages are never reused, so the predecessor's own stage issued it.
+    if (record?.status !== 'passed' || record.origin)
+      throw new DeliveryRunnerError('git-stage-seed-unavailable')
+    const binding = this.read(predecessor, record, false)
+    if (binding?.kind !== 'commit') throw new DeliveryRunnerError('git-stage-seed-unavailable')
+    return { seed: { commit: binding.resource } }
   }
   workspace(request: Readonly<RunnerRequest>, unit: string) {
     const binding = this.unitBinding(request, 'workspace', unit),
@@ -320,6 +339,7 @@ export class RunnerGitStages {
         unit,
         key: `runner-${contractDigest({ request, plan: record.basis, unit }).slice(0, 25)}`,
         parts,
+        ...this.seed(context.request, pinned.plan, unit),
       })
       binding.resource = allocation.digest
       this.write(binding)

@@ -59,6 +59,10 @@ describe('seeded correction workspaces (ADR-0208)', () => {
           })
         await new DeliveryWorkspaces(fixture.store.files.root).execute(record.digest)
         expect(git(record.repository.path, ['rev-parse', 'HEAD'])).toBe(committed.receipt.head)
+        // The creation effect itself is observed against the seed, not the base.
+        expect(
+          new DeliveryWorkspaces(fixture.store.files.root).inspect(record.digest),
+        ).toMatchObject({ status: 'ready', head: committed.receipt.head })
         expect(record.repository.branch).not.toBe(committed.allocation.repository.branch)
       },
       { singleUnit: true },
