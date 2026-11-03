@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Public to-pr composition up to commit — in progress
+
+- The composer builds a `to-pr` dispatcher for plan, acceptance definition, workspace, build plan (with its delegated decision), implementation and commit. Each launch goes through the fixed observer, and the builder's observer is built for the unit workspace. Guidance pins become context only from a plan repository file at the pinned base with a matching digest. Later stages have no adapter, so the route stays unsupported before dispatch (ADR-0207, increment 3).
+- A synthetic client through the real `CodexBoundaryHost` runs all six front stages. Each of the five launches is preceded by two sandbox controls and one login check, and the builder's edit is committed. Without the workspace, the builder's launch is refused.
+- Next: compose verification and review gates.
+
+---
+
 ## 2026-11-03 · P6-27 · Unit QA environments in verification — in progress
 
 - `RunnerUnitEnvironments` prepares a unit's QA environment inside its own verification invocation. It uses the existing environment producer, with one fixed phase for the original round and one per correction round, keyed by the correction receipt. It runs before the round is consumed, and a recovered controller reads the original preparation back. The verification adapter accepts only the fixed preparer on its own store (ADR-0207, increment 2).

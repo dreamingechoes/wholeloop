@@ -97,3 +97,21 @@ A new scenario in `npm run eval:runner-verification` runs real Docker:
 - the environment is then retired.
 
 The existing `observed-pass` and `observed-fail` scenarios still pass with the changed fixture.
+
+### Composition up to commit (increment 3)
+
+The composer now builds a `to-pr` dispatcher with these adapters:
+
+- plan;
+- acceptance definition;
+- Git workspace and commit;
+- build plan, with its delegated `approve-build-plan` decision;
+- implementation.
+
+Each binding's launch goes through its fixed observer. The builder's observer is built for the unit workspace, so it regenerates the writable recipe. Guidance pins become worker context only when each one names a file in a plan repository whose bytes, read at the pinned base commit, match the pinned digest. Any other pin leaves the route unsupported. Verification and every later stage have no adapter yet, so the dispatcher reports the route unsupported before dispatch.
+
+The cases:
+
+- **Coverage.** Exactly the six front stages are covered. Preflight is unavailable. A missing builder binding, or a pin whose bytes differ, composes nothing.
+- **End to end with a synthetic client.** It runs through the real `CodexBoundaryHost` and executes plan, acceptance definition, workspace, build plan, implementation and commit. All six pass and the builder's edit is committed. Each of the five launches is preceded by two sandbox controls and one login check.
+- **Mutation.** If the builder's observer is built without its workspace, the implementation launch is refused.
