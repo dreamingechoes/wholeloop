@@ -868,7 +868,14 @@ describe('actual synthetic native processes', () => {
         ),
       )
       expect(environment.home).toBe(containment.home)
-      expect(environment.keys).toEqual(expect.arrayContaining(['CLAUDE_CONFIG_DIR', 'USER']))
+      expect(environment.keys).toEqual(
+        expect.arrayContaining([
+          'CLAUDE_CODE_TMPDIR',
+          'CLAUDE_CONFIG_DIR',
+          'DISABLE_AUTOUPDATER',
+          'USER',
+        ]),
+      )
       expect(environment.args).toContain('--restricted')
     }, 'contained'))
 

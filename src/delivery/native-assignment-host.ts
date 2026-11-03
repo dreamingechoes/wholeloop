@@ -275,6 +275,11 @@ export class NativeAssignmentHost {
     if (options.containment) {
       env.HOME = options.containment.home
       env.USER = options.containment.user
+      // Without this the client creates /tmp/claude-<uid>, which the profile
+      // denies and which other sessions of the same user share.
+      env.CLAUDE_CODE_TMPDIR = join(directory, 'tmp')
+      // A run never updates the pinned client it was observed as.
+      env.DISABLE_AUTOUPDATER = '1'
     }
     const controller = new AbortController()
     const abort = () => controller.abort()

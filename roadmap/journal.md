@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-03 · P6-27 · First model turn under the Claude profile — in progress
+
+- The owner approved one model turn inside the launch profile. It found that Claude Code ignores `TMPDIR` and creates `/tmp/claude-<uid>`, which the profile denies and other sessions share. Contained launches and the observer now set `CLAUDE_CODE_TMPDIR` to the assignment's `tmp/`, and `DISABLE_AUTOUPDATER=1`. The retry completed in 5.1 s on `claude-opus-5-5`, with only Glob, Grep and Read, the allowed read returned and the outside read denied by restricted mode.
+- The native installer moved the client from 2.1.316 to 2.1.317 during the session, although `autoUpdates` is false; the trigger was not identified. The retried turn therefore ran on 2.1.317 and does not count for the pin. The observer refused 2.1.317 as intended, and the six model-free controls pass again on the exact 2.1.316 binary. The owner kept the 2.1.316 pin. The turn repeated on the exact `versions/2.1.316` binary completed in 5.3 s with 278 output tokens and the outside read denied. The runtime document names that binary rather than the symlink the installer moves.
+
+---
+
 ## 2026-11-03 · P6-27 · Bundle reconcile and identity command — in progress
 
 - With a verified bundle installed, `wl delivery reconcile` runs the bundle's private reconcile mode, so the code that composed a run is the code that inspects or stops it. `wl delivery runner-host` prints the identity a request must name; it is a new output contract with its fingerprint. Bindings and runtime reading is shared by run, reconcile and the identity command. The CLI reference and the runner tutorial are regenerated and updated.

@@ -64,6 +64,9 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
     env.HOME = containment.home
     env.USER = containment.user
     env.CLAUDE_CONFIG_DIR = containment.store
+    // The launch's own temporary directory, never the shared /tmp/claude-<uid>.
+    env.CLAUDE_CODE_TMPDIR = join(directory, 'tmp')
+    env.DISABLE_AUTOUPDATER = '1'
     const result = await this.options.process(command, args, {
       cwd: directory,
       input: body,

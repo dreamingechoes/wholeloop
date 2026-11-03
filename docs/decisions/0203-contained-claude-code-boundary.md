@@ -51,4 +51,10 @@ Two facts observed on the reference client, Claude Code 2.1.316 on macOS, shaped
 - On the owner's machine, `npm run eval:claude-boundary` passes six real controls on Claude Code 2.1.316: planner, builder and verifier, each with both output modes. Each control is authenticated through the dedicated client home, with the workspace unchanged and no model invoked.
 - Re-running that eval without the profile's leading deny makes the observer refuse.
 
-A model call under the profile has not run yet; it waits for the owner's approval to spend quota.
+## Findings from the first model turn
+
+The owner approved one model turn under the launch profile (2026-11-03). Its first attempt failed at startup: the client creates `/tmp/claude-<uid>` whatever `TMPDIR` says, and the profile denies it. Allowing it would expose the temporary files of every other session of the same user. Contained launches and their observer therefore set `CLAUDE_CODE_TMPDIR` to the assignment's own `tmp/`.
+
+They also set `DISABLE_AUTOUPDATER=1`. During the session the native installer moved `~/.local/bin/claude` from 2.1.316 to 2.1.317, although the owner's configuration disables auto-update; the trigger was not identified. The observer refused the new version, as intended. The runtime document should name the exact version binary rather than the symlink the installer moves.
+
+The retried turn completed in 5.1 s on `claude-opus-5-5` with only `Glob`, `Grep` and `Read` and no MCP server. It read the allowed witness, and the client's restricted mode denied the read outside the working directories (`permission_denials`). The client reported 277 output tokens. That turn ran on 2.1.317, so it is not evidence for the pinned 2.1.316. With the exact 2.1.316 binary and both variables, the six model-free controls pass again. The owner kept the 2.1.316 pin, and the same turn repeated on that exact binary also completed: client 2.1.316, 5.3 s, 278 output tokens, the allowed read returned and the outside read denied.

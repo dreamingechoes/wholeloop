@@ -200,7 +200,8 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
             calls.every(
               (call) =>
                 call.env.HOME === containment.home &&
-                call.env.CLAUDE_CONFIG_DIR === containment.store,
+                call.env.CLAUDE_CONFIG_DIR === containment.store &&
+                call.env.CLAUDE_CODE_TMPDIR === `${input.recipe.cwd}/tmp`,
             ),
           ).toBe(true)
           // No model: only version, the probe, its cancellation and auth status.
