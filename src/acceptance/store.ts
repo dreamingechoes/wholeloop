@@ -143,6 +143,11 @@ export class DeliveryAcceptance {
     if (pinned.digest !== digest) throw new AcceptanceError('unpinned-case-definitions')
     return record
   }
+  /** The one plan pinned for a run revision, verified as `get` verifies it. */
+  pinnedFor(run: string, revision: number) {
+    const record = this.readPlan(`delivery/acceptance-plans/${run}/${revision}.json`)
+    return this.get(record.digest)
+  }
   assertCurrent(digest: string) {
     const pinned = this.get(digest)
     this.authority(pinned.plan)

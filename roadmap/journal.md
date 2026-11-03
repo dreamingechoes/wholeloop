@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Public to-pr gates — in progress
+
+- Verification, review and re-verification are composed (ADR-0207, increment 4). Gates launch read only through the fixed observer built for the unit workspace. Each gate's flow engine is configured only from a store-owned file: `verify.suite` is bound to the runtime's suite and `review.rubric` to the plan's pinned rubric. Its home is an empty store directory, so the owner's own configuration is never read.
+- Real Docker showed that a suite ref names an acceptance case, and a revision has exactly one acceptance plan, pinned before builders. The acceptance-definition stage now appends controller-owned `cli` cases derived from the pinned recipe, and a produced case may not redefine one. The ADR's wording on the mapping is corrected in place.
+- New `npm run eval:public-implementation`: a synthetic client behind the real Codex observer, with real Docker unit QA, passes all nine stages from plan to re-verification. There were twelve launches, each preceded by its controls, and one environment, which was retired. The first run found a case timeout set to the command's 5 s, which cancelled the case during container setup.
+- Next: integration and acceptance.
+
+---
+
 ## 2026-11-03 · P6-27 · Public to-pr composition up to commit — in progress
 
 - The composer builds a `to-pr` dispatcher for plan, acceptance definition, workspace, build plan (with its delegated decision), implementation and commit. Each launch goes through the fixed observer, and the builder's observer is built for the unit workspace. Guidance pins become context only from a plan repository file at the pinned base with a matching digest. Later stages have no adapter, so the route stays unsupported before dispatch (ADR-0207, increment 3).

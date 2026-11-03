@@ -27,7 +27,7 @@ Publication also needs the GitHub CLI. ADR-0205 rejected resolving a client thro
 
 - **The runtime document names the machine's inputs, not authority.** `wholeloop/native-runtime@1` gains two optional fields:
   - `codeHost`: `{ kind: "github-cli", client }`, the absolute path of the `gh` binary that publication runs.
-  - `repositories`: one entry per plan repository. Each entry gives the digest of an environment recipe already prepared in the store, a digest-pinned helper image, and the suite: the declared command refs, the recipe command each ref runs, and a timeout.
+  - `repositories`: one entry per plan repository. Each entry gives the digest of an environment recipe already prepared in the store, a digest-pinned helper image, and the suite: the declared command refs, the recipe test command each ref runs (through a controller-owned acceptance case; see increment 4), and a timeout.
 
   Both fields are digested into the public host identity, so a changed recipe, image or binary is a different host. A runtime without them keeps its identity byte for byte.
 
@@ -115,3 +115,36 @@ The cases:
 - **Coverage.** Exactly the six front stages are covered. Preflight is unavailable. A missing builder binding, or a pin whose bytes differ, composes nothing.
 - **End to end with a synthetic client.** It runs through the real `CodexBoundaryHost` and executes plan, acceptance definition, workspace, build plan, implementation and commit. All six pass and the builder's edit is committed. Each of the five launches is preceded by two sandbox controls and one login check.
 - **Mutation.** If the builder's observer is built without its workspace, the implementation launch is refused.
+
+### Gates and controller suite cases (increment 4)
+
+Verification, review and re-verification are composed. One binding must cover `verifier`, `reviewer` and `refuter`, and the gates launch read only through the fixed observer built for the unit workspace.
+
+Each gate's flow engine is configured only from a file the composer writes into the store:
+
+- `verify.suite` is bound to the runtime's first suite ref;
+- `review.rubric` is bound to the plan's pinned rubric file.
+
+The engine's home is an empty store directory. Neither discovery ambiguity nor the owner's own configuration can choose a rubric or a suite.
+
+The real Docker run showed that a suite ref does not run a recipe command directly. It names an acceptance case, a `cli` case that runs one recipe test command and asserts exit zero. A run revision has exactly one acceptance plan, pinned before any builder, so those cases must be in the plan the acceptance-definition stage pins.
+
+The acceptance-definition stage therefore takes optional controller cases. When it pins the produced plan, it appends them, and a produced case with the same id refuses the plan. The composer derives one case per declared suite command from the pinned recipe:
+
+- the case id is the recipe command id;
+- the command runs in that command's service;
+- the criteria are the plan's machine criteria;
+- the timeout is the suite's, because the case also covers container setup.
+
+The planner's brief lists these cases as controller-owned. A command the recipe cannot back, or an id the case contract does not allow, leaves the route unsupported.
+
+Two alternatives were rejected:
+
+- **Asking the model to copy the cases.** The unit suite would then depend on model compliance.
+- **A separate suite plan.** The acceptance store allows one plan per revision.
+
+Verification:
+
+- **Unit cases.** The appended plan pins with both cases, and a produced case with the controller's id blocks the plan. If the explicit collision check is removed, the plan is still refused as a duplicate case; the check only makes the reason specific.
+- **`npm run eval:public-implementation`.** It runs real Docker and a synthetic client behind the real Codex observer. All nine stages from plan to re-verification pass: twelve launches, each preceded by two sandbox controls and one login check. The unit verification provisions one environment and the re-verification attests the same head without another, after which the environment is retired.
+- **The first Docker run found the case-timeout defect.** A case limited to the command's own 5 s was cancelled during container setup.

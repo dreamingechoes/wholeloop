@@ -1,5 +1,9 @@
 import { existsSync } from 'node:fs'
-import { ACCEPTANCE_SCHEMAS, type AcceptancePlan } from '../acceptance/contracts.js'
+import {
+  ACCEPTANCE_SCHEMAS,
+  type AcceptanceCase,
+  type AcceptancePlan,
+} from '../acceptance/contracts.js'
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { BUILDER_PLAN_SCHEMA, validateBuilderPlan } from '../build/contracts.js'
 import { contractDigest } from '../contracts/compatibility.js'
@@ -61,6 +65,13 @@ export interface RunnerArtifactOptions {
   identity: RunnerRequest['host']
   native(process: NativeProcessRunner): NativeRunOptions
   context(context: RunnerStageContext): RunnerArtifactInput
+  /**
+   * Controller-owned acceptance cases, such as a repository's declared suite,
+   * appended to the produced acceptance plan before it is pinned (ADR-0207).
+   * They must be a pure function of the pinned plan and trusted host inputs;
+   * a produced case with the same id refuses the plan rather than replacing it.
+   */
+  cases?(context: RunnerStageContext): AcceptanceCase[]
 }
 
 /** Artifact production precedes its independent decisions; it never completes a root stage alone. */
@@ -213,6 +224,13 @@ export class RunnerArtifactStages {
         source: source.body,
         plan: context.plan,
         response: this.response(context.stage.kind),
+        ...(context.stage.kind === 'acceptance-definition' && this.options.cases
+          ? {
+              controllerCases: this.options.cases(context),
+              controllerCasesRule:
+                'The controller appends these exact cases to the plan. Do not redefine their ids; define every other case the criteria need.',
+            }
+          : {}),
         instruction:
           'Produce exactly one report artifact at artifacts/production.json containing JSON that follows response. Preserve original scope, source, ownership, exclusions, guidance, policy and unknowns. Definition/plan proposals use the next revision and original digest as previous. Define complete acceptance cases before any builder; never waive human ownership or claim tests, execution, approval or delivery completion. Keep outer criteria/findings/unknowns empty; encode missing facts explicitly in the artifact.',
       })
@@ -347,7 +365,14 @@ export class RunnerArtifactStages {
               const value: unknown = JSON.parse(body)
               validateDeliveryShape(value, this.response(selected.context.stage.kind))
               if (selected.context.stage.kind === 'acceptance-definition') {
-                const input = value as AcceptancePlan
+                const produced = value as AcceptancePlan,
+                  appended = this.options.cases?.(selected.context) ?? []
+                if (produced.cases.some((test) => appended.some((owned) => owned.id === test.id)))
+                  throw new DeliveryRunnerError('artifact-stage-controller-case')
+                const input: AcceptancePlan = {
+                  ...produced,
+                  cases: [...produced.cases, ...structuredClone(appended)],
+                }
                 if (
                   input.run !== request.run ||
                   input.plan !== record.basis ||

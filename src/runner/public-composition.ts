@@ -1,7 +1,9 @@
 import { createHash } from 'node:crypto'
-import { existsSync } from 'node:fs'
+import { existsSync, mkdirSync } from 'node:fs'
 import { userInfo } from 'node:os'
 import { dirname } from 'node:path'
+import type { AcceptanceCase } from '../acceptance/contracts.js'
+import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { NativeDelegatedDecisionHost } from '../decisions/native-host.js'
 import type { DecisionRequest } from '../decisions/store.js'
@@ -12,12 +14,19 @@ import { ClaudeBoundaryHost } from '../delivery/native-claude-boundary.js'
 import { CodexBoundaryHost } from '../delivery/native-codex-boundary.js'
 import type { NativeProcessRunner, NativeRunOptions } from '../delivery/native-host.js'
 import { NativePurposeAttempts } from '../delivery/native-purpose.js'
-import { type NativeRuntime, nativeRuntimeClient } from '../delivery/native-runtime.js'
+import {
+  type NativeRuntime,
+  nativeRuntimeClient,
+  nativeRuntimeRepository,
+} from '../delivery/native-runtime.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
-import { DeliveryQueue } from '../delivery/queue.js'
+import { DeliveryQueue, type QueueReadiness } from '../delivery/queue.js'
 import { DeliverySources } from '../delivery/source.js'
 import type { WorkerAssignment, WorkerContext, WorkerRole } from '../delivery/worker-protocol.js'
+import { EnvironmentRecipes } from '../environment/recipe-store.js'
+import { FlowEngine } from '../flow/engine.js'
 import { canonicalPath } from '../state/paths.js'
+import { StateStore } from '../state/store.js'
 import { gitBytes } from '../worktrees/git.js'
 import { RunnerAcceptanceDefinitionStages } from './acceptance-definition-stages.js'
 import type { RunnerArtifactInput } from './artifact-attempts.js'
@@ -28,9 +37,12 @@ import { RunnerPlanStages } from './plan-stages.js'
 import type { PublicHostComposer } from './public-host.js'
 import { RunnerResearchStages } from './research-stages.js'
 import { NativeResearchWorkers, RunnerResearchAttempts } from './research-workers.js'
+import { RunnerReviewStages } from './review-stages.js'
 import { DeliveryRunnerError, runnerDecisionRequirements } from './route.js'
 import { RunnerStageDispatcher } from './stage-dispatcher.js'
-import type { RunnerStore } from './store.js'
+import type { RunnerRequest, RunnerStore } from './store.js'
+import { RunnerUnitEnvironments } from './unit-environments.js'
+import { RunnerVerificationStages } from './verification-stages.js'
 import { RunnerWorkerStages } from './worker-stages.js'
 
 /** Routes the public host composes so far; every other route stays unsupported. */
@@ -274,20 +286,159 @@ export const composePublicHost: PublicHostComposer = (input) => {
 }
 
 /**
+ * One controller-owned `cli` case per declared suite command (ADR-0207). The
+ * case runs the recipe command its ref maps to, in that command's service, and
+ * asserts exit zero; it records repository suite facts for the plan's machine
+ * criteria and nothing else. Anything the pinned recipe cannot back leaves the
+ * route unsupported.
+ */
+function suiteCases(
+  store: RunnerStore,
+  plan: Readonly<DeliveryPlan>,
+  runtime: Readonly<NativeRuntime>,
+): AcceptanceCase[] | undefined {
+  const criteria = plan.criteria.filter((c) => c.acceptance === 'machine').map((c) => c.id),
+    recipes = new EnvironmentRecipes(store.files.root),
+    cases: AcceptanceCase[] = []
+  if (!criteria.length) return undefined
+  for (const repository of plan.repositories) {
+    const entry = nativeRuntimeRepository(runtime, repository.id)
+    if (!entry) return undefined
+    let commands: ReturnType<EnvironmentRecipes['get']>['recipe']['commands']
+    try {
+      commands = recipes.get(entry.recipe).recipe.commands
+    } catch {
+      return undefined
+    }
+    for (const ref of entry.suite.refs) {
+      const id = entry.suite.mapping[ref] ?? '',
+        declared = commands.find((command) => command.id === id && command.phase === 'test')
+      if (
+        !/^[a-z][a-z0-9-]{0,63}$/.test(id) ||
+        !declared ||
+        declared.timeoutMs > entry.suite.timeoutMs ||
+        cases.some((test) => test.id === id)
+      )
+        return undefined
+      cases.push({
+        id,
+        criteria,
+        owner: 'machine',
+        applicability: 'applicable',
+        rationale: `The repository's declared check ${ref} exits zero; this records suite facts only.`,
+        initial: 'The owned unit candidate contains its declared check.',
+        actions: [`Run the declared repository check ${ref}.`],
+        assertions: [
+          {
+            id: 'exit',
+            description: 'The declared command exits zero.',
+            subject: 'exit',
+            operator: 'equals',
+            expected: '0',
+          },
+        ],
+        failureConditions: ['A nonzero exit fails the repository suite.'],
+        runner: {
+          kind: 'cli',
+          capability: 'process.exec',
+          input: JSON.stringify({
+            schema: 'wholeloop/behavior-input@1',
+            kind: 'cli',
+            service: declared.service,
+            command: id,
+          }),
+        },
+        fixture: { ref: `recipe:${entry.recipe}`, sha256: entry.recipe },
+        // The case also covers container setup; the command keeps its own limit.
+        timeoutMs: entry.suite.timeoutMs,
+      })
+    }
+  }
+  return cases
+}
+
+/**
+ * A flow engine for one unit workspace whose only configuration is the
+ * store-owned file written here: the plan's pinned review rubric and the
+ * runtime's first suite ref fill their slots, so neither discovery ambiguity
+ * nor the owner's own home configuration can choose them (ADR-0207).
+ */
+function publicEngine(
+  store: RunnerStore,
+  plan: Readonly<DeliveryPlan>,
+  runtime: Readonly<NativeRuntime>,
+) {
+  const home = store.files.path('delivery/public-engine/home')
+  return (request: Readonly<RunnerRequest>, workspace: string) => {
+    const repository = unitRepository(store, plan, request, workspace),
+      suite = nativeRuntimeRepository(runtime, repository)?.suite,
+      rubric = plan.guidance.find(
+        (pin) => pin.slot === 'review.rubric' && pin.repository === repository,
+      )
+    if (!suite) throw new DeliveryRunnerError('public-engine-workspace')
+    const body = `version: 1\nslots:\n  verify.suite: ${JSON.stringify(suite.refs[0])}\n${
+        rubric ? `  review.rubric: ${JSON.stringify(rubric.ref)}\n` : ''
+      }`,
+      config = `delivery/public-engine/${sourceHash(body)}/config.yml`
+    if (!existsSync(store.files.path(config))) store.files.atomic(config, body)
+    mkdirSync(home, { recursive: true, mode: 0o700 })
+    return new FlowEngine(
+      new StateStore(store.files.root),
+      workspace,
+      store.files.path(config),
+      home,
+    )
+  }
+}
+
+/** The plan repository whose owned unit workspace is exactly `workspace`. */
+function unitRepository(
+  store: RunnerStore,
+  plan: Readonly<DeliveryPlan>,
+  request: Readonly<RunnerRequest>,
+  workspace: string,
+) {
+  const git = new RunnerGitStages(store)
+  for (const work of plan.work) {
+    if (work.role === 'research') continue
+    try {
+      const allocation = git.workspace(request, work.id)
+      if (allocation.repository.path === workspace) return allocation.repository.repository
+    } catch {
+      // A unit without an allocation yet cannot own this workspace.
+    }
+  }
+  throw new DeliveryRunnerError('public-unit-workspace')
+}
+
+/**
  * The to-pr route (ADR-0207). Composed so far: plan, acceptance definition,
- * workspace, build plan, implementation and commit. Every later stage has no
- * adapter yet, so the dispatcher reports the route unsupported before any
- * dispatch; nothing runs half a route.
+ * workspace, build plan, implementation, commit, verification, review and
+ * re-verification. Integration and later stages have no adapter yet, so the
+ * dispatcher reports the route unsupported before any dispatch; nothing runs
+ * half a route.
  */
 const composeImplementation: PublicHostComposer = ({ store, request, plan, configuration }) => {
   const { bindings, runtime } = configuration,
     judges = bindingFor(bindings, ['planner', 'challenger']),
     builders = bindingFor(bindings, ['builder']),
+    gates = bindingFor(bindings, ['verifier', 'reviewer', 'refuter']),
     judging = judges && publicNativeOptions(store, judges, runtime, 'inline-proposal'),
     // A builder edits its workspace directly; its proposal stays inline.
     building = builders && publicNativeParts(store, builders, runtime, 'inline-proposal'),
-    guidance = guidanceContext(store, plan)
-  if (!judging || !building || !guidance) return undefined
+    gating = gates && publicNativeParts(store, gates, runtime, 'inline-proposal'),
+    guidance = guidanceContext(store, plan),
+    cases = suiteCases(store, plan, runtime)
+  if (
+    !cases ||
+    !judging ||
+    !building ||
+    !gating ||
+    !guidance ||
+    // Every repository needs its pinned recipe and suite for unit QA.
+    plan.repositories.some((repository) => !nativeRuntimeRepository(runtime, repository.id))
+  )
+    return undefined
   const environment: WorkerAssignment['environment'] = {
       id: 'public-native-delivery',
       recipe: contractDigest({ runtime }),
@@ -309,11 +460,26 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
       provenance: 'host-observed',
     }),
     production = { identity: request.host, native: judging, context: artifact },
-    // A queued builder is admitted only for a role some binding allows.
-    admitted = contractDigest({ bindings, runtime })
+    // The repository suites join the produced acceptance plan as controller cases.
+    definition = { ...production, cases: () => structuredClone(cases) },
+    // Queued work is admitted only for a role some binding allows.
+    admitted = contractDigest({ bindings, runtime }),
+    admit = (candidate: { entry: { role: string } }): QueueReadiness =>
+      bindings.bindings.some((binding) =>
+        binding.roles.includes(candidate.entry.role as WorkerRole),
+      )
+        ? { ready: true, provenance: 'host-observed', evidence: admitted }
+        : { ready: false, reason: 'capability-unavailable' },
+    engine = publicEngine(store, plan, runtime),
+    acceptance = new RunnerAcceptanceDefinitionStages(store, definition),
+    gate = (process: NativeProcessRunner, workspace: string) => ({
+      native: { ...gating.base, process, host: gating.observer(process, workspace) },
+      context: () => ({ workspace, environment, ...guidance }),
+      admit,
+    })
   return new RunnerStageDispatcher(store, request.host, {
     plan: new RunnerPlanStages(store, { identity: request.host, requests: decide, host }),
-    'acceptance-definition': new RunnerAcceptanceDefinitionStages(store, production),
+    'acceptance-definition': acceptance,
     git: new RunnerGitStages(store),
     'build-plan': new RunnerBuilderPlanningStages(store, {
       production,
@@ -334,10 +500,31 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
         environment,
         ...guidance,
       }),
-      admit: (candidate) =>
-        bindings.bindings.some((binding) => binding.roles.includes(candidate.entry.role))
-          ? { ready: true, provenance: 'host-observed', evidence: admitted }
-          : { ready: false, reason: 'capability-unavailable' },
+      admit,
     }),
+    verification: new RunnerVerificationStages(store, {
+      identity: request.host,
+      engine,
+      gate,
+      // The environment named here is replaced by the round's own preparation;
+      // each ref selects the controller-owned case that runs its recipe command.
+      suite: (current, workspace) => {
+        const entry = nativeRuntimeRepository(
+          runtime,
+          unitRepository(store, plan, current, workspace),
+        )
+        if (!entry) throw new DeliveryRunnerError('public-suite-workspace')
+        return {
+          acceptance: new DeliveryAcceptance(store.files.root).pinnedFor(
+            current.run,
+            current.revision,
+          ).digest,
+          environment: `environment-${'0'.repeat(32)}`,
+          ...structuredClone(entry.suite),
+        }
+      },
+      environments: new RunnerUnitEnvironments(store, runtime.repositories ?? []),
+    }),
+    review: new RunnerReviewStages(store, { identity: request.host, engine, gate }),
   })
 }

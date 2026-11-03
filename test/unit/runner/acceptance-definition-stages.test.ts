@@ -121,3 +121,71 @@ describe('owned acceptance definitions precede builders', () => {
     }, 'host-observed')
   })
 })
+
+describe('controller-owned acceptance cases (ADR-0207)', () => {
+  const owned = (id: string) => ({
+    id,
+    criteria: ['search'],
+    owner: 'machine' as const,
+    applicability: 'applicable' as const,
+    rationale: 'The declared check exits zero; this records suite facts only.',
+    initial: 'The owned unit candidate contains its declared check.',
+    actions: ['Run the declared repository check.'],
+    assertions: [
+      {
+        id: 'exit',
+        description: 'The declared command exits zero.',
+        subject: 'exit' as const,
+        operator: 'equals' as const,
+        expected: '0',
+      },
+    ],
+    failureConditions: ['A nonzero exit fails the repository suite.'],
+    runner: {
+      kind: 'cli' as const,
+      capability: 'process.exec',
+      input: JSON.stringify({
+        schema: 'wholeloop/behavior-input@1',
+        kind: 'cli',
+        service: 'web',
+        command: 'suite',
+      }),
+    },
+    fixture: { ref: `recipe:${'a'.repeat(64)}`, sha256: 'a'.repeat(64) },
+    timeoutMs: 30000,
+  })
+  it('appends the declared cases to the produced plan before pinning it', async () => {
+    await setup(async (f) => {
+      const stage = new RunnerAcceptanceDefinitionStages(f.store, {
+        ...options(f),
+        cases: () => [owned('suite')],
+      })
+      expect((await stage.execute(f.context)).status).toBe('passed')
+      const produced = await stage.artifacts.inspect(f.context.request, record(f))
+      if (!produced.prepared) throw new Error('Fixture pinned definitions missing')
+      expect(
+        new DeliveryAcceptance(f.store.files.root)
+          .get(produced.prepared.digest)
+          .plan.cases.map((test) => test.id),
+      ).toEqual(['find-title', 'suite'])
+      expect(
+        new DeliveryAcceptance(f.store.files.root).pinnedFor(
+          f.context.request.run,
+          f.context.request.revision,
+        ).digest,
+      ).toBe(produced.prepared.digest)
+    }, 'host-observed')
+  })
+  it('refuses a produced case that redefines a controller case', async () => {
+    await setup(async (f) => {
+      const stage = new RunnerAcceptanceDefinitionStages(f.store, {
+        ...options(f),
+        cases: () => [owned('find-title')],
+      })
+      expect((await stage.execute(f.context)).status).toBe('blocked')
+      expect(
+        existsSync(f.store.files.path(`delivery/acceptance-plans/${f.context.request.run}`)),
+      ).toBe(false)
+    }, 'host-observed')
+  })
+})
