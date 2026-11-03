@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-03 · P6-29 · Seeded correction workspaces — in progress
+
+- ADR-0208 designs the correction producer for `none` policies. ADR-0197 gave units other than the corrected one a seeded candidate that skips implementation, but under `none` the build plan's delegated decision is never carried into a new revision, so it and the builder run again. Git records are bound to their grant, so no workspace or commit stage can be reused, and the acceptance plan belongs to one revision. Every unit is therefore seeded at its committed head and its chain runs again under the new grant; no decision rule is relaxed.
+- First increment: a workspace request may name a predecessor commit record as its seed. The head is read as history from the old topic's latest applied, host-observed commit and must be a commit object descending from the declared base. Only independent units are seeded. The topic branch starts there. The request, record and status contracts gain the optional `seed`; their fingerprints are updated.
+- Four cases: the seeded topic starts at the old head on a new branch, and an unknown record, a plan with no previous revision and a seeded unit with predecessor parts are refused before any effect.
+- Next: reuse exclusions and seeded workspace stages in a continuation.
+
+---
+
 ## 2026-11-03 · P6-27 · Complete synthetic to-pr run — in progress
 
 - `eval:public-implementation` now hands the request to the real engine (ADR-0207, increment 7). The run ends `completed` with outcome `ready-pr`: thirteen host-observed stages, fourteen launches each preceded by its controls, and no wait for input. It used real Docker unit and product QA and a real Git push, without force, to a local bare repository behind an SSH-form GitHub remote. One owned pull request was opened as a draft and readied by a synthetic `gh`, and both environments were retired.

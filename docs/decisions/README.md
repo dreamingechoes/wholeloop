@@ -217,6 +217,7 @@
 | [0205](./0205-public-controller-bundle.md) | Public controller bundle | Accepted | 2026-11-03 |
 | [0206](./0206-live-research-pilot-findings.md) | Live research pilot findings | Accepted | 2026-11-03 |
 | [0207](./0207-public-implementation-route-composition.md) | Public implementation route composition | Accepted | 2026-11-03 |
+| [0208](./0208-seeded-correction-producer.md) | Seeded correction producer | Accepted | 2026-11-03 |
 
 ## Lifecycle
 

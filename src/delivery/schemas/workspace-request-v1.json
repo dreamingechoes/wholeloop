@@ -69,6 +69,18 @@
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,63}$",
       "maxLength": 64
+    },
+    "seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit"],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "maxLength": 64
+        }
+      }
     }
   },
   "required": ["schema", "run", "revision", "plan", "unit", "parts", "key"]

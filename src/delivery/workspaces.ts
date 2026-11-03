@@ -14,7 +14,11 @@ import {
 import { observeCommittedWorktree } from '../integration/observe.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { ancestor, git, registeredWorktrees, repository } from '../worktrees/git.js'
-import { currentWorkspaceCommit } from './commit-state.js'
+import {
+  currentWorkspaceCommit,
+  readCandidateCommit,
+  workspaceCommitEffects,
+} from './commit-state.js'
 import type { EffectRecord } from './effect-events.js'
 import { DeliveryEffects, type EffectHost } from './effects.js'
 import { readSourceFile, safeSourceText } from './input.js'
@@ -42,6 +46,11 @@ export interface DeliveryWorkspaceRequest {
   unit: string
   key: string
   parts: IntegrationPart[]
+  /**
+   * ADR-0208: start the topic at the predecessor revision's committed head of
+   * this unit, named by its commit record, instead of at the declared base.
+   */
+  seed?: { commit: string }
 }
 interface WorkspaceRepository {
   repository: string
@@ -61,6 +70,8 @@ export interface DeliveryWorkspaceRecord {
   source: string
   repository: WorkspaceRepository
   parts: (IntegrationPart & { snapshot: string })[]
+  /** The checked head the topic starts from; absent for a base allocation. */
+  seed?: { commit: string; head: string }
 }
 type WorkspaceStep = {
   operation: 'workspace.create' | 'git.commit'
@@ -181,6 +192,7 @@ export class DeliveryWorkspaces {
     )
       throw new IntegrationError('workspace-predecessor-merge-authority')
     request.parts = observed.parts.map(({ snapshot: _snapshot, ...part }) => part)
+    const seeded = request.seed ? this.seeded(request, current.plan, declared) : undefined
     const seed = contractDigest({
         request,
         grantDigest: current.grantDigest,
@@ -203,6 +215,7 @@ export class DeliveryWorkspaces {
           ),
         },
         parts: observed.parts,
+        ...(seeded ? { seed: seeded } : {}),
       },
       digest = contractDigest(binding),
       record: DeliveryWorkspaceRecord = {
@@ -222,6 +235,63 @@ export class DeliveryWorkspaces {
       if (previous === undefined) this.files.atomic(index, `${digest}\n`)
     })
     return record
+  }
+  /**
+   * A seed is checked, never trusted (ADR-0208): the commit record must belong
+   * to this run and unit under the previous revision's plan and hold a
+   * receipt whose head is a commit descending from the declared base. Only an
+   * independent unit may be seeded, since an earlier head already carries the
+   * predecessor merges of its own revision.
+   */
+  private seeded(
+    request: DeliveryWorkspaceRequest,
+    plan: DeliveryPlan,
+    declared: DeliveryPlan['repositories'][number],
+  ) {
+    const unit = plan.work.find((work) => work.id === request.unit)
+    if (!unit || unit.after.length || request.parts.length)
+      throw new IntegrationError('workspace-seed-predecessors')
+    let record: ReturnType<typeof readCandidateCommit>, previous: DeliveryWorkspaceRecord
+    try {
+      record = readCandidateCommit(this.effects.lifecycle, request.seed?.commit ?? '')
+      previous = this.get(record.request.workspace)
+    } catch {
+      throw new IntegrationError('workspace-seed-commit')
+    }
+    // History, not current evidence: the original grant is inactive by design,
+    // so the head comes from the old topic's latest applied, host-observed
+    // commit, which includes any repair the earlier revision made.
+    const effects = workspaceCommitEffects(this.effects.lifecycle, previous),
+      latest = effects
+        .filter((effect) => effect.intent.operation === 'git.commit' && effect.status === 'applied')
+        .sort((a, b) => b.sequence - a.sequence)[0],
+      observed = latest?.observations.at(-1),
+      head = observed?.resource?.revision ?? ''
+    if (
+      !plan.previous ||
+      record.run !== request.run ||
+      record.plan !== plan.previous ||
+      previous.request.run !== request.run ||
+      previous.request.plan !== plan.previous ||
+      previous.request.unit !== request.unit ||
+      previous.repository.repository !== declared.id ||
+      effects.some((effect) => ['prepared', 'pending', 'unknown'].includes(effect.status)) ||
+      latest?.admission?.provenance !== 'host-observed' ||
+      observed?.provenance !== 'host-observed' ||
+      observed.status !== 'applied' ||
+      observed.resource?.ref !== previous.repository.branch ||
+      !/^[a-f0-9]{40}(?:[a-f0-9]{24})?$/.test(head)
+    )
+      throw new IntegrationError('workspace-seed-commit')
+    let object = ''
+    try {
+      object = git(declared.root, ['cat-file', '-t', head]).trim()
+    } catch {
+      object = ''
+    }
+    if (object !== 'commit' || !ancestor(declared.root, declared.base, head))
+      throw new IntegrationError('workspace-seed-head')
+    return { commit: record.digest, head }
   }
   private path(digest: string) {
     if (!/^[a-f0-9]{64}$/.test(digest)) throw new IntegrationError('workspace-digest')
@@ -273,10 +343,10 @@ export class DeliveryWorkspaces {
         {
           key: `${prefix}-create`,
           operation: 'workspace.create',
-          expectedHead: record.repository.base,
+          expectedHead: record.seed?.head ?? record.repository.base,
         },
       ]
-    let head = record.repository.base
+    let head = record.seed?.head ?? record.repository.base
     for (const part of record.parts.filter(
       (part) => part.repository === record.repository.repository,
     )) {
@@ -319,7 +389,7 @@ export class DeliveryWorkspaces {
         hooks,
         owner,
         step.operation === 'workspace.create'
-          ? ['worktree', 'add', '-b', repo.branch, '--', repo.path, repo.base]
+          ? ['worktree', 'add', '-b', repo.branch, '--', repo.path, record.seed?.head ?? repo.base]
           : [
               'merge',
               '--no-ff',
