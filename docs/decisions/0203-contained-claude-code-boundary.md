@@ -51,6 +51,10 @@ Two facts observed on the reference client, Claude Code 2.1.316 on macOS, shaped
 - On the owner's machine, `npm run eval:claude-boundary` passes six real controls on Claude Code 2.1.316: planner, builder and verifier, each with both output modes. Each control is authenticated through the dedicated client home, with the workspace unchanged and no model invoked.
 - Re-running that eval without the profile's leading deny makes the observer refuse.
 
+## Owned closure of the sandbox process
+
+A contained launch's command is `/usr/bin/sandbox-exec`, not `claude`. The runner's stage scope managed only bare client names, so it ran `sandbox-exec` unmanaged and reported its ownership as unknown. The observer then refused every contained launch, correctly. `sandbox-exec` is now one of the reference native commands, so its process group gets the same owned, recorded closure as a bare client. The first live EVAL-10 attempt found this before any model call.
+
 ## Findings from the first model turn
 
 The owner approved one model turn under the launch profile (2026-11-03). Its first attempt failed at startup: the client creates `/tmp/claude-<uid>` whatever `TMPDIR` says, and the profile denies it. Allowing it would expose the temporary files of every other session of the same user. Contained launches and their observer therefore set `CLAUDE_CODE_TMPDIR` to the assignment's own `tmp/`.

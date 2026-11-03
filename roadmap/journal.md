@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Live research evaluation and owned sandbox launches — in progress
+
+- New opt-in `npm run eval:live-research`. It prepares a disposable store, a none-policy research plan with delegated `research-plan` and `research-sources` rubrics, a source-read/report-write grant, the owner's bindings and runtime documents, and a public request. It runs the compiled `wl delivery run` and writes a report: outcome, seconds, controller waits for input, and every native receipt's status, version, model and provenance. It refuses to start without `WHOLELOOP_LIVE_CONFIRM=spend-quota`.
+- The owner approved the Claude EVAL-10 pilot. Its first attempt ended blocked in one second with no model call. The observer's version control succeeded but came back with unknown ownership: the stage scope managed only bare client names, and a contained launch runs as `sandbox-exec`. `sandbox-exec` is now an owned reference command. A regression case fails without it.
+
+---
+
 ## 2026-11-03 · P6-27 · First model turn under the Claude profile — in progress
 
 - The owner approved one model turn inside the launch profile. It found that Claude Code ignores `TMPDIR` and creates `/tmp/claude-<uid>`, which the profile denies and other sessions share. Contained launches and the observer now set `CLAUDE_CODE_TMPDIR` to the assignment's `tmp/`, and `DISABLE_AUTOUPDATER=1`. The retry completed in 5.1 s on `claude-opus-5-5`, with only Glob, Grep and Read, the allowed read returned and the outside read denied by restricted mode.

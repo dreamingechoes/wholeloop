@@ -15,6 +15,9 @@ export const REFERENCE_NATIVE_COMMANDS = [
   'agent',
   'gemini',
   'agy',
+  // A contained Claude Code launch and its probe run as sandbox-exec (ADR-0203);
+  // their process groups need the same owned closure as a bare client.
+  'sandbox-exec',
 ] as const
 interface NativeCall {
   invocation: string

@@ -72,7 +72,8 @@
     "eval:runner-definitions": "node scripts/check-runner-definitions.mjs",
     "eval:runner": "node scripts/check-runner.mjs",
     "eval:native-boundary": "node scripts/check-native-boundary.mjs",
-    "eval:claude-boundary": "node scripts/check-native-boundary.mjs claude"
+    "eval:claude-boundary": "node scripts/check-native-boundary.mjs claude",
+    "eval:live-research": "npm run build && node scripts/check-live-research.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
