@@ -14,7 +14,9 @@ import { readSourceBytes, safeSourceText } from './input.js'
 import {
   type NativeDeliveryRecipe,
   type NativeRecipeResult,
+  type NativeUsage,
   nativeDeliveryRecipe,
+  nativeUsage,
 } from './native-adapters.js'
 import {
   type NativeDeliveryObservation,
@@ -78,6 +80,8 @@ export interface NativeRunReceipt {
   publication: 'not-performed'
   signal?: string
   artifacts?: (BudgetArtifact & { worker: string })[]
+  /** Reported by the client itself; evidence for campaign reports, never a budget (ADR-0206). */
+  usage?: NativeUsage
 }
 export interface NativeRunOptions {
   target: string
@@ -459,6 +463,7 @@ export class NativeAssignmentHost {
         finishedAt,
         provenance: negotiated.observation.provenance,
       }
+      const usage = nativeUsage(recipe.target, observedProcess.stdout)
       const boundary = {
         instance: runtime.instance,
         assignment: assignment.assignment,
@@ -501,6 +506,7 @@ export class NativeAssignmentHost {
         observation: negotiated.observation,
         execution,
         ...(result ? { result } : {}),
+        ...(usage ? { usage } : {}),
       })
       try {
         this.owner.finish(

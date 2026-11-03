@@ -11,7 +11,8 @@
   - Real judges invented uncertainty IDs, which the unchanged rule blocks, so judge briefs now list the rubric's owned IDs.
   - The brief rendered a claim that was never examined as `active refutations: 0/2`. It now says the claim was not independently examined.
 - The last attempt ran 793 s with no human wait and 25 successful Claude launches. The brief completed with unknowns, with seven claims cited from the official sandboxing pages. The delegated source judge rejected it, citing the misrendered claim and uncited parts of it, and its challenger supported the rejection. The route ended blocked: not a pass. Client usage is not yet recorded, so the quota cost is unmeasured.
-- Next: record client-reported usage in trial reports, then ask the owner before another paid attempt.
+- Native receipts now carry the client's own usage report: Claude's JSON result, or the sum of Codex's `turn.completed` events. The live trial report totals it. It is evidence, never a budget. The native-run schema gains the optional field and its fingerprint is updated. Four new cases, including a launch whose receipt carries the synthetic client's report.
+- Next: ask the owner before another paid attempt.
 
 ---
 

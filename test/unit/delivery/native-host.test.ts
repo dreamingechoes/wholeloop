@@ -414,7 +414,7 @@ const proof=mode==='inline-empty'?'':'Fixture proof.\\n';if(!mode.startsWith('in
 const result=mode.startsWith('inline')?{schema:'wholeloop/delivery-worker-proposal@1',assignment:mode==='inline-wrong-fence'?'f'.repeat(64):assignment.assignment,status:'complete',summary:'Observed fixture proposal.',artifacts:[{ref:'artifacts/proof.txt',kind:'evidence',text:proof}],criteria:[{id:'search',status:'pass',evidence:['artifacts/proof.txt']}],findings:[],unknowns:[]}:{schema:'wholeloop/delivery-worker-result@1',assignment:assignment.assignment,identity:assignment.identity,status:mode==='blocked'?'blocked':'complete',origin:'worker-claim',summary:'Observed fixture output.',artifacts:[{ref:'artifacts/proof.txt',sha256:crypto.createHash('sha256').update(proof).digest('hex'),bytes:Buffer.byteLength(proof),kind:'report'}],criteria:[],findings:[],unknowns:[]};
 if(mode==='wrong-fence')result.identity.generation++;
 if(${JSON.stringify(target)}==='codex'){console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(result)}}));console.log(JSON.stringify({type:'turn.completed'}))}
-else console.log(JSON.stringify({is_error:false,structured_output:result}));
+else console.log(JSON.stringify({is_error:false,structured_output:result,usage:{input_tokens:3,output_tokens:2,cache_read_input_tokens:0,cache_creation_input_tokens:0}}));
 });
 `,
     )
@@ -464,6 +464,16 @@ describe('actual synthetic native processes', () => {
             output: 'inline-proposal',
           })
           expect(receipt.status).toBe('succeeded')
+          // The client's own report reaches the receipt; Codex here emits none.
+          if (target === 'claude')
+            expect(receipt.usage).toEqual({
+              provenance: 'client-reported',
+              inputTokens: 3,
+              outputTokens: 2,
+              cacheReadTokens: 0,
+              cacheCreationTokens: 0,
+            })
+          else expect(receipt.usage).toBeUndefined()
           expect(receipt.result?.artifacts[0]).toMatchObject({ bytes: 0, sha256: hash('') })
           const artifact = receipt.artifacts?.[0]
           if (!artifact) throw new Error('The exact empty artifact must be retained.')

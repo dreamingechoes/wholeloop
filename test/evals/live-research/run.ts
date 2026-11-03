@@ -230,6 +230,30 @@ try {
 } catch {
   /* No native launch happened; the report says so. */
 }
+
+const KEYS = [
+  'inputTokens',
+  'outputTokens',
+  'cacheReadTokens',
+  'cacheCreationTokens',
+  'costMicros',
+] as const
+function totalUsage(receipts: readonly Record<string, unknown>[]) {
+  const total: Record<(typeof KEYS)[number] | 'unreported', number> = {
+    inputTokens: 0,
+    outputTokens: 0,
+    cacheReadTokens: 0,
+    cacheCreationTokens: 0,
+    costMicros: 0,
+    unreported: 0,
+  }
+  for (const receipt of receipts) {
+    const usage = receipt.usage as Partial<Record<(typeof KEYS)[number], number>> | undefined
+    if (!usage) total.unreported++
+    else for (const key of KEYS) total[key] += usage[key] ?? 0
+  }
+  return { provenance: 'client-reported', ...total }
+}
 const states = store.lifecycle.journal
     .events()
     .filter((event) => event.run === run)
@@ -255,7 +279,10 @@ const states = store.lifecycle.journal
       version: receipt.version,
       model: receipt.model,
       provenance: (receipt.observation as { provenance?: string } | undefined)?.provenance ?? null,
+      usage: receipt.usage ?? null,
     })),
+    // Client-reported, never metered: a launch without a report counts as unknown.
+    usage: totalUsage(receipts),
   }
 mkdirSync(join(dir, 'results'), { recursive: true })
 writeFileSync(join(dir, 'results', 'report.json'), `${JSON.stringify(report, null, 2)}\n`)

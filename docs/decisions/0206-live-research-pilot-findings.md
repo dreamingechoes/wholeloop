@@ -27,7 +27,11 @@ The brief completed with unknowns. It holds seven claims cited from the official
 
 The `research-sources` judge rejected the brief, and its challenger supported the rejection. They gave two reasons: the unexamined claim rendered as verified, which is fixed above, and parts of that claim with no cited excerpt. The route therefore ended `blocked`. That is a correct none-policy outcome, not a completed EVAL-10 trial.
 
-The trial report does not yet carry client-reported usage, so the pilot's quota cost is unmeasured.
+That report did not yet carry client-reported usage, so the pilot's quota cost is unmeasured. Receipts keep only output hashes and the client persisted no session, so it cannot be recovered.
+
+## Client-reported usage
+
+A native receipt now carries an optional `usage`, marked `client-reported`. It holds input, output, cache-read and cache-creation tokens, plus the client's own cost estimate in millionths of a dollar when the client gives one. Claude's figures come from its JSON result; Codex's are the sum of its `turn.completed` events. Malformed or missing reports yield no usage rather than a guess. A trial report sums them per run and counts the launches that reported nothing. This is evidence for sizing the campaign, never a budget: the plans are subscriptions that the runner cannot meter or enforce. The `delivery-native-run@1` schema gains the optional field, an additive change with an updated fingerprint.
 
 ## Alternatives rejected
 

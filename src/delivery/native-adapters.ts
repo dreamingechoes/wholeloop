@@ -307,3 +307,64 @@ export function nativeDeliveryRecipe(input: {
     },
   }
 }
+
+/** What a client says a launch consumed. It is a report, never a metered or enforced limit. */
+export interface NativeUsage {
+  provenance: 'client-reported'
+  inputTokens: number
+  outputTokens: number
+  cacheReadTokens: number
+  cacheCreationTokens: number
+  /** The client's own cost estimate in millionths of a dollar; subscriptions are not billed per call. */
+  costMicros?: number
+}
+const count = (value: unknown) =>
+  typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 1e12 ? value : 0
+
+/**
+ * Reads usage from the reference clients' own machine output: Claude's single
+ * JSON result, or the sum of Codex's turn.completed events. Anything else, or
+ * a malformed report, yields no usage rather than a guess.
+ */
+export function nativeUsage(target: string, stdout: string): NativeUsage | undefined {
+  try {
+    if (target === 'claude') {
+      const value: unknown = JSON.parse(stdout)
+      if (!isObject(value) || !isObject(value.usage)) return undefined
+      const usage = value.usage,
+        cost = value.total_cost_usd
+      return {
+        provenance: 'client-reported',
+        inputTokens: count(usage.input_tokens),
+        outputTokens: count(usage.output_tokens),
+        cacheReadTokens: count(usage.cache_read_input_tokens),
+        cacheCreationTokens: count(usage.cache_creation_input_tokens),
+        ...(typeof cost === 'number' && cost >= 0 && cost < 1e6
+          ? { costMicros: Math.round(cost * 1e6) }
+          : {}),
+      }
+    }
+    if (target === 'codex') {
+      const turns = stdout
+        .split('\n')
+        .filter((line) => line.includes('"turn.completed"'))
+        .map((line) => JSON.parse(line) as unknown)
+        .filter(
+          (event) => isObject(event) && event.type === 'turn.completed' && isObject(event.usage),
+        )
+        .map((event) => (event as { usage: Record<string, unknown> }).usage)
+      if (!turns.length) return undefined
+      const sum = (key: string) => turns.reduce((total, usage) => total + count(usage[key]), 0)
+      return {
+        provenance: 'client-reported',
+        inputTokens: sum('input_tokens'),
+        outputTokens: sum('output_tokens'),
+        cacheReadTokens: sum('cached_input_tokens'),
+        cacheCreationTokens: 0,
+      }
+    }
+  } catch {
+    return undefined
+  }
+  return undefined
+}
