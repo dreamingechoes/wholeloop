@@ -5,6 +5,7 @@ import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { gateRuns } from '../../../src/gates/state.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerStore } from '../../../src/runner/store.js'
+import { RunnerUnitEnvironments } from '../../../src/runner/unit-environments.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
 import { runnerSuiteFixture as setup } from '../../support/runner-suite.js'
 
@@ -366,6 +367,89 @@ describe('original verification re-entry after review', () => {
       await expect(
         stages.stop(context.request, other, new AbortController().signal),
       ).rejects.toThrow('verification-stage-binding')
+    })
+  })
+})
+
+describe('unit QA environment preparation (ADR-0207)', () => {
+  const input = (repository: string) => ({
+    repository,
+    recipe: 'a'.repeat(64),
+    helperImage: `node@sha256:${'b'.repeat(64)}`,
+    suite: {
+      refs: ['package.json#check'],
+      mapping: { 'package.json#check': 'suite' },
+      timeoutMs: 5000,
+    },
+  })
+  it('accepts only the fixed preparer on the same store', async () => {
+    await setup(async ({ store, context, engine, selection, driver }) => {
+      const options = {
+        identity: context.request.host,
+        engine: () => engine,
+        suite: () => selection,
+        driver,
+        gate: () => {
+          throw new Error('Must not construct a native host')
+        },
+      }
+      expect(
+        () =>
+          new RunnerVerificationStages(store, {
+            ...options,
+            environments: { prepare: async () => 'environment' } as never,
+          }),
+      ).toThrow('verification-stage-fixed-environments-required')
+      const other = new RunnerStore(join(dirname(store.files.root), 'other-store'))
+      expect(
+        () =>
+          new RunnerVerificationStages(store, {
+            ...options,
+            environments: new RunnerUnitEnvironments(other, [input('app')], driver),
+          }),
+      ).toThrow('verification-stage-fixed-environments-required')
+    })
+  })
+  it('refuses an unconfigured repository before consuming the round or provisioning', async () => {
+    await setup(async ({ store, context, engine, selection }) => {
+      let calls = 0
+      const driver = {
+          provenance: 'host-observed' as const,
+          call: async () => {
+            calls++
+            throw new Error('Must not reach the backend')
+          },
+        },
+        stages = new RunnerVerificationStages(store, {
+          identity: context.request.host,
+          engine: () => engine,
+          suite: () => selection,
+          driver,
+          environments: new RunnerUnitEnvironments(store, [input('other')], driver),
+          gate: () => {
+            throw new Error('Must not construct a native host')
+          },
+        })
+      await expect(stages.execute(context)).rejects.toThrow('unit-environment-input-required')
+      expect(calls).toBe(0)
+      expect(
+        existsSync(
+          store.files.path(`delivery/runner-verifications/${context.invocation}.json.consumed`),
+        ),
+      ).toBe(false)
+      expect(new RunnerNativeScope(store.files, context.invocation).calls()).toEqual([])
+    })
+  })
+  it('refuses a round that is neither the original nor a correction digest', async () => {
+    await setup(async ({ store, context, driver }) => {
+      const environments = new RunnerUnitEnvironments(store, [input('app')], driver)
+      await expect(
+        environments.prepare(
+          context,
+          { repository: 'app', path: store.files.root, head: 'c'.repeat(40) },
+          'retry',
+        ),
+      ).rejects.toThrow('unit-environment-round')
     })
   })
 })

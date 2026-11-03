@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { findBudget } from '../../../src/delivery/budget-events.js'
 import type { DockerTransport } from '../../../src/environment/docker-command.js'
+import { DOCKER_REFERENCE_HELPER } from '../../../src/environment/docker-policy.js'
 import { EnvironmentLifecycle } from '../../../src/environment/lifecycle.js'
 import { EnvironmentResources } from '../../../src/environment/runtime.js'
 import { gateRuns } from '../../../src/gates/state.js'
@@ -15,6 +16,7 @@ import { runnerRepairFeedback } from '../../../src/runner/repair-feedback.js'
 import { RunnerRepairWorkers } from '../../../src/runner/repair-workers.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { RunnerSuiteStages } from '../../../src/runner/suite-stages.js'
+import { RunnerUnitEnvironments } from '../../../src/runner/unit-environments.js'
 import { RunnerVerificationStages } from '../../../src/runner/verification-stages.js'
 import { gateWorkerFixture } from '../../support/gate-worker.js'
 import { runnerSuiteFixture } from '../../support/runner-suite.js'
@@ -30,7 +32,7 @@ const samples = [
   { key: 'observed-fail', exit: 7, native: 'host-observed' },
   { key: 'fixture-refusal', exit: 0, native: 'fixture' },
 ] as const
-if (!samples.some((sample) => sample.key === scenario))
+if (!samples.some((sample) => sample.key === scenario) && scenario !== 'unit-environment')
   throw new Error('Select an explicit owned verification scenario')
 if (!destination) throw new Error('Provide an external evidence directory')
 mkdirSync(destination, { recursive: true })
@@ -66,6 +68,122 @@ const report = {
   publication: 'not-performed',
 }
 try {
+  // ADR-0207: the verification invocation provisions its own unit environment.
+  if (scenario === 'unit-environment')
+    await runnerSuiteFixture(
+      async ({ store, context, engine, selection, driver, recipe }) => {
+        assert.ok(recipe, 'The fixture must leave the prepared recipe unprovisioned')
+        const abort = new AbortController(),
+          timer = setTimeout(() => abort.abort(), 180000)
+        context.signal = abort.signal
+        context.deadline = new Date(
+          Math.min(Date.parse(context.deadline), Date.now() + 180000),
+        ).toISOString()
+        let provisions = 0
+        const counted: DockerTransport = {
+            provenance: driver.provenance,
+            call: async (args, options) => {
+              if (options?.registration) provisions++
+              return driver.call(args, options)
+            },
+          },
+          native = gateWorkerFixture(
+            store,
+            engine.store.get(gateRuns(engine.store.events())[0]?.subject ?? '').repository ?? '',
+            'valid',
+            'host-observed',
+          ),
+          options = {
+            identity: context.request.host,
+            engine: () => engine,
+            driver: counted,
+            // The placeholder environment must be replaced by the prepared one.
+            suite: () => ({ ...selection, environment: `environment-${'0'.repeat(32)}` }),
+            gate: native,
+          },
+          environments = (store: RunnerStore) =>
+            new RunnerUnitEnvironments(
+              store,
+              [
+                {
+                  repository: 'app',
+                  recipe,
+                  helperImage: DOCKER_REFERENCE_HELPER,
+                  suite: {
+                    refs: selection.refs,
+                    mapping: selection.mapping,
+                    timeoutMs: selection.timeoutMs,
+                  },
+                },
+              ],
+              counted,
+            )
+        try {
+          const observed = await new RunnerVerificationStages(store, {
+            ...options,
+            environments: environments(store),
+          }).execute(context)
+          assert.equal(observed.status, 'passed', JSON.stringify(observed))
+          const binding = JSON.parse(
+              readFileSync(
+                store.files.path(`delivery/runner-verifications/${context.invocation}.json`),
+                'utf8',
+              ),
+            ),
+            environment = new EnvironmentResources(store.files).get(
+              binding.selection.environment,
+            ).record
+          assert.notEqual(binding.selection.environment, `environment-${'0'.repeat(32)}`)
+          assert.equal(environment.recipe, recipe)
+          assert.equal(environment.provenance, 'host-observed')
+          assert.ok(provisions > 0)
+          // A recovered controller reads the original binding and preparation back.
+          const before = provisions,
+            again = await new RunnerVerificationStages(new RunnerStore(store.files.root), {
+              ...options,
+              environments: environments(new RunnerStore(store.files.root)),
+            }).execute(context)
+          assert.equal(again.status, 'passed')
+          assert.equal(provisions, before)
+          const item = {
+            exit: 0,
+            native: 'host-observed',
+            status: observed.status,
+            calls: new RunnerNativeScope(store.files, context.invocation).calls().length,
+            evidence: observed.evidence,
+            store: store.files.root,
+            environment: binding.selection.environment,
+            retirement: 'not-requested',
+          }
+          if (process.argv.includes('--retire-success')) {
+            const resources = new EnvironmentResources(store.files),
+              retired = await new EnvironmentLifecycle(store.files, driver).execute({
+                schema: 'wholeloop/environment-lifecycle-request@1',
+                id: 'owned-unit-environment-evaluation-retire',
+                environment: binding.selection.environment,
+                expected: resources.get(binding.selection.environment).digest,
+                action: 'retire',
+                reason:
+                  'Explicitly retire this exact disposable unit environment after retaining all original observations.',
+              })
+            assert.equal(retired.state, 'retired', JSON.stringify(retired))
+            item.retirement = 'observed-retired'
+          }
+          report.checks.push(item)
+          console.log(`Observed unit environment verification: ${observed.status}`)
+        } finally {
+          clearTimeout(timer)
+          abort.abort()
+        }
+      },
+      {
+        backend: 'docker',
+        retain: true,
+        exit: 0,
+        guidance: DEFAULT_REVIEW_RUBRIC,
+        unitEnvironment: true,
+      },
+    )
   for (const sample of samples.filter((sample) => sample.key === scenario)) {
     await runnerSuiteFixture(
       async ({ store, context, engine, selection, driver, production }) => {

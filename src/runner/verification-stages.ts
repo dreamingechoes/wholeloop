@@ -29,6 +29,7 @@ import { RunnerRepairCommits } from './repair-commits.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 import { type RunnerSuiteSelection, RunnerSuiteStages } from './suite-stages.js'
+import { type RunnerUnitCandidate, RunnerUnitEnvironments } from './unit-environments.js'
 
 interface VerificationStageBinding {
   version: 1
@@ -74,6 +75,12 @@ export interface RunnerVerificationOptions {
   suite(request: Readonly<RunnerRequest>, workspace: string): RunnerSuiteSelection
   driver?: DockerTransport
   contracts?(request: Readonly<RunnerRequest>, workspace: string): Record<string, string>
+  /**
+   * When set, each round prepares its own QA environment for the exact head
+   * and the suite selection names it (ADR-0207). Without it the caller's
+   * selection must already name a ready environment.
+   */
+  environments?: RunnerUnitEnvironments
 }
 
 /** Join actual suite facts and independent requirement judgments without recording a human approval. */
@@ -81,7 +88,27 @@ export class RunnerVerificationStages {
   constructor(
     readonly store: RunnerStore,
     readonly options: RunnerVerificationOptions,
-  ) {}
+  ) {
+    if (
+      options.environments !== undefined &&
+      (!(options.environments instanceof RunnerUnitEnvironments) ||
+        options.environments.store.files.root !== store.files.root)
+    )
+      throw new DeliveryRunnerError('verification-stage-fixed-environments-required')
+  }
+  /** The suite selection, naming the round's own prepared environment when configured. */
+  private async selection(
+    context: RunnerStageContext,
+    candidate: Readonly<RunnerUnitCandidate>,
+    round: string,
+  ): Promise<RunnerSuiteSelection> {
+    const selected = structuredClone(this.options.suite(context.request, candidate.path))
+    if (!this.options.environments) return selected
+    return {
+      ...selected,
+      environment: await this.options.environments.prepare(context, candidate, round),
+    }
+  }
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation))
       throw new DeliveryRunnerError('verification-stage-invocation')
@@ -363,7 +390,18 @@ export class RunnerVerificationStages {
           : { request: pinned.digest, plan: record.basis, unit: pinned.stage.unit },
       )}.json`,
       marker = `${this.path(record.invocation)}.consumed`,
-      engine = pinned.engine
+      engine = pinned.engine,
+      // Prepared before the round is consumed: a recovered controller reads the
+      // original preparation back, so this never provisions twice.
+      selection = await this.selection(
+        context,
+        {
+          repository: pinned.candidate.allocation.repository.repository,
+          path: pinned.candidate.allocation.repository.path,
+          head: pinned.candidate.receipt.head,
+        },
+        'original',
+      )
     this.store.files.locked(() => {
       if (existsSync(this.store.files.path(marker)))
         throw new DeliveryRunnerError('verification-stage-original-unresolved')
@@ -417,9 +455,7 @@ export class RunnerVerificationStages {
         run: selected.plan.run,
         round: selected.plan.round,
         gate: contractDigest(selected.plan),
-        selection: structuredClone(
-          this.options.suite(context.request, pinned.candidate.allocation.repository.path),
-        ),
+        selection,
       }
     safeSourceText(JSON.stringify(binding), 65536)
     this.store.files.atomic(this.path(record.invocation), `${JSON.stringify(binding)}\n`)
@@ -613,7 +649,15 @@ export class RunnerVerificationStages {
         deadline: context.deadline,
         correction: state.candidate.receipt.digest,
         from: state.binding,
-        selection: structuredClone(this.options.suite(context.request, state.binding.workspace)),
+        selection: await this.selection(
+          context,
+          {
+            repository: state.candidate.allocation.repository.repository,
+            path: state.binding.workspace,
+            head: state.candidate.receipt.head,
+          },
+          state.candidate.receipt.digest,
+        ),
       }
       safeSourceText(JSON.stringify(intent), 131072)
       if (this.phaseSelection(context.request, state, intent.selection).state !== 'ready')

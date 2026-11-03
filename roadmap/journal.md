@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Unit QA environments in verification — in progress
+
+- `RunnerUnitEnvironments` prepares a unit's QA environment inside its own verification invocation. It uses the existing environment producer, with one fixed phase for the original round and one per correction round, keyed by the correction receipt. It runs before the round is consumed, and a recovered controller reads the original preparation back. The verification adapter accepts only the fixed preparer on its own store (ADR-0207, increment 2).
+- Three unit refusal cases. A new real-Docker scenario in `eval:runner-verification`: the invocation provisions its own environment, the suite and the synthetic verifier pass, a recovered controller passes without another provisioning call, and the environment is retired. The existing `observed-pass` and `observed-fail` scenarios still pass.
+- Next: compose the route up to commit.
+
+---
+
 ## 2026-11-03 · P6-27 · Implementation route inputs — in progress
 
 - ADR-0207 designs the public composition of the `to-pr` route. Every stage has a tested adapter, but three inputs had no producer in the public path: the unit's QA environment, the suite selection and the integration product inputs. Publication also needed a `gh` binary that is not resolved through `PATH`.

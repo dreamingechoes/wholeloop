@@ -42,7 +42,7 @@ rules:
   - id: delivery-public-controller-bundle
     enforcers: [src/runner/controller-bundle.ts#controllerBundle, src/runner/public-host.ts#RunnerPublicHost, src/runner/public-composition.ts#composePublicHost, src/delivery/native-runtime.ts#validNativeRuntime, test/unit/runner/public-runner.test.ts, test/unit/runner/public-composition.test.ts]
   - id: delivery-public-implementation-inputs
-    enforcers: [src/delivery/native-runtime.ts#validNativeRuntime, src/delivery/native-runtime.ts#nativeRuntimeRepository, test/unit/runner/public-composition.test.ts]
+    enforcers: [src/delivery/native-runtime.ts#validNativeRuntime, src/delivery/native-runtime.ts#nativeRuntimeRepository, src/runner/unit-environments.ts#RunnerUnitEnvironments, src/runner/verification-stages.ts#RunnerVerificationStages, test/unit/runner/public-composition.test.ts, test/unit/runner/verification-stages.test.ts, test/evals/runner/verification.ts]
   - id: delivery-research-web-reads
     enforcers: [src/delivery/worker-protocol.ts#validateWorkerAssignment, src/runner/research-workers.ts#NativeResearchWorkers, src/delivery/native-adapters.ts#nativeDeliveryRecipe, test/unit/delivery/research-web.test.ts, test/unit/runner/research-stages.test.ts]
   - id: delivery-research-dispatch-boundary

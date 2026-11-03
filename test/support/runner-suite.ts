@@ -30,6 +30,8 @@ export async function runnerSuiteFixture(
     selection: RunnerSuiteSelection
     driver: DockerTransport
     production?: ReturnType<typeof runnerWorkerComponents>
+    /** With unitEnvironment: the prepared recipe, left unprovisioned for the stage itself. */
+    recipe?: string
   }) => Promise<void>,
   options: {
     unit?: 'contract'
@@ -54,6 +56,8 @@ export async function runnerSuiteFixture(
     acceptanceStage?: boolean
     /** Publish the accepted candidate to a stub code host (to-pr endpoint). */
     publication?: boolean
+    /** Docker only: prepare the recipe but let verification provision its own environment (ADR-0207). */
+    unitEnvironment?: boolean
   } = {},
 ) {
   if (options.production && options.unit)
@@ -347,7 +351,8 @@ export async function runnerSuiteFixture(
         }).plan,
         declaredEnvironment = `environment-${'a'.repeat(32)}`,
         authority = store.lifecycle.authority.inspect(request.grant)
-      let environment = declaredEnvironment
+      let environment = declaredEnvironment,
+        recipeDigest: string | undefined
       const driver: DockerTransport =
         options.backend === 'docker'
           ? new DockerCli()
@@ -396,11 +401,15 @@ export async function runnerSuiteFixture(
           },
           timeoutMs: 5000,
         })
-        const prepared = environments.recipes.prepare(recipe),
+        const prepared = environments.recipes.prepare(recipe)
+        recipeDigest = prepared.digest
+      }
+      if (options.backend === 'docker' && !options.unitEnvironment && recipeDigest) {
+        const environments = new DeliveryEnvironments(store.files.root, driver),
           result = await environments.provision({
             schema: 'wholeloop/environment-provision-request@1',
             run: request.run,
-            recipe: prepared.digest,
+            recipe: recipeDigest,
             key: 'runner-suite',
             helperImage: DOCKER_REFERENCE_HELPER,
             workspaces: [
@@ -421,7 +430,7 @@ export async function runnerSuiteFixture(
           to: 'queued',
           reason: 'Continue the original route after observing environment readiness.',
         })
-      } else {
+      } else if (options.backend !== 'docker') {
         // Metadata-only fixture for admission/uncertainty tests. It establishes no
         // Docker readiness or execution; positive acceptance needs the real backend.
         new EnvironmentResources(store.files).create({
@@ -476,6 +485,7 @@ export async function runnerSuiteFixture(
         selection,
         driver,
         ...(production ? { production } : {}),
+        ...(options.unitEnvironment && recipeDigest ? { recipe: recipeDigest } : {}),
       })
     },
     {

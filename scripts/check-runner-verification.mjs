@@ -31,6 +31,7 @@ console.log(`Retained evaluation: ${destination}`)
 // controller process too, rather than retaining previous native fixture heaps.
 const scenarios = []
 for (const scenario of [
+  'unit-environment',
   'observed-pass',
   'observed-fail',
   'fixture-refusal',
@@ -62,7 +63,7 @@ const report = {
     ? 'passed'
     : 'failed',
   scope:
-    'Seven fresh model-free controllers; actual owned Docker suites and synthetic native verification only. No models, containment, independent Linux application-host or whole-feature certification.',
+    'Eight fresh model-free controllers; actual owned Docker suites and synthetic native verification only. No models, containment, independent Linux application-host or whole-feature certification.',
   scenarios,
   acceptance: 'not-established',
   publication: 'not-performed',

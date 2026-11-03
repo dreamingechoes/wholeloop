@@ -79,3 +79,21 @@ Each increment adds its own cases. The runtime document rejects:
 - unknown fields.
 
 A runtime without the new fields keeps its earlier identity.
+
+### Unit environment preparation (increment 2)
+
+`RunnerUnitEnvironments` prepares the environment. The verification adapter calls it before consuming the original round, and again for each correction round, using that round's correction receipt as the phase key. Three unit cases cover the refusals:
+
+- a substituted or foreign-store preparer;
+- an unconfigured repository, refused before the round is consumed and with no backend call;
+- a round key that is neither `original` nor a digest.
+
+A new scenario in `npm run eval:runner-verification` runs real Docker:
+
+- the verification invocation provisions its own environment from a prepared recipe that was left unprovisioned;
+- the placeholder environment in the caller's selection is replaced;
+- the suite and the synthetic verifier pass;
+- a recovered controller in a fresh store object passes again without another provisioning call;
+- the environment is then retired.
+
+The existing `observed-pass` and `observed-fail` scenarios still pass with the changed fixture.
