@@ -62,3 +62,19 @@ The owner approved one model turn under the launch profile (2026-11-03). Its fir
 They also set `DISABLE_AUTOUPDATER=1`. During the session the native installer moved `~/.local/bin/claude` from 2.1.316 to 2.1.317, although the owner's configuration disables auto-update; the trigger was not identified. The observer refused the new version, as intended. The runtime document should name the exact version binary rather than the symlink the installer moves.
 
 The retried turn completed in 5.1 s on `claude-opus-5-5` with only `Glob`, `Grep` and `Read` and no MCP server. It read the allowed witness, and the client's restricted mode denied the read outside the working directories (`permission_denials`). The client reported 277 output tokens. That turn ran on 2.1.317, so it is not evidence for the pinned 2.1.316. With the exact 2.1.316 binary and both variables, the six model-free controls pass again. The owner kept the 2.1.316 pin, and the same turn repeated on that exact binary also completed: client 2.1.316, 5.3 s, 278 output tokens, the allowed read returned and the outside read denied.
+
+## Token refresh inside the profile
+
+The first attempt of the three campaign trials (2026-11-03) was admitted and started, then exited `permission-denied` within four seconds with zero tokens. At that moment the client wrote `.credentials.json` into its client home. The observer then refused the next two launches for that file, as designed. The trials count as failed, not as campaign evidence.
+
+The likely cause is unverified. The login from that morning needed a token refresh. Inside the profile the login Keychain is readable but not writable, so the client stored the refreshed token as a plaintext file in the one place it may write, and still failed.
+
+The profile now denies creating `.credentials.json`, `credentials.json` and `auth.json` in the client home. The deny is placed last, so it overrides the home's write allowance. A refresh that cannot reach the Keychain therefore fails without leaving a credential on disk.
+
+Verification:
+
+- a unit case checks the deny's place;
+- a macOS case runs the real `sandbox-exec`: it can write another file in the client home but none of the three names;
+- removing the deny fails that case.
+
+Neither allowing Keychain writes inside the profile nor refreshing outside it was chosen here. The first would let a model-driven process change the owner's Keychain; the second runs the client uncontained. Both are the owner's decision. Until then, the owner signs in again before each batch of trials.

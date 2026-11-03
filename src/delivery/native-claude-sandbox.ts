@@ -32,6 +32,15 @@ function quoted(path: string) {
     throw new Error('Native sandbox paths must be absolute, normalized and unquoted')
   return JSON.stringify(path)
 }
+/**
+ * File names a client could use for a plaintext credential. The client keeps
+ * its login in the Keychain, which the profile lets it read but not write; a
+ * token refresh inside the sandbox once fell back to writing one of these into
+ * the client home (2026-11-03). Their creation is denied, so a refresh that
+ * cannot reach the Keychain fails without leaving a credential on disk.
+ */
+export const CLAUDE_CREDENTIAL_FILES = ['.credentials.json', 'credentials.json', 'auth.json']
+
 const rule = (operation: string, filters: string[]) =>
   filters.length ? [`(allow ${operation} ${filters.join(' ')})`] : []
 
@@ -79,5 +88,7 @@ export function claudeSandboxProfile(input: {
     '(deny file-read* file-write* (subpath "/"))',
     ...rule('file-read*', read),
     ...rule('file-read* file-write*', write),
+    // Last, so it overrides the client-home write allowance above.
+    `(deny file-write* ${CLAUDE_CREDENTIAL_FILES.map((name) => literal(join(containment.store, name))).join(' ')})`,
   ].join('')
 }

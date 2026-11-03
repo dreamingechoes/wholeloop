@@ -65,7 +65,7 @@ P6-20 publishes accepted candidates as owned PRs on a stub code host, and P6-21 
 
 P6-33's research host completes a none-policy research route on the synthetic native transport: plan, sources, independent refuters, stored brief and delegated source decision, with no prompt. That evidence certifies no native client, real source provider or model.
 
-- [ ] A reference client completes a none-policy research route against real sources with zero interactive tool events (RSR-01, EVAL-10). Claude Code completed one diagnostic run on 2026-11-03 ([ADR-0206](../docs/decisions/0206-live-research-pilot-findings.md)); the three required trials per client are still open.
+- [ ] A reference client completes a none-policy research route against real sources with zero interactive tool events (RSR-01, EVAL-10). Claude Code completed one diagnostic run on 2026-11-03 ([ADR-0206](../docs/decisions/0206-live-research-pilot-findings.md)); the three required trials per client are still open. The first three campaign trials on 2026-11-03 (code 183b4a0) did not reach the model: the first exited `permission-denied` with zero tokens while the client wrote `.credentials.json` into its client home, and the observer refused the other two for that file ([ADR-0203](../docs/decisions/0203-contained-claude-code-boundary.md#token-refresh-inside-the-profile)). They count as failed trials. The profile now denies that file. The owner removes the file and signs in again before the trials are repeated.
 - [ ] A reference-client research route with an unsatisfiable mandatory prerequisite returns a terminal blocked receipt within its deadline (EVAL-11).
 
 ## Delegated machine decision checks (2026-10-25)

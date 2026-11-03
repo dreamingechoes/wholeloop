@@ -1,4 +1,13 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from 'node:fs'
+import { homedir, tmpdir, userInfo } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { nativeDeliveryRecipe } from '../../../src/delivery/native-adapters.js'
@@ -138,6 +147,11 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
     const writes = (text: string) => text.slice(text.indexOf('(allow file-read* file-write*'))
     expect(writes(files)).toContain('(subpath "/work/tree")')
     expect(writes(inline)).not.toContain('(subpath "/work/tree")')
+    // The credential deny comes last, so it overrides the client-home write allowance.
+    expect(files.endsWith('(literal "/state/claude/auth.json"))')).toBe(true)
+    expect(
+      files.lastIndexOf('(deny file-write* (literal "/state/claude/.credentials.json")'),
+    ).toBeGreaterThan(files.indexOf('(allow file-read* file-write*'))
     for (const path of ['relative', '/a/"b', '/a/../b', '/a\nb'])
       expect(() =>
         claudeSandboxProfile({
@@ -252,4 +266,33 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
       expect(calls).toHaveLength(0)
     })
   })
+  it.runIf(process.platform === 'darwin')(
+    'lets the real sandbox write the client home but never a credential file there',
+    () => {
+      const store = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-claude-store-'))),
+        directory = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-claude-run-'))),
+        profile = claudeSandboxProfile({
+          containment: {
+            kind: 'macos-sandbox',
+            sandbox: '/usr/bin/sandbox-exec',
+            client: '/usr/bin/touch',
+            home: realpathSync(homedir()),
+            user: userInfo().username,
+            store,
+          },
+          directory,
+          output: 'inline-proposal',
+          workspaceWrite: false,
+        }),
+        touch = (name: string) =>
+          spawnSync('/usr/bin/sandbox-exec', ['-p', profile, '/usr/bin/touch', join(store, name)])
+            .status
+      expect(touch('settings.json')).toBe(0)
+      expect(existsSync(join(store, 'settings.json'))).toBe(true)
+      for (const name of ['.credentials.json', 'credentials.json', 'auth.json']) {
+        expect(touch(name)).not.toBe(0)
+        expect(existsSync(join(store, name))).toBe(false)
+      }
+    },
+  )
 })

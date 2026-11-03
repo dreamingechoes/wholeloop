@@ -9,14 +9,16 @@ import { nativeDeliveryRecipe, REFERENCE_NATIVE_VERSIONS } from './native-adapte
 import type { NativeBoundaryHost, NativeProcessRunner } from './native-assignment-host.js'
 import { NATIVE_BOUNDARY_PROGRAM } from './native-boundary-program.js'
 import type { NativeDeliveryObservation } from './native-capabilities.js'
-import { claudeSandboxProfile, type NativeClaudeContainment } from './native-claude-sandbox.js'
+import {
+  CLAUDE_CREDENTIAL_FILES,
+  claudeSandboxProfile,
+  type NativeClaudeContainment,
+} from './native-claude-sandbox.js'
 import { nativeBoundaryKey } from './native-codex-boundary.js'
 import { nativeWorkspaceWitness, sealNativeGitControl } from './native-workspace.js'
 
 type Input = Parameters<NativeBoundaryHost['observe']>[0]
 const hash = (text: string) => createHash('sha256').update(text).digest('hex')
-/** A credential the client could have written as a file instead of using the Keychain. */
-const CREDENTIAL_FILES = ['.credentials.json', 'credentials.json', 'auth.json']
 
 /**
  * Observes the Claude Code reference client inside its macOS sandbox profile
@@ -125,7 +127,7 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
       !lstatSync(store).isDirectory() ||
       !lstatSync(containment.client).isFile() ||
       // The client must keep its credential in the Keychain, never beside its settings.
-      readdirSync(store).some((name) => CREDENTIAL_FILES.includes(name))
+      readdirSync(store).some((name) => CLAUDE_CREDENTIAL_FILES.includes(name))
     )
       return undefined
     const seal = this.options.workspace ? sealNativeGitControl(this.options.workspace) : () => true,

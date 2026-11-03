@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Claude trials stopped by a token refresh — in progress
+
+- The owner approved three EVAL-10 trials on Claude Code 2.1.316 (code 183b4a0). None reached the model. The first was admitted, exited `permission-denied` with zero tokens, and the client wrote `.credentials.json` into its client home; the observer refused the other two for that file. The likely cause, unverified, is a token refresh that could not write the read-only Keychain inside the profile.
+- The profile now denies creating `.credentials.json`, `credentials.json` and `auth.json` in the client home, so a refresh that cannot reach the Keychain fails without a plaintext credential. A real `sandbox-exec` case covers it, and removing the deny fails it. How tokens are refreshed during long campaigns is left to the owner; until then the owner signs in again before each batch.
+
+---
+
 ## 2026-11-03 · P6-29 · Public continuation run — in progress
 
 - The public `to-pr` composition registers the correction adapter, so a continuation route is covered as a whole (ADR-0208, increment 4).
