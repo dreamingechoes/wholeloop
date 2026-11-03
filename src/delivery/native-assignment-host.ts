@@ -22,6 +22,7 @@ import {
   nativeFailureReason,
   negotiateNativeDelivery,
 } from './native-capabilities.js'
+import type { NativeClaudeContainment } from './native-claude-sandbox.js'
 import { sealNativeGitControl } from './native-workspace.js'
 import { validateDeliveryShape } from './plan.js'
 import { boundedRecoveryCall } from './read-retry.js'
@@ -88,6 +89,8 @@ export interface NativeRunOptions {
   nativeStore?: string
   signal?: AbortSignal
   output?: 'files' | 'inline-proposal'
+  /** Claude Code on macOS: the trusted sandbox the launch runs inside (ADR-0203). */
+  containment?: NativeClaudeContainment
   /** Trusted metadata registration precedes controls and model input; failure retains the claim. */
   prepared?(input: { assignment: Readonly<WorkerAssignment>; directory: string }): void
 }
@@ -109,6 +112,11 @@ export class NativeAssignmentHost {
   }
 
   async run(context: { workspace?: string }, options: NativeRunOptions): Promise<NativeRunReceipt> {
+    // Checked before any attempt is prepared: a mispaired client home is a
+    // controller configuration error, and the separate-store checks below
+    // must cover the only home the contained client reads.
+    if (options.containment && options.nativeStore !== options.containment.store)
+      throw new Error('Native containment must name the explicit client store')
     const prepared = this.owner.prepare()
     const assignment = prepared.assignment
     const files = this.budgets.lifecycle.journal.files
@@ -146,6 +154,7 @@ export class NativeAssignmentHost {
       ...(context.workspace ? { workspace: context.workspace } : {}),
       model: options.model,
       ...(options.output ? { output: options.output } : {}),
+      ...(options.containment ? { containment: options.containment } : {}),
     })
     if (!selected.available) return unavailable(selected.reason)
     const recipe = selected.recipe
@@ -236,8 +245,9 @@ export class NativeAssignmentHost {
     })
     if (Buffer.byteLength(input) > 2 * 1024 * 1024) return unavailable('input-limit')
     mkdirSync(join(directory, 'outputs', 'artifacts'), { recursive: true, mode: 0o700 })
-    mkdirSync(join(directory, 'home'), { mode: 0o700 })
-    mkdirSync(join(directory, 'tmp'), { mode: 0o700 })
+    // A contained client's boundary probe already used tmp/ inside the fresh directory.
+    mkdirSync(join(directory, 'home'), { recursive: true, mode: 0o700 })
+    mkdirSync(join(directory, 'tmp'), { recursive: true, mode: 0o700 })
     for (const item of prepared.resume)
       files.atomic(`${relative}/inputs/${item.context.artifact.ref}`, item.bytes)
     for (const [path, content] of recipe.files) {
@@ -260,6 +270,12 @@ export class NativeAssignmentHost {
     // These are references read by the trusted native client. No secret value enters argv, a generated file or the application environment.
     if (options.nativeStore)
       env[recipe.target === 'codex' ? 'CODEX_HOME' : 'CLAUDE_CONFIG_DIR'] = options.nativeStore
+    // The login Keychain resolves through the owner's home and user name; the
+    // sandbox profile, not a substituted home, keeps the run away from them.
+    if (options.containment) {
+      env.HOME = options.containment.home
+      env.USER = options.containment.user
+    }
     const controller = new AbortController()
     const abort = () => controller.abort()
     options.signal?.addEventListener('abort', abort, { once: true })

@@ -1,7 +1,11 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { nativeDeliveryRecipe } from '../../src/delivery/native-adapters.js'
+import {
+  nativeDeliveryRecipe,
+  REFERENCE_NATIVE_VERSIONS,
+} from '../../src/delivery/native-adapters.js'
+import type { NativeClaudeContainment } from '../../src/delivery/native-claude-sandbox.js'
 import { DEFAULT_DELIVERY_BUDGETS } from '../../src/delivery/plan.js'
 import { createWorkerAssignment, type WorkerRole } from '../../src/delivery/worker-protocol.js'
 import type { StoreFiles } from '../../src/state/files.js'
@@ -12,6 +16,8 @@ export function nativeBoundaryInput(
   role: WorkerRole = 'planner',
   workspace?: string,
   output: 'files' | 'inline-proposal' = 'inline-proposal',
+  /** Selects the contained Claude Code recipe instead of Codex. */
+  containment?: NativeClaudeContainment,
 ) {
   const assignment = createWorkerAssignment({
       identity: {
@@ -43,8 +49,9 @@ export function nativeBoundaryInput(
     nativeStore = join(parent, 'empty-native-store')
   mkdirSync(nativeStore, { recursive: true, mode: 0o700 })
   const selected = nativeDeliveryRecipe({
-    target: 'codex',
-    version: '0.166.0',
+    ...(containment
+      ? { target: 'claude', version: REFERENCE_NATIVE_VERSIONS.claude, containment }
+      : { target: 'codex', version: REFERENCE_NATIVE_VERSIONS.codex }),
     assignment,
     directory,
     model: 'model-not-invoked',

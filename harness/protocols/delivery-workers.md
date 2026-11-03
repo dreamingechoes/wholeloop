@@ -19,7 +19,7 @@ Only the controller stamps process/backend identity, exit, cancellation, output 
 
 These are protocol and host obligations. Versioned schemas and role tools alone do not prove actual native permissions or filesystem containment; those capabilities require their own observed backend/client checks.
 
-⛔ `delivery-native-boundary-controls`: bind actual permission/process controls to the exact original assignment and recipe; keep unknown probe attempts held and never promote policy-only or fixture evidence into authenticated model execution or acceptance.
+⛔ `delivery-native-boundary-controls`: bind actual permission/process controls to the exact original assignment and recipe; keep unknown probe attempts held, launch Claude Code only inside the sandbox profile its probe observed, and never promote policy-only or fixture evidence into authenticated model execution or acceptance.
 
 ⛔ `delivery-runner-git-stages`: bind runner Git stages to their original private domain resources before native input; preserve live issued-operation fencing separately from future dispatch and never replay missing/unknown results or promote Git success into semantic QA.
 

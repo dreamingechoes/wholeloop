@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Contained Claude Code boundary — in progress
+
+- Claude Code had no boundary observer, so no Claude stage could be admitted. Two observations on 2.1.316 shaped the fix. First, the client reads its login from the macOS Keychain, which needs the real home and `USER`, so the per-assignment home made every launch unauthenticated; this had gone unseen because only synthetic clients ran. Second, the client has no policy-only probe.
+- The fix is ADR-0203. A Claude launch runs inside a `sandbox-exec` read/write allow-list profile carried in argv, and therefore in the policy digest. The client home is dedicated and was signed in once by the owner. `ClaudeBoundaryHost` runs the controller's probe, cancellation and the client's own login status under that profile without a model. It is macOS only; off macOS Claude stays unavailable. The workspace-witness helper moved to `native-workspace.ts` for both observers.
+- Ten unit cases, plus a launch case showing the sandboxed command and environment. A mispaired client home is now refused before an attempt is prepared; the first version registered the attempt and then threw. Six real controls pass on the installed client, and the eval refuses once the profile's leading deny is removed. A model turn under the profile has not run; it needs the owner's approval to spend quota.
+- Next: public host composition.
+
+---
+
 ## 2026-11-03 · P6-27 · Reference client pin — in progress
 
 - P6-27 is 🔄. The delivery pin moves to the owner's Claude Code 2.1.316 and Codex 0.166.0 ([ADR-0202](../docs/decisions/0202-campaign-reference-client-versions.md)). Every recipe flag exists in both installed help outputs. Codex 0.166.0 enables MCP elicitation, image generation and tool suggestions by default; the recipe now disables all three, since elicitation is an interactive entry point.

@@ -57,6 +57,18 @@ The internal CodexBoundaryHost can separately observe local client authenticatio
 
 The actual macOS controls cover the reference version's three selected roles and both output modes. Linux fixture/minimum-runtime checks do not establish actual Linux client containment. Accounts, model availability and complete native application execution remain separate acceptance work. Fixed native/semantic host composition and public complete-route commands remain P6-10 technical implementation work; these controls do not close that task.
 
+## Repeat actual model-free Claude Code controls
+
+Claude Code runs inside a macOS `sandbox-exec` profile that denies every file the assignment does not need ([ADR-0203](../decisions/0203-contained-claude-code-boundary.md)). It authenticates through a dedicated client home that you sign in to once:
+
+```bash
+mkdir -p -m 700 ~/.local/state/wholeloop-native/claude
+CLAUDE_CONFIG_DIR="$HOME/.local/state/wholeloop-native/claude" claude auth login
+WHOLELOOP_CLAUDE_CLIENT="$(readlink -f "$(command -v claude)")" npm run eval:claude-boundary
+```
+
+The eval checks planner, builder and verifier with both output modes. Each case runs the client's version check, the controller's boundary program under the launch profile, owned cancellation and the client's own login status. No model is invoked. `WHOLELOOP_CLAUDE_STORE` selects another client home. Off macOS the observer returns no observation, so Claude stages stay unavailable there.
+
 ## Artifact transport for controller authors
 
 The existing files mode remains the default. A fixed controller can explicitly select output: inline-proposal when calling NativeDeliveryHost.run. That versioned worker proposal returns artifact text through the owned structured stdout channel; a read-only worker can produce a new report without a Write tool or a writable output directory. Workers may continue citing their original pinned input evidence.

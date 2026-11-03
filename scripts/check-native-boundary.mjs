@@ -5,13 +5,16 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 
-if (process.argv.length !== 2)
-  throw new Error('The model-free native boundary control takes no options')
+// No option selects Codex; `claude` selects the contained Claude Code control (ADR-0203).
+const target = process.argv.slice(2)
+if (target.length > 1 || (target.length === 1 && target[0] !== 'claude'))
+  throw new Error('The model-free native boundary control takes no option or claude')
+const entry = target[0] === 'claude' ? 'claude-boundary' : 'native-boundary'
 const root = dirname(dirname(fileURLToPath(import.meta.url))),
   destination = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-native-boundary-evaluation-'))),
   runner = join(destination, 'runner.mjs')
 await build({
-  entryPoints: [join(root, 'test/evals/native-boundary/run.ts')],
+  entryPoints: [join(root, `test/evals/${entry}/run.ts`)],
   outfile: runner,
   bundle: true,
   platform: 'node',

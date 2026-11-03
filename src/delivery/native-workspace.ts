@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { lstatSync, realpathSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
-import { git, repository } from '../worktrees/git.js'
+import { git, gitBytes, repository } from '../worktrees/git.js'
 import { readSourceBytes } from './input.js'
 
 /** Check raw control bytes before invoking Git again: a replaced gitdir/config can execute helpers. */
@@ -52,4 +52,21 @@ export function sealNativeGitControl(workspace: string): () => boolean {
       return false
     }
   }
+}
+
+/** A tracked regular file the probe opens for access only; it never writes bytes. */
+export function nativeWorkspaceWitness(workspace: string) {
+  const bytes = gitBytes(workspace, ['ls-files', '-z']),
+    text = bytes.toString('utf8')
+  if (!Buffer.from(text).equals(bytes)) return undefined
+  for (const path of text.split('\0').filter(Boolean)) {
+    const full = join(workspace, path)
+    try {
+      const stat = lstatSync(full)
+      if (stat.isFile() && !stat.isSymbolicLink()) return full
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') return undefined
+    }
+  }
+  return undefined
 }

@@ -18,6 +18,7 @@ import { type NativeBoundaryHost, NativeDeliveryHost } from '../../../src/delive
 import { DEFAULT_DELIVERY_BUDGETS } from '../../../src/delivery/plan.js'
 import { DeliveryQueue } from '../../../src/delivery/queue.js'
 import { createWorkerAssignment, type WorkerRole } from '../../../src/delivery/worker-protocol.js'
+import { workerProcess } from '../../../src/fanout/process.js'
 import { ManagedRunnerProcess } from '../../../src/runner/native-process.js'
 import { authorization, entry, fixture, git } from '../../support/delivery.js'
 
@@ -377,7 +378,7 @@ async function nativeFixture(
     const lease = queue.claim('controller-0123456789abcdef0123456789abcdef', () => ({
       ready: true,
       evidence: 'f'.repeat(64),
-      provenance: 'fixture',
+      provenance: mode === 'contained' ? 'host-observed' : 'fixture',
     })).assignment
     if (!lease) throw new Error('Fixture requires one claim')
     const workspace = join(dir, 'worktree'),
@@ -822,6 +823,54 @@ describe('actual synthetic native processes', () => {
       })
       expect(receipt.execution).toBeUndefined()
     }))
+
+  it('launches a contained Claude client through the sandbox with its owner home and client store', () =>
+    nativeFixture(async ({ queue, lease, context, options, dir, bin }) => {
+      const store = join(dir, 'claude-store'),
+        containment = {
+          kind: 'macos-sandbox' as const,
+          sandbox: '/usr/bin/sandbox-exec',
+          client: join(bin, 'claude'),
+          home: join(dir, 'owner-home'),
+          user: 'owner',
+          store,
+        },
+        launched: { command: string; args: string[] }[] = []
+      mkdirSync(store)
+      await expect(
+        new NativeDeliveryHost(queue).run(lease, context, { ...options, containment }),
+      ).rejects.toThrow('explicit client store')
+      const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
+        ...options,
+        containment,
+        nativeStore: store,
+        host: {
+          observe: (input) => ({ ...host.observe(input), provenance: 'host-observed' }),
+        },
+        // Run the synthetic client the sandbox would have run; the profile is policy here.
+        process: (command, args, process) => {
+          launched.push({ command, args })
+          return workerProcess(args[2] ?? '', args.slice(3), process).then((result) => ({
+            ...result,
+            ownership: { invocationState: 'stopped' as const },
+          }))
+        },
+      })
+      expect(receipt.status).toBe('succeeded')
+      expect(launched).toHaveLength(1)
+      expect(launched[0]?.command).toBe('/usr/bin/sandbox-exec')
+      expect(launched[0]?.args.slice(0, 1)).toEqual(['-p'])
+      expect(launched[0]?.args[1]).toContain('(deny file-read* file-write* (subpath "/"))')
+      const environment = JSON.parse(
+        readFileSync(
+          queue.lifecycle.journal.files.path(`${receipt.directory}/outputs/environment.json`),
+          'utf8',
+        ),
+      )
+      expect(environment.home).toBe(containment.home)
+      expect(environment.keys).toEqual(expect.arrayContaining(['CLAUDE_CONFIG_DIR', 'USER']))
+      expect(environment.args).toContain('--restricted')
+    }, 'contained'))
 
   it('refuses unobserved runtime capability before starting a process', () =>
     nativeFixture(async ({ queue, lease, context, options }) => {

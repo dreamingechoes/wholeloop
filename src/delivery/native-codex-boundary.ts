@@ -5,14 +5,13 @@ import { join } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { StoreFiles } from '../state/files.js'
 import { assertExternal, canonicalPath, inside } from '../state/paths.js'
-import { gitBytes } from '../worktrees/git.js'
 import { deliveryWorkerEnvironment } from './broker.js'
 import { readSourceFile, safeSourceText } from './input.js'
 import { nativeDeliveryRecipe, REFERENCE_NATIVE_VERSIONS } from './native-adapters.js'
 import type { NativeBoundaryHost, NativeProcessRunner } from './native-assignment-host.js'
 import { NATIVE_BOUNDARY_PROGRAM } from './native-boundary-program.js'
 import type { NativeDeliveryObservation } from './native-capabilities.js'
-import { sealNativeGitControl } from './native-workspace.js'
+import { nativeWorkspaceWitness, sealNativeGitControl } from './native-workspace.js'
 
 type Input = Parameters<NativeBoundaryHost['observe']>[0]
 const hash = (text: string) => createHash('sha256').update(text).digest('hex')
@@ -86,22 +85,6 @@ export class CodexBoundaryHost implements NativeBoundaryHost {
     return result
   }
 
-  private witness(workspace: string) {
-    const bytes = gitBytes(workspace, ['ls-files', '-z']),
-      text = bytes.toString('utf8')
-    if (!Buffer.from(text).equals(bytes)) return undefined
-    for (const path of text.split('\0').filter(Boolean)) {
-      const full = join(workspace, path)
-      try {
-        const stat = lstatSync(full)
-        if (stat.isFile() && !stat.isSymbolicLink()) return full
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') return undefined
-      }
-    }
-    return undefined
-  }
-
   /** Runs no model and never queries an account; authentication remains false in this policy-only observation. */
   async probePolicy(input: Input): Promise<NativeDeliveryObservation | undefined> {
     if (input.recipe.target !== 'codex' || input.recipe.version !== REFERENCE_NATIVE_VERSIONS.codex)
@@ -140,7 +123,9 @@ export class CodexBoundaryHost implements NativeBoundaryHost {
     )
       return undefined
     const seal = this.options.workspace ? sealNativeGitControl(this.options.workspace) : () => true,
-      workspace = this.options.workspace ? this.witness(this.options.workspace) : undefined
+      workspace = this.options.workspace
+        ? nativeWorkspaceWitness(this.options.workspace)
+        : undefined
     if (this.options.workspace && !workspace) return undefined
     const control = randomUUID(),
       index = `delivery/native-boundary-index/${nativeBoundaryKey(input)}.txt`,

@@ -709,7 +709,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Started** — On the owner's instruction, before P6-22, P6-24 and P6-33 are ✅: their remaining work is native or hosted acceptance that this task supplies, or P6-29's producer, which the owner chose to build here. The owner fixed the campaign inputs on 2026-11-03 ([manual verification](./manual-verification.md#native-evaluation-campaign-inputs-2026-11-03)). Increments, in order: reference version pin, Claude Code boundary observer, public host composition, P6-29's seeded correction producer, live evaluation host and three-run report, then the paid pilot.
 
-**Completed technical work** — The reference pin is Claude Code 2.1.316 and Codex 0.166.0, and the Codex recipe disables three more default features, including interactive MCP elicitation ([ADR-0202](../docs/decisions/0202-campaign-reference-client-versions.md)). The six real model-free Codex boundary controls pass on 0.166.0.
+**Completed technical work** — The reference pin is Claude Code 2.1.316 and Codex 0.166.0, and the Codex recipe disables three more default features, including interactive MCP elicitation ([ADR-0202](../docs/decisions/0202-campaign-reference-client-versions.md)). The six real model-free Codex boundary controls pass on 0.166.0. Claude Code now has its own boundary: on macOS it launches inside a `sandbox-exec` profile that denies every file the assignment does not need, authenticates through a dedicated client home, and is admitted only after an observer runs the controller's probe under that profile ([ADR-0203](../docs/decisions/0203-contained-claude-code-boundary.md)). Six real model-free Claude Code 2.1.316 controls pass, authenticated, with no model invoked.
 
 ---
 

@@ -5,6 +5,7 @@ import { contractDigest } from '../contracts/compatibility.js'
 import { headlessAdapter } from '../fanout/adapters.js'
 import { generationSchema } from '../fanout/response-schema.js'
 import { safeSourceText } from './input.js'
+import { claudeSandboxProfile, type NativeClaudeContainment } from './native-claude-sandbox.js'
 import { workerProposalResponseSchema } from './worker-proposal.js'
 import {
   validateWorkerAssignment,
@@ -43,6 +44,7 @@ export type NativeRecipeResult =
         | 'native-version-unverified'
         | 'missing-workspace'
         | 'unexpected-workspace'
+        | 'unexpected-containment'
     }
 
 /** argv contains non-secret policy only; quote TOML keys/values rather than constructing shell commands. */
@@ -82,6 +84,8 @@ export function nativeDeliveryRecipe(input: {
   workspace?: string
   model?: string
   output?: 'files' | 'inline-proposal'
+  /** Claude Code only: the operating system profile the launch runs inside (ADR-0203). */
+  containment?: NativeClaudeContainment
 }): NativeRecipeResult {
   validateWorkerAssignment(input.assignment)
   if (!NATIVE_DELIVERY_TARGETS.includes(input.target as NativeDeliveryTarget))
@@ -90,6 +94,9 @@ export function nativeDeliveryRecipe(input: {
     return { available: false, reason: 'expanded-target-unverified' }
   if (input.version !== REFERENCE_NATIVE_VERSIONS[input.target])
     return { available: false, reason: 'native-version-unverified' }
+  // Codex contains tool commands through its own permission profile.
+  if (input.containment && input.target !== 'claude')
+    return { available: false, reason: 'unexpected-containment' }
   if (
     (input.assignment.tools.workspace === 'write' || input.assignment.candidates.length > 0) &&
     !input.workspace
@@ -228,6 +235,26 @@ export function nativeDeliveryRecipe(input: {
     )
   }
   const target = input.target
+  let command: string = target
+  if (input.containment) {
+    // The profile is part of argv and therefore of the policy digest, so an
+    // observation of one profile can never admit a launch under another.
+    if (input.containment.kind !== 'macos-sandbox')
+      throw new Error('Provide one supported native containment')
+    args = [
+      '-p',
+      claudeSandboxProfile({
+        containment: input.containment,
+        directory: input.directory,
+        output: input.output ?? 'files',
+        ...(input.workspace ? { workspace: input.workspace } : {}),
+        workspaceWrite: input.assignment.tools.workspace === 'write',
+      }),
+      input.containment.client,
+      ...args,
+    ]
+    command = input.containment.sandbox
+  }
   const policy = contractDigest({
     target,
     version: input.version,
@@ -236,13 +263,14 @@ export function nativeDeliveryRecipe(input: {
     cwd: input.directory,
     files: [...files],
     tools: input.assignment.tools,
+    ...(input.containment ? { containment: input.containment } : {}),
   })
   return {
     available: true,
     recipe: {
       target,
       version: input.version,
-      command: target,
+      command,
       args,
       cwd: input.directory,
       files,
