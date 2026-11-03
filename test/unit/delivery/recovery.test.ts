@@ -295,6 +295,39 @@ describe('effect intent and exact read reconciliation', () => {
       expect(recovered.get(plan.run, two.intent.id).status).toBe('prepared')
     }))
 
+  it('completes a queued run only after an applied effect on its basis (ADR-0207)', () =>
+    prepared(async ({ planning, plan }) => {
+      const prepared = planning.preparePlan(plan)
+      const queue = new DeliveryQueue(planning.sources.files.root, () => at)
+      queue.lifecycle.authority.authorize(authorization(plan, prepared.digest))
+      queue.lifecycle.track({ run: plan.run, revision: 1, grant: 'authorization-0123456789abcdef' })
+      queue.enqueue(plan.run, { unit: 'contract' })
+      const complete = () =>
+        queue.lifecycle.transition(plan.run, {
+          to: 'completed',
+          reason: 'The exact endpoint is observed.',
+          outcome: 'code-ready',
+          evidence: 'd'.repeat(64),
+        })
+      // Metadata alone never completes a run.
+      expect(queue.lifecycle.journal.get(plan.run).state).toBe('queued')
+      expect(complete).toThrow('impossible-transition')
+      const effects = new DeliveryEffects(planning.sources.files.root, () => at),
+        effect = effects.prepare(plan.run, {
+          key: 'report',
+          operation: 'report.write',
+          ref: 'artifacts/report.md',
+          inputDigest: 'a'.repeat(64),
+        })
+      expect((await effects.execute(plan.run, effect.intent.id, host())).status).toBe('applied')
+      queue.lifecycle.transition(plan.run, {
+        to: 'queued',
+        reason: 'Continue after the exact observed fixture action.',
+      })
+      complete()
+      expect(queue.lifecycle.journal.get(plan.run).state).toBe('completed')
+    }))
+
   it('bounds a lost invocation at its retained deadline without treating timeout as absence', () =>
     prepared(async ({ planning, plan }) => {
       plan.budgets.attemptMs = 1

@@ -6,6 +6,7 @@ import { safeSourceText } from '../delivery/input.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { boundedRecoveryCall } from '../delivery/read-retry.js'
+import { executedThroughEffect } from '../delivery/reducer.js'
 import { deliveryRunner, type RunnerRuntime, type RunnerStageRecord } from './events.js'
 import { ForegroundOwner } from './foreground-owner.js'
 import { ManagedRunnerProcess } from './native-process.js'
@@ -318,10 +319,12 @@ export class DeliveryRunner {
             context.plan.policy.intervention === 'none' ? 'blocked' : 'paused',
             'Current independently observed endpoint evidence is unavailable or fixture-only.',
           )
+        const executed = this.store.lifecycle.journal.get(request.run)
         if (
-          !['running', 'waiting-external'].includes(
-            this.store.lifecycle.journal.get(request.run).state,
-          )
+          !['running', 'waiting-external'].includes(executed.state) &&
+          // A run whose last execution was an observed effect, such as
+          // publication, is queued again by design (ADR-0207).
+          !(executed.state === 'queued' && executedThroughEffect(executed))
         )
           return this.limit(
             lease,

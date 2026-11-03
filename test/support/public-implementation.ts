@@ -72,11 +72,18 @@ export const REPOSITORY = (recipe: string, repository = 'app') => ({
 /** Decisions a none-policy to-pr route delegates; the fixture grant names exactly these. */
 export const DELEGATED = ['approve-build-plan', 'acceptance'] as const
 
-export function toPr(plan: DeliveryPlan, files: StoreFiles, rubric = RUBRIC) {
+/** `ssh`: an SSH-form remote whose transport GIT_SSH_COMMAND can serve locally. */
+export function toPr(plan: DeliveryPlan, files: StoreFiles, remote: 'https' | 'ssh' = 'https') {
+  const rubric = RUBRIC
   plan.policy.endpoint = 'to-pr'
   plan.policy.intervention = 'none'
   for (const repository of plan.repositories) {
-    git(repository.root, ['remote', 'add', 'origin', 'https://github.com/fixture/app.git'])
+    git(repository.root, [
+      'remote',
+      'add',
+      'origin',
+      remote === 'ssh' ? 'git@github.com:fixture/app.git' : 'https://github.com/fixture/app.git',
+    ])
     repository.remote = { name: 'origin', url: 'https://github.com/fixture/app' }
   }
   // The pinned rubric is a committed repository file read at the pinned base.
@@ -152,3 +159,31 @@ export function prepareSuiteRecipe(storeRoot: string, root: string, data = false
   })
   return new DeliveryEnvironments(storeRoot).recipes.prepare(recipe).digest
 }
+
+/**
+ * Serves the SSH-form GitHub remote from a local bare repository, so the
+ * fixed code host pushes and lists heads with real Git and no network.
+ * Git runs it as GIT_SSH_COMMAND with the host and the remote command.
+ */
+export const LOCAL_SSH = (bare: string) => `#!${process.execPath}
+const command=process.argv.at(-1).split(' ')[0],map={'git-receive-pack':'receive-pack','git-upload-pack':'upload-pack'};
+if(!map[command])process.exit(2);
+process.exit(require('node:child_process').spawnSync('git',[map[command],${JSON.stringify(bare)}],{stdio:'inherit'}).status??1)
+`
+
+/**
+ * A stateful synthetic gh: lists, creates and readies pull requests for
+ * fixture/app in a JSON file, reading pushed heads from the local bare
+ * repository. Every call is logged. It certifies no GitHub behavior.
+ */
+export const SYNTHETIC_GH = (state: string, bare: string, log: string) => `#!${process.execPath}
+const fs=require('node:fs'),cp=require('node:child_process'),args=process.argv.slice(2);
+fs.appendFileSync(${JSON.stringify(log)},JSON.stringify(args)+'\\n');
+const load=()=>fs.existsSync(${JSON.stringify(state)})?JSON.parse(fs.readFileSync(${JSON.stringify(state)},'utf8')):[],save=v=>fs.writeFileSync(${JSON.stringify(state)},JSON.stringify(v));
+if(args[0]==='pr'&&args[1]==='ready'){const v=load(),pr=v.find(p=>p.html_url===args.at(-1));if(!pr)process.exit(1);pr.draft=false;save(v);process.exit(0)}
+if(args[0]!=='api')process.exit(2);
+const method=args[args.indexOf('--method')+1],endpoint=args.find(a=>a.startsWith('repos/fixture/app/'));
+if(method==='GET'&&endpoint.startsWith('repos/fixture/app/pulls?')){const head=decodeURIComponent(new URL('https://x/'+endpoint).searchParams.get('head')).split(':')[1];console.log(JSON.stringify(load().filter(p=>p.head.ref===head)));process.exit(0)}
+if(method==='POST'&&endpoint==='repos/fixture/app/pulls'){let input='';process.stdin.on('data',c=>input+=c);process.stdin.on('end',()=>{const body=JSON.parse(input),v=load(),sha=cp.execFileSync('git',['--git-dir',${JSON.stringify(bare)},'rev-parse','refs/heads/'+body.head],{encoding:'utf8'}).trim(),pr={number:v.length+1,html_url:'https://github.com/fixture/app/pull/'+(v.length+1),head:{ref:body.head,sha},base:{ref:body.base},draft:body.draft===true,state:'open',merged_at:null,title:body.title,body:body.body};v.push(pr);save(v);console.log(JSON.stringify(pr))});return}
+process.exit(2)
+`

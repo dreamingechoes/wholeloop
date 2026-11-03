@@ -188,3 +188,27 @@ Verification:
 - a runtime without a code host composes nothing.
 
 Publication has not run yet. Git expands `insteadOf` rewrites in `remote get-url`, which the code host reads to name the GitHub repository, so a local bare remote cannot sit behind a GitHub URL. Increment 7 therefore uses an SSH-form GitHub remote whose transport a disposable `GIT_SSH_COMMAND` serves from a local bare repository, with a synthetic `gh`.
+
+### Complete synthetic run (increment 7)
+
+`npm run eval:public-implementation` now hands the request to the real engine, which runs the composed host from plan to handoff with no prompt:
+
+- a synthetic client behind the real Codex observer;
+- real Docker unit and product QA;
+- a real Git push, without force, to a local bare repository behind an SSH-form GitHub remote;
+- a stateful synthetic `gh`.
+
+The run ends `completed` with outcome `ready-pr`, and all thirteen stages pass with host-observed provenance. There were fourteen launches, each preceded by its controls, and no wait for input. One owned pull request exists at the pushed head, opened as a draft and then readied, and both environments are retired.
+
+The first engine run found a gap no earlier test reached, because every to-pr test called the endpoint directly. Publication returns the run from `waiting-external` to `queued` after observing its own effect: `running` needs an active attempt, and publication has none. The state table only allowed completion from `running` or `waiting-external`, so a to-pr run could never complete.
+
+The table now also allows `queued` → `completed`, but only when the run holds an applied effect on its current basis, which is execution the controller observed. The engine checks the same condition. Every other completion guard stays:
+
+- no unresolved effect;
+- no active attempt;
+- an endpoint outcome with evidence;
+- a current, host-observed endpoint.
+
+A journal case refuses completion from a fresh queued run and accepts it after an applied effect. Moving publication back to `running` instead was rejected because `running` requires an active attempt.
+
+The debugging runs also showed that these evaluations keep a failed run's Docker resources for inspection. Several failed attempts used up Docker's predefined address pools, and the next run then failed at network creation. The leftover resources were removed by their exact `org.wholeloop.run` fixture label after checking that nothing else carried it.

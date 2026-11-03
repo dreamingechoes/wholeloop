@@ -22,6 +22,8 @@ const EDGES: Record<DeliveryState, readonly DeliveryState[]> = {
   planned: ['queued', 'waiting-input', 'paused', 'stopping', 'blocked', 'failed', 'exhausted'],
   queued: [
     'running',
+    // Only after an applied effect on the current basis (see control()).
+    'completed',
     'waiting-input',
     'waiting-external',
     'paused',
@@ -97,6 +99,14 @@ export function deliveryAttempts(state: DeliveryProjection): AttemptsFacet {
   if (!facet) throw new DeliveryJournalError('missing-attempt-facet')
   return facet
 }
+/** At least one applied effect on the current basis: execution the controller observed. */
+export function executedThroughEffect(state: DeliveryProjection): boolean {
+  return !!state.facets
+    .find((facet) => facet.schema === 'wholeloop/delivery-effects@1')
+    ?.records.some(
+      (record) => record.status === 'applied' && record.intent.basis === state.basis.digest,
+    )
+}
 function active(state: DeliveryProjection): boolean {
   return deliveryAttempts(state).records.some((record) => ACTIVE.has(record.state))
 }
@@ -124,6 +134,11 @@ function control(state: DeliveryProjection, payload: ControlPayload): void {
   if (payload.to === 'queued' && active(state)) throw new DeliveryJournalError('active-attempt')
   if (['completed', 'stopped'].includes(payload.to) && active(state))
     throw new DeliveryJournalError('unconfirmed-stop')
+  // A queued run completes only when its last execution was an observed
+  // external effect, such as publication (ADR-0207); metadata alone never
+  // completes a run.
+  if (payload.from === 'queued' && payload.to === 'completed' && !executedThroughEffect(state))
+    throw new DeliveryJournalError('impossible-transition')
   const terminal = ['completed', 'stopped', 'failed', 'blocked', 'exhausted'].includes(payload.to)
   if (terminal !== (payload.outcome !== undefined))
     throw new DeliveryJournalError('invalid-outcome')

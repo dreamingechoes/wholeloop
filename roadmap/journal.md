@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Complete synthetic to-pr run — in progress
+
+- `eval:public-implementation` now hands the request to the real engine (ADR-0207, increment 7). The run ends `completed` with outcome `ready-pr`: thirteen host-observed stages, fourteen launches each preceded by its controls, and no wait for input. It used real Docker unit and product QA and a real Git push, without force, to a local bare repository behind an SSH-form GitHub remote. One owned pull request was opened as a draft and readied by a synthetic `gh`, and both environments were retired.
+- That run found that no to-pr run could ever complete. Publication returns the run to `queued` after its own effect, and completion was only allowed from `running` or `waiting-external`. Completion from `queued` is now allowed only with an applied effect on the current basis; every other guard stays. A journal case covers both sides.
+- Failed debugging runs kept their Docker resources by design and used up Docker's address pools. They were removed by their exact fixture-run label after checking that nothing else carried it.
+- Next: P6-29's seeded correction producer.
+
+---
+
 ## 2026-11-03 · P6-27 · Public to-pr publication — in progress
 
 - Publication and the `to-pr` handoff are composed with the fixed `GithubCliCodeHost`, whose executor runs the runtime's absolute `gh` (ADR-0207, increment 6). The whole route is now covered and passes static preflight; a runtime without a code host composes nothing. A unit case checks the executor's exact `gh` arguments against a synthetic binary.
