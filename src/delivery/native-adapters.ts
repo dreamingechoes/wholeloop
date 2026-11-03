@@ -75,6 +75,23 @@ function generationContract(rule: Schema): Schema {
   return result
 }
 
+/**
+ * Claude Code 2.1.316 validates --json-schema with a validator that does not
+ * know draft 2020-12 and rejects the declaration itself, so every structured
+ * launch failed before the model. The schemas use no 2020-12-only keyword, so
+ * dropping the declaration keeps the same constraints; the core still decodes
+ * every response against the original schema.
+ */
+function withoutDraftDeclaration(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(withoutDraftDeclaration)
+  if (!isObject(value)) return value
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key]) => key !== '$schema')
+      .map(([key, child]) => [key, withoutDraftDeclaration(child)]),
+  )
+}
+
 /** Dedicated recipes never broaden the existing read-only gate launchers or select a fallback model. */
 export function nativeDeliveryRecipe(input: {
   target: string
@@ -152,7 +169,7 @@ export function nativeDeliveryRecipe(input: {
       '--safe-mode',
       '--no-session-persistence',
       '--json-schema',
-      JSON.stringify(schema),
+      JSON.stringify(withoutDraftDeclaration(schema)),
       ...(input.workspace ? ['--add-dir', input.workspace] : []),
       ...(input.model ? ['--model', input.model] : []),
     ]

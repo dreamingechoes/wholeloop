@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-03 · P6-27 · EVAL-10 pilot findings — in progress
+
+- Three more defects found by the pilot, recorded in ADR-0206:
+  - Claude Code 2.1.316 rejects a `--json-schema` that declares draft 2020-12, so the Claude recipe strips `$schema`. A call to a nonexistent model confirmed the fix at zero tokens.
+  - Real judges invented uncertainty IDs, which the unchanged rule blocks, so judge briefs now list the rubric's owned IDs.
+  - The brief rendered a claim that was never examined as `active refutations: 0/2`. It now says the claim was not independently examined.
+- The last attempt ran 793 s with no human wait and 25 successful Claude launches. The brief completed with unknowns, with seven claims cited from the official sandboxing pages. The delegated source judge rejected it, citing the misrendered claim and uncited parts of it, and its challenger supported the rejection. The route ended blocked: not a pass. Client usage is not yet recorded, so the quota cost is unmeasured.
+- Next: record client-reported usage in trial reports, then ask the owner before another paid attempt.
+
+---
+
 ## 2026-11-03 · P6-27 · Live research evaluation and owned sandbox launches — in progress
 
 - New opt-in `npm run eval:live-research`. It prepares a disposable store, a none-policy research plan with delegated `research-plan` and `research-sources` rubrics, a source-read/report-write grant, the owner's bindings and runtime documents, and a public request. It runs the compiled `wl delivery run` and writes a report: outcome, seconds, controller waits for input, and every native receipt's status, version, model and provenance. It refuses to start without `WHOLELOOP_LIVE_CONFIRM=spend-quota`.

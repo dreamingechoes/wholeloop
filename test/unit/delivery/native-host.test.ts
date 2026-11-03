@@ -205,6 +205,12 @@ describe('dedicated native delivery recipes', () => {
       } else {
         expect(recipe.args).toContain('--restricted')
         expect(recipe.args).toContain('--safe-mode')
+        // The reference client rejects the 2020-12 declaration (ADR-0203).
+        const declared = JSON.stringify(
+          JSON.parse(entry(recipe.args, recipe.args.indexOf('--json-schema') + 1)),
+        )
+        expect(declared).not.toContain('$schema')
+        expect(declared).toContain('"$id"')
         expect(recipe.args).toContain('--strict-mcp-config')
         expect(recipe.args).toContain(
           role === 'builder' ? 'Read,Glob,Grep,Edit,Write' : 'Read,Glob,Grep',

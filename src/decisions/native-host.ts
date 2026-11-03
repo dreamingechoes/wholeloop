@@ -115,6 +115,13 @@ export class NativeDelegatedDecisionHost implements DelegatedDecisionHost {
       response: schema,
       basis: context.basis,
       ...(judgment ? { judgment: contractDigest(judgment) } : {}),
+      // The first live trial showed judges inventing their own uncertainty IDs,
+      // which the store blocks because the rubric does not own them. Naming the
+      // owned IDs changes no rule: any other uncertainty still blocks.
+      uncertainties: {
+        owned: [...context.rubric.unknowns.allowed],
+        rule: 'Use only these uncertainty ids. Report any other material uncertainty anyway; it blocks the decision, so the run stops honestly instead of claiming support.',
+      },
       output:
         'Return exactly one complete inline report at artifacts/decision.json. Its JSON body follows the supplied response schema and exact basis/judgment. Put all uncertainties in that body; keep outer findings/criteria/unknowns empty. Never supply identity, runtime, authority or human approval.',
     })

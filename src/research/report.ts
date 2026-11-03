@@ -106,7 +106,12 @@ export function renderResearchBrief(
     [
       `### ${claim.id}`,
       `Claim: ${claim.text}`,
-      `Confidence: ${claim.confidence}; active refutations: ${claim.refutations}/${plan.refutations}.`,
+      // A claim the worker did not mark load-bearing is never examined. Printing
+      // a refutation count for it read as a verified claim in the first live
+      // trial, and both delegated judges rejected the brief for it.
+      claim.loadBearing
+        ? `Confidence: ${claim.confidence}; active refutations: ${claim.refutations}/${plan.refutations}.`
+        : `Confidence: ${claim.confidence}, as the source worker stated it; not load-bearing, so not independently examined.`,
       ...claim.evidence.map((entry) => `Evidence: ${entry.ref}\n\n${entry.excerpt}`),
       ...claim.examinations.map(
         (entry) =>

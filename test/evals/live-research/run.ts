@@ -83,7 +83,12 @@ const delegations = (['research-plan', 'research-sources'] as const).map((id) =>
         { id: 'honesty', text: 'Missing or contradictory evidence stays an open question.' },
       ],
       outcomes: ['accept', 'reject'],
-      unknowns: { allowed: [], defaults: [] },
+      // Uncertainties a public-web answer can honestly carry; the judges are told
+      // these IDs, and any other uncertainty still blocks the decision.
+      unknowns: {
+        allowed: ['source-currency', 'coverage-gap', 'conflicting-sources', 'access-limited'],
+        defaults: [],
+      },
       timeoutMs: 900000,
     },
     text = JSON.stringify(rubric)
@@ -92,7 +97,7 @@ const delegations = (['research-plan', 'research-sources'] as const).map((id) =>
     id,
     rubric: { ref: `rubrics/${id}.json`, sha256: sourceHash(text) },
     evidence: ['production'],
-    fallback: 'blocked' as const,
+    fallback: 'complete-with-unknowns' as const,
   }
 })
 const plan: DeliveryPlan = {

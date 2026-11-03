@@ -215,6 +215,7 @@
 | [0203](./0203-contained-claude-code-boundary.md) | Contained Claude Code boundary | Accepted | 2026-11-03 |
 | [0204](./0204-research-web-reads.md) | Research web reads | Accepted | 2026-11-03 |
 | [0205](./0205-public-controller-bundle.md) | Public controller bundle | Accepted | 2026-11-03 |
+| [0206](./0206-live-research-pilot-findings.md) | Live research pilot findings | Accepted | 2026-11-03 |
 
 ## Lifecycle
 

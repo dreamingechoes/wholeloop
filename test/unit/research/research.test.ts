@@ -10,7 +10,7 @@ import { loadProviders } from '../../../src/providers/load.js'
 import type { AngleResult, Refutation, ResearchPlan } from '../../../src/research/contracts.js'
 import { validateRefutation } from '../../../src/research/contracts.js'
 import { researchPlan } from '../../../src/research/plan.js'
-import { researchReport } from '../../../src/research/report.js'
+import { renderResearchBrief, researchReport } from '../../../src/research/report.js'
 import { ResearchWorkflow } from '../../../src/research/workflow.js'
 import { StateStore } from '../../../src/state/store.js'
 
@@ -139,6 +139,17 @@ describe('source-bound planning and refutation arithmetic', () => {
       }),
   )
 
+  it('never renders an unexamined claim as if verifiers had checked it', () =>
+    fixture((dir) => {
+      const p = plan(dir),
+        angle = p.angles[0]?.id ?? '',
+        examined = renderResearchBrief(p, researchReport(p, [result(angle)], [])),
+        unexamined = renderResearchBrief(p, researchReport(p, [result(angle, false)], []))
+      expect(examined).toContain(`active refutations: 0/${p.refutations}`)
+      // Found by the first live EVAL-10 trial: both judges read the count as verification.
+      expect(unexamined).not.toContain('active refutations')
+      expect(unexamined).toContain('not load-bearing, so not independently examined')
+    }))
   it('rejects duplicate voters, unplanned angles and evidence-free refutations', () =>
     fixture((dir) => {
       const p = plan(dir)
