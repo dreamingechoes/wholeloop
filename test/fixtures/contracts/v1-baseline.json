@@ -382,6 +382,7 @@
     "schema:wholeloop/delegated-decision-rubric@1": "a2b0dfc98e37e63f877b4e79be0aef0c521f170f7aebc0319c981ad7237b5723",
     "output:wholeloop/delivery-runner-status@1": "d61fb2c06ccbd24cb5be32001cba914d45bcb477fb9ee193b03c2e34c0037566",
     "output:wholeloop/delivery-runner-run@1": "30490b1bf4e4fb8a8a9ff415840147b16648badbcdfefbc1a358fcc9d14f6a49",
+    "output:wholeloop/delivery-runner-host@1": "e91db8363112ec671b7ce7756afec530d4ede8159b0f37348e7af99a0f59c892",
     "output:wholeloop/delivery-runner-reconcile@1": "df779e088750b0995529956989aec264c6b5765a55e57be345445f99a1dc62d3",
     "output:wholeloop/delivery-report@1": "f715d15510d9459086c8966646f849c9939c755ccb46377858ced7e13197092b",
     "output:wholeloop/delivery-diagnostics@1": "f7c4ed0201a9d9810cbc4f112d9873fcd1499f74a1e61c6771ff4fc06ae98329",

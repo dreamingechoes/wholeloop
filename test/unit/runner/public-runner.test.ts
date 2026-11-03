@@ -214,6 +214,29 @@ describe('public foreground run and reconcile (P6-10)', () => {
           )
         expect(records).toHaveLength(1)
         expect(invocation.core.path).toBe(realpathSync(resolve('dist/wl-runner.mjs')))
+        // The identity command names exactly the host the request was prepared for.
+        const identity = invoke(
+          ['delivery', 'runner-host', '--bindings', bindingsFile, '--runtime', runtimeFile],
+          dir,
+          env,
+        )
+        expect(identity.value).toEqual({
+          schema: 'wholeloop/delivery-runner-host@1',
+          host: store.get(digest).host,
+          runtime: true,
+        })
+        // Reconcile runs in the bundle that composed the run and finds nothing owned.
+        const reconciled = invoke(
+          ['delivery', 'reconcile', '--digest', digest, '--store', store.files.root, ...extra],
+          dir,
+          env,
+        )
+        expect(reconciled.code, reconciled.errors).toBe(0)
+        expect(reconciled.value).toMatchObject({
+          schema: 'wholeloop/delivery-runner-reconcile@1',
+          recoveryProblems: [],
+          status: { state: 'blocked', stages: [] },
+        })
         // Without the runtime document the identity differs and is refused.
         const missing = invoke(run(digest, store, ['--bindings', bindingsFile]), dir, env)
         expect(`${JSON.stringify(missing.value)}${missing.errors}`).toContain('runner-host-binding')

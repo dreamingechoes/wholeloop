@@ -41,6 +41,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | Command | Output schema | Purpose |
 | --- | --- | --- |
 | `wl delivery runner-schema` | `wholeloop/delivery-runner-schema@1` | Show owned runner contracts and current execution limitations |
+| `wl delivery runner-host` | `wholeloop/delivery-runner-host@1` | Print the public host identity a runner request must name for these documents |
 | `wl delivery runner-prepare` | `wholeloop/delivery-runner-status@1` | Prepare a private authorized route without starting execution |
 | `wl delivery runner-status` | `wholeloop/delivery-runner-status@1` | Inspect retained controller ownership and exact stage observations |
 | `wl delivery pause` | `wholeloop/delivery-runner-status@1` | Pause dispatch without deleting owned work or renewing budgets |

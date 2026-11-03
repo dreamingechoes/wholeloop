@@ -15,6 +15,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Show owned runner contracts and current execution limitations',
   },
   {
+    path: 'delivery runner-host',
+    arguments: '',
+    options: ['--bindings <path>', '--runtime <path>', '--root <path>'],
+    schema: 'wholeloop/delivery-runner-host@1',
+    summary: 'Print the public host identity a runner request must name for these documents',
+  },
+  {
     path: 'delivery runner-prepare',
     arguments: '',
     options: ['--file <path>', '--root <path>', '--store <path>'],

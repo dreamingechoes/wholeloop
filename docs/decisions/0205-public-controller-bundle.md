@@ -46,4 +46,7 @@ Trusted runtime observers now exist for both reference clients ([ADR-0120](./012
 - End to end, a composed research route completes with no prompt through the real `CodexBoundaryHost`. A synthetic client answers its version, feature, sandbox-probe, cancellation and login controls. Every launch is preceded by two sandbox controls and one login check, and the `native-web` angle runs with live web search.
 - That end-to-end case found the output-mode mismatch described above. Before the fix, the observer refused every launch as `runtime-unobserved`.
 
-`wl delivery reconcile` still runs in the core. Reconciling a composed run's stage work through the bundle, and a command that prints the public identity for a request, remain P6-27 work. No real client or model has run through the public host.
+- **Reconcile in the same bundle.** With a verified bundle installed, `wl delivery reconcile` runs the bundle's second private mode. The mode takes one bounded input naming the store and the request. It rebuilds the host from the retained documents that the request's identity names and returns the bounded result, which the core relays. Only the code that composed a run can inspect or stop its stages.
+- **Identity command.** `wl delivery runner-host --bindings --runtime` prints the identity a request must name (`wholeloop/delivery-runner-host@1`). It computes only; it retains nothing.
+
+A compiled-CLI case shows that the identity matches the prepared request and that reconcile goes through the bundle. Breaking the bundle's reconcile mode fails five public-runner cases. No real client or model has run through the public host.

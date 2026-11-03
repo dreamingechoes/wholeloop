@@ -5,6 +5,8 @@ import { DeliveryRunnerError } from './route.js'
 
 declare const __WL_CONTROLLER_SHA256__: string | undefined
 export const CONTROLLER_BUNDLE = 'wl-runner.mjs'
+/** The bundle's second private mode; the core never parses it as a command. */
+export const RECONCILE_ARGUMENT = '--internal-delivery-reconcile'
 
 /**
  * The installed controller bundle beside the core, verified against the digest

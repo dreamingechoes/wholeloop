@@ -12377,6 +12377,27 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": ["schema", "host", "runtime"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-runner-host@1"
+        },
+        "host": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "version", "configuration"],
+          "properties": {
+            "id": { "const": "wholeloop-fixed-dispatch" },
+            "version": { "type": "string", "minLength": 1, "maxLength": 64 },
+            "configuration": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "runtime": { "type": "boolean" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["schema", "status", "recoveryProblems"],
       "properties": {
         "schema": {

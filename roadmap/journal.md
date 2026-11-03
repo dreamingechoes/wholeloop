@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Bundle reconcile and identity command — in progress
+
+- With a verified bundle installed, `wl delivery reconcile` runs the bundle's private reconcile mode, so the code that composed a run is the code that inspects or stops it. `wl delivery runner-host` prints the identity a request must name; it is a new output contract with its fingerprint. Bindings and runtime reading is shared by run, reconcile and the identity command. The CLI reference and the runner tutorial are regenerated and updated.
+- A compiled-CLI case matches the printed identity to the prepared request and reconciles through the bundle. Breaking the bundle's reconcile mode fails five public-runner cases.
+- Next: the owner-approved model turn under the Claude profile, then the EVAL-10 pilot.
+
+---
+
 ## 2026-11-03 · P6-27 · Public controller bundle — in progress
 
 - ADR-0205. The build now emits a self-contained `dist/wl-runner.mjs` and embeds its SHA-256 in the core. `wl delivery run` launches the verified bundle as the owned child and refuses a missing or changed one before claiming the run. The core is 3.8 MB, under the 4 MiB copy bound, and both files ship. The process boundary keeps one copy of each class, which a dynamic import into the core would not.

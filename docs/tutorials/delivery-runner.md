@@ -86,18 +86,36 @@ Pause fences future dispatch. Resume retains the same run, original grant, deadl
 
 ## Run and reconcile from the terminal
 
-Prepare the request with `host` set to the public host identity for your bindings document, then run it:
+Write a bindings document naming the exact clients, models and roles you trust, and a runtime document naming where each client lives and the client home it signs in from. Then print the host identity those two documents define:
 
 ```bash
-wl delivery run --digest <request> --store <store> --json
-wl delivery reconcile --digest <request> --store <store> --json
+wl delivery runner-host --bindings bindings.json --runtime runtime.json --json
 ```
 
-Without `--bindings`, no native client is trusted. A route that needs native clients ends before dispatch: blocked under none policy and paused otherwise, with the reason in the receipt's `preflight`. A `--bindings` file listing exact pinned clients is part of the host identity, so the request must be prepared for that same document. Even then the route stops with `public-host-native-runtime-unavailable` until P6-27 supplies trusted runtime proof. `reconcile --cancel` cancels owned controller and stage work after `stop` and confirms closure separately. See [ADR-0183](../decisions/0183-public-foreground-runner-host.md).
+```json
+{
+  "schema": "wholeloop/native-runtime@1",
+  "clients": [
+    { "target": "codex", "client": "/opt/homebrew/bin/codex", "store": "/Users/you/.local/state/wholeloop-native/codex" },
+    { "target": "claude", "client": "/Users/you/.local/share/claude/versions/2.1.316", "store": "/Users/you/.local/state/wholeloop-native/claude" }
+  ]
+}
+```
+
+Prepare the request with `host` set to that identity, then run and reconcile it with the same documents:
+
+```bash
+wl delivery run --digest <request> --bindings bindings.json --runtime runtime.json --store <store> --json
+wl delivery reconcile --digest <request> --bindings bindings.json --runtime runtime.json --store <store> --json
+```
+
+Without `--bindings`, no native client is trusted. A route that needs native clients ends before dispatch: blocked under none policy and paused otherwise, with the reason in the receipt's `preflight`. Both documents are part of the host identity, so a request prepared for other documents is refused. Without `--runtime` a bound route still stops with `public-host-native-runtime-unavailable`.
+
+With both documents, the installed core launches its controller bundle, after checking the digest the build embedded, and that bundle composes the supported routes. Today only `research-report` is composed; every other route ends with `public-host-unsupported-stage` before any client starts. Each native launch still needs its own observed boundary. `reconcile` runs in the same bundle, so it can inspect and stop composed stages, and `reconcile --cancel` cancels owned controller and stage work after `stop` and confirms closure separately. See [ADR-0183](../decisions/0183-public-foreground-runner-host.md) and [ADR-0205](../decisions/0205-public-controller-bundle.md).
 
 ## Run unattended research to a stored brief
 
-A `research-report` route runs `plan → research → handoff` through the fixed research host. Under none policy, delegate `research-plan` and `research-sources` and grant only `source.read` and `report.write`. The host pins one research plan of at most eight angles, queries each available source with at most two repairs and examines every load-bearing claim with separate verifiers. It stores a brief whose receipt names the outcome: `research-report-complete`, `completed-with-unknowns` when the uncertainty policy is `complete-with-unknowns`, or `blocked`. Crashed or unavailable sources and missing examinations stay open questions; refuted claims stay in the brief with their counterevidence. The brief stays local; nothing is published. Supervised report research is refused, and the public host stops research routes in preflight until trusted runtime proof exists. See [ADR-0184](../decisions/0184-unattended-research-host.md).
+A `research-report` route runs `plan → research → handoff` through the fixed research host. Under none policy, delegate `research-plan` and `research-sources` and grant only `source.read` and `report.write`. The host pins one research plan of at most eight angles, queries each available source with at most two repairs and examines every load-bearing claim with separate verifiers. It stores a brief whose receipt names the outcome: `research-report-complete`, `completed-with-unknowns` when the uncertainty policy is `complete-with-unknowns`, or `blocked`. Crashed or unavailable sources and missing examinations stay open questions; refuted claims stay in the brief with their counterevidence. The brief stays local; nothing is published. Supervised report research is refused. The public host composes this route when given a runtime document: sources are the built-in `native-web` angle, read with the bound client's own search and fetch ([ADR-0204](../decisions/0204-research-web-reads.md)). See [ADR-0184](../decisions/0184-unattended-research-host.md).
 
 ## Report, diagnose and move a run
 
