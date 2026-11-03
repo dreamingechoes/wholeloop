@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Public controller bundle — in progress
+
+- ADR-0205. The build now emits a self-contained `dist/wl-runner.mjs` and embeds its SHA-256 in the core. `wl delivery run` launches the verified bundle as the owned child and refuses a missing or changed one before claiming the run. The core is 3.8 MB, under the 4 MiB copy bound, and both files ship. The process boundary keeps one copy of each class, which a dynamic import into the core would not.
+- A closed `wholeloop/native-runtime@1` document (`--runtime`) names each client's binary and dedicated home. The host identity digests it with the bindings; a bindings-only identity is unchanged. `RunnerPublicHost` delegates to a composer that only the bundle supplies. It composes the research route with the `native-web` angle, native judges, observed artifact evidence, and the fixed Codex and Claude observers.
+- Bug found by the new end-to-end case: read-only attempts always launch inline proposals, but the observers were built for file output, so every launch would have been refused as `runtime-unobserved`. Observers now use the launch's output mode. Six new cases: two compiled CLI, three unit and one end-to-end composed research run through the real Codex observer with a synthetic client. The package check now ships and verifies both files.
+- Remaining before the pilot: reconcile through the bundle and a command that prints the public identity.
+
+---
+
 ## 2026-11-03 · P6-27 · Research web reads — in progress
 
 - Found while preparing the public host: a native research worker is told to query its source angle, but every recipe removed web tools. A public-web research trial could therefore only return open questions. The owner chose public-web research through each client's own tools. ADR-0204 adds an optional `web: 'read'` assignment tool. The validator admits it only for research angle and claim cells, and the controller sets it for `native-web` angles and for examiners of `http(s)` citations. Claude Code gets `WebSearch,WebFetch` under restricted mode, and Codex gets `web_search = "live"` with command network still disabled. `live` is one of the four values the installed Codex accepts.

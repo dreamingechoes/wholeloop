@@ -2,10 +2,13 @@ import { resolve } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'
 import { NATIVE_BINDINGS_DEFAULT, validNativeBindings } from '../delivery/native-bindings.js'
+import { validNativeRuntime } from '../delivery/native-runtime.js'
+import { controllerBundle } from '../runner/controller-bundle.js'
 import { DeliveryRunner } from '../runner/engine.js'
 import { OwnedForegroundRunner, receiveOwnedForeground } from '../runner/foreground.js'
 import { type RunnerHumanDecision, RunnerHumanDecisions } from '../runner/human-decisions.js'
 import {
+  type PublicHostComposer,
   RunnerPublicHost,
   retainedPublicBindings,
   retainPublicBindings,
@@ -124,6 +127,7 @@ export async function deliveryRunnerAsyncCommand(
 ) {
   const digest = options['--digest'],
     file = options['--bindings'],
+    runtimeFile = options['--runtime'],
     boundary = options['--root']
   if (typeof digest !== 'string') throw new CliError('Provide --digest <sha256>', EXIT.input)
   let bindings: unknown = NATIVE_BINDINGS_DEFAULT
@@ -137,15 +141,30 @@ export async function deliveryRunnerAsyncCommand(
     }
   if (!validNativeBindings(bindings))
     throw new CliError('Provide a valid wholeloop/native-bindings@1 document', EXIT.input)
+  let runtime: unknown
+  if (typeof runtimeFile === 'string')
+    try {
+      runtime = JSON.parse(
+        readSourceFile(
+          typeof boundary === 'string' ? resolve(root, boundary) : root,
+          runtimeFile,
+          65536,
+        ),
+      )
+    } catch {
+      throw new CliError('Provide a readable --runtime document', EXIT.input)
+    }
+  if (runtime !== undefined && !validNativeRuntime(runtime))
+    throw new CliError('Provide a valid wholeloop/native-runtime@1 document', EXIT.input)
   try {
     const store = new RunnerStore(
         typeof options['--store'] === 'string' ? resolve(root, options['--store']) : undefined,
       ),
-      identity = retainPublicBindings(store, bindings),
+      identity = retainPublicBindings(store, bindings, runtime),
       request = store.get(digest)
     if (contractDigest(request.host) !== contractDigest(identity))
       throw new DeliveryRunnerError('runner-host-binding')
-    const host = new RunnerPublicHost(store, bindings)
+    const host = new RunnerPublicHost(store, bindings, runtime)
     if (command === 'delivery reconcile') {
       const { recoveryProblems, ...status } = await new DeliveryRunner(store).reconcile(
         digest,
@@ -178,9 +197,14 @@ export async function deliveryRunnerAsyncCommand(
     process.once('SIGINT', relay)
     process.once('SIGTERM', relay)
     try {
-      const { status } = await new OwnedForegroundRunner(store).run(digest, core, {
-        signal: abort.signal,
-      })
+      // The verified controller bundle, when installed, is the owned child.
+      const { status } = await new OwnedForegroundRunner(store).run(
+        digest,
+        controllerBundle(core) ?? core,
+        {
+          signal: abort.signal,
+        },
+      )
       io.out(
         JSON.stringify(
           { schema: 'wholeloop/delivery-runner-run@1', status, preflight },
@@ -202,8 +226,11 @@ export async function deliveryRunnerAsyncCommand(
   }
 }
 
-/** Private controller mode: one bounded input, consumed once inside its owned group. */
-export async function deliveryForegroundChild(core: string) {
+/**
+ * Private controller mode: one bounded input, consumed once inside its owned
+ * group. Only the controller bundle passes a composer; the core composes none.
+ */
+export async function deliveryForegroundChild(core: string, composer?: PublicHostComposer) {
   let text = ''
   for await (const chunk of process.stdin) {
     text += chunk
@@ -211,8 +238,9 @@ export async function deliveryForegroundChild(core: string) {
   }
   const value = JSON.parse(text) as { store?: unknown },
     status = await receiveOwnedForeground(value, core, (request) => {
-      const store = new RunnerStore(String(value.store))
-      return new RunnerPublicHost(store, retainedPublicBindings(store, request.host))
+      const store = new RunnerStore(String(value.store)),
+        configuration = retainedPublicBindings(store, request.host)
+      return new RunnerPublicHost(store, configuration.bindings, configuration.runtime, composer)
     })
   return status.state === 'completed' ? EXIT.ok : EXIT.precondition
 }

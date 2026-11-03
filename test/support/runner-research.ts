@@ -70,6 +70,8 @@ export async function runnerResearchFixture(
     intervention?: 'none' | 'supervised'
     decision?: 'accept' | 'reject'
     native?: boolean
+    /** Prepares the request for another host, such as the public identity. */
+    host?: (dir: string) => RunnerRequest['host']
   } = {},
 ) {
   await fixture(async ({ dir, planning, plan }) => {
@@ -123,7 +125,11 @@ export async function runnerResearchFixture(
         revision: 1,
         plan: prepared.digest,
         grant: grant.grant.id,
-        host: { id: 'fixture', version: '1', configuration: 'a'.repeat(64) },
+        host: settings.host?.(dir) ?? {
+          id: 'fixture',
+          version: '1',
+          configuration: 'a'.repeat(64),
+        },
         pollMs: 50,
       },
       digest = store.prepare(request).digest

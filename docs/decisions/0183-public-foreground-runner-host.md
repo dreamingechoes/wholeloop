@@ -15,7 +15,7 @@ Add `wl delivery run` and `wl delivery reconcile` over one fixed public host, `w
 
 `reconcile` observes or, with `--cancel`, cancels owned controller and stage work through the existing nonce-bound recovery, never by signaling a stored PID. The operator's interrupt reaches the controller through its owned group.
 
-Native and domain adapters join the public host when P6-27 supplies trusted runtime observers, with a bundling approach that keeps the core bounded. Until then, binding a client is necessary but never sufficient, and a route that would need no native client reports `public-host-unsupported-stage`.
+Native and domain adapters join the public host when P6-27 supplies trusted runtime observers, with a bundling approach that keeps the core bounded ([ADR-0205](./0205-public-controller-bundle.md) adds the controller bundle and composes the research route). Until then, binding a client is necessary but never sufficient, and a route that would need no native client reports `public-host-unsupported-stage`.
 
 ## Alternatives rejected
 

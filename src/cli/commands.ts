@@ -52,7 +52,13 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'delivery run',
     arguments: '',
-    options: ['--digest <sha256>', '--bindings <path>', '--root <path>', '--store <path>'],
+    options: [
+      '--digest <sha256>',
+      '--bindings <path>',
+      '--runtime <path>',
+      '--root <path>',
+      '--store <path>',
+    ],
     schema: 'wholeloop/delivery-runner-run@1',
     summary: 'Run a prepared route in an owned foreground controller under the public fixed host',
   },
@@ -62,6 +68,7 @@ export const COMMANDS: readonly Command[] = [
     options: [
       '--digest <sha256>',
       '--bindings <path>',
+      '--runtime <path>',
       '--root <path>',
       '--store <path>',
       '--cancel',

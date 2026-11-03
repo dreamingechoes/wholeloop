@@ -1,5 +1,14 @@
 import { spawn, spawnSync } from 'node:child_process'
-import { chmodSync, existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import {
+  chmodSync,
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from 'node:fs'
 import { delimiter, join, resolve } from 'node:path'
 import { build } from 'esbuild'
 import { describe, expect, it } from 'vitest'
@@ -9,6 +18,7 @@ import {
   NATIVE_BINDINGS_DEFAULT,
   type NativeBindings,
 } from '../../../src/delivery/native-bindings.js'
+import type { NativeRuntime } from '../../../src/delivery/native-runtime.js'
 import { OwnedForegroundRunner } from '../../../src/runner/foreground.js'
 import { publicRunnerIdentity } from '../../../src/runner/public-host.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
@@ -59,7 +69,11 @@ async function setup(
     env: NodeJS.ProcessEnv
     canary: string
   }) => Promise<void>,
-  options: { intervention: 'none' | 'supervised'; bindings: NativeBindings },
+  options: {
+    intervention: 'none' | 'supervised'
+    bindings: NativeBindings
+    runtime?: NativeRuntime
+  },
 ) {
   await fixture(async ({ dir, planning, plan }) => {
     plan.policy.intervention = options.intervention
@@ -74,7 +88,7 @@ async function setup(
         revision: 1,
         plan: prepared.digest,
         grant: grant.grant.id,
-        host: publicRunnerIdentity(options.bindings),
+        host: publicRunnerIdentity(options.bindings, options.runtime),
         pollMs: 50,
       },
       file = join(dir, 'request.json'),
@@ -174,6 +188,62 @@ describe('public foreground run and reconcile (P6-10)', () => {
       )
     },
   )
+  it('launches the verified controller bundle, which composes no route it does not support (ADR-0205)', async () => {
+    const runtime: NativeRuntime = {
+      schema: 'wholeloop/native-runtime@1',
+      clients: [
+        { target: 'codex', client: '/opt/fixture/bin/codex', store: '/opt/fixture/codex-home' },
+      ],
+    }
+    await setup(
+      async ({ store, digest, dir, bindingsFile, env, canary }) => {
+        const runtimeFile = join(dir, 'runtime.json')
+        writeFileSync(runtimeFile, JSON.stringify(runtime))
+        const extra = ['--bindings', bindingsFile, '--runtime', runtimeFile],
+          result = invoke(run(digest, store, extra), dir, env)
+        // The fixture plan is an implementation route; only research is composed.
+        expect(result.code, result.errors).toBe(3)
+        expect(result.value.status).toMatchObject({ state: 'blocked', stages: [] })
+        expect(existsSync(canary)).toBe(false)
+        const records = readdirSync(store.files.path('delivery/runner-foreground')),
+          invocation = JSON.parse(
+            readFileSync(
+              store.files.path(`delivery/runner-foreground/${records[0]}/invocation.json`),
+              'utf8',
+            ),
+          )
+        expect(records).toHaveLength(1)
+        expect(invocation.core.path).toBe(realpathSync(resolve('dist/wl-runner.mjs')))
+        // Without the runtime document the identity differs and is refused.
+        const missing = invoke(run(digest, store, ['--bindings', bindingsFile]), dir, env)
+        expect(`${JSON.stringify(missing.value)}${missing.errors}`).toContain('runner-host-binding')
+      },
+      { intervention: 'none', bindings: bound, runtime },
+    )
+  })
+  it('refuses an installed core whose controller bundle changed before claiming the run', async () => {
+    await setup(
+      async ({ store, digest, dir, env, canary }) => {
+        const copy = join(dir, 'installed')
+        mkdirSync(copy)
+        copyFileSync(cli, join(copy, 'wl.mjs'))
+        writeFileSync(
+          join(copy, 'wl-runner.mjs'),
+          `${readFileSync(resolve('dist/wl-runner.mjs'), 'utf8')}\n// changed\n`,
+        )
+        const result = spawnSync(
+          process.execPath,
+          [join(copy, 'wl.mjs'), ...run(digest, store), '--json'],
+          { cwd: dir, env, encoding: 'utf8', timeout: 60000 },
+        )
+        expect(result.status).toBe(3)
+        expect(`${result.stdout}${result.stderr}`).toContain('public-host-controller-bundle')
+        expect(store.record(digest).controller).toBeUndefined()
+        expect(existsSync(canary)).toBe(false)
+      },
+      { intervention: 'none', bindings: NATIVE_BINDINGS_DEFAULT },
+    )
+  })
   it('refuses a different bindings document and a revoked grant before claiming the run', async () => {
     await setup(
       async ({ store, request, digest, dir, env, canary }) => {

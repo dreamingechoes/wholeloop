@@ -83,7 +83,8 @@ try {
       ],
       cwd,
     )
-  const expected = ['LICENSE', 'README.md', 'dist/wl.mjs', 'package.json']
+  // The core plus the owned controller bundle it verifies by digest (ADR-0205).
+  const expected = ['LICENSE', 'README.md', 'dist/wl-runner.mjs', 'dist/wl.mjs', 'package.json']
   const before = new Map(
     expected.map((file) => {
       const path = join(repository, file)
@@ -99,7 +100,7 @@ try {
     !lstatSync(join(repository, 'dist')).isSymbolicLink(),
     'Package dist must be a real directory',
   )
-  assert.deepEqual(readdirSync(join(repository, 'dist')), ['wl.mjs'])
+  assert.deepEqual(readdirSync(join(repository, 'dist')).sort(), ['wl-runner.mjs', 'wl.mjs'])
   assert.deepEqual(pkg.bin, { wholeloop: 'dist/wl.mjs', wl: 'dist/wl.mjs' })
   for (const name of [
     'dependencies',
@@ -131,7 +132,7 @@ try {
   assert(contained(prefix, modules), 'Package installation must remain under its temporary prefix')
   const installed = join(modules, pkg.name)
   assert.deepEqual(JSON.parse(readFileSync(join(installed, 'package.json'), 'utf8')), pkg)
-  for (const file of ['LICENSE', 'README.md', 'dist/wl.mjs'])
+  for (const file of ['LICENSE', 'README.md', 'dist/wl.mjs', 'dist/wl-runner.mjs'])
     assert.equal(
       hash('sha256', readFileSync(join(installed, file))),
       hash('sha256', before.get(file)),
