@@ -21,7 +21,7 @@ Instructions for any coding agent (and any human) working **on this repository**
 1. Read this file, the last three entries in `roadmap/journal.md`, and the current phase file.
 2. Take the first ⬜ task whose dependencies are ✅; mark it 🔄.
 3. Do it end to end — code, tests and docs in the same change.
-4. Tick every acceptance criterion; run all local checks.
+4. Tick every acceptance criterion. Before each commit run `npm run check:fast`; run the full `npm run check` before any push and when a task closes. Trust only the final `CHECK PASS` or `CHECK FAIL (<step>)` line.
 5. Mark it ✅, add a journal entry, update status banners in the docs.
 6. A design change gets a new ADR in the same change.
 7. When a task needs a choice that counts as an implementation refinement (an internal design choice, which task owns a piece of work, a conservative default, a narrower scope), choose the most conservative option that keeps every safety and authority guarantee. Record it in an ADR, or in the journal if it is minor, and keep going. Stop only for: (a) choices that widen authority, containment, credentials or who can approve; (b) publication to npm, real pushes to external services, or real PR, CI or merge trials against a hosted service; (c) work that needs installed, signed-in native clients or real model accounts. For (a), apply the most conservative choice and leave the wider option as a Proposed ADR plus a row in manual verification. For (b) and (c), finish everything that can be built and tested with fixtures and leave only the acceptance evidence open in manual verification; neither is a reason to leave a task's implementation undone.
@@ -45,7 +45,8 @@ Node ≥ 22 and npm for development; the published CLI runs on Node ≥ 20 ([ADR
 
 ```bash
 npm ci
-npm run check      # lint · types · tests · offline npm package · docs · harness — must be green
+npm run check      # full gate: lint · types · all tests · offline npm package · docs · harness; ends CHECK PASS/FAIL
+npm run check:fast # per-commit gate: same steps, only tests related to changed files, no offline install
 npm run lint:fix   # apply Biome's safe fixes and formatting
 npm run build      # dist/wl.mjs, one bundled ESM file
 npm run smoke      # the built CLI prints the package version

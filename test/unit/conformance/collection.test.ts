@@ -120,7 +120,8 @@ describe('fresh multi-client conformance collection', () => {
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
-  }, 60000)
+    // Fourteen simulated native runs; four parallel suite workers need headroom.
+  }, 120000)
 
   it('refuses an unsupported OpenCode dialect before writing any earlier entry', async () => {
     const { root, context } = fixture()
