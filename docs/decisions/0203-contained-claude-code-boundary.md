@@ -78,3 +78,11 @@ Verification:
 - removing the deny fails that case.
 
 Neither allowing Keychain writes inside the profile nor refreshing outside it was chosen here. The first would let a model-driven process change the owner's Keychain; the second runs the client uncontained. Both are the owner's decision. Until then, the owner signs in again before each batch of trials.
+
+## Developer-tools prompt
+
+During the campaign trials the owner saw macOS ask, over and over, to install the command line developer tools. The cause: inside the profile, `/var/select/developer_dir` is unreadable. When the client calls `/usr/bin/git`, the shim decides no developer tools exist and asks the owner's GUI session to install them, once per launch. Outside the profile, Git works normally.
+
+The profile now denies the `com.apple.dt.CommandLineTools.installondemand` lookup, so the failure stays silent and Git stays unavailable inside the profile, as before. Allowing reads of the developer link and the Xcode directory was not chosen: it would widen what the client can read for no benefit to a run.
+
+A macOS case runs `/usr/bin/git` under the real profile and requires a non-zero exit reporting that no install could be requested. The case was not run with the deny removed, because that would show the owner the dialog again.

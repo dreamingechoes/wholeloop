@@ -147,8 +147,14 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
     const writes = (text: string) => text.slice(text.indexOf('(allow file-read* file-write*'))
     expect(writes(files)).toContain('(subpath "/work/tree")')
     expect(writes(inline)).not.toContain('(subpath "/work/tree")')
-    // The credential deny comes last, so it overrides the client-home write allowance.
-    expect(files.endsWith('(literal "/state/claude/auth.json"))')).toBe(true)
+    // The credential deny overrides the client-home write allowance, and no
+    // launch may ask the owner's session to install developer tools.
+    expect(files).toContain('(literal "/state/claude/auth.json"))')
+    expect(
+      files.endsWith(
+        '(deny mach-lookup (global-name "com.apple.dt.CommandLineTools.installondemand"))',
+      ),
+    ).toBe(true)
     expect(
       files.lastIndexOf('(deny file-write* (literal "/state/claude/.credentials.json")'),
     ).toBeGreaterThan(files.indexOf('(allow file-read* file-write*'))
@@ -293,6 +299,15 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
         expect(touch(name)).not.toBe(0)
         expect(existsSync(join(store, name))).toBe(false)
       }
+      // The Git shim cannot see the developer tools here; it must not ask the
+      // owner's GUI session to install them.
+      const git = spawnSync('/usr/bin/sandbox-exec', ['-p', profile, '/usr/bin/git', '--version'], {
+        encoding: 'utf8',
+        cwd: directory,
+        env: { PATH: '/usr/bin:/bin', HOME: realpathSync(homedir()) },
+      })
+      expect(git.status).not.toBe(0)
+      expect(git.stderr).toContain('no install could be requested')
     },
   )
 })

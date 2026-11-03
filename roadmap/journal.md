@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Developer-tools prompt from contained launches — in progress
+
+- The owner kept seeing macOS ask to install the command line developer tools during the Claude trials. Inside the profile `/var/select/developer_dir` is unreadable, so every launch's `/usr/bin/git` call asked the GUI session to install them. The profile now denies that request: Git stays unavailable inside the profile and no prompt appears. A real `sandbox-exec` case covers it; the case was not run with the deny removed, which would show the prompt again.
+- Second fresh batch: trial 1 completed (1113 s, 32 launches, 71,677 output tokens, no human wait). At 80% of the five-hour usage window the owner's budget would not cover trial 3, so its loop was stopped before it started; trial 2 was left to finish.
+
+---
+
 ## 2026-11-03 · P6-27 · Claude research trials, second batch — in progress
 
 - After a fresh sign-in, three EVAL-10 trials on code 6809993 gave one pass and two failures. Trial 1 completed with outcome `completed-with-unknowns`: 867 s, no human wait, 29 launches, both delegated decisions accepted and supported, twelve cited claims, no refutation, four open questions and 58,123 output tokens. Trial 2 passed its plan, then its research launches exited `permission-denied` and the route ended blocked after 721 s. Trial 3 was blocked within 3 s with zero tokens.

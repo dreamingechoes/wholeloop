@@ -90,5 +90,10 @@ export function claudeSandboxProfile(input: {
     ...rule('file-read* file-write*', write),
     // Last, so it overrides the client-home write allowance above.
     `(deny file-write* ${CLAUDE_CREDENTIAL_FILES.map((name) => literal(join(containment.store, name))).join(' ')})`,
+    // The profile hides /var/select/developer_dir, so the /usr/bin/git shim the
+    // client calls concludes no developer tools exist and asks the owner's GUI
+    // session to install them, once per launch (2026-11-03). Denying that
+    // request keeps the failure silent; Git stays unavailable, as before.
+    '(deny mach-lookup (global-name "com.apple.dt.CommandLineTools.installondemand"))',
   ].join('')
 }
