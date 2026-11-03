@@ -689,7 +689,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-27 · Native zero-intervention vertical evaluations
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-13, P6-16, P6-17, P6-22, P6-24, P6-25, P6-26, P6-33
+**Status:** 🔄 · **Size:** L · **Depends on:** P6-13, P6-16, P6-17, P6-22, P6-24, P6-25, P6-26, P6-33
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -706,6 +706,10 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 **Tests** — EVAL-01–EVAL-03, EVAL-08–EVAL-11 and RSR-01: live disposable trials with selected native accounts/budgets and exact versions.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/09-validation-and-acceptance.md); platform matrix, v1 acceptance, manual verification.
+
+**Started** — On the owner's instruction, before P6-22, P6-24 and P6-33 are ✅: their remaining work is native or hosted acceptance that this task supplies, or P6-29's producer, which the owner chose to build here. The owner fixed the campaign inputs on 2026-11-03 ([manual verification](./manual-verification.md#native-evaluation-campaign-inputs-2026-11-03)). Increments, in order: reference version pin, Claude Code boundary observer, public host composition, P6-29's seeded correction producer, live evaluation host and three-run report, then the paid pilot.
+
+**Completed technical work** — The reference pin is Claude Code 2.1.316 and Codex 0.166.0, and the Codex recipe disables three more default features, including interactive MCP elicitation ([ADR-0202](../docs/decisions/0202-campaign-reference-client-versions.md)). The six real model-free Codex boundary controls pass on 0.166.0.
 
 ---
 

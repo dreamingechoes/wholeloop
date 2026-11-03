@@ -73,7 +73,7 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
   const options = (nativeProcess: NativeProcessRunner): RunnerGateOptions => ({
     native: {
       target: 'codex',
-      version: '0.163.0',
+      version: '0.166.0',
       model: 'fixture-model',
       path: `${bin}:${dirname(process.execPath)}`,
       host: boundary,

@@ -46,7 +46,7 @@ async function setup(
         if (args.includes('--version'))
           return {
             ...closed,
-            stdout: `codex-cli ${fault === 'version' ? 'unverified' : '0.163.0'}\n`,
+            stdout: `codex-cli ${fault === 'version' ? 'unverified' : '0.166.0'}\n`,
           }
         if (args.includes('features')) {
           const names = args
@@ -106,7 +106,7 @@ describe('actual-boundary reference observer preserves independent proof and own
         }),
         selected = nativeDeliveryRecipe({
           target: 'codex',
-          version: '0.163.0',
+          version: '0.166.0',
           assignment,
           directory: input.recipe.cwd,
           model: input.model,

@@ -139,7 +139,7 @@ if(${JSON.stringify(target)}==='claude')console.log(JSON.stringify({is_error:fal
       {
         native: {
           target,
-          version: target === 'claude' ? '2.1.307' : '0.163.0',
+          version: target === 'claude' ? '2.1.316' : '0.166.0',
           model: 'fixture-model',
           path: `${bin}:${process.env.PATH ?? ''}`,
           host: boundary,

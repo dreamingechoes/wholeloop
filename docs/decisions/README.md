@@ -211,6 +211,7 @@
 | [0199](./0199-composed-conditional-merge-routes.md) | Composed conditional merge routes | Accepted | 2026-11-02 |
 | [0200](./0200-learning-observation-runs.md) | Learning observation runs | Accepted | 2026-11-02 |
 | [0201](./0201-learning-observation-host.md) | Learning observation host | Accepted | 2026-11-02 |
+| [0202](./0202-campaign-reference-client-versions.md) | Campaign reference client versions | Accepted | 2026-11-03 |
 
 ## Lifecycle
 

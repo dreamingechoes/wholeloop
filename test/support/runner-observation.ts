@@ -195,7 +195,7 @@ export function decisionHost(store: RunnerStore, outcome: string) {
   store.files.atomic(
     'observation-bin/codex',
     `#!${process.execPath}
-if(process.argv.includes('--version')){console.log('codex-cli 0.163.0');process.exit(0)}
+if(process.argv.includes('--version')){console.log('codex-cli 0.166.0');process.exit(0)}
 let input='';process.stdin.on('data',chunk=>input+=chunk);process.stdin.on('end',()=>{
 const payload=JSON.parse(input),a=payload.assignment,b=JSON.parse(a.brief),inner=JSON.parse(payload.inputs[0].content);
 const output={schema:b.response.$id,basis:inner.basis,rationale:a.identity.role==='planner'?'The settled readings meet the target.':'A single checkpoint cannot separate the change from seasonality.',uncertainties:[]};
@@ -229,7 +229,7 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
       {
         native: {
           target: 'codex',
-          version: '0.163.0',
+          version: '0.166.0',
           model: 'fixture-model',
           path,
           host: boundary,

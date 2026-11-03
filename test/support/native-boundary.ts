@@ -44,7 +44,7 @@ export function nativeBoundaryInput(
   mkdirSync(nativeStore, { recursive: true, mode: 0o700 })
   const selected = nativeDeliveryRecipe({
     target: 'codex',
-    version: '0.163.0',
+    version: '0.166.0',
     assignment,
     directory,
     model: 'model-not-invoked',

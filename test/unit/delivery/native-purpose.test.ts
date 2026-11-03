@@ -139,7 +139,7 @@ else {console.log(JSON.stringify({type:'item.completed',item:{type:'agent_messag
         }),
       options: {
         target: 'claude',
-        version: '2.1.307',
+        version: '2.1.316',
         model: 'fixture-model',
         path: `${bin}:${process.env.PATH ?? ''}`,
         host: boundary,
@@ -263,7 +263,7 @@ describe('owned native decision purpose attempts', () => {
     'executes %s planner/challenger without an implementation unit',
     async (target) => {
       await setup(async ({ purpose, claim, options, run }) => {
-        options = { ...options, target, version: target === 'claude' ? '2.1.307' : '0.163.0' }
+        options = { ...options, target, version: target === 'claude' ? '2.1.316' : '0.166.0' }
         const planner = claim(),
           first = await purpose.run(planner, options)
         expect(first).toMatchObject({

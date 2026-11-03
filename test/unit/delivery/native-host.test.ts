@@ -96,7 +96,7 @@ describe('dedicated native delivery recipes', () => {
       const value = assignment('verifier'),
         input = {
           target,
-          version: target === 'claude' ? '2.1.307' : '0.163.0',
+          version: target === 'claude' ? '2.1.316' : '0.166.0',
           assignment: value,
           directory: '/tmp/native-fixture',
           workspace: '/tmp/workspace-fixture',
@@ -155,7 +155,7 @@ describe('dedicated native delivery recipes', () => {
       const value = assignment(role)
       const selected = nativeDeliveryRecipe({
         target,
-        version: target === 'claude' ? '2.1.307' : '0.163.0',
+        version: target === 'claude' ? '2.1.316' : '0.166.0',
         assignment: value,
         directory: '/tmp/wholeloop-fixture',
         ...(value.tools.workspace !== 'none' ? { workspace: '/tmp/wholeloop-workspace' } : {}),
@@ -188,7 +188,15 @@ describe('dedicated native delivery recipes', () => {
           if (recipe.args[index] === '--config') configText += `${entry(recipe.args, index + 1)}\n`
         expect(parse(configText)).toMatchObject({
           default_permissions: 'wholeloop',
-          features: { shell_tool: false, apps: false, multi_agent: false },
+          features: {
+            shell_tool: false,
+            apps: false,
+            multi_agent: false,
+            // ADR-0202: on by default in 0.166.0; elicitation is interactive.
+            tool_call_mcp_elicitation: false,
+            image_generation: false,
+            tool_suggest: false,
+          },
           web_search: 'disabled',
         })
         const schema = JSON.parse(recipe.files.get('response.schema.json') ?? '{}')
@@ -217,7 +225,7 @@ describe('dedicated native delivery recipes', () => {
     const value = assignment(),
       selected = nativeDeliveryRecipe({
         target: 'codex',
-        version: '0.163.0',
+        version: '0.166.0',
         assignment: value,
         directory: '/tmp/fixture',
         workspace: '/tmp/workspace',
@@ -429,7 +437,7 @@ else console.log(JSON.stringify({is_error:false,structured_output:result}));
       },
       options: {
         target,
-        version: target === 'claude' ? '2.1.307' : '0.163.0',
+        version: target === 'claude' ? '2.1.316' : '0.166.0',
         model: 'fixture-model',
         path: `${bin}:${dirname(process.execPath)}`,
         host,

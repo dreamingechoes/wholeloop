@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-03 · P6-27 · Reference client pin — in progress
+
+- P6-27 is 🔄. The delivery pin moves to the owner's Claude Code 2.1.316 and Codex 0.166.0 ([ADR-0202](../docs/decisions/0202-campaign-reference-client-versions.md)). Every recipe flag exists in both installed help outputs. Codex 0.166.0 enables MCP elicitation, image generation and tool suggestions by default; the recipe now disables all three, since elicitation is an interactive entry point.
+- The six real model-free Codex boundary controls pass on 0.166.0, and the observer confirms that the new feature names exist and are off. A mutation that re-enables elicitation fails the recipe test. The nightly conformance pins are a separate baseline and are unchanged.
+- Next: a Claude Code boundary observer, which does not exist yet.
+
+---
+
 ## 2026-11-03 · P6-27 · Native evaluation campaign inputs — recorded
 
 - The owner fixed the campaign inputs in [manual verification](./manual-verification.md#native-evaluation-campaign-inputs-2026-11-03). Reference clients are Claude Code 2.1.316 on `claude-opus-5-5` and Codex 0.166.0 on `gpt-6.1-sol` with high effort, both observed installed and signed in. The exact model ID replaces the `opus` alias, which can move between trials.

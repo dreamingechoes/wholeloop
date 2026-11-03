@@ -22,7 +22,7 @@ export const NATIVE_DELIVERY_TARGETS = [
   'antigravity',
 ] as const
 export type NativeDeliveryTarget = (typeof NATIVE_DELIVERY_TARGETS)[number]
-export const REFERENCE_NATIVE_VERSIONS = { claude: '2.1.307', codex: '0.163.0' } as const
+export const REFERENCE_NATIVE_VERSIONS = { claude: '2.1.316', codex: '0.166.0' } as const
 export interface NativeDeliveryRecipe {
   target: NativeDeliveryTarget
   version: string
@@ -186,6 +186,12 @@ export function nativeDeliveryRecipe(input: {
       'features.skill_mcp_dependency_install': false,
       'features.request_permissions_tool': false,
       'features.default_mode_request_user_input': false,
+      // Enabled by default in 0.166.0. Elicitation lets an MCP tool ask the
+      // user mid-run, which a none-policy run must never do even with no
+      // servers configured; the other two are tools no assignment needs.
+      'features.tool_call_mcp_elicitation': false,
+      'features.image_generation': false,
+      'features.tool_suggest': false,
       'skills.bundled.enabled': false,
       'skills.include_instructions': false,
       'tools.view_image': false,

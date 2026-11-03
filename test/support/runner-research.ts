@@ -130,7 +130,7 @@ export async function runnerResearchFixture(
     store.files.atomic(
       'research-bin/codex',
       `#!${process.execPath}
-if(process.argv.includes('--version')){console.log('codex-cli 0.163.0');process.exit(0)}
+if(process.argv.includes('--version')){console.log('codex-cli 0.166.0');process.exit(0)}
 let input='';process.stdin.on('data',chunk=>input+=chunk);process.stdin.on('end',()=>{
 const payload=JSON.parse(input),a=payload.assignment,b=JSON.parse(a.brief);
 const emit=(ref,body)=>{const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic process output; no account, model or real source certification.',artifacts:[{ref,kind:'report',text:JSON.stringify(body)}],criteria:[],findings:[],unknowns:[]};
@@ -196,7 +196,7 @@ emit('artifacts/decision.json',output);
           {
             native: {
               target: 'codex',
-              version: '0.163.0',
+              version: '0.166.0',
               model: 'fixture-model',
               path: nativePath,
               host: boundary,
@@ -258,7 +258,7 @@ emit('artifacts/decision.json',output);
                   grant: context.request.grant,
                   native: {
                     target: 'codex',
-                    version: '0.163.0',
+                    version: '0.166.0',
                     model: 'fixture-model',
                     path: nativePath,
                     host: boundary,
