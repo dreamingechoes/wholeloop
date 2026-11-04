@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-04 · P6-27 · Next steps — in progress
+
+- Next: live EVAL-09 implementation-to-PR trials. They need a live to-pr evaluation like the research one, the private trial repository, and a synthetic rehearsal before the real Claude and Codex runs.
+- Waiting on quota: the three Codex EVAL-10 research trials.
+- Open owner decisions: the proposed worker credential design (P6-35) and the envelope-grant continuation draft.
+
+---
+
 ## 2026-11-04 · P6-35 · Worker credentials task added — planned
 
 - The owner added P6-35, controller-owned worker credentials, to Phase 6 as a 1.0 task, and P6-32 now depends on it. The task starts with the verifications the proposed credential design lists and the owner's acceptance decision. It then implements, for Claude Code and Codex, secret-store references, injection per launch, disposable worker homes, a credential preflight and pausing on exhausted usage windows. P6-27 does not depend on it: its remaining trials run with a fresh sign-in before each batch.
