@@ -191,4 +191,4 @@ These are immutable artifacts, not new legacy item events or an alternative item
 Operator grants/revocations add private immutable delivery/authority records, while delivery/broker retains scoped worker requests as claims with effects not-performed. Stable action IDs prevent implicit renewal, reads verify record digests and revoked/expired authority refuses later admission/requests. These artifacts do not append legacy human approval/testing events. A grant ID is not a bearer credential; only controller-owned session context and the separately observed runtime boundary can make a broker session available. Full lifecycle journaling and actual native/backend ownership follow in later increments. See [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md).
 
 <!-- docnav -->
-[◀ Core CLI](core-cli.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Orchestration and gates ▶](orchestration-and-gates.md)
+[◀ Core CLI](core-cli.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Operator overview ▶](operator-overview.md)

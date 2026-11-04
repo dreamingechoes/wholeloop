@@ -969,7 +969,7 @@ To fill them:
 
 ## P6-37 · Operator overview read model
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-25, P6-30, P6-36
+**Status:** 🔄 · **Size:** L · **Depends on:** P6-25, P6-30, P6-36
 
 **Design review:** added on 2026-11-04 · **Release:** 1.0
 
@@ -992,6 +992,8 @@ Also `wl overview schema`, and fixture stores with expected output for every hea
 - [ ] On the same store, the overview agrees with `wl status`, `wl delivery report` and `wl delivery runner-status`, and reuses their rules. Every new rule lives in `src/` with a table-driven test.
 - [ ] Rebuilding every projection gives a byte-identical digest, and the cursor names the exact journal positions read.
 - [ ] Fixture, claimed, observed, human and policy provenance stay distinct, and no prompt, credential or source payload appears. Output stays bounded on a large store.
+
+**Progress** — The first increment adds internal canonical journal-prefix cursors and fixed attention/headline precedence with table-driven tests. It does not yet expose a store reader, CLI, schema or consumer fixture kit. All acceptance criteria remain open.
 
 **Tests** — Tables per headline state and attention kind, differential checks against the existing reads, digest after a rebuild, secret canaries, and a large-store fixture.
 

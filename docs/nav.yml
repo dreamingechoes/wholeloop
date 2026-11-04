@@ -64,6 +64,7 @@ pages:
   - { path: architecture/autonomous-delivery.md, title: Autonomous delivery design }
   - { path: architecture/core-cli.md, title: Core CLI }
   - { path: architecture/state-and-messaging.md, title: State and messaging }
+  - { path: architecture/operator-overview.md, title: Operator overview }
   - { path: architecture/orchestration-and-gates.md, title: Orchestration and gates }
   - { path: architecture/determinism-and-testing.md, title: Determinism and testing }
   - { path: decisions/README.md, title: Decisions }

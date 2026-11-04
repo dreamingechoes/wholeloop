@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: verified-overview-prefix
+    enforcers: [src/overview/cursor.ts#journalPosition, src/overview/cursor.ts#decodeCursor, src/overview/cursor.ts#cursorPrefix, test/unit/overview/cursor.test.ts]
   - id: descriptive-event-attribution
     enforcers: [src/state/attribution.ts#validActor, src/state/attribution.ts#validRationale, src/state/events.ts#validateEvent, src/state/events.ts#event, src/delivery/events.ts#validateDeliveryEvent, src/state/projections.ts#projections, src/state/resume.ts#contextPack, src/runner/operator-report.ts#deliveryReport, src/runner/operator-report.ts#deliveryDiagnostics, src/cli/delivery-journal.ts#deliveryJournalCommand, src/state/attribution-context.ts#withPersonAttribution, src/state/attribution-context.ts#eventAttribution, src/cli/attribution.ts#withCommandAttribution, src/cli/adapter-root.ts#packagedClient, src/runner/human-decisions.ts#RunnerHumanDecisions, src/runner/attribution.ts#retainedDecisionRationale, test/unit/state/attribution.test.ts, test/unit/state/attribution-producers.test.ts]
   - id: delivery-public-runner-host

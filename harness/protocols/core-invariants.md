@@ -2,6 +2,7 @@
 
 The deterministic CLI owns these rules; skills consume the returned contracts.
 
+- ⛔ `verified-overview-prefix` — verify both journal positions and prefix digests before accepting a resume cursor; reject edited, truncated, unknown-version or malformed prefixes. A cursor grants no authority.
 - ⛔ `external-runtime-state` — keep all runtime state outside repositories, including worktrees and symlinked destinations. Project configuration is an explicit settings action, not runtime state.
 - ⛔ `recorded-step-skips` — skipping a step requires a durable reason, visible in subsequent preflights.
 - ⛔ `required-human-decisions` — retain required decisions after completion or skip; approval applies to one revision and never becomes a reusable default.

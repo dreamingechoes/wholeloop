@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-04 · P6-37 · Verified read positions and precedence — in progress
+
+- Start the next eligible task after P6-36's full gate and closure commit. Add pure cursor helpers binding state count/event ID/prefix digest and delivery global sequence/hash-chain tip. Reject noncanonical, oversized, unknown-version, changed and truncated resume inputs; cursor metadata grants no authority and performs no I/O.
+- Add a fixed attention order with deterministic typed-ID ties and a headline table. Order before bounding so a low-urgency prefix cannot hide a more urgent entry. Person/outcome inputs remain explicit in the internal command type; no approval is selected. Actual store classification will reuse existing status/report/runner rules in the next increment.
+- Add the overview architecture page and enforcer. Initial focused coverage passes 25 tests in two files. The first fast gate rejects a missing docnav marker on the new page; add the marker and regenerate navigation before retrying. Add per-category headline cases so every attention kind is covered. The final gate passes 38 tests in two files and every fast check: `CHECK PASS (fast) in 7s`. The full gate remains required at P6-37 closure; no Linux claim is made for the unfinished overview/feed. The reader, public CLI, schemas and consumer fixture kit remain open; P6-37 is not complete. The cursor/precedence types are internal and add no frozen public identity yet.
+
+---
+
 ## 2026-11-04 · P6-36 · Attribution complete
 
 - Close P6-36 after the unchanged producer commit `d18c120` passes the complete macOS arm64/Node 24.22.0 gate: 3992 tests in 218 files, offline npm archive/install and every other check; final line `CHECK PASS in 680s`. The per-commit gate had passed 3056 related tests in 165 files: `CHECK PASS (fast) in 643s`. Linux arm64 compiled-CLI stdin, journal attribution and default-read redaction pass on Node 24.22.0 and the published Node 20.0.0 floor.
