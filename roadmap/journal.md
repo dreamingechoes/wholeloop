@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-04 · P6-36–P6-38 · Operator overview tasks added — planned
+
+- The owner added three 1.0 tasks so that a separate, optional interface can be built on 1.0 alone ([ADR-0210](../docs/decisions/0210-operator-overview-and-change-feed.md)):
+  - P6-36 adds optional attribution fields to journal events before the v1 freeze: an agent's client and model, a person's channel, and a decision's rationale.
+  - P6-37 adds `wl overview`, one ordered read of everything happening in the harness.
+  - P6-38 adds `wl watch`, a local change feed. It is the watch P6-25 left out.
+- The core owns every meaning; an interface only renders. It gets no network listener, presence or narration in 1.0. P6-32 now depends on the three tasks.
+
+---
+
 ## 2026-11-04 · P6-27 · Next steps — in progress
 
 - Next: live EVAL-09 implementation-to-PR trials. They need a live to-pr evaluation like the research one, the private trial repository, and a synthetic rehearsal before the real Claude and Codex runs.

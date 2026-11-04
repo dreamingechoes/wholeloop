@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 original tasks on 2026-10-24 and added P6-35 on 2026-11-04 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 original tasks on 2026-10-24 and added P6-35–P6-38 on 2026-11-04 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 89 tasks: 68 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 5 new pending implementation tasks; the owner added P6-35 on 2026-11-04.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 68 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 8 new pending implementation tasks; the owner added P6-35–P6-38 on 2026-11-04.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -35,6 +35,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 | Changes, learning and release closure | P6-29–P6-32 | Integration, learning and validation |
 | Fully unattended research/decisions | P6-33–P6-34 | Unattended decisions and research |
 | Worker credentials | P6-35 | Runner, validation |
+| Operator overview and live feed | P6-36–P6-38 | Controls and observability |
 
 ---
 
@@ -662,7 +663,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/07-controls-and-observability.md); getting-started, troubleshooting, state and messaging.
 
-**Evidence** — `wl delivery report`, `wl delivery diagnostics`, `wl delivery recovery-export --include-private` and `wl delivery recovery-import` ([ADR-0190](../docs/decisions/0190-operator-report-diagnostics-and-recovery-bundles.md)) are covered by 19 cases: a read-only report with exact next actions, all thirteen outcome categories, diagnostics free of a planted secret canary, source text and owner, import refusals for missing, unknown and baseless rebindings, tampered and unlisted files and a repeat, an accepted import that leaves no live journal, authority or run, and compiled CLI cases for the private-export flag. The optional live event watch is not provided; the report and the existing `wl delivery events` pages cover inspection.
+**Evidence** — `wl delivery report`, `wl delivery diagnostics`, `wl delivery recovery-export --include-private` and `wl delivery recovery-import` ([ADR-0190](../docs/decisions/0190-operator-report-diagnostics-and-recovery-bundles.md)) are covered by 19 cases: a read-only report with exact next actions, all thirteen outcome categories, diagnostics free of a planted secret canary, source text and owner, import refusals for missing, unknown and baseless rebindings, tampered and unlisted files and a repeat, an accepted import that leaves no live journal, authority or run, and compiled CLI cases for the private-export flag. The optional live event watch is not provided here; the report and the existing `wl delivery events` pages cover inspection, and P6-38 adds the watch.
 
 ---
 
@@ -832,7 +833,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-32 · Expanded V1 documentation and release closure
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P6-35, P5-06
+**Status:** ⬜ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P6-35, P6-36, P6-37, P6-38, P5-06
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -929,6 +930,99 @@ The documentation also records Antigravity as an unavailable worker, while its i
 **Tests** — Credential reference and resolution contracts; synthetic clients that honour or reject an injected credential; boundary probes showing every credential store denied; preflight refusals; window pause and resume on a fake clock; live acceptance on the owner's accounts.
 
 **Docs** — The proposed design and its acceptance, the platform guide (macOS and Linux first; a headless Linux secret store; Windows through WSL2), the runner tutorial, the README note on Antigravity, and manual verification.
+
+---
+
+## P6-36 · Agent attribution on journal events
+
+**Status:** ⬜ · **Size:** M · **Depends on:** P6-10, P6-34
+
+**Design review:** added by the owner on 2026-11-04 · **Release:** 1.0
+
+**Goal** — Record which client and model acted, through which channel a person decided, and why, before the v1 event contract freezes ([ADR-0210](../docs/decisions/0210-operator-overview-and-change-feed.md)).
+
+**Deliverables** — The following optional fields on journal events:
+
+- the client identity of an agent actor (client, version, model), with its source;
+- the channel of a person actor;
+- a bounded rationale on decision events.
+
+To fill them:
+
+- Generated adapters declare their client.
+- Person decision commands accept a channel option and a rationale through stdin or a file.
+- Delegated decisions surface a reason they already record, and nothing is generated for them.
+
+**Acceptance criteria:**
+
+- [ ] Events without the new fields stay valid and replay identically. The v1 compatibility fixture changes once, with ADR-0210 as its reason.
+- [ ] A declared identity is labelled declared. Nothing is inferred from client text, worker output or messages. A worker cannot record a person's channel or rationale.
+- [ ] A rationale is bounded, never read from argv, and absent from default diagnostics and exports.
+
+**Tests** — Schema and replay tables over legacy fixture journals, adapter generation snapshots, actor spoofing attempts, and argv and secret canaries.
+
+**Docs** — ADR-0210, state and messaging, decision points, the core CLI reference.
+
+---
+
+## P6-37 · Operator overview read model
+
+**Status:** ⬜ · **Size:** L · **Depends on:** P6-25, P6-30, P6-36
+
+**Design review:** added by the owner on 2026-11-04 · **Release:** 1.0
+
+**Goal** — One deterministic read of everything happening in the harness, ordered by what needs a person first, that a terminal, a skill or a separate interface can render without deciding anything.
+
+**Deliverables** — `wl overview [--json]` emitting `wholeloop/overview@1` (ADR-0210), with:
+
+- store health and a headline chosen by a fixed precedence;
+- the ordered attention list, each entry with its reason category and exact next permitted command;
+- the item tree with each item's flow position;
+- delivery run summaries;
+- agents: delivery workers as observed, and session agents as last seen from attributed events;
+- worktrees, scheduled checkpoints and bounded recent outcomes;
+- the cursor and a digest.
+
+Also `wl overview schema`, and fixture stores with expected output for every headline state and attention kind under `test/fixtures/overview/`.
+
+**Acceptance criteria:**
+
+- [ ] On the same store, the overview agrees with `wl status`, `wl delivery report` and `wl delivery runner-status`, and reuses their rules. Every new rule lives in `src/` with a table-driven test.
+- [ ] Rebuilding every projection gives a byte-identical digest, and the cursor names the exact journal positions read.
+- [ ] Fixture, claimed, observed, human and policy provenance stay distinct, and no prompt, credential or source payload appears. Output stays bounded on a large store.
+
+**Tests** — Tables per headline state and attention kind, differential checks against the existing reads, digest after a rebuild, secret canaries, and a large-store fixture.
+
+**Docs** — ADR-0210, core CLI, state and messaging, an architecture page for the overview and its contract kit.
+
+---
+
+## P6-38 · Local change feed
+
+**Status:** ⬜ · **Size:** M · **Depends on:** P6-37
+
+**Design review:** added by the owner on 2026-11-04 · **Release:** 1.0
+
+**Goal** — Follow the harness live from another process without polling commands or reading journal files. This delivers the optional watch P6-25 left out.
+
+**Deliverables** — `wl watch` writing `wholeloop/watch-frame@1` documents to stdout (ADR-0210):
+
+- a full overview with its cursor and digest, at start and after each committed change;
+- redacted, bounded events;
+- liveness, kept apart from progress;
+- problem frames.
+
+File events are hints, a poll is the fallback, and `--since <cursor>` resumes. There is also a recorded feed fixture for consumers. The feed makes no store writes and opens no listener.
+
+**Acceptance criteria:**
+
+- [ ] When a fixture journal is replayed event by event, every overview frame equals `wl overview` at its cursor. A sequence gap or digest mismatch emits a problem frame and stops the feed advancing.
+- [ ] A feed killed and restarted with `--since` misses and repeats no change, and a heartbeat never reads as progress.
+- [ ] It works on macOS and Linux, both with file events and with the poll forced, and a guard shows that it writes nothing in the store and opens no port.
+
+**Tests** — Replay equality, kill and resume, forced poll, journal rollover, a held writer lock, and a Linux container run.
+
+**Docs** — ADR-0210, core CLI, the controls specification's inspection surfaces, the overview architecture page.
 
 ---
 

@@ -8,9 +8,9 @@ Current manual checks and owner-only actions: [manual verification](./manual-ver
 
 ## Expanded 1.0 review
 
-Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [35 Phase 6 tasks](./phase-6-autonomous-delivery.md). The owner reviewed and accepted every new task on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
+Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [38 Phase 6 tasks](./phase-6-autonomous-delivery.md). The owner reviewed and accepted every new task on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
 
-The roadmap now contains 89 tasks: 68 completed tasks (forty original plus P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34), fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 5 new pending implementation tasks (P6-35 added by the owner on 2026-11-04). The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
+The roadmap now contains 92 tasks: 68 completed tasks (forty original plus P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34), fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 8 new pending implementation tasks (P6-35–P6-38 added by the owner on 2026-11-04). The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
 
 No cloud platform, marketplace, vendor API expansion or production automation is added. Local P6 implementation is authorized to proceed without waiting for unrelated native/account acceptance. Those original checks and the new capability-specific acceptance still need their stated evidence before release.
 
@@ -40,7 +40,7 @@ flowchart LR
 | [P3 · Build](./phase-3-build.md) | A slice is built in a worktree, verified, reviewed and opened as a draft PR | 10 |
 | [P4 · Rollout & Learn](./phase-4-rollout-learn.md) | The loop closes: launch kit, ramp evidence, measured impact, recorded decision | 7 |
 | [P5 · Reach & release](./phase-5-reach-release.md) | Tier B CLIs, headless engine, nightly conformance, 1.0 published | 7 |
-| [P6 · Autonomous delivery](./phase-6-autonomous-delivery.md) | Recoverable no-intervention research/implementation, actual integrated QA, authorized PR/merge and evaluation; before P5-07 | 35 |
+| [P6 · Autonomous delivery](./phase-6-autonomous-delivery.md) | Recoverable no-intervention research/implementation, actual integrated QA, authorized PR/merge and evaluation; before P5-07 | 38 |
 
 Phase IDs preserve the existing history: P6 is inside expanded 1.0 and precedes final P5-07 closure. Tasks follow their explicit dependencies and any phase review hold; the diagram is an overview, not a requirement to wait for unrelated manual checks.
 
