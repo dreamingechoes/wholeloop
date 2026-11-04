@@ -1,0 +1,55 @@
+[
+  {
+    "schema": "wholeloop/delivery-event@1",
+    "ts": "2026-11-04T12:00:00.000Z",
+    "run": "delivery-0123456789abcdef",
+    "id": "delivery-event-00000000-0000-0000-0000-000000000001",
+    "sequence": 1,
+    "actor": {
+      "kind": "controller",
+      "name": "wholeloop"
+    },
+    "payload": {
+      "schema": "wholeloop/delivery-registration-event@1",
+      "basis": {
+        "kind": "plan",
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "revision": 1
+      },
+      "source": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "policy": {
+        "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "endpoint": "local-handoff",
+        "intervention": "supervised"
+      },
+      "units": [
+        {
+          "id": "status",
+          "role": "implementation",
+          "repository": "app"
+        }
+      ]
+    },
+    "digest": "1efa03577e65447370cb91728400b05aee9fccb75a2a5e00097005e296a6b762"
+  },
+  {
+    "schema": "wholeloop/delivery-event@1",
+    "ts": "2026-11-04T12:00:00.000Z",
+    "run": "delivery-0123456789abcdef",
+    "id": "delivery-event-00000000-0000-0000-0000-000000000002",
+    "sequence": 2,
+    "actor": {
+      "kind": "operator",
+      "name": "Owner"
+    },
+    "previous": "1efa03577e65447370cb91728400b05aee9fccb75a2a5e00097005e296a6b762",
+    "payload": {
+      "schema": "wholeloop/delivery-control-event@1",
+      "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "from": "planned",
+      "to": "paused",
+      "reason": "Explicit operator pause."
+    },
+    "digest": "55608d6041de8cb261dc145b7043fa32378ffc0b07608800c911131a6e5af352"
+  }
+]

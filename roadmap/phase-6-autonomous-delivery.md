@@ -935,7 +935,7 @@ The documentation also records Antigravity as an unavailable worker, while its i
 
 ## P6-36 · Agent attribution on journal events
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-10, P6-34
+**Status:** 🔄 · **Size:** M · **Depends on:** P6-10, P6-34
 
 **Design review:** added on 2026-11-04 · **Release:** 1.0
 
@@ -955,9 +955,11 @@ To fill them:
 
 **Acceptance criteria:**
 
-- [ ] Events without the new fields stay valid and replay identically. The v1 compatibility fixture changes once, with ADR-0210 as its reason.
+- [x] Events without the new fields stay valid and replay identically. The v1 compatibility fixture changes once, with ADR-0210 as its reason.
 - [ ] A declared identity is labelled declared. Nothing is inferred from client text, worker output or messages. A worker cannot record a person's channel or rationale.
 - [ ] A rationale is bounded, never read from argv, and absent from default diagnostics and exports.
+
+**Progress** — The first increment implements optional state-agent client provenance, person/operator channels and private decision rationale in the two journal envelopes and store append APIs. Legacy fields and records stay valid; attribution changes integrity digests without changing transition/approval meaning. Role and UTF-8 bounds are enforced, and existing default reads/private-export boundaries keep the new reason private. The two event baseline digests are updated together under ADR-0210 before freeze. Adapter declaration, CLI channel/rationale ingestion, delegated-reason production and their end-to-end cases remain open. Only the legacy replay/compatibility criterion is closed; the task is not complete.
 
 **Tests** — Schema and replay tables over legacy fixture journals, adapter generation snapshots, actor spoofing attempts, and argv and secret canaries.
 

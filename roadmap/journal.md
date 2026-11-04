@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-04 · P6-36 · Optional attribution contract — in progress
+
+- Defer Claude EVAL-09 until the operator's reported quota reset on 2026-11-06; keep its real acceptance open and continue the first independent task, P6-36. This increment spends no native model quota and starts no actual native client.
+- Add optional state-agent client identity/source, person/operator channels and bounded private decision rationale to the two event envelopes and store append APIs. Keep controller identity separate from native workers' existing observed bindings/receipts. Descriptive metadata grants no approval or authority and is never inferred from client text.
+- Choose explicit actor-role validation and a 4096-byte UTF-8 private reason limit. Permit controller reasons only on original delegated plan/build-plan/acceptance observations; reject worker person-metadata and non-decision reasons before mutation. Existing projections, resume packs, reports/diagnostics and explicit-private export boundaries retain their privacy behavior.
+- Update exactly the two event-schema compatibility digests together under ADR-0210 before v1 freeze; every other frozen declaration stays unchanged. Retain literal pre-attribution state/delivery fixtures and their digest chain. New tests distinguish changed integrity digests from unchanged delivery meaning and preserve the existing unknown-option shape exit code. A failing spoofing canary exposed payload headers overwriting the caller-selected actor; reject every extra payload header before event creation.
+- Focused verification passes 503 tests in four files, including 27 attribution cases, real append/rebuild/rollback and compiled CLI read/argv canaries. The final per-commit gate passes after the payload-header fix: `CHECK PASS (fast) in 649s`. The offline package install/full gate and Linux execution are not repeated in this contract increment; the full gate remains mandatory at task closure. Adapter declarations, person-command channel and stdin/file ingestion, delegated-reason producers and their integration cases remain the next P6-36 increment; the task is not complete.
+
+---
+
 ## 2026-11-04 · P6-27 · Hosted fixture and protection — in progress
 
 - After explicit approval for every push needed by this trial, publish the six-file fixture to the private trial repository without force. Observe `main` at `3aeeef7b3045dadddb67404530f914b4bf41ab18`; no wholeloop source remote is pushed.

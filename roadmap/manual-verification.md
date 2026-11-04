@@ -33,6 +33,8 @@ P6-10 is complete on automated synthetic/reference-transport evidence: the compi
 
 ## Native evaluation campaign inputs (2026-11-03)
 
+Claude EVAL-09 is deferred until the operator's reported quota reset on 2026-11-06 (hour unknown). Continue quota-independent roadmap implementation in the meantime. No fresh login or native trial is requested before quota is available; this does not change the accepted reference versions, trial counts or retained failed attempts.
+
 The reference clients are fixed for the whole P6-27 campaign, so its three trials per scenario stay comparable. Both clients were observed installed and signed in on the macOS arm64 development host; each trial receipt still records the version and model it actually observed.
 
 | Client | Version | Binary | Account | Model |

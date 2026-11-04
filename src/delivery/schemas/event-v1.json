@@ -39,8 +39,48 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 256
+        },
+        "channel": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,63}$"
         }
-      }
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "name"],
+          "properties": {
+            "kind": {
+              "const": "operator"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "name"],
+          "properties": {
+            "kind": {
+              "const": "controller"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        }
+      ]
     },
     "previous": {
       "type": "string",
@@ -60,6 +100,68 @@
     "digest": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "description": "Private decision reason; at most 4096 UTF-8 bytes. Not an approval or authority."
     }
-  }
+  },
+  "$comment": "ADR-0210: optional attribution added before the v1 freeze; absent fields remain unknown. UTF-8 byte limits and decision ownership are additionally enforced by the core.",
+  "allOf": [
+    {
+      "if": {
+        "required": ["rationale"]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "properties": {
+              "actor": {
+                "properties": {
+                  "kind": {
+                    "const": "operator"
+                  }
+                }
+              },
+              "payload": {
+                "properties": {
+                  "schema": {
+                    "const": "wholeloop/delivery-control-event@1"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "actor": {
+                "properties": {
+                  "kind": {
+                    "const": "controller"
+                  }
+                }
+              },
+              "payload": {
+                "properties": {
+                  "schema": {
+                    "const": "wholeloop/delivery-runner-event@1"
+                  },
+                  "action": {
+                    "const": "observed"
+                  },
+                  "stage": {
+                    "type": "string",
+                    "pattern": "^(plan|acceptance|build-plan:.+)$"
+                  }
+                },
+                "required": ["schema", "action", "stage"]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
 }

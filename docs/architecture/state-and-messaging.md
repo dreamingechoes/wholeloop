@@ -3,7 +3,7 @@
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later Build/Rollout/Learn workflows and canonical URL adoption/shared outboxes are implemented locally. Live adapter execution remains an manual conformance check. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
+> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later Build/Rollout/Learn workflows and canonical URL adoption/shared outboxes are implemented locally. Optional journal attribution is implemented through store APIs; its adapter/CLI producers remain P6-36 work. Live adapter execution remains an manual conformance check. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
 
 ---
 
@@ -52,6 +52,22 @@ Delivery queue events/facets additionally retain exact work slots, enqueue order
 Checkpoint manifests pin exact allowed external input paths, sizes and hashes, including binary evidence without copying its content. Immutable manifests precede their journal event; orphan manifests convey no state or authority. Delivery recovery validates current inputs and retains legacy gates/budgets. Effect intents persist a finite single invocation and its scoped observations separately; ambiguity cannot be blindly retried or closed successfully. Unknown worker identity retains reservations, pauses supervised recovery or returns blocked in none. Actual backend observations remain explicit host prerequisites.
 
 Ordinary locking still never steals ownership. Explicit delivery lock-status/repair-lock accepts only an exact unchanged writer record whose PID is observed absent, retaining the original directory and a versioned receipt. It never signals a PID or restores a grant. Unknown/live/reused/malformed ownership refuses. See the [checkpoint tutorial](../tutorials/delivery-checkpoints.md) and [ADR-0098](../decisions/0098-checkpoint-recovery-and-observed-effect-reconciliation.md); native/backend group ownership and full runner acceptance remain separate.
+
+## Optional event attribution
+
+The pre-freeze journal contract accepts optional attribution ([ADR-0210](../decisions/0210-operator-overview-and-change-feed.md)). This first P6-36 increment implements validation, store APIs and replay; generated adapter declarations, person-command channel/stdin/file options and delegated-reason producers remain pending. No client or model is inferred from a name, message, environment variable or worker response.
+
+| Field | Who may supply it | Meaning |
+| --- | --- | --- |
+| `actor.client` | State agent actor | Explicit `client`, optional `version`/`model`, and required `source` (`declared` or `host-observed`) |
+| `actor.channel` | State person or delivery operator actor | A lowercase channel token, at most 64 ASCII characters |
+| `rationale` | Person decision; operator lifecycle decision; controller observation of a delegated plan/build-plan/acceptance decision | A private reason, at most 4096 UTF-8 bytes, retaining line breaks |
+
+Identity source is a provenance label, not authentication or evidence of native execution. An adapter declaration must remain `declared`; a trusted host may only describe observations it already owns. Existing native worker bindings and receipts keep their independently observed identity. Controller actors remain controllers: a session client never becomes the controller's identity. Missing fields mean unknown and are not backfilled on replay.
+
+The state store's transaction append accepts optional metadata as its third argument; `event` accepts it as its fourth. The delivery append accepts an optional `{ rationale }` third argument; `deliveryEvent` accepts it as its sixth. Actor input is copied before retention. Validation rejects agent channels, worker-supplied person reasons, unknown provenance, malformed/oversized identity and non-decision reasons before journal mutation. Client versions are bounded to 128 UTF-8 bytes and models to 256, both single-line. None of these fields changes a grant, approval, transition or capability.
+
+Legacy events retain their original bytes and replay behavior. Attribution participates in delivery event digests, so adding or changing it creates different integrity bytes; it never rewrites earlier records. Projections, bounded resume context, delivery reports and default diagnostics omit the new private reason. Raw journals remain private; exporting a recovery bundle still requires explicit `--include-private`. This metadata has no argv ingestion path in this increment.
 
 ## Shared work and the publication outbox
 

@@ -44,6 +44,13 @@ import {
   type WorktreeEventData,
   worktreeRecords,
 } from '../worktrees/contracts.js'
+import {
+  type EventMetadata,
+  type StateActor,
+  stateDecision,
+  validActor,
+  validRationale,
+} from './attribution.js'
 import { replayMailbox } from './mailbox.js'
 
 export const KINDS = ['initiative', 'scope', 'slice', 'part', 'brief', 'review'] as const
@@ -164,7 +171,8 @@ export type StateEvent = {
   v: 1
   id: string
   ts: string
-  actor: { kind: 'person' | 'agent' | 'system'; name: string }
+  actor: StateActor
+  rationale?: string
   subject: string
 } & EventData
 
@@ -425,7 +433,7 @@ function address(value: unknown): value is string {
 export function validateEvent(value: unknown): asserts value is StateEvent {
   if (
     !isObject(value) ||
-    !keys(value, ['v', 'id', 'ts', 'actor', 'subject', 'type', 'data']) ||
+    !keys(value, ['v', 'id', 'ts', 'actor', 'subject', 'type', 'data', 'rationale']) ||
     value.v !== 1 ||
     !text(value.id) ||
     !/^ev-[a-f0-9-]{36}$/.test(value.id) ||
@@ -434,13 +442,14 @@ export function validateEvent(value: unknown): asserts value is StateEvent {
     !text(value.subject) ||
     !ITEM_ID.test(value.subject) ||
     !isObject(value.actor) ||
-    !keys(value.actor, ['kind', 'name']) ||
+    !validActor(value.actor, 'state') ||
     !text(value.actor.kind) ||
     !['person', 'agent', 'system'].includes(value.actor.kind) ||
     !text(value.actor.name) ||
     !text(value.type) ||
     !isObject(value.data) ||
-    !validData(value.type, value.data)
+    !validData(value.type, value.data) ||
+    !validRationale({ kind: String(value.actor.kind) }, value.rationale, stateDecision(value.type))
   ) {
     throw new Error('Invalid wholeloop/state-event@1 event')
   }
@@ -470,12 +479,23 @@ export function validateEvent(value: unknown): asserts value is StateEvent {
   }
 }
 
-export function event(subject: string, data: EventData, ts: string): StateEvent {
+export function event(
+  subject: string,
+  data: EventData,
+  ts: string,
+  metadata: EventMetadata = {},
+): StateEvent {
+  // Payload headers must not overwrite the actor chosen by the trusted caller.
+  if (!isObject(data) || !keys(data, ['type', 'data']))
+    throw new Error('Invalid event data; contents omitted')
+  if (!keys(metadata as unknown as Record<string, unknown>, ['actor', 'rationale']))
+    throw new Error('Invalid event metadata; contents omitted')
   const value = {
     v: 1,
     id: `ev-${randomUUID()}`,
     ts,
-    actor: { kind: 'person', name: 'local' },
+    actor: structuredClone(metadata.actor ?? { kind: 'person' as const, name: 'local' }),
+    ...(metadata.rationale !== undefined ? { rationale: metadata.rationale } : {}),
     subject,
     ...data,
   }

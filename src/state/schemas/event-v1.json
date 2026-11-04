@@ -25,9 +25,109 @@
         "name": {
           "type": "string",
           "minLength": 1
+        },
+        "channel": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,63}$"
+        },
+        "client": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["client", "source"],
+          "properties": {
+            "client": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "model": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "source": {
+              "enum": ["declared", "host-observed"]
+            }
+          }
         }
       },
-      "required": ["kind", "name"]
+      "required": ["kind", "name"],
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "name"],
+          "properties": {
+            "kind": {
+              "const": "person"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "channel": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "name"],
+          "properties": {
+            "kind": {
+              "const": "agent"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "client": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["client", "source"],
+              "properties": {
+                "client": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9-]{0,63}$"
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "model": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "source": {
+                  "enum": ["declared", "host-observed"]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "name"],
+          "properties": {
+            "kind": {
+              "const": "system"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
     },
     "subject": {
       "type": "string",
@@ -38,6 +138,12 @@
     },
     "data": {
       "type": "object"
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "description": "Private decision reason; at most 4096 UTF-8 bytes. Not an approval or authority."
     }
   },
   "required": ["v", "id", "ts", "actor", "subject", "type", "data"],
@@ -4886,6 +4992,40 @@
           },
           "required": ["key", "ref", "origin"]
         }
+      }
+    }
+  ],
+  "$comment": "ADR-0210: optional attribution added before the v1 freeze; absent fields remain unknown. UTF-8 byte limits and decision ownership are additionally enforced by the core.",
+  "allOf": [
+    {
+      "if": {
+        "required": ["rationale"]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "properties": {
+              "actor": {
+                "properties": {
+                  "kind": {
+                    "const": "person"
+                  }
+                }
+              },
+              "type": {
+                "enum": [
+                  "decision.recorded",
+                  "frame.decided",
+                  "gate.decided",
+                  "build.agreed",
+                  "pr.tested",
+                  "ramp.decided",
+                  "learn.decided"
+                ]
+              }
+            }
+          }
+        ]
       }
     }
   ]

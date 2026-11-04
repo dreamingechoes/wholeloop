@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: descriptive-event-attribution
+    enforcers: [src/state/attribution.ts#validActor, src/state/attribution.ts#validRationale, src/state/events.ts#validateEvent, src/state/events.ts#event, src/delivery/events.ts#validateDeliveryEvent, src/state/projections.ts#projections, src/state/resume.ts#contextPack, src/runner/operator-report.ts#deliveryReport, src/runner/operator-report.ts#deliveryDiagnostics, src/cli/delivery-journal.ts#deliveryJournalCommand, test/unit/state/attribution.test.ts]
   - id: delivery-public-runner-host
     enforcers: [src/runner/public-host.ts#RunnerPublicHost, src/runner/public-host.ts#publicRunnerIdentity, src/runner/public-host.ts#publicNativeRoles, src/cli/delivery-runner.ts#deliveryRunnerAsyncCommand, src/cli/delivery-runner.ts#deliveryForegroundChild, test/unit/runner/public-runner.test.ts]
   - id: learning-maintenance-proposals

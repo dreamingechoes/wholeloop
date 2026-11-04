@@ -8,6 +8,12 @@ import {
   runnerFacetSchema,
 } from '../runner/events.js'
 import {
+  deliveryDecision,
+  type OperatorActor,
+  validActor,
+  validRationale,
+} from '../state/attribution.js'
+import {
   type BudgetFacet,
   type BudgetPayload,
   budgetEventSchema,
@@ -100,7 +106,7 @@ export type DeliveryOutcome =
   | 'failed'
   | 'exhausted'
   | 'stopped'
-export type DeliveryActor = { kind: 'operator' | 'controller'; name: string }
+export type DeliveryActor = OperatorActor
 export interface RegistrationPayload {
   schema: 'wholeloop/delivery-registration-event@1'
   basis: { kind: 'plan' | 'envelope'; digest: string; revision?: number }
@@ -179,6 +185,7 @@ export interface DeliveryEvent {
   ts: string
   run: string
   actor: DeliveryActor
+  rationale?: string
   previous?: string
   payload: DeliveryPayload
   digest: string
@@ -239,6 +246,12 @@ export function validateDeliveryEvent(value: unknown): asserts value is Delivery
     throw new DeliveryJournalError('invalid-event')
   }
   const event = value as unknown as DeliveryEvent
+  const decision = deliveryDecision(payload as { schema: string; [key: string]: unknown })
+  if (
+    !validActor(event.actor, 'delivery') ||
+    !validRationale(event.actor, event.rationale, decision.decision, decision.delegated)
+  )
+    throw new DeliveryJournalError('invalid-attribution')
   deliveryTimestamp(event.ts)
   const { digest, ...binding } = event
   if (contractDigest(binding) !== digest) throw new DeliveryJournalError('event-digest')
@@ -251,7 +264,10 @@ export function deliveryEvent(
   payload: DeliveryPayload,
   previous: DeliveryEvent | undefined,
   ts: string,
+  metadata: { rationale?: string } = {},
 ): DeliveryEvent {
+  if (Object.keys(metadata).some((key) => key !== 'rationale'))
+    throw new DeliveryJournalError('invalid-attribution')
   const value = {
     schema: 'wholeloop/delivery-event@1' as const,
     id: `delivery-event-${randomUUID()}`,
@@ -259,6 +275,7 @@ export function deliveryEvent(
     ts,
     run,
     actor: structuredClone(actor),
+    ...(metadata.rationale !== undefined ? { rationale: metadata.rationale } : {}),
     ...(previous ? { previous: previous.digest } : {}),
     payload: structuredClone(payload),
   }

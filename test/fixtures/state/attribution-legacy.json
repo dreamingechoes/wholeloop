@@ -1,0 +1,50 @@
+[
+  {
+    "v": 1,
+    "ts": "2026-11-04T12:00:00.000Z",
+    "actor": {
+      "kind": "person",
+      "name": "local"
+    },
+    "subject": "init-1234abcd",
+    "id": "ev-00000000-0000-0000-0000-000000000001",
+    "type": "item.created",
+    "data": {
+      "kind": "initiative",
+      "title": "A fixture",
+      "owner": "Owner",
+      "body": ""
+    }
+  },
+  {
+    "v": 1,
+    "ts": "2026-11-04T12:00:00.000Z",
+    "actor": {
+      "kind": "person",
+      "name": "local"
+    },
+    "subject": "init-1234abcd",
+    "id": "ev-00000000-0000-0000-0000-000000000002",
+    "type": "note.added",
+    "data": {
+      "text": "Original retained note."
+    }
+  },
+  {
+    "v": 1,
+    "ts": "2026-11-04T12:00:00.000Z",
+    "actor": {
+      "kind": "person",
+      "name": "local"
+    },
+    "subject": "init-1234abcd",
+    "id": "ev-00000000-0000-0000-0000-000000000003",
+    "type": "decision.recorded",
+    "data": {
+      "decision": "go",
+      "outcome": "approved",
+      "by": "Owner",
+      "basis": "ev-00000000-0000-0000-0000-000000000001"
+    }
+  }
+]

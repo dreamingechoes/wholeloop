@@ -126,7 +126,7 @@ export class DeliveryJournal {
     actor: DeliveryActor,
     operation: (
       view: () => ReadonlyMap<string, DeliveryProjection>,
-      append: (run: string, payload: DeliveryPayload) => void,
+      append: (run: string, payload: DeliveryPayload, metadata?: { rationale?: string }) => void,
     ) => T,
   ): T {
     return this.files.locked(() => {
@@ -137,10 +137,10 @@ export class DeliveryJournal {
       const ts = this.now()
       const result = operation(
         () => new Map([...states].map(([run, state]) => [run, structuredClone(state)])),
-        (run, payload) => {
+        (run, payload, metadata) => {
           if (events.length - original >= 1000)
             throw new DeliveryJournalError('transaction-event-limit')
-          const event = deliveryEvent(run, actor, payload, events.at(-1), ts)
+          const event = deliveryEvent(run, actor, payload, events.at(-1), ts, metadata)
           if (Buffer.byteLength(JSON.stringify(event)) > 65536)
             throw new DeliveryJournalError('event-byte-limit')
           const next = replayDelivery([...events, event])

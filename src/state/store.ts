@@ -1,4 +1,5 @@
 import { existsSync, readdirSync } from 'node:fs'
+import type { EventMetadata } from './attribution.js'
 import {
   event,
   type Item,
@@ -56,7 +57,11 @@ export class StateStore {
   transaction<T>(
     operation: (
       events: readonly StateEvent[],
-      append: (subject: string, data: Parameters<typeof event>[1]) => void,
+      append: (
+        subject: string,
+        data: Parameters<typeof event>[1],
+        metadata?: EventMetadata,
+      ) => void,
     ) => T,
   ): T {
     return this.files.locked(() => {
@@ -66,8 +71,12 @@ export class StateStore {
       const last = events.at(-1)?.ts
       // One batch belongs to one month and one atomic journal replacement.
       const ts = new Date(Math.max(Date.now(), last ? Date.parse(last) + 1 : 0)).toISOString()
-      const append = (subject: string, data: Parameters<typeof event>[1]) => {
-        const entry = event(subject, data, ts)
+      const append = (
+        subject: string,
+        data: Parameters<typeof event>[1],
+        metadata?: EventMetadata,
+      ) => {
+        const entry = event(subject, data, ts, metadata)
         replay([...events, entry])
         events.push(entry)
       }
