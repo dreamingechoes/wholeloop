@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31, P6-34 and P6-36 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 68 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 8 new pending implementation tasks; P6-35–P6-38 were added on 2026-11-04.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 69 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 7 new pending implementation tasks; P6-35–P6-38 were added on 2026-11-04.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -935,7 +935,7 @@ The documentation also records Antigravity as an unavailable worker, while its i
 
 ## P6-36 · Agent attribution on journal events
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P6-10, P6-34
+**Status:** ✅ · **Size:** M · **Depends on:** P6-10, P6-34
 
 **Design review:** added on 2026-11-04 · **Release:** 1.0
 
@@ -956,10 +956,10 @@ To fill them:
 **Acceptance criteria:**
 
 - [x] Events without the new fields stay valid and replay identically. The v1 compatibility fixture changes once, with ADR-0210 as its reason.
-- [ ] A declared identity is labelled declared. Nothing is inferred from client text, worker output or messages. A worker cannot record a person's channel or rationale.
-- [ ] A rationale is bounded, never read from argv, and absent from default diagnostics and exports.
+- [x] A declared identity is labelled declared. Nothing is inferred from client text, worker output or messages. A worker cannot record a person's channel or rationale.
+- [x] A rationale is bounded, never read from argv, and absent from default diagnostics and exports.
 
-**Progress** — The first increment implements optional state-agent client provenance, person/operator channels and private decision rationale in the two journal envelopes and store append APIs. Legacy fields and records stay valid; attribution changes integrity digests without changing transition/approval meaning. Role and UTF-8 bounds are enforced, and existing default reads/private-export boundaries keep the new reason private. The two event baseline digests are updated together under ADR-0210 before freeze. Packaged adapter declarations, private CLI channel/rationale ingestion, immutable human-decision descriptions and retained delegated-reason production are now implemented with end-to-end producer cases. Focused tests and a Linux compiled-CLI exercise pass. The full task-closure gate remains pending; the task is not complete.
+**Progress** — Optional client provenance, person channels and private rationale are implemented through journal validation, store append APIs, owned adapter declarations and person CLI producers. Supervised delivery descriptions refer to unchanged immutable human decisions; delegated plan/build-plan/acceptance observations copy original retained judgment reasons. Metadata creates no approval, transition or authority. Legacy fixture replay and the one intentional two-event baseline update remain covered; the human-description payload has a new additive identity. The full macOS arm64/Node 24.22.0 gate passes 3992 tests in 218 files and offline package installation: `CHECK PASS in 680s`. The producer commit's fast gate passes 3056 tests in 165 files: `CHECK PASS (fast) in 643s`. Actual Linux arm64 compiled-CLI stdin/decision/redaction exercises pass on Node 24.22.0 and 20.0.0. No native model or hosted mutation is needed for this task.
 
 **Tests** — Schema and replay tables over legacy fixture journals, adapter generation snapshots, actor spoofing attempts, and argv and secret canaries.
 

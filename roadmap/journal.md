@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-04 · P6-36 · Attribution complete
+
+- Close P6-36 after the unchanged producer commit `d18c120` passes the complete macOS arm64/Node 24.22.0 gate: 3992 tests in 218 files, offline npm archive/install and every other check; final line `CHECK PASS in 680s`. The per-commit gate had passed 3056 related tests in 165 files: `CHECK PASS (fast) in 643s`. Linux arm64 compiled-CLI stdin, journal attribution and default-read redaction pass on Node 24.22.0 and the published Node 20.0.0 floor.
+- Keep the earlier sandbox failure in the record; rerunning with the required local process permissions fixed the observation environment without weakening the runner. No actual native client/model, hosted trial, source push or account operation runs in this task.
+- Preserve the two pre-freeze envelope changes from ADR-0210 and add only the new human-description payload identity. The task's three acceptance criteria are checked. Update roadmap counts to 69 complete and seven Phase 6 tasks still in progress or awaiting implementation, separate from the two implemented tasks awaiting native/hosted acceptance.
+- Next: P6-37's deterministic overview, followed by P6-38's local change feed. Cursor and fixed-precedence prototypes were prepared outside the unchanged checked source; they are not yet part of P6-37 implementation or acceptance. Claude trials remain deferred until the operator's reported November 6 quota reset, without blocking these tasks.
+
+---
+
 ## 2026-11-04 · P6-36 · Attribution producers — in progress
 
 - Complete packaged client declarations through the existing manifest and unchanged core-byte verification. Declare only the client ID; native version and model remain unknown. Invocation-scoped metadata keeps concurrent callers separate and refuses person metadata in a declared agent context before any private input read.
