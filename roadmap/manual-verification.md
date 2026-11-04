@@ -54,6 +54,36 @@ A Homebrew cask cannot be pinned, so no general `brew upgrade` runs during the c
 - [ ] Maintainer decision on the worker credential design drafted in `docs/decisions/0209-controller-owned-native-credentials.md` (Proposed, 2026-11-04). It covers controller-owned credentials injected per launch, a preflight, pausing on an exhausted usage window, and Antigravity as an unavailable worker. Probes with fabricated credentials showed the injection path works on six of the seven clients. Before acceptance it still needs one real call per client and account kind, the lifetime of a `claude setup-token` token, a usage-window signal, a headless Linux secret store and the Windows path.
 - [ ] Branch protection is available on that private repository. GitHub Free offers protected branches and rulesets only on public repositories; if the API refuses protection on creation, merge trials (REL-10, EVAL-08) wait for a choice between a paid plan and making the repository public, and no protection is faked.
 
+## Implementation-to-PR trial procedure (2026-11-04)
+
+`npm run eval:live-implementation` runs one EVAL-09 attempt through the built public `wl delivery run`. It pins a fresh clone of the campaign repository's `main`, the source, rubric, environment recipe and declared suite, and delegates only build-plan approval and acceptance. The grant permits non-force publication and readying, with no merge. It checks the repository's exact private identity and initial fixture bytes before launching a worker.
+
+The small application reads `status.txt` through its public HTTP endpoint. The initial value is `pending`; the requested value is `public fixture`. The unchanged suite must fail before implementation. Its code, the HTTP entrypoint, package and review rubric stay pinned. The CI fixture reuses this project's pinned checkout/setup-node actions and runs the same suite without dependencies. This small trial exercises transport and QA; complex feature delivery remains separate evidence.
+
+From the wholeloop checkout:
+
+```bash
+# Local Git and real Docker, synthetic client and gh; no model or hosted service.
+npm run eval:live-implementation -- --rehearse
+
+# Prepare a disposable initial repository only; create/push nothing on GitHub.
+npm run eval:live-implementation -- --seed
+```
+
+Each command prints its external retained directory. An attempt saves `results/report.json`, its immutable request/plan/grant and the store's original evidence. Reports include controller waits, every native receipt's status/provenance and client-reported usage, case statuses/reasons, exact base/core digests and sanitized effect observations. Failed attempts are retained without retry; their environments stay available for inspection. Successful runs retire only their own environments and retain the retirement observations. Rehearsal reports use `wholeloop/rehearsal-trial@1`, which `eval:campaign` rejects; real attempts use `wholeloop/live-trial@1`.
+
+For an already authorized live batch, first sign the dedicated client home in again. Resolve the pinned native executable and `gh` to absolute paths, then supply the same non-secret client/model/home variables used by the research trials. Claude's pinned binary is `$HOME/.local/share/claude/versions/2.1.316`, its model is `claude-opus-5-5`; Codex uses `gpt-6.1-sol`. A default home resolves beneath `$HOME/.local/state/wholeloop-native/<target>`.
+
+```bash
+# WHOLELOOP_LIVE_TARGET, _MODEL and _CLIENT must already be set.
+# Optional _HOME and _GH select the dedicated home and absolute gh executable.
+WHOLELOOP_LIVE_CONFIRM=spend-quota-and-publish npm run eval:live-implementation
+```
+
+Observed on macOS arm64/Node 24.22.0: the 2026-11-04 repeat exits zero in 931 s with `ready-pr`, thirteen passed stages, fourteen successful synthetic-client launches, zero controller input waits, all three unit/product cases passed and both environments retired. Timed QA ran without another evaluation or gate; the later fast gate overlaps publication/handoff inspection only. An earlier concurrent rehearsal had HTTP PASS but a cancelled integration suite at the unchanged thirty-second case limit; it stays retained, and its two environments were explicitly retired. This establishes the model-free public route, not a native client or GitHub endpoint.
+
+A live invocation reads/clones only `dreamingechoes/wholeloop-trials` and may publish the run's owned PR there. It spends quota and does not sign in, create the hosted repository, alter protection, merge, retry or clean failed resources. Branch protection acceptance and native isolation remain separately observed checks. Score real attempt directories in order with the existing `eval:campaign -- --require EVAL-09:claude,EVAL-09:codex` command.
+
 ## Pull request publication checks (2026-11-01)
 
 P6-20 publishes accepted candidates as owned PRs on a stub code host, and P6-21 evaluates revision-bound CI observations; both GitHub CLI hosts are checked only with a stub executor. That evidence certifies no hosted code host.

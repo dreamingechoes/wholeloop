@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-04 · P6-27 · Public EVAL-09 host — in progress
+
+- Add `eval:live-implementation`: one none-policy implementation-to-PR attempt through the built public CLI, with exact private repository checks, source/recipe/rubric pins, narrow delegated decisions and explicit quota/publication confirmation. Use a small HTTP status change with a genuinely failing initial suite so the trial isolates transport, QA and publication; it establishes no complex-feature capability.
+- Add model-free `--rehearse` and local-only `--seed`. Rehearsal reports have a distinct schema that the campaign rejects. Retain failed attempts, native status/usage, controller waits, case results, effect observations and core/base digests; retire successful environments through the core lifecycle.
+- Six new cases cover early refusal, real suite failure/pass, changed/symlink/additional inputs, pinned scope and rehearsal exclusion. Full macOS arm64/Node 24.22.0 check passes 3944 tests in 216 files, plus every other gate: `CHECK PASS in 795s`. The final per-commit gate also passes all 3944 tests: `CHECK PASS (fast) in 744s`; only the already-passed offline package install is omitted by that mode.
+- The caller of the first synthetic run was interrupted, but its owned controller completed all thirteen stages to `ready-pr`. Retain the recovered evidence separately. A concurrent second rehearsal failed: HTTP passed, but the integration suite was cancelled at its unchanged thirty-second case deadline. Both runs' four exact environments were explicitly retired; no deadline was widened.
+- Repeat with timed QA isolated: the public CLI exits zero after 931 s, all thirteen stages complete to `ready-pr`, all fourteen synthetic-client launches succeed with zero input waits, all three cases pass and both environments are retired. The later fast gate overlaps only the remaining publication/handoff inspection, after all native turns and timed cases had finished. Report SHA-256: ea3075e90af3ba3aec4638240b085378bd1417e608a01a389f0936b81c832df2.
+- Create the authorized private trial repository; its initial fixture push remains pending. Actual hosted publication/protection and reference-client trials remain open. No model call, hosted PR, merge or wholeloop remote push ran.
+
+---
+
 ## 2026-11-04 · P6-36–P6-38 · Operator overview tasks added — planned
 
 - Three 1.0 tasks were added so that a separate, optional interface can be built on 1.0 alone ([ADR-0210](../docs/decisions/0210-operator-overview-and-change-feed.md)):

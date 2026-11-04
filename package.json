@@ -77,6 +77,7 @@
     "eval:native-boundary": "node scripts/check-native-boundary.mjs",
     "eval:claude-boundary": "node scripts/check-native-boundary.mjs claude",
     "eval:live-research": "npm run build && node scripts/check-live-research.mjs",
+    "eval:live-implementation": "npm run build && node scripts/check-live-implementation.mjs",
     "eval:campaign": "node scripts/check-campaign.mjs"
   },
   "devDependencies": {
