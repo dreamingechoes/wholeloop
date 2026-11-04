@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-04 · P6-27 · Hosted fixture and protection — in progress
+
+- After explicit approval for every push needed by this trial, publish the six-file fixture to the private trial repository without force. Observe `main` at `3aeeef7b3045dadddb67404530f914b4bf41ab18`; no wholeloop source remote is pushed.
+- Require PRs and the strict `test` check from the actually observed GitHub Actions issuer `15368`, including administrators, with force pushes and deletion disabled. A separate GET confirms every setting.
+- Read the hosted failure rather than assuming its cause: check run `41904851288` reaches `npm run check` on Node 22.23.4 and fails the exact `pending` versus `public fixture` assertion. Retain sanitized protection, revision, check and assertion receipts outside the repository (SHA-256: 1bbf14a5540ca8b487ebef45e7bda955262671440cd366035d275c93b3d9ee18). The documentation-only per-commit gate passes: `CHECK PASS (fast) in 6s`; code tests are not selected and the already-verified offline package install is omitted by that mode. This is the intended negative baseline, not a passing delivery or native-client trial.
+- The next step is the three Claude EVAL-09 trials after a fresh sign-in to the dedicated home. Codex research remains quota-dependent. No model call, hosted PR or merge ran in this increment.
+
+---
+
 ## 2026-11-04 · P6-27 · Public EVAL-09 host — in progress
 
 - Add `eval:live-implementation`: one none-policy implementation-to-PR attempt through the built public CLI, with exact private repository checks, source/recipe/rubric pins, narrow delegated decisions and explicit quota/publication confirmation. Use a small HTTP status change with a genuinely failing initial suite so the trial isolates transport, QA and publication; it establishes no complex-feature capability.
