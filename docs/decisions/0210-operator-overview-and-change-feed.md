@@ -5,7 +5,7 @@
 
 ## Context
 
-The owner plans a separate, optional interface (working name: the Deck) that shows live what the harness is doing: work items and where each sits in the flow, which decision waits for a person, gates, delivery runs, agents, worktrees and recent activity. It lives in its own repository. Its first version should be buildable on top of 1.0 alone.
+A separate, optional interface (working name: the Deck) is planned to show live what the harness is doing: work items and where each sits in the flow, which decision waits for a person, gates, delivery runs, agents, worktrees and recent activity. It lives in its own repository. Its first version should be buildable on top of 1.0 alone.
 
 Today that information exists but is spread over several reads: `wl status`, `wl delivery report`, `wl delivery runner-status`, `wl delivery events`, `wl worktree list` and the mailbox. Nothing orders it by what needs a person first. Nothing follows it live: [ADR-0190](./0190-operator-report-diagnostics-and-recovery-bundles.md) and P6-25 left the optional live watch out. An interface that read the journals itself would have to re-derive decision logic (what is blocked, what waits for whom, which status wins). That logic has one right answer, so it belongs in the core with tests.
 

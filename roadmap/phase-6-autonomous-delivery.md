@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 original tasks on 2026-10-24 and added P6-35–P6-38 on 2026-11-04 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 original tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 68 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 8 new pending implementation tasks; the owner added P6-35–P6-38 on 2026-11-04.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 68 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 8 new pending implementation tasks; P6-35–P6-38 were added on 2026-11-04.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -907,7 +907,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ⬜ · **Size:** L · **Depends on:** P6-27, P6-10, P6-34
 
-**Design review:** added by the owner on 2026-11-04 · **Release:** 1.0
+**Design review:** added on 2026-11-04 · **Release:** 1.0
 
 **Goal** — Let an authorized delivery run reach its endpoint unattended across token expiry and usage windows, without a worker ever holding or refreshing a stored credential.
 
@@ -937,7 +937,7 @@ The documentation also records Antigravity as an unavailable worker, while its i
 
 **Status:** ⬜ · **Size:** M · **Depends on:** P6-10, P6-34
 
-**Design review:** added by the owner on 2026-11-04 · **Release:** 1.0
+**Design review:** added on 2026-11-04 · **Release:** 1.0
 
 **Goal** — Record which client and model acted, through which channel a person decided, and why, before the v1 event contract freezes ([ADR-0210](../docs/decisions/0210-operator-overview-and-change-feed.md)).
 
@@ -969,7 +969,7 @@ To fill them:
 
 **Status:** ⬜ · **Size:** L · **Depends on:** P6-25, P6-30, P6-36
 
-**Design review:** added by the owner on 2026-11-04 · **Release:** 1.0
+**Design review:** added on 2026-11-04 · **Release:** 1.0
 
 **Goal** — One deterministic read of everything happening in the harness, ordered by what needs a person first, that a terminal, a skill or a separate interface can render without deciding anything.
 
@@ -1001,7 +1001,7 @@ Also `wl overview schema`, and fixture stores with expected output for every hea
 
 **Status:** ⬜ · **Size:** M · **Depends on:** P6-37
 
-**Design review:** added by the owner on 2026-11-04 · **Release:** 1.0
+**Design review:** added on 2026-11-04 · **Release:** 1.0
 
 **Goal** — Follow the harness live from another process without polling commands or reading journal files. This delivers the optional watch P6-25 left out.
 
