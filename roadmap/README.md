@@ -1,14 +1,14 @@
 # Roadmap — built in vertical phases, worked in session-sized tasks
 
-> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. The owner accepted Phase 6 for 1.0 and authorized sequential implementation; P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are complete; P6-24 and P6-33 are implemented and await native or hosted acceptance, and 4 tasks await implementation.
+> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. Phase 6 is accepted for 1.0 and sequential implementation is authorized; P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are complete; P6-24 and P6-33 are implemented and await native or hosted acceptance, and 4 tasks await implementation.
 
 ---
 
-Current manual checks and owner-only actions: [manual verification](./manual-verification.md). Start with the [V1 acceptance runbook](../docs/v1-acceptance.md) for executable trials, expected results and the distinction between owner decisions, implementation work and deferred service certification.
+Current manual checks and maintainer-only actions: [manual verification](./manual-verification.md). Start with the [V1 acceptance runbook](../docs/v1-acceptance.md) for executable trials, expected results and the distinction between maintainer decisions, implementation work and deferred service certification.
 
 ## Expanded 1.0 review
 
-Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [38 Phase 6 tasks](./phase-6-autonomous-delivery.md). The owner reviewed and accepted every new task on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
+Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [38 Phase 6 tasks](./phase-6-autonomous-delivery.md). Every new task was reviewed and accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
 
 The roadmap now contains 92 tasks: 68 completed tasks (forty original plus P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34), fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 8 new pending implementation tasks (P6-35–P6-38 added on 2026-11-04). The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
 
@@ -82,7 +82,7 @@ Phase IDs preserve the existing history: P6 is inside expanded 1.0 and precedes 
 3. **Do it end to end.** Code, tests and docs land together. Keep files inside the [size budgets](../docs/decisions/0011-size-budgets-and-enforcement.md).
 4. **Check.** Every acceptance criterion ticked, all local checks green.
 5. **Record.** Mark the task ✅, add a journal entry (what changed, decisions taken, follow-ups), update status banners in the docs.
-6. **Commit.** Conventional commits, one concern each, no tool attribution ([ADR-0017](../docs/decisions/0017-no-tool-attribution-in-history.md)). During the bootstrap, commits go **straight to `main`** — no branches, no PRs — until the owner announces the switch (see [AGENTS.md](../AGENTS.md)).
+6. **Commit.** Conventional commits, one concern each, no tool attribution ([ADR-0017](../docs/decisions/0017-no-tool-attribution-in-history.md)). During the bootstrap, commits go **straight to `main`** — no branches, no PRs — until the maintainer announces the switch (see [AGENTS.md](../AGENTS.md)).
 
 A decision that changes the design goes into a new ADR in the same change — never only into the journal.
 

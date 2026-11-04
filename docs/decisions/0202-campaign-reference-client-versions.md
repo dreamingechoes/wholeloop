@@ -5,7 +5,7 @@
 
 ## Context
 
-Native delivery recipes admit exactly one version per reference client. The pinned pair was Claude Code 2.1.307 and Codex 0.163.0, the versions observed when the recipes and the Codex boundary observer were written ([ADR-0120](./0120-observed-native-boundaries-and-asynchronous-admission.md)). For P6-27 the owner fixed the campaign's clients at the versions installed and signed in on the development host: Claude Code 2.1.316 and Codex 0.166.0. A run that binds another version is refused, so the pin had to move before any live trial.
+Native delivery recipes admit exactly one version per reference client. The pinned pair was Claude Code 2.1.307 and Codex 0.163.0, the versions observed when the recipes and the Codex boundary observer were written ([ADR-0120](./0120-observed-native-boundaries-and-asynchronous-admission.md)). For P6-27 the campaign's clients are fixed at the versions installed and signed in on the development host: Claude Code 2.1.316 and Codex 0.166.0. A run that binds another version is refused, so the pin had to move before any live trial.
 
 A newer client can change behavior without changing flags. Codex 0.166.0 lists several features enabled by default that the recipe did not name. One of them, `tool_call_mcp_elicitation`, lets an MCP tool ask the user for input during a turn.
 
@@ -20,7 +20,7 @@ The conformance pins in `test/conformance/pins.json` are a separate nightly base
 ## Alternatives rejected
 
 - Admitting a version range would let a trial run on a client nobody observed, and make three trials of one scenario incomparable.
-- Keeping the old pin and installing older clients would mean evaluating versions the owner does not use.
+- Keeping the old pin and installing older clients would mean evaluating versions not in use on the development host.
 - Leaving the new defaults alone would trust that an interactive feature stays unreachable without a configured server, which is a client implementation detail.
 
 ## Verification

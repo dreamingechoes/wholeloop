@@ -10,7 +10,7 @@ A native launch is admitted only with a trusted runtime observation of the exact
 Two facts observed on the reference client, Claude Code 2.1.316 on macOS, shaped the design:
 
 - **Authentication needs the real home.** Claude Code keeps its login in the macOS login Keychain and reads it through `security(1)`. With the substituted per-assignment home that every launch used, the client reported `loggedIn: false`. It also needs `USER`. Setting `CLAUDE_CONFIG_DIR` selects a different Keychain entry, one per client home.
-- **The client offers no policy-only probe.** Its file tools follow the client's permission engine, which runs only when a model calls a tool. A model-driven canary would spend the owner's quota on every launch, and its denials would come from model behavior rather than an observed mechanism.
+- **The client offers no policy-only probe.** Its file tools follow the client's permission engine, which runs only when a model calls a tool. A model-driven canary would spend model quota on every launch, and its denials would come from model behavior rather than an observed mechanism.
 
 ## Decision
 
@@ -23,7 +23,7 @@ Two facts observed on the reference client, Claude Code 2.1.316 on macOS, shaped
   - writes to the assignment's outputs (file output only), its `home/` and `tmp/`, the dedicated client home and `/dev`.
 
   Network and process creation stay open: the client needs its API, and the recipe's `--restricted` mode removes every tool that runs commands. Since the profile is in argv, it is part of the recipe's policy digest. An observation of one profile therefore cannot admit a launch under another.
-- **A dedicated client home.** The client runs with `CLAUDE_CONFIG_DIR` set to a home that the owner signed in to once, outside the wholeloop store and outside every repository. `HOME` and `USER` are the owner's, taken from trusted controller configuration. The profile, not a substituted home, keeps the run away from the rest of the home directory. Neither the owner's personal configuration nor their default login is used. A containment whose client home differs from the native-store reference is refused before any attempt is prepared.
+- **A dedicated client home.** The client runs with `CLAUDE_CONFIG_DIR` set to a home that the operator signed in to once, outside the wholeloop store and outside every repository. `HOME` and `USER` are the operator's, taken from trusted controller configuration. The profile, not a substituted home, keeps the run away from the rest of the home directory. Neither the operator's personal configuration nor their default login is used. A containment whose client home differs from the native-store reference is refused before any attempt is prepared.
 - **The observer probes the real mechanism.** `ClaudeBoundaryHost` runs before admission, on macOS only, and invokes no model. It refuses a recipe that does not regenerate exactly, and a client home that holds a credential file. It then runs these controls, all under `sandbox-exec`:
   1. The client's `--version` under the launch profile.
   2. The controller's boundary program under the same profile, plus read access to the controller's Node runtime. Under this profile the program must:
@@ -47,8 +47,8 @@ Two facts observed on the reference client, Claude Code 2.1.316 on macOS, shaped
 ## Verification
 
 - Ten unit cases with a synthetic process runner cover the profile order and quoting, the policy binding, three roles, each refused proof, a signed-out client, a non-macOS host, a credential file, and a changed recipe.
-- A launch case shows that a contained run goes through `sandbox-exec` with the owner's home, the user and the client home, and that a mispaired client home is refused first.
-- On the owner's machine, `npm run eval:claude-boundary` passes six real controls on Claude Code 2.1.316: planner, builder and verifier, each with both output modes. Each control is authenticated through the dedicated client home, with the workspace unchanged and no model invoked.
+- A launch case shows that a contained run goes through `sandbox-exec` with the operator's home, the user and the client home, and that a mispaired client home is refused first.
+- On the development host, `npm run eval:claude-boundary` passes six real controls on Claude Code 2.1.316: planner, builder and verifier, each with both output modes. Each control is authenticated through the dedicated client home, with the workspace unchanged and no model invoked.
 - Re-running that eval without the profile's leading deny makes the observer refuse.
 
 ## Owned closure of the sandbox process
@@ -57,11 +57,11 @@ A contained launch's command is `/usr/bin/sandbox-exec`, not `claude`. The runne
 
 ## Findings from the first model turn
 
-The owner approved one model turn under the launch profile (2026-11-03). Its first attempt failed at startup: the client creates `/tmp/claude-<uid>` whatever `TMPDIR` says, and the profile denies it. Allowing it would expose the temporary files of every other session of the same user. Contained launches and their observer therefore set `CLAUDE_CODE_TMPDIR` to the assignment's own `tmp/`.
+One model turn under the launch profile was approved (2026-11-03). Its first attempt failed at startup: the client creates `/tmp/claude-<uid>` whatever `TMPDIR` says, and the profile denies it. Allowing it would expose the temporary files of every other session of the same user. Contained launches and their observer therefore set `CLAUDE_CODE_TMPDIR` to the assignment's own `tmp/`.
 
-They also set `DISABLE_AUTOUPDATER=1`. During the session the native installer moved `~/.local/bin/claude` from 2.1.316 to 2.1.317, although the owner's configuration disables auto-update; the trigger was not identified. The observer refused the new version, as intended. The runtime document should name the exact version binary rather than the symlink the installer moves.
+They also set `DISABLE_AUTOUPDATER=1`. During the session the native installer moved `~/.local/bin/claude` from 2.1.316 to 2.1.317, although the host's configuration disables auto-update; the trigger was not identified. The observer refused the new version, as intended. The runtime document should name the exact version binary rather than the symlink the installer moves.
 
-The retried turn completed in 5.1 s on `claude-opus-5-5` with only `Glob`, `Grep` and `Read` and no MCP server. It read the allowed witness, and the client's restricted mode denied the read outside the working directories (`permission_denials`). The client reported 277 output tokens. That turn ran on 2.1.317, so it is not evidence for the pinned 2.1.316. With the exact 2.1.316 binary and both variables, the six model-free controls pass again. The owner kept the 2.1.316 pin, and the same turn repeated on that exact binary also completed: client 2.1.316, 5.3 s, 278 output tokens, the allowed read returned and the outside read denied.
+The retried turn completed in 5.1 s on `claude-opus-5-5` with only `Glob`, `Grep` and `Read` and no MCP server. It read the allowed witness, and the client's restricted mode denied the read outside the working directories (`permission_denials`). The client reported 277 output tokens. That turn ran on 2.1.317, so it is not evidence for the pinned 2.1.316. With the exact 2.1.316 binary and both variables, the six model-free controls pass again. The 2.1.316 pin was kept, and the same turn repeated on that exact binary also completed: client 2.1.316, 5.3 s, 278 output tokens, the allowed read returned and the outside read denied.
 
 ## Token refresh inside the profile
 
@@ -77,12 +77,12 @@ Verification:
 - a macOS case runs the real `sandbox-exec`: it can write another file in the client home but none of the three names;
 - removing the deny fails that case.
 
-Neither allowing Keychain writes inside the profile nor refreshing outside it was chosen here. The first would let a model-driven process change the owner's Keychain; the second runs the client uncontained. Both are the owner's decision. Until then, the owner signs in again before each batch of trials.
+Neither allowing Keychain writes inside the profile nor refreshing outside it was chosen here. The first would let a model-driven process change the operator's Keychain; the second runs the client uncontained. Both are a maintainer decision. Until then, the client home is signed in again before each batch of trials.
 
 ## Developer-tools prompt
 
-During the campaign trials the owner saw macOS ask, over and over, to install the command line developer tools. The cause: inside the profile, `/var/select/developer_dir` is unreadable. When the client calls `/usr/bin/git`, the shim decides no developer tools exist and asks the owner's GUI session to install them, once per launch. Outside the profile, Git works normally.
+During the campaign trials macOS asked, over and over, to install the command line developer tools. The cause: inside the profile, `/var/select/developer_dir` is unreadable. When the client calls `/usr/bin/git`, the shim decides no developer tools exist and asks the user's GUI session to install them, once per launch. Outside the profile, Git works normally.
 
 The profile now denies the `com.apple.dt.CommandLineTools.installondemand` lookup, so the failure stays silent and Git stays unavailable inside the profile, as before. Allowing reads of the developer link and the Xcode directory was not chosen: it would widen what the client can read for no benefit to a run.
 
-A macOS case runs `/usr/bin/git` under the real profile and requires a non-zero exit reporting that no install could be requested. The case was not run with the deny removed, because that would show the owner the dialog again.
+A macOS case runs `/usr/bin/git` under the real profile and requires a non-zero exit reporting that no install could be requested. The case was not run with the deny removed, because that would show the dialog again.

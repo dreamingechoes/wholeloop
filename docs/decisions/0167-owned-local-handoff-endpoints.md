@@ -19,7 +19,7 @@ Return current code-ready endpoint evidence only when the actual handoff stage i
 
 ## Alternatives rejected
 
-An extra reporter model adds a new uncertain judgment to deterministic data. A passed flag omits the actual accepted product and report. Treating a stored report as permanently current misses later candidate edits. Reconstructing a lost report consumes another allowance and obscures its original producer. Signalling a stored core PID risks an unrelated process after reuse. Declaring local delivery for a requested remote endpoint misstates the owner's authorization and requested outcome.
+An extra reporter model adds a new uncertain judgment to deterministic data. A passed flag omits the actual accepted product and report. Treating a stored report as permanently current misses later candidate edits. Reconstructing a lost report consumes another allowance and obscures its original producer. Signalling a stored core PID risks an unrelated process after reuse. Declaring local delivery for a requested remote endpoint misstates the operator's authorization and requested outcome.
 
 ## Verification
 

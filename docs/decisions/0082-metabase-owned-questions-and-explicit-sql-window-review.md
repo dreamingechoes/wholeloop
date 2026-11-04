@@ -22,7 +22,7 @@ A full dashcards PUT would carry replacement authority over an existing dashboar
 
 ## Verification
 
-Test exact config/artifact/SQL/window preview, API-key transport, create-only question ownership and classic-query readback. Refuse malformed IDs, missing window review, mutations/templates, changed query/database/ownership, sharing and extra parameters/series/visualization state. Exercise actual built-in manifest/launch ledger, compiled no-key preview and cached complete/partial receipts. All HTTP responses are synthetic; actual Metabase versions, datasource permissions, SQL/time scope, normalization/rendering and Linux remain owner verification.
+Test exact config/artifact/SQL/window preview, API-key transport, create-only question ownership and classic-query readback. Refuse malformed IDs, missing window review, mutations/templates, changed query/database/ownership, sharing and extra parameters/series/visualization state. Exercise actual built-in manifest/launch ledger, compiled no-key preview and cached complete/partial receipts. All HTTP responses are synthetic; actual Metabase versions, datasource permissions, SQL/time scope, normalization/rendering and Linux remain manual verification.
 
 ## Sources
 

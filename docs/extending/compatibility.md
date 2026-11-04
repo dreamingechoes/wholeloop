@@ -41,7 +41,7 @@ Disposable delivery cache repair cannot recover private grants, erase revocation
 
 ## Before the actual release
 
-Review the candidate against supported user workflows, migrations and release-note breaking intent. Finish native and fresh-machine checks, then activate publication through the owner's chosen channels. The fixture is a compatibility candidate, not a version bump, published package, tag or announcement. See [ADR-0066](../decisions/0066-v1-compatibility-baseline-and-deprecation.md).
+Review the candidate against supported user workflows, migrations and release-note breaking intent. Finish native and fresh-machine checks, then activate publication through the maintainer's chosen channels. The fixture is a compatibility candidate, not a version bump, published package, tag or announcement. See [ADR-0066](../decisions/0066-v1-compatibility-baseline-and-deprecation.md).
 
 <!-- docnav -->
 [◀ Remote rollout bridges](remote-bridges.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Lenses, templates, profiles ▶](lenses-templates-profiles.md)

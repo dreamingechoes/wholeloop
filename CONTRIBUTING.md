@@ -1,6 +1,6 @@
 # Contributing to wholeloop
 
-`wholeloop` is built in small, session-sized tasks. Start with the working agreement and current journal; the repository remains private until the owner explicitly approves public release.
+`wholeloop` is built in small, session-sized tasks. Start with the working agreement and current journal; the repository remains private until the maintainer explicitly approves public release.
 
 To use wholeloop rather than change it, start with the [README](./README.md) and [getting started](./docs/getting-started.md). The agreement below concerns implementation of this repository.
 
@@ -21,7 +21,7 @@ To use wholeloop rather than change it, start with the [README](./README.md) and
 ## Commits and pull requests
 
 > [!NOTE]
-> **Bootstrap phase:** while the foundations are being built, the owner commits directly to `main`. Branches and pull requests become the workflow once the switch is announced in the [journal](./roadmap/journal.md).
+> **Bootstrap phase:** while the foundations are being built, changes are committed directly to `main`. Branches and pull requests become the workflow once the switch is announced in the [journal](./roadmap/journal.md).
 
 - [Conventional commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:` — imperative subject, ≤ 72 characters, one concern per commit.
 - **No tool attribution.** No `Co-Authored-By` trailers for AI assistants, no "generated with" footers — in commits, PR descriptions or anywhere else ([ADR-0017](./docs/decisions/0017-no-tool-attribution-in-history.md)). Use whatever tools you like; the history records people.

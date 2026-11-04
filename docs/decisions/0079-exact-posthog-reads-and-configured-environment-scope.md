@@ -9,7 +9,7 @@ PostHog exposes feature flags within numeric projects, not named deployment envi
 
 ## Decision
 
-- Add wholeloop/posthog-flag-bridge@1 with an explicit owner-maintained project to environment mapping. Preserve the existing generic configuration declaration. Reject mismatched requested environments before credentials or network access. Label that mapping in the plan and normalized result as configured evidence, never an API-observed environment or proof of application routing.
+- Add wholeloop/posthog-flag-bridge@1 with an explicit user-maintained project to environment mapping. Preserve the existing generic configuration declaration. Reject mismatched requested environments before credentials or network access. Label that mapping in the plan and normalized result as configured evidence, never an API-observed environment or proof of application routing.
 - Plan a key-filtered list GET with limit=2 and offset=0. Require count=1, null next/previous and one exact-case key with positive numeric ID. Then GET that ID from the configured project/base, requiring unchanged resource identity. Never follow server-supplied URLs. Both requests share one ten-second deadline; each response retains the existing one-MiB JSON bound and redacted error path.
 - Use a host-resolved Bearer credential, GET only, no redirects/cookies/retries. A read consumes no personal configuration, stores no credential and changes no flag. The CLI keeps default-preview and explicit live behavior.
 - Normalize only explicit non-archived/non-deleted boolean state, positive version, no experiments/evaluation contexts/continuity/remote configuration, runtime=all and distinct_id bucketing. Require one condition group with explicit empty properties and finite numeric percentage 0–100. Refuse multivariate/holdout/ enrollment/group aggregation/frozen exposure and unknown filter/group controls.
@@ -21,7 +21,7 @@ Echoing the requested environment as a server observation would hide a scope ass
 
 ## Verification
 
-Exercise exact preview/configuration, lookup completeness/case/identity, live list/detail routing, one shared deadline, cancellation between requests, redaction and built-in manifest/ramp normalization. Cover numeric boundaries, disabled state, content revisions and unsupported controls with synthetic HTTP responses. Actual PostHog authentication/version/permissions, project mapping, SDK behavior and Linux acceptance remain owner verification. No authenticated service call is performed.
+Exercise exact preview/configuration, lookup completeness/case/identity, live list/detail routing, one shared deadline, cancellation between requests, redaction and built-in manifest/ramp normalization. Cover numeric boundaries, disabled state, content revisions and unsupported controls with synthetic HTTP responses. Actual PostHog authentication/version/permissions, project mapping, SDK behavior and Linux acceptance remain manual verification. No authenticated service call is performed.
 
 ## Sources
 

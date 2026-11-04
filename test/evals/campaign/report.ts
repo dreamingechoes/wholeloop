@@ -36,7 +36,7 @@ const REQUIRED = 3
 /**
  * Launch reasons that mean the run never had a fair chance: the observer
  * refused the launch, or the client was denied for credentials or its usage
- * window. By the owner's rule (2026-11-04) such an attempt is repeated
+ * window. By the campaign rule (2026-11-04) such an attempt is repeated
  * without invalidating the batch, but stays listed. The reason comes from
  * the retained receipt, never from interpreting client text.
  */

@@ -30,6 +30,6 @@ An impact report can invent confidence by replacing an unavailable datapoint wit
 
 ## Consequences
 
-Report customization controls layout, not arbitrary computed fields or unrestricted narrative. Document comments are appended marker-bound notes, not native threaded comments. Live query/cohort semantics, causal interpretation, model grounding, real client isolation and authenticated publication remain owner checks. Local SDK/CLI fixtures prove contracts and deterministic arithmetic only.
+Report customization controls layout, not arbitrary computed fields or unrestricted narrative. Document comments are appended marker-bound notes, not native threaded comments. Live query/cohort semantics, causal interpretation, model grounding, real client isolation and authenticated publication remain manual checks. Local SDK/CLI fixtures prove contracts and deterministic arithmetic only.
 
 [◀ Decisions index](./README.md)

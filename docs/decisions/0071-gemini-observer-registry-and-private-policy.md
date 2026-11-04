@@ -15,11 +15,11 @@ Gemini has a headless entrypoint, but allowed-tools only bypasses confirmation a
 - Preserve the original system-defaults file path, or an existing absolute explicit override, instead of letting native derivation redirect it into the worker. Keep existing native denies and trust settings; change no HOME, credential store, model, trust flag or permission-bypass setting. Reject comma/newline paths rather than let native include-directory parsing broaden the selected roots.
 - Pass the host's effective environment into recipe planning before applying worker overrides. Managed-setting checks must see caller-supplied host options, not only the parent process environment. Refused setup starts no native client.
 - Extend the existing policy stager's closed path list with the one Gemini file. Preflight all selected parents/files before writing, retain private modes and reject symlinks/existing output. Preserve Cursor behavior; claim no crash-atomic multi-file transaction or hermetic native process.
-- Advertise local headless capability while retaining unverified conformance. Actual native activation, trust/authentication, client logs/updaters, inherited include roots, ignored/external effects and model behavior remain owner checks. Antigravity's remaining recipe does not block this implementation.
+- Advertise local headless capability while retaining unverified conformance. Actual native activation, trust/authentication, client logs/updaters, inherited include roots, ignored/external effects and model behavior remain manual checks. Antigravity's remaining recipe does not block this implementation.
 
 ## Alternatives rejected
 
-Project-only settings can disappear under native trust handling. Allowed-tools alone leaves other tool surfaces available. Enabling plan mode introduces a different experimental surface and does not establish a positive registry. Replacing an administrator policy or copying HOME/authentication would cross an owner setup boundary. Disabling only experimental agents misses the two built-in delegators. Reusing the derived defaults path would silently skip original system defaults. Searching mixed stdout for a result could accept an intermediate value.
+Project-only settings can disappear under native trust handling. Allowed-tools alone leaves other tool surfaces available. Enabling plan mode introduces a different experimental surface and does not establish a positive registry. Replacing an administrator policy or copying HOME/authentication would cross a user setup boundary. Disabling only experimental agents misses the two built-in delegators. Reusing the derived defaults path would silently skip original system defaults. Searching mixed stdout for a result could accept an intermediate value.
 
 ## Verification
 

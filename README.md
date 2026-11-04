@@ -9,7 +9,7 @@ wholeloop supplies the process around the model: what context to load, which que
 
 ## Contents
 
-**Expanded 1.0:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [twenty-six implemented tasks, one awaiting native or hosted acceptance and 7 pending implementation tasks](./roadmap/phase-6-autonomous-delivery.md). The owner accepted the scope and authorized implementation; current installation and usage below retain their existing supervised behavior.
+**Expanded 1.0:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [twenty-six implemented tasks, one awaiting native or hosted acceptance and 7 pending implementation tasks](./roadmap/phase-6-autonomous-delivery.md). The scope is accepted and implementation is authorized; current installation and usage below retain their existing supervised behavior.
 
 - [What you can do](#what-you-can-do)
 - [Install from source](#install-from-source)
@@ -222,7 +222,7 @@ All seven targets have implemented artifact/installation paths. This table ident
 
 Managed Claude loose skills use `/wl-frame-problem`; a separately installed generated Claude plugin uses `/wholeloop:frame-problem`. Codex's skill picker uses `$wl-frame-problem`. Other clients can be asked to use the exact installed name. [Client setup](./docs/platforms/local-onboarding.md) explains delivery routes; [platforms](./docs/platforms/README.md) records boundaries and evidence.
 
-The owner has exercised Claude framing and session recovery. Actual Codex framing and one six-lens headless review have passing observations. These results are scoped to their recorded versions/builds; other trials have recorded permission, access or availability failures. See [acceptance](./docs/v1-acceptance.md) before treating copied files or simulations as native passes.
+Claude framing and session recovery have been exercised by hand. Actual Codex framing and one six-lens headless review have passing observations. These results are scoped to their recorded versions/builds; other trials have recorded permission, access or availability failures. See [acceptance](./docs/v1-acceptance.md) before treating copied files or simulations as native passes.
 
 ## Local first, integrations when needed
 
@@ -269,7 +269,7 @@ npm run smoke
 
 The complete check includes lint, types, unit/workflow tests, offline package installation, generated references, harness rules, Markdown and Mermaid. Markdown prose uses one paragraph per source line: check with `npm run lint:md`, or apply fixes with `npm run lint:md:fix`.
 
-Read the [working agreement](./AGENTS.md), [contribution guide](./CONTRIBUTING.md) and [roadmap journal](./roadmap/journal.md). The bootstrap currently commits directly to `main`; the future branch/PR switch will be recorded explicitly. Public visibility, npm publication and the 1.0 release remain owner decisions.
+Read the [working agreement](./AGENTS.md), [contribution guide](./CONTRIBUTING.md) and [roadmap journal](./roadmap/journal.md). The bootstrap currently commits directly to `main`; the future branch/PR switch will be recorded explicitly. Public visibility, npm publication and the 1.0 release remain maintainer decisions.
 
 ## License
 

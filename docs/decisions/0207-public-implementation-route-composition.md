@@ -125,7 +125,7 @@ Each gate's flow engine is configured only from a file the composer writes into 
 - `verify.suite` is bound to the runtime's first suite ref;
 - `review.rubric` is bound to the plan's pinned rubric file.
 
-The engine's home is an empty store directory. Neither discovery ambiguity nor the owner's own configuration can choose a rubric or a suite.
+The engine's home is an empty store directory. Neither discovery ambiguity nor the user's own configuration can choose a rubric or a suite.
 
 The real Docker run showed that a suite ref does not run a recipe command directly. It names an acceptance case, a `cli` case that runs one recipe test command and asserts exit zero. A run revision has exactly one acceptance plan, pinned before any builder, so those cases must be in the plan the acceptance-definition stage pins.
 

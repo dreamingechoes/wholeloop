@@ -22,4 +22,4 @@ Run the checklist in [README](./README.md) before promoting any capability.
 
 ## Guard transport implementation (2026-10-19)
 
-The generated opencode native guard transport is implemented and executed with authored payloads against the copied core. This is synthetic transport evidence; it does not prove actual client registration, captured payloads or permissions. Real hook capture, timeout/managed-policy behavior and Linux remain owner checks.
+The generated opencode native guard transport is implemented and executed with authored payloads against the copied core. This is synthetic transport evidence; it does not prove actual client registration, captured payloads or permissions. Real hook capture, timeout/managed-policy behavior and Linux remain manual checks.

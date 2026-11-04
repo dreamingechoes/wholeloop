@@ -26,4 +26,4 @@ Antigravity has its own agents, hook protocol and MCP dialect. Copying Gemini co
 
 ## Sources
 
-Official [plugins](https://www.antigravity.google/docs/plugins?tab=cli), [subagents](https://www.antigravity.google/docs/subagents), [hooks](https://www.antigravity.google/docs/hooks), [MCP](https://www.antigravity.google/docs/mcp) and [headless JSONL](https://www.antigravity.google/docs/cli/headless/) documentation, checked 2026-10-19. Actual native activation remains owner verification.
+Official [plugins](https://www.antigravity.google/docs/plugins?tab=cli), [subagents](https://www.antigravity.google/docs/subagents), [hooks](https://www.antigravity.google/docs/hooks), [MCP](https://www.antigravity.google/docs/mcp) and [headless JSONL](https://www.antigravity.google/docs/cli/headless/) documentation, checked 2026-10-19. Actual native activation remains manual verification.

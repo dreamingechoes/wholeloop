@@ -21,4 +21,4 @@ Run the checklist in [README](./README.md) before promoting any capability.
 
 ## Guard transport implementation (2026-10-19)
 
-The generated Codex artifact declares the explicit Git fallback. A Codex-shaped SDK normalization fixture is authored and synthetic; it is not a captured CLI hook. No unsupported CLI hooks configuration is emitted. Real hook capture, timeout/managed-policy behavior and Linux remain owner checks.
+The generated Codex artifact declares the explicit Git fallback. A Codex-shaped SDK normalization fixture is authored and synthetic; it is not a captured CLI hook. No unsupported CLI hooks configuration is emitted. Real hook capture, timeout/managed-policy behavior and Linux remain manual checks.

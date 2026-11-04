@@ -1,6 +1,6 @@
 # Nightly conformance — activate evidence collection deliberately
 
-> **TL;DR** — The checked-in workflow resolves pinned/latest clients, runs fresh standalone framing scenarios, and produces a structural matrix, issue drafts and an owned documentation-page projection. It is disabled until the owner configures the activation variables and native credentials. Issue delivery has its own switch and permission boundary.
+> **TL;DR** — The checked-in workflow resolves pinned/latest clients, runs fresh standalone framing scenarios, and produces a structural matrix, issue drafts and an owned documentation-page projection. It is disabled until the maintainer configures the activation variables and native credentials. Issue delivery has its own switch and permission boundary.
 
 > [!NOTE]
 > **Status: 🚧 partial.** Local provisioning/collection/aggregation/delivery and synthetic transport tests are implemented. No actual scheduled workflow, authenticated issue or native model run is established by those tests.
@@ -27,7 +27,7 @@ For OpenCode, explicitly select an available openai/model identifier through the
 
 An ordinary local trial without this explicit nightly host value keeps its existing account/model selection. This is not automatic model substitution; see [ADR-0090](../decisions/0090-explicit-nightly-native-model-selection.md).
 
-The host creates non-secret authentication-mode settings only inside each fresh Gemini/Antigravity HOME: Gemini's gemini-api-key selected type and Antigravity's modelProvider=gemini. It never writes an API key, seeds an account-session file or changes personal settings. Actual acceptance of these settings and model access on each selected version remain owner verification.
+The host creates non-secret authentication-mode settings only inside each fresh Gemini/Antigravity HOME: Gemini's gemini-api-key selected type and Antigravity's modelProvider=gemini. It never writes an API key, seeds an account-session file or changes personal settings. Actual acceptance of these settings and model access on each selected version remain manual verification.
 
 Enable collection, then dispatch the exact reviewed default-branch version. Native trust/permission failures remain failures; the host grants no approval bypass. Do not interpret imported environment context or locally generated synthetic reports as authorization or actual native acceptance.
 
@@ -52,7 +52,7 @@ The page is an **external artifact projection**. Review and explicitly apply its
 
 Review the matrix and draft artifact first. Configure the conformance-issues environment/protection policy, then set WHOLELOOP_CONFORMANCE_ISSUES to true only when you intend delivery. This job alone has issues:write and receives its token only in the delivery step. It downloads the exact core/aggregate artifact IDs and verifies the independently passed result digest before service access; it neither rebuilds nor executes a native model.
 
-Writers serialize through conformance-issues concurrency. The delivery host checks actual repository/default-branch metadata, inventories intact markers in open and closed issues, refuses incomplete scans, and rechecks unchanged current evidence before sending each exact body through stdin. Completed external outcomes survive partial failure; no automatic close/delete/retry occurs. Inspect actual GitHub outcomes before another dispatch. Owner edits to markers or independent writers remain outside atomic deduplication guarantees.
+Writers serialize through conformance-issues concurrency. The delivery host checks actual repository/default-branch metadata, inventories intact markers in open and closed issues, refuses incomplete scans, and rechecks unchanged current evidence before sending each exact body through stdin. Completed external outcomes survive partial failure; no automatic close/delete/retry occurs. Inspect actual GitHub outcomes before another dispatch. Maintainer edits to markers or independent writers remain outside atomic deduplication guarantees.
 
 ## Verification boundaries
 

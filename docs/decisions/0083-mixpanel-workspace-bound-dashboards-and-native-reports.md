@@ -22,7 +22,7 @@ The hosted MCP roster alone does not supply a deterministic argument schema. Ins
 
 ## Verification
 
-Exercise three official origins, workspace/project identity and incomplete inventory refusal before writes, explicit native definitions, bounded envelope decoding and Bearer-only routing. Verify exact owned report and dedicated attachment/privacy readback, changed/missing state, redaction and known/unknown cancellation outcomes. Use actual built-in manifest/launch dispatch, compiled no-key preview and cached complete/partial receipts. All HTTP responses are synthetic. Actual API/version, OAuth/roles/workspaces, native query/time scope, rendering/traffic and Linux remain owner verification.
+Exercise three official origins, workspace/project identity and incomplete inventory refusal before writes, explicit native definitions, bounded envelope decoding and Bearer-only routing. Verify exact owned report and dedicated attachment/privacy readback, changed/missing state, redaction and known/unknown cancellation outcomes. Use actual built-in manifest/launch dispatch, compiled no-key preview and cached complete/partial receipts. All HTTP responses are synthetic. Actual API/version, OAuth/roles/workspaces, native query/time scope, rendering/traffic and Linux remain manual verification.
 
 ## Sources
 

@@ -3,7 +3,7 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 original tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
@@ -19,7 +19,7 @@ P6-33 and P6-34 have later IDs to retain the initial grouping; their explicit de
 
 Every task lands code, meaningful tests and docs together; keeps one concern per commit; passes all local checks; adds versioned public contracts/compatibility cases where needed; and updates the journal. Implemented hard rules gain named enforcers in enforcement.yml. Future enforcers in this plan are not current enforcement.
 
-Keep actual execution levels distinct: pure rules, synthetic native processes, real local backends/apps, actual native clients/models, hosted code-host effects and owner decisions. No fixture substitutes for a real acceptance requirement. Unsupported expanded capabilities remain explicit and cannot be enabled by broader permissions.
+Keep actual execution levels distinct: pure rules, synthetic native processes, real local backends/apps, actual native clients/models, hosted code-host effects and maintainer decisions. No fixture substitutes for a real acceptance requirement. Unsupported expanded capabilities remain explicit and cannot be enabled by broader permissions.
 
 ## Task groups
 
@@ -43,7 +43,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** M · **Depends on:** P2-08, P3-04
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Turn an issue, document, file or existing work item into one traceable input without inventing requirements.
 
@@ -67,7 +67,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-01, P3-01
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Represent the complete intended outcome before assigning work.
 
@@ -91,7 +91,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** L · **Depends on:** P6-02
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Keep execution authority outside the workers that consume it.
 
@@ -115,7 +115,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-02
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Make every plan, control transition and attempt replayable without rewriting existing history.
 
@@ -137,7 +137,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-03, P6-04
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Assign eligible work once under concurrent local scheduling.
 
@@ -159,7 +159,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** L · **Depends on:** P6-05
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Resume after interruption without guessing whether an external action happened.
 
@@ -181,7 +181,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-04
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Bound unattended work and explain exhaustion using observed data.
 
@@ -205,7 +205,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-02, P6-03
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Give each fresh worker exactly its context, authority and reporting contract.
 
@@ -229,7 +229,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** L · **Depends on:** P6-08, P5-03
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Execute native builder roles without widening existing read-only gate recipes.
 
@@ -253,7 +253,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-06, P6-07, P6-09, P6-34
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Run an authorized route from the terminal or CI without a required long-lived conversation.
 
@@ -273,7 +273,7 @@ The provisioning backend also retains a private copy of the original request acr
 
 - Public foreground run and reconcile commands over a fixed public host whose identity binds the trusted native bindings document (ADR-0180, ADR-0183), working with the empty default and with explicit bindings.
 
-Owner decisions of 2026-11-01 settle the other items. Envelope-derived supervised plans and supervised definition approvals execute only under a fresh exact-plan grant (ADR-0182). Continuation after integration or acceptance repairs belongs to P6-29. Report-level research belongs to P6-33 (ADR-0179) and hosted endpoints to P6-20–P6-24; neither is a P6-10 closure condition.
+Decisions of 2026-11-01 settle the other items. Envelope-derived supervised plans and supervised definition approvals execute only under a fresh exact-plan grant (ADR-0182). Continuation after integration or acceptance repairs belongs to P6-29. Report-level research belongs to P6-33 (ADR-0179) and hosted endpoints to P6-20–P6-24; neither is a P6-10 closure condition.
 
 **Closure** — P6-10 closes when its three acceptance criteria hold with automated evidence: the compiled CLI lifecycle, process-group cancellation and interactive-tool canaries, using the synthetic/reference transport. That evidence certifies neither a native client nor a hosted service; those checks stay open in manual verification and in P6-27.
 
@@ -295,7 +295,7 @@ Owner decisions of 2026-11-01 settle the other items. Envelope-derived supervise
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-03, P3-09
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Describe actual application setup without treating declarations as execution.
 
@@ -319,7 +319,7 @@ Owner decisions of 2026-11-01 settle the other items. Envelope-derived supervise
 
 **Status:** ✅ · **Size:** L · **Depends on:** P6-11, P6-09
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Run services and fixture data without sharing controller or sibling state.
 
@@ -351,7 +351,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-12, P6-06
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Stop disposable resources predictably without deleting evidence or unrelated work.
 
@@ -375,7 +375,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-02, P6-04
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Bind criterion coverage to actual executions and immutable artifacts.
 
@@ -399,7 +399,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-12, P6-14, P3-05
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Observe user-visible behavior through declared commands and service endpoints.
 
@@ -423,7 +423,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** L · **Depends on:** P6-15
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Validate actual UI journeys with observable actions and assertions.
 
@@ -447,7 +447,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-15, P6-03
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Make acceptance resistant to the implementation rewriting its own standard.
 
@@ -471,7 +471,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-02, P3-01
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Define the exact assembled result of all required parts.
 
@@ -495,7 +495,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** L · **Depends on:** P6-18, P6-15, P6-16, P6-17
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Catch failures that independently passing parts do not expose.
 
@@ -519,7 +519,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-03, P6-10, P6-19, P3-07
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Deliver the checked feature to a PR without forging a person's testing.
 
@@ -543,7 +543,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-20
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Know which exact revision passed which trusted checks and repository requirements.
 
@@ -567,7 +567,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** 🔄 · **Size:** M · **Depends on:** P6-21, P6-19, P6-07
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Close actual failure feedback through the builder within the original scope.
 
@@ -593,7 +593,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-20, P6-21, P6-19, P6-03
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Explain whether an exact candidate can merge under an explicit operator policy.
 
@@ -617,7 +617,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ⏸️ · **Size:** L · **Depends on:** P6-23, P6-22
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Perform one authorized merge only when the server can enforce the required candidate boundary.
 
@@ -639,7 +639,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Evidence** — Eleven dispatcher-composed cases on stub hosts: route order and the runtime refusal; passing CI, one exact-head merge, the handoff and the endpoint, with no second merge on re-inspection; a CI failure that keeps its repair request and never reaches the merge; seven refusals with no merge; and someone else's merge, never handed off. A mutation that forces eligibility fails all seven refusals. Four stub-executor cases cover complete pagination and unknown facts.
 
-**Awaiting** — The separately authorized disposable hosted protection and exact-SHA trials (REL-10, EVAL-05, EVAL-08) need an owner-authorized hosted repository and a controller that installs the merge stages with the runtime allowance. No hosted code host was used.
+**Awaiting** — The separately authorized disposable hosted protection and exact-SHA trials (REL-10, EVAL-05, EVAL-08) need a maintainer-authorized hosted repository and a controller that installs the merge stages with the runtime allowance. No hosted code host was used.
 
 ---
 
@@ -647,7 +647,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-10, P6-14, P6-21, P6-24
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Make every result and limit understandable without opening private raw transcripts.
 
@@ -671,7 +671,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-02, P6-14, P6-18, P6-19
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Measure completed behavior against a stable standard outside the builder's control.
 
@@ -693,7 +693,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** 🔄 · **Size:** L · **Depends on:** P6-13, P6-16, P6-17, P6-22, P6-24, P6-25, P6-26, P6-33
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Observe the whole flow on actual reference clients with no concealed human assistance.
 
@@ -709,9 +709,9 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/09-validation-and-acceptance.md); platform matrix, v1 acceptance, manual verification.
 
-**Started** — On the owner's instruction, before P6-22, P6-24 and P6-33 are ✅: their remaining work is native or hosted acceptance that this task supplies, or P6-29's producer, which the owner chose to build here. The owner fixed the campaign inputs on 2026-11-03 ([manual verification](./manual-verification.md#native-evaluation-campaign-inputs-2026-11-03)). Increments, in order: reference version pin, Claude Code boundary observer, public host composition, P6-29's seeded correction producer, live evaluation host and three-run report, then the paid pilot.
+**Started** — By explicit instruction, before P6-22, P6-24 and P6-33 are ✅: their remaining work is native or hosted acceptance that this task supplies, or P6-29's producer, which is built here. The campaign inputs were fixed on 2026-11-03 ([manual verification](./manual-verification.md#native-evaluation-campaign-inputs-2026-11-03)). Increments, in order: reference version pin, Claude Code boundary observer, public host composition, P6-29's seeded correction producer, live evaluation host and three-run report, then the paid pilot.
 
-**Completed technical work** — The reference pin is Claude Code 2.1.316 and Codex 0.166.0, and the Codex recipe disables three more default features, including interactive MCP elicitation ([ADR-0202](../docs/decisions/0202-campaign-reference-client-versions.md)). The six real model-free Codex boundary controls pass on 0.166.0. Claude Code now has its own boundary: on macOS it launches inside a `sandbox-exec` profile that denies every file the assignment does not need, authenticates through a dedicated client home, and is admitted only after an observer runs the controller's probe under that profile ([ADR-0203](../docs/decisions/0203-contained-claude-code-boundary.md)). Six real model-free Claude Code 2.1.316 controls pass, authenticated, with no model invoked. Research workers now get the client's own read-only web search and fetch, but only for a `native-web` angle or to re-read a web citation, which the owner's choice of public-web research needs ([ADR-0204](../docs/decisions/0204-research-web-reads.md)). `wl delivery run` now launches a digest-verified controller bundle that composes the research route from a `--runtime` document naming each client's binary and home; the core stays a single file under 4 MiB ([ADR-0205](../docs/decisions/0205-public-controller-bundle.md)). `wl delivery reconcile` runs in the same bundle, and `wl delivery runner-host` prints the identity a request must name. An owner-approved model turn under the Claude profile passed. The EVAL-10 pilot ran end to end with no human wait but ended blocked on a correct machine rejection, after finding five defects ([ADR-0206](../docs/decisions/0206-live-research-pilot-findings.md)). Native receipts now carry client-reported usage. The three-run report is `npm run eval:campaign`: it groups retained live trials by scenario, client, version and model, and passes a trial only when the run completed with an outcome its route allows, with zero controller waits and every launch succeeded and host-observed. Claude Code has four EVAL-10 passes out of ten campaign attempts. Under the owner's 2026-11-04 rule, infrastructure failures are set aside and the first three remaining attempts must pass, which gives `three-passes`. The owner also confirmed that 1.0 autonomous delivery covers Claude Code and Codex, with Gemini, OpenCode, Copilot and Cursor in a 1.x release ([validation spec](./specifications/autonomous-delivery/09-validation-and-acceptance.md)). A diagnostic repeat completed with no human wait, both delegated decisions accepted, in 968 s and 26 launches. The implementation-to-PR route is composed in seven increments ([ADR-0207](../docs/decisions/0207-public-implementation-route-composition.md)); the first two are done: pinned repository inputs and the `gh` path in the runtime document, each verification round provisioning its own unit QA environment, observed with real Docker, the composition from plan to commit, run end to end through the real Codex observer with a synthetic client, and the verification, review and re-verification gates, with the declared suite as controller-owned acceptance cases, run through real Docker from plan to re-verification, integration and acceptance, with real Docker product QA from plan to acceptance, publication through the runtime's `gh`, and a complete synthetic run: the real engine drives the whole route to `completed` with outcome `ready-pr`, through real Docker QA and a real Git push to a local bare repository. That run also found that a to-pr run could never complete, now fixed. Remaining: P6-29's producer, the three required research trials per client and the three-run report.
+**Completed technical work** — The reference pin is Claude Code 2.1.316 and Codex 0.166.0, and the Codex recipe disables three more default features, including interactive MCP elicitation ([ADR-0202](../docs/decisions/0202-campaign-reference-client-versions.md)). The six real model-free Codex boundary controls pass on 0.166.0. Claude Code now has its own boundary: on macOS it launches inside a `sandbox-exec` profile that denies every file the assignment does not need, authenticates through a dedicated client home, and is admitted only after an observer runs the controller's probe under that profile ([ADR-0203](../docs/decisions/0203-contained-claude-code-boundary.md)). Six real model-free Claude Code 2.1.316 controls pass, authenticated, with no model invoked. Research workers now get the client's own read-only web search and fetch, but only for a `native-web` angle or to re-read a web citation, which the chosen public-web research needs ([ADR-0204](../docs/decisions/0204-research-web-reads.md)). `wl delivery run` now launches a digest-verified controller bundle that composes the research route from a `--runtime` document naming each client's binary and home; the core stays a single file under 4 MiB ([ADR-0205](../docs/decisions/0205-public-controller-bundle.md)). `wl delivery reconcile` runs in the same bundle, and `wl delivery runner-host` prints the identity a request must name. An owner-approved model turn under the Claude profile passed. The EVAL-10 pilot ran end to end with no human wait but ended blocked on a correct machine rejection, after finding five defects ([ADR-0206](../docs/decisions/0206-live-research-pilot-findings.md)). Native receipts now carry client-reported usage. The three-run report is `npm run eval:campaign`: it groups retained live trials by scenario, client, version and model, and passes a trial only when the run completed with an outcome its route allows, with zero controller waits and every launch succeeded and host-observed. Claude Code has four EVAL-10 passes out of ten campaign attempts. Under the 2026-11-04 rule, infrastructure failures are set aside and the first three remaining attempts must pass, which gives `three-passes`. The 1.0 scope for autonomous delivery was also confirmed: it covers Claude Code and Codex, with Gemini, OpenCode, Copilot and Cursor in a 1.x release ([validation spec](./specifications/autonomous-delivery/09-validation-and-acceptance.md)). A diagnostic repeat completed with no human wait, both delegated decisions accepted, in 968 s and 26 launches. The implementation-to-PR route is composed in seven increments ([ADR-0207](../docs/decisions/0207-public-implementation-route-composition.md)); the first two are done: pinned repository inputs and the `gh` path in the runtime document, each verification round provisioning its own unit QA environment, observed with real Docker, the composition from plan to commit, run end to end through the real Codex observer with a synthetic client, and the verification, review and re-verification gates, with the declared suite as controller-owned acceptance cases, run through real Docker from plan to re-verification, integration and acceptance, with real Docker product QA from plan to acceptance, publication through the runtime's `gh`, and a complete synthetic run: the real engine drives the whole route to `completed` with outcome `ready-pr`, through real Docker QA and a real Git push to a local bare repository. That run also found that a to-pr run could never complete, now fixed. Remaining: P6-29's producer, the three required research trials per client and the three-run report.
 
 ---
 
@@ -719,7 +719,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-26, P6-10, P6-06, P6-24
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Verify that unattended execution fails safely and remains recoverable at its actual boundaries.
 
@@ -743,11 +743,11 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** 🔄 · **Size:** M · **Depends on:** P6-02, P6-18, P6-20, P6-24
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Keep execution aligned when source intent or relevant repository state changes.
 
-**Deliverables** — Preview-only revision/impact command, explicit adoption, affected-worker fencing and deterministic evidence reuse/invalidation. Also, moved from P6-10 by the owner on 2026-11-01: continuation after an integration, acceptance or CI repair (the last moved from P6-22 by ADR-0187), with its own ADR for the cross-invocation correction protocol that ADR-0154 records as missing. Until then a failed integration or acceptance stage ends the run honestly.
+**Deliverables** — Preview-only revision/impact command, explicit adoption, affected-worker fencing and deterministic evidence reuse/invalidation. Also, moved from P6-10 on 2026-11-01: continuation after an integration, acceptance or CI repair (the last moved from P6-22 by ADR-0187), with its own ADR for the cross-invocation correction protocol that ADR-0154 records as missing. Until then a failed integration or acceptance stage ends the run honestly.
 
 **Acceptance criteria:**
 
@@ -769,7 +769,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Evidence** — Engine cases on a synthetic controller host: a failed integration is previewed without writing; the failed run's grant and a fresh envelope grant are refused; reopening under a new grant records the chain; exactly workspace, build plan, implementation, commit and acceptance definition are reused while every downstream stage runs again and the predecessor's failure stays historical; a stale original forces its dependents to run again; pending effects and a spent repair budget refuse the continuation; compiled CLI preview and acceptance pass. A decision case shows that a delegated decision becomes stale once a later revision is adopted, keeping its record. Mutation checks confirm that the new-grant rule and evidence re-inspection are each load-bearing.
 
-**Remaining** — The fixed correction producer. [ADR-0208](../docs/decisions/0208-seeded-correction-producer.md) replaces ADR-0197's seeded candidates for `none` policies: every unit is seeded and its chain runs again. Done so far: seeded workspace allocation, continuations that reuse no grant- or revision-bound stage and seed each unit's new workspace at its failed head, the registered `correction` stage, which reruns the unit's builder with the retained failure and commits the result, and the public composition with a synthetic continuation run (`eval:public-continuation`): failed product QA, an operator-recorded correction under a new grant, a seeded rebuild, the correction, and a completed `ready-pr`. Still open: a CI-origin continuation (P6-24's CI stage), a dedicated test that private cases stay hidden, richer acceptance-origin feedback, verification repairs on top of a correction, and the owner's envelope-grant decision. The original design is recorded in ADR-0197. The corrected unit gets a workspace seeded at its failed head under the new grant, where the repair builder works from the failure evidence alone. Every other unit feeding a stage that runs again gets a seeded candidate at its existing head under the new grant, and is re-verified. Original stages remain history only, so the commit-receipt invariant is unchanged. This needs a seeded-candidate notion in the workspace contract and in every consumer of commit receipts. The owner chose to build it together with P6-27, when native clients can exercise it with real evidence. Until then the dispatcher reports a continuation route unsupported at static preflight. A CI-origin continuation needs the CI stage that P6-24 adds. Whether a `none` run may continue under its envelope grant is an owner decision, `docs/decisions/0198-envelope-grant-continuation.md` (status Proposed). P6-22's second criterion depends on the producer.
+**Remaining** — The fixed correction producer. [ADR-0208](../docs/decisions/0208-seeded-correction-producer.md) replaces ADR-0197's seeded candidates for `none` policies: every unit is seeded and its chain runs again. Done so far: seeded workspace allocation, continuations that reuse no grant- or revision-bound stage and seed each unit's new workspace at its failed head, the registered `correction` stage, which reruns the unit's builder with the retained failure and commits the result, and the public composition with a synthetic continuation run (`eval:public-continuation`): failed product QA, an operator-recorded correction under a new grant, a seeded rebuild, the correction, and a completed `ready-pr`. Still open: a CI-origin continuation (P6-24's CI stage), a dedicated test that private cases stay hidden, richer acceptance-origin feedback, verification repairs on top of a correction, and the maintainer's envelope-grant decision. The original design is recorded in ADR-0197. The corrected unit gets a workspace seeded at its failed head under the new grant, where the repair builder works from the failure evidence alone. Every other unit feeding a stage that runs again gets a seeded candidate at its existing head under the new grant, and is re-verified. Original stages remain history only, so the commit-receipt invariant is unchanged. This needs a seeded-candidate notion in the workspace contract and in every consumer of commit receipts. It is built together with P6-27, when native clients can exercise it with real evidence. Until then the dispatcher reports a continuation route unsupported at static preflight. A CI-origin continuation needs the CI stage that P6-24 adds. Whether a `none` run may continue under its envelope grant is a maintainer decision, `docs/decisions/0198-envelope-grant-continuation.md` (status Proposed). P6-22's second criterion depends on the producer.
 
 ---
 
@@ -777,7 +777,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-10, P4-03, P4-04, P4-06
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Execute due authorized observations through the same recoverable runner.
 
@@ -809,7 +809,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-30, P6-29
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Turn recurring evidence into reviewable follow-up work without self-authorizing an endless backlog.
 
@@ -835,7 +835,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ⬜ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P6-35, P6-36, P6-37, P6-38, P5-06
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Ship only the expanded capabilities and evidence actually implemented and accepted.
 
@@ -857,7 +857,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ⏸️ · **Size:** L · **Depends on:** P6-10, P6-12, P6-34, P2-01
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Complete a research flow from one authorized request through challenged evidence and a stored brief.
 
@@ -885,7 +885,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** ✅ · **Size:** L · **Depends on:** P6-02, P6-03, P6-04
 
-**Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** 1.0
 
 **Goal** — Permit a complete flow with one initial human authorization while preserving truthful decision provenance.
 
@@ -911,7 +911,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Goal** — Let an authorized delivery run reach its endpoint unattended across token expiry and usage windows, without a worker ever holding or refreshing a stored credential.
 
-**Deliverables** — The verifications listed in the proposed design (`docs/decisions/0209-controller-owned-native-credentials.md`), the owner's acceptance decision, and then, for Claude Code and Codex:
+**Deliverables** — The verifications listed in the proposed design (`docs/decisions/0209-controller-owned-native-credentials.md`), the maintainer's acceptance decision, and then, for Claude Code and Codex:
 
 - a credential reference per binding, resolved from the operating system's secret store;
 - injection per launch;
@@ -923,11 +923,11 @@ The documentation also records Antigravity as an unavailable worker, while its i
 
 **Acceptance criteria:**
 
-- [ ] The owner accepts or rejects the design after one real call per reference client and account kind, a measured `claude setup-token` lifetime, and a usage-window signal or its absence.
+- [ ] The maintainer accepts or rejects the design after one real call per reference client and account kind, a measured `claude setup-token` lifetime, and a usage-window signal or its absence.
 - [ ] A Claude Code run spanning a token expiry, and a Codex run, complete unattended with no credential in any worker-writable path. A missing or invalid credential ends the run at preflight with a named reason.
 - [ ] An exhausted usage window pauses the run and it resumes after the reset, keeping its work. Without a client signal, the attempt is reported as an infrastructure failure.
 
-**Tests** — Credential reference and resolution contracts; synthetic clients that honour or reject an injected credential; boundary probes showing every credential store denied; preflight refusals; window pause and resume on a fake clock; live acceptance on the owner's accounts.
+**Tests** — Credential reference and resolution contracts; synthetic clients that honour or reject an injected credential; boundary probes showing every credential store denied; preflight refusals; window pause and resume on a fake clock; live acceptance on the maintainer's accounts.
 
 **Docs** — The proposed design and its acceptance, the platform guide (macOS and Linux first; a headless Linux secret store; Windows through WSL2), the runner tutorial, the README note on Antigravity, and manual verification.
 
@@ -1028,6 +1028,6 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 ## Acceptance and execution boundary
 
-The owner accepted every task for 1.0 and authorized implementing all technically executable work one task at a time, committing tested changes and updating documentation without waiting for manual checks or another signal. Manual checks are deferred, not passed. Take pragmatic implementation decisions within this scope. Account/model choices, hosted mutations, actual project merges, publication and changing the bootstrap commit workflow remain separate execution authority.
+Every task is accepted for 1.0, with authorization for implementing all technically executable work one task at a time, committing tested changes and updating documentation without waiting for manual checks or another signal. Manual checks are deferred, not passed. Take pragmatic implementation decisions within this scope. Account/model choices, hosted mutations, actual project merges, publication and changing the bootstrap commit workflow remain separate execution authority.
 
 [◀ P5](./phase-5-reach-release.md) · [Roadmap](./README.md) · [Specification index](./specifications/autonomous-delivery/README.md) · [Journal](./journal.md)

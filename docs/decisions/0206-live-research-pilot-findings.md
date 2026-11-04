@@ -5,7 +5,7 @@
 
 ## Context
 
-The owner approved one EVAL-10 pilot. It is a none-policy research route on Claude Code 2.1.316 with `claude-opus-5-5`, run through the public `wl delivery run` with `npm run eval:live-research`. Its goal was to size the campaign. Each attempt ran until the first defect it hit. The first two defects, `sandbox-exec` ownership and the temporary directory, are recorded in [ADR-0203](./0203-contained-claude-code-boundary.md). This record covers the three that followed, and the result.
+One EVAL-10 pilot was approved. It is a none-policy research route on Claude Code 2.1.316 with `claude-opus-5-5`, run through the public `wl delivery run` with `npm run eval:live-research`. Its goal was to size the campaign. Each attempt ran until the first defect it hit. The first two defects, `sandbox-exec` ownership and the temporary directory, are recorded in [ADR-0203](./0203-contained-claude-code-boundary.md). This record covers the three that followed, and the result.
 
 ## Decision
 
@@ -35,7 +35,7 @@ A native receipt now carries an optional `usage`, marked `client-reported`. It h
 
 ## Diagnostic repeat
 
-The owner approved one repeat after the fixes above, as a diagnostic that does not count toward the three required trials. It ran on the same client, model and question and **completed**:
+One repeat was approved after the fixes above, as a diagnostic that does not count toward the three required trials. It ran on the same client, model and question and **completed**:
 
 - 968 seconds, no human wait, 26 native launches, all successful and host-observed: the plan judge and its challenger, one `native-web` source worker, three verifiers for each of seven load-bearing claims, and the source judge and its challenger.
 - Both delegated decisions accepted, and both challengers supported them. The route ended `completed-with-unknowns` with no problem.
@@ -49,7 +49,7 @@ Two findings from it:
 
 ## Alternatives rejected
 
-- Accepting any uncertainty ID would widen what a machine decision may accept, which only the owner can choose.
+- Accepting any uncertainty ID would widen what a machine decision may accept, which only the maintainer can choose.
 - Constraining uncertainty IDs in the response schema would force a judge either to hide an uncertainty or to change its outcome.
 - Examining every claim would multiply verifier launches; marking unexamined claims is enough for an honest brief.
 
@@ -58,4 +58,4 @@ Two findings from it:
 - The recipe test fails when the declaration is passed through.
 - A research test fails when an unexamined claim is rendered with a refutation count.
 - Decision, delivery and research suites pass.
-- The pilot's retained store and report are local evidence on the owner's machine; nothing was published.
+- The pilot's retained store and report are local evidence on the development host; nothing was published.

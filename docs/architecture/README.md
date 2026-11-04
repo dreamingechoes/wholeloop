@@ -9,7 +9,7 @@
 
 ## The three layers
 
-The [expanded V1 autonomous-delivery design](./autonomous-delivery.md) proposes a local durable runner over these layers, complete zero-intervention research/implementation, executable integrated QA and opt-in conditional merge. The owner accepted the scope and authorized implementation; source, planning, authority, persistence, worker protocols and dedicated native hosts are implemented at their documented local boundaries. Complete runner, environment and endpoint behavior remains subsequent work.
+The [expanded V1 autonomous-delivery design](./autonomous-delivery.md) proposes a local durable runner over these layers, complete zero-intervention research/implementation, executable integrated QA and opt-in conditional merge. The scope is accepted and implementation is authorized; source, planning, authority, persistence, worker protocols and dedicated native hosts are implemented at their documented local boundaries. Complete runner, environment and endpoint behavior remains subsequent work.
 
 ```mermaid
 flowchart TB

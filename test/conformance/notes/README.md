@@ -1,6 +1,6 @@
 # Conformance spike — evidence still required
 
-Version/help probes and owner-authorized actual model trials ran on macOS arm64. Codex 0.163.0 passed the structural standalone framing scenario; the owner observed Claude loose-skill framing and recovery across sessions. Other automatic trials failed; see [actual results and blockers](../../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22). P0-03's full permissions/hooks/questions/MCP spike and dependent aggregate adapter acceptance remain open. These observations do not establish the complete platform matrix.
+Version/help probes and authorized actual model trials ran on macOS arm64. Codex 0.163.0 passed the structural standalone framing scenario; Claude loose-skill framing and recovery across sessions were observed by hand. Other automatic trials failed; see [actual results and blockers](../../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22). P0-03's full permissions/hooks/questions/MCP spike and dependent aggregate adapter acceptance remain open. These observations do not establish the complete platform matrix.
 
 ## Manual checklist (repeat for each CLI)
 

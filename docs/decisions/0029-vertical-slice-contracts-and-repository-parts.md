@@ -28,7 +28,7 @@ Builders need concrete acceptance criteria before code. Cross-repository slices 
 
 ## Consequences
 
-The contract-owning repository's implementation finishes before parallel peer parts. Structural checks verify declared outcomes and demonstrations, not their semantic quality; the slicing challenger inspects that boundary. Worktrees, building, real remote mirroring and live host critique remain subsequent tasks or owner verification.
+The contract-owning repository's implementation finishes before parallel peer parts. Structural checks verify declared outcomes and demonstrations, not their semantic quality; the slicing challenger inspects that boundary. Worktrees, building, real remote mirroring and live host critique remain subsequent tasks or manual verification.
 
 ## Links
 

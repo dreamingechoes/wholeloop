@@ -15,7 +15,7 @@ Keep the selected native credential only in the child environment, never in argv
 
 ## Alternatives rejected
 
-Writing a new native config for a single value adds ownership and merge concerns without benefit over a documented flag. Relying on a V1 environment mechanism leaves V2 selection unverified. Choosing an available model automatically changes the owner's intended cost/access policy. Passing credential data in argv exposes it unnecessarily; the model identifier and authentication are separate inputs.
+Writing a new native config for a single value adds ownership and merge concerns without benefit over a documented flag. Relying on a V1 environment mechanism leaves V2 selection unverified. Choosing an available model automatically changes the maintainer's intended cost/access policy. Passing credential data in argv exposes it unnecessarily; the model identifier and authentication are separate inputs.
 
 ## Verification
 

@@ -27,7 +27,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 | Build a bounded change | [Small-change walkthrough](./tutorials/small-change.md) | Verified/reviewed work and a human testing handoff before publication |
 | Pin a request before delivery planning | [Delivery intake](./tutorials/delivery-intake.md) | An immutable source revision without starting workers |
 | Recover from a setup/workflow problem | [Troubleshooting](./troubleshooting.md) | A specific diagnosis and next action |
-| Assess readiness for 1.0 | [Acceptance](./v1-acceptance.md) | Executed checks separated from owner decisions and deferred services |
+| Assess readiness for 1.0 | [Acceptance](./v1-acceptance.md) | Executed checks separated from maintainer decisions and deferred services |
 
 ## Tutorials and everyday use
 
@@ -122,7 +122,7 @@ Start locally. Remote providers are optional until your work needs their capabil
 | [Authoring](./contributing/authoring.md) | Skills, agents, protocols and enforcers |
 | [Documentation style](./contributing/docs-style.md) | Page structure, source layout and generated navigation |
 | [Roadmap](../roadmap/README.md) and [journal](../roadmap/journal.md) | Implementation status and executed evidence |
-| [V1 acceptance](./v1-acceptance.md) | Owner decisions and actual client/workflow closure |
+| [V1 acceptance](./v1-acceptance.md) | Maintainer decisions and actual client/workflow closure |
 | [Detailed verification](../roadmap/manual-verification.md) | Scoped regressions, environments and limitations |
 | [Nightly conformance](./contributing/conformance.md) | Maintainers activating collection and issue delivery |
 | [Release preparation](./contributing/releasing.md) | Maintainers reviewing bundles, visibility and publication |

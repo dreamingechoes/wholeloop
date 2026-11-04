@@ -22,7 +22,7 @@ Enabling arbitrary MCP writes would exceed the built-in read-only roster. Genera
 
 ## Verification
 
-Exercise strict configuration/call/artifact refusal, exact generated query/window/ provenance, bounded POST/GET, conflict and readback failure/cancellation. Use the actual manifest and launch ledger to verify once-only completion and retained ambiguous outcomes. Run compiled preview and missing-key behavior in an isolated external store. HTTP responses are synthetic; actual Grafana permissions/version/ normalization, datasource/PromQL/rendering and Linux acceptance remain owner checks.
+Exercise strict configuration/call/artifact refusal, exact generated query/window/ provenance, bounded POST/GET, conflict and readback failure/cancellation. Use the actual manifest and launch ledger to verify once-only completion and retained ambiguous outcomes. Run compiled preview and missing-key behavior in an isolated external store. HTTP responses are synthetic; actual Grafana permissions/version/ normalization, datasource/PromQL/rendering and Linux acceptance remain manual checks.
 
 ## Sources
 

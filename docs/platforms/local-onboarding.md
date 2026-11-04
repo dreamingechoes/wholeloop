@@ -3,7 +3,7 @@
 > **TL;DR** — Build once, choose a named target, inspect its dry run and install its owned components. Run doctor for that target, then restart the native client and verify discovery and permissions. File installation and native activation are separate observations.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The seven source-built installation paths, packaged resources and diagnostics are implemented and tested locally. The owner observed Claude loose-skill framing and status recovery across sessions; broader discovery, trust, permissions, authentication and model scenarios remain owner verification. Published npm/remote-marketplace delivery remains pending.
+> **Status: 🚧 partial.** The seven source-built installation paths, packaged resources and diagnostics are implemented and tested locally. Claude loose-skill framing and status recovery across sessions were observed by hand; broader discovery, trust, permissions, authentication and model scenarios remain manual verification. Published npm/remote-marketplace delivery remains pending.
 
 ## Before choosing a target
 
@@ -44,7 +44,7 @@ node "$WHOLELOOP_CLI" doctor --target claude --json
 
 Managed loose components use wl-prefixed names under .claude, or the absolute CLAUDE_CONFIG_DIR override. Restart Claude and request the wl-frame-problem skill in the intended project. Inspect role discovery and the scoped guard transport; read-only/native permission behavior remains an actual-client check.
 
-The [2026-10-22 owner observation](../../roadmap/manual-verification.md#owner-observed-claude-framing-and-session-recovery-2026-10-22) confirms interactive loose-skill framing, an on-hold closure and status recovery after restarting Claude. It also records unapproved narrative conditions and an unreviewed final revision; this is narrower than full native conformance.
+The [2026-10-22 manual observation](../../roadmap/manual-verification.md#manually-observed-claude-framing-and-session-recovery-2026-10-22) confirms interactive loose-skill framing, an on-hold closure and status recovery after restarting Claude. It also records unapproved narrative conditions and an unreviewed final revision; this is narrower than full native conformance.
 
 Standalone generated plugins use the wholeloop namespace instead. For that delivery route, follow the [local marketplace preview](../contributing/releasing.md#review-a-local-delivery-preview) and explicitly register/install it in a disposable client configuration. The plugin invocation is /wholeloop:frame-problem; it is distinct from the loose wl-frame-problem entrypoint. Static plugin validation does not activate it.
 
@@ -70,7 +70,7 @@ node "$WHOLELOOP_CLI" install --target opencode --scope user --json
 node "$WHOLELOOP_CLI" doctor --target opencode --json
 ```
 
-User components use the XDG opencode root or absolute OPENCODE_CONFIG_DIR. Project scope uses .opencode, including its dedicated wholeloop.js guard plugin. Restart OpenCode, request wl-frame-problem and verify skills/roles plus plugin activation. Existing unrelated native configuration is retained; actual permission and compatible-skill precedence remain owner checks.
+User components use the XDG opencode root or absolute OPENCODE_CONFIG_DIR. Project scope uses .opencode, including its dedicated wholeloop.js guard plugin. Restart OpenCode, request wl-frame-problem and verify skills/roles plus plugin activation. Existing unrelated native configuration is retained; actual permission and compatible-skill precedence remain manual checks.
 
 Install selects V1/V2 from an isolated native version probe; even dry-run leaves the real home untouched. If the binary cannot report a version, legacy rendering is retained. Install the intended client first, or export an explicit dialect with adapter build-native --target opencode --pin 2.1.1 --out path --json. V2's hook obtains the current session directory and refuses missing context. An actual isolated user-scope 2.1.1 trial allowed a README read and denied a reserved runtime write. Project-scope activation/trust and other versions remain separate checks. Neither install nor doctor certifies native model/permission use.
 
@@ -86,7 +86,7 @@ node "$WHOLELOOP_CLI" doctor --target copilot --json
 
 User components use COPILOT_HOME or .copilot; project scope uses .github with native .agent.md roles and a dedicated hooks/wholeloop.json binding. Restart Copilot and request wl-frame-problem. Check native role/tool selection and actual hook activation instead of treating copied files as a native conformance pass.
 
-MCP detection observes declarations only. Review rendered recipes and configure authentication through Copilot's own setup. The separate headless recipe limits workers to view/glob/grep; custom native startup policy still needs owner checks.
+MCP detection observes declarations only. Review rendered recipes and configure authentication through Copilot's own setup. The separate headless recipe limits workers to view/glob/grep; custom native startup policy still needs manual checks.
 
 ## Gemini
 
@@ -139,7 +139,7 @@ The second command starts the native client; arrange its own trust/auth/model se
 
 ## Verify a first step and retire the same installation
 
-In the selected native client, ask it to use the exact framing skill from the table for a small idea. Confirm that missing input produces real questions, that completion records an owned initiative/artifact in the external store, and that the client stops for the next required decision. Follow the [owner checklist](../../roadmap/manual-verification.md) for actual permissions, MCP, hooks and model evidence; a filesystem receipt proves none of these.
+In the selected native client, ask it to use the exact framing skill from the table for a small idea. Confirm that missing input produces real questions, that completion records an owned initiative/artifact in the external store, and that the client stops for the next required decision. Follow the [manual checklist](../../roadmap/manual-verification.md) for actual permissions, MCP, hooks and model evidence; a filesystem receipt proves none of these.
 
 The disposable framing runner supports every target. Prepare with the exact observed version before choosing fixture or live execution; see [standalone conformance](./README.md#standalone-conformance). Simulation remains FIXTURE_PASS. Live execution is an explicit authenticated model operation.
 

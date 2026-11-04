@@ -5,7 +5,7 @@
 
 ## Context
 
-[0193](./0193-cross-invocation-correction-protocol.md) allows a `none` run to continue after a repairable failure under a grant that already carries the repair effects and budgets, without an operator. [0197](./0197-correction-revisions-and-stage-reuse.md) implements the conservative reading instead: every correction revision needs a new exact-plan grant, issued after the failure. The wider option changes who can approve a continuation, so AGENTS.md leaves it to the owner.
+[0193](./0193-cross-invocation-correction-protocol.md) allows a `none` run to continue after a repairable failure under a grant that already carries the repair effects and budgets, without an operator. [0197](./0197-correction-revisions-and-stage-reuse.md) implements the conservative reading instead: every correction revision needs a new exact-plan grant, issued after the failure. The wider option changes who can approve a continuation, so AGENTS.md leaves it to the maintainer.
 
 ## Proposal
 
@@ -20,7 +20,7 @@ The controller could then register and run the continuation in the same foregrou
 
 ## Consequences
 
-Fully unattended repair of integration and acceptance failures within the original authority. A grant would authorize work after the run it was first used for had ended, which is exactly the widening ADR-0197 avoids. Accepting this needs the owner's decision and a native trial showing that the bounded repair loop stays within its budget.
+Fully unattended repair of integration and acceptance failures within the original authority. A grant would authorize work after the run it was first used for had ended, which is exactly the widening ADR-0197 avoids. Accepting this needs the maintainer's decision and a native trial showing that the bounded repair loop stays within its budget.
 
 ## Alternatives
 

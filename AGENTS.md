@@ -28,7 +28,7 @@ Instructions for any coding agent (and any human) working **on this repository**
 
 ## Non-negotiables
 
-- **Bootstrap workflow: commit straight to `main`.** Until the owner explicitly announces the switch to branches and pull requests, every change is committed directly on `main` — no feature branches, no PRs. The switch, when it comes, is recorded in `roadmap/journal.md` and this line is replaced.
+- **Bootstrap workflow: commit straight to `main`.** Until the maintainer explicitly announces the switch to branches and pull requests, every change is committed directly on `main` — no feature branches, no PRs. The switch, when it comes, is recorded in `roadmap/journal.md` and this line is replaced.
 - **English** for everything written into the repository.
 - **Conventional commits**, one concern each, subject ≤ 72 characters, imperative.
 - **No tool attribution — ever.** No `Co-Authored-By` trailers for AI tools, no "generated with" footers, no mention of the assistant that helped, in commits, PRs, changelogs or docs (ADR-0017).

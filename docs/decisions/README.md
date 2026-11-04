@@ -232,7 +232,7 @@ flowchart LR
   class P,A,R,S,D core;
 ```
 
-- **Propose** with a new file `NNNN-short-title.md` (next free number). Keep a Proposed draft unreferenced until accepted; add the published index row/references with the settled status. During bootstrap, the owner-authorized main workflow applies; after a switch to PRs, discussion happens on the PR. The ADR records the outcome.
+- **Propose** with a new file `NNNN-short-title.md` (next free number). Keep a Proposed draft unreferenced until accepted; add the published index row/references with the settled status. During bootstrap, the maintainer-authorized main workflow applies; after a switch to PRs, discussion happens on the PR. The ADR records the outcome.
 - **Never rewrite history.** An accepted ADR is edited only to fix typos or add links. To change a decision, write a new ADR and mark the old one `Superseded by NNNN`.
 - **Rejected ideas stay.** A rejected ADR is as useful as an accepted one: it stops the same debate from starting over.
 - **Check references.** Docs check requires one Accepted or explicit Superseded metadata declaration in the first fifteen lines. Both Superseded by NNNN and a matching relative Markdown ADR link are supported. Successors must resolve uniquely and be settled; cycles are rejected. This verifies lifecycle metadata, not the truth of platform claims.

@@ -30,6 +30,6 @@ A merged scope is not a decided product outcome. Closing a parent after a manual
 
 ## Consequences
 
-The durable guard proves identity, coverage, human attribution and closure rules; it does not prove counterargument quality, the truth of self-reports or causality. Iteration framing stays draft work and cleanup stays proposed work. Real client permissions, semantic challenge and physical interruption tests remain owner verification; they do not block later local implementation.
+The durable guard proves identity, coverage, human attribution and closure rules; it does not prove counterargument quality, the truth of self-reports or causality. Iteration framing stays draft work and cleanup stays proposed work. Real client permissions, semantic challenge and physical interruption tests remain manual verification; they do not block later local implementation.
 
 [◀ Decisions index](./README.md)

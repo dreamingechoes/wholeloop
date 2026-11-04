@@ -59,7 +59,7 @@ import { type RunnerWorkerOptions, RunnerWorkerStages } from './worker-stages.js
 
 /** Routes the public host composes so far; every other route stays unsupported. */
 const COMPOSED = ['research-report', 'to-pr']
-/** The only built-in source the owner chose for unattended research (ADR-0204). */
+/** The only built-in source chosen for unattended research (ADR-0204). */
 const WEB = {
   id: 'native-web:source.web',
   provider: 'native-web',
@@ -466,7 +466,7 @@ function suiteCases(
  * A flow engine for one unit workspace whose only configuration is the
  * store-owned file written here: the plan's pinned review rubric and the
  * runtime's first suite ref fill their slots, so neither discovery ambiguity
- * nor the owner's own home configuration can choose them (ADR-0207).
+ * nor the user's own home configuration can choose them (ADR-0207).
  */
 function publicEngine(
   store: RunnerStore,

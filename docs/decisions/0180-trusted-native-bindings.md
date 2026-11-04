@@ -5,11 +5,11 @@
 
 ## Context
 
-A public foreground run must launch native clients for planning, building, verification, review and delegated judgments. Which clients, versions and models an unattended run may launch is an authority choice for the owner, not a technical default. Native hosts already require trusted runtime proof before launch, and default proof is unavailable, but nothing yet states which clients a public runner may even attempt.
+A public foreground run must launch native clients for planning, building, verification, review and delegated judgments. Which clients, versions and models an unattended run may launch is an authority choice for the maintainer, not a technical default. Native hosts already require trusted runtime proof before launch, and default proof is unavailable, but nothing yet states which clients a public runner may even attempt.
 
 ## Decision
 
-The owner accepted option 1 below on 2026-11-01: trust no native client unless it is explicitly bound, and never relax containment.
+Option 1 below was accepted on 2026-11-01: trust no native client unless it is explicitly bound, and never relax containment.
 
 - A closed `wholeloop/native-bindings@1` document lists explicit bindings. Each binding names one pinned reference target and version, one exact model and the worker roles it may serve. There are no wildcards, defaults or inheritance.
 - The built-in default document is empty, so every native client is refused as unbound.

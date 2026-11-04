@@ -274,7 +274,7 @@ export class NativeAssignmentHost {
     // These are references read by the trusted native client. No secret value enters argv, a generated file or the application environment.
     if (options.nativeStore)
       env[recipe.target === 'codex' ? 'CODEX_HOME' : 'CLAUDE_CONFIG_DIR'] = options.nativeStore
-    // The login Keychain resolves through the owner's home and user name; the
+    // The login Keychain resolves through the operator's home and user name; the
     // sandbox profile, not a substituted home, keeps the run away from them.
     if (options.containment) {
       env.HOME = options.containment.home

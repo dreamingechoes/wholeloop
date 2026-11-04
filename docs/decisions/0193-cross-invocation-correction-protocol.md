@@ -5,7 +5,7 @@
 
 ## Context
 
-A failed integration, acceptance or required CI check ends its runner invocation honestly. Fixing it means producing a corrected candidate and re-running every affected stage. [ADR-0154](./0154-recorded-correction-checkpoint-reconstruction.md) reconstructs correction checkpoints within one invocation, but it records that producing a correction across invocations still needs its own protocol. The owner assigned that protocol to P6-29. Re-entering stages inside the original invocation would reorder or repeat issued effects. Starting an unrelated run would lose the link to the failure it repairs.
+A failed integration, acceptance or required CI check ends its runner invocation honestly. Fixing it means producing a corrected candidate and re-running every affected stage. [ADR-0154](./0154-recorded-correction-checkpoint-reconstruction.md) reconstructs correction checkpoints within one invocation, but it records that producing a correction across invocations still needs its own protocol. That protocol was assigned to P6-29. Re-entering stages inside the original invocation would reorder or repeat issued effects. Starting an unrelated run would lose the link to the failure it repairs.
 
 ## Decision
 

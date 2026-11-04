@@ -15,11 +15,11 @@ Cursor supports headless Ask mode and an explicit sandbox, but print mode also s
 - Add a worker-local version-1 preToolUse hook with failClosed. Its only allowed tool names are known read/list/glob/grep aliases. Deny shell, write/delete, web/search, MCP, delegation, memory, questions and unknown names. Require object tool input, absolute existing cwd and workspace roots contained in the selected repository/worker roots. Native tool schemas remain responsible for read inputs; the hook is not an independent proof of every file read's containment.
 - Render this observer policy as a self-contained deterministic Node program in the core, not a prompt. Bind the actual Node executable and context as quoted literal data. Bound hook input to 64 KiB and waiting to five seconds; emit a static denial if Node fails. Empty read responses preserve native permission checks and other hooks; never emit an allow grant over a native denial.
 - Decode only one native type=result/subtype=success/is_error=false JSON object with non-empty result text, then apply the existing assignment-bound envelope and gate validation. Keep process cancellation, snapshot checks and aggregation shared with the other recipes. Advertise headless in Cursor's local manifest.
-- Setup failure starts no client. Policy staging is not crash-atomic; partial output stays in that failed external worker. Managed/native startup effects, hook discovery, permission merging, ignored/external changes, model execution and Linux remain owner conformance checks.
+- Setup failure starts no client. Policy staging is not crash-atomic; partial output stays in that failed external worker. Managed/native startup effects, hook discovery, permission merging, ignored/external changes, model execution and Linux remain manual conformance checks.
 
 ## Alternatives rejected
 
-Rewriting shared CLI settings would change the owner's working environment. Replacing HOME would disrupt native authentication. Ask alone does not describe all print-mode permissions. Reusing ordinary workflow guards would authorize actions inappropriate for observers. An unknown-tool allow fallback would admit new native tools without review. Arbitrary artifact paths would let adapter setup escape its worker or write unrelated files.
+Rewriting shared CLI settings would change the user's working environment. Replacing HOME would disrupt native authentication. Ask alone does not describe all print-mode permissions. Reusing ordinary workflow guards would authorize actions inappropriate for observers. An unknown-tool allow fallback would admit new native tools without review. Arbitrary artifact paths would let adapter setup escape its worker or write unrelated files.
 
 ## Verification
 

@@ -5,7 +5,7 @@
 
 ## Context
 
-The original provider architecture delegates tool invocation and authentication to the native client through ProviderHost. Subsequent rollout work added four HTTP flag readers and four HTTP dashboard writers. Those narrow bridges are useful options, but requiring another HTTP implementation for every catalogue service duplicates client integrations and makes provider adoption a core maintenance task. The owner explicitly accepted restoring MCP priority while retaining existing HTTP bridges as optional experimental transports.
+The original provider architecture delegates tool invocation and authentication to the native client through ProviderHost. Subsequent rollout work added four HTTP flag readers and four HTTP dashboard writers. Those narrow bridges are useful options, but requiring another HTTP implementation for every catalogue service duplicates client integrations and makes provider adoption a core maintenance task. The maintainer explicitly accepted restoring MCP priority while retaining existing HTTP bridges as optional experimental transports.
 
 ## Decision
 

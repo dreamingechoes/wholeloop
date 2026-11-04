@@ -47,15 +47,15 @@ Run the complete deterministic suite on macOS and Linux with supported developme
 
 Use at least three independent native runs per reference scenario/client and report every outcome. One pass out of three is not a three-run pass. Proposed release acceptance requires all three required runs to satisfy the defined outcome; retain first-pass success, retries, intervention, costs and limitations. Changes to this threshold require explicit review and a documented reason.
 
-The owner clarified the threshold on 2026-11-04. An attempt that fails for infrastructure reasons is repeated without invalidating its batch, and it stays reported. Infrastructure here means that the retained receipt shows the observer refused the launch, or the client was denied for credentials or its usage window, so the route never had a fair chance. Taken in order, the first three remaining attempts must all pass, and a route failure among them fails the batch. `npm run eval:campaign` applies this rule.
+The threshold was clarified on 2026-11-04. An attempt that fails for infrastructure reasons is repeated without invalidating its batch, and it stays reported. Infrastructure here means that the retained receipt shows the observer refused the launch, or the client was denied for credentials or its usage window, so the route never had a fair chance. Taken in order, the first three remaining attempts must all pass, and a route failure among them fails the batch. `npm run eval:campaign` applies this rule.
 
-On the same day the owner confirmed the 1.0 scope. Claude Code and Codex are the 1.0 reference clients for autonomous delivery. Gemini, OpenCode, Copilot and Cursor follow as autonomous workers in a 1.x release, built on the same client kit (headless invocation, injected credentials, an observed boundary, role recipes and a live campaign). Their harness support stays in 1.0. Antigravity has no headless credential path today, so it stays unavailable as a worker, while its in-session harness use is unaffected.
+On the same day the 1.0 scope was confirmed. Claude Code and Codex are the 1.0 reference clients for autonomous delivery. Gemini, OpenCode, Copilot and Cursor follow as autonomous workers in a 1.x release, built on the same client kit (headless invocation, injected credentials, an observed boundary, role recipes and a live campaign). Their harness support stays in 1.0. Antigravity has no headless credential path today, so it stays unavailable as a worker, while its in-session harness use is unaffected.
 
 ## Metrics and comparison
 
 Record success per accepted criterion and complete feature, actual human prompts/waits, active/wall/wait time, native/backend versions, attempts, repair cycles, cost/token provenance, escaped regressions and correct recovery. Compare a fixed source/candidate scenario and policy; do not rank performance from different builds or models as if comparable.
 
-Use intervention counts from controller/tool events, not the model's claim that it asked nobody. For `none`, an interactive question request is a scenario failure even if the owner ignores it. Native login/trust/model setup occurs before the authorized run and is reported as a prerequisite, not hidden mid-run assistance.
+Use intervention counts from controller/tool events, not the model's claim that it asked nobody. For `none`, an interactive question request is a scenario failure even if nobody answers it. Native login/trust/model setup occurs before the authorized run and is reported as a prerequisite, not hidden mid-run assistance.
 
 Repeated evaluation measures the harness, not just the fixture suite. Default fixtures remain network-free; actual models and hosted trials are explicit opt-ins with budgets. Do not change an expected outcome to hide a failed run.
 
@@ -67,7 +67,7 @@ No real destructive action is required for a negative scenario. Synthetic hosts 
 
 ## Owner and external acceptance
 
-The owner reviewed and accepted the expanded design on 2026-10-24 and authorized implementation. That approval is distinct from each actual native/account/hosted trial below.
+The expanded design was reviewed and accepted on 2026-10-24, and implementation was authorized. That approval is distinct from each actual native/account/hosted trial below.
 
 - [ ] Supply intended native account/model/trust setup where required; no tool bypass is assumed.
 - [ ] Observe actual backend isolation and scoped native zero-intervention runs on the selected platforms/versions.
@@ -75,7 +75,7 @@ The owner reviewed and accepted the expanded design on 2026-10-24 and authorized
 - [ ] Review which decisions and acceptance criteria may be delegated in real use.
 - [ ] Retain original native/workflow/runtime/release checks and deferred experimental service certification distinctly.
 
-These observations may be automated when explicitly authorized and technically available. They are not all manual owner labor; the owner supplies authority/account choices and judges the resulting evidence.
+These observations may be automated when explicitly authorized and technically available. They are not all manual maintainer labor; the maintainer supplies authority/account choices and judges the resulting evidence.
 
 ## Closure
 

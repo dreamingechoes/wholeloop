@@ -3,7 +3,7 @@ import { nativeUsage } from '../../../src/delivery/native-adapters.js'
 
 describe('client-reported native usage (ADR-0206)', () => {
   it("reads Claude's single JSON result, including its own cost estimate", () => {
-    // Field names as Claude Code 2.1.316 reported them in the owner's live turn.
+    // Field names as Claude Code 2.1.316 reported them in a live turn.
     const stdout = JSON.stringify({
       type: 'result',
       is_error: false,

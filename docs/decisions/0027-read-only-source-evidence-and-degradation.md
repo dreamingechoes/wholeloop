@@ -27,7 +27,7 @@ Research and later measurement need reusable queries against actual sources. Aut
 
 ## Consequences
 
-PostgreSQL scanning is deliberately conservative and rejects dollar quotes and backslash escapes. Server read-only semantics and least-privilege roles still matter for functions, temporary objects and external effects. Process tests use a real fake-psql executable; no database or live source was queried. Synthetic transcripts establish the host contract, while permissions, regions, costs, pagination and exact live window behavior remain owner verification.
+PostgreSQL scanning is deliberately conservative and rejects dollar quotes and backslash escapes. Server read-only semantics and least-privilege roles still matter for functions, temporary objects and external effects. Process tests use a real fake-psql executable; no database or live source was queried. Synthetic transcripts establish the host contract, while permissions, regions, costs, pagination and exact live window behavior remain manual verification.
 
 ## Links
 

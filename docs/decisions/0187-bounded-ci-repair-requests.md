@@ -5,7 +5,7 @@
 
 ## Context
 
-After publication, a required check can fail or a reviewer can comment. The repair must stay within the original scope and a finite push budget, must not trust comment text, and must not dismiss a failed check as flaky by guessing. Running the repair means a builder produces a new head, which then needs fresh local, behavioral, integration and remote evidence. That is a continuation across route invocations. [ADR-0154](./0154-recorded-correction-checkpoint-reconstruction.md) records that the cross-invocation correction protocol is still missing, and the owner assigned that protocol to P6-29.
+After publication, a required check can fail or a reviewer can comment. The repair must stay within the original scope and a finite push budget, must not trust comment text, and must not dismiss a failed check as flaky by guessing. Running the repair means a builder produces a new head, which then needs fresh local, behavioral, integration and remote evidence. That is a continuation across route invocations. [ADR-0154](./0154-recorded-correction-checkpoint-reconstruction.md) records that the cross-invocation correction protocol is still missing, and that protocol was assigned to P6-29.
 
 ## Decision
 

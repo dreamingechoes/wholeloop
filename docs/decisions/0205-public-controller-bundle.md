@@ -20,7 +20,7 @@ Trusted runtime observers now exist for both reference clients ([ADR-0120](./012
   - Both files ship in the package. The core stays at about 3.8 MB.
 
   The process boundary is also the module boundary. No class is loaded twice in one process, so `instanceof` checks on adapters and errors keep their meaning.
-- **A runtime document.** `--runtime` reads a closed `wholeloop/native-runtime@1` document. It holds one entry per reference client, each with the absolute path of the client binary to launch and the client home the owner signed in to. It holds no credential, model or role; those stay in the bindings.
+- **A runtime document.** `--runtime` reads a closed `wholeloop/native-runtime@1` document. It holds one entry per reference client, each with the absolute path of the client binary to launch and the client home the operator signed in to. It holds no credential, model or role; those stay in the bindings.
 
   The public host identity digests the runtime together with the bindings. Without a runtime the identity is byte-for-byte the previous one. Retained configuration keeps a bindings-only host's original bytes.
 - **An optional composer.** `RunnerPublicHost` takes an optional composer, which only the controller bundle supplies. The core's host keeps its earlier preflight reasons.
@@ -36,7 +36,7 @@ Trusted runtime observers now exist for both reference clients ([ADR-0120](./012
 - esbuild code splitting would make the core import shared chunks, so a copied core would no longer be one file.
 - Dynamically importing a second bundle into the core process would load two copies of shared classes.
 - Resolving clients through `PATH` would let any earlier directory substitute a program.
-- Putting runtime paths into the bindings document would mix where a client lives with which models and roles the owner trusts.
+- Putting runtime paths into the bindings document would mix where a client lives with which models and roles the operator trusts.
 
 ## Verification
 

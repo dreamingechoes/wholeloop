@@ -148,7 +148,7 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
     expect(writes(files)).toContain('(subpath "/work/tree")')
     expect(writes(inline)).not.toContain('(subpath "/work/tree")')
     // The credential deny overrides the client-home write allowance, and no
-    // launch may ask the owner's session to install developer tools.
+    // launch may ask the user's session to install developer tools.
     expect(files).toContain('(literal "/state/claude/auth.json"))')
     expect(
       files.endsWith(
@@ -300,7 +300,7 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
         expect(existsSync(join(store, name))).toBe(false)
       }
       // The Git shim cannot see the developer tools here; it must not ask the
-      // owner's GUI session to install them.
+      // user's GUI session to install them.
       const git = spawnSync('/usr/bin/sandbox-exec', ['-p', profile, '/usr/bin/git', '--version'], {
         encoding: 'utf8',
         cwd: directory,

@@ -5,7 +5,7 @@
 
 ## Context
 
-P4-05's virtual flag operation has no authenticated service implementation. This is code work, separate from capturing actual owner credentials and service results. The ramp accepts a complete enabled/percentage/audience/revision observation; flattening arbitrary targeting rules into that shape would authorize false ramps.
+P4-05's virtual flag operation has no authenticated service implementation. This is code work, separate from capturing actual user credentials and service results. The ramp accepts a complete enabled/percentage/audience/revision observation; flattening arbitrary targeting rules into that shape would authorize false ramps.
 
 ## Decision
 
@@ -22,7 +22,7 @@ Calling every valid provider manifest connected would invent authentication. Eva
 
 ## Verification
 
-Test exact plans/origins/identifiers and credential-free default compiled execution. Exercise boolean/direct/reversed variations and ordinary percentage/off decoding; reject complex/missing/contradictory targeting and experiment/weight variants. Use local synthetic fetch responses for GET/header-only authentication, body/input bounds, cancellation, redirects, denied/malformed/large responses, private-error redaction and no mutation arguments. Feed the real built-in manifest and bridge through ramp's existing flagEvidence: simple state is observed, complex state stays unknown. Actual LaunchDarkly tokens, server/API versions, permissions, native hosts and Linux execution remain owner verification; no real authenticated request runs.
+Test exact plans/origins/identifiers and credential-free default compiled execution. Exercise boolean/direct/reversed variations and ordinary percentage/off decoding; reject complex/missing/contradictory targeting and experiment/weight variants. Use local synthetic fetch responses for GET/header-only authentication, body/input bounds, cancellation, redirects, denied/malformed/large responses, private-error redaction and no mutation arguments. Feed the real built-in manifest and bridge through ramp's existing flagEvidence: simple state is observed, complex state stays unknown. Actual LaunchDarkly tokens, server/API versions, permissions, native hosts and Linux execution remain manual verification; no real authenticated request runs.
 
 ## Sources
 

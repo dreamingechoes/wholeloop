@@ -51,7 +51,7 @@ Until increment 3 lands, the dispatcher keeps reporting a continuation route as 
 
 ## Alternatives rejected
 
-- **ADR-0197's seeded candidates for the other units.** They need the build plan of an untouched unit to pass without a new decision. That would carry a judgment of revision N into revision N+1, which ADR-0197 forbids and which only the owner could relax.
+- **ADR-0197's seeded candidates for the other units.** They need the build plan of an untouched unit to pass without a new decision. That would carry a judgment of revision N into revision N+1, which ADR-0197 forbids and which only the maintainer could relax.
 - **Relaxing the commit-receipt grant check for an older grant of the same run.** ADR-0197 already rejected this as a weaker evidence rule.
 - **Re-pinning the earlier acceptance plan for the new revision.** A controller copy would present the old plan as a definition of the new revision without a planner producing it.
 
@@ -111,5 +111,5 @@ New `npm run eval:public-continuation` runs the real engine:
 Three defects surfaced on the way:
 
 - **The failed-case reader required the record to be on the current basis.** A predecessor's record never is, so the reader now checks the original binding against that record's own basis.
-- **The failed run's environments still held Docker capacity.** The continuation's unit environment was refused as `reserved-capacity-unavailable`. Those environments are evidence under the earlier grant, and retiring them is an explicit owner action that keeps their observations. A continuation does not retire them by itself, so the operator retires them before continuing.
+- **The failed run's environments still held Docker capacity.** The continuation's unit environment was refused as `reserved-capacity-unavailable`. Those environments are evidence under the earlier grant, and retiring them is an explicit operator action that keeps their observations. A continuation does not retire them by itself, so the operator retires them before continuing.
 - **The fixture's failure had to live outside recipe-pinned bytes.** A correction that changed a pinned file would invalidate the recipe, and integration would refuse it. A correction is therefore limited to bytes the recipe does not pin, or the operator prepares a new recipe.

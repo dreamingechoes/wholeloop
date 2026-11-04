@@ -18,7 +18,7 @@ Gemini has an extension format, project/user native overlays and preview local a
 
 ## Consequences
 
-Gemini can use generated extensions, owned native overlays and the local framing runner now. File installation does not enable experimental subagents, approve trust or authenticate models. Native discovery, read-only behavior, questions, MCP/tool execution and real framing remain owner checks. Antigravity generation, its hook/MCP dialect and the broader P5-01 acceptance remain separate unfinished work. No Gemini headless gate recipe or native parallelism is implied.
+Gemini can use generated extensions, owned native overlays and the local framing runner now. File installation does not enable experimental subagents, approve trust or authenticate models. Native discovery, read-only behavior, questions, MCP/tool execution and real framing remain manual checks. Antigravity generation, its hook/MCP dialect and the broader P5-01 acceptance remain separate unfinished work. No Gemini headless gate recipe or native parallelism is implied.
 
 ## Rejected alternatives
 

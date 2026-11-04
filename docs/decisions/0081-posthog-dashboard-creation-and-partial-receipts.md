@@ -22,7 +22,7 @@ A single dashboard POST does not establish an attached measurement insight. Quer
 
 ## Verification
 
-Exercise exact plans/source/window/scope, project preconditions before mutation, new resource creation and both attachment views. Cover missing/deleted/duplicate/ changed content, effective/persisted overrides, null empty overrides, lost responses, redaction and inspectable pending receipts. Use the actual manifest/launch ledger and compiled no-key preview; completed and pending receipts both suppress further writes. All HTTP responses remain synthetic; actual API versions, permissions, deprecated-field support, query/rendering/traffic and Linux remain owner checks.
+Exercise exact plans/source/window/scope, project preconditions before mutation, new resource creation and both attachment views. Cover missing/deleted/duplicate/ changed content, effective/persisted overrides, null empty overrides, lost responses, redaction and inspectable pending receipts. Use the actual manifest/launch ledger and compiled no-key preview; completed and pending receipts both suppress further writes. All HTTP responses remain synthetic; actual API versions, permissions, deprecated-field support, query/rendering/traffic and Linux remain manual checks.
 
 ## Sources
 

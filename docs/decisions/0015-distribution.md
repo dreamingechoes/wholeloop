@@ -18,7 +18,7 @@ Bare names like `wholeloop` are already taken on npm.
 4. **Gemini CLI extension** in Phase 5; Antigravity has its own closed native plugin format, refined in [ADR-0055](./0055-antigravity-native-overlays-and-pinned-hook-transport.md).
 5. **Compiled binaries later** (`bun build --compile`), attached to releases, for machines without Node.
 6. **Docs need no hosting.** They are written to render on GitHub; no third-party documentation host is required.
-7. **Repository:** `github.com/dreamingechoes/wholeloop`, a personal repository (never an organisation), **private** until the owner decides to open it — at the latest as part of the first public release ([P5-05](../../roadmap/phase-5-reach-release.md#p5-05--distribution)). Install paths in the docs that rely on a public repository (the plugin marketplace) only work from then on.
+7. **Repository:** `github.com/dreamingechoes/wholeloop`, a personal repository (never an organisation), **private** until the maintainer decides to open it — at the latest as part of the first public release ([P5-05](../../roadmap/phase-5-reach-release.md#p5-05--distribution)). Install paths in the docs that rely on a public repository (the plugin marketplace) only work from then on.
 8. **Semantic versioning** from the first release; the JSON contract and the capability taxonomy are versioned separately and treated as public API.
 
 ## Consequences

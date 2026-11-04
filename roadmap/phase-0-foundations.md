@@ -52,7 +52,7 @@
 - [ ] Specifically answered: Claude Code reading `.agents/skills` and Agent Plugins manifests; Codex `request_user_input` behaviour; Copilot reading Claude hooks.
 - [ ] Any finding that changes a design decision opens or amends an ADR.
 
-**Pending manual verification** — The owner observed Claude loose-skill framing and session recovery; an automatic Codex 0.163.0 standalone framing trial passed on macOS. Other automatic client trials failed. These narrow observations do not close the discovery, permissions, hooks, questions and MCP spike. See `test/conformance/notes/README.md` and the [actual trial table](./manual-verification.md#automatic-native-client-trials-2026-10-22). Help text alone is not conformance evidence.
+**Pending manual verification** — Claude loose-skill framing and session recovery were observed by hand; an automatic Codex 0.163.0 standalone framing trial passed on macOS. Other automatic client trials failed. These narrow observations do not close the discovery, permissions, hooks, questions and MCP spike. See `test/conformance/notes/README.md` and the [actual trial table](./manual-verification.md#automatic-native-client-trials-2026-10-22). Help text alone is not conformance evidence.
 
 **Docs** — platforms (matrix), ADR-0005, ADR-0006.
 

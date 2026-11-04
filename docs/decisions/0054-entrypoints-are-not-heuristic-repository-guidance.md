@@ -5,7 +5,7 @@
 
 ## Context
 
-Native wholeloop skills and roles are entrypoints into the harness. Their names and descriptions also match slot rules such as frame.template. Coinstalling several clients therefore made standalone framing ask the owner to choose among copies of the harness itself, even with no repository-specific guidance present. Excluding nested distribution output alone did not address native overlays.
+Native wholeloop skills and roles are entrypoints into the harness. Their names and descriptions also match slot rules such as frame.template. Coinstalling several clients therefore made standalone framing ask the user to choose among copies of the harness itself, even with no repository-specific guidance present. Excluding nested distribution output alone did not address native overlays.
 
 ## Decision
 
@@ -17,7 +17,7 @@ Native wholeloop skills and roles are entrypoints into the harness. Their names 
 
 ## Consequences
 
-Installing several clients no longer turns their harness entrypoints into competing framing templates. Real team guidance still wins; genuine conflicting guides still ask. Reinstall unchanged owned older output to receive the marker, preserving upgrades/backups. An explicit previously remembered binding remains an owner choice and is not silently rewritten. Actual native model execution and permission checks remain separate from the real core framing regression tests.
+Installing several clients no longer turns their harness entrypoints into competing framing templates. Real team guidance still wins; genuine conflicting guides still ask. Reinstall unchanged owned older output to receive the marker, preserving upgrades/backups. An explicit previously remembered binding remains a user choice and is not silently rewritten. Actual native model execution and permission checks remain separate from the real core framing regression tests.
 
 ## Rejected alternatives
 

@@ -26,6 +26,6 @@ Worktrees isolate code, not seeded databases, containers, dev servers or remote 
 
 ## Consequences
 
-The ledger makes cleanup reviewable without pretending to control every external system. It cannot discover undeclared effects or prove an undo works. Owners must exercise recipes on disposable resources and repeat supported-platform checks. No external service or undo command was run by the local ledger tests.
+The ledger makes cleanup reviewable without pretending to control every external system. It cannot discover undeclared effects or prove an undo works. Users must exercise recipes on disposable resources and repeat supported-platform checks. No external service or undo command was run by the local ledger tests.
 
 [◀ Decisions index](./README.md)

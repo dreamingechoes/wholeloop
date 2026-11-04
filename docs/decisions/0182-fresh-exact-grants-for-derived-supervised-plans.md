@@ -5,7 +5,7 @@
 
 ## Context
 
-[ADR-0181](./0181-supervised-plans-require-exact-grants.md) refused supervised routes under envelope grants because every effect check accepts a derived plan only through current machine decisions. Two paths remained open: a person's recorded approval could become derived-plan authority, or the operator could issue a new exact-plan grant for each derived plan. The owner chose on 2026-11-01.
+[ADR-0181](./0181-supervised-plans-require-exact-grants.md) refused supervised routes under envelope grants because every effect check accepts a derived plan only through current machine decisions. Two paths remained open: a person's recorded approval could become derived-plan authority, or the operator could issue a new exact-plan grant for each derived plan. The choice was made on 2026-11-01.
 
 ## Decision
 

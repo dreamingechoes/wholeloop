@@ -29,6 +29,6 @@ A closed PR is not necessarily merged, a manually closed slice does not prove al
 
 ## Consequences
 
-Local proofs, routing, state changes, explicit tracker transitions and real Git cleanup fixtures run without a live provider. Actual code-host authentication, tracker revision semantics, imported-observation truth, scheduling and cleanup across merge strategies/platforms remain owner verification. No authenticated remote read/write or actual project cleanup ran during implementation.
+Local proofs, routing, state changes, explicit tracker transitions and real Git cleanup fixtures run without a live provider. Actual code-host authentication, tracker revision semantics, imported-observation truth, scheduling and cleanup across merge strategies/platforms remain manual verification. No authenticated remote read/write or actual project cleanup ran during implementation.
 
 [◀ Decisions index](./README.md)

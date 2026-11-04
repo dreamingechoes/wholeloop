@@ -5,7 +5,7 @@
 
 ## Context
 
-Every native adapter has its own self-contained tree, while release delivery is still unimplemented. A reviewable delivery snapshot can be built locally before the owner chooses public hosting, npm configuration or publication. Merging the seven formats into one plugin root would confuse incompatible manifests and hash-bound native guard roots.
+Every native adapter has its own self-contained tree, while release delivery is still unimplemented. A reviewable delivery snapshot can be built locally before the maintainer chooses public hosting, npm configuration or publication. Merging the seven formats into one plugin root would confuse incompatible manifests and hash-bound native guard roots.
 
 ## Decision
 
@@ -18,7 +18,7 @@ Every native adapter has its own self-contained tree, while release delivery is 
 
 ## Alternatives rejected
 
-Checking generated cores into the source tree would mix delivery with ordinary source maintenance. Publishing a marketplace file whose relative sources are absent would validate metadata without delivering a usable plugin. Reimplementing ownership per channel would preserve inconsistent handling of unknown entries. Treating the output as released would bypass the owner's visibility/publication decision and the actual native/fresh-machine acceptance checks.
+Checking generated cores into the source tree would mix delivery with ordinary source maintenance. Publishing a marketplace file whose relative sources are absent would validate metadata without delivering a usable plugin. Reimplementing ownership per channel would preserve inconsistent handling of unknown entries. Treating the output as released would bypass the maintainer's visibility/publication decision and the actual native/fresh-machine acceptance checks.
 
 ## Verification
 

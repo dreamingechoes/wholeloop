@@ -5,7 +5,7 @@
 
 ## Context
 
-Copied-core tests do not exercise the npm archive, npm's bin links or the installed package's embedded resources. A local package can be tested before any public visibility, ownership, provenance or registry publication decision. Verification must not install into the owner's actual global prefix or native client home.
+Copied-core tests do not exercise the npm archive, npm's bin links or the installed package's embedded resources. A local package can be tested before any public visibility, ownership, provenance or registry publication decision. Verification must not install into the user's actual global prefix or native client home.
 
 ## Decision
 
@@ -22,6 +22,6 @@ A copied-file smoke test misses npm's archive/link behavior. Installing globally
 
 ## Verification
 
-Execute npm pack dry-run and actual pack, verify archive digests, install the archive offline, execute both linked aliases and complete the owned installation round trip. Initial execution passed on macOS arm64, Node 24.1.0 and npm 11.8.0, retaining private true and version 0.0.0. Include the same path in the complete check; Linux, other supported Node/npm releases and physical interruption remain owner verification. No registry publication or native activation is implied.
+Execute npm pack dry-run and actual pack, verify archive digests, install the archive offline, execute both linked aliases and complete the owned installation round trip. Initial execution passed on macOS arm64, Node 24.1.0 and npm 11.8.0, retaining private true and version 0.0.0. Include the same path in the complete check; Linux, other supported Node/npm releases and physical interruption remain manual verification. No registry publication or native activation is implied.
 
 [◀ Decisions index](./README.md)

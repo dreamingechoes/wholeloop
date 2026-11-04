@@ -7,7 +7,7 @@
 
 A research plan lists one angle per source provider. The built-in `native-web` provider is defined as "the host CLI web tools for read-only evidence". A native research worker is told to query its named angle, but every delivery recipe removed web tools. Claude Code's restricted mode drops WebFetch unless `--tools` names it, and the Codex recipe set `web_search` to `disabled`. An unattended research run on the public web could therefore only return open questions.
 
-For the P6-27 campaign, the owner chose the public web through each client's own search and fetch, plus the trial repository, as the only research sources ([manual verification](../../roadmap/manual-verification.md#native-evaluation-campaign-inputs-2026-11-03)). This decision gives research workers exactly that, and no more.
+For the P6-27 campaign, the only research sources are the public web, through each client's own search and fetch, and the trial repository ([manual verification](../../roadmap/manual-verification.md#native-evaluation-campaign-inputs-2026-11-03)). This decision gives research workers exactly that, and no more.
 
 ## Decision
 
@@ -23,8 +23,8 @@ The worker-assignment and native-purpose schemas gain the optional field. These 
 ## Alternatives rejected
 
 - Giving web tools to every research role would let a planner or a refuter browse outside any angle the plan pinned.
-- A controller-side HTTP fetcher would be a new vendor integration, and would add a network path the owner did not choose ([ADR-0085](./0085-client-owned-mcp-first-provider-transport.md)).
-- Codex's `cached` index would not be the public web the owner chose.
+- A controller-side HTTP fetcher would be a new vendor integration, and would add a network path that was not chosen ([ADR-0085](./0085-client-owned-mcp-first-provider-transport.md)).
+- Codex's `cached` index would not be the chosen public web.
 - Re-enabling WebFetch for Claude through settings, rather than by naming it in `--tools`, would depend on settings that `--setting-sources ''` deliberately ignores.
 
 ## Verification

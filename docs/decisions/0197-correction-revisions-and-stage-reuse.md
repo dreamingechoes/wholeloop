@@ -20,7 +20,7 @@
   - integration repair counters plus earlier continuations stay below the pinned `integrationRepairs` limit.
 
   `completed` and `exhausted` runs never continue. The predecessor's terminal control event and its runner record remain unchanged history; `continuations` in the runner facet and the operator report name the chain.
-- **Always a new exact-plan grant.** The first grant recorded on a correction revision must be bound to that revision's exact plan digest and must never have been seen on the run before. The failed run's grant and any envelope grant are refused, under every intervention policy. This is the conservative choice AGENTS.md requires when authority could widen. Letting a still-active envelope grant start a `none` continuation without an operator is left to the owner as a separate draft, `docs/decisions/0198-envelope-grant-continuation.md` (status Proposed).
+- **Always a new exact-plan grant.** The first grant recorded on a correction revision must be bound to that revision's exact plan digest and must never have been seen on the run before. The failed run's grant and any envelope grant are refused, under every intervention policy. This is the conservative choice AGENTS.md requires when authority could widen. Letting a still-active envelope grant start a `none` continuation without an operator is left to a maintainer decision as a separate draft, `docs/decisions/0198-envelope-grant-continuation.md` (status Proposed).
 - **The route re-enters the owning unit.** Each correction adds a `correction-N:<unit>` stage between `commit:<unit>` and `verification:<unit>`. Verification, review, re-verification, integration, acceptance, publication and handoff therefore have new inputs. Nothing upstream changes.
 - **Reuse is computed, then confirmed.** At the start of the continuation, the controller computes the [revision impact](./0192-revision-impact-and-explicit-adoption.md) between the two revisions and walks the route in order. A stage is reused only when all of these hold:
   - the impact keeps it;
@@ -43,7 +43,7 @@ Owned workspaces and commit receipts are valid evidence only under the run's cur
 - **Seeded candidates.** Every other code unit feeding a stage that runs again gets a candidate under the new grant, fixed at its existing head. Its quality checks run again on that candidate.
 - **History only.** Original stages count only as history, never as current candidate evidence. The commit-receipt invariant stays unchanged.
 
-This requires a seeded-candidate notion in the workspace contract and in every consumer that today expects a commit receipt: verification, review, native gates, readiness, integration and repairs. Relaxing the receipt invariant for an older grant of the same run was rejected as a weaker evidence rule. The owner chose to build the producer together with P6-27, when native reference clients can exercise it with real evidence.
+This requires a seeded-candidate notion in the workspace contract and in every consumer that today expects a commit receipt: verification, review, native gates, readiness, integration and repairs. Relaxing the receipt invariant for an older grant of the same run was rejected as a weaker evidence rule. The producer was scheduled together with P6-27, when native reference clients can exercise it with real evidence.
 
 ## Alternatives rejected
 

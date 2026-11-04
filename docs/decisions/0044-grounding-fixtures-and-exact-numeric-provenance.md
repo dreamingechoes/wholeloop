@@ -29,6 +29,6 @@ A data step can invent the most reassuring possible value by treating an absent 
 
 ## Consequences
 
-The seeded structural boundary is locally reproducible and suitable for regression checks. Actual model/host grounding, independently reviewed labels, narrative numbers and production/cohort semantics remain owner verification. New failures should become original fixtures; the small seed is not a population estimate.
+The seeded structural boundary is locally reproducible and suitable for regression checks. Actual model/host grounding, independently reviewed labels, narrative numbers and production/cohort semantics remain manual verification. New failures should become original fixtures; the small seed is not a population estimate.
 
 [◀ Decisions index](./README.md)

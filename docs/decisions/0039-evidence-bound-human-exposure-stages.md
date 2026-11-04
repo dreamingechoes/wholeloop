@@ -30,6 +30,6 @@ A generic approval cannot identify which stage or evidence a person saw. An unre
 
 ## Consequences
 
-Replay rebuilds the stage cursor and evidence outside repositories. Real source semantics, safe normalized inputs, continuous flag history, authenticated proposal behavior, manual control truth and Linux execution remain owner verification. These checks do not block independent implementation.
+Replay rebuilds the stage cursor and evidence outside repositories. Real source semantics, safe normalized inputs, continuous flag history, authenticated proposal behavior, manual control truth and Linux execution remain manual verification. These checks do not block independent implementation.
 
 [◀ Decisions index](./README.md)

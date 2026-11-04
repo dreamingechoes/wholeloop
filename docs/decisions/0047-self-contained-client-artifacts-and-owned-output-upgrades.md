@@ -31,7 +31,7 @@ A plugin must work after leaving the source checkout and must invoke the same co
 
 ## Verification
 
-Golden fixtures pin rendered skills/agents/manifest. Temporary directories exercise hash/mode ownership, idempotence, backups and refusal of edited/unowned/symlinked output. Compiled CLI fixtures execute the copied core and begin framing outside the source checkout. Claude 2.1.299 plugin validate --strict accepted a generated manifest in an isolated temporary directory; no plugin was installed and no model session ran. Client discovery/execution, hooks and Linux remain owner checks.
+Golden fixtures pin rendered skills/agents/manifest. Temporary directories exercise hash/mode ownership, idempotence, backups and refusal of edited/unowned/symlinked output. Compiled CLI fixtures execute the copied core and begin framing outside the source checkout. Claude 2.1.299 plugin validate --strict accepted a generated manifest in an isolated temporary directory; no plugin was installed and no model session ran. Client discovery/execution, hooks and Linux remain manual checks.
 
 ## Sources
 

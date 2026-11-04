@@ -95,7 +95,7 @@
 - [x] Each provider passes offline contract tests with explicitly synthetic response fixtures; remote destinations are labelled experimental, fixture-tested and service-unverified.
 - [x] `docs.update` never writes a body that was not fetched first in the same operation (test).
 
-**Local implementation:** complete and fixture-tested. All eight providers pass `wl provider test`; synthetic host-boundary transcripts are checked in. The owner accepted ADR-0084: authenticated per-vendor certification is a deferred follow-up, not a 1.0 prerequisite. Remote destinations remain experimental and service-unverified. The manual backlog preserves actual account/permission/readback checks unchecked; local fixture acceptance never represents those checks as passed.
+**Local implementation:** complete and fixture-tested. All eight providers pass `wl provider test`; synthetic host-boundary transcripts are checked in. ADR-0084 is accepted: authenticated per-vendor certification is a deferred follow-up, not a 1.0 prerequisite. Remote destinations remain experimental and service-unverified. The manual backlog preserves actual account/permission/readback checks unchecked; local fixture acceptance never represents those checks as passed.
 
 **Docs** — configuration/providers (catalogue status).
 

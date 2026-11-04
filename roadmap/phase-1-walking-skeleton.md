@@ -159,7 +159,7 @@
 - [x] `wl build --target claude` output matches golden files.
 - [ ] The generated plugin installs locally and lists every skill.
 
-**Local implementation:** the adapter interface, pure Claude skill/agent renderer, embedded canonical resources, bundled core, owned output/backup writer and golden fixtures are implemented. The actual Claude 2.1.299 static plugin validator passed in an isolated directory. Native guard registration is now implemented through the shared core. The owner exercised user-scope loose-skill framing through an on-hold closure and recovered status in a fresh Claude session; independent core reads confirmed persistence. See the [observation and content defects](./manual-verification.md#owner-observed-claude-framing-and-session-recovery-2026-10-22). Real hook capture, role isolation, plugin installation/all-skill discovery and the live runner remain owner checks. These gaps do not block independent installation implementation.
+**Local implementation:** the adapter interface, pure Claude skill/agent renderer, embedded canonical resources, bundled core, owned output/backup writer and golden fixtures are implemented. The actual Claude 2.1.299 static plugin validator passed in an isolated directory. Native guard registration is now implemented through the shared core. User-scope loose-skill framing was exercised by hand through an on-hold closure and recovered status in a fresh Claude session; independent core reads confirmed persistence. See the [observation and content defects](./manual-verification.md#manually-observed-claude-framing-and-session-recovery-2026-10-22). Real hook capture, role isolation, plugin installation/all-skill discovery and the live runner remain manual checks. These gaps do not block independent installation implementation.
 
 **Docs** — platforms, ADR-0047.
 
@@ -176,7 +176,7 @@
 - [x] Golden files for each adapter; one canonical change updates all four outputs.
 - [ ] Read-only roles map to each CLI's strongest available restriction.
 
-**Local implementation:** all three native renderers, namespaced skills/agents, portable Codex/Copilot manifests, checked launcher/root binding, role restrictions and cross-target goldens are implemented. Codex's inherited permission limitation is explicit; mappings are not a claimed isolated native sandbox. OpenCode/Copilot native hook bindings and the explicit Codex Git fallback now call the common guard. Actual payload capture, permission enforcement and model conformance remain owner verification; these checks do not block independent installation implementation.
+**Local implementation:** all three native renderers, namespaced skills/agents, portable Codex/Copilot manifests, checked launcher/root binding, role restrictions and cross-target goldens are implemented. Codex's inherited permission limitation is explicit; mappings are not a claimed isolated native sandbox. OpenCode/Copilot native hook bindings and the explicit Codex Git fallback now call the common guard. Actual payload capture, permission enforcement and model conformance remain manual verification; these checks do not block independent installation implementation.
 
 **Docs** — platforms, ADR-0048.
 
@@ -209,7 +209,7 @@
 - [x] Install then uninstall leaves no file behind (test in a temp HOME).
 - [ ] Doctor explains every failure with the command that fixes it.
 
-**Local implementation:** four-target user/project native overlays, relative checked launchers, scoped/dedicated hooks, external ownership/backups, preflighted dry runs, semantic idempotency, upgrades, clean uninstall and recorded pending recovery are implemented. Full-package fixtures restore temporary HOME/project trees exactly; smaller catalogs exercise ownership edges. Doctor now checks owned scopes as well as versions, actual store writes and explicit standalone artifacts. Installed files remain distinct from native activation/authentication; Git hooks retain explicit per-repository activation/removal. Actual clients, physical recovery, Linux/other Node releases and corrective commands needing the owner's platform/configuration choices remain verification, so the second full-item criterion stays open. These checks do not block the local P1-14 conformance runner.
+**Local implementation:** four-target user/project native overlays, relative checked launchers, scoped/dedicated hooks, external ownership/backups, preflighted dry runs, semantic idempotency, upgrades, clean uninstall and recorded pending recovery are implemented. Full-package fixtures restore temporary HOME/project trees exactly; smaller catalogs exercise ownership edges. Doctor now checks owned scopes as well as versions, actual store writes and explicit standalone artifacts. Installed files remain distinct from native activation/authentication; Git hooks retain explicit per-repository activation/removal. Actual clients, physical recovery, Linux/other Node releases and corrective commands needing the maintainer's platform/configuration choices remain verification, so the second full-item criterion stays open. These checks do not block the local P1-14 conformance runner.
 
 **Docs** — getting-started.
 
@@ -226,7 +226,7 @@
 - [ ] The scenario passes on Claude Code, Codex, OpenCode and Copilot CLI.
 - [x] A failure report names the CLI, the step and the missing journal event.
 
-**Local implementation:** a bundled synthetic scenario, disposable seeded repositories, real project installer/launchers, four native headless recipes, exact version preflight, bounded execution/cancellation and a replay/projection/marker judge are implemented. Preparation, simulation and explicit live process evidence are distinct. Fixtures cannot close the real-client criterion. An owner-authorized actual Codex 0.163.0 standalone run passed after correcting the exact-input prompt. Claude has separate owner-observed on-hold/session-recovery evidence; actual automatic trials of the other five clients failed. See the [native trial table](./manual-verification.md#automatic-native-client-trials-2026-10-22). Full four-client scenario acceptance, native permissions/hooks and Linux/other Node checks remain open. These checks do not block other implementation.
+**Local implementation:** a bundled synthetic scenario, disposable seeded repositories, real project installer/launchers, four native headless recipes, exact version preflight, bounded execution/cancellation and a replay/projection/marker judge are implemented. Preparation, simulation and explicit live process evidence are distinct. Fixtures cannot close the real-client criterion. An authorized actual Codex 0.163.0 standalone run passed after correcting the exact-input prompt. Claude has separate owner-observed on-hold/session-recovery evidence; actual automatic trials of the other five clients failed. See the [native trial table](./manual-verification.md#automatic-native-client-trials-2026-10-22). Full four-client scenario acceptance, native permissions/hooks and Linux/other Node checks remain open. These checks do not block other implementation.
 
 **Docs** — architecture/determinism-and-testing, platforms, ADR-0051.
 

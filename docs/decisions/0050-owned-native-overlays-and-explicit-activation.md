@@ -26,7 +26,7 @@ Deleting a directory because it has a familiar name loses edits and foreign file
 
 ## Verification
 
-Exercise complete four-target user/project round trips, exact temporary HOME restoration, partial target removal, owned upgrades/backups, drift/refusal, mixed old/new pending recovery, URL/shell-special paths, relocation, compiled launchers, native transport fixtures and managed doctor status. Ownership edge cases use a small authored catalog; full catalogs and compiled CLI integration remain separate. Real clients, native trust/precedence, physical recovery, Linux and other supported Node versions remain owner checks. No real model or personal installation is used.
+Exercise complete four-target user/project round trips, exact temporary HOME restoration, partial target removal, owned upgrades/backups, drift/refusal, mixed old/new pending recovery, URL/shell-special paths, relocation, compiled launchers, native transport fixtures and managed doctor status. Ownership edge cases use a small authored catalog; full catalogs and compiled CLI integration remain separate. Real clients, native trust/precedence, physical recovery, Linux and other supported Node versions remain manual checks. No real model or personal installation is used.
 
 ## Primary references
 

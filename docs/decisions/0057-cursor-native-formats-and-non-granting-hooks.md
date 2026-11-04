@@ -20,7 +20,7 @@ Cursor accepts its own plugin format and the portable Agent Plugins format, with
 
 ## Evidence and limits
 
-Native 2026.07.16-899851b version/help and its installed pure hook validators accept empty/deny responses and the native config shape without starting a client/model. Its installed prompt builder reads piped input when no positional prompt is given. Authored hook tests invoke actual copied cores; calendar pins and stdin transport also run through a synthetic agent process. Those checks do not establish native role discovery, readonly enforcement, plugin activation, authentication or model quality. Full owner conformance remains open.
+Native 2026.07.16-899851b version/help and its installed pure hook validators accept empty/deny responses and the native config shape without starting a client/model. Its installed prompt builder reads piped input when no positional prompt is given. Authored hook tests invoke actual copied cores; calendar pins and stdin transport also run through a synthetic agent process. Those checks do not establish native role discovery, readonly enforcement, plugin activation, authentication or model quality. Full manual conformance remains open.
 
 ## Rejected alternatives
 

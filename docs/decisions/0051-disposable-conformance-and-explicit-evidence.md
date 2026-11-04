@@ -20,7 +20,7 @@ Adapter goldens and successful core fixtures do not establish that an actual cli
 
 ## Consequences
 
-The same local structural contract can be exercised for all four tier-A targets without authenticated model calls. Owner-run live results remain separate from simulations and cannot silently close the broader permission/conformance matrix. Native startup files can cause workspace-change failures and need investigation; ignored files, Git configuration, external writes and service-side state are not covered by the workspace snapshot. Preserve external evidence for inspection.
+The same local structural contract can be exercised for all four tier-A targets without authenticated model calls. Manually run live results remain separate from simulations and cannot silently close the broader permission/conformance matrix. Native startup files can cause workspace-change failures and need investigation; ignored files, Git configuration, external writes and service-side state are not covered by the workspace snapshot. Preserve external evidence for inspection.
 
 ## Rejected alternatives
 

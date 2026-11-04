@@ -5,7 +5,7 @@
 
 ## Context
 
-[ADR-0194](./0194-scheduled-observations-and-learning-recommendations.md) schedules due checkpoint observations once and settles them by policy, but the reads and the delegated `learning-outcome` decision ran outside the recoverable delivery runner. Delegated decisions are bound to a delivery run, plan and grant, so a recommendation recorded outside a run had no grant behind it. The owner chose to execute each scheduled observation as its own delivery run instead of composing it outside the runner.
+[ADR-0194](./0194-scheduled-observations-and-learning-recommendations.md) schedules due checkpoint observations once and settles them by policy, but the reads and the delegated `learning-outcome` decision ran outside the recoverable delivery runner. Delegated decisions are bound to a delivery run, plan and grant, so a recommendation recorded outside a run had no grant behind it. The chosen design executes each scheduled observation as its own delivery run instead of composing it outside the runner.
 
 ## Decision
 

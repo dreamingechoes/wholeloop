@@ -18,7 +18,7 @@ The framing runner and matrix renderer exist, but collecting separate pinned and
 
 ## Alternatives rejected
 
-Running a moving latest alias directly would make comparisons irreproducible. One shared PATH would let missing channel installations reuse a global client. Stopping after the first failed client would hide the remaining evidence. Removing the successful report's initiative ID would break existing matrix input validation; retain that structural ID rather than weaken the validator. Copying full fixture paths, artifacts or raw process output into aggregate results would expose unnecessary data. Automatic trust/permission changes would cross an owner setup boundary rather than measure real client behavior.
+Running a moving latest alias directly would make comparisons irreproducible. One shared PATH would let missing channel installations reuse a global client. Stopping after the first failed client would hide the remaining evidence. Removing the successful report's initiative ID would break existing matrix input validation; retain that structural ID rather than weaken the validator. Copying full fixture paths, artifacts or raw process output into aggregate results would expose unnecessary data. Automatic trust/permission changes would cross a user setup boundary rather than measure real client behavior.
 
 ## Verification
 

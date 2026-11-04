@@ -286,7 +286,7 @@ With nothing configured, everything lands in the local store as Markdown — the
 
 ### Tested code-host boundary
 
-`github` uses gh api; `gitlab` uses glab api. Both resolve one explicit remote, push a pinned tested commit and verify a matching open draft response. Read/status normalize source SHA/branch, target, repository, draft and merge state. Bodies use stdin and each CLI's credential store. Optional comments reconcile a stable round marker before posting. Local tests use synthetic API-shaped responses and a separate real push to a temporary local bare repository; live authentication, self-managed versions and network interruption remain owner verification.
+`github` uses gh api; `gitlab` uses glab api. Both resolve one explicit remote, push a pinned tested commit and verify a matching open draft response. Read/status normalize source SHA/branch, target, repository, draft and merge state. Bodies use stdin and each CLI's credential store. Optional comments reconcile a stable round marker before posting. Local tests use synthetic API-shaped responses and a separate real push to a temporary local bare repository; live authentication, self-managed versions and network interruption remain manual verification.
 
 Explicit service execution: the [remote rollout bridge guide](../extending/remote-bridges.md) covers non-secret configuration, default-preview/live selection and the first conservative LaunchDarkly boolean reader. It does not make metadata-only provider tests authenticated health checks or convert dashboard handoffs into remote charts.
 

@@ -3,7 +3,7 @@
 > **TL;DR** — The planned runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The owner accepted the expanded scope and authorized sequential implementation on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery and persistent finite budgets and role-bound worker/context contracts are implemented. Dedicated native-host contracts and owned Docker API/CLI/browser execution are also implemented. Actual native-model certification and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
+> **Status: 🚧 partial.** The expanded scope was accepted, and sequential implementation authorized, on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery and persistent finite budgets and role-bound worker/context contracts are implemented. Dedicated native-host contracts and owned Docker API/CLI/browser execution are also implemented. Actual native-model certification and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
 
 ## Observed behavior hosts
 
@@ -64,7 +64,7 @@ The accepted [planning decision](../decisions/0092-expanded-v1-autonomous-delive
 
 ## Accepted implementation scope
 
-The owner accepted this scope and authorized pragmatic implementation decisions, passing tests, docs and incremental commits without waiting for manual checks or further signals. Implemented intake evidence is recorded in Phase 6; later capability acceptance remains pending. No cloud platform, marketplace, vendor API expansion or actual production operation is included.
+This scope is accepted, with authorization for pragmatic implementation decisions, passing tests, docs and incremental commits without waiting for manual checks or further signals. Implemented intake evidence is recorded in Phase 6; later capability acceptance remains pending. No cloud platform, marketplace, vendor API expansion or actual production operation is included.
 
 <!-- docnav -->
 [◀ Architecture](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Core CLI ▶](core-cli.md)

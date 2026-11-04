@@ -3,7 +3,7 @@
 > **TL;DR** — Start from a revision-bound issue, document, approved initiative or local request. Run implementation, behavioral QA, independent adversarial review and integration validation through recoverable workers, or complete an evidence-backed research flow. An explicit initial policy can delegate the entire flow with no subsequent human intervention. Deliver a report, pull request or separately authorized conditional merge. Keep the deterministic core, existing clients and external state.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The owner requested this expanded 1.0 scope on 2026-10-24. The owner reviewed/accepted all new tasks and authorized sequential implementation on 2026-10-24. P6-01–P6-09, P6-11, P6-13–P6-19, P6-26 and P6-34 are complete at their evidenced local boundaries. P6-12 is implemented with actual reference Docker observations and independent Linux-host acceptance pending. The remaining fourteen tasks retain accepted implementation targets, not actual run grants. Browser/API/CLI observations remain separate from native-model and independent-platform certification. The existing supervised behavior, native failures and release checks remain in force.
+> **Status: 🚧 partial.** This expanded 1.0 scope was requested on 2026-10-24, and all new tasks were reviewed and accepted, with sequential implementation authorized, on the same day. P6-01–P6-09, P6-11, P6-13–P6-19, P6-26 and P6-34 are complete at their evidenced local boundaries. P6-12 is implemented with actual reference Docker observations and independent Linux-host acceptance pending. The remaining fourteen tasks retain accepted implementation targets, not actual run grants. Browser/API/CLI observations remain separate from native-model and independent-platform certification. The existing supervised behavior, native failures and release checks remain in force.
 
 ## Read and review
 
@@ -83,9 +83,9 @@ Intervention is a separate axis: `supervised` keeps current stops, `on-exception
 
 ## Scope and release ordering
 
-Phase 6 is inside the expanded 1.0, numbered after the existing phases to retain stable task links. It runs before P5-07's release closure. Local implementation can proceed independently of unresolved original native/account checks under the owner's implementation authorization; those checks remain release obligations at their existing scope.
+Phase 6 is inside the expanded 1.0, numbered after the existing phases to retain stable task links. It runs before P5-07's release closure. Local implementation can proceed independently of unresolved original native/account checks under the maintainer's implementation authorization; those checks remain release obligations at their existing scope.
 
-The expanded roadmap has 88 tasks: 54 original tasks (40 complete, fourteen open) and 34 new tasks (twenty-six complete, one implemented and awaiting native or hosted acceptance (P6-33), seven awaiting implementation). The owner has lifted the review hold and authorized sequential implementation; pending tasks still need their actual tests and evidence before completion. Its size estimates are planning hypotheses and may be split without weakening acceptance.
+The expanded roadmap has 88 tasks: 54 original tasks (40 complete, fourteen open) and 34 new tasks (twenty-six complete, one implemented and awaiting native or hosted acceptance (P6-33), seven awaiting implementation). The review hold is lifted and sequential implementation is authorized; pending tasks still need their actual tests and evidence before completion. Its size estimates are planning hypotheses and may be split without weakening acceptance.
 
 ## Opportunity disposition
 
@@ -103,7 +103,7 @@ The expanded roadmap has 88 tasks: 54 original tasks (40 complete, fourteen open
 
 ## Accepted design direction
 
-The accepted design direction covers: zero-intervention decision delegation, opt-in delegated acceptance, the trusted effect broker and containment requirement, GitHub as the first conditional-merge host, separately reported GitLab capabilities, the native reference-client scope, bounded repair defaults and conservative cross-repository merge behavior. The owner authorized pragmatic implementation refinements; preserve acceptance and record material changes in technical decisions.
+The accepted design direction covers: zero-intervention decision delegation, opt-in delegated acceptance, the trusted effect broker and containment requirement, GitHub as the first conditional-merge host, separately reported GitLab capabilities, the native reference-client scope, bounded repair defaults and conservative cross-repository merge behavior. Pragmatic implementation refinements are authorized; preserve acceptance and record material changes in technical decisions.
 
 ## Research provenance
 

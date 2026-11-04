@@ -30,6 +30,6 @@ Shared work can enter the harness through a document or issue rather than a new 
 
 ## Verification
 
-Temporary stores and data-only hosts exercise adoption, missing facts, URL identity, publication, revision-preserving updates, ambiguity, reconciliation, projection rebuild and compiled CLI handoffs. These are synthetic boundary tests; authenticated provider semantics, physical interruptions, client enforcement and Linux remain owner verification in the manual checklist.
+Temporary stores and data-only hosts exercise adoption, missing facts, URL identity, publication, revision-preserving updates, ambiguity, reconciliation, projection rebuild and compiled CLI handoffs. These are synthetic boundary tests; authenticated provider semantics, physical interruptions, client enforcement and Linux remain manual verification in the manual checklist.
 
 [◀ Decisions index](./README.md)

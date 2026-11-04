@@ -23,7 +23,7 @@ Reading the latest draft would report a change that was never published. Truthy 
 
 ## Verification
 
-Test exact cloud/self-hosted paths, published/draft separation, direct/force/forward/ reverse/zero/full rules, owning/global project scope, content revisions and cohort labels. Test decimal/exponent arithmetic and unrepresentable boundary refusal. Reject missing identities/revisions, nonboolean values, targeting, experiments, prerequisites, holdouts, config references, schedules, custom hashes and conflicting compiled definitions. Exercise Bearer GET-only transport and the actual built-in manifest/ramp normalizer with local synthetic HTTP responses. Actual API access, SDK/application behavior and Linux remain owner verification; no real service runs.
+Test exact cloud/self-hosted paths, published/draft separation, direct/force/forward/ reverse/zero/full rules, owning/global project scope, content revisions and cohort labels. Test decimal/exponent arithmetic and unrepresentable boundary refusal. Reject missing identities/revisions, nonboolean values, targeting, experiments, prerequisites, holdouts, config references, schedules, custom hashes and conflicting compiled definitions. Exercise Bearer GET-only transport and the actual built-in manifest/ramp normalizer with local synthetic HTTP responses. Actual API access, SDK/application behavior and Linux remain manual verification; no real service runs.
 
 ## Sources
 

@@ -29,6 +29,6 @@ A launch can quietly drift away from its spec when dashboards recreate queries o
 
 ## Consequences
 
-Typed interfaces, canonical metadata and known-route checks are enforceable local boundaries, not proof of opaque server semantics or live client permissions. The per-CLI adapter no-send criterion remains pending until P1 adapters/conformance can run; it must not be checked based on synthetic hosts. Source/label semantics, real authentication, publication interruption and merge/flag readiness also need owner verification. Those checks do not block dependent local rollout workflows.
+Typed interfaces, canonical metadata and known-route checks are enforceable local boundaries, not proof of opaque server semantics or live client permissions. The per-CLI adapter no-send criterion remains pending until P1 adapters/conformance can run; it must not be checked based on synthetic hosts. Source/label semantics, real authentication, publication interruption and merge/flag readiness also need manual verification. Those checks do not block dependent local rollout workflows.
 
 [◀ Decisions index](./README.md)

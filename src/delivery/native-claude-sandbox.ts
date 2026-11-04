@@ -4,7 +4,7 @@ import { safeSourceText } from './input.js'
 /**
  * Trusted controller paths that contain a Claude Code process on macOS. The
  * client authenticates through the login Keychain, which it reaches only with
- * the owner's real home, so containment cannot come from hiding the home: the
+ * the operator's real home, so containment cannot come from hiding the home: the
  * operating system profile denies every file the run has no reason to touch.
  */
 export interface NativeClaudeContainment {
@@ -13,10 +13,10 @@ export interface NativeClaudeContainment {
   sandbox: string
   /** Canonical client binary, so a PATH entry cannot substitute another program. */
   client: string
-  /** The owner's home; the Keychain lookup needs it. */
+  /** The operator's home; the Keychain lookup needs it. */
   home: string
   user: string
-  /** Dedicated client home (CLAUDE_CONFIG_DIR), signed in once by the owner. */
+  /** Dedicated client home (CLAUDE_CONFIG_DIR), signed in once by the operator. */
   store: string
 }
 
@@ -91,7 +91,7 @@ export function claudeSandboxProfile(input: {
     // Last, so it overrides the client-home write allowance above.
     `(deny file-write* ${CLAUDE_CREDENTIAL_FILES.map((name) => literal(join(containment.store, name))).join(' ')})`,
     // The profile hides /var/select/developer_dir, so the /usr/bin/git shim the
-    // client calls concludes no developer tools exist and asks the owner's GUI
+    // client calls concludes no developer tools exist and asks the user's GUI
     // session to install them, once per launch (2026-11-03). Denying that
     // request keeps the failure silent; Git stays unavailable, as before.
     '(deny mach-lookup (global-name "com.apple.dt.CommandLineTools.installondemand"))',

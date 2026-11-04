@@ -9,11 +9,11 @@ In autonomous delivery, `wl delivery run` launches its own native workers (plann
 
 The harness used inside a person's own agent session (skills, agents, steps, hooks) runs on that session's sign-in and needs no credential from wholeloop. It is out of scope.
 
-Today a worker authenticates through a dedicated client home that the owner signed in to once. For Claude Code that sign-in lives in the macOS login Keychain, which the boundary profile lets the client read but not write ([ADR-0203](./0203-contained-claude-code-boundary.md)). The P6-27 campaign showed what that costs:
+Today a worker authenticates through a dedicated client home that the operator signed in to once. For Claude Code that sign-in lives in the macOS login Keychain, which the boundary profile lets the client read but not write ([ADR-0203](./0203-contained-claude-code-boundary.md)). The P6-27 campaign showed what that costs:
 
 - **Token expiry ends unattended runs.** When the access token expires, the client cannot store the refreshed token. Every launch after expiry fails with `permission-denied` and zero tokens. That happened three times: in the afternoon, overnight, and once with the client writing a plaintext `.credentials.json` as a fallback, before the profile denied it.
-- **The usage window ends runs too.** A Claude Pro five-hour usage window ran out mid-batch and failed two trials. The owner's interactive session draws on the same window.
-- **The workaround needs the owner every time.** The owner signs in again before every batch, which defeats "authorize once, run unattended".
+- **The usage window ends runs too.** A Claude Pro five-hour usage window ran out mid-batch and failed two trials. The operator's interactive session draws on the same window.
+- **The workaround needs a person every time.** The operator signs in again before every batch, which defeats "authorize once, run unattended".
 
 Codex is not affected: its own process runs outside the sandbox it applies to tool commands, so it refreshes its session itself.
 
@@ -63,11 +63,11 @@ Public documentation adds three points:
 - **Preflight before any work is claimed.** Before claiming a run, the controller checks that every bound role has a credential, that it authenticates with one minimal no-model call where the client offers one, and, where known, that it does not expire within the run's wall-time budget. Any failure ends the run before dispatch with a named reason. A run never fails mid-way on a credential the controller could have checked.
 - **An exhausted usage window pauses the run.** When a launch reports that the subscription window is exhausted, the run pauses and resumes once the window resets. It does not fail, and the work done so far is kept. Deciding that a report means "window exhausted" needs a client-reported signal. Until a client gives one, the attempt stays an infrastructure failure under the campaign rule.
 - **Antigravity is a documented exception.** It stays unavailable as a worker, reported at preflight, until it has a headless mode with an injectable credential. Its harness use inside an Antigravity session is unaffected. The README, the platform guide and the user guides say so.
-- **Platforms: macOS and Linux first.** A Linux host without a desktop has no standard secret store. There the owner chooses a supported store explicitly (for example `systemd-creds` or an external secret manager), and the controller never falls back to a file. Windows is supported through WSL2 until native containment and the Credential Manager are verified.
+- **Platforms: macOS and Linux first.** A Linux host without a desktop has no standard secret store. There the operator chooses a supported store explicitly (for example `systemd-creds` or an external secret manager), and the controller never falls back to a file. Windows is supported through WSL2 until native containment and the Credential Manager are verified.
 
 ## Verification still required before acceptance
 
-- **One real call per client and account kind**, with a valid credential, inside its boundary. It spends quota or money and needs the owner's accounts and approval.
+- **One real call per client and account kind**, with a valid credential, inside its boundary. It spends quota or money and needs the maintainer's accounts and approval.
 - **The lifetime of a `claude setup-token` token**, and its behaviour across a full campaign.
 - **A signal for an exhausted usage window**, for each client that has one.
 - **A secret store on a headless Linux host**, and the Windows path.
@@ -75,9 +75,9 @@ Public documentation adds three points:
 
 ## Alternatives rejected
 
-- **Writing the Keychain from inside the boundary.** It lets a model-driven process change the owner's login Keychain.
+- **Writing the Keychain from inside the boundary.** It lets a model-driven process change the operator's login Keychain.
 - **Refreshing a subscription token outside the boundary before each launch.** No client offers a refresh-only command that is verified to call no model, and it runs the client uncontained.
-- **Asking the owner to sign in before each batch.** That is the current workaround. It works only within a token's lifetime and contradicts unattended operation.
+- **Asking the operator to sign in before each batch.** That is the current workaround. It works only within a token's lifetime and contradicts unattended operation.
 - **One credential store shared by all workers.** A compromised worker would reach every client's credential.
 
 ## Consequences

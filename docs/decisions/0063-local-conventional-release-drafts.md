@@ -21,6 +21,6 @@ Adding a changelog dependency would duplicate the established subject grammar fo
 
 ## Verification
 
-Exercise shared grammar, classifications, breaking markers/trailers, subject-only output, attribution rejection, Markdown escaping, semantic labels and input bounds. Use a real temporary Git repository for exact initial/ranged/empty history, compiled JSON/Markdown output, invalid ancestry/ref refusal and shallow/promisor refusal. Verify files and refs remain unchanged. Review actual breaking intent, selected history and final publication prose with the owner before a release.
+Exercise shared grammar, classifications, breaking markers/trailers, subject-only output, attribution rejection, Markdown escaping, semantic labels and input bounds. Use a real temporary Git repository for exact initial/ranged/empty history, compiled JSON/Markdown output, invalid ancestry/ref refusal and shallow/promisor refusal. Verify files and refs remain unchanged. Review actual breaking intent, selected history and final publication prose with the maintainer before a release.
 
 [◀ Decisions index](./README.md)

@@ -5,7 +5,7 @@
 
 ## Context
 
-The service catalogue names common tools, not accounts the owner holds. Requiring authenticated acceptance for every listed vendor prevents a release even when the local contracts and fixtures pass. The owner explicitly chose to ship remote integrations experimentally and validate them as accounts and actual needs arise. Native clients such as Claude Code and Codex are a different compatibility surface.
+The service catalogue names common tools, not accounts the maintainer holds. Requiring authenticated acceptance for every listed vendor prevents a release even when the local contracts and fixtures pass. The maintainer explicitly chose to ship remote integrations experimentally and validate them as accounts and actual needs arise. Native clients such as Claude Code and Codex are a different compatibility surface.
 
 ## Decision
 
@@ -13,7 +13,7 @@ The service catalogue names common tools, not accounts the owner holds. Requirin
 - Passing declared-operation fixtures, manifest validation and local safety tests is the integration acceptance bar for 1.0. Authenticated vendor certification is deferred and does not block that release. Missing implementation, failing tests and misleading capability claims remain implementation work.
 - Replace P2-06's requirement for authenticated recorded responses with explicit synthetic fixture provenance and the experimental label. Preserve real-service checks unchecked in the manual verification backlog; do not relabel them passed.
 - Keep native-client discovery/permissions/hooks, engine conformance, release CI, npm ownership, visibility and publication acceptance unchanged. In particular, the missing Amplitude dashboard bridge is not implemented by this policy.
-- Promote only the operations actually observed against a real service after the owner supplies evidence. Record date, service/version where observable, exact operations, scope/permissions and limitations. Do not infer vendor-wide support, all failure modes or another operation's correctness from one successful call.
+- Promote only the operations actually observed against a real service after the maintainer supplies evidence. Record date, service/version where observable, exact operations, scope/permissions and limitations. Do not infer vendor-wide support, all failure modes or another operation's correctness from one successful call.
 
 ## Alternatives rejected
 

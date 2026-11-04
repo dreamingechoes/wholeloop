@@ -10,7 +10,7 @@ Git mutations and the external journal cannot share one filesystem transaction. 
 ## Decision
 
 1. Journal an allocation intent before provisioning, then ready or failed status. Pin canonical repository/common-directory identity, deterministic topic branch, named base/ref SHA, integration target, original checkout identity and ports. Retry adopts only the matching owned branch/worktree descending from that base.
-2. Coordinate lifecycle operations under a separate external lock, always before acquiring the journal lock. Never call the manager inside a journal transaction. Preserve stale locks for explicit owner inspection, as in ADR-0020.
+2. Coordinate lifecycle operations under a separate external lock, always before acquiring the journal lock. Never call the manager inside a journal transaction. Preserve stale locks for explicit manual inspection, as in ADR-0020.
 3. Default to external linked worktrees on `wl/<slice-or-part>`. Require an explicit named local/remote base or a recorded stacked predecessor. A stack inherits its predecessor's integration target so cleanup never mistakes the topic below it for the default integration branch.
 4. Reserve ten-port blocks from 5200 through 6199 within the selected store. Stopped/failed allocations retain their range; successful prune releases it. Reservations prevent wholeloop collisions, not conflicts with unrelated processes.
 5. Disable checkout hooks only for lifecycle Git mutations, using a process-scoped empty hooks directory. This prevents provisioning hooks touching the person's checkout; later builder commits still use normal repository hooks.
@@ -31,7 +31,7 @@ Git mutations and the external journal cannot share one filesystem transaction. 
 
 ## Consequences
 
-Failed intents and branches remain visible for recovery. Physical interruption may need stale-lock inspection; observed recovery paths are tested by removing a ready receipt after real provisioning. Process control, actual port binding and live project setup remain later builder/owner work. Git 2.49.0 was exercised on macOS; the other supported platform has not been executed in this session.
+Failed intents and branches remain visible for recovery. Physical interruption may need stale-lock inspection; observed recovery paths are tested by removing a ready receipt after real provisioning. Process control, actual port binding and live project setup remain later builder/manual work. Git 2.49.0 was exercised on macOS; the other supported platform has not been executed in this session.
 
 ## Links
 

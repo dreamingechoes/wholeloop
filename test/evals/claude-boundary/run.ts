@@ -11,7 +11,7 @@ import { ManagedRunnerProcess } from '../../../src/runner/native-process.js'
 import { fixture, git } from '../../support/delivery.js'
 import { nativeBoundaryInput } from '../../support/native-boundary.js'
 
-// The owner's dedicated client home, signed in once (manual verification,
+// The operator's dedicated client home, signed in once (manual verification,
 // 2026-11-03). Resolved at run time; WHOLELOOP_CLAUDE_STORE overrides it.
 const store = realpathSync(
     process.env.WHOLELOOP_CLAUDE_STORE ??

@@ -30,7 +30,7 @@ A machine PASS does not mean a person tried the change. A generic approval can a
 
 ## Consequences
 
-Plans and receipts remain outside repositories; source files and index stay intact. The state store cannot atomically commit a network operation, so physical interruption requires inspection. A failed request with no remote PR needs explicit owner recovery; there is no blind reset command. Custom hosts still own authentication and tool policy. Fork heads, nonstandard SSH ports and unbounded comment histories require an explicit host extension. Automated tests use real local Git/processes and synthetic HTTP-shaped responses; no authenticated push, PR, comment or tracker write ran.
+Plans and receipts remain outside repositories; source files and index stay intact. The state store cannot atomically commit a network operation, so physical interruption requires inspection. A failed request with no remote PR needs explicit manual recovery; there is no blind reset command. Custom hosts still own authentication and tool policy. Fork heads, nonstandard SSH ports and unbounded comment histories require an explicit host extension. Automated tests use real local Git/processes and synthetic HTTP-shaped responses; no authenticated push, PR, comment or tracker write ran.
 
 ## Links
 

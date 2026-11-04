@@ -24,7 +24,7 @@ import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 
 /**
  * Live EVAL-10 trial (P6-27): one none-policy research route on a real
- * reference client through the public `wl delivery run`, with the owner's
+ * reference client through the public `wl delivery run`, with the operator's
  * documents. It spends model quota, so it refuses to start without
  * WHOLELOOP_LIVE_CONFIRM=spend-quota. Every outcome is reported, never retried.
  */

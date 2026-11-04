@@ -23,6 +23,6 @@ Re-executing a pending intent can duplicate external test effects after a crash.
 
 ## Consequences
 
-Project tests may have effects outside Git; the snapshot detects tracked/untracked non-ignored workspace changes, not every external effect. Hosts must declare/undo those effects and enforce genuinely read-only verifier tools. Process-group fixture checks ran on macOS; Linux, live client execution and authenticated PR checkout remain owner verification. A cached passing suite is historical when current is false.
+Project tests may have effects outside Git; the snapshot detects tracked/untracked non-ignored workspace changes, not every external effect. Hosts must declare/undo those effects and enforce genuinely read-only verifier tools. Process-group fixture checks ran on macOS; Linux, live client execution and authenticated PR checkout remain manual verification. A cached passing suite is historical when current is false.
 
 [◀ Decisions index](./README.md)

@@ -19,7 +19,7 @@ Registration gives every public schema an identity, but cannot detect changing a
 
 ## Alternatives rejected
 
-Automatic version bumps from commit labels would confuse intent with compatibility. A single aggregate output fingerprint would make every additive command invalidate all old outputs. Byte hashes would reject harmless formatting. A semantic JSON Schema implication engine would introduce a large new dependency and still miss runtime meanings; conservative declaration checks plus domain tests are clearer. Promoting the candidate to a release would bypass unfinished distribution/native acceptance and the owner's publication decision.
+Automatic version bumps from commit labels would confuse intent with compatibility. A single aggregate output fingerprint would make every additive command invalidate all old outputs. Byte hashes would reject harmless formatting. A semantic JSON Schema implication engine would introduce a large new dependency and still miss runtime meanings; conservative declaration checks plus domain tests are clearer. Promoting the candidate to a release would bypass unfinished distribution/native acceptance and the maintainer's publication decision.
 
 ## Verification
 

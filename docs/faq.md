@@ -9,7 +9,7 @@
 
 ## Installation and first use
 
-**Can I install it from public npm today?** No. The development package is private at 0.0.0; use the [source installation](./getting-started.md#build-the-source-checkout). Publication and the 1.0 release remain explicit owner decisions.
+**Can I install it from public npm today?** No. The development package is private at 0.0.0; use the [source installation](./getting-started.md#build-the-source-checkout). Publication and the 1.0 release remain explicit maintainer decisions.
 
 **Why is `wl` not found after installation?** Managed installation writes native components, not a global shell command. Invoke the source bundle with `node "$WHOLELOOP_CLI" ...` and export that absolute path again in each new terminal. → [Executable paths](./troubleshooting.md#the-shell-cannot-find-wholeloop)
 

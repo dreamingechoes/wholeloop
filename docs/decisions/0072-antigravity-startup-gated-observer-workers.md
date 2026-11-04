@@ -5,7 +5,7 @@
 
 ## Context
 
-Antigravity's documented headless policy permits writes inside its active workspace by default. Shell-off or sandbox flags alone cannot establish an observer boundary. It accepts JSONL user input and reports an init record with workspace, tool names and permission mode, followed by step updates and a terminal result. Actual native startup/agent/hook activation still needs owner verification.
+Antigravity's documented headless policy permits writes inside its active workspace by default. Shell-off or sandbox flags alone cannot establish an observer boundary. It accepts JSONL user input and reports an init record with workspace, tool names and permission mode, followed by step updates and a terminal result. Actual native startup/agent/hook activation still needs manual verification.
 
 ## Decision
 
@@ -15,7 +15,7 @@ Antigravity's documented headless policy permits writes inside its active worksp
 - Require a single reported init for the exact external worker cwd, non-empty unique read-only tools and request-review/strict mode. Native startup must emit this record before receiving an assignment. Clients that wait for a prompt first time out without input; do not weaken the condition or send a bootstrap prompt. This is a reported native contract, not a cryptographic or hermetic attestation.
 - Share the JSONL user-event encoder with framing conformance, preserving that existing input byte shape. For gate workers require one matching fresh SUCCESS result, one turn, no error, consistent conversation IDs and only documented intermediate step updates. Never accept an earlier result from a failed stream.
 - Extend the closed policy path set with named hooks and a fixed observer-prefix/ sixteen-hex agent filename. Preflight every ancestor before creating directories or files; preserve private modes and existing output. Generic role policy may live on disk, while actual assignments and credentials stay off disk.
-- Declare a local conditional headless recipe without claiming native acceptance. Keep startup hooks/logs, policy merging, agent discovery, pre-prompt init ordering, authentication/models, update behavior and external effects as owner checks. Missing readiness is an unavailable worker, never evidence against a finding.
+- Declare a local conditional headless recipe without claiming native acceptance. Keep startup hooks/logs, policy merging, agent discovery, pre-prompt init ordering, authentication/models, update behavior and external effects as manual checks. Missing readiness is an unavailable worker, never evidence against a finding.
 
 ## Alternatives rejected
 

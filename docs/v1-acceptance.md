@@ -12,9 +12,9 @@
 | Local core | State, routing, gates, artifacts, worktrees | Executed automated tests and a representative real workflow |
 | Native clients | Claude Code, Codex, OpenCode, Copilot, Gemini, Antigravity, Cursor | Actual discovery/execution, permissions and hook behavior on the named version |
 | Remote integrations | Metabase, PostHog, Notion, Jira, flag services | Experimental, fixture-tested and service-unverified for 1.0; live certification is deferred |
-| Release | npm, GitHub delivery, version/tag, announcement | Owner choices plus actual reviewed publication evidence |
+| Release | npm, GitHub delivery, version/tag, announcement | Maintainer choices plus actual reviewed publication evidence |
 
-The owner accepted the integration policy in [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md). Do not turn unexecuted service checks into passed checks. Later promotion names the actual service/version, operations, permissions, date and limitations; it is not a claim that every vendor feature has been tested. Missing implementation is still missing implementation. Under [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md), Amplitude's dashboard operation remains a pending handoff until a known MCP contract is supplied; a dedicated HTTP bridge is not a 1.0 requirement.
+The integration policy is accepted in [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md). Do not turn unexecuted service checks into passed checks. Later promotion names the actual service/version, operations, permissions, date and limitations; it is not a claim that every vendor feature has been tested. Missing implementation is still missing implementation. Under [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md), Amplitude's dashboard operation remains a pending handoff until a known MCP contract is supplied; a dedicated HTTP bridge is not a 1.0 requirement.
 
 The full roadmap includes all seven native clients. Accepting Claude alone would be a separate scope change, not a consequence of experimental service integrations.
 
@@ -23,7 +23,7 @@ The full roadmap includes all seven native clients. Accepting Claude alone would
 - [x] The expanded delivery candidate passes the complete 2252-test check on macOS and Debian Linux arm64/Node 24.22.0, including actual local recovery fixtures and offline packaging. See [expanded platform evidence](../roadmap/manual-verification.md#expanded-delivery-platform-checks-2026-10-24) for exact candidate/layout hashes and the retained first Linux failure.
 - [x] The earlier 1955-test check passes on macOS and Debian Linux arm64/Node 24.22.0, including the offline package, which has the same hash on both. The Linux source snapshot runs without network or native credentials; real Linux client/model/service and other Node/platform acceptance remain separate. See [automated platform checks](../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
 - [x] The earlier complete 1925-test check passed on macOS arm64/Node 22.23.1, which also passes the new Markdown layout lint. The earlier built bundle passes scoped Linux arm64/Node 20.0.0 offline installation, smoke, docs, harness and three-corpus execution with exact Node 24 JSON parity. Eight adapter/dialect framing simulations pass as FIXTURE_PASS; no native client runs. CI now repeats the package and corpus runtime checks, with hosted execution still pending.
-- [x] The owner installed user-scope Claude loose skills and invoked framing with the eight questions and an explicit human stop.
+- [x] User-scope Claude loose skills were installed by hand and framing was invoked with the eight questions and an explicit human stop.
 - [x] An on-hold outcome retained the owner's reason and reopening condition in external core state.
 - [x] After closing Claude and opening a new session, status recovered that same closed initiative with framing completed and no next step.
 - [x] The automatic standalone framing scenario passed on actual Codex 0.163.0 after correcting the exact-input prompt. The other five attempted clients have failures recorded in [the native trial table](../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22).
@@ -34,9 +34,9 @@ That does not establish a complete go/spec path, all skill/agent discovery, nati
 
 ## Who must do the remaining work
 
-The implementation side prepares fixtures, runs local tests, attempts installed clients automatically, diagnoses failures, fixes code and updates evidence/docs. The owner does not need to author schemas or run every low-level backlog item.
+The implementation side prepares fixtures, runs local tests, attempts installed clients automatically, diagnoses failures, fixes code and updates evidence/docs. The maintainer does not need to author schemas or run every low-level backlog item.
 
-Owner involvement is needed for:
+Maintainer involvement is needed for:
 
 1. Native login/trust/model access when an automated client cannot proceed with its current setup. Use the client's own credential store; do not paste credentials into a report.
 2. Human decisions in a representative workflow: framing outcome, spec approval, testing the built result and the final learning decision.
@@ -50,18 +50,18 @@ Accounts with every remote service are absent from this list deliberately.
 
 ### 0. Review and implement expanded 1.0
 
-The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. The owner accepted every new task on 2026-10-24 and authorized sequential implementation without further signals. P6-01–P6-09, P6-11 and P6-13–P6-19 are complete at their stated local contract boundaries. P6-12 implements and actually exercises the reference Docker application backend on macOS and on an independent Linux host. Actual native client/model execution remains separate and no old native failure becomes a pass.
+The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. Every new task was accepted on 2026-10-24, with authorization for sequential implementation without further signals. P6-01–P6-09, P6-11 and P6-13–P6-19 are complete at their stated local contract boundaries. P6-12 implements and actually exercises the reference Docker application backend on macOS and on an independent Linux host. Actual native client/model execution remains separate and no old native failure becomes a pass.
 
 Independent local implementation is authorized to proceed before the remaining original manual/account checks. Use the [new validation plan](../roadmap/specifications/autonomous-delivery/09-validation-and-acceptance.md) for the additional actual backend, native research/implementation and disposable code-host evidence. Production effects and release remain separately authorized.
 
 ### 1. Finish implementation defects first
 
-The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external owner decisions; P6-01–P6-09 and P6-11 source/plan/envelope/authority, broker, replayable delivery-state and durable queue/fencing and checkpoint/effect/ownership recovery and persistent finite budget and role-bound worker/context and dedicated native-host contracts are implemented and tested. P6-12 Docker execution is implemented and accepted on macOS and an independent Linux host. P6-13 owned stop, private cancellation, retained data and interrupted retirement are implemented and tested; P6-14 pinned behavioral coverage, current-candidate evidence, human-note separation and immutable budgeted artifacts are also implemented. P6-15 executes declared API/CLI cases against actual owned applications, preserves complete output and reuses pinned suite rounds. P6-16 adds actual grounded private-stdio MCP browser journeys, complete bounded captures and restart/fresh-context/backend persistence. P6-17 adds evaluator-only private HTTP cases, actual clean-base/current-candidate sensitivity and aggregate acceptance enforcement. P6-18 pins exact committed milestone vectors and complete inputs, reobserves freshness and blocks moving bases without granting authority. P6-19 creates owned assemblies with per-step effects, retains conflicts/partial outcomes and executes exact whole-milestone contract/behavior checks under the original repair budget; 16 new Phase 6 tasks remain unimplemented. Actual native/backend containment is still later acceptance. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
+The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external maintainer decisions; P6-01–P6-09 and P6-11 source/plan/envelope/authority, broker, replayable delivery-state and durable queue/fencing and checkpoint/effect/ownership recovery and persistent finite budget and role-bound worker/context and dedicated native-host contracts are implemented and tested. P6-12 Docker execution is implemented and accepted on macOS and an independent Linux host. P6-13 owned stop, private cancellation, retained data and interrupted retirement are implemented and tested; P6-14 pinned behavioral coverage, current-candidate evidence, human-note separation and immutable budgeted artifacts are also implemented. P6-15 executes declared API/CLI cases against actual owned applications, preserves complete output and reuses pinned suite rounds. P6-16 adds actual grounded private-stdio MCP browser journeys, complete bounded captures and restart/fresh-context/backend persistence. P6-17 adds evaluator-only private HTTP cases, actual clean-base/current-candidate sensitivity and aggregate acceptance enforcement. P6-18 pins exact committed milestone vectors and complete inputs, reobserves freshness and blocks moving bases without granting authority. P6-19 creates owned assemblies with per-step effects, retains conflicts/partial outcomes and executes exact whole-milestone contract/behavior checks under the original repair budget; 16 new Phase 6 tasks remain unimplemented. Actual native/backend containment is still later acceptance. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
 - [x] Add bounded, redacted native diagnosis and explicit version-appropriate invocations. New trials can distinguish structured native errors from an empty journal; exit zero remains insufficient.
-- [x] Execute fresh OpenCode, Copilot and Antigravity trials after the owner's explicit private-harness disclosure approval. Preserve their failures: OpenCode reached framing begin before timeout and a longer diagnosis ended with a provider error mentioning HTTP 503; Copilot and Antigravity require native permission review. Recognize soft-denied tools and structured upstream availability errors without retaining native payloads.
+- [x] Execute fresh OpenCode, Copilot and Antigravity trials after explicit approval of the private-harness disclosure. Preserve their failures: OpenCode reached framing begin before timeout and a longer diagnosis ended with a provider error mentioning HTTP 503; Copilot and Antigravity require native permission review. Recognize soft-denied tools and structured upstream availability errors without retaining native payloads.
 - [x] MCP-first routing is implemented and fixture-tested under ADR-0085. Keep unknown tool contracts pending; real-service certification stays deferred.
 - [x] Add version-specific OpenCode V1/V2 render/guard/headless transports without changing the existing V1 pin. Actual V2 inspector discovery/read and user-scope native hook read/deny are observed; complete review attempts still fail and do not establish native gate parity. See ADR-0088 and the detailed trial record.
 - [x] Supply an exact scripted final-owner declaration for the automatic framing fixture and require the final review in its judge (ADR-0089). Keep fictional approval separate from real human acceptance.
@@ -114,7 +114,7 @@ For the remaining flow, inspect [open-pr](./flow/build/open-pr.md), [prepare-lau
 
 - [ ] Obtain fresh actual client acceptance after resolving the recorded native blockers. Execution and diagnosis alone do not close acceptance. The recorded Codex passes cover their exact scenarios/cores; the remaining clients and wider workflow checks stay open.
 
-The owner authorized actual model-backed trials of installed clients. This can use native accounts and model allowance. No permission bypass is part of the recipe. Missing trust/authentication or unavailable models are blockers to report.
+Actual model-backed trials of installed clients are authorized. This can use native accounts and model allowance. No permission bypass is part of the recipe. Missing trust/authentication or unavailable models are blockers to report.
 
 For example, from the wholeloop checkout:
 
@@ -132,13 +132,13 @@ node ./dist/wl.mjs conformance report <returned-cf-id> --json
 
 Repeat with target codex, opencode, copilot, gemini, antigravity and cursor and their exact version tokens. Antigravity's executable is agy; Cursor's is agent. A failed or interrupted fixture is consumed: retain it and prepare a fresh trial after diagnosing the cause. Do not rerun it or change its evidence label.
 
-Accept a structural trial only when status is PASS, evidence is live-process-and-journal, the exact version matches and missing/problems are empty. FIXTURE_PASS is simulation. Process exit zero with missing events is a failure. This scenario deliberately uses go and a random installed-skill marker; the owner's earlier on-hold exercise is useful separate evidence, not its substitute.
+Accept a structural trial only when status is PASS, evidence is live-process-and-journal, the exact version matches and missing/problems are empty. FIXTURE_PASS is simulation. Process exit zero with missing events is a failure. This scenario deliberately uses go and a random installed-skill marker; the earlier manual on-hold exercise is useful separate evidence, not its substitute.
 
 The bundled Fixture Owner is a scripted fictional actor. Its declaration approves one exact final document hash and decision, supplied in the prepared prompt. The client must preserve those bytes, perform the final challenger review and use frame finalize. Changed bytes require a new declaration; an initial go does not approve later edits. No real human approval or customer validation is claimed. The judge checks review structure and byte identity; review quality and isolation still need observation. --fixture uses a visibly simulated reviewer and remains FIXTURE_PASS. See [ADR-0089](./decisions/0089-scripted-final-approval-in-framing-conformance.md).
 
 ### 5. Verify permissions, hooks and engine behavior separately
 
-The implementation side prepares these probes in disposable repositories and records native outcomes; the owner reviews any actual permission/trust decision:
+The implementation side prepares these probes in disposable repositories and records native outcomes; the maintainer reviews any actual permission/trust decision:
 
 | Probe | Passing result |
 | --- | --- |
@@ -153,7 +153,7 @@ Capture actual hook payload shape and read-only restrictions for each supported 
 
 ### 6. Review CI and publication when native acceptance is ready
 
-The implementation side prepares the exact bundle, notes, test results and commands before asking for activation. Owner confirmations are:
+The implementation side prepares the exact bundle, notes, test results and commands before asking for activation. Maintainer confirmations are:
 
 - Select native credentials/model access, environment protection and spending for [nightly conformance](./contributing/conformance.md). Verify an actual pinned/latest regression issue with exact version/assertion; synthetic issue drafts do not meet that criterion.
 - Confirm npm ownership and the intended public repository/package identity.
@@ -169,9 +169,9 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 68 complete and 20 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are complete; P6-24 and P6-33 are implemented and await native or hosted acceptance, and 4 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the owner must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 88 tasks, 68 complete and 20 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are complete; P6-24 and P6-33 are implemented and await native or hosted acceptance, and 4 new implementation tasks remain pending. The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
 
-| Task | What closes it | Owner involvement |
+| Task | What closes it | Maintainer involvement |
 | --- | --- | --- |
 | P0-01 | npm name/scope ownership | Account and identity choice |
 | P0-03 | Actual four-client spike: discovery, questions, MCP, roles, hooks and headless behavior | Login/trust only where blocked; review findings |
@@ -188,7 +188,7 @@ The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Pha
 | P5-05 | Reviewed distribution, approved visibility, fresh-machine timing and clean notes | Publication/ownership decision |
 | P5-07 | Actual 1.0 tag and announcement after remaining acceptance | Final release approval |
 
-P4-05 is complete with fixture-tested MCP priority, explicit HTTP selection and no automatic fallback. Its unavailable service contracts retain pending handoffs. Service-account certification is a deferred backlog, not one more release gate for every vendor. Other robustness cases in the manual backlog document limitations and follow-up scope rather than silently expanding the task table into hundreds of owner-only release prerequisites.
+P4-05 is complete with fixture-tested MCP priority, explicit HTTP selection and no automatic fallback. Its unavailable service contracts retain pending handoffs. Service-account certification is a deferred backlog, not one more release gate for every vendor. Other robustness cases in the manual backlog document limitations and follow-up scope rather than silently expanding the task table into hundreds of maintainer-only release prerequisites.
 
 The new [Phase 6 task groups](../roadmap/phase-6-autonomous-delivery.md#task-groups) separately cover inputs/authority, durable workers, environments, actual QA, integration, publication/CI/merge, operational evidence, requirement changes, learning, research and delegated decisions. Their checkboxes remain empty until implementation and the specified execution-level evidence exist. Native reference-client trials do not replace the original seven-client obligations.
 
@@ -206,7 +206,7 @@ Relevant non-secret receipt fields:
 Human decision, if any:
 ```
 
-The implementation side updates the narrow checked observation, fixes failures, records remaining limits and commits the evidence. It does not rewrite a failed trial as passed or ask the owner to repeat already verified checks without cause.
+The implementation side updates the narrow checked observation, fixes failures, records remaining limits and commits the evidence. It does not rewrite a failed trial as passed or ask the maintainer to repeat already verified checks without cause.
 
 <!-- docnav -->
 [◀ Troubleshooting](troubleshooting.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)

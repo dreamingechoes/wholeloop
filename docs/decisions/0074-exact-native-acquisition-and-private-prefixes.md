@@ -18,11 +18,11 @@ The collector accepts exact versions and separate native paths but does not prov
 
 ## Alternatives rejected
 
-Piping installers into a shell would execute moving setup code with the owner's configuration. Installing latest directly would lose the exact version identity. Disabling all npm lifecycle scripts would leave some official native clients unusable. Shared prefixes could select the wrong channel. Treating Cursor's observed digest as a vendor checksum would claim evidence the installer lacks. An automatic cleanup/retry would hide partially installed external evidence.
+Piping installers into a shell would execute moving setup code with the user's configuration. Installing latest directly would lose the exact version identity. Disabling all npm lifecycle scripts would leave some official native clients unusable. Shared prefixes could select the wrong channel. Treating Cursor's observed digest as a vendor checksum would claim evidence the installer lacks. An automatic cleanup/retry would hide partially installed external evidence.
 
 ## Verification
 
-Exercise package/path/version/digest binding, all four logical platform mappings, whole-batch resolution and ambiguous/mismatched metadata with local fake downloads. Use actual host tar for tiny synthetic regular archives, refusal fixtures and private extraction; fake npm installation records arguments/environment and tests package identity, binary containment, checksum failure and partial outcomes. Compiled CLI tests check input bounds, linked-file refusal and empty HOME. Public metadata and archive-list probes do not execute native payloads. Linux execution, actual native installations/authentication/models and CI remain owner verification; logical mappings are not cross-platform execution evidence.
+Exercise package/path/version/digest binding, all four logical platform mappings, whole-batch resolution and ambiguous/mismatched metadata with local fake downloads. Use actual host tar for tiny synthetic regular archives, refusal fixtures and private extraction; fake npm installation records arguments/environment and tests package identity, binary containment, checksum failure and partial outcomes. Compiled CLI tests check input bounds, linked-file refusal and empty HOME. Public metadata and archive-list probes do not execute native payloads. Linux execution, actual native installations/authentication/models and CI remain manual verification; logical mappings are not cross-platform execution evidence.
 
 ## Sources
 

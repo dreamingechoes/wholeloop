@@ -5,12 +5,12 @@
 
 ## Context
 
-Prompt rules cannot reliably bind a Git mutation to the exact Build workspace or approved publication. Native clients have different payloads, permission responses and timeout behavior. Installing a guard must also preserve the owner's existing hooks and must not leave runtime files in a project.
+Prompt rules cannot reliably bind a Git mutation to the exact Build workspace or approved publication. Native clients have different payloads, permission responses and timeout behavior. Installing a guard must also preserve the user's existing hooks and must not leave runtime files in a project.
 
 ## Decision
 
 - Normalize bounded transient native JSON in the core. Keep commands, arguments, remote URLs and file bodies out of guard reports/errors and the journal. Ordinary read tools do not require journal access. Corrupt/missing required context denies.
-- Bind Build commits to their active recorded workspace/topic branch. Carry WL_SUBJECT in prepared/opened environments so an attempted commit in the original checkout can be identified. The environment is context, not proof: validate the allocation. Ordinary unmanaged owner commits remain allowed; do not guess the repository's default branch or impose wholeloop's commit style on other projects.
+- Bind Build commits to their active recorded workspace/topic branch. Carry WL_SUBJECT in prepared/opened environments so an attempted commit in the original checkout can be identified. The environment is context, not proof: validate the allocation. Ordinary unmanaged user commits remain allowed; do not guess the repository's default branch or impose wholeloop's commit style on other projects.
 - Authorize only one non-delete update matching the pending open-pr request and its exact clean human-tested plan, repository, remote URL, branch, SHA and snapshot. Recheck inherited decisions, current gated evidence and known remote ancestry. Accept the producer's object-SHA local ref, not only a moving branch ref. No network/fetch occurs during guard evaluation.
 - Keep the external-state writer boundary authoritative for runtime I/O. Native known write tools and Git staged paths additionally reject reserved .wholeloop runtime locations. Project settings/distribution output are intentional writes, not an exception allowing state in a repository.
 - Render transport-only Claude/Copilot command hooks and an OpenCode JS plugin. Call an explicit Node executable rather than a native client's process.execPath. Empty success preserves native permission checks; native deny never auto-approves another tool. Inner bounded subprocess failures return explicit deny before the outer timeout. Copilot can fail open at its outer timeout, so keep Git fallbacks. Codex CLI has no verified native registration; desktop plugin hooks do not prove CLI support. Use the Git fallback rather than inventing a CLI configuration.
@@ -19,13 +19,13 @@ Prompt rules cannot reliably bind a Git mutation to the exact Build workspace or
 
 ## Alternatives rejected
 
-A universal shell parser would give false coverage of aliases, scripts and Git configuration. Recognize simple argv and known bypass flags only; actual Git hooks carry commit/push checks. Hooks remain cooperative enforcement, not a security sandbox against their owner disabling them. Snapshot checks also cannot prove the absence of ignored, transient-restored or external effects.
+A universal shell parser would give false coverage of aliases, scripts and Git configuration. Recognize simple argv and known bypass flags only; actual Git hooks carry commit/push checks. Hooks remain cooperative enforcement, not a security sandbox against their user disabling them. Snapshot checks also cannot prove the absence of ignored, transient-restored or external effects.
 
 Overwriting/copying existing hooks would change their paths, lose their semantics or duplicate private script contents. Pinning only the wholeloop executable on PATH would silently switch versions; use an owned core copy with a recorded hash instead. Automatic installation would change personal/project behavior without a concrete explicit request, so generation only emits native bindings and Git install is opt-in.
 
 ## Verification
 
-Authored native/SDK fixtures are labelled synthetic, including the Codex-shaped normalization example. Execute generated bridges and real pre-commit/pre-push hooks on temporary repositories, including an SSH-shaped local bare transport with no network. Test exact approvals, wrong checkout, staged runtime, prior-hook mutation, original/global restoration, integrity/config refusal, malformed input and redaction. Actual native captures, permissions, outer timeouts, physical interruptions, Linux and other supported Node versions remain owner verification.
+Authored native/SDK fixtures are labelled synthetic, including the Codex-shaped normalization example. Execute generated bridges and real pre-commit/pre-push hooks on temporary repositories, including an SSH-shaped local bare transport with no network. Test exact approvals, wrong checkout, staged runtime, prior-hook mutation, original/global restoration, integrity/config refusal, malformed input and redaction. Actual native captures, permissions, outer timeouts, physical interruptions, Linux and other supported Node versions remain manual verification.
 
 ## Primary references
 
