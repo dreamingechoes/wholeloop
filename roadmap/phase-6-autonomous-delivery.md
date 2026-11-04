@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31, P6-34 and P6-36 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31, P6-34, P6-36 and P6-37 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 69 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 7 new pending implementation tasks; P6-35–P6-38 were added on 2026-11-04.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 70 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 6 new pending implementation tasks; P6-35–P6-38 were added on 2026-11-04.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -969,7 +969,7 @@ To fill them:
 
 ## P6-37 · Operator overview read model
 
-**Status:** 🔄 · **Size:** L · **Depends on:** P6-25, P6-30, P6-36
+**Status:** ✅ · **Size:** L · **Depends on:** P6-25, P6-30, P6-36
 
 **Design review:** added on 2026-11-04 · **Release:** 1.0
 
@@ -989,11 +989,11 @@ Also `wl overview schema`, and fixture stores with expected output for every hea
 
 **Acceptance criteria:**
 
-- [ ] On the same store, the overview agrees with `wl status`, `wl delivery report` and `wl delivery runner-status`, and reuses their rules. Every new rule lives in `src/` with a table-driven test.
-- [ ] Rebuilding every projection gives a byte-identical digest, and the cursor names the exact journal positions read.
-- [ ] Fixture, claimed, observed, human and policy provenance stay distinct, and no prompt, credential or source payload appears. Output stays bounded on a large store.
+- [x] On the same store, the overview agrees with `wl status`, `wl delivery report` and `wl delivery runner-status`, and reuses their rules. Every new rule lives in `src/` with a table-driven test.
+- [x] Rebuilding every projection gives a byte-identical digest, and the cursor names the exact journal positions read.
+- [x] Fixture, claimed, observed, human and policy provenance stay distinct, and no prompt, credential or source payload appears. Output stays bounded on a large store.
 
-**Progress** — The read-only reader and projector, public CLI, schemas and complete consumer fixture kit are implemented. Shared flow/report/runner rules, exact cursor prefixes, stale displayed-decision refusal, auxiliary observation changes, bounds and private canaries have focused coverage. The complete closure gate remains pending; acceptance criteria stay open until it passes.
+**Evidence** — Shared flow/report/runner differential reads, both projection rebuilds, exact cursor prefixes, stale displayed-decision refusal, same-cursor auxiliary changes, private canaries, 600-item bounds and the 23 consumer archives pass. The final full macOS arm64/Node 24.22.0 gate passes 4121 tests in 227 files, offline package installation and all remaining checks: `CHECK PASS in 674s`. The compiled CLI also passes actual Linux arm64 privacy and rebuild-cursor/digest smoke checks on Node 24.22.0 and the published Node 20.0.0 floor; no full Linux suite or native client acceptance is claimed. The feed runtime remains P6-38.
 
 **Tests** — Tables per headline state and attention kind, differential checks against the existing reads, digest after a rebuild, secret canaries, and a large-store fixture.
 

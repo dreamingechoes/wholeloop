@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-05 · P6-37 · Operator overview complete
+
+- Close P6-37 after the corrected fixture/rebuild commit `fb1e03d` passes the repeated full macOS arm64/Node 24.22.0 gate: 4121 tests in 227 files, offline npm archive/install and every remaining check; final line `CHECK PASS in 674s`. The verified archive digest is `4c992e31c21ee42d0e68ef32358090bfb955160ea2fb98812327815afc864029`. The corrected two-file fixture/rebuild suite also passed the per-commit gate: `CHECK PASS (fast) in 8s`.
+- Preserve the earlier complete-code pass and final-review correction in the record. Both grant expiry and budget start/deadline examples now follow actual clocks/policy, and the differential test rebuilds state plus delivery projections. Production code and frozen schemas remain unchanged by those corrections. The compiled CLI passed actual Linux arm64 privacy and rebuild-cursor/digest checks on Node 24.22.0 and Node 20.0.0; the full Linux suite was not run.
+- Check all three acceptance criteria. Reconcile counts to 70 complete of 92 overall: 30 completed Phase 6 tasks, two implemented awaiting native/hosted acceptance and six in progress or awaiting implementation. Correct the older README summary to match this ledger.
+- Next: P6-38’s local feed using the already exposed contract kit. Temporary typed/streaming probes prepared outside the checked source establish no public CLI or cross-platform feed acceptance. Native/model trials remain deferred; no source push, hosted mutation or model call runs.
+
+---
+
 ## 2026-11-05 · P6-37 · Complete code gate and fixture clock correction — in progress
 
 - The unchanged overview implementation at `07b3e1e` passes all 4121 tests in 227 files, offline npm archive/install and every other full gate on macOS arm64/Node 24.22.0: `CHECK PASS in 688s`. The checked archive digest is `4c992e31c21ee42d0e68ef32358090bfb955160ea2fb98812327815afc864029`; no publication runs.
