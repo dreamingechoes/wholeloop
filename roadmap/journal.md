@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-04 · P6-27 · Worker credential design drafted — in progress
+
+- Drafted `docs/decisions/0209-controller-owned-native-credentials.md` (Proposed). The controller would keep every worker credential in the OS secret store and inject it per launch. Workers would have disposable homes and no credential store access, there would be a preflight before any claim, and an exhausted usage window would pause the run. Antigravity is documented as an unavailable worker, while its in-session harness use is unaffected.
+- The draft was written only after probing all seven installed clients with fabricated credentials and empty homes (zero tokens). Injection works on Claude Code (API key and subscription token, on macOS and Linux and inside the profile with the Keychain denied), Codex (`CODEX_API_KEY`; ChatGPT sign-in refreshes itself), Gemini, OpenCode, Copilot and Cursor. Antigravity 1.4.7 requires a browser sign-in in `-p` mode. Those probes opened sign-in tabs on the owner's screen until the later probes blocked browser launches; the probes' leftover OpenCode services were stopped.
+- The owner decides on acceptance after real calls per client.
+
+---
+
 ## 2026-11-04 · P6-27 · Three-run rule and 1.0 client scope — in progress
 
 - The owner set the three-run rule. An attempt the retained receipt shows was refused by the observer, or denied for credentials or its usage window, is an infrastructure failure: it is repeated without invalidating its batch and stays reported. Taken in order, the first three remaining attempts must all pass. `eval:campaign` applied a laxer rule (any three passes) before; it now follows this one. Claude EVAL-10 stays `three-passes`: six infrastructure failures are set aside and the four remaining attempts all passed.
