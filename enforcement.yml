@@ -8,7 +8,7 @@
 version: 1
 rules:
   - id: verified-overview-prefix
-    enforcers: [src/overview/cursor.ts#journalPosition, src/overview/cursor.ts#decodeCursor, src/overview/cursor.ts#cursorPrefix, test/unit/overview/cursor.test.ts]
+    enforcers: [src/overview/cursor.ts#journalPosition, src/overview/cursor.ts#decodeCursor, src/overview/cursor.ts#cursorPrefix, test/unit/overview/cursor.test.ts, src/overview/read.ts#readOverview, src/overview/project.ts#projectOverview, src/overview/attention.ts#orderedAttention, src/overview/attention.ts#overviewHeadline, src/runner/operator-report.ts#projectDeliveryReport, test/unit/overview/read.test.ts, test/unit/overview/project.test.ts, test/unit/overview/fixtures.test.ts]
   - id: descriptive-event-attribution
     enforcers: [src/state/attribution.ts#validActor, src/state/attribution.ts#validRationale, src/state/events.ts#validateEvent, src/state/events.ts#event, src/delivery/events.ts#validateDeliveryEvent, src/state/projections.ts#projections, src/state/resume.ts#contextPack, src/runner/operator-report.ts#deliveryReport, src/runner/operator-report.ts#deliveryDiagnostics, src/cli/delivery-journal.ts#deliveryJournalCommand, src/state/attribution-context.ts#withPersonAttribution, src/state/attribution-context.ts#eventAttribution, src/cli/attribution.ts#withCommandAttribution, src/cli/adapter-root.ts#packagedClient, src/runner/human-decisions.ts#RunnerHumanDecisions, src/runner/attribution.ts#retainedDecisionRationale, test/unit/state/attribution.test.ts, test/unit/state/attribution-producers.test.ts]
   - id: delivery-public-runner-host
@@ -494,7 +494,7 @@ rules:
   - id: recorded-step-skips
     enforcers: [src/flow/engine.ts#skip, test/unit/flow/engine.test.ts]
   - id: required-human-decisions
-    enforcers: [src/flow/plan.ts#decisions, test/unit/flow/engine.test.ts]
+    enforcers: [src/flow/plan.ts#decisions, test/unit/flow/engine.test.ts, test/unit/overview/cli.test.ts]
   - id: profile-preserves-coverage
     enforcers: [test/unit/profile/profile.test.ts]
   - id: history-without-tool-attribution

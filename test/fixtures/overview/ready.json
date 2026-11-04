@@ -1,0 +1,90 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "ready",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000001",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "initiative",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY"
+        }
+      }
+    ],
+    "delivery": []
+  },
+  "observations": {
+    "grants": [],
+    "runners": [],
+    "humans": [],
+    "budgetReports": []
+  },
+  "problem": null,
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "healthy",
+      "problems": []
+    },
+    "headline": "ready",
+    "attention": [],
+    "items": [
+      {
+        "id": "init-00000001",
+        "kind": "initiative",
+        "parent": null,
+        "status": "open",
+        "flow": {
+          "next": "frame-problem",
+          "available": true,
+          "completed": [],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      }
+    ],
+    "deliveries": [],
+    "agents": [],
+    "worktrees": [],
+    "scheduled": [],
+    "outcomes": [],
+    "counts": {
+      "attention": 0,
+      "items": 1,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "omitted": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "unreadCount": 0,
+    "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MSwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwiZGlnZXN0IjoiYjFjMjA5YTM3NzUzMDE4NmU2Yjk4ODJhM2RlY2ZmYmU1ODE0NzYzOWIxN2RjYTI2ZTAyMDZjYWEwZjA2NTBhNSJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+    "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "23c9b84de48bf6200045d0b567fd079c96da4f3bd1318e48fc0cb222b36a912f"
+  }
+}

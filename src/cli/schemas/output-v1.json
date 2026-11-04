@@ -12489,6 +12489,54 @@
           "type": "boolean"
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/overview@1"
+        }
+      },
+      "required": ["schema"],
+      "$ref": "overview@1"
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "contracts", "available"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/overview-schema@1"
+        },
+        "contracts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["overview", "watch"],
+          "properties": {
+            "overview": {
+              "type": "object"
+            },
+            "watch": {
+              "type": "object"
+            }
+          }
+        },
+        "available": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["overview", "watch"],
+          "properties": {
+            "overview": {
+              "type": "boolean"
+            },
+            "watch": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {

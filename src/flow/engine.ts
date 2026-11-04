@@ -43,7 +43,7 @@ import type { StateStore } from '../state/store.js'
 import { verificationCriteria } from '../verification/contracts.js'
 import { verificationReceipt } from '../verification/workflow.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
-import { beginPlan, decisions, decisionTrail, flowPlan, remembered } from './plan.js'
+import { beginPlan, decisions, decisionTrail, flowPlan, itemFlow, remembered } from './plan.js'
 import { checkShape, decisionBlocks, STEPS, stepDefinition } from './registry.js'
 
 const newRun = () => `run-${randomBytes(8).toString('hex')}`
@@ -396,17 +396,7 @@ export class FlowEngine {
 
   plan(subject: string) {
     this.store.get(subject)
-    const events = this.store.events()
-    const plan = flowPlan(events, subject, this.additions())
-    return {
-      schema: 'wholeloop/step-plan@1',
-      subject,
-      ...plan,
-      pending: [
-        ...decisionTrail(events, subject).filter((decision) => decision.subject !== subject),
-        ...plan.pending.map((decision) => ({ ...decision, subject })),
-      ],
-    }
+    return itemFlow(this.store.events(), subject, this.additions())
   }
 
   complete(
@@ -657,13 +647,14 @@ export class FlowEngine {
   answer(
     qid: string,
     value: string,
-    options: { scope: string; subject?: string; run?: string; by?: string },
+    options: { scope: string; subject?: string; run?: string; by?: string; basis?: string },
   ) {
     if (!value.trim()) throw new CliError('Answer must not be empty')
     const scope = options.scope
     if (!['run', 'initiative', 'project', 'user'].includes(scope))
       throw new CliError(`Unknown remember scope: ${scope}`)
     if (qid.startsWith('decision.')) return this.decide(qid.slice(9), value, options)
+    if (options.basis !== undefined) throw new CliError('--basis requires a decision answer')
     if (qid.startsWith('slot:')) {
       const slot = qid.slice(5)
       if (!knownSlot(slot)) throw new CliError(`Unknown slot: ${slot}`)
@@ -708,7 +699,7 @@ export class FlowEngine {
   private decide(
     decision: string,
     value: string,
-    options: { scope: string; subject?: string; by?: string },
+    options: { scope: string; subject?: string; by?: string; basis?: string },
   ) {
     if (!options.subject || !options.by)
       throw new CliError('A decision requires --for <id> and --by <person>', EXIT.input)
@@ -744,6 +735,11 @@ export class FlowEngine {
       )
       const pending = required.find((candidate) => candidate.id === decision)
       if (!pending) throw new CliError(`No pending decision: ${decision}`, EXIT.precondition)
+      if (options.basis !== undefined && options.basis !== pending.basis)
+        throw new CliError(
+          'The displayed decision basis changed; inspect status before recording it',
+          EXIT.precondition,
+        )
       append(subject, {
         type: 'decision.recorded',
         data: { decision, outcome: value, by, basis: pending.basis },

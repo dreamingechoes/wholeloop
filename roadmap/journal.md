@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-05 · P6-37 · Read-only overview and consumer kit — in progress
+
+- Implement the stable reader and bounded projector, `wl overview` and `wl overview schema`. Reuse item flow/dependency, delivery report, runner, authority and budget rules. Observe required journals and auxiliary facts twice at one pinned time; fail closed after three changed reads instead of joining incompatible snapshots or repairing state.
+- Bind displayed generic approvals to their exact pending event with optional `answer --basis`, checked inside the writer transaction. Suppress new controller work while ownership is active or unknown; repair the shared report's invalid no-request and stopping suggestions without changing its schema. Keep person/outcome inputs explicit.
+- Add strict overview/feed schemas and only four new compatibility declarations; existing frozen identities remain unchanged. The feed schema is exposed with runtime availability false until P6-38. Separate delivered-activity resume checkpoints from an initial current overview's cursor so later resumption cannot silently skip a backlog.
+- Add 23 inert consumer archives with canonical replayed journals, explicitly synthetic auxiliary observations and frozen expected output. Cover all nine headlines and fifteen attention kinds, claimed workers and distinct fixture/host provenance labels. No archive grants runtime authority or native acceptance. Real-store tests separately cover original read equality, rebuilds, private canaries, 600-item bounds, held locks, recorded human decisions changing the digest without an append, and a live deadline with active authority.
+- Focused verification passes 161 tests in eleven files; two added provenance archives pass their 24-case kit suite. Compatibility plus the earlier kit pass 462 tests in two files. Type checking passes. The broad per-commit gate passes 1688 tests in 68 files and all other checks: `CHECK PASS (fast) in 275s`. The compiled CLI passes actual Linux arm64 overview, privacy and rebuild-cursor/digest checks on Node 24.22.0 and the published Node 20.0.0 floor, in read-only network-disabled containers with disposable external state. The full task-closure gate remains pending; P6-37 stays in progress. No native client/model, hosted mutation or source push runs.
+
+---
+
 ## 2026-11-04 · P6-37 · Verified read positions and precedence — in progress
 
 - Start the next eligible task after P6-36's full gate and closure commit. Add pure cursor helpers binding state count/event ID/prefix digest and delivery global sequence/hash-chain tip. Reject noncanonical, oversized, unknown-version, changed and truncated resume inputs; cursor metadata grants no authority and performs no I/O.

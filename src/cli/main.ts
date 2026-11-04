@@ -42,6 +42,7 @@ import { launchDispatchCommand } from './launch-dispatch.js'
 import { learningCommand } from './learning.js'
 import { mailboxCommand } from './mailbox.js'
 import { maintenanceCommand } from './maintenance.js'
+import { overviewCommand } from './overview.js'
 import { profileCommand } from './profile.js'
 import { providerCommand } from './provider.js'
 import { providerPlanCommand } from './provider-plan.js'
@@ -113,6 +114,8 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
     return withCommandAttribution(command.path, parsed, root, () => {
+      if (['overview', 'overview schema'].includes(command.path))
+        return overviewCommand(command.path, root, json, io)
       if (command.path.startsWith('delivery decision-'))
         return delegatedDecisionsCommand(command.path, parsed, root, json, io)
       if (

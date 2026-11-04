@@ -1,0 +1,56 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "store-problem",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [],
+    "delivery": []
+  },
+  "observations": {
+    "grants": [],
+    "runners": [],
+    "humans": [],
+    "budgetReports": []
+  },
+  "problem": "store-busy",
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "busy",
+      "problems": ["store-busy"]
+    },
+    "headline": "unavailable",
+    "attention": [
+      {
+        "id": "f5e8606214e7d17434aebf23e692821095b71a1eb35f2746ea1469bc5a194597",
+        "reason": "store-problem",
+        "target": {
+          "kind": "store",
+          "id": "configured-store"
+        },
+        "next": [
+          {
+            "argv": ["wl", "overview"],
+            "inputs": []
+          }
+        ],
+        "omittedNext": 0
+      }
+    ],
+    "items": [],
+    "deliveries": [],
+    "agents": [],
+    "worktrees": [],
+    "scheduled": [],
+    "outcomes": [],
+    "counts": null,
+    "omitted": null,
+    "unreadCount": null,
+    "cursor": null,
+    "configurationDigest": null,
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "ddc1610bfe810ccbaf60d52eebedd3b64a71ae5272d5d91993907e28dca200fa"
+  }
+}

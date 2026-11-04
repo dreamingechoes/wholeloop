@@ -1,0 +1,1727 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/overview@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "nativeAcceptance",
+    "health",
+    "headline",
+    "attention",
+    "items",
+    "deliveries",
+    "agents",
+    "worktrees",
+    "scheduled",
+    "outcomes",
+    "counts",
+    "omitted",
+    "unreadCount",
+    "cursor",
+    "configurationDigest",
+    "asOf",
+    "digest"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/overview@1"
+    },
+    "nativeAcceptance": {
+      "type": "string",
+      "const": "not-established-by-inspection"
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "problems"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["healthy", "busy", "unavailable"]
+        },
+        "problems": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "enum": [
+              "invalid-cursor",
+              "cursor-diverged",
+              "store-busy",
+              "store-unreadable",
+              "overview-limit"
+            ]
+          }
+        }
+      }
+    },
+    "headline": {
+      "type": "string",
+      "enum": [
+        "unavailable",
+        "attention",
+        "blocked",
+        "running",
+        "waiting",
+        "ready",
+        "complete",
+        "empty",
+        "idle"
+      ]
+    },
+    "attention": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/attention"
+      }
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    },
+    "deliveries": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "$ref": "#/$defs/delivery"
+      }
+    },
+    "agents": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "$ref": "#/$defs/agent"
+      }
+    },
+    "worktrees": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/worktree"
+      }
+    },
+    "scheduled": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/scheduled"
+      }
+    },
+    "outcomes": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/outcome"
+      }
+    },
+    "counts": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attention",
+            "items",
+            "deliveries",
+            "agents",
+            "worktrees",
+            "scheduled",
+            "outcomes"
+          ],
+          "properties": {
+            "attention": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "deliveries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "agents": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "worktrees": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "scheduled": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "outcomes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "omitted": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attention",
+            "items",
+            "deliveries",
+            "agents",
+            "worktrees",
+            "scheduled",
+            "outcomes"
+          ],
+          "properties": {
+            "attention": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "deliveries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "agents": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "worktrees": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "scheduled": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "outcomes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "unreadCount": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^v1\\.[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "configurationDigest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "asOf": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30,
+      "format": "date-time"
+    },
+    "digest": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "$defs": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argv", "inputs"],
+      "properties": {
+        "argv": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["input"],
+                "properties": {
+                  "input": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "inputs": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "kind"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "kind": {
+                "type": "string",
+                "enum": ["person", "choice"]
+              },
+              "values": {
+                "type": "array",
+                "maxItems": 32,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "attention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "reason", "target", "next", "omittedNext"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "store-problem",
+            "ambiguous-effect",
+            "unknown-worker",
+            "human-decision",
+            "item-decision",
+            "inactive-grant",
+            "unavailable-basis",
+            "budget-boundary",
+            "failed-run",
+            "exhausted-run",
+            "blocked-run",
+            "paused-run",
+            "blocked-dependency",
+            "due-checkpoint",
+            "unread-mail"
+          ]
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "id"],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["store", "delivery", "item", "mail"]
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        },
+        "next": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/command"
+          }
+        },
+        "omittedNext": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "parent", "status", "flow", "blockedBy", "omittedDependencies"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["initiative", "scope", "slice", "part", "brief", "review"]
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32,
+              "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["open", "closed"]
+        },
+        "flow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["next", "available", "completed", "pending", "omittedPending"],
+          "properties": {
+            "next": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "research",
+                    "frame-problem",
+                    "write-spec",
+                    "cut-scopes",
+                    "slice-work",
+                    "build-slice",
+                    "verify-works",
+                    "review-code",
+                    "open-pr",
+                    "prepare-launch",
+                    "ramp-exposure",
+                    "measure-impact",
+                    "decide-next"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "available": {
+              "type": "boolean"
+            },
+            "completed": {
+              "type": "array",
+              "maxItems": 13,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "research",
+                  "frame-problem",
+                  "write-spec",
+                  "cut-scopes",
+                  "slice-work",
+                  "build-slice",
+                  "verify-works",
+                  "review-code",
+                  "open-pr",
+                  "prepare-launch",
+                  "ramp-exposure",
+                  "measure-impact",
+                  "decide-next"
+                ]
+              }
+            },
+            "pending": {
+              "type": "array",
+              "maxItems": 32,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "basis", "subject"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "basis": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "subject": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32,
+                    "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+                  }
+                }
+              }
+            },
+            "omittedPending": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "blockedBy": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+          }
+        },
+        "omittedDependencies": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "expiresAt", "provenance"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "pattern": "^authorization-[a-f0-9]{16}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "expired", "revoked", "clock-invalid"]
+        },
+        "expiresAt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "format": "date-time"
+        },
+        "provenance": {
+          "type": "string",
+          "const": "operator-control"
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tokens",
+        "currencies",
+        "unmeteredInvocations",
+        "provenance",
+        "omittedCurrencies"
+      ],
+      "properties": {
+        "tokens": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "completeness"],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "completeness": {
+              "type": "string",
+              "enum": ["complete", "partial", "unknown"]
+            }
+          }
+        },
+        "currencies": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["currency", "micros", "completeness"],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 3,
+                "pattern": "^[A-Z]{3}$"
+              },
+              "micros": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "completeness": {
+                "type": "string",
+                "enum": ["complete", "partial", "unknown"]
+              }
+            }
+          }
+        },
+        "unmeteredInvocations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "provenance": {
+          "type": "string",
+          "enum": ["fixture", "host-observed", "unknown"]
+        },
+        "omittedCurrencies": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startedAt",
+        "deadline",
+        "limits",
+        "committedElapsedMs",
+        "problem",
+        "noProgressStreak",
+        "metering",
+        "reservations",
+        "integrationRepairs",
+        "usage",
+        "lastProgress"
+      ],
+      "properties": {
+        "startedAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 30,
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deadline": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 30,
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limits": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "wallTimeMs",
+                "attemptMs",
+                "artifactBytes",
+                "builders",
+                "buildersPerRepository",
+                "evaluators",
+                "noProgress",
+                "restarts",
+                "ciPushes",
+                "integrationRepairs"
+              ],
+              "properties": {
+                "wallTimeMs": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "attemptMs": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "artifactBytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "builders": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "buildersPerRepository": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "evaluators": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "noProgress": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "restarts": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "ciPushes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "integrationRepairs": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "committedElapsedMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "problem": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "inactive-authority",
+                "deadline",
+                "clock-invalid",
+                "metering-violation",
+                "no-progress"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "noProgressStreak": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "metering": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "tokens": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["limit", "mode"],
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": ["hard", "advisory"]
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["currency", "micros", "mode"],
+              "properties": {
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "micros": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": ["hard", "advisory"]
+                }
+              }
+            }
+          }
+        },
+        "reservations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "integrationRepairs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "usage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/usage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastProgress": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "digest", "provenance"],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "validated-artifact",
+                    "observed-behavior",
+                    "resolved-finding",
+                    "accepted-candidate",
+                    "reconciled-effect"
+                  ]
+                },
+                "digest": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "provenance": {
+                  "type": "string",
+                  "enum": ["fixture", "host-observed"]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run",
+        "state",
+        "outcome",
+        "category",
+        "endpoint",
+        "intervention",
+        "plan",
+        "grant",
+        "policyProvenance",
+        "controllers",
+        "omittedControllers",
+        "humanDecisions",
+        "unresolved",
+        "next",
+        "omittedNext",
+        "route",
+        "budget",
+        "updatedAt"
+      ],
+      "properties": {
+        "run": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 25,
+          "pattern": "^delivery-[a-f0-9]{16}$"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "queued",
+            "running",
+            "waiting-input",
+            "waiting-external",
+            "paused",
+            "stopping",
+            "stopped",
+            "exhausted",
+            "completed",
+            "failed",
+            "blocked"
+          ]
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "research-report-complete",
+                "learning-recorded",
+                "completed-with-unknowns",
+                "code-ready",
+                "draft-pr",
+                "ready-pr",
+                "merge-queued",
+                "merged",
+                "partial",
+                "blocked",
+                "failed",
+                "exhausted",
+                "stopped"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "report",
+            "code",
+            "pr",
+            "queue",
+            "merge",
+            "partial",
+            "blocked",
+            "failed",
+            "exhausted",
+            "stopped",
+            "in-progress"
+          ]
+        },
+        "endpoint": {
+          "type": "string",
+          "enum": ["research-report", "learning-observation", "local-handoff", "to-pr", "to-merge"]
+        },
+        "intervention": {
+          "type": "string",
+          "enum": ["supervised", "on-exception", "none"]
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "revision", "digest"],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["plan", "envelope"]
+            },
+            "revision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "digest": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "grant": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/grant"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policyProvenance": {
+          "type": "string",
+          "const": "pinned-policy"
+        },
+        "controllers": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["request", "ownership", "generation"],
+            "properties": {
+              "request": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "ownership": {
+                "type": "string",
+                "enum": ["unclaimed", "active", "released", "unknown"]
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "omittedControllers": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "humanDecisions": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["request", "stage", "decision", "subject", "status", "record", "outcome"],
+            "properties": {
+              "request": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "stage": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "decision": {
+                "type": "string",
+                "enum": ["delivery-plan", "approve-build-plan", "acceptance"]
+              },
+              "subject": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["recorded", "required"]
+              },
+              "record": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "outcome": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": ["accept", "reject"]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "unresolved": {
+          "type": "boolean"
+        },
+        "next": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/command"
+          }
+        },
+        "omittedNext": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "route": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["total", "observed", "passed", "blocked"],
+          "properties": {
+            "total": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "observed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "passed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "blocked": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "budget": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/budget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "format": "date-time"
+        }
+      }
+    },
+    "agent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "kind", "status", "source", "client", "lastSeen"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 72,
+              "pattern": "^session-[a-f0-9]{64}$"
+            },
+            "kind": {
+              "type": "string",
+              "const": "session"
+            },
+            "status": {
+              "type": "string",
+              "const": "last-seen"
+            },
+            "source": {
+              "type": "string",
+              "enum": ["declared", "host-observed", "unknown"]
+            },
+            "client": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["client", "source"],
+                  "properties": {
+                    "client": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9-]{0,63}$"
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "model": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "source": {
+                      "enum": ["declared", "host-observed"]
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "lastSeen": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["event", "at"],
+              "properties": {
+                "event": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 30,
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "kind",
+            "run",
+            "role",
+            "status",
+            "source",
+            "runtimeDigest",
+            "semanticProvenance",
+            "lastSeen"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 24,
+              "pattern": "^attempt-[a-f0-9]{16}$"
+            },
+            "kind": {
+              "type": "string",
+              "const": "delivery-worker"
+            },
+            "run": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 25,
+              "pattern": "^delivery-[a-f0-9]{16}$"
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "builder",
+                "verifier",
+                "reviewer",
+                "refuter",
+                "researcher",
+                "planner",
+                "challenger"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": ["claimed", "started", "stopping", "stopped", "completed", "failed", "fenced"]
+            },
+            "source": {
+              "type": "string",
+              "enum": ["observed-process", "claimed"]
+            },
+            "runtimeDigest": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "semanticProvenance": {
+              "type": "string",
+              "enum": ["fixture", "host-observed", "unknown"]
+            },
+            "lastSeen": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["at"],
+              "properties": {
+                "at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 30,
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "worktree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "status", "mode", "ports"],
+      "properties": {
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["creating", "active", "stopped", "failed", "pruned"]
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["worktree", "checkout"]
+        },
+        "ports": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end"],
+          "properties": {
+            "start": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "end": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    "scheduled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "due", "status", "subject"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "due": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 30,
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["measured", "needs-offset", "due", "scheduled"]
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^(init|scope|slice|part|brief|review)-[a-f0-9]{8}$"
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "id", "event", "at", "outcome", "actor"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["state", "delivery"]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "event": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 30,
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "research-report-complete",
+            "learning-recorded",
+            "completed-with-unknowns",
+            "code-ready",
+            "draft-pr",
+            "ready-pr",
+            "merge-queued",
+            "merged",
+            "partial",
+            "blocked",
+            "failed",
+            "exhausted",
+            "stopped",
+            "go",
+            "on-hold",
+            "dropped",
+            "keep",
+            "iterate",
+            "kill",
+            "unflag",
+            "closed"
+          ]
+        },
+        "actor": {
+          "type": "string",
+          "enum": ["person", "agent", "system", "operator", "controller"]
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "health": {
+            "properties": {
+              "status": {
+                "const": "healthy"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^v1\\.[A-Za-z0-9_-]+$"
+          },
+          "counts": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attention",
+              "items",
+              "deliveries",
+              "agents",
+              "worktrees",
+              "scheduled",
+              "outcomes"
+            ],
+            "properties": {
+              "attention": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "deliveries": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "agents": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "worktrees": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "scheduled": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "outcomes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "omitted": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attention",
+              "items",
+              "deliveries",
+              "agents",
+              "worktrees",
+              "scheduled",
+              "outcomes"
+            ],
+            "properties": {
+              "attention": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "deliveries": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "agents": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "worktrees": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "scheduled": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "outcomes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "configurationDigest": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "unreadCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "health": {
+            "properties": {
+              "problems": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "headline": {
+            "type": "string",
+            "const": "unavailable"
+          },
+          "cursor": {
+            "type": "null"
+          },
+          "counts": {
+            "type": "null"
+          },
+          "omitted": {
+            "type": "null"
+          },
+          "configurationDigest": {
+            "type": "null"
+          },
+          "unreadCount": {
+            "type": "null"
+          },
+          "attention": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "properties": {
+                "reason": {
+                  "const": "store-problem"
+                }
+              }
+            }
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "deliveries": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "agents": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "worktrees": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "scheduled": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "outcomes": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "health": {
+            "properties": {
+              "problems": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

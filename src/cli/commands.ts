@@ -10,6 +10,20 @@ export interface Command {
 
 export const COMMANDS: readonly Command[] = [
   {
+    path: 'overview schema',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/overview-schema@1',
+    summary: 'Print the overview and local feed contract kit without opening a store',
+  },
+  {
+    path: 'overview',
+    arguments: '',
+    options: [],
+    schema: 'wholeloop/overview@1',
+    summary: 'Read bounded operator attention, progress and exact next commands without writes',
+  },
+  {
     path: 'delivery runner-schema',
     arguments: '',
     options: [],
@@ -1761,7 +1775,13 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'answer',
     arguments: '<qid=value>',
-    options: ['--for <id>', '--run <id>', '--remember <scope>', '--by <person>'],
+    options: [
+      '--for <id>',
+      '--run <id>',
+      '--remember <scope>',
+      '--by <person>',
+      '--basis <event-id>',
+    ],
     schema: 'wholeloop/answer@1',
     summary: 'Remember an answer or record an explicit human decision',
   },

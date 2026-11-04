@@ -993,7 +993,7 @@ Also `wl overview schema`, and fixture stores with expected output for every hea
 - [ ] Rebuilding every projection gives a byte-identical digest, and the cursor names the exact journal positions read.
 - [ ] Fixture, claimed, observed, human and policy provenance stay distinct, and no prompt, credential or source payload appears. Output stays bounded on a large store.
 
-**Progress** — The first increment adds internal canonical journal-prefix cursors and fixed attention/headline precedence with table-driven tests. It does not yet expose a store reader, CLI, schema or consumer fixture kit. All acceptance criteria remain open.
+**Progress** — The read-only reader and projector, public CLI, schemas and complete consumer fixture kit are implemented. Shared flow/report/runner rules, exact cursor prefixes, stale displayed-decision refusal, auxiliary observation changes, bounds and private canaries have focused coverage. The complete closure gate remains pending; acceptance criteria stay open until it passes.
 
 **Tests** — Tables per headline state and attention kind, differential checks against the existing reads, digest after a rebuild, secret canaries, and a large-store fixture.
 

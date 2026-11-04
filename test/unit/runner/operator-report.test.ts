@@ -51,10 +51,7 @@ describe('operator report (read-only)', () => {
         intervention: 'none',
         waits: { human: 0, external: 0 },
         unresolved: false,
-        next: [
-          `wl delivery resume --run ${runId} --operator <name>`,
-          `wl delivery stop --run ${runId} --operator <name>`,
-        ],
+        next: [`wl delivery status --run ${runId}`],
       })
       expect(JSON.stringify(lifecycle.journal.events())).toBe(before)
       lifecycle.transition(runId, {

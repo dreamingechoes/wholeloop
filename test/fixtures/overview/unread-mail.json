@@ -1,0 +1,123 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "unread-mail",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000001",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "initiative",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000002",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "msg.sent",
+        "data": {
+          "to": "conductor",
+          "from": "fixture",
+          "kind": "question",
+          "body": "PRIVATE_FIXTURE_MESSAGE"
+        }
+      }
+    ],
+    "delivery": []
+  },
+  "observations": {
+    "grants": [],
+    "runners": [],
+    "humans": [],
+    "budgetReports": []
+  },
+  "problem": null,
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "healthy",
+      "problems": []
+    },
+    "headline": "attention",
+    "attention": [
+      {
+        "id": "150535db0bf6e144727a07d289f92a057f3005b846f39990e645f9c99b00eb24",
+        "reason": "unread-mail",
+        "target": {
+          "kind": "mail",
+          "id": "conductor"
+        },
+        "next": [
+          {
+            "argv": ["wl", "msg", "read", "--for", "conductor", "--reader", "conductor", "--peek"],
+            "inputs": []
+          }
+        ],
+        "omittedNext": 0
+      }
+    ],
+    "items": [
+      {
+        "id": "init-00000001",
+        "kind": "initiative",
+        "parent": null,
+        "status": "open",
+        "flow": {
+          "next": "frame-problem",
+          "available": true,
+          "completed": [],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      }
+    ],
+    "deliveries": [],
+    "agents": [],
+    "worktrees": [],
+    "scheduled": [],
+    "outcomes": [],
+    "counts": {
+      "attention": 1,
+      "items": 1,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "omitted": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "unreadCount": 1,
+    "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MiwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwiZGlnZXN0IjoiMTg5MmFjNmFmMWRmYjRjNjM5NjIxMzIzZWExZGFhNTFlZTE2NWI3NjQyMzhjMzdlNzRmMWM3YWYxODA2MDM2NSJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+    "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "a3d3ee34ba84499ba720fee137e615718f24def22d775fddffd5e62a07ceb0b7"
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "item-decision",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000001",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "initiative",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000002",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "write-spec",
+          "run": "run-0123456789abcdef",
+          "reason": "PRIVATE_FIXTURE_REASON"
+        }
+      }
+    ],
+    "delivery": []
+  },
+  "observations": {
+    "grants": [],
+    "runners": [],
+    "humans": [],
+    "budgetReports": []
+  },
+  "problem": null,
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "healthy",
+      "problems": []
+    },
+    "headline": "attention",
+    "attention": [
+      {
+        "id": "1049b798a0b8cb6097521aee612648c1aab2412395160a404e6ac60689b59257",
+        "reason": "item-decision",
+        "target": {
+          "kind": "item",
+          "id": "init-00000001"
+        },
+        "next": [
+          {
+            "argv": [
+              "wl",
+              "answer",
+              {
+                "input": "outcome",
+                "prefix": "decision.approve-spec="
+              },
+              "--for",
+              "init-00000001",
+              "--by",
+              {
+                "input": "operator"
+              },
+              "--basis",
+              "ev-00000000-0000-4000-8000-000000000002"
+            ],
+            "inputs": [
+              {
+                "name": "outcome",
+                "kind": "choice",
+                "values": ["approved", "rejected"]
+              },
+              {
+                "name": "operator",
+                "kind": "person"
+              }
+            ]
+          }
+        ],
+        "omittedNext": 0
+      }
+    ],
+    "items": [
+      {
+        "id": "init-00000001",
+        "kind": "initiative",
+        "parent": null,
+        "status": "open",
+        "flow": {
+          "next": "frame-problem",
+          "available": true,
+          "completed": ["write-spec"],
+          "pending": [
+            {
+              "id": "approve-spec",
+              "basis": "ev-00000000-0000-4000-8000-000000000002",
+              "subject": "init-00000001"
+            }
+          ],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      }
+    ],
+    "deliveries": [],
+    "agents": [],
+    "worktrees": [],
+    "scheduled": [],
+    "outcomes": [],
+    "counts": {
+      "attention": 1,
+      "items": 1,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "omitted": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "unreadCount": 0,
+    "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MiwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwiZGlnZXN0IjoiYzU2Yjg4MzM5MjcwODQzYmFmMzE4Nzg0MzBlYTg3MjdiMTllNzVkMzJjM2Y5ZjQ0ZGM1NjY4NzhkZTE2ZDIxNyJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+    "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "513eec4c51eeaaf836d2cbe2a0e8af7b620eb266038c768d77a62eb53c19adcc"
+  }
+}

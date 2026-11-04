@@ -417,7 +417,11 @@
     "schema:wholeloop/delivery-commit-receipt@1": "754fc3295b9eefcc11c11766867eb6254aeed3d5ad7931f50570f44f017dd94b",
     "schema:wholeloop/delivery-commit-status@1": "ef075374765c97c41cfe01744f4513b9b538cf2e5ab8c6281bee5a5efe7f40da",
     "schema:wholeloop/delivery-runner-git-binding@1": "5cf3769a18a668dc537c4cd0eac70fc693917dbcb3d3c45064601a4ed065f60e",
-    "schema:wholeloop/delivery-ci@1": "44cc91bcd9dd4a49dbfb4ce7e6a686d9503a3bcf08834bd32584ac14b450de4b"
+    "schema:wholeloop/delivery-ci@1": "44cc91bcd9dd4a49dbfb4ce7e6a686d9503a3bcf08834bd32584ac14b450de4b",
+    "schema:wholeloop/overview@1": "d6c88d09e7b8fa2bff3a058765316a7218219a221ce92fb54b20f2ec049ab81a",
+    "schema:wholeloop/watch-frame@1": "825a11c30b31ddabde4a4d247c10d59ce3a07477c6cb93cb09f54df4336eef60",
+    "output:wholeloop/overview@1": "89a023a1f695be5af22be68790eeee286ce98e11d45cc6b50565284702cf2b70",
+    "output:wholeloop/overview-schema@1": "a019499a6eb80a59abaab7b10f1cc43bd1c0f228dad1e2e74684ebda55b4641a"
   },
   "commands": [
     {
@@ -1998,6 +2002,18 @@
       "arguments": "",
       "options": ["--digest <sha256>", "--operator <person>", "--store <path>"],
       "schema": "wholeloop/delivery-runner-status@1"
+    },
+    {
+      "path": "overview schema",
+      "arguments": "",
+      "options": [],
+      "schema": "wholeloop/overview-schema@1"
+    },
+    {
+      "path": "overview",
+      "arguments": "",
+      "options": [],
+      "schema": "wholeloop/overview@1"
     }
   ],
   "exitCodes": {

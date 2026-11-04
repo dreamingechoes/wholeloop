@@ -39,6 +39,8 @@ describe('operator overview precedence', () => {
   it.each(ATTENTION_REASONS)('classifies %s before routine activity', (reason) => {
     const blocked = [
       'inactive-grant',
+      'unavailable-basis',
+      'budget-boundary',
       'failed-run',
       'exhausted-run',
       'blocked-run',
@@ -50,7 +52,13 @@ describe('operator overview precedence', () => {
   })
   it('orders every attention category before applying a display bound and uses stable typed-ID ties', () => {
     const entries: Attention[] = ATTENTION_REASONS.toReversed().flatMap((reason) =>
-      ['b', 'a'].map((id) => ({ id, reason, target: { kind: 'item' as const, id }, next: [] })),
+      ['b', 'a'].map((id) => ({
+        id,
+        reason,
+        target: { kind: 'item' as const, id },
+        next: [],
+        omittedNext: 0,
+      })),
     )
     const original = structuredClone(entries),
       ordered = orderedAttention(entries)

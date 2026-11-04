@@ -1,0 +1,282 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "due-checkpoint",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000001",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "initiative",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000002",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "scope-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "scope",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY",
+          "parent": "init-00000001"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000003",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "scope-00000001",
+        "type": "step.started",
+        "data": {
+          "step": "measure-impact",
+          "run": "run-0123456789abcdef",
+          "mode": "standalone",
+          "input": "fixture"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000004",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "scope-00000001",
+        "type": "impact.planned",
+        "data": {
+          "run": "run-0123456789abcdef",
+          "source": {
+            "ref": "fixture:measurement",
+            "revision": "fixture-v1",
+            "digest": "9a90234282887e13462f60ba4d5977701a987c557acf780137e68e26cff351eb",
+            "plan": {
+              "schema": "wholeloop/measurement-plan@1",
+              "impact": "Reduce the time returning customers need to retrieve a past order.",
+              "metrics": [
+                {
+                  "id": "retrieval-time",
+                  "name": "Time to find a previous order",
+                  "unit": "seconds",
+                  "source": {
+                    "provider": "analytics",
+                    "operation": "source.product-analytics.query",
+                    "query": "median(order_found_at - order_search_started_at) for returning customers"
+                  },
+                  "baseline": {
+                    "status": "known",
+                    "value": 48,
+                    "evidence": "https://example.com/fixture-baseline"
+                  },
+                  "target": {
+                    "operator": "lte",
+                    "value": 20
+                  },
+                  "window": {
+                    "days": 30,
+                    "timezone": "UTC"
+                  }
+                }
+              ],
+              "rollout": {
+                "strategy": "flagged",
+                "flag": "orders_search_v1",
+                "stages": [
+                  {
+                    "name": "pilot",
+                    "audience": "internal test accounts",
+                    "exposure": 10,
+                    "exit": "No ownership leaks or query errors observed"
+                  },
+                  {
+                    "name": "general",
+                    "audience": "returning customers",
+                    "exposure": 100,
+                    "exit": "Pilot review approved"
+                  }
+                ],
+                "rollback": "Disable the proposed flag and retain the existing order list."
+              }
+            }
+          },
+          "checkpoint": "launch",
+          "launchedAt": "2026-09-01T00:00:00.000Z",
+          "afterDays": 0,
+          "at": "2026-09-01T00:00:00.000Z",
+          "qualitative": [],
+          "guidance": {
+            "ref": "fixture:guidance",
+            "origin": "fixture",
+            "digest": "5555555555555555555555555555555555555555555555555555555555555555"
+          }
+        }
+      }
+    ],
+    "delivery": []
+  },
+  "observations": {
+    "grants": [],
+    "runners": [],
+    "humans": [],
+    "budgetReports": []
+  },
+  "problem": null,
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "healthy",
+      "problems": []
+    },
+    "headline": "attention",
+    "attention": [
+      {
+        "id": "30c8ca5d4868870d10e509ab4b3d910de4a486f2e570ead4fb4e7d4144aad622",
+        "reason": "due-checkpoint",
+        "target": {
+          "kind": "item",
+          "id": "scope-00000001"
+        },
+        "next": [
+          {
+            "argv": ["wl", "measure", "schedule", "--for", "scope-00000001"],
+            "inputs": []
+          }
+        ],
+        "omittedNext": 0
+      },
+      {
+        "id": "8348332f44b1691aace0fb5aea38872fbfcb36f6622ea4dd9344947c1c338262",
+        "reason": "due-checkpoint",
+        "target": {
+          "kind": "item",
+          "id": "scope-00000001"
+        },
+        "next": [
+          {
+            "argv": ["wl", "measure", "schedule", "--for", "scope-00000001"],
+            "inputs": []
+          }
+        ],
+        "omittedNext": 0
+      },
+      {
+        "id": "c2ddf085ee99d98e73feced72f255c67f42ed7cd8cc28544dd0477eba5107c9d",
+        "reason": "due-checkpoint",
+        "target": {
+          "kind": "item",
+          "id": "scope-00000001"
+        },
+        "next": [
+          {
+            "argv": ["wl", "measure", "schedule", "--for", "scope-00000001"],
+            "inputs": []
+          }
+        ],
+        "omittedNext": 0
+      }
+    ],
+    "items": [
+      {
+        "id": "init-00000001",
+        "kind": "initiative",
+        "parent": null,
+        "status": "open",
+        "flow": {
+          "next": "frame-problem",
+          "available": true,
+          "completed": [],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      },
+      {
+        "id": "scope-00000001",
+        "kind": "scope",
+        "parent": "init-00000001",
+        "status": "open",
+        "flow": {
+          "next": "measure-impact",
+          "available": true,
+          "completed": [],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      }
+    ],
+    "deliveries": [],
+    "agents": [],
+    "worktrees": [],
+    "scheduled": [
+      {
+        "key": "launch",
+        "due": "2026-09-01T00:00:00.000Z",
+        "status": "due",
+        "subject": "scope-00000001"
+      },
+      {
+        "key": "d7",
+        "due": "2026-09-08T00:00:00.000Z",
+        "status": "due",
+        "subject": "scope-00000001"
+      },
+      {
+        "key": "d30",
+        "due": "2026-10-01T00:00:00.000Z",
+        "status": "due",
+        "subject": "scope-00000001"
+      }
+    ],
+    "outcomes": [],
+    "counts": {
+      "attention": 3,
+      "items": 2,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 3,
+      "outcomes": 0
+    },
+    "omitted": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "unreadCount": 0,
+    "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6NCwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDA0IiwiZGlnZXN0IjoiOWVkZGE2NGQzMzU3OGVkMmQ4OGU3ZGU0ZWFkYzk4ODJhODUzN2ZjYjliMmE5ZGI4NmJmMmVjMTJhNDJiY2M1MiJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+    "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "100301880faec0ea4792b63101297095facc1d132088eaafda75c4fdc32bfc91"
+  }
+}

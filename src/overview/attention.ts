@@ -6,6 +6,8 @@ export const ATTENTION_REASONS = [
   'human-decision',
   'item-decision',
   'inactive-grant',
+  'unavailable-basis',
+  'budget-boundary',
   'failed-run',
   'exhausted-run',
   'blocked-run',
@@ -24,6 +26,7 @@ export interface Attention {
   reason: AttentionReason
   target: { kind: 'store' | 'delivery' | 'item' | 'mail'; id: string }
   next: NextCommand[]
+  omittedNext: number
 }
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 export function orderedAttention(entries: readonly Attention[]) {
@@ -72,6 +75,8 @@ export function overviewHeadline(facts: HeadlineFacts): Headline {
     facts.attention.some((entry) =>
       [
         'inactive-grant',
+        'unavailable-basis',
+        'budget-boundary',
         'failed-run',
         'exhausted-run',
         'blocked-run',

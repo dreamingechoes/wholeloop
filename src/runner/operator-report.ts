@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
+import type { AuthorizationReceipt } from '../delivery/authority.js'
+import { DeliveryBudgets } from '../delivery/budgets.js'
 import { deliveryEffects } from '../delivery/effect-events.js'
 import type { DeliveryEvent, DeliveryOutcome, DeliveryProjection } from '../delivery/events.js'
 import { DeliveryLifecycle } from '../delivery/lifecycle.js'
@@ -50,31 +52,57 @@ export function nextActions(
   state: DeliveryProjection,
   requests: readonly string[],
   unresolved: boolean,
+  activeAuthority = false,
 ) {
+  if (!requests.length)
+    return [
+      'planned',
+      'queued',
+      'running',
+      'waiting-input',
+      'waiting-external',
+      'paused',
+      'stopping',
+    ].includes(state.state) || unresolved
+      ? [`wl delivery status --run ${state.run}`]
+      : []
+  const owned =
+    state.facets.find((facet) => facet.schema === 'wholeloop/delivery-runner@1')?.records ?? []
+  const unsettled = owned.some(
+    (record) =>
+      ['active', 'unknown'].includes(record.ownership) ||
+      record.stages.some((stage) =>
+        ['prepared', 'running', 'pending', 'unknown'].includes(stage.status),
+      ),
+  )
   const actions: string[] = [],
     each = (verb: string, extra = '') =>
-      requests.length
-        ? requests.map((digest) => `wl delivery ${verb} --digest ${digest}${extra}`)
-        : [`wl delivery ${verb} --run ${state.run}${extra}`]
-  if (['planned', 'queued'].includes(state.state)) actions.push(...each('run'))
+      requests.map((digest) => `wl delivery ${verb} --digest ${digest}${extra}`)
+  if (activeAuthority && !unsettled && ['planned', 'queued'].includes(state.state))
+    actions.push(...each('run'))
   if (['planned', 'queued', 'running', 'waiting-external'].includes(state.state))
     actions.push(...each('pause', ' --operator <name>'), ...each('stop', ' --operator <name>'))
   if (state.state === 'paused')
-    actions.push(...each('resume', ' --operator <name>'), ...each('stop', ' --operator <name>'))
-  if (state.state === 'waiting-input')
     actions.push(
-      ...each(
-        'human-decide',
-        ' --stage <stage> --decision <id> --subject <sha256> --outcome <accept|reject> --operator <name>',
-      ),
+      ...(activeAuthority && !unsettled ? each('resume', ' --operator <name>') : []),
       ...each('stop', ' --operator <name>'),
     )
-  if (state.state === 'stopping') actions.push(...each('reconcile', ' --cancel'))
-  if (unresolved || ['running', 'waiting-external'].includes(state.state))
+  if (state.state === 'waiting-input')
+    actions.push(
+      ...(activeAuthority
+        ? each(
+            'human-decide',
+            ' --stage <stage> --decision <id> --subject <sha256> --outcome <accept|reject> --operator <name>',
+          )
+        : []),
+      ...each('stop', ' --operator <name>'),
+    )
+  if (state.state === 'stopping') actions.push(...each('reconcile'))
+  if (unsettled || unresolved || ['running', 'waiting-external'].includes(state.state))
     actions.push(...each('reconcile'))
   // ADR-0197: a retained integration or acceptance failure may be continued by a
   // correction revision; the preview names the failure, the owning unit is chosen.
-  if (['failed', 'blocked'].includes(state.state))
+  if (activeAuthority && ['failed', 'blocked'].includes(state.state))
     for (const record of deliveryRunner(state).records)
       for (const stage of record.stages)
         if (
@@ -89,10 +117,27 @@ export function nextActions(
 }
 
 /** Read-only: replays the journal and changes nothing. */
-export function deliveryReport(root: string | undefined, run: string) {
-  const lifecycle = new DeliveryLifecycle(root),
-    state = lifecycle.journal.get(runId(run)),
-    events = lifecycle.journal.events().filter((event) => event.run === run),
+export function deliveryReport(root: string | undefined, run: string, now?: () => string) {
+  const lifecycle = new DeliveryLifecycle(root, now),
+    state = lifecycle.journal.get(runId(run))
+  return projectDeliveryReport(
+    state,
+    lifecycle.journal.events(),
+    state.grant ? lifecycle.authority.inspect(state.grant.id) : undefined,
+    new DeliveryBudgets(root, now).inspect(run).problem,
+  )
+}
+
+/** Project one exact validated snapshot without additional reads or mutations. */
+export function projectDeliveryReport(
+  original: DeliveryProjection,
+  journal: readonly DeliveryEvent[],
+  grant: AuthorizationReceipt | undefined,
+  budgetProblem: string | null,
+) {
+  const state = structuredClone(original),
+    run = state.run,
+    events = journal.filter((event) => event.run === run),
     effects = deliveryEffects(state).records,
     runner = deliveryRunner(state).records,
     transitions = events.flatMap((event) =>
@@ -106,8 +151,7 @@ export function deliveryReport(root: string | undefined, run: string) {
         record.stages.some((stage) =>
           ['prepared', 'running', 'pending', 'unknown'].includes(stage.status),
         ),
-      ),
-    grant = state.grant ? lifecycle.authority.inspect(state.grant.id) : undefined
+      )
   return {
     schema: 'wholeloop/delivery-report@1' as const,
     run,
@@ -151,8 +195,14 @@ export function deliveryReport(root: string | undefined, run: string) {
     unresolved,
     next: nextActions(
       state,
-      runner.map((record) => record.request),
+      runner
+        .filter((record) => record.basis === state.basis.digest)
+        .map((record) => record.request),
       unresolved,
+      budgetProblem === null &&
+        grant?.status === 'active' &&
+        grant.digest === state.grant?.digest &&
+        grant.grant.id === state.grant?.id,
     ),
     updatedAt: state.updatedAt,
   }

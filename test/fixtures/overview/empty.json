@@ -1,0 +1,56 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "empty",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [],
+    "delivery": []
+  },
+  "observations": {
+    "grants": [],
+    "runners": [],
+    "humans": [],
+    "budgetReports": []
+  },
+  "problem": null,
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "healthy",
+      "problems": []
+    },
+    "headline": "empty",
+    "attention": [],
+    "items": [],
+    "deliveries": [],
+    "agents": [],
+    "worktrees": [],
+    "scheduled": [],
+    "outcomes": [],
+    "counts": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "omitted": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "unreadCount": 0,
+    "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MCwidGlwIjpudWxsLCJkaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1In0sImRlbGl2ZXJ5Ijp7InNlcXVlbmNlIjowLCJkaWdlc3QiOm51bGx9fQ",
+    "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "ac21a6afd0282bc1468e245a0858a51f0b5bfbc9b156ba5fad16cf5fced5baa8"
+  }
+}

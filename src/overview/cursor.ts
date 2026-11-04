@@ -10,7 +10,12 @@ export interface JournalPosition {
 }
 export class OverviewError extends Error {
   constructor(
-    readonly problem: 'invalid-cursor' | 'cursor-diverged' | 'store-busy' | 'store-unreadable',
+    readonly problem:
+      | 'invalid-cursor'
+      | 'cursor-diverged'
+      | 'store-busy'
+      | 'store-unreadable'
+      | 'overview-limit',
   ) {
     super(`Overview unavailable: ${problem}; contents omitted`)
   }

@@ -1,0 +1,527 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "host-worker",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [],
+    "delivery": [
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000001",
+        "sequence": 1,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "payload": {
+          "schema": "wholeloop/delivery-registration-event@1",
+          "basis": {
+            "kind": "plan",
+            "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "revision": 1
+          },
+          "source": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "policy": {
+            "digest": "9d9d01bc0225743b1c6833937aeec8b692cebedc4e1432244870307175c66c4b",
+            "endpoint": "local-handoff",
+            "intervention": "supervised"
+          },
+          "units": [
+            {
+              "id": "work",
+              "role": "implementation",
+              "repository": "app"
+            }
+          ]
+        },
+        "digest": "513a4013a6916a79ba8fba39ae7ed3bf074d94cfacbf5a6e567c29ebae4ac0ed"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000002",
+        "sequence": 2,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "513a4013a6916a79ba8fba39ae7ed3bf074d94cfacbf5a6e567c29ebae4ac0ed",
+        "payload": {
+          "schema": "wholeloop/delivery-grant-event@1",
+          "id": "authorization-0123456789abcdef",
+          "digest": "279cfd26fa0d6ec5080f4750d1b36f7fa6c493b6a7b3df0c86b330428e27e0ed",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "active"
+        },
+        "digest": "af8f1623ff881e335121491787737ec6a07f73c7d75783b12b6e4691c2e34a8b"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000003",
+        "sequence": 3,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "af8f1623ff881e335121491787737ec6a07f73c7d75783b12b6e4691c2e34a8b",
+        "payload": {
+          "schema": "wholeloop/delivery-control-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "from": "planned",
+          "to": "queued",
+          "reason": "Synthetic consumer fixture."
+        },
+        "digest": "6eaf454c96326694482bf43347fbaa72ad6851c4b1b4a8146d88b499188117a3"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000004",
+        "sequence": 4,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "6eaf454c96326694482bf43347fbaa72ad6851c4b1b4a8146d88b499188117a3",
+        "payload": {
+          "schema": "wholeloop/delivery-runner-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "request": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "action": "prepared"
+        },
+        "digest": "44c150e3cd31920e8a570adbce41e6f5e5031c04d3e95a7d51a2e3aa77623055"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000005",
+        "sequence": 5,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "44c150e3cd31920e8a570adbce41e6f5e5031c04d3e95a7d51a2e3aa77623055",
+        "payload": {
+          "schema": "wholeloop/delivery-attempt-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "id": "attempt-0123456789abcdef",
+          "role": "builder",
+          "unit": "work",
+          "generation": 1,
+          "action": "claimed"
+        },
+        "digest": "9d2a78817d58f6fcc363db9c495ea36d4f69ccfa8215c03329643bb63c83f0f2"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000006",
+        "sequence": 6,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "9d2a78817d58f6fcc363db9c495ea36d4f69ccfa8215c03329643bb63c83f0f2",
+        "payload": {
+          "schema": "wholeloop/delivery-attempt-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "id": "attempt-0123456789abcdef",
+          "role": "builder",
+          "unit": "work",
+          "generation": 1,
+          "action": "started",
+          "runtime": {
+            "backend": "fixture-runtime",
+            "instance": "PRIVATE_FIXTURE_INSTANCE",
+            "worker": "PRIVATE_FIXTURE_WORKER"
+          }
+        },
+        "digest": "67080827b6a68e8980be40c007866cac165fb9e5be6c6c0e19f6491a4a590034"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000007",
+        "sequence": 7,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "67080827b6a68e8980be40c007866cac165fb9e5be6c6c0e19f6491a4a590034",
+        "payload": {
+          "schema": "wholeloop/delivery-runner-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "request": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "action": "claimed",
+          "controller": "controller-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "generation": 1
+        },
+        "digest": "0d808092774877dd5222c1b0ab25f9f7e1c3558cdff6c373a5f1afbe344fa608"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000008",
+        "sequence": 8,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "0d808092774877dd5222c1b0ab25f9f7e1c3558cdff6c373a5f1afbe344fa608",
+        "payload": {
+          "schema": "wholeloop/delivery-runner-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "request": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "action": "dispatched",
+          "controller": "controller-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "generation": 1,
+          "stage": "implementation:work",
+          "invocation": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        },
+        "digest": "abe91d82887135f4646a968dd9e3051f2e50164504f9c3581bb333ccf4270df8"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-000000000009",
+        "sequence": 9,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "abe91d82887135f4646a968dd9e3051f2e50164504f9c3581bb333ccf4270df8",
+        "payload": {
+          "schema": "wholeloop/delivery-runner-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "request": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "action": "started",
+          "controller": "controller-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "generation": 1,
+          "stage": "implementation:work",
+          "invocation": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "runtime": {
+            "backend": "fixture-runtime",
+            "instance": "PRIVATE_FIXTURE_INSTANCE",
+            "worker": "PRIVATE_FIXTURE_WORKER"
+          }
+        },
+        "digest": "f70ffe7fd2a01ba047ad6f7cbb4be0ac424adb356e5f31b63987f64b357c522c"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-00000000000a",
+        "sequence": 10,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "f70ffe7fd2a01ba047ad6f7cbb4be0ac424adb356e5f31b63987f64b357c522c",
+        "payload": {
+          "schema": "wholeloop/delivery-runner-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "request": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "action": "observed",
+          "controller": "controller-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "generation": 1,
+          "stage": "implementation:work",
+          "invocation": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "status": "pending",
+          "evidence": "8888888888888888888888888888888888888888888888888888888888888888",
+          "provenance": "host-observed",
+          "reason": "Synthetic provenance distinction, not native acceptance."
+        },
+        "digest": "6615fac1f53634844eb3f8feeca7c3f8b99e12cff3df1c9972cb0cf4cf966fed"
+      },
+      {
+        "schema": "wholeloop/delivery-event@1",
+        "id": "delivery-event-00000000-0000-4000-8000-00000000000b",
+        "sequence": 11,
+        "ts": "2026-11-04T20:00:00.000Z",
+        "run": "delivery-0123456789abcdef",
+        "actor": {
+          "kind": "controller",
+          "name": "Fixture"
+        },
+        "previous": "6615fac1f53634844eb3f8feeca7c3f8b99e12cff3df1c9972cb0cf4cf966fed",
+        "payload": {
+          "schema": "wholeloop/delivery-control-event@1",
+          "basis": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "from": "queued",
+          "to": "running",
+          "reason": "Synthetic consumer fixture."
+        },
+        "digest": "e28fe73079ec8faddac1d902944a37221f54fb2ddd6a5304fe2445f28e639ae9"
+      }
+    ]
+  },
+  "observations": {
+    "grants": [
+      [
+        "delivery-0123456789abcdef",
+        {
+          "schema": "wholeloop/delivery-authorization@1",
+          "digest": "279cfd26fa0d6ec5080f4750d1b36f7fa6c493b6a7b3df0c86b330428e27e0ed",
+          "grant": {
+            "schema": "wholeloop/delivery-grant@1",
+            "id": "authorization-0123456789abcdef",
+            "operator": "Fixture Operator",
+            "basis": {
+              "kind": "plan",
+              "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "run": "delivery-0123456789abcdef",
+              "revision": 1
+            },
+            "effects": ["source.read", "report.write"],
+            "decisions": [],
+            "repositories": [],
+            "reads": [],
+            "effectLimit": 20,
+            "requestDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "issuedAt": "2026-11-04T12:00:00.000Z",
+            "expiresAt": "2026-11-05T12:00:00.000Z",
+            "source": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "owner": "Fixture Owner",
+            "policy": {
+              "endpoint": "local-handoff",
+              "intervention": "supervised",
+              "uncertainty": "blocked",
+              "delegations": []
+            },
+            "budgets": {
+              "wallTimeMs": 14400000,
+              "attemptMs": 1800000,
+              "builders": 2,
+              "buildersPerRepository": 1,
+              "evaluators": 4,
+              "restarts": 2,
+              "ciPushes": 2,
+              "integrationRepairs": 3,
+              "noProgress": 3,
+              "artifactBytes": 209715200
+            },
+            "provenance": "operator-control"
+          },
+          "status": "active",
+          "revocation": null,
+          "runtime": "not-observed-by-this-command"
+        }
+      ]
+    ],
+    "runners": [
+      [
+        "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        {
+          "request": {
+            "schema": "wholeloop/delivery-runner-request@1",
+            "key": "fixture",
+            "run": "delivery-0123456789abcdef",
+            "revision": 1,
+            "plan": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "grant": "authorization-0123456789abcdef",
+            "host": {
+              "id": "fixture",
+              "version": "1",
+              "configuration": "6666666666666666666666666666666666666666666666666666666666666666"
+            },
+            "pollMs": 50
+          },
+          "route": [
+            {
+              "id": "plan",
+              "kind": "plan",
+              "after": [],
+              "criteria": []
+            }
+          ],
+          "problems": []
+        }
+      ]
+    ],
+    "humans": [],
+    "budgetReports": [
+      [
+        "delivery-0123456789abcdef",
+        {
+          "problem": null,
+          "limits": {
+            "wallTimeMs": 14400000,
+            "attemptMs": 1800000,
+            "builders": 2,
+            "buildersPerRepository": 1,
+            "evaluators": 4,
+            "restarts": 2,
+            "ciPushes": 2,
+            "integrationRepairs": 3,
+            "noProgress": 3,
+            "artifactBytes": 209715200
+          },
+          "deadline": null
+        }
+      ]
+    ]
+  },
+  "problem": null,
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "healthy",
+      "problems": []
+    },
+    "headline": "running",
+    "attention": [],
+    "items": [],
+    "deliveries": [
+      {
+        "run": "delivery-0123456789abcdef",
+        "state": "running",
+        "outcome": null,
+        "category": "in-progress",
+        "endpoint": "local-handoff",
+        "intervention": "supervised",
+        "plan": {
+          "kind": "plan",
+          "revision": 1,
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "grant": {
+          "id": "authorization-0123456789abcdef",
+          "status": "active",
+          "expiresAt": "2026-11-05T12:00:00.000Z",
+          "provenance": "operator-control"
+        },
+        "policyProvenance": "pinned-policy",
+        "controllers": [
+          {
+            "request": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "ownership": "active",
+            "generation": 1
+          }
+        ],
+        "omittedControllers": 0,
+        "humanDecisions": [],
+        "unresolved": true,
+        "next": [
+          {
+            "argv": [
+              "wl",
+              "delivery",
+              "pause",
+              "--digest",
+              "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+              "--operator",
+              {
+                "input": "operator"
+              },
+              "--store",
+              "/fixture/store"
+            ],
+            "inputs": [
+              {
+                "name": "operator",
+                "kind": "person"
+              }
+            ]
+          },
+          {
+            "argv": [
+              "wl",
+              "delivery",
+              "stop",
+              "--digest",
+              "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+              "--operator",
+              {
+                "input": "operator"
+              },
+              "--store",
+              "/fixture/store"
+            ],
+            "inputs": [
+              {
+                "name": "operator",
+                "kind": "person"
+              }
+            ]
+          },
+          {
+            "argv": [
+              "wl",
+              "delivery",
+              "reconcile",
+              "--digest",
+              "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+              "--store",
+              "/fixture/store"
+            ],
+            "inputs": []
+          }
+        ],
+        "omittedNext": 0,
+        "route": {
+          "total": 1,
+          "observed": 1,
+          "passed": 0,
+          "blocked": 0
+        },
+        "budget": null,
+        "updatedAt": "2026-11-04T20:00:00.000Z"
+      }
+    ],
+    "agents": [
+      {
+        "id": "attempt-0123456789abcdef",
+        "kind": "delivery-worker",
+        "run": "delivery-0123456789abcdef",
+        "role": "builder",
+        "status": "started",
+        "source": "observed-process",
+        "runtimeDigest": "5eb47690ebe93565c9482f739c5dcf900e64b88e0a4cf9a72f5ef589c1efaeea",
+        "semanticProvenance": "host-observed",
+        "lastSeen": {
+          "at": "2026-11-04T20:00:00.000Z"
+        }
+      }
+    ],
+    "worktrees": [],
+    "scheduled": [],
+    "outcomes": [],
+    "counts": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 1,
+      "agents": 1,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "omitted": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "unreadCount": 0,
+    "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MCwidGlwIjpudWxsLCJkaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1In0sImRlbGl2ZXJ5Ijp7InNlcXVlbmNlIjoxMSwiZGlnZXN0IjoiZTI4ZmU3MzA3OWVjOGZhZGRhYzFkOTAyOTQ0YTM3MjIxZjU0ZmIyZGRkNmE1MzA0ZmUyNDQ1ZjI4ZTYzOWFlOSJ9fQ",
+    "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "146bebd6773de8ee07da32d93837c62b668cb87b444390a0bf58341a04297d10"
+  }
+}

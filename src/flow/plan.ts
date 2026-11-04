@@ -144,6 +144,24 @@ export function flowPlan(
   }
 }
 
+/** The same current and inherited decisions serve status, execution and read-only overview. */
+export function itemFlow(
+  events: readonly StateEvent[],
+  subject: string,
+  additions: readonly string[] = [],
+) {
+  const plan = flowPlan(events, subject, additions)
+  return {
+    schema: 'wholeloop/step-plan@1',
+    subject,
+    ...plan,
+    pending: [
+      ...decisionTrail(events, subject).filter((decision) => decision.subject !== subject),
+      ...plan.pending.map((decision) => ({ ...decision, subject })),
+    ],
+  }
+}
+
 export function remembered(
   events: readonly StateEvent[],
   subject: string | undefined,

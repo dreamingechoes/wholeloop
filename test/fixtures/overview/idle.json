@@ -1,0 +1,346 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "idle",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000001",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "initiative",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000002",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "research",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000003",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "frame-problem",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000004",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "write-spec",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000005",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "cut-scopes",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000006",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "slice-work",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000007",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "build-slice",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000008",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "verify-works",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000009",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "review-code",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-00000000000a",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "open-pr",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-00000000000b",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "prepare-launch",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-00000000000c",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "ramp-exposure",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-00000000000d",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "measure-impact",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-00000000000e",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "decide-next",
+          "run": "run-0123456789abcdef",
+          "reason": "Synthetic completed flow."
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-00000000000f",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "decision.recorded",
+        "data": {
+          "decision": "approve-spec",
+          "outcome": "approved",
+          "by": "Fixture Owner",
+          "basis": "ev-00000000-0000-4000-8000-000000000004"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000010",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "decision.recorded",
+        "data": {
+          "decision": "approve-scopes",
+          "outcome": "approved",
+          "by": "Fixture Owner",
+          "basis": "ev-00000000-0000-4000-8000-000000000005"
+        }
+      }
+    ],
+    "delivery": []
+  },
+  "observations": {
+    "grants": [],
+    "runners": [],
+    "humans": [],
+    "budgetReports": []
+  },
+  "problem": null,
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "healthy",
+      "problems": []
+    },
+    "headline": "idle",
+    "attention": [],
+    "items": [
+      {
+        "id": "init-00000001",
+        "kind": "initiative",
+        "parent": null,
+        "status": "open",
+        "flow": {
+          "next": null,
+          "available": false,
+          "completed": [
+            "research",
+            "frame-problem",
+            "write-spec",
+            "cut-scopes",
+            "slice-work",
+            "build-slice",
+            "verify-works",
+            "review-code",
+            "open-pr",
+            "prepare-launch",
+            "ramp-exposure",
+            "measure-impact",
+            "decide-next"
+          ],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      }
+    ],
+    "deliveries": [],
+    "agents": [],
+    "worktrees": [],
+    "scheduled": [],
+    "outcomes": [],
+    "counts": {
+      "attention": 0,
+      "items": 1,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "omitted": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "unreadCount": 0,
+    "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MTYsInRpcCI6ImV2LTAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAxMCIsImRpZ2VzdCI6IjZmM2VlODFiNThiMTExYjMyZjM4NGM3NzZlMzJiMWMzNzA0NjZlMDQ3OGZjYTMxODNhOWQwZDY4YzRjZDkyNzIifSwiZGVsaXZlcnkiOnsic2VxdWVuY2UiOjAsImRpZ2VzdCI6bnVsbH19",
+    "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "3da85260858060c77dd91a169b79d5d3b1411293ea7f7b8be7c61a2ac3e794cc"
+  }
+}

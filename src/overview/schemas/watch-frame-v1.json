@@ -1,0 +1,384 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/watch-frame@1",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "sequence",
+        "at",
+        "resumeCursor",
+        "kind",
+        "change",
+        "progress",
+        "overview"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/watch-frame@1"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "at": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "format": "date-time"
+        },
+        "resumeCursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^v1\\.[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "const": "overview"
+        },
+        "change": {
+          "type": "string",
+          "enum": ["initial", "journal", "observation"]
+        },
+        "progress": {
+          "type": "boolean"
+        },
+        "overview": {
+          "$ref": "overview@1"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "change": {
+                "enum": ["initial", "observation"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "progress": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "sequence",
+        "at",
+        "resumeCursor",
+        "kind",
+        "fromCursor",
+        "cursor",
+        "progress",
+        "events"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/watch-frame@1"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "at": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "format": "date-time"
+        },
+        "resumeCursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^v1\\.[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "const": "events"
+        },
+        "fromCursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^v1\\.[A-Za-z0-9_-]+$"
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^v1\\.[A-Za-z0-9_-]+$"
+        },
+        "progress": {
+          "type": "boolean"
+        },
+        "events": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "journal",
+              "position",
+              "id",
+              "at",
+              "digest",
+              "category",
+              "actor",
+              "provenance",
+              "progress"
+            ],
+            "properties": {
+              "journal": {
+                "type": "string",
+                "enum": ["state", "delivery"]
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 30,
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "digest": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "category": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[a-z][a-z0-9.@-]{0,95}$"
+              },
+              "actor": {
+                "type": "string",
+                "enum": ["person", "agent", "system", "operator", "controller"]
+              },
+              "provenance": {
+                "type": "string",
+                "enum": [
+                  "fixture",
+                  "host-observed",
+                  "declared",
+                  "unknown",
+                  "person-record",
+                  "operator-record",
+                  "policy",
+                  "claimed",
+                  "process-observed"
+                ]
+              },
+              "progress": {
+                "type": "boolean"
+              },
+              "action": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9-]{0,63}$"
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-z][a-z0-9-]{0,63}$"
+              }
+            }
+          },
+          "minItems": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "events": {
+                "contains": {
+                  "properties": {
+                    "progress": {
+                      "const": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "progress": {
+                "const": true
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "progress": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "sequence",
+        "at",
+        "resumeCursor",
+        "kind",
+        "progress",
+        "state",
+        "wakeup"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/watch-frame@1"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "at": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "format": "date-time"
+        },
+        "resumeCursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^v1\\.[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "const": "liveness"
+        },
+        "progress": {
+          "type": "boolean",
+          "const": false
+        },
+        "state": {
+          "type": "string",
+          "enum": ["idle", "writer-busy"]
+        },
+        "wakeup": {
+          "type": "string",
+          "enum": ["filesystem", "poll"]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "sequence", "at", "resumeCursor", "kind", "progress", "problem"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/watch-frame@1"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "at": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "format": "date-time"
+        },
+        "resumeCursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^v1\\.[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "const": "problem"
+        },
+        "progress": {
+          "type": "boolean",
+          "const": false
+        },
+        "problem": {
+          "type": "string",
+          "enum": [
+            "invalid-cursor",
+            "cursor-diverged",
+            "store-busy",
+            "store-unreadable",
+            "overview-limit"
+          ]
+        }
+      }
+    }
+  ]
+}

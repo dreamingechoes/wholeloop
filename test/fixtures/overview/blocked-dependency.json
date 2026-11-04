@@ -1,0 +1,277 @@
+{
+  "schema": "wholeloop/overview-fixture@1",
+  "name": "blocked-dependency",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000001",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "initiative",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000002",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "scope-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "scope",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY",
+          "parent": "init-00000001"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000003",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "slice-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "slice",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY",
+          "parent": "scope-00000001"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000004",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "slice-00000002",
+        "type": "item.created",
+        "data": {
+          "kind": "slice",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY",
+          "parent": "scope-00000001"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000005",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "slice-00000002",
+        "type": "slice.defined",
+        "data": {
+          "scope": "scope-00000001",
+          "run": "run-0123456789abcdef",
+          "definition": {
+            "key": "search",
+            "title": "Find an owned order by number",
+            "objective": "A returning customer retrieves one past order",
+            "outcomes": ["Customer retrieves the matching owned order"],
+            "demonstration": {
+              "entry": "Order history page",
+              "steps": [
+                "Sign in as the seeded customer",
+                "Enter an owned order number",
+                "Submit the search form"
+              ],
+              "expected": "The page shows only the matching owned order returned by the API"
+            },
+            "criteria": [
+              {
+                "id": "exact-number",
+                "text": "An exact order-number query returns only that customer's matching order.",
+                "test": "Seed two customers with overlapping order numbers and assert ownership filtering."
+              }
+            ],
+            "tests": [
+              {
+                "id": "owned-order",
+                "criteria": ["exact-number"],
+                "steps": [
+                  "Seed overlapping order numbers for two customers",
+                  "Sign in and search for the owned order number"
+                ],
+                "expected": "The page renders only the owned order"
+              }
+            ],
+            "repositories": ["web", "api"],
+            "contract": {
+              "repository": "api",
+              "interface": "GET /orders?number=<order-number> returns only authorized matching orders",
+              "examples": ["GET /orders?number=123 returns [{id:123,owner:current-customer}]"]
+            }
+          },
+          "repositories": [
+            {
+              "key": "api",
+              "path": "/fixture/api"
+            },
+            {
+              "key": "web",
+              "path": "/fixture/web"
+            }
+          ],
+          "blockedBy": ["slice-00000001"],
+          "parts": [],
+          "tracker": {
+            "provider": "fixture",
+            "operation": "tracker.create-item",
+            "status": "stored",
+            "ref": "fixture:consumer"
+          }
+        }
+      }
+    ],
+    "delivery": []
+  },
+  "observations": {
+    "grants": [],
+    "runners": [],
+    "humans": [],
+    "budgetReports": []
+  },
+  "problem": null,
+  "expected": {
+    "schema": "wholeloop/overview@1",
+    "nativeAcceptance": "not-established-by-inspection",
+    "health": {
+      "status": "healthy",
+      "problems": []
+    },
+    "headline": "blocked",
+    "attention": [
+      {
+        "id": "e3c38f7c64dd54351cdbde2a88f0c76bcc2bac08bca568a0964a0f589950f9a8",
+        "reason": "blocked-dependency",
+        "target": {
+          "kind": "item",
+          "id": "slice-00000002"
+        },
+        "next": [
+          {
+            "argv": ["wl", "status", "slice-00000002"],
+            "inputs": []
+          }
+        ],
+        "omittedNext": 0
+      }
+    ],
+    "items": [
+      {
+        "id": "init-00000001",
+        "kind": "initiative",
+        "parent": null,
+        "status": "open",
+        "flow": {
+          "next": "frame-problem",
+          "available": true,
+          "completed": [],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      },
+      {
+        "id": "scope-00000001",
+        "kind": "scope",
+        "parent": "init-00000001",
+        "status": "open",
+        "flow": {
+          "next": "slice-work",
+          "available": true,
+          "completed": [],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      },
+      {
+        "id": "slice-00000001",
+        "kind": "slice",
+        "parent": "scope-00000001",
+        "status": "open",
+        "flow": {
+          "next": "build-slice",
+          "available": true,
+          "completed": [],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": [],
+        "omittedDependencies": 0
+      },
+      {
+        "id": "slice-00000002",
+        "kind": "slice",
+        "parent": "scope-00000001",
+        "status": "open",
+        "flow": {
+          "next": "build-slice",
+          "available": true,
+          "completed": [],
+          "pending": [],
+          "omittedPending": 0
+        },
+        "blockedBy": ["slice-00000001"],
+        "omittedDependencies": 0
+      }
+    ],
+    "deliveries": [],
+    "agents": [],
+    "worktrees": [],
+    "scheduled": [],
+    "outcomes": [],
+    "counts": {
+      "attention": 1,
+      "items": 4,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "omitted": {
+      "attention": 0,
+      "items": 0,
+      "deliveries": 0,
+      "agents": 0,
+      "worktrees": 0,
+      "scheduled": 0,
+      "outcomes": 0
+    },
+    "unreadCount": 0,
+    "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6NSwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDA1IiwiZGlnZXN0IjoiYTY0NjBhNGZkNTc3MDhlMTE2MzA5MmQwMWNjMDEwMTU3ZGQxNDdmZWNjNjJiYzM5YjRkMTM5NDIwMDkwY2JkYiJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+    "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+    "asOf": "2026-11-04T20:00:00.000Z",
+    "digest": "0ef8856e85c7b76f806689db456416fa352726e49a5f3f72cb8a13a783990945"
+  }
+}

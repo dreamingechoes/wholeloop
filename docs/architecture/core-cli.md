@@ -7,6 +7,12 @@
 
 ---
 
+## Operator overview
+
+`wl overview [--json]` returns the bounded `wholeloop/overview@1` read model: health, a deterministic headline, ordered attention with exact commands, item flow, deliveries, agents, worktrees, checkpoints and outcomes. `wl overview schema` prints the consumer contract kit without opening a store. A held writer lock or unreadable input returns an unavailable view with unknown totals and exit 3. Reads make no store writes and establish no native acceptance. See the [overview architecture and fixtures](./operator-overview.md).
+
+Displayed item approval commands include optional `answer --basis <event-id>`. The writer transaction checks that it still matches the pending decision before appending an approval. Person and outcome inputs remain explicit.
+
 ## Private decision attribution
 
 Person decisions support `--channel <name>` plus one optional `--rationale-stdin` or `--rationale-file <path>`. These flags apply to `answer decision.<id>=<outcome>`, `frame finalize`, `build agree`, `pr tested`, `learn decide`, `ramp decide`, and delivery `human-decide`, `pause`, `resume` and `stop`. A rationale must be nonblank UTF-8 of at most 4096 bytes. A declared agent cannot supply person metadata. No option accepts the optional private rationale text in argv; default reads omit it. See [state and messaging](./state-and-messaging.md#optional-event-attribution) for provenance, privacy and retry semantics.
@@ -44,6 +50,8 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 <!-- commands:start -->
 | Command | Output schema | Purpose |
 | --- | --- | --- |
+| `wl overview schema` | `wholeloop/overview-schema@1` | Print the overview and local feed contract kit without opening a store |
+| `wl overview` | `wholeloop/overview@1` | Read bounded operator attention, progress and exact next commands without writes |
 | `wl delivery runner-schema` | `wholeloop/delivery-runner-schema@1` | Show owned runner contracts and current execution limitations |
 | `wl delivery runner-host` | `wholeloop/delivery-runner-host@1` | Print the public host identity a runner request must name for these documents |
 | `wl delivery runner-prepare` | `wholeloop/delivery-runner-status@1` | Prepare a private authorized route without starting execution |

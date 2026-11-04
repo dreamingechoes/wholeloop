@@ -40,6 +40,7 @@ export function flowCommand(
         ...(value('--for') ? { subject: value('--for') as string } : {}),
         ...(value('--run') ? { run: value('--run') as string } : {}),
         ...(value('--by') ? { by: value('--by') as string } : {}),
+        ...(value('--basis') ? { basis: value('--basis') as string } : {}),
       })
     } else if (command === 'step plan') payload = engine.plan(require(value('--for'), '--for <id>'))
     else {
