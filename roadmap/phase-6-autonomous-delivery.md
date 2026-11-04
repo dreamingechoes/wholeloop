@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 tasks on 2026-10-24 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** The owner accepted all 34 original tasks on 2026-10-24 and added P6-35 on 2026-11-04 and authorized sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31 and P6-34 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 88 tasks: 68 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 4 new pending implementation tasks.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 89 tasks: 68 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 5 new pending implementation tasks; the owner added P6-35 on 2026-11-04.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -34,6 +34,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 | Operator evidence and evaluations | P6-25–P6-28 | Controls and validation |
 | Changes, learning and release closure | P6-29–P6-32 | Integration, learning and validation |
 | Fully unattended research/decisions | P6-33–P6-34 | Unattended decisions and research |
+| Worker credentials | P6-35 | Runner, validation |
 
 ---
 
@@ -831,7 +832,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ## P6-32 · Expanded V1 documentation and release closure
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P5-06
+**Status:** ⬜ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P6-35, P5-06
 
 **Design review:** accepted by the owner on 2026-10-24 · **Release:** 1.0
 
@@ -898,6 +899,36 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 **Tests** — DEC-01–DEC-06, AUTH-03–AUTH-08 and RUN-09: complete decision tables, legacy replay, prompt canaries and envelope scope attacks.
 
 **Docs** — [Detailed contract](./specifications/autonomous-delivery/10-unattended-decisions-and-research.md); concepts, decision points, framing/spec/scopes, profiles, guards.
+
+---
+
+## P6-35 · Controller-owned worker credentials
+
+**Status:** ⬜ · **Size:** L · **Depends on:** P6-27, P6-10, P6-34
+
+**Design review:** added by the owner on 2026-11-04 · **Release:** 1.0
+
+**Goal** — Let an authorized delivery run reach its endpoint unattended across token expiry and usage windows, without a worker ever holding or refreshing a stored credential.
+
+**Deliverables** — The verifications listed in the proposed design (`docs/decisions/0209-controller-owned-native-credentials.md`), the owner's acceptance decision, and then, for Claude Code and Codex:
+
+- a credential reference per binding, resolved from the operating system's secret store;
+- injection per launch;
+- disposable worker homes, with every credential store denied;
+- a credential preflight before any claim;
+- pausing on an exhausted usage window.
+
+The documentation also records Antigravity as an unavailable worker, while its in-session harness use is unaffected.
+
+**Acceptance criteria:**
+
+- [ ] The owner accepts or rejects the design after one real call per reference client and account kind, a measured `claude setup-token` lifetime, and a usage-window signal or its absence.
+- [ ] A Claude Code run spanning a token expiry, and a Codex run, complete unattended with no credential in any worker-writable path. A missing or invalid credential ends the run at preflight with a named reason.
+- [ ] An exhausted usage window pauses the run and it resumes after the reset, keeping its work. Without a client signal, the attempt is reported as an infrastructure failure.
+
+**Tests** — Credential reference and resolution contracts; synthetic clients that honour or reject an injected credential; boundary probes showing every credential store denied; preflight refusals; window pause and resume on a fake clock; live acceptance on the owner's accounts.
+
+**Docs** — The proposed design and its acceptance, the platform guide (macOS and Linux first; a headless Linux secret store; Windows through WSL2), the runner tutorial, the README note on Antigravity, and manual verification.
 
 ---
 

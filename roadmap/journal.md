@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-11-04 · P6-35 · Worker credentials task added — planned
+
+- The owner added P6-35, controller-owned worker credentials, to Phase 6 as a 1.0 task, and P6-32 now depends on it. The task starts with the verifications the proposed credential design lists and the owner's acceptance decision. It then implements, for Claude Code and Codex, secret-store references, injection per launch, disposable worker homes, a credential preflight and pausing on exhausted usage windows. P6-27 does not depend on it: its remaining trials run with a fresh sign-in before each batch.
+
+---
+
 ## 2026-11-04 · P6-27 · Worker credential design drafted — in progress
 
 - Drafted `docs/decisions/0209-controller-owned-native-credentials.md` (Proposed). The controller would keep every worker credential in the OS secret store and inject it per launch. Workers would have disposable homes and no credential store access, there would be a preflight before any claim, and an exhausted usage window would pause the run. Antigravity is documented as an unavailable worker, while its in-session harness use is unaffected.
