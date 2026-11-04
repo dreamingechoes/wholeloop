@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-37 · Complete code gate and fixture clock correction — in progress
+
+- The unchanged overview implementation at `07b3e1e` passes all 4121 tests in 227 files, offline npm archive/install and every other full gate on macOS arm64/Node 24.22.0: `CHECK PASS in 688s`. The checked archive digest is `4c992e31c21ee42d0e68ef32358090bfb955160ea2fb98812327815afc864029`; no publication runs.
+- Final fixture review finds two synthetic observation inconsistencies: an expired receipt sampled before its expiry and a budget deadline without the original start ledger. Move the expiry observation beyond its real deadline and build the budget start/deadline through the actual budget policy. Add consistency assertions instead of preserving impossible examples in the consumer kit. Production code and frozen schemas are unchanged.
+- Extend the real-store differential case to rebuild both state and delivery projections and compare cursor plus semantic digest. The corrected kit and this strengthened reader suite pass 32 tests in two files. Repeat the fast and full gates before closure so the final checked tree includes these test corrections. P6-37 remains in progress; P6-38 preparation stays outside source until this task closes.
+
+---
+
 ## 2026-11-05 · P6-37 · Read-only overview and consumer kit — in progress
 
 - Implement the stable reader and bounded projector, `wl overview` and `wl overview schema`. Reuse item flow/dependency, delivery report, runner, authority and budget rules. Observe required journals and auxiliary facts twice at one pinned time; fail closed after three changed reads instead of joining incompatible snapshots or repairing state.

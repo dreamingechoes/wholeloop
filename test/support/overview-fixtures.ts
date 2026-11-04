@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { contractDigest } from '../../src/contracts/compatibility.js'
 import type { AuthorizationReceipt, DeliveryGrant } from '../../src/delivery/authority.js'
+import { budgetClockPayload, effectiveBudget } from '../../src/delivery/budget-policy.js'
 import {
   type DeliveryEvent,
   type DeliveryPayload,
@@ -110,7 +111,7 @@ export function overviewFixture(name: OverviewCase) {
       { kind: 'controller', name: 'Fixture' },
       payload,
       delivery.at(-1),
-      FIXTURE_AT,
+      name === 'budget-boundary' ? '2026-11-04T12:00:00.000Z' : FIXTURE_AT,
     )
     const { digest: _digest, ...body } = { ...value, id: `delivery-event-${uuid()}` }
     const canonical = { ...body, digest: contractDigest(body) }
@@ -459,6 +460,26 @@ export function overviewFixture(name: OverviewCase) {
       })
     }
   }
+  if (name === 'budget-boundary') {
+    const registered = replayDelivery(delivery).get(run)
+    if (!registered) throw new Error('Budget fixture requires a registered run')
+    emit(
+      budgetClockPayload(registered, grant, {
+        wall: '2026-11-04T12:00:00.000Z',
+        monotonicMs: 0,
+        epoch: '9'.repeat(64),
+      }),
+    )
+  }
+  const budgetState = replayDelivery(delivery).get(run),
+    observedBudget =
+      name === 'budget-boundary' && budgetState
+        ? effectiveBudget(budgetState, grant, {
+            wall: FIXTURE_AT,
+            monotonicMs: 8 * 60 * 60 * 1000,
+            epoch: '9'.repeat(64),
+          })
+        : null
   const observations = {
     grants: isDelivery ? [[run, receipt] as const] : [],
     runners: isDelivery
@@ -505,9 +526,9 @@ export function overviewFixture(name: OverviewCase) {
           [
             run,
             {
-              problem: name === 'budget-boundary' ? 'deadline-exhausted' : null,
+              problem: observedBudget?.problem ?? null,
               limits: { ...DEFAULT_DELIVERY_BUDGETS },
-              deadline: null,
+              deadline: observedBudget?.deadline ?? null,
             },
           ] as const,
         ]
@@ -517,7 +538,7 @@ export function overviewFixture(name: OverviewCase) {
     schema: 'wholeloop/overview-fixture@1' as const,
     name,
     provenance: 'fixture' as const,
-    at: FIXTURE_AT,
+    at: name === 'inactive-grant' ? '2026-11-06T20:00:00.000Z' : FIXTURE_AT,
     journals: { state, delivery },
     observations,
     problem: name === 'store-problem' ? ('store-busy' as const) : null,

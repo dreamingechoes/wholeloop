@@ -44,6 +44,24 @@ describe('portable overview contract kit', () => {
           source: 'observed-process',
           semanticProvenance: name === 'fixture-worker' ? 'fixture' : 'host-observed',
         })
+      for (const [, receipt] of source.observations.grants) {
+        expect(receipt.status === 'expired').toBe(
+          Date.parse(source.at) >= Date.parse(receipt.grant.expiresAt),
+        )
+      }
+      if (name === 'budget-boundary') {
+        expect(
+          source.journals.delivery.some(
+            (event) =>
+              event.payload.schema === 'wholeloop/delivery-budget-event@1' &&
+              event.payload.action === 'started',
+          ),
+        ).toBe(true)
+        expect(expected.deliveries[0]?.budget).toMatchObject({
+          problem: 'deadline',
+          deadline: '2026-11-04T16:00:00.000Z',
+        })
+      }
       headlines.add(expected.headline)
       expected.attention.forEach((entry) => {
         reasons.add(entry.reason)

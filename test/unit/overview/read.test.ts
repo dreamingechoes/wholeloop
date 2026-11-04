@@ -15,6 +15,7 @@ import { describe, expect, it } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
 import { itemFlow } from '../../../src/flow/plan.js'
+import { projectOverview } from '../../../src/overview/project.js'
 import { readOverview } from '../../../src/overview/read.js'
 import { deliveryReport } from '../../../src/runner/operator-report.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
@@ -121,6 +122,16 @@ describe('stable read-only overview inputs', () => {
       )
       expect(value.runners.get(digest)).toEqual(runner.inspect(digest))
       expect(tree(runner.files.root)).toEqual(before)
+      runner.lifecycle.journal.rebuild()
+      new StateStore(runner.files.root).rebuild()
+      const rebuilt = readOverview({
+        root,
+        store: runner.files.root,
+        at,
+        userFile: join(dir, 'user.yml'),
+      })
+      expect(rebuilt.cursor).toBe(value.cursor)
+      expect(projectOverview(rebuilt).digest).toBe(projectOverview(value).digest)
       runner.control(digest, 'pause', 'Owner')
       const paused = readOverview({
         root,
