@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-04 · P6-27 · Three-run rule and 1.0 client scope — in progress
+
+- The owner set the three-run rule. An attempt the retained receipt shows was refused by the observer, or denied for credentials or its usage window, is an infrastructure failure: it is repeated without invalidating its batch and stays reported. Taken in order, the first three remaining attempts must all pass. `eval:campaign` applied a laxer rule (any three passes) before; it now follows this one. Claude EVAL-10 stays `three-passes`: six infrastructure failures are set aside and the four remaining attempts all passed.
+- The owner confirmed the 1.0 scope: Claude Code and Codex are the autonomous-delivery reference clients. Gemini, OpenCode, Copilot and Cursor follow as workers in 1.x through a shared client kit, and their harness support stays in 1.0. Antigravity stays unavailable as a worker until it has a headless credential path. Credential probes on all seven clients support this: injection works on six, and Antigravity requires browser sign-in in `-p` mode.
+
+---
+
 ## 2026-11-04 · P6-27 · Three-run campaign report — in progress
 
 - New `npm run eval:campaign` reads retained live trials and groups them by scenario, client, version and model. A trial passes only when the run completed with an outcome its route allows, with zero controller waits for input and every native launch succeeded and host-observed. Failed attempts keep their observed cause. Required pairs that have not run yet show as pending. Eight table cases cover the verdicts and the aggregation.

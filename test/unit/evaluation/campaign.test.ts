@@ -24,8 +24,8 @@ const trial = (overrides: Partial<LiveTrial> = {}): LiveTrial => ({
 
 describe('P6-27 three-run campaign report', () => {
   it.each([
-    ['a completed run', trial(), true, null],
-    ['a human wait', trial({ humanWaits: 1 }), false, 'human-waits:1'],
+    ['a completed run', trial(), true, null, false],
+    ['a human wait', trial({ humanWaits: 1 }), false, 'human-waits:1', false],
     [
       'a refused launch',
       trial({
@@ -33,12 +33,14 @@ describe('P6-27 three-run campaign report', () => {
       }),
       false,
       'launch-failed:permission-denied',
+      true,
     ],
     [
       'a fixture launch',
       trial({ native: [{ status: 'succeeded', reason: null, provenance: 'fixture' }] }),
       false,
       'launch-succeeded:unrecorded',
+      false,
     ],
     [
       'a blocked route',
@@ -51,16 +53,36 @@ describe('P6-27 three-run campaign report', () => {
       }),
       false,
       'run-blocked:research:unknown',
+      false,
     ],
     [
       'an outcome its route does not allow',
       trial({ status: { state: 'completed', outcome: 'ready-pr', stages: [] } }),
       false,
       'outcome:ready-pr',
+      false,
     ],
-    ['no launch at all', trial({ native: [] }), false, 'no-native-launch'],
-  ])('judges %s from retained facts', (_name, value, passed, cause) => {
-    expect(trialVerdict(value)).toEqual({ passed, cause })
+    ['no launch at all', trial({ native: [] }), false, 'no-native-launch', false],
+  ])('judges %s from retained facts', (_name, value, passed, cause, infrastructure) => {
+    expect(trialVerdict(value)).toEqual({ passed, cause, infrastructure })
+  })
+  it('sets infrastructure failures aside and needs the first three remaining attempts to pass', () => {
+    const refused = trial({
+        native: [{ status: 'failed', reason: 'permission-denied', provenance: 'host-observed' }],
+      }),
+      blocked = trial({
+        status: {
+          state: 'blocked',
+          outcome: 'blocked',
+          stages: [{ id: 'research', status: 'blocked' }],
+        },
+      }),
+      verdict = (trials: LiveTrial[]) => campaignReport(trials).rows[0]?.verdict
+    expect(verdict([refused, trial(), refused, trial(), trial()])).toBe('three-passes')
+    // A route failure among the first three counted attempts fails the batch,
+    // even when later attempts pass: one pass in three is not a three-run pass.
+    expect(verdict([trial(), blocked, trial(), trial(), trial()])).toBe('failed')
+    expect(verdict([trial(), refused, trial()])).toBe('pending')
   })
   it('needs three passes per scenario and client, and keeps every failure', () => {
     const report = campaignReport(

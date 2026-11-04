@@ -47,6 +47,10 @@ Run the complete deterministic suite on macOS and Linux with supported developme
 
 Use at least three independent native runs per reference scenario/client and report every outcome. One pass out of three is not a three-run pass. Proposed release acceptance requires all three required runs to satisfy the defined outcome; retain first-pass success, retries, intervention, costs and limitations. Changes to this threshold require explicit review and a documented reason.
 
+The owner clarified the threshold on 2026-11-04. An attempt that fails for infrastructure reasons is repeated without invalidating its batch, and it stays reported. Infrastructure here means that the retained receipt shows the observer refused the launch, or the client was denied for credentials or its usage window, so the route never had a fair chance. Taken in order, the first three remaining attempts must all pass, and a route failure among them fails the batch. `npm run eval:campaign` applies this rule.
+
+On the same day the owner confirmed the 1.0 scope. Claude Code and Codex are the 1.0 reference clients for autonomous delivery. Gemini, OpenCode, Copilot and Cursor follow as autonomous workers in a 1.x release, built on the same client kit (headless invocation, injected credentials, an observed boundary, role recipes and a live campaign). Their harness support stays in 1.0. Antigravity has no headless credential path today, so it stays unavailable as a worker, while its in-session harness use is unaffected.
+
 ## Metrics and comparison
 
 Record success per accepted criterion and complete feature, actual human prompts/waits, active/wall/wait time, native/backend versions, attempts, repair cycles, cost/token provenance, escaped regressions and correct recovery. Compare a fixed source/candidate scenario and policy; do not rank performance from different builds or models as if comparable.

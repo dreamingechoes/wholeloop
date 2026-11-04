@@ -33,25 +33,48 @@ const OUTCOMES: Record<string, string[]> = {
   'EVAL-08': ['merged'],
 }
 const REQUIRED = 3
+/**
+ * Launch reasons that mean the run never had a fair chance: the observer
+ * refused the launch, or the client was denied for credentials or its usage
+ * window. By the owner's rule (2026-11-04) such an attempt is repeated
+ * without invalidating the batch, but stays listed. The reason comes from
+ * the retained receipt, never from interpreting client text.
+ */
+const INFRASTRUCTURE = new Set(['runtime-unobserved', 'permission-denied'])
 
-export function trialVerdict(trial: Readonly<LiveTrial>) {
+export function trialVerdict(trial: Readonly<LiveTrial>): {
+  passed: boolean
+  cause: string | null
+  infrastructure: boolean
+} {
   const failed = trial.native.find(
     (launch) => launch.status !== 'succeeded' || launch.provenance !== 'host-observed',
   )
-  if (trial.humanWaits !== 0) return { passed: false, cause: `human-waits:${trial.humanWaits}` }
+  if (trial.humanWaits !== 0)
+    return { passed: false, cause: `human-waits:${trial.humanWaits}`, infrastructure: false }
   if (failed)
-    return { passed: false, cause: `launch-${failed.status}:${failed.reason ?? 'unrecorded'}` }
+    return {
+      passed: false,
+      cause: `launch-${failed.status}:${failed.reason ?? 'unrecorded'}`,
+      infrastructure: failed.status !== 'succeeded' && INFRASTRUCTURE.has(failed.reason ?? ''),
+    }
   if (trial.status?.state !== 'completed') {
     const stage = trial.status?.stages?.find((entry) => entry.status !== 'passed')
     return {
       passed: false,
       cause: `run-${trial.status?.state ?? 'unknown'}${stage ? `:${stage.id}:${stage.status}` : ''}`,
+      infrastructure: false,
     }
   }
   if (!(OUTCOMES[trial.scenario] ?? []).includes(trial.status.outcome ?? ''))
-    return { passed: false, cause: `outcome:${trial.status.outcome ?? 'none'}` }
-  if (!trial.native.length) return { passed: false, cause: 'no-native-launch' }
-  return { passed: true, cause: null }
+    return {
+      passed: false,
+      cause: `outcome:${trial.status.outcome ?? 'none'}`,
+      infrastructure: false,
+    }
+  if (!trial.native.length)
+    return { passed: false, cause: 'no-native-launch', infrastructure: false }
+  return { passed: true, cause: null, infrastructure: false }
 }
 
 export function campaignReport(
@@ -75,7 +98,16 @@ export function campaignReport(
         outputTokens: trial.usage?.outputTokens ?? null,
         ...trialVerdict(trial),
       })),
-      passes = attempts.filter((attempt) => attempt.passed)
+      passes = attempts.filter((attempt) => attempt.passed),
+      // Attempts in the order given; infrastructure failures are set aside and
+      // the first three remaining attempts must all pass (validation spec 09).
+      counted = attempts.filter((attempt) => !attempt.infrastructure).slice(0, REQUIRED),
+      verdict =
+        counted.length < REQUIRED
+          ? ('pending' as const)
+          : counted.every((attempt) => attempt.passed)
+            ? ('three-passes' as const)
+            : ('failed' as const)
     return {
       scenario: first.scenario,
       target: first.target,
@@ -83,7 +115,8 @@ export function campaignReport(
       model: first.model,
       passed: passes.length,
       attempted: attempts.length,
-      verdict: passes.length >= REQUIRED ? ('three-passes' as const) : ('pending' as const),
+      verdict,
+      infrastructure: attempts.filter((attempt) => attempt.infrastructure).length,
       // Client-reported, never metered: only passing runs size a campaign.
       outputTokens: passes.reduce((sum, attempt) => sum + (attempt.outputTokens ?? 0), 0),
       attempts,
@@ -99,6 +132,7 @@ export function campaignReport(
         passed: 0,
         attempted: 0,
         verdict: 'pending',
+        infrastructure: 0,
         outputTokens: 0,
         attempts: [],
       })
@@ -115,11 +149,11 @@ export function campaignReport(
 /** A short table for the journal or a terminal; the JSON stays authoritative. */
 export function campaignMarkdown(report: ReturnType<typeof campaignReport>) {
   const lines = [
-    '| Scenario | Client | Passed | Attempted | Verdict | Failure causes |',
-    '| --- | --- | --- | --- | --- | --- |',
+    '| Scenario | Client | Passed | Attempted | Infrastructure | Verdict | Failure causes |',
+    '| --- | --- | --- | --- | --- | --- | --- |',
     ...report.rows.map(
       (row) =>
-        `| ${row.scenario} | ${row.target} ${row.version} | ${row.passed} | ${row.attempted} | ${row.verdict} | ${
+        `| ${row.scenario} | ${row.target} ${row.version} | ${row.passed} | ${row.attempted} | ${row.infrastructure} | ${row.verdict} | ${
           [...new Set(row.attempts.filter((a) => !a.passed).map((a) => a.cause))].join(', ') || '—'
         } |`,
     ),

@@ -69,12 +69,14 @@ P6-33's research host completes a none-policy research route on the synthetic na
 
 The three-run report (`npm run eval:campaign -- --require EVAL-10:claude,EVAL-10:codex,EVAL-09:claude,EVAL-09:codex <retained trial directories>`) gives, on 2026-11-04:
 
-| Scenario | Client | Passed | Attempted | Verdict | Failure causes |
-| --- | --- | --- | --- | --- | --- |
-| EVAL-09 | Claude Code | 0 | 0 | pending | — |
-| EVAL-09 | Codex | 0 | 0 | pending | — |
-| EVAL-10 | Claude Code 2.1.316 | 4 | 10 | three-passes | launch-unavailable:runtime-unobserved, launch-failed:permission-denied |
-| EVAL-10 | Codex | 0 | 0 | pending | — |
+| Scenario | Client | Passed | Attempted | Infrastructure | Verdict | Failure causes |
+| --- | --- | --- | --- | --- | --- | --- |
+| EVAL-09 | Claude Code | 0 | 0 | 0 | pending | — |
+| EVAL-09 | Codex | 0 | 0 | 0 | pending | — |
+| EVAL-10 | Claude Code 2.1.316 | 4 | 10 | 6 | three-passes | launch-unavailable:runtime-unobserved, launch-failed:permission-denied |
+| EVAL-10 | Codex | 0 | 0 | 0 | pending | — |
+
+The verdict follows the owner's 2026-11-04 rule ([validation spec](./specifications/autonomous-delivery/09-validation-and-acceptance.md)): the six infrastructure failures are set aside, and the first three remaining attempts all passed.
 
 - [ ] A reference-client research route with an unsatisfiable mandatory prerequisite returns a terminal blocked receipt within its deadline (EVAL-11).
 
