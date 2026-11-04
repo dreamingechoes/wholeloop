@@ -76,7 +76,8 @@
     "eval:public-continuation": "node scripts/check-public-continuation.mjs",
     "eval:native-boundary": "node scripts/check-native-boundary.mjs",
     "eval:claude-boundary": "node scripts/check-native-boundary.mjs claude",
-    "eval:live-research": "npm run build && node scripts/check-live-research.mjs"
+    "eval:live-research": "npm run build && node scripts/check-live-research.mjs",
+    "eval:campaign": "node scripts/check-campaign.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

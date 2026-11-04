@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-04 · P6-27 · Three-run campaign report — in progress
+
+- New `npm run eval:campaign` reads retained live trials and groups them by scenario, client, version and model. A trial passes only when the run completed with an outcome its route allows, with zero controller waits for input and every native launch succeeded and host-observed. Failed attempts keep their observed cause. Required pairs that have not run yet show as pending. Eight table cases cover the verdicts and the aggregation.
+- On the real campaign it reports EVAL-10 for Claude Code as `three-passes`, with four of ten attempts passed, which corrects my earlier count of three. EVAL-10 for Codex and EVAL-09 (implementation to PR) for both clients are pending. Writing it also corrected a scenario id I had wrong: implementation to PR is EVAL-09; EVAL-08 is the conditional merge.
+
+---
+
 ## 2026-11-04 · P6-27 · Three passing Claude research trials — in progress
 
 - After a fresh sign-in, a replacement EVAL-10 trial on code 5fa691e completed with unknowns: 969 s, no human wait, 29 launches, 64,384 output tokens, both delegated decisions accepted and supported, nine cited claims and three open questions. Claude Code now has three passing research trials (1113 s, 995 s and 969 s), and the failed attempts stay reported.
