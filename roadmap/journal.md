@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-04 · P6-27 · Third Claude trial stopped by token expiry — in progress
+
+- Trial 3 of the batch ran on code c0de26a in the next usage window. It was admitted, then exited `permission-denied` after 6 s with zero tokens, the same signature as the first refresh failure. `auth status` still reported a sign-in, since it checks that the login exists, not that its token is valid. The likely cause, unverified, is a token that expired overnight. No credential file was written, so the new deny held.
+- The batch stands at two passes and one infrastructure failure. A reliable campaign needs a token-refresh decision from the owner, or a fresh sign-in right before each batch.
+
+---
+
 ## 2026-11-03 · P6-27 · Developer-tools prompt from contained launches — in progress
 
 - The owner kept seeing macOS ask to install the command line developer tools during the Claude trials. Inside the profile `/var/select/developer_dir` is unreadable, so every launch's `/usr/bin/git` call asked the GUI session to install them. The profile now denies that request: Git stays unavailable inside the profile and no prompt appears. A real `sandbox-exec` case covers it; the case was not run with the deny removed, which would show the prompt again.
