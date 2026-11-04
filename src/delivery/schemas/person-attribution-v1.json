@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-person-attribution@1",
+  "description": "Descriptive metadata for an immutable human decision. This event grants no authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "basis", "record", "invocation"],
+  "properties": {
+    "schema": { "type": "string", "const": "wholeloop/delivery-person-attribution@1" },
+    "basis": { "type": "string", "pattern": "^[a-f0-9]{64}$", "maxLength": 64 },
+    "record": { "type": "string", "pattern": "^[a-f0-9]{64}$", "maxLength": 64 },
+    "invocation": { "type": "string", "pattern": "^[a-f0-9]{64}$", "maxLength": 64 },
+    "rationale": { "type": "string", "minLength": 1, "maxLength": 4096 }
+  }
+}

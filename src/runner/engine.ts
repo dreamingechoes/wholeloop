@@ -7,6 +7,8 @@ import type { DeliveryPlan } from '../delivery/plan.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { boundedRecoveryCall } from '../delivery/read-retry.js'
 import { executedThroughEffect } from '../delivery/reducer.js'
+import { deliveryDecision } from '../state/attribution.js'
+import { retainedDecisionRationale } from './attribution.js'
 import { deliveryRunner, type RunnerRuntime, type RunnerStageRecord } from './events.js'
 import { ForegroundOwner } from './foreground-owner.js'
 import { ManagedRunnerProcess } from './native-process.js'
@@ -659,6 +661,38 @@ export class DeliveryRunner {
     }
     let artifact: string | undefined
     let observation: string | undefined
+    let rationale: string | undefined
+    if (
+      valid &&
+      value &&
+      deliveryDecision({
+        schema: 'wholeloop/delivery-runner-event@1',
+        action: 'observed',
+        stage: stage.id,
+      }).delegated
+    ) {
+      try {
+        const request = this.store.get(lease.request),
+          context = this.store.basis(request),
+          records = (value.decisions ?? []).flatMap((digest) => {
+            try {
+              return [this.store.decisions.inspect(digest).record]
+            } catch {
+              return []
+            }
+          })
+        rationale = retainedDecisionRationale(
+          records,
+          request.run,
+          basis,
+          runnerDecisionRequirements(context.plan, stage, context.authority.grant.basis.kind).map(
+            (required) => required.id,
+          ),
+        )
+      } catch {
+        /* Attribution cannot change a stage's execution or authority result. */
+      }
+    }
     if (valid && value) {
       try {
         const captured = this.store.budgets.captureArtifact(
@@ -692,6 +726,7 @@ export class DeliveryRunner {
             : 'The original host did not establish a complete exact invocation observation.',
       },
       basis,
+      rationale !== undefined ? { rationale } : {},
     )
     if (status === 'passed' && artifact && observation)
       this.checkpoint(lease, stage, invocation, observation)

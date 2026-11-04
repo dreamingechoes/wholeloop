@@ -11,29 +11,7 @@ import { EXIT, type Io } from './io.js'
 /** Resolve from the actual imported core, including when a skill launcher was reached by symlink. */
 export function adapterRoot(json: boolean, io: Io) {
   try {
-    const executable = fileURLToPath(import.meta.url)
-    const root = canonicalPath(join(dirname(executable), '..'))
-    const file = join(root, 'wholeloop-artifacts.json')
-    const stat = lstatSync(file)
-    if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1024 * 1024)
-      throw new Error('No regular ownership manifest')
-    const value: unknown = JSON.parse(readFileSync(file, 'utf8'))
-    if (
-      !isObject(value) ||
-      value.schema !== 'wholeloop/adapter-artifacts@1' ||
-      value.version !== VERSION ||
-      typeof value.target !== 'string' ||
-      typeof value.source !== 'string' ||
-      !/^[a-f0-9]{64}$/.test(value.source) ||
-      canonicalPath(executable) !== canonicalPath(join(root, 'bin/wl.mjs')) ||
-      !Array.isArray(value.files) ||
-      !value.files.some(
-        (entry) => isObject(entry) && entry.path === 'bin/wl.mjs' && entry.sha256 === value.core,
-      ) ||
-      value.core !== artifactDigest(readFileSync(executable, 'utf8'))
-    )
-      throw new Error('No matching packaged core manifest')
-    adapterFor(value.target)
+    const { root, value } = packagedAdapter(fileURLToPath(import.meta.url))
     io.out(
       JSON.stringify(
         {
@@ -53,5 +31,41 @@ export function adapterRoot(json: boolean, io: Io) {
       'Run adapter root through an unchanged packaged skill launcher/core with a matching ownership manifest',
       EXIT.precondition,
     )
+  }
+}
+
+/** An owned manifest declares a client; it provides no authenticated worker evidence. */
+export function packagedAdapter(executable: string) {
+  const root = canonicalPath(join(dirname(executable), '..'))
+  const file = join(root, 'wholeloop-artifacts.json')
+  const stat = lstatSync(file)
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1024 * 1024)
+    throw new Error('No regular ownership manifest')
+  const value: unknown = JSON.parse(readFileSync(file, 'utf8'))
+  if (
+    !isObject(value) ||
+    value.schema !== 'wholeloop/adapter-artifacts@1' ||
+    value.version !== VERSION ||
+    typeof value.target !== 'string' ||
+    typeof value.source !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(value.source) ||
+    canonicalPath(executable) !== canonicalPath(join(root, 'bin/wl.mjs')) ||
+    !Array.isArray(value.files) ||
+    !value.files.some(
+      (entry) => isObject(entry) && entry.path === 'bin/wl.mjs' && entry.sha256 === value.core,
+    ) ||
+    value.core !== artifactDigest(readFileSync(executable, 'utf8'))
+  )
+    throw new Error('No matching packaged core manifest')
+  adapterFor(value.target)
+  return { root, value }
+}
+
+export function packagedClient(executable: string) {
+  try {
+    const { value } = packagedAdapter(executable)
+    return { client: value.target as string, source: 'declared' as const }
+  } catch {
+    return undefined
   }
 }

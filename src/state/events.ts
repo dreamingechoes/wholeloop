@@ -51,6 +51,7 @@ import {
   validActor,
   validRationale,
 } from './attribution.js'
+import { eventAttribution } from './attribution-context.js'
 import { replayMailbox } from './mailbox.js'
 
 export const KINDS = ['initiative', 'scope', 'slice', 'part', 'brief', 'review'] as const
@@ -490,6 +491,7 @@ export function event(
     throw new Error('Invalid event data; contents omitted')
   if (!keys(metadata as unknown as Record<string, unknown>, ['actor', 'rationale']))
     throw new Error('Invalid event metadata; contents omitted')
+  metadata = eventAttribution(data.type, metadata)
   const value = {
     v: 1,
     id: `ev-${randomUUID()}`,

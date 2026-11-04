@@ -7,6 +7,10 @@
 
 ---
 
+## Private decision attribution
+
+Person decisions support `--channel <name>` plus one optional `--rationale-stdin` or `--rationale-file <path>`. These flags apply to `answer decision.<id>=<outcome>`, `frame finalize`, `build agree`, `pr tested`, `learn decide`, `ramp decide`, and delivery `human-decide`, `pause`, `resume` and `stop`. A rationale must be nonblank UTF-8 of at most 4096 bytes. A declared agent cannot supply person metadata. No option accepts the optional private rationale text in argv; default reads omit it. See [state and messaging](./state-and-messaging.md#optional-event-attribution) for provenance, privacy and retry semantics.
+
 ## Design rules
 
 1. **Every command has `--json`**, with a versioned schema. Skills only ever consume JSON.

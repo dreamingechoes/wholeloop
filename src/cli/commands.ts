@@ -1,3 +1,5 @@
+import { ATTRIBUTED_COMMANDS, ATTRIBUTION_OPTIONS } from './attribution.js'
+
 export interface Command {
   path: string
   arguments: string
@@ -1967,4 +1969,9 @@ export const COMMANDS: readonly Command[] = [
     schema: 'wholeloop/commit-check@1',
     summary: 'Validate a commit message without changing it',
   },
-]
+].map((command) => ({
+  ...command,
+  options: ATTRIBUTED_COMMANDS.has(command.path)
+    ? [...command.options, ...ATTRIBUTION_OPTIONS]
+    : command.options,
+}))

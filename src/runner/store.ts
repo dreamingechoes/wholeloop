@@ -269,6 +269,7 @@ export class RunnerStore {
     lease: RunnerLease,
     value: Omit<RunnerPayload, 'schema' | 'basis' | 'request' | 'controller' | 'generation'>,
     basis = this.record(lease.request).basis,
+    metadata: { rationale?: string } = {},
   ) {
     const request = this.get(lease.request)
     this.lifecycle.journal.transaction(ACTOR, (view, append) => {
@@ -279,12 +280,16 @@ export class RunnerStore {
         (value.action === 'started' && !this.live(lease))
       )
         throw new DeliveryRunnerError('inactive-runner-lease')
-      append(request.run, {
-        ...value,
-        schema: 'wholeloop/delivery-runner-event@1',
-        basis,
-        ...lease,
-      })
+      append(
+        request.run,
+        {
+          ...value,
+          schema: 'wholeloop/delivery-runner-event@1',
+          basis,
+          ...lease,
+        },
+        metadata,
+      )
     })
   }
   release(lease: RunnerLease, reason: string) {

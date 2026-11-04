@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
+import { currentPersonAttribution } from '../state/attribution-context.js'
 import type { RunnerStageRecord } from './events.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
@@ -163,7 +164,8 @@ export class RunnerHumanDecisions {
     )
       throw new DeliveryRunnerError('human-decision-input')
     safeSourceText(JSON.stringify({ by, note }), 8192)
-    return this.store.files.locked(() => {
+    const metadata = currentPersonAttribution()
+    const result = this.store.files.locked(() => {
       const opened = this.pending(request, record)
       if (!opened) throw new DeliveryRunnerError('human-decision-not-requested')
       if (opened.decision !== input.decision || opened.subject !== input.subject)
@@ -193,5 +195,44 @@ export class RunnerHumanDecisions {
       )
       return value
     })
+    if (metadata) {
+      const journal = this.store.lifecycle.journal,
+        digest = contractDigest(result),
+        actor = {
+          kind: 'operator' as const,
+          name: result.by,
+          ...(metadata.actor?.kind === 'person' && metadata.actor.channel !== undefined
+            ? { channel: metadata.actor.channel }
+            : {}),
+        },
+        payload = {
+          schema: 'wholeloop/delivery-person-attribution@1' as const,
+          basis: result.plan,
+          record: digest,
+          invocation: result.invocation,
+          ...(metadata.rationale !== undefined ? { rationale: metadata.rationale } : {}),
+        }
+      // Publish the immutable decision first. A retry may repair only its missing description.
+      journal.transaction(actor, (_states, append) => {
+        const prior = journal
+          .events()
+          .find(
+            (entry) =>
+              entry.run === request.run &&
+              entry.payload.schema === payload.schema &&
+              entry.payload.invocation === result.invocation,
+          )
+        if (prior) {
+          if (
+            contractDigest(prior.payload) !== contractDigest(payload) ||
+            contractDigest(prior.actor) !== contractDigest(actor)
+          )
+            throw new DeliveryRunnerError('human-attribution-already-recorded')
+          return
+        }
+        append(request.run, payload)
+      })
+    }
+    return result
   }
 }

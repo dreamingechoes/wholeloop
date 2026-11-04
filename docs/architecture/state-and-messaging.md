@@ -3,7 +3,7 @@
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later Build/Rollout/Learn workflows and canonical URL adoption/shared outboxes are implemented locally. Optional journal attribution is implemented through store APIs; its adapter/CLI producers remain P6-36 work. Live adapter execution remains an manual conformance check. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
+> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later Build/Rollout/Learn workflows and canonical URL adoption/shared outboxes are implemented locally. Optional journal attribution includes packaged client declarations and private person-decision metadata. Live adapter execution remains an manual conformance check. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
 
 ---
 
@@ -55,7 +55,7 @@ Ordinary locking still never steals ownership. Explicit delivery lock-status/rep
 
 ## Optional event attribution
 
-The pre-freeze journal contract accepts optional attribution ([ADR-0210](../decisions/0210-operator-overview-and-change-feed.md)). This first P6-36 increment implements validation, store APIs and replay; generated adapter declarations, person-command channel/stdin/file options and delegated-reason producers remain pending. No client or model is inferred from a name, message, environment variable or worker response.
+The pre-freeze journal contract accepts optional attribution ([ADR-0210](../decisions/0210-operator-overview-and-change-feed.md)). Validation, store APIs, packaged adapter declarations and person-command producers share this contract. No client or model is inferred from a name, message, environment variable or worker response.
 
 | Field | Who may supply it | Meaning |
 | --- | --- | --- |
@@ -67,7 +67,15 @@ Identity source is a provenance label, not authentication or evidence of native 
 
 The state store's transaction append accepts optional metadata as its third argument; `event` accepts it as its fourth. The delivery append accepts an optional `{ rationale }` third argument; `deliveryEvent` accepts it as its sixth. Actor input is copied before retention. Validation rejects agent channels, worker-supplied person reasons, unknown provenance, malformed/oversized identity and non-decision reasons before journal mutation. Client versions are bounded to 128 UTF-8 bytes and models to 256, both single-line. None of these fields changes a grant, approval, transition or capability.
 
-Legacy events retain their original bytes and replay behavior. Attribution participates in delivery event digests, so adding or changing it creates different integrity bytes; it never rewrites earlier records. Projections, bounded resume context, delivery reports and default diagnostics omit the new private reason. Raw journals remain private; exporting a recovery bundle still requires explicit `--include-private`. This metadata has no argv ingestion path in this increment.
+Legacy events retain their original bytes and replay behavior. Attribution participates in delivery event digests, so adding or changing it creates different integrity bytes; it never rewrites earlier records. Projections, bounded resume context, delivery reports and default diagnostics omit the new private reason. Raw journals remain private; exporting a recovery bundle still requires explicit `--include-private`. The optional rationale has no argv ingestion path.
+
+Generated adapters declare only their client ID through the existing owned package manifest. The executing core verifies that manifest against its actual bytes; package version is not a native-client version. Missing or invalid declarations remain unknown. Invocation-scoped attribution keeps concurrent clients separate and prevents a declared agent from replacing its actor or reading person rationale inputs. This descriptive boundary supplements the existing worker containment; it is not authentication.
+
+Person decision commands accept `--channel`, and one of `--rationale-stdin` or `--rationale-file`. Inputs are bounded before decoding, must be valid UTF-8, and retain their original text. Files must be regular, with no symlink leaf. Errors omit contents and paths. `answer` permits these flags only for a decision question. Existing semantic reason/note options retain their original contract; they never populate the new private rationale. Incidental non-decision events in a transaction carry no rationale.
+
+A supervised delivery human decision keeps its existing immutable record unchanged. Optional attribution is a separate `wholeloop/delivery-person-attribution@1` journal payload referring to its record digest and invocation. The reducer validates the operator, basis and intervention policy without creating approval or lifecycle state. The decision publishes first; while the original request remains pending, a retry can repair a missing description. Identical retries append nothing, and conflicting descriptions cannot rewrite history. Controls attach optional person metadata to their original control event.
+
+The controller copies an existing plan/build-plan/acceptance judgment rationale only from a retained decision on the exact run, plan and required decision ID. It never generates one, uses a challenge as a substitute, or changes execution on an attribution failure. An original reason exceeding the journal's byte bound stays in its original private decision record; its journal rationale remains absent. Fixture and observed native stage provenance remain distinct.
 
 ## Shared work and the publication outbox
 

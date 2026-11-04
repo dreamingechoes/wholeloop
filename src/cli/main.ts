@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { VERSION } from '../version.js'
 import { adapterRoot } from './adapter-root.js'
 import { parseArguments } from './arguments.js'
+import { withCommandAttribution } from './attribution.js'
 import { buildCommand } from './build.js'
 import { challengeCommand } from './challenge.js'
 import { COMMANDS } from './commands.js'
@@ -111,114 +112,119 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
     )
     if (!command.arguments && parsed.positional.length)
       throw new CliError(`Unexpected argument for ${command.path}`)
-    if (command.path.startsWith('delivery decision-'))
-      return delegatedDecisionsCommand(command.path, parsed, root, json, io)
-    if (
-      command.path.startsWith('delivery runner-') ||
-      ['delivery pause', 'delivery resume', 'delivery stop', 'delivery human-decide'].includes(
-        command.path,
+    return withCommandAttribution(command.path, parsed, root, () => {
+      if (command.path.startsWith('delivery decision-'))
+        return delegatedDecisionsCommand(command.path, parsed, root, json, io)
+      if (
+        command.path.startsWith('delivery runner-') ||
+        ['delivery pause', 'delivery resume', 'delivery stop', 'delivery human-decide'].includes(
+          command.path,
+        )
       )
-    )
-      return deliveryRunnerCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('delivery '))
-      return deliveryCommand(command.path, parsed, root, json, io)
-    if (command.path === 'release verify') return releaseVerifyCommand(parsed, root, json, io)
-    if (command.path === 'release artifacts') return releaseArtifacts(parsed, root, json, io)
-    if (command.path === 'release notes') return releaseNotesCommand(parsed, root, json, io)
-    if (command.path === 'release preflight') return releasePreflightCommand(parsed, root, json, io)
-    if (command.path.startsWith('learn '))
-      return learningCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('maintenance '))
-      return maintenanceCommand(command.path, parsed, root, json, io)
-    if (command.path === 'launch dispatch')
-      throw new CliError('This command requires the asynchronous dispatcher')
-    if (command.path.startsWith('launch '))
-      return launchCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('env '))
-      return environmentCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('review '))
-      return reviewCommand(command.path, parsed, root, json, io)
-    if (['verify begin', 'verify complete'].includes(command.path))
-      return verificationCommand(command.path, parsed, root, json, io)
-    if (
-      (command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
-      command.path === 'fanout run' ||
-      command.path.startsWith('conformance ') ||
-      command.path === 'adopt' ||
-      command.path.startsWith('share ') ||
-      command.path === 'eval grounding' ||
-      command.path === 'sync' ||
-      command.path === 'provider test' ||
-      command.path === 'provider read-flags' ||
-      command.path === 'verify suite' ||
-      command.path.startsWith('pr ') ||
-      command.path.startsWith('ramp ') ||
-      command.path.startsWith('measure ')
-    )
-      throw new CliError('This command requires the asynchronous dispatcher')
-    if (command.path === 'install' || command.path === 'uninstall')
-      return installationCommand(command.path, parsed, root, json, io)
-    if (command.path === 'doctor') return doctorCommand(parsed, root, json, io)
-    if (command.path === 'adapter root') return adapterRoot(json, io)
-    if (command.path === 'adapter build-native')
-      return generateCommand(parsed, root, json, io, true)
-    if (command.path === 'build') return generateCommand(parsed, root, json, io)
-    if (command.path.startsWith('build ')) return buildCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('worktree '))
-      return worktreeCommand(command.path, parsed, root, json, io)
-    if (command.path === 'eval gates') return gateEvalCommand(parsed, json, io)
-    if (command.path === 'eval definitions') return evalCommand(parsed, json, io)
-    if (command.path.startsWith('challenge '))
-      return challengeCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('slices '))
-      return slicesCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('scopes '))
-      return scopesCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('spec ')) return specCommand(command.path, parsed, json, io)
-    if (command.path.startsWith('research '))
-      return researchCommand(command.path, parsed, root, json, io)
-    if (['next', 'status', 'setup'].includes(command.path))
-      return utilityCommand(command.path, parsed, root, json, io)
-    if (/^(template|lens) |^profile (list|test|scaffold)$/.test(command.path))
-      return extensionCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('frame ')) return frameCommand(command.path, parsed, root, json, io)
-    if (command.path === 'provider plan') return providerPlanCommand(parsed, root, json, io)
-    if (command.path.startsWith('provider ') || command.path === 'mcp add')
-      return providerCommand(command.path, parsed, root, json, io)
-    if (['discover', 'resolve'].includes(command.path))
-      return discoveryCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('profile '))
-      return profileCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('step ') || command.path === 'answer')
-      return flowCommand(command.path, parsed, root, json, io)
-    if (command.path.startsWith('msg ') || ['handoff', 'resume'].includes(command.path))
-      return mailboxCommand(command.path, parsed, json, io)
-    if (command.path.startsWith('state ') || ['note', 'link', 'open'].includes(command.path))
-      return stateCommand(command.path, parsed, json, io)
-    switch (command.path) {
-      case 'config show':
-      case 'config schema':
-        return configCommand(command.path.split(' ')[1] ?? '', parsed, root, json, io)
-      case 'docs nav':
-        return docsNav(root, json, io)
-      case 'docs check':
-        return docsCheck(root, json, io)
-      case 'eval delivery-schema':
-      case 'eval delivery-catalog':
-      case 'eval delivery-seed':
-      case 'eval delivery-inspect':
-        return evaluationFixturesCommand(command.path, parsed, root, json, io)
-      case 'docs reference':
-        return docsReference(parsed, root, json, io)
-      case 'harness check':
-        return harnessCheck(root, json, io)
-      case 'guard commit-msg':
-        if (parsed.positional.length > 1) throw new CliError('Expected one commit message file')
-        return commitCheck(parsed.positional[0], json, io)
-      default:
-        throw new Error(`No handler registered for ${command.path}`)
-    }
+        return deliveryRunnerCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('delivery '))
+        return deliveryCommand(command.path, parsed, root, json, io)
+      if (command.path === 'release verify') return releaseVerifyCommand(parsed, root, json, io)
+      if (command.path === 'release artifacts') return releaseArtifacts(parsed, root, json, io)
+      if (command.path === 'release notes') return releaseNotesCommand(parsed, root, json, io)
+      if (command.path === 'release preflight')
+        return releasePreflightCommand(parsed, root, json, io)
+      if (command.path.startsWith('learn '))
+        return learningCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('maintenance '))
+        return maintenanceCommand(command.path, parsed, root, json, io)
+      if (command.path === 'launch dispatch')
+        throw new CliError('This command requires the asynchronous dispatcher')
+      if (command.path.startsWith('launch '))
+        return launchCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('env '))
+        return environmentCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('review '))
+        return reviewCommand(command.path, parsed, root, json, io)
+      if (['verify begin', 'verify complete'].includes(command.path))
+        return verificationCommand(command.path, parsed, root, json, io)
+      if (
+        (command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
+        command.path === 'fanout run' ||
+        command.path.startsWith('conformance ') ||
+        command.path === 'adopt' ||
+        command.path.startsWith('share ') ||
+        command.path === 'eval grounding' ||
+        command.path === 'sync' ||
+        command.path === 'provider test' ||
+        command.path === 'provider read-flags' ||
+        command.path === 'verify suite' ||
+        command.path.startsWith('pr ') ||
+        command.path.startsWith('ramp ') ||
+        command.path.startsWith('measure ')
+      )
+        throw new CliError('This command requires the asynchronous dispatcher')
+      if (command.path === 'install' || command.path === 'uninstall')
+        return installationCommand(command.path, parsed, root, json, io)
+      if (command.path === 'doctor') return doctorCommand(parsed, root, json, io)
+      if (command.path === 'adapter root') return adapterRoot(json, io)
+      if (command.path === 'adapter build-native')
+        return generateCommand(parsed, root, json, io, true)
+      if (command.path === 'build') return generateCommand(parsed, root, json, io)
+      if (command.path.startsWith('build '))
+        return buildCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('gate ')) return gateCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('worktree '))
+        return worktreeCommand(command.path, parsed, root, json, io)
+      if (command.path === 'eval gates') return gateEvalCommand(parsed, json, io)
+      if (command.path === 'eval definitions') return evalCommand(parsed, json, io)
+      if (command.path.startsWith('challenge '))
+        return challengeCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('slices '))
+        return slicesCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('scopes '))
+        return scopesCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('spec ')) return specCommand(command.path, parsed, json, io)
+      if (command.path.startsWith('research '))
+        return researchCommand(command.path, parsed, root, json, io)
+      if (['next', 'status', 'setup'].includes(command.path))
+        return utilityCommand(command.path, parsed, root, json, io)
+      if (/^(template|lens) |^profile (list|test|scaffold)$/.test(command.path))
+        return extensionCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('frame '))
+        return frameCommand(command.path, parsed, root, json, io)
+      if (command.path === 'provider plan') return providerPlanCommand(parsed, root, json, io)
+      if (command.path.startsWith('provider ') || command.path === 'mcp add')
+        return providerCommand(command.path, parsed, root, json, io)
+      if (['discover', 'resolve'].includes(command.path))
+        return discoveryCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('profile '))
+        return profileCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('step ') || command.path === 'answer')
+        return flowCommand(command.path, parsed, root, json, io)
+      if (command.path.startsWith('msg ') || ['handoff', 'resume'].includes(command.path))
+        return mailboxCommand(command.path, parsed, json, io)
+      if (command.path.startsWith('state ') || ['note', 'link', 'open'].includes(command.path))
+        return stateCommand(command.path, parsed, json, io)
+      switch (command.path) {
+        case 'config show':
+        case 'config schema':
+          return configCommand(command.path.split(' ')[1] ?? '', parsed, root, json, io)
+        case 'docs nav':
+          return docsNav(root, json, io)
+        case 'docs check':
+          return docsCheck(root, json, io)
+        case 'eval delivery-schema':
+        case 'eval delivery-catalog':
+        case 'eval delivery-seed':
+        case 'eval delivery-inspect':
+          return evaluationFixturesCommand(command.path, parsed, root, json, io)
+        case 'docs reference':
+          return docsReference(parsed, root, json, io)
+        case 'harness check':
+          return harnessCheck(root, json, io)
+        case 'guard commit-msg':
+          if (parsed.positional.length > 1) throw new CliError('Expected one commit message file')
+          return commitCheck(parsed.positional[0], json, io)
+        default:
+          throw new Error(`No handler registered for ${command.path}`)
+      }
+    })
   } catch (error) {
     const code = error instanceof CliError ? error.code : EXIT.unexpected
     const message = error instanceof Error ? error.message : String(error)
@@ -290,73 +296,76 @@ export async function runAsync(
         .filter((option) => option.includes(' '))
         .map((option) => option.split(' ')[0] ?? option),
     )
-    if (command.path.startsWith('guard '))
-      return await guardCommand(command.path, parsed, root, json, io)
-    if (
-      [
-        'delivery environment-backend',
-        'delivery environment-start',
-        'delivery environment-status',
-        'delivery environment-stop',
-        'delivery environment-reconcile',
-        'delivery environment-retire',
-      ].includes(command.path)
-    )
-      return await deliveryEnvironmentRuntimeCommand(command.path, parsed, root, json, io)
-    if (
-      [
-        'delivery acceptance-run',
-        'delivery acceptance-report',
-        'delivery acceptance-seal',
-        'delivery acceptance-human-note',
-      ].includes(command.path)
-    )
-      return await deliveryAcceptanceAsyncCommand(command.path, parsed, root, json, io)
-    if (
-      [
-        'delivery integration-assembly-schema',
-        'delivery integration-assemble',
-        'delivery integration-assembly-status',
-        'delivery integration-assembly-reconcile',
-        'delivery integration-verify',
-        'delivery integration-report',
-      ].includes(command.path)
-    )
-      return await deliveryAssemblyCommand(command.path, parsed, root, json, io)
-    if (command.path === 'delivery private-sensitivity')
-      return await deliveryPrivateAsyncCommand(parsed, root, json, io)
-    if (command.path === 'delivery recover')
-      return await deliveryRecoverCommand(parsed, root, json, io)
-    if (command.path === 'delivery run' || command.path === 'delivery reconcile')
-      return await deliveryRunnerAsyncCommand(
-        command.path,
-        parsed,
-        root,
-        json,
-        io,
-        fileURLToPath(import.meta.url),
+    return await withCommandAttribution(command.path, parsed, root, async () => {
+      if (command.path.startsWith('guard '))
+        return await guardCommand(command.path, parsed, root, json, io)
+      if (
+        [
+          'delivery environment-backend',
+          'delivery environment-start',
+          'delivery environment-status',
+          'delivery environment-stop',
+          'delivery environment-reconcile',
+          'delivery environment-retire',
+        ].includes(command.path)
       )
-    if (command.path === 'provider read-flags') return await flagReadCommand(parsed, root, json, io)
-    if (command.path === 'launch dispatch')
-      return await launchDispatchCommand(parsed, root, json, io)
-    if (command.path === 'fanout run') return await fanoutCommand(parsed, root, json, io)
-    if (command.path.startsWith('conformance '))
-      return await conformanceCommand(command.path, parsed, root, json, io)
-    if (command.path === 'adopt' || command.path.startsWith('share '))
-      return await sharingCommand(command.path, parsed, root, json, io)
-    return command.path === 'eval grounding'
-      ? await groundingCommand(parsed, json, io)
-      : command.path === 'sync'
-        ? await syncCommand(parsed, root, json, io)
-        : command.path === 'provider test'
-          ? await providerFixtureCommand(parsed, root, json, io)
-          : command.path.startsWith('measure ')
-            ? await impactCommand(command.path, parsed, root, json, io)
-            : command.path.startsWith('ramp ')
-              ? await rampCommand(command.path, parsed, root, json, io)
-              : command.path.startsWith('pr ')
-                ? await pullRequestCommand(command.path, parsed, root, json, io)
-                : await verificationSuiteCommand(parsed, root, json, io)
+        return await deliveryEnvironmentRuntimeCommand(command.path, parsed, root, json, io)
+      if (
+        [
+          'delivery acceptance-run',
+          'delivery acceptance-report',
+          'delivery acceptance-seal',
+          'delivery acceptance-human-note',
+        ].includes(command.path)
+      )
+        return await deliveryAcceptanceAsyncCommand(command.path, parsed, root, json, io)
+      if (
+        [
+          'delivery integration-assembly-schema',
+          'delivery integration-assemble',
+          'delivery integration-assembly-status',
+          'delivery integration-assembly-reconcile',
+          'delivery integration-verify',
+          'delivery integration-report',
+        ].includes(command.path)
+      )
+        return await deliveryAssemblyCommand(command.path, parsed, root, json, io)
+      if (command.path === 'delivery private-sensitivity')
+        return await deliveryPrivateAsyncCommand(parsed, root, json, io)
+      if (command.path === 'delivery recover')
+        return await deliveryRecoverCommand(parsed, root, json, io)
+      if (command.path === 'delivery run' || command.path === 'delivery reconcile')
+        return await deliveryRunnerAsyncCommand(
+          command.path,
+          parsed,
+          root,
+          json,
+          io,
+          fileURLToPath(import.meta.url),
+        )
+      if (command.path === 'provider read-flags')
+        return await flagReadCommand(parsed, root, json, io)
+      if (command.path === 'launch dispatch')
+        return await launchDispatchCommand(parsed, root, json, io)
+      if (command.path === 'fanout run') return await fanoutCommand(parsed, root, json, io)
+      if (command.path.startsWith('conformance '))
+        return await conformanceCommand(command.path, parsed, root, json, io)
+      if (command.path === 'adopt' || command.path.startsWith('share '))
+        return await sharingCommand(command.path, parsed, root, json, io)
+      return command.path === 'eval grounding'
+        ? await groundingCommand(parsed, json, io)
+        : command.path === 'sync'
+          ? await syncCommand(parsed, root, json, io)
+          : command.path === 'provider test'
+            ? await providerFixtureCommand(parsed, root, json, io)
+            : command.path.startsWith('measure ')
+              ? await impactCommand(command.path, parsed, root, json, io)
+              : command.path.startsWith('ramp ')
+                ? await rampCommand(command.path, parsed, root, json, io)
+                : command.path.startsWith('pr ')
+                  ? await pullRequestCommand(command.path, parsed, root, json, io)
+                  : await verificationSuiteCommand(parsed, root, json, io)
+    })
   } catch (error) {
     const code = error instanceof CliError ? error.code : EXIT.precondition
     const message = error instanceof Error ? error.message : 'Asynchronous command failed'

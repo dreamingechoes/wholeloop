@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-04 · P6-36 · Attribution producers — in progress
+
+- Complete packaged client declarations through the existing manifest and unchanged core-byte verification. Declare only the client ID; native version and model remain unknown. Invocation-scoped metadata keeps concurrent callers separate and refuses person metadata in a declared agent context before any private input read.
+- Add person-decision channel and bounded UTF-8 rationale ingestion through stdin or a regular file. Reject conflicting inputs, invalid Unicode, oversized reasons, symlink leaves and non-decision answers without mutation or private error output. Preserve legacy semantic reason/note options without copying them into optional private rationale.
+- Keep supervised human decision records unchanged. Add the descriptive `wholeloop/delivery-person-attribution@1` payload with the original record digest/invocation, no approval facet and no state transition. Publish the original first; an identical pending retry repairs only a missing description and cannot rewrite an existing one. This additive identity avoids changing another frozen envelope or repurposing a control event as an approval.
+- Copy existing retained plan/build-plan/acceptance judgment reasons only on the exact run, plan and required decision. Oversized original reasons remain in their original private record, with absent optional journal rationale. Attribution failures cannot change execution or authority. Other original delegated records retain their existing inspectable reasons.
+- Focused macOS verification passes 513 tests in six files; documentation checks 441 files with zero problems, harness checks 151 files with zero findings, and Markdown reports zero issues. The compiled CLI also passes actual Linux arm64 stdin-to-decision/read-redaction tests on Node 24.22.0 and the published Node 20.0.0 floor in a read-only, network-disabled disposable container. No native client or model runs. The first broad fast gate was interrupted with `CHECK FAIL (test)` after sandboxed runner cases could not observe their leases. The isolated failing case passes with the required local process permissions; no runner check is weakened. The correctly permissioned per-commit gate passes: `CHECK PASS (fast) in 643s`. The full task-closure gate remains pending; P6-36 stays in progress until it passes.
+
+---
+
 ## 2026-11-04 · P6-36 · Optional attribution contract — in progress
 
 - Defer Claude EVAL-09 until the operator's reported quota reset on 2026-11-06; keep its real acceptance open and continue the first independent task, P6-36. This increment spends no native model quota and starts no actual native client.

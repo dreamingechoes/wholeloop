@@ -13,6 +13,7 @@ import {
   validActor,
   validRationale,
 } from '../state/attribution.js'
+import { currentPersonAttribution } from '../state/attribution-context.js'
 import {
   type BudgetFacet,
   type BudgetPayload,
@@ -51,6 +52,7 @@ import attemptsSchema from './schemas/attempts-v1.json' with { type: 'json' }
 import controlSchema from './schemas/control-event-v1.json' with { type: 'json' }
 import eventSchema from './schemas/event-v1.json' with { type: 'json' }
 import grantSchema from './schemas/grant-event-v1.json' with { type: 'json' }
+import personAttributionSchema from './schemas/person-attribution-v1.json' with { type: 'json' }
 import registrationSchema from './schemas/registration-event-v1.json' with { type: 'json' }
 import stateSchema from './schemas/state-v1.json' with { type: 'json' }
 
@@ -67,6 +69,7 @@ export const DELIVERY_PAYLOAD_SCHEMAS = [
   recoveryEventSchema,
   budgetEventSchema,
   runnerEventSchema,
+  personAttributionSchema,
 ]
 export const DELIVERY_FACET_SCHEMAS = [
   attemptsSchema,
@@ -168,6 +171,7 @@ export interface AttemptPayload {
   evidence?: string
 }
 export type DeliveryPayload =
+  | PersonAttributionPayload
   | RegistrationPayload
   | GrantPayload
   | ControlPayload
@@ -178,6 +182,14 @@ export type DeliveryPayload =
   | RecoveryPayload
   | BudgetPayload
   | RunnerPayload
+/** An immutable record reference, never a second approval or a lifecycle transition. */
+export interface PersonAttributionPayload {
+  schema: 'wholeloop/delivery-person-attribution@1'
+  basis: string
+  record: string
+  invocation: string
+  rationale?: string
+}
 export interface DeliveryEvent {
   schema: 'wholeloop/delivery-event@1'
   id: string
@@ -246,6 +258,11 @@ export function validateDeliveryEvent(value: unknown): asserts value is Delivery
     throw new DeliveryJournalError('invalid-event')
   }
   const event = value as unknown as DeliveryEvent
+  if (
+    event.payload.schema === 'wholeloop/delivery-person-attribution@1' &&
+    (event.actor.kind !== 'operator' || !validRationale(event.actor, event.payload.rationale, true))
+  )
+    throw new DeliveryJournalError('invalid-attribution')
   const decision = deliveryDecision(payload as { schema: string; [key: string]: unknown })
   if (
     !validActor(event.actor, 'delivery') ||
@@ -268,6 +285,17 @@ export function deliveryEvent(
 ): DeliveryEvent {
   if (Object.keys(metadata).some((key) => key !== 'rationale'))
     throw new DeliveryJournalError('invalid-attribution')
+  const person = currentPersonAttribution()
+  if (actor.kind === 'operator' && person) {
+    actor = {
+      ...actor,
+      ...(person.actor?.kind === 'person' && person.actor.channel !== undefined
+        ? { channel: person.actor.channel }
+        : {}),
+    }
+    if (payload.schema === 'wholeloop/delivery-control-event@1' && person.rationale !== undefined)
+      metadata = { rationale: person.rationale, ...metadata }
+  }
   const value = {
     schema: 'wholeloop/delivery-event@1' as const,
     id: `delivery-event-${randomUUID()}`,

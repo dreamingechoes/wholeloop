@@ -5,6 +5,10 @@
 > [!NOTE]
 > **Status: ✅ implemented.** P6-34 policy, private rubric pins, decision records, current-plan readers and no-prompt fallbacks pass complete macOS/Linux checks. The research host runs the research route on the synthetic transport; real native delivery and research trials remain open in P6-27 and P6-33. Policy preflight and synthetic host controls are not native-model certification. See [ADR-0112](../decisions/0112-private-delegation-and-independent-machine-decisions.md).
 
+## Optional private attribution
+
+A person recording a supervised `delivery human-decide` or a `delivery pause`, `resume` or `stop` control can add `--channel terminal` and `--rationale-file <private-file>` (or `--rationale-stdin`). The rationale is bounded to 4096 UTF-8 bytes and omitted from the default report and diagnostics. It grants no authority. Human decision attribution refers to the immutable original record; an identical retry records no additional event. A delegated plan/build-plan/acceptance observation copies only its original retained judgment reason, without inventing an explanation. See [optional attribution](../architecture/state-and-messaging.md#optional-event-attribution).
+
 ## Independent choices
 
 Choose the endpoint, intervention policy, named decision delegations and observed runtime independently. A research-report endpoint grants no code edits; to-pr grants no merge; none grants no extra effect. Interaction profiles affect communication/concurrency and cannot select these permissions.

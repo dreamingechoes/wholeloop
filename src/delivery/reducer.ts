@@ -314,6 +314,11 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
             throw new DeliveryJournalError('completion-actor')
           control(state, payload)
           break
+        case 'wholeloop/delivery-person-attribution@1':
+          if (payload.basis !== state.basis.digest || state.policy.intervention === 'none')
+            throw new DeliveryJournalError('person-attribution-basis')
+          // Retain its journal position and digest, but never synthesize an approval facet.
+          break
         case 'wholeloop/delivery-attempt-event@1': {
           if (event.actor.kind !== 'controller') throw new DeliveryJournalError('attempt-actor')
           const facet = deliveryAttempts(state)
