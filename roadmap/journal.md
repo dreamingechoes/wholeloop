@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-04 · P6-27 · Three passing Claude research trials — in progress
+
+- After a fresh sign-in, a replacement EVAL-10 trial on code 5fa691e completed with unknowns: 969 s, no human wait, 29 launches, 64,384 output tokens, both delegated decisions accepted and supported, nine cited claims and three open questions. Claude Code now has three passing research trials (1113 s, 995 s and 969 s), and the failed attempts stay reported.
+- Remaining for P6-27: three Codex research trials after its weekly quota reset, the implementation-to-PR trials on the hosted trial repository for both clients, the three-run report, and the owner's token-refresh decision for long campaigns.
+
+---
+
 ## 2026-11-04 · P6-27 · Third Claude trial stopped by token expiry — in progress
 
 - Trial 3 of the batch ran on code c0de26a in the next usage window. It was admitted, then exited `permission-denied` after 6 s with zero tokens, the same signature as the first refresh failure. `auth status` still reported a sign-in, since it checks that the login exists, not that its token is valid. The likely cause, unverified, is a token that expired overnight. No credential file was written, so the new deny held.
