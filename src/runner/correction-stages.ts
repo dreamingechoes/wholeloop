@@ -6,6 +6,8 @@ import type { DeliveryCorrection, DeliveryPlan } from '../delivery/plan.js'
 import type { DeliveryQueue, QueueAssignment } from '../delivery/queue.js'
 import { DeliveryWorkspaces } from '../delivery/workspaces.js'
 import type { AssemblyGitControl } from '../integration/git-process.js'
+import { correctionTask, CORRECTION_MESSAGE as MESSAGE } from './correction-input.js'
+import { type CorrectionBinding, correctionProduction } from './correction-production.js'
 import { RunnerDecisionStages } from './decision-stages.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
@@ -17,9 +19,6 @@ import { RunnerNativeStage } from './native-stage.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 import { type RunnerWorkerOptions, RunnerWorkerStages } from './worker-stages.js'
-
-const MESSAGE =
-  'fix(delivery): correct the recorded failure\n\nApply the owned correction for the continuation revision.\nVerification and acceptance remain pending against this commit.'
 
 /** What the correction builder is told: the retained failure, nothing more. */
 export interface RunnerCorrectionFeedback {
@@ -33,28 +32,6 @@ export interface RunnerCorrectionFeedback {
     person: ReturnType<RunnerHumanDecisions['originalFeedback']> | null
   }
 }
-interface CorrectionBinding {
-  version: 1
-  request: string
-  plan: string
-  stage: string
-  invocation: string
-  unit: string
-  deadline: string
-  controller: string
-  workspace: string
-  prior: QueueAssignment
-  feedback: RunnerCorrectionFeedback
-}
-const correctionTask = (feedback: RunnerCorrectionFeedback) => ({
-  kind: 'repair' as const,
-  prompt: JSON.stringify({
-    instruction:
-      'Correct only the recorded integration or acceptance failure within this pinned unit, starting from its failed head. Preserve acceptance definitions and criteria. Report production honestly; the commit and independent QA are separate.',
-    feedback,
-  }),
-})
-
 /**
  * The `correction-N:<unit>` stage of a continuation (ADR-0208). The unit's
  * builder attempt from this revision is fenced and requeued with a
@@ -85,11 +62,33 @@ export class RunnerCorrectionStages {
       throw new DeliveryRunnerError('correction-stage-invocation')
     return `delivery/runner-corrections/${invocation}`
   }
-  private context(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+  private context(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    active = true,
+  ) {
     const digest = contractDigest(request),
-      basis = this.store.basis(request),
+      actual = this.store.get(digest),
+      basis = active
+        ? this.store.basis(actual)
+        : this.store.planning.getPlan(
+            actual.run,
+            this.store.lifecycle.journal
+              .get(actual.run)
+              .plans.find((entry) => entry.digest === record.basis)?.revision ?? 0,
+          ),
+      retained = this.store
+        .record(digest)
+        .stages.find(
+          (entry) =>
+            entry.id === record.id &&
+            entry.invocation === record.invocation &&
+            entry.basis === record.basis,
+        ),
       stage = runnerRoute(basis.plan).find((entry) => entry.id === record.id)
     if (
+      !retained ||
+      retained.origin ||
       contractDigest(request.host) !== contractDigest(this.options.identity) ||
       record.basis !== basis.digest ||
       stage?.kind !== 'correction' ||
@@ -301,26 +300,25 @@ export class RunnerCorrectionStages {
       evidence: unknown = null
     try {
       this.context(request, record)
-      const binding = this.read(request, record),
-        lease = binding ? this.lease(binding) : undefined,
-        retained = lease ? this.workers.native.retained(lease) : undefined,
-        calls = new RunnerNativeScope(this.store.files, record.invocation).inspect(),
-        commit = this.commitDigest(record.invocation),
-        observed = commit ? new DeliveryCommits(this.store.files.root).inspect(commit) : undefined
-      if (retained?.receipt?.status && retained.receipt.status !== 'succeeded') status = 'blocked'
-      else if (
-        binding &&
-        lease &&
-        this.workers.native.completed(lease) &&
-        calls.length &&
-        calls.every((call) => call.observed.invocationState === 'stopped') &&
-        retained?.binding.provenance === 'host-observed' &&
-        observed?.status === 'committed' &&
-        observed.receipt
-      ) {
+      const commit = this.commitDigest(record.invocation)
+      if (commit) {
+        const proof = correctionProduction(
+          this.store,
+          request,
+          record,
+          this.git.workspace(request, this.context(request, record).stage.unit as string).digest,
+        )
         status = 'passed'
         provenance = 'host-observed'
-        evidence = { feedback: contractDigest(binding.feedback), receipt: observed.receipt.digest }
+        evidence = {
+          feedback: contractDigest(proof.binding.feedback),
+          receipt: proof.receipt.digest,
+        }
+      } else {
+        const binding = this.read(request, record),
+          lease = binding ? this.lease(binding) : undefined,
+          retained = lease ? this.workers.native.retained(lease) : undefined
+        if (retained?.receipt?.status && retained.receipt.status !== 'succeeded') status = 'blocked'
       }
     } catch {
       status = 'unknown'
@@ -342,7 +340,8 @@ export class RunnerCorrectionStages {
     }
   }
   stop(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>, signal: AbortSignal) {
-    this.context(request, record)
+    // Cleanup observes the original private owner, even after execution authority ends.
+    this.context(request, record, false)
     if (!signal.aborted)
       new RunnerNativeScope(this.store.files, record.invocation).requestCancellation()
   }

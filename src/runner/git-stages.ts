@@ -8,6 +8,7 @@ import { type DeliveryPlan, validateDeliveryShape } from '../delivery/plan.js'
 import { DeliveryWorkspaces } from '../delivery/workspaces.js'
 import type { IntegrationPart } from '../integration/contracts.js'
 import type { AssemblyGitControl } from '../integration/git-process.js'
+import { latestCorrectionProduction } from './correction-production.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import { deliveryRunner, type RunnerStageRecord } from './events.js'
 import { RunnerRepairCommits } from './repair-commits.js'
@@ -186,7 +187,8 @@ export class RunnerGitStages {
         correction.store.files.root !== this.store.files.root
       )
         throw new DeliveryRunnerError('git-stage-candidate-not-current')
-      return correction.candidate(request, unit, binding.resource)
+      const root = latestCorrectionProduction(this.store, request, unit, allocation.digest)
+      return correction.candidate(request, unit, root?.receipt.record ?? binding.resource)
     }
     const files = candidateFiles(allocation.repository.path)
     if (
@@ -198,8 +200,8 @@ export class RunnerGitStages {
   }
   /**
    * The latest passed `correction-N:<unit>` commit of this request, when it is
-   * still the workspace's current head. A verification repair on top of a
-   * correction is not supported yet, so a moved head finds nothing here.
+   * still the workspace's current head. A later QA repair needs its own fixed
+   * checkpoint anchored to that correction's original recorded commit.
    */
   private corrected(request: Readonly<RunnerRequest>, unit: string, workspace: string) {
     const record = this.store

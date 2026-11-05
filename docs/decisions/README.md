@@ -219,6 +219,7 @@
 | [0207](./0207-public-implementation-route-composition.md) | Public implementation route composition | Accepted | 2026-11-03 |
 | [0208](./0208-seeded-correction-producer.md) | Seeded correction producer | Accepted | 2026-11-03 |
 | [0210](./0210-operator-overview-and-change-feed.md) | Operator overview and change feed | Accepted | 2026-11-04 |
+| [0211](./0211-seeded-correction-roots-for-qa-repairs.md) | Seeded correction roots for QA repairs | Accepted | 2026-11-05 |
 
 ## Lifecycle
 

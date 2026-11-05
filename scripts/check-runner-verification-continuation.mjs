@@ -12,6 +12,7 @@ if (
   args.some(
     (arg) =>
       ![
+        '--seeded-correction',
         '--retire-success',
         '--repeated-failure',
         '--second-correction',
@@ -24,14 +25,26 @@ if (
   )
 )
   throw new Error(
-    'Supported options: --retire-success, --repeated-failure, --second-correction, --repeat-verification, --review-after-verification, --unit-readiness, --reopen-checkpoint, --predecessor-readiness',
+    'Supported options: --seeded-correction, --retire-success, --repeated-failure, --second-correction, --repeat-verification, --review-after-verification, --unit-readiness, --reopen-checkpoint, --predecessor-readiness',
   )
+if (
+  args.includes('--seeded-correction') &&
+  args.some((arg) => !['--seeded-correction', '--retire-success'].includes(arg))
+)
+  throw new Error('Seeded correction mode supports only --retire-success')
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-runner-verification-continuation-')),
   ),
   runner = join(destination, 'runner.mjs')
 await build({
-  entryPoints: [join(root, 'test/evals/runner/verification-continuation.ts')],
+  entryPoints: [
+    join(
+      root,
+      args.includes('--seeded-correction')
+        ? 'test/evals/runner/seeded-correction-repair.ts'
+        : 'test/evals/runner/verification-continuation.ts',
+    ),
+  ],
   outfile: runner,
   bundle: true,
   platform: 'node',

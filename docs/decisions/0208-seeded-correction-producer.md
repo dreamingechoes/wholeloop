@@ -101,9 +101,7 @@ The actual `eval:assembly` control executes an opaque private evaluator before t
 
 Read-only feedback survives grant revocation and later revisions, while current human pending/open/record paths retain active-basis validation. The actual owned-builder/Git hybrid continuation now covers both integration and acceptance failures: the acceptance branch records a fixture human rejection, renews the exact-plan grant, and verifies that the correction's private binding carries that note. Forty focused reader, authority-refusal and continuation cases pass. This does not certify an actual native client/model or hosted acceptance.
 
-Not covered yet:
-
-- **A verification repair on top of a correction.** It is not supported: its repair chain would root at the correction's commit and lease, so it blocks honestly.
+**QA repair roots follow-up.** [ADR-0211](./0211-seeded-correction-roots-for-qa-repairs.md) binds bounded verification/review repairs to the correction's own completed builder and commit. Original production survives fencing without becoming a current lease or QA verdict. The default restart budget can legitimately be exhausted across the old build, rebuild and correction; another repair needs sufficient allowance declared before execution, never a reset. The actual two-environment suite control and independent fixture judgments pass; native/model and hosted acceptance remain separate.
 
 **Increment 4.** The public `to-pr` composition registers the correction adapter, with the integration stages supplying failed product cases, so a continuation route is covered as a whole.
 

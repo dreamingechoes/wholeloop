@@ -6,6 +6,7 @@ import type { NativeDeliveryHost } from '../delivery/native-host.js'
 import type { DeliveryQueue, QueueAssignment } from '../delivery/queue.js'
 import { deliveryAttempts } from '../delivery/reducer.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
+import { latestCorrectionProduction } from './correction-production.js'
 import type { RunnerStageContext } from './engine.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerNativeScope } from './native-scope.js'
@@ -227,8 +228,23 @@ export class RunnerRepairWorkers {
           !this.native.completed(parent.observed.production.lease))
       )
         return result('blocked', 'current-original-repair-predecessor-required')
+      const allocation = this.workers.git.workspace(
+          context.request,
+          admission.feedback.origin.unit,
+        ),
+        corrected = parent
+          ? undefined
+          : latestCorrectionProduction(
+              this.store,
+              context.request,
+              admission.feedback.origin.unit,
+              allocation.digest,
+            )
+      if (corrected && !this.native.completed(corrected.lease))
+        return result('blocked', 'current-original-correction-lease-required')
       const prior =
           parent?.observed.production.lease ??
+          corrected?.lease ??
           this.workers.productionLease(context.request, admission.feedback.origin.unit),
         workspace = new RunnerGitStages(this.store).candidate(
           context.request,

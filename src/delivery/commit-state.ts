@@ -122,6 +122,43 @@ export function validateHistoricalWorkspaceCommit(
 ): void {
   validateOwnedWorkspaceCommit(lifecycle, workspace, receipt, false)
 }
+/** Read a known original receipt after a later owned commit supersedes its locator. */
+export function retainedWorkspaceCommit(
+  lifecycle: DeliveryLifecycle,
+  workspace: DeliveryWorkspaceRecord,
+  digest: string,
+): CandidateCommitReceipt {
+  const record = readCandidateCommit(lifecycle, digest),
+    effects = workspaceCommitEffects(lifecycle, workspace),
+    exact = (step: 'stage' | 'commit') => {
+      const matches = effects.filter(
+        (effect) => effect.intent.key === candidateCommitKey(digest, step),
+      )
+      if (matches.length !== 1) throw new CandidateCommitError('historical-commit-exact-effects')
+      const effect = matches[0]
+      if (!effect) throw new CandidateCommitError('historical-commit-exact-effects')
+      return effect
+    },
+    stage = exact('stage'),
+    committed = exact('commit'),
+    binding = {
+      record: record.digest,
+      workspace: workspace.digest,
+      run: record.run,
+      plan: record.plan,
+      grantDigest: record.grantDigest,
+      parent: record.request.head,
+      head: committed.observations.at(-1)?.resource?.revision ?? '',
+      files: record.files.digest,
+      index: record.files.index,
+      effects: { stage: stage.intent.id, commit: committed.intent.id },
+    },
+    receipt = readCommitReceipt(lifecycle, contractDigest(binding))
+  // Reconstruct only a locator. Existing bytes and closed native effects must
+  // independently validate; this reader never creates or republishes a receipt.
+  validateHistoricalWorkspaceCommit(lifecycle, workspace, receipt)
+  return receipt
+}
 function validateOwnedWorkspaceCommit(
   lifecycle: DeliveryLifecycle,
   workspace: DeliveryWorkspaceRecord,
