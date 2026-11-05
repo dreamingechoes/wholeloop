@@ -8,6 +8,7 @@ import {
   type WorkerAssignment,
   WorkerProtocolError,
   type WorkerResult,
+  workerCriteriaResponseSchema,
   workerResultArtifacts,
 } from './worker-protocol.js'
 
@@ -29,6 +30,7 @@ export function workerProposalResponseSchema(assignment: WorkerAssignment) {
     type: 'string',
     const: assignment.assignment,
   }
+  schema.properties.criteria = workerCriteriaResponseSchema(assignment)
   // These controller cells consume one fixed report, even when its JSON body
   // describes a plan. The generic artifact-kind enum otherwise advertises
   // values that the producer stage must reject after an expensive model call.

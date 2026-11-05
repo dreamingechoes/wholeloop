@@ -16,7 +16,13 @@ export function generationSchema(rule: Schema): Schema {
   }
   if (rule.type === 'array') {
     if (!rule.items) throw new Error('Native generation requires explicit array items')
-    return { type: 'array', items: generationSchema(rule.items) }
+    return {
+      type: 'array',
+      items: generationSchema(rule.items),
+      // Preserve an explicit role prohibition without importing every public
+      // array bound into the native subset. The core still validates all output.
+      ...((rule as Schema & { maxItems?: number }).maxItems === 0 ? { maxItems: 0 } : {}),
+    }
   }
   return { type: rule.type, ...(rule.enum ? { enum: [...rule.enum] } : {}) }
 }

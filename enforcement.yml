@@ -228,7 +228,7 @@ rules:
   - id: delivery-native-host
     enforcers: [src/delivery/native-adapters.ts#nativeDeliveryRecipe, src/delivery/native-capabilities.ts#negotiateNativeDelivery, src/delivery/native-host.ts#NativeDeliveryHost, src/delivery/native-assignment-host.ts#NativeAssignmentHost, src/delivery/native-workspace.ts#sealNativeGitControl, src/fanout/process.ts#workerProcess, test/unit/delivery/native-host.test.ts]
   - id: delivery-worker-protocol
-    enforcers: [src/delivery/worker-protocol.ts#validateWorkerAssignment, src/delivery/worker-protocol.ts#decodeWorkerResult, src/delivery/worker-protocol.ts#stampWorkerExecution, test/unit/delivery/worker-protocol.test.ts]
+    enforcers: [src/delivery/worker-protocol.ts#validateWorkerAssignment, src/delivery/worker-protocol.ts#decodeWorkerResult, src/delivery/worker-protocol.ts#stampWorkerExecution, src/delivery/worker-protocol.ts#workerCriteriaResponseSchema, src/delivery/worker-proposal.ts#workerProposalResponseSchema, src/fanout/response-schema.ts#generationSchema, test/unit/delivery/worker-protocol.test.ts, test/unit/delivery/native-host.test.ts]
   - id: delivery-worker-context
     enforcers: [src/delivery/worker-protocol.ts#workerTools, src/delivery/worker-protocol.ts#workerResumePack, src/delivery/worker-context.ts#workerContextForClaim, test/unit/delivery/worker-protocol.test.ts]
   - id: delivery-finite-budgets

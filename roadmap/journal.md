@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-05 · P6-27 · Resume with role-bound generation contracts
+
+- Resume after the maintainer's explicit pause. Preserve the external checkpoint, all eight failed native pilots and their original workspaces. Review and commit the unchanged private diagnostic concern as deeacfb after its retained 726-test per-commit pass; no source push or hosted action occurs during the pause or resume inspection.
+- Independently reproduce thirty native-schema failures across all seven roles, both reference clients and both output transports. The decoder already forbids non-verifier criterion claims, but generation advertises them; verifier IDs are also unrestricted. Narrow only generation to empty non-verifier/empty-scope arrays and exact assigned verifier IDs ([ADR-0221](../docs/decisions/0221-native-role-criterion-scope.md)). Keep generic schemas, strict decoding, unknowns and all authority unchanged. This does not identify the preceding actual builder's unknown rejected-output category. The first corrected run also exposes an incorrect test assumption that Claude drops its existing positive array bound; retain it. Four managed-process controls fail inside the restricted runner. After correcting only that assertion and running with original-process observation permissions, all 148 focused controls in four files pass, including those four actual-process controls; strict types pass. Preserve both failed logs. Current per-commit/platform gates and a fresh native attempt remain pending.
+
+---
+
 ## 2026-11-05 · P6-27 · First real builder reaches rejected-output diagnostics
 
 - The evaluator-only 3a572d9 snapshot passes the complete isolated Linux arm64/Node 24.22.0 gate: 4347 tests with the one existing macOS-only omission, 255 files, CHECK PASS in 172s. Runtime bundles and npm 11 package bytes remain identical to the preceding full macOS/Linux/Node 20 observations; the changed trial fixture has seven passing real macOS controls and the per-commit gate. Retain the preceding complete macOS gate with its original snapshot scope, rather than claiming a redundant full run of this data-only change. Eleven source commits pass the explicit history guard.

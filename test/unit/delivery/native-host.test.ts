@@ -91,6 +91,55 @@ const host = {
 }
 
 describe('dedicated native delivery recipes', () => {
+  it.each(
+    roles.flatMap((role) =>
+      (['claude', 'codex'] as const).flatMap((target) =>
+        (['files', 'inline-proposal'] as const).map((output) => ({ role, target, output })),
+      ),
+    ),
+  )('advertises only the $role criterion scope for $target $output', ({ role, target, output }) => {
+    const value = assignment(role)
+    value.criteria = ['search', 'details']
+    const { assignment: _digest, ...body } = value
+    value.assignment = contractDigest(body)
+    const result = nativeDeliveryRecipe({
+      target,
+      version: target === 'claude' ? '2.1.316' : '0.166.0',
+      assignment: value,
+      directory: '/tmp/native-fixture',
+      ...(['planner', 'challenger'].includes(role) ? {} : { workspace: '/tmp/workspace-fixture' }),
+      output,
+    })
+    if (!result.available) throw new Error(result.reason)
+    const schema = JSON.parse(
+      target === 'codex'
+        ? (result.recipe.files.get('response.schema.json') ?? '{}')
+        : entry(result.recipe.args, result.recipe.args.indexOf('--json-schema') + 1),
+    )
+    if (role === 'verifier') {
+      expect(schema.properties.criteria.items.properties.id.enum).toEqual(value.criteria)
+      expect(schema.properties.criteria.maxItems ?? 1).toBeGreaterThan(0)
+    } else expect(schema.properties.criteria.maxItems).toBe(0)
+  })
+  it.each(['claude', 'codex'] as const)(
+    'advertises empty results for a %s verifier with no assigned criteria',
+    (target) => {
+      const result = nativeDeliveryRecipe({
+        target,
+        version: target === 'claude' ? '2.1.316' : '0.166.0',
+        assignment: assignment('verifier'),
+        directory: '/tmp/native-fixture',
+        output: 'inline-proposal',
+      })
+      if (!result.available) throw new Error(result.reason)
+      const schema = JSON.parse(
+        target === 'codex'
+          ? (result.recipe.files.get('response.schema.json') ?? '{}')
+          : entry(result.recipe.args, result.recipe.args.indexOf('--json-schema') + 1),
+      )
+      expect(schema.properties.criteria.maxItems).toBe(0)
+    },
+  )
   it.each(['claude', 'codex'] as const)(
     'keeps %s file mode unchanged and binds read-only inline output explicitly',
     (target) => {

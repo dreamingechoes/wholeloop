@@ -318,11 +318,23 @@ export function workerResultArtifacts(
   })
 }
 
+/** Generation must not invite criterion claims that the role decoder forbids. */
+export function workerCriteriaResponseSchema(assignment: WorkerAssignment): Schema {
+  validateWorkerAssignment(assignment)
+  const rule: Schema = structuredClone(resultSchema.properties.criteria)
+  if (assignment.identity.role !== 'verifier' || !assignment.criteria.length)
+    return Object.assign(rule, { maxItems: 0 })
+  if (!rule.items?.properties?.id) throw new WorkerProtocolError('response-schema')
+  rule.items.properties.id = { type: 'string', enum: [...assignment.criteria] }
+  return rule
+}
+
 export function workerResponseSchema(assignment: WorkerAssignment) {
   validateWorkerAssignment(assignment)
   const schema: Schema = structuredClone(resultSchema)
   if (!schema.properties) throw new WorkerProtocolError('response-schema')
   schema.properties.assignment = { type: 'string', const: assignment.assignment }
+  schema.properties.criteria = workerCriteriaResponseSchema(assignment)
   schema.properties.identity = {
     type: 'object',
     additionalProperties: false,

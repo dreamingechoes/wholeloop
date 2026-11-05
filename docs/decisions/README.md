@@ -233,6 +233,8 @@
 
 | [0220](./0220-private-native-output-diagnostics.md) | Retain closed private native output-failure categories | Accepted | 2026-11-05 |
 
+| [0221](./0221-native-role-criterion-scope.md) | Advertise only the assigned role's criterion results | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid
