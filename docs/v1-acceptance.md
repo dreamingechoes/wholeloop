@@ -1,6 +1,6 @@
 # V1 acceptance — what remains and who does it
 
-> **TL;DR** — Expanded 1.0 now includes 34 accepted autonomous-delivery/research tasks authorized for implementation, alongside the original native/workflow/release acceptance. Existing observations stay valid at their recorded scope. Remote services remain experimental; accounts with every vendor are not required.
+> **TL;DR** — Expanded 1.0 now includes 38 accepted autonomous-delivery/research tasks authorized for implementation, alongside the original native/workflow/release acceptance. Existing observations stay valid at their recorded scope. Remote services remain experimental; accounts with every vendor are not required.
 
 > [!NOTE]
 > **Status: 🚧 partial.** This is the acceptance runbook for the defined roadmap. Procedures below describe expected results, not completed tests. Check off observations only after execution. The [manual backlog](../roadmap/manual-verification.md) preserves detailed cases; the [journal](../roadmap/journal.md) records actual results.
@@ -46,6 +46,12 @@ Maintainer involvement is needed for:
 
 Accounts with every remote service are absent from this list deliberately.
 
+## Expanded delivery case coverage
+
+The [expanded acceptance map](./reference/delivery-acceptance.md) links all 86 specification cases to concrete tests, registered enforcers and their required evidence classes. The docs gate checks coverage and prevents local controls from claiming pending native/hosted acceptance. Its source-installable boundary table separates intervention policy from installed endpoint support; a public runtime supplies neither supervised human-decision hosts nor SDK-only CI/merge authority.
+
+The map records executable local coverage. Actual backend, platform, signed-in client and hosted-service observations keep their own evidence and failures. It does not waive the original seven-client obligations or permit P5-07 closure before P6-32 and the original release prerequisites.
+
 ## Practical order
 
 ### 0. Review and implement expanded 1.0
@@ -56,7 +62,7 @@ Independent local implementation is authorized to proceed before the remaining o
 
 ### 1. Finish implementation defects first
 
-The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external maintainer decisions. The [Phase 6 ledger](../roadmap/phase-6-autonomous-delivery.md) now records 32 completed tasks, three implemented tasks awaiting native or hosted acceptance, and three tasks with implementation or acceptance work remaining. P6-12 includes actual macOS and independent Linux-host backend acceptance; P6-36–P6-38 include attribution, the operator overview and a local read-only feed. Their model-free local and platform checks do not certify native clients, hosted services or the expanded release. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
+The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external maintainer decisions. The [Phase 6 ledger](../roadmap/phase-6-autonomous-delivery.md) now records 32 completed tasks, four implemented tasks awaiting native or hosted acceptance, and two tasks with implementation or acceptance work remaining. P6-12 includes actual macOS and independent Linux-host backend acceptance; P6-36–P6-38 include attribution, the operator overview and a local read-only feed. Their model-free local and platform checks do not certify native clients, hosted services or the expanded release. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
@@ -169,7 +175,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 92 tasks, 72 complete and 20 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance, and three new implementation/acceptance tasks remain pending. The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 92 tasks, 72 complete and 20 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38 are complete; P6-22, P6-24, P6-32 and P6-33 are implemented and await native or hosted acceptance, and two new implementation/acceptance tasks remain pending. The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Maintainer involvement |
 | --- | --- | --- |

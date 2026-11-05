@@ -9,7 +9,7 @@ wholeloop supplies the process around the model: what context to load, which que
 
 ## Contents
 
-**Expanded 1.0:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [thirty-two completed tasks, three implemented tasks awaiting native or hosted acceptance and three tasks in progress or awaiting implementation](./roadmap/phase-6-autonomous-delivery.md). The scope is accepted and implementation is authorized; current installation and usage below retain their existing supervised behavior.
+**Expanded 1.0:** [recoverable autonomous delivery and unattended research](./roadmap/specifications/autonomous-delivery/README.md), with [thirty-two completed tasks, four implemented tasks awaiting native or hosted acceptance and two tasks in progress or awaiting implementation](./roadmap/phase-6-autonomous-delivery.md). The scope is accepted and implementation is authorized; current installation and usage below retain their existing supervised behavior.
 
 - [What you can do](#what-you-can-do)
 - [Install from source](#install-from-source)
@@ -24,6 +24,8 @@ wholeloop supplies the process around the model: what context to load, which que
 - [Documentation map](#documentation-map)
 - [Development and contributing](#development-and-contributing)
 - [License](#license)
+
+The [expanded acceptance map](./docs/reference/delivery-acceptance.md) connects every delivery specification case to executable controls and keeps native, backend, hosted and release evidence separate.
 
 ## What you can do
 

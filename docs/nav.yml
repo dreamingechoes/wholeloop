@@ -62,6 +62,7 @@ pages:
   - { path: platforms/local-onboarding.md, title: Local client setup }
   - { path: architecture/README.md, title: Architecture }
   - { path: architecture/autonomous-delivery.md, title: Autonomous delivery design }
+  - { path: reference/delivery-acceptance.md, title: Expanded delivery acceptance }
   - { path: architecture/core-cli.md, title: Core CLI }
   - { path: architecture/state-and-messaging.md, title: State and messaging }
   - { path: architecture/operator-overview.md, title: Operator overview }

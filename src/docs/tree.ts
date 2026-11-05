@@ -27,3 +27,9 @@ export function readNavYaml(root: string): string {
 export function writeFile(root: string, file: string, content: string): void {
   writeFileSync(join(root, file), content)
 }
+
+/** Optional for unrelated documentation trees; expanded delivery requires it. */
+export function readEnforcementYaml(root: string): string | undefined {
+  const file = join(root, 'enforcement.yml')
+  return existsSync(file) ? readFileSync(file, 'utf8') : undefined
+}

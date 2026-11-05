@@ -47,6 +47,10 @@ Build first, then run `wl docs check` to check navigation, status banners, links
 
 Use `npm run docs:references` to build and regenerate together. Existing docs:commands and docs:config scripts delegate to the same renderer; docs:providers updates the manifest-derived mapping table; docs:platforms updates adapter declarations. The provider source JSON catalog has its separate providers:catalog check. Generated mapping rows describe declared operations/access, not authenticated availability or actual server behavior. Local adapter declarations are generated from the build/install registry and remain separate from native conformance. Supplied observation snapshots have their own explicit conformance matrix --docs destination/time comparison and optional write; ordinary docs check cannot reconstruct external evidence. Disabled nightly collection/issue automation has its own explicit maintainer activation and external artifacts; simulation passes cannot establish native support.
 
+## Expanded delivery acceptance map
+
+When changing an autonomous-delivery specification case, update [the acceptance map](../reference/delivery-acceptance.md) in the same change. The docs gate requires every accepted case definition and one row per declared case, its exact definition file, existing test/evaluation links and executable hard-rule enforcers from enforcement.yml. Required native, hosted, backend and host-platform labels cannot be downgraded. A local gate result does not close external acceptance; retain its observed records and failures in the manual matrix. The existing docs-check JSON identity remains unchanged.
+
 ## Page templates
 
 ### Step page (`docs/flow/<block>/<step>.md`)

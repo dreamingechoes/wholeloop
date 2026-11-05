@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: delivery-case-evidence-map
+    enforcers: [src/docs/delivery-cases.ts#checkDeliveryCases, src/cli/docs.ts#docsCheck, test/unit/docs/delivery-cases.test.ts]
   - id: read-only-change-feed
     enforcers: [src/overview/watch.ts#watchOverview, src/overview/watch.ts#stateActivity, src/overview/watch.ts#deliveryActivity, src/cli/watch.ts#watchCommand, test/unit/overview/watch.test.ts, test/unit/overview/watch-integrity.test.ts, test/unit/overview/watch-cli.test.ts, test/unit/overview/watch-recording.test.ts, test/unit/overview/watch-activity.test.ts, test/unit/overview/watch-command.test.ts, test/unit/overview/watch-clock.test.ts, test/fixtures/overview/read-only-guard.mjs]
   - id: verified-overview-prefix

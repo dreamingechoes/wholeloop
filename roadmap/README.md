@@ -1,6 +1,6 @@
 # Roadmap — built in vertical phases, worked in session-sized tasks
 
-> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. Phase 6 is accepted for 1.0 and sequential implementation is authorized; P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance, and 3 tasks remain in progress or await implementation.
+> **TL;DR** — Seven phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0 adds recoverable autonomous delivery and complete unattended research. Phase 6 is accepted for 1.0 and sequential implementation is authorized; P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38 are complete; P6-22, P6-24, P6-32 and P6-33 are implemented and await native or hosted acceptance, and 2 tasks remain in progress or await implementation.
 
 ---
 
@@ -10,7 +10,7 @@ Current manual checks and maintainer-only actions: [manual verification](./manua
 
 Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [38 Phase 6 tasks](./phase-6-autonomous-delivery.md). Every new task was reviewed and accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
 
-The roadmap now contains 92 tasks: 72 completed tasks (forty original plus P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38), fourteen original open tasks, three implemented tasks awaiting native or hosted acceptance and 3 new pending implementation tasks (P6-35–P6-38 added on 2026-11-04). The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
+The roadmap now contains 92 tasks: 72 completed tasks (forty original plus P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38), fourteen original open tasks, four implemented tasks awaiting native or hosted acceptance and 2 new pending implementation/acceptance tasks (P6-35–P6-38 added on 2026-11-04). The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
 
 No cloud platform, marketplace, vendor API expansion or production automation is added. Local P6 implementation is authorized to proceed without waiting for unrelated native/account acceptance. Those original checks and the new capability-specific acceptance still need their stated evidence before release.
 

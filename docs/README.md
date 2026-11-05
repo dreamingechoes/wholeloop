@@ -17,7 +17,7 @@
 
 ## Start with your goal
 
-For the expanded 1.0 scope, review the [autonomous-delivery design](./architecture/autonomous-delivery.md), [detailed specifications](../roadmap/specifications/autonomous-delivery/README.md) and [34 Phase 6 tasks](../roadmap/phase-6-autonomous-delivery.md). Revision-bound source intake, plan/envelope preparation and operator authorization/revocation metadata are available; complete no-intervention flows after initial authorization remain under implementation.
+For the expanded 1.0 scope, review the [autonomous-delivery design](./architecture/autonomous-delivery.md), [detailed specifications](../roadmap/specifications/autonomous-delivery/README.md) and [38 Phase 6 tasks](../roadmap/phase-6-autonomous-delivery.md). Revision-bound source intake, plan/envelope preparation and operator authorization/revocation metadata are available; public none-policy research-report/to-PR composition is implemented, while its signed-in native/hosted acceptance remains pending.
 
 | Goal | First page | Successful stopping point |
 | --- | --- | --- |
@@ -27,6 +27,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 | Build a bounded change | [Small-change walkthrough](./tutorials/small-change.md) | Verified/reviewed work and a human testing handoff before publication |
 | Pin a request before delivery planning | [Delivery intake](./tutorials/delivery-intake.md) | An immutable source revision without starting workers |
 | Recover from a setup/workflow problem | [Troubleshooting](./troubleshooting.md) | A specific diagnosis and next action |
+| Inspect expanded delivery coverage | [Acceptance case map](./reference/delivery-acceptance.md) | Concrete controls and explicit native/hosted/backend evidence limits |
 | Assess readiness for 1.0 | [Acceptance](./v1-acceptance.md) | Executed checks separated from maintainer decisions and deferred services |
 
 ## Tutorials and everyday use

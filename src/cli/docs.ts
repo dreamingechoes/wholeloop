@@ -1,4 +1,5 @@
 import { checkLinks, checkNav, type Problem } from '../docs/check.js'
+import { checkDeliveryCases, hasDeliveryCases } from '../docs/delivery-cases.js'
 import { parseNav, renderFooter, withFooter } from '../docs/nav.js'
 import {
   checkReferences,
@@ -6,7 +7,8 @@ import {
   referenceSections,
   replaceReference,
 } from '../docs/references.js'
-import { readNavYaml, readTree, writeFile } from '../docs/tree.js'
+import { readEnforcementYaml, readNavYaml, readTree, writeFile } from '../docs/tree.js'
+import { parseEnforcement } from '../harness/enforcement.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -51,10 +53,12 @@ export function docsNav(root: string, json: boolean, io: Io): number {
 
 export function docsCheck(root: string, json: boolean, io: Io): number {
   const tree = readTree(root)
+  const registry = hasDeliveryCases(tree) ? readEnforcementYaml(root) : undefined
   const problems = [
     ...checkNav(parseNav(readNavYaml(root)), tree),
     ...checkLinks(tree),
     ...checkReferences(tree),
+    ...checkDeliveryCases(tree, registry === undefined ? undefined : parseEnforcement(registry)),
   ]
   if (json) {
     io.out(JSON.stringify({ schema: 'wholeloop/docs-check@1', files: tree.files.size, problems }))
