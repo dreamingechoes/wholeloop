@@ -98,5 +98,7 @@ it.each([2, 3])(
       { restarts },
     )
   },
-  120000,
+  // Two revisions and four owned builder generations include real Git/native
+  // setup and cleanup in the shared suite. Product deadlines remain independent.
+  180000,
 )

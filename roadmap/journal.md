@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-05 · P6-29 · Correction repair orchestration window — in progress
+
+- The full macOS arm64/Node 24.22.0 gate on committed `28244f0` ends `CHECK FAIL (test)`: 4191 tests pass in the other cases, while the positive three-restart component control exceeds Vitest's external 120-second timeout (reported case duration 124715 ms). The remaining full steps, including the offline archive/install, do not run after that failure. Keep the earlier focused and fast passes separate from this failed full result.
+- Give this two-revision/four-builder-generation fixture a finite 180-second outer setup/execution/cleanup window. Preserve its actual stage deadlines, original restart-limit negative control, original grant and all product budget checks. This changes test orchestration only. The repeated per-commit gate passes both budget controls and all remaining fast checks: `CHECK PASS (fast) in 154s`. The full gate remains required; no closure or native/model/hosted acceptance is inferred.
+
+---
+
 ## 2026-11-05 · P6-29 · Original correction production roots — in progress
 
 - Reproduce the seeded producer's lifetime bug with actual owned production/Git and an explicitly synthetic predecessor failure: fencing its completed lease changes its observed stage from passed to unknown. The first fixture attempt correctly refuses a terminal transition with no outcome; record the required failed outcome before the actual red/green regression. Separate original production from current lease/head eligibility in the fixed reader and exact existing-receipt locator ([ADR-0211](../docs/decisions/0211-seeded-correction-roots-for-qa-repairs.md)). Preserve the serialized correction task and commit message.
