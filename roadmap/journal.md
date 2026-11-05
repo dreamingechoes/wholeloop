@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-29 · Correction roots and CI evidence verified
+
+- The clean combined tree at `bd74b7a` passes the complete macOS arm64/Node 24.22.0 gate: 4214 tests in 242 files, offline npm archive/install and every remaining check; final line `CHECK PASS in 763s`. The checked archive digest is `3113124c5d25f746e469a9d8bb9521675a444f7f8d08306be66568866cb5a6df`. The corrected outer orchestration window passes in the full suite; retain the earlier 120-second failure and both unchanged product-budget controls.
+- The increment's previous per-commit gate passed 461 tests in 23 files in 115 seconds, and the final compiled original-CI component checks passed on Linux arm64 Node 20.0.0 and 24.22.0 with a stub remote. Earlier actual Git/Docker verification retains its exact two-environment evidence and retirement receipts. These checks certify no native/model or hosted route and publish nothing.
+- P6-29 remains in progress for CI-origin execution, a fresh current-feedback/authority/head preflight and original-topic/PR publication. Its version-two plan and explicit CLI wire selection are prepared only outside the unchanged checked source. No wholeloop source push or model/account operation runs.
+
+---
+
 ## 2026-11-05 · P6-29 · Retained CI correction evidence — in progress
 
 - Reproduce seven literal-conclusion/tied-attempt failures before their fix: completed timeout, action-required or absent conclusions wrongly became code-test, while equal latest attempts depended on array order. Preserve literal states and require one unique latest trusted required check at the candidate. Keep timeouts/action-required unsuccessful without licensing code repair; unknown/tied results never pass or admit repair.
