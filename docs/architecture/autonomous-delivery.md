@@ -15,6 +15,10 @@ Pinned acceptance cases execute objective [API/CLI](../tutorials/delivery-behavi
 
 The [decision controller](../tutorials/delivery-decisions.md) pins original private rubrics, exact artifacts/evidence and independent planner/challenger observations. It preserves machine provenance and current eligibility separately from legacy human approvals. Fixture judgments cannot enable actual envelope execution. Policy-only preflight and no-prompt fallbacks preserve missing facts, mandatory gates, original budgets and runtime limitations; complete native delivery/research routes remain under implementation.
 
+## Current CI feedback reads
+
+The optional GitHub code-host feedback reader returns a complete bounded, bodyless observation of issue comments, inline comments and reviews for an exact open PR/head/base ([ADR-0213](../decisions/0213-complete-bodyless-ci-feedback.md)). Missing permissions, malformed or truncated pages and moved heads refuse completeness. Raw bodies and author identities stay inside the adapter; every projected item remains unadopted. This read capability supplies no correction, approval or publication authority. CI-origin execution remains under implementation.
+
 ## Read the proposal
 
 The [specification index](../../roadmap/specifications/autonomous-delivery/README.md) links ten detailed chapters. The [Phase 6 roadmap](../../roadmap/phase-6-autonomous-delivery.md) tracks 34 accepted tasks with dependencies, deliverables, acceptance criteria, test cases and documentation obligations.

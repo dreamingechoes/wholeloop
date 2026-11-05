@@ -36,10 +36,15 @@ export type CommandExecutor = (
   args: readonly string[],
   cwd: string,
   input?: string,
+  signal?: AbortSignal,
 ) => Promise<string>
 /** No shell, credential arguments or durable raw logs. CLI credential stores remain authoritative. */
-export const executeCodehostCommand: CommandExecutor = (binary, args, cwd, input) =>
+export const executeCodehostCommand: CommandExecutor = (binary, args, cwd, input, signal) =>
   new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new Error('Code-host command cancelled before launch'))
+      return
+    }
     const child = spawn(binary, [...args], {
       cwd,
       env: { ...process.env, GIT_TERMINAL_PROMPT: '0', GH_PROMPT_DISABLED: '1', NO_COLOR: '1' },
@@ -59,6 +64,8 @@ export const executeCodehostCommand: CommandExecutor = (binary, args, cwd, input
       }
     }
     const timeout = setTimeout(stop, 60000)
+    signal?.addEventListener('abort', stop, { once: true })
+    if (signal?.aborted) stop()
     const collect = (chunk: Buffer, stdout: boolean) => {
       bytes += chunk.length
       if (bytes > 1024 * 1024) {
@@ -75,6 +82,7 @@ export const executeCodehostCommand: CommandExecutor = (binary, args, cwd, input
     })
     child.on('close', (code) => {
       clearTimeout(timeout)
+      signal?.removeEventListener('abort', stop)
       if (failed || code !== 0)
         reject(new Error('Code-host command failed; reconcile remote state before retrying'))
       else resolve(Buffer.concat(output).toString('utf8'))

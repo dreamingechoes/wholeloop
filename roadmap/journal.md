@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-29 · Complete bodyless CI feedback — in progress
+
+- Add a fixed optional GitHub feedback reader with its own closed identity, preserving all frozen declarations. Read the exact open PR/head/base before and after bounded pagination across issue comments, inline comments and reviews. Truncation, duplicate IDs, malformed or denied responses, cancellation and changed heads refuse completeness. Project hashed identities and revision/source flags in memory; bodies and authors never leave the adapter and no feedback is adopted ([ADR-0213](../docs/decisions/0213-complete-bodyless-ci-feedback.md)).
+- Extend the existing shell-free command executor with original in-memory cancellation, pre-aborted zero launch and closed-stdio completion. Keep its timeout/output caps and credential-store behavior. Dedicated fixtures and actual local child-process controls pass; no account or hosted GitHub read runs.
+- The first mandatory fast gate passes 3042 tests in 185 files but ends `CHECK FAIL (harness)`: the new enforcer has no canonical hard-rule declaration. Add that declaration to the recovery protocol and repeat the complete fast gate before committing. P6-29 remains open for CI execution and original-topic/PR publication. The version-two continuation and execution work remain only in an external prototype, separate from this increment; no source push runs.
+
+---
+
 ## 2026-11-05 · P6-29 · Correction roots and CI evidence verified
 
 - The clean combined tree at `bd74b7a` passes the complete macOS arm64/Node 24.22.0 gate: 4214 tests in 242 files, offline npm archive/install and every remaining check; final line `CHECK PASS in 763s`. The checked archive digest is `3113124c5d25f746e469a9d8bb9521675a444f7f8d08306be66568866cb5a6df`. The corrected outer orchestration window passes in the full suite; retain the earlier 120-second failure and both unchanged product-budget controls.

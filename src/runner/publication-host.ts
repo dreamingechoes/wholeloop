@@ -5,6 +5,7 @@ import {
   executeCodehostCommand,
 } from '../pull-requests/codehost.js'
 import { type CiObservation, type RunnerCiHost, validateCiObservation } from './ci-observations.js'
+import { readGithubFeedback } from './github-feedback.js'
 import type { MergeMethod } from './merge-eligibility.js'
 import {
   assertMergeTarget,
@@ -63,6 +64,31 @@ export class GithubCliCodeHost implements RunnerCodeHost {
     } catch {
       throw new DeliveryRunnerError('publication-host-incomplete')
     }
+  }
+  async readFeedback(target: Readonly<RunnerPublicationTarget>, pr: string, signal: AbortSignal) {
+    const repo = this.repository(target)
+    return readGithubFeedback({
+      repository: repo.url,
+      pr,
+      head: target.head,
+      base: target.base,
+      signal,
+      api: async (endpoint, signal) => {
+        if (signal.aborted) throw new DeliveryRunnerError('ci-feedback-cancelled')
+        const output = await this.execute(
+          'gh',
+          ['api', '--hostname', repo.host, '--method', 'GET', `repos/${repo.path}/${endpoint}`],
+          target.path,
+          undefined,
+          signal,
+        )
+        try {
+          return JSON.parse(output) as unknown
+        } catch {
+          throw new DeliveryRunnerError('ci-feedback-host-incomplete')
+        }
+      },
+    })
   }
   async remoteHead(target: Readonly<RunnerPublicationTarget>, _signal?: AbortSignal) {
     this.repository(target)

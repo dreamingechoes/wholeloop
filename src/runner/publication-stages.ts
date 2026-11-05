@@ -8,6 +8,7 @@ import type { RecoveryRead } from '../delivery/read-retry.js'
 import { hasToolAttribution } from '../git/commit.js'
 import { IntegrationCandidates } from '../integration/store.js'
 import { RunnerAcceptanceStages } from './acceptance-stages.js'
+import type { CiFeedbackRead } from './ci-feedback.js'
 import type {
   RunnerEndpointObservation,
   RunnerStageContext,
@@ -42,6 +43,12 @@ export interface RunnerPullRequest {
  * never merge and never edit a pull request they did not create.
  */
 export interface RunnerCodeHost {
+  /** A complete bounded read; raw comment bodies and actors never leave the adapter. */
+  readFeedback?(
+    target: Readonly<RunnerPublicationTarget>,
+    pr: string,
+    signal: AbortSignal,
+  ): Promise<CiFeedbackRead>
   readonly provenance: 'fixture' | 'host-observed'
   remoteHead(target: Readonly<RunnerPublicationTarget>, signal: AbortSignal): Promise<string | null>
   push(target: Readonly<RunnerPublicationTarget>, signal: AbortSignal): Promise<void>

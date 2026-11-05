@@ -39,6 +39,8 @@ rules:
     enforcers: [src/runner/merge-eligibility.ts#mergeEligibility, src/runner/merge-eligibility.ts#pathMatches, src/runner/stage-dispatcher.ts#preflight, test/unit/runner/merge-eligibility.test.ts]
   - id: delivery-original-ci-failure
     enforcers: [src/runner/ci-failure.ts#originalCiFailure, src/runner/publication-stages.ts#publicationRecords, src/runner/ci-observations.ts#ciVerdict, src/runner/ci-repair.ts#ciRepairAdmission, src/runner/ci-repair.ts#ciRepairRequest, test/unit/runner/ci-failure.test.ts, test/unit/runner/ci-repair-boundary.test.ts, test/unit/runner/ci-repair-budget.test.ts]
+  - id: delivery-complete-bodyless-ci-feedback
+    enforcers: [src/runner/github-feedback.ts#readGithubFeedback, src/runner/ci-feedback.ts#validateCiFeedback, src/runner/publication-host.ts#readFeedback, src/pull-requests/codehost.ts#executeCodehostCommand, test/unit/runner/github-feedback.test.ts, test/unit/pull-requests/codehost-cancellation.test.ts]
   - id: delivery-bounded-ci-repair
     enforcers: [src/runner/ci-repair.ts#classifyCiFailures, src/runner/ci-repair.ts#ciFeedback, src/runner/ci-repair.ts#ciRepairAdmission, src/runner/ci-repair.ts#ciRepairRequest, src/delivery/effect-events.ts#deliveryEffects, test/unit/runner/ci-repair.test.ts, test/unit/runner/ci-repair-boundary.test.ts, test/unit/runner/ci-repair-budget.test.ts]
   - id: delivery-revision-bound-ci

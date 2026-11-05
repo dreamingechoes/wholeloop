@@ -422,7 +422,8 @@
     "schema:wholeloop/watch-frame@1": "825a11c30b31ddabde4a4d247c10d59ce3a07477c6cb93cb09f54df4336eef60",
     "output:wholeloop/overview@1": "89a023a1f695be5af22be68790eeee286ce98e11d45cc6b50565284702cf2b70",
     "output:wholeloop/overview-schema@1": "a019499a6eb80a59abaab7b10f1cc43bd1c0f228dad1e2e74684ebda55b4641a",
-    "output:wholeloop/watch-frame@1": "76810df046479209336c417aaaad387595d2d1670e257cac11c62a1216a1b083"
+    "output:wholeloop/watch-frame@1": "76810df046479209336c417aaaad387595d2d1670e257cac11c62a1216a1b083",
+    "schema:wholeloop/delivery-ci-feedback@1": "f1fb8b190d88be0514d79a40e15c5abcfc4778dfdab116072f7ebbb9aaab6fb8"
   },
   "commands": [
     {

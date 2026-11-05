@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-ci-feedback@1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "repository",
+    "pr",
+    "head",
+    "base",
+    "observedAt",
+    "complete",
+    "items",
+    "provenance",
+    "evidence"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wholeloop/delivery-ci-feedback@1"
+    },
+    "repository": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://github\\.com/"
+    },
+    "pr": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://github\\.com/.+/pull/[1-9][0-9]*$"
+    },
+    "head": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40,64}$"
+    },
+    "base": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "observedAt": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "complete": {
+      "type": "boolean",
+      "const": true
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 900,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identity",
+          "origin",
+          "revision",
+          "current",
+          "adopted",
+          "source",
+          "revisionSource"
+        ],
+        "properties": {
+          "identity": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "origin": {
+            "type": "string",
+            "const": "pr-comment"
+          },
+          "revision": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{40,64}$"
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "adopted": {
+            "type": "boolean",
+            "const": false
+          },
+          "source": {
+            "type": "string",
+            "enum": ["issue-comment", "review-comment", "review"]
+          },
+          "revisionSource": {
+            "type": "string",
+            "enum": ["host-commit", "current-head-snapshot"]
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["fixture", "host-observed"]
+    },
+    "evidence": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}
