@@ -240,6 +240,7 @@ export class RunnerArtifactStages {
         source: source.body,
         plan: context.plan,
         response: this.response(context.stage.kind, context.plan),
+        outputArtifact: { ref: 'artifacts/production.json', kind: 'report', count: 1 },
         ...(context.stage.kind === 'acceptance-definition' && this.options.cases
           ? {
               controllerCases: this.options.cases(context),

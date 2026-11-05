@@ -229,6 +229,8 @@
 
 | [0218](./0218-controller-owned-repository-diff.md) | Observe committed repository scope through the original controller | Accepted | 2026-11-05 |
 
+| [0219](./0219-native-producer-transport.md) | Pin artifact producer transport before native generation | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

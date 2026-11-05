@@ -29,6 +29,19 @@ export function workerProposalResponseSchema(assignment: WorkerAssignment) {
     type: 'string',
     const: assignment.assignment,
   }
+  // These controller cells consume one fixed report, even when its JSON body
+  // describes a plan. The generic artifact-kind enum otherwise advertises
+  // values that the producer stage must reject after an expensive model call.
+  if (
+    /^artifact:(?:definition|plan|acceptance-definition|build-plan):[a-f0-9]{64}$/.test(
+      assignment.identity.cell ?? '',
+    )
+  ) {
+    const fields = schema.properties.artifacts?.items?.properties
+    if (!fields?.kind || !fields.ref) throw new WorkerProtocolError('response-schema')
+    fields.kind = { ...fields.kind, enum: ['report'], const: 'report' }
+    fields.ref = { ...fields.ref, const: 'artifacts/production.json' }
+  }
   return schema
 }
 

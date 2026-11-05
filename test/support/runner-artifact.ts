@@ -42,6 +42,7 @@ export async function runnerArtifactFixture(
       | 'incomplete'
       | 'decision-reject'
       | 'next-revision'
+      | 'plan-kind'
     withinEnvelope?: boolean
     delegate?: boolean
     stageBudget?: 'plan'
@@ -82,7 +83,7 @@ if(b.response?.$id==='wholeloop/acceptance-plan@1')output={schema:b.response.$id
 if(b.response?.$id==='wholeloop/delivery-plan@1')output={...b.plan,revision:b.plan.revision+1,previous:mode==='wrong-basis'?'f'.repeat(64):a.identity.plan,definition:mode==='incomplete'?b.plan.definition:{ready:true,missing:[]}};
 if(b.response?.$id==='wholeloop/delegated-native-judgment@1'||b.response?.$id==='wholeloop/delegated-native-challenge@1'){const inner=JSON.parse(payload.inputs[0].content);output={schema:b.response.$id,basis:inner.basis,rationale:'Independently inspect the exact produced builder plan.',uncertainties:[]};if(a.identity.role==='planner')output.outcome=inner.request.decision==='frame-outcome'?(mode==='decision-reject'?'on-hold':'go'):(mode==='decision-reject'?'reject':'accept');else{output.judgment=b.judgment;output.verdict='supported'}};
 if(mode==='policy'&&output.policy)output.policy={...output.policy,endpoint:'to-merge'};
-const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic artifact production, not approval.',artifacts:[{ref:b.response?.$id?.startsWith('wholeloop/delegated-native-')?'artifacts/decision.json':'artifacts/production.json',kind:'report',text:mode==='malformed'?'Incomplete JSON':JSON.stringify(output)}],criteria:[],findings:[],unknowns:mode==='unknown'?[{question:'Missing fact?',reason:'Unobserved fixture input.',owner:'Fixture Owner'}]:[]};
+const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic artifact production, not approval.',artifacts:[{ref:b.response?.$id?.startsWith('wholeloop/delegated-native-')?'artifacts/decision.json':'artifacts/production.json',kind:mode==='plan-kind'?'plan':'report',text:mode==='malformed'?'Incomplete JSON':JSON.stringify(output)}],criteria:[],findings:[],unknowns:mode==='unknown'?[{question:'Missing fact?',reason:'Unobserved fixture input.',owner:'Fixture Owner'}]:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(proposal)}}));console.log(JSON.stringify({type:'turn.completed'}));
 });\n`,
       )

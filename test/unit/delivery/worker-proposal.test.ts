@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
+import { validate } from '../../../src/config/schema.js'
 import { DEFAULT_DELIVERY_BUDGETS } from '../../../src/delivery/plan.js'
 import {
   decodeWorkerProposal,
@@ -15,7 +16,11 @@ import {
   type WorkerRole,
 } from '../../../src/delivery/worker-protocol.js'
 
-function assignment(role: WorkerRole = 'verifier', context: WorkerAssignment['context'] = []) {
+function assignment(
+  role: WorkerRole = 'verifier',
+  context: WorkerAssignment['context'] = [],
+  cell?: string,
+) {
   return createWorkerAssignment({
     identity: {
       run: 'delivery-0123456789abcdef',
@@ -25,6 +30,7 @@ function assignment(role: WorkerRole = 'verifier', context: WorkerAssignment['co
       role,
       attempt: 'attempt-0123456789abcdef',
       generation: 1,
+      ...(cell ? { cell } : {}),
     },
     grantDigest: 'b'.repeat(64),
     source: 'c'.repeat(64),
@@ -61,6 +67,56 @@ function proposal(selected = assignment()): WorkerProposal {
 }
 const encode = (value: unknown) => Buffer.from(JSON.stringify(value))
 describe('bounded inline artifact proposals from read-only workers', () => {
+  it.each(['definition', 'plan', 'acceptance-definition', 'build-plan'])(
+    'pins the %s producer transport while preserving rejected historical claims',
+    (purpose) => {
+      const selected = assignment('planner', [], `artifact:${purpose}:${'d'.repeat(64)}`),
+        schema = workerProposalResponseSchema(selected),
+        value = proposal(selected)
+      value.artifacts = [
+        {
+          ref: 'artifacts/production.json',
+          kind: 'report',
+          text: '{"schema":"wholeloop/builder-plan@1"}',
+        },
+      ]
+      expect(validate(value, schema)).toEqual([])
+      const wrong = structuredClone(value)
+      if (wrong.artifacts[0]) wrong.artifacts[0].kind = 'plan'
+      expect(validate(wrong, schema)).not.toEqual([])
+      expect(decodeWorkerProposal(encode(wrong), selected).result.artifacts[0]?.kind).toBe('plan')
+      if (wrong.artifacts[0]) {
+        wrong.artifacts[0].kind = 'report'
+        wrong.artifacts[0].ref = 'artifacts/other.json'
+      }
+      expect(validate(wrong, schema)).not.toEqual([])
+      expect(
+        validate(
+          {
+            ...value,
+            status: 'blocked',
+            artifacts: [],
+            unknowns: [
+              {
+                question: 'Missing fact?',
+                reason: 'No observation is supplied.',
+                owner: 'Fixture Owner',
+              },
+            ],
+          },
+          schema,
+        ),
+      ).toEqual([])
+    },
+  )
+  it.each(['artifact:research:', 'decision:approve-build-plan:', 'artifact:build-plan:extra:'])(
+    'does not impose production transport on the separate %s cell',
+    (prefix) => {
+      const selected = assignment('planner', [], `${prefix}${'d'.repeat(64)}`),
+        value = proposal(selected)
+      expect(validate(value, workerProposalResponseSchema(selected))).toEqual([])
+    },
+  )
   it.each(['planner', 'challenger', 'researcher'] as const)(
     'retains the %s controller identity when an artifact needs no writable workspace',
     (role) => {

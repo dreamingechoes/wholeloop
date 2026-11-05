@@ -19,6 +19,47 @@ function stages(fixture: Parameters<Parameters<typeof setup>[0]>[0]) {
   })
 }
 describe('owned artifact stages preserve proposals separately from decisions and behavioral evidence', () => {
+  it('retains a plan-labelled production artifact as blocked without changing its captured metadata or bytes', async () => {
+    await setup(
+      async (fixture) => {
+        const host = stages(fixture),
+          result = await host.execute(fixture.context)
+        expect(result.status).toBe('blocked')
+        expect(result.prepared).toBeUndefined()
+        const binding = JSON.parse(
+            readFileSync(
+              fixture.store.files.path(
+                `delivery/runner-artifacts/${fixture.context.invocation}.json`,
+              ),
+              'utf8',
+            ),
+          ),
+          directory = fixture.store.files.path(binding.directory),
+          receiptFile = readdirSync(directory).find((name) => name.startsWith('receipt-'))
+        if (!receiptFile) throw new Error('Original native receipt missing')
+        const receiptPath = join(directory, receiptFile),
+          original = readFileSync(receiptPath, 'utf8'),
+          receipt = JSON.parse(original),
+          captured = receipt.artifacts[0],
+          bytes = readFileSync(fixture.store.files.path(captured.ref))
+        expect(receipt.result.artifacts[0].kind).toBe('plan')
+        const record = fixture.store.stage(
+          contractDigest(fixture.context.request),
+          fixture.context.stage.id,
+        )
+        if (!record) throw new Error('Original stage missing')
+        expect((await host.inspect(fixture.context.request, record)).status).toBe('blocked')
+        expect(readFileSync(receiptPath, 'utf8')).toBe(original)
+        expect(readFileSync(fixture.store.files.path(captured.ref))).toEqual(bytes)
+        expect(
+          new RunnerNativeScope(fixture.store.files, fixture.context.invocation).calls(),
+        ).toHaveLength(1)
+      },
+      'host-observed',
+      { stage: 'build-plan', mode: 'plan-kind' },
+    )
+  })
+
   it('keeps a next-revision acceptance proposal blocked without rewriting its captured bytes', async () => {
     await setup(
       async (fixture) => {
@@ -66,6 +107,11 @@ describe('owned artifact stages preserve proposals separately from decisions and
         source: fixture.context.plan.source,
       }))
         expect(brief.response.properties[field].const).toBe(value)
+      expect(brief.outputArtifact).toEqual({
+        ref: 'artifacts/production.json',
+        kind: 'report',
+        count: 1,
+      })
       expect(brief.instruction).not.toContain('Definition/plan proposals')
     })
   })
