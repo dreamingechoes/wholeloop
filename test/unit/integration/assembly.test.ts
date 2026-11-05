@@ -1,13 +1,15 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
-import { expect, it } from 'vitest'
+import { afterEach, expect, it, vi } from 'vitest'
 import { acceptanceShape } from '../../../src/acceptance/contracts.js'
 import output from '../../../src/cli/schemas/output-v1.json' with { type: 'json' }
 import type { Schema } from '../../../src/config/schema.js'
 import { IntegrationAssembly } from '../../../src/integration/assembly.js'
 import { authorization, git } from '../../support/delivery.js'
 import { integrationFixture } from '../../support/integration.js'
+
+afterEach(() => vi.restoreAllMocks())
 
 async function assemblyFixture(
   run: (context: {
@@ -50,6 +52,10 @@ it('creates and commits the complete ordered assembly without changing personal 
       worker = readFileSync(join(paths.search, 'search.txt'), 'utf8')
     const result = await assembly.execute(record.digest)
     expect(result.status).toBe('assembled')
+    const inspect = vi.spyOn(assembly.effects, 'inspect')
+    expect(assembly.inspect(record.digest).status).toBe('assembled')
+    expect(inspect).toHaveBeenCalledTimes(1)
+    inspect.mockRestore()
     expect(result.repositories[0]?.effects).toHaveLength(3)
     expect(result.acceptance).toBe('not-established')
     expect(git(root, ['rev-parse', 'HEAD'])).toBe(main)

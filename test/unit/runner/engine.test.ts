@@ -1,8 +1,12 @@
-import { describe, expect, it, vi } from 'vitest'
+import { readdirSync } from 'node:fs'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import * as segments from '../../../src/delivery/journal-segment.js'
 import { DeliveryRunner, type DeliveryRunnerHost } from '../../../src/runner/engine.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { authorization, fixture } from '../../support/delivery.js'
+
+afterEach(() => vi.restoreAllMocks())
 
 async function setup(
   run: (store: RunnerStore, request: RunnerRequest, host: DeliveryRunnerHost) => Promise<void>,
@@ -78,6 +82,8 @@ describe('foreground runner refusals preserve truthful execution state', () => {
   })
   it('retains a complete fixture route and checkpoints without certifying native acceptance', async () => {
     await setup(async (store, request, host) => {
+      const reads = vi.spyOn(segments, 'readJournalSegment'),
+        polls: number[] = []
       host.preflight = async () => ({
         available: true,
         interactive: 'disabled',
@@ -85,6 +91,13 @@ describe('foreground runner refusals preserve truthful execution state', () => {
         reason: 'The explicit synthetic controller protocol is available.',
       })
       host.execute = async (context) => {
+        const leaves = readdirSync(store.files.path('delivery/journal')).filter((name) =>
+          name.endsWith('.ndjson'),
+        )
+        reads.mockClear()
+        const current = context.current()
+        polls.push(reads.mock.calls.length / leaves.length)
+        expect(current).toBe(true)
         context.started({
           backend: 'fixture',
           instance: context.invocation,
@@ -107,6 +120,9 @@ describe('foreground runner refusals preserve truthful execution state', () => {
         result = await new DeliveryRunner(store).run(prepared.digest, host)
       expect(result).toMatchObject({ state: 'paused', ownership: 'released', outcome: null })
       expect(result.stages).toHaveLength(result.route.length)
+      expect(polls).toHaveLength(result.route.length)
+      expect(polls).toEqual(polls.map(() => 1))
+      reads.mockRestore()
       expect(result.stages.every((s) => s.status === 'passed' && s.provenance === 'fixture')).toBe(
         true,
       )

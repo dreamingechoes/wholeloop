@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   type DeliveryWorkspaceRequest,
   DeliveryWorkspaces,
@@ -9,6 +9,8 @@ import { ENVIRONMENT_SNAPSHOT_LIMITS } from '../../../src/environment/candidates
 import { authorization, git } from '../../support/delivery.js'
 import { deliveryWorkspaceFixture as setup } from '../../support/delivery-workspaces.js'
 import { integrationFixture } from '../../support/integration.js'
+
+afterEach(() => vi.restoreAllMocks())
 
 describe('owned delivery workspaces', () => {
   it('creates a subjectless external topic once without changing personal files or granting acceptance', async () => {
@@ -81,6 +83,10 @@ describe('owned delivery workspaces', () => {
         result = await workspaces.execute(record.digest)
       expect(result.status).toBe('ready')
       expect(result.effects).toHaveLength(2)
+      const inspect = vi.spyOn(workspaces.effects, 'inspect')
+      expect(workspaces.inspect(record.digest).status).toBe('ready')
+      expect(inspect).toHaveBeenCalledTimes(1)
+      inspect.mockRestore()
       expect(readFileSync(join(record.repository.path, 'contract.json'), 'utf8')).toContain('v1')
       expect(existsSync(join(record.repository.path, 'search.txt'))).toBe(false)
       expect(git(root, ['rev-parse', 'HEAD'])).toBe(before)

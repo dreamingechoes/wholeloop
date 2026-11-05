@@ -336,10 +336,16 @@ export class DeliveryWorkspaces {
       throw new IntegrationError('changed-workspace-inputs')
     return current
   }
-  private find(record: DeliveryWorkspaceRecord, step: WorkspaceStep): EffectRecord | undefined {
-    return this.effects.inspect(record.request.run).find((effect) => effect.intent.key === step.key)
+  private effectIndex(record: DeliveryWorkspaceRecord) {
+    // Index a fresh vector only for this selection; effects and cancellation
+    // writes invalidate it before any subsequent traversal.
+    const indexed = new Map<string, EffectRecord>()
+    // Keys can recur on a later plan basis; retain the original find-first semantics.
+    for (const effect of this.effects.inspect(record.request.run))
+      if (!indexed.has(effect.intent.key)) indexed.set(effect.intent.key, effect)
+    return indexed
   }
-  private steps(record: DeliveryWorkspaceRecord) {
+  private steps(record: DeliveryWorkspaceRecord, effects: ReadonlyMap<string, EffectRecord>) {
     const prefix = `workspace-${record.digest.slice(0, 24)}`,
       steps: WorkspaceStep[] = [
         {
@@ -353,7 +359,7 @@ export class DeliveryWorkspaces {
       (part) => part.repository === record.repository.repository,
     )) {
       // The previous native result, rather than predicted Git hashes, supplies the next precondition.
-      const previous = this.find(record, steps[steps.length - 1] as WorkspaceStep)
+      const previous = effects.get((steps[steps.length - 1] as WorkspaceStep).key)
       if (previous?.status !== 'applied' || !previous.observations.at(-1)?.resource?.revision) break
       head = previous.observations.at(-1)?.resource?.revision ?? head
       steps.push({
@@ -520,11 +526,12 @@ export class DeliveryWorkspaces {
     const record = this.get(digest)
     this.current(record)
     while (true) {
-      const step = this.steps(record).find(
-        (entry) => this.find(record, entry)?.status !== 'applied',
-      )
+      const effects = this.effectIndex(record),
+        step = this.steps(record, effects).find(
+          (entry) => effects.get(entry.key)?.status !== 'applied',
+        )
       if (!step) return this.inspect(digest)
-      let effect = this.find(record, step)
+      let effect = effects.get(step.key)
       if (effect?.status === 'not-applied' || effect?.status === 'abandoned')
         return this.inspect(digest)
       if (effect && ['pending', 'unknown'].includes(effect.status)) {
@@ -574,28 +581,35 @@ export class DeliveryWorkspaces {
   }
   async reconcile(digest: string) {
     const record = this.get(digest)
-    for (const step of this.steps(record)) {
-      const effect = this.find(record, step)
-      if (effect && ['pending', 'unknown'].includes(effect.status))
+    let effects = this.effectIndex(record)
+    for (const step of this.steps(record, effects)) {
+      const effect = effects.get(step.key)
+      if (effect && ['pending', 'unknown'].includes(effect.status)) {
         await this.effects.reconcile(record.request.run, effect.intent.id, this.host(record, step))
+        effects = this.effectIndex(record)
+      }
     }
     return this.inspect(digest)
   }
   requestCancellation(digest: string) {
     const record = this.get(digest)
-    for (const step of this.steps(record)) {
-      const effect = this.find(record, step)
-      if (effect?.invocation && ['pending', 'unknown'].includes(effect.status))
+    let effects = this.effectIndex(record)
+    for (const step of this.steps(record, effects)) {
+      const effect = effects.get(step.key)
+      if (effect?.invocation && ['pending', 'unknown'].includes(effect.status)) {
         new AssemblyGitProcess(
           this.files,
           `delivery/workspace-operations/${record.digest}/${effect.invocation}`,
         ).requestCancellation()
+        effects = this.effectIndex(record)
+      }
     }
   }
   inspect(digest: string) {
     const record = this.get(digest),
-      steps = this.steps(record),
-      effects = steps.map((step) => this.find(record, step)),
+      indexed = this.effectIndex(record),
+      steps = this.steps(record, indexed),
+      effects = steps.map((step) => indexed.get(step.key)),
       expected =
         1 + record.parts.filter((part) => part.repository === record.repository.repository).length
     let current = true,

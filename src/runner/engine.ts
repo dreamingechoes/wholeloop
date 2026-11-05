@@ -236,8 +236,7 @@ export class DeliveryRunner {
               signal: abort.signal,
               // Domain hosts re-observe complete inputs before issue and acceptance.
               // Their live poll must not spawn Git again every 50 milliseconds.
-              current: () =>
-                this.store.live(lease, false) && this.store.record(digest).basis === basis,
+              current: () => this.store.live(lease, false, basis),
               started: (runtime) =>
                 this.store.append(
                   lease,

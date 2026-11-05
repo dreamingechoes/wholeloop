@@ -256,10 +256,14 @@ export class RunnerStore {
     }
   }
   /** An already issued domain effect waits for observation; it does not admit another stage. */
-  live(lease: RunnerLease, observeBases = true): boolean {
+  live(lease: RunnerLease, observeBases = true, expectedBasis?: string): boolean {
     try {
       const state = this.currentState(lease, false, observeBases)
-      return !!state && ['queued', 'running', 'waiting-external'].includes(state.state)
+      return (
+        !!state &&
+        (expectedBasis === undefined || state.basis.digest === expectedBasis) &&
+        ['queued', 'running', 'waiting-external'].includes(state.state)
+      )
     } catch {
       return false
     }

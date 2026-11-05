@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-06 · P6-39 · Reuse fresh controller and effect selections
+
+- Commit 76224b8 passes exact isolated Linux CHECK PASS fast in 120s (2602 tests plus the existing macOS-only omission in 183 files) and CHECK PASS in 148s (4522 tests plus that omission in 273 files). Both bundles match macOS; all 48 focused macOS controls and strict types pass. The preceding documentation precheck finds a malformed new ADR-index row separation; fix it before pinning these gates. No total-route overhead pass is inferred.
+- Add physical segment-read counters to the actual fixture runner route and effect-list counters to owned Git assembly/workspace reports. An initial sandbox run has sixteen failures including unavailable process ownership; repeat with actual process-table access. That original-source run has exactly three operation-count failures and 34 passes: twelve issued-host polls each read every current segment twice, and both complete reports read the effect vector three times. Preserve the two scopes separately.
+- Compare each issued host's pinned basis inside the same fresh live observation, and index effects once per synchronous step selection ([ADR-0232](../docs/decisions/0232-fresh-controller-and-effect-vector-selections.md)). Refresh across effects, awaited reconciliation and cancellation writes. Preserve first historical key matches across plan bases, current authority/budget/generation checks, predecessor heads, unknown stopping and actual native ownership. All 47 final focused actual macOS controls and strict types pass: twelve domain callbacks open each current segment once, and both reports read their effect vector once. Required increment gates remain pending. The parent poll, repeated backend callers and remaining traversal/replay remain open; no paid model, hosted effect or source push runs.
+
+---
+
 ## 2026-11-05 · P6-39 · Share projection traversal and avoid unchanged basic writes
 
 - Commit bea453e passes exact isolated Linux CHECK PASS fast in 125s (2820 tests plus the existing macOS-only omission in 204 files) and CHECK PASS in 145s (4511 tests plus that omission in 270 files). Both bundles match macOS; 75 focused macOS controls and strict types pass. This verifies its no-op admission/history correction, not complete-route overhead.

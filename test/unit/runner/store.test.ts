@@ -59,11 +59,13 @@ describe('private prepared foreground controller requests', () => {
         const names = readdirSync(store.files.path('delivery/journal')).filter((name) =>
           name.endsWith('.ndjson'),
         )
-        reads.mockClear()
-        expect(store.live(lease, false)).toBe(expected)
-        // Count actual selected leaves, independent of which public view the
-        // poll requests. A metadata-only cache cannot conceal later control.
-        expect(reads.mock.calls.map(([, , name]) => name).sort()).toEqual(names.sort())
+        for (const basis of [undefined, request.plan]) {
+          reads.mockClear()
+          expect(store.live(lease, false, basis)).toBe(expected)
+          // Count actual selected leaves, independent of which public view the
+          // poll requests. A metadata-only cache cannot conceal later control.
+          expect(reads.mock.calls.map(([, , name]) => name).sort()).toEqual(names.sort())
+        }
       }
       live(true)
       store.lifecycle.transition(request.run, {
@@ -154,6 +156,11 @@ describe('private prepared foreground controller requests', () => {
       const revision = store.planning.preparePlan(next)
       store.adopt(lease, { revision: 2, digest: revision.digest })
       expect(store.record(prepared.digest).basis).toBe(revision.digest)
+      expect(store.live(lease, false, request.plan)).toBe(false)
+      expect(store.live(lease, false, revision.digest)).toBe(true)
+      expect(
+        store.live({ ...lease, generation: lease.generation + 1 }, false, revision.digest),
+      ).toBe(false)
       expect(store.current(lease)).toBe(true)
       expect(store.get(prepared.digest).plan).toBe(request.plan)
       expect(store.stage(prepared.digest, 'plan')).toBeUndefined()

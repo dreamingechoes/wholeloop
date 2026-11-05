@@ -255,6 +255,8 @@
 
 | [0231](./0231-shared-projection-traversal-and-selective-item-writes.md) | Share projection traversal and skip unchanged basic item writes | Accepted | 2026-11-05 |
 
+| [0232](./0232-fresh-controller-and-effect-vector-selections.md) | Select controller and effect facts from one fresh view | Accepted | 2026-11-06 |
+
 ## Lifecycle
 
 ```mermaid

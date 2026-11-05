@@ -230,7 +230,7 @@ export class IntegrationAssembly {
       throw new IntegrationError('changed-assembly-inputs')
     return { plan, state }
   }
-  private steps(record: AssemblyRecord) {
+  private steps(record: AssemblyRecord, effects: ReadonlyMap<string, EffectRecord>) {
     const steps: Step[] = [],
       heads = new Map(record.assembly.repositories.map((repo) => [repo.repository, repo.base]))
     const prefix = (repo: AssemblyRepository) =>
@@ -256,15 +256,21 @@ export class IntegrationAssembly {
         key: `${prefix(repo)}-${contractDigest(part.work).slice(0, 12)}`,
       }
       steps.push(step)
-      const prior = this.find(record, step),
+      const prior = effects.get(step.key),
         revision = prior?.observations.at(-1)?.resource?.revision
       if (prior?.status !== 'applied' || !revision) break
       heads.set(part.repository, revision)
     }
     return steps
   }
-  private find(record: AssemblyRecord, step: Step) {
-    return this.effects.inspect(record.assembly.request.run).find((e) => e.intent.key === step.key)
+  private effectIndex(record: AssemblyRecord) {
+    // This vector belongs to one synchronous selection. Every effect boundary
+    // starts another observation rather than retaining authority across work.
+    const indexed = new Map<string, EffectRecord>()
+    // Keys can recur on a later plan basis; retain the original find-first semantics.
+    for (const effect of this.effects.inspect(record.assembly.request.run))
+      if (!indexed.has(effect.intent.key)) indexed.set(effect.intent.key, effect)
+    return indexed
   }
   private owned(repo: AssemblyRepository, expectedHead: string, clean = true) {
     const registered = registeredWorktrees(repo.root).find((t) => t.path === repo.path)
@@ -438,10 +444,11 @@ export class IntegrationAssembly {
         throw new IntegrationError('integration-repair-budget')
     }
     while (true) {
-      const steps = this.steps(record),
-        step = steps.find((step) => this.find(record, step)?.status !== 'applied')
+      const effects = this.effectIndex(record),
+        steps = this.steps(record, effects),
+        step = steps.find((step) => effects.get(step.key)?.status !== 'applied')
       if (!step) return this.inspect(digest)
-      let effect = this.find(record, step)
+      let effect = effects.get(step.key)
       if (effect?.status === 'not-applied' || effect?.status === 'abandoned')
         return this.inspect(digest)
       const host = this.host(record, step)
@@ -482,12 +489,13 @@ export class IntegrationAssembly {
   async reconcile(digest: string) {
     const record = this.get(digest)
     while (true) {
-      const step = this.steps(record).find((step) => {
-        const effect = this.find(record, step)
-        return effect && ['pending', 'unknown'].includes(effect.status)
-      })
+      const effects = this.effectIndex(record),
+        step = this.steps(record, effects).find((step) => {
+          const effect = effects.get(step.key)
+          return effect && ['pending', 'unknown'].includes(effect.status)
+        })
       if (!step) break
-      const effect = this.find(record, step)
+      const effect = effects.get(step.key)
       if (!effect) break
       const observed = await this.effects.reconcile(
         record.assembly.request.run,
@@ -500,19 +508,22 @@ export class IntegrationAssembly {
   }
   requestCancellation(digest: string) {
     const record = this.get(digest)
-    for (const step of this.steps(record)) {
-      const effect = this.find(record, step)
-      if (effect?.invocation && ['pending', 'unknown'].includes(effect.status))
+    let effects = this.effectIndex(record)
+    for (const step of this.steps(record, effects)) {
+      const effect = effects.get(step.key)
+      if (effect?.invocation && ['pending', 'unknown'].includes(effect.status)) {
         new AssemblyGitProcess(
           this.files,
           `delivery/assemblies/${record.digest}/operations/${effect.invocation}`,
         ).requestCancellation()
+        effects = this.effectIndex(record)
+      }
     }
   }
   inspect(digest: string) {
     const record = this.get(digest),
-      effects = this.effects.inspect(record.assembly.request.run),
-      steps = this.steps(record)
+      effects = this.effectIndex(record),
+      steps = this.steps(record, effects)
     let stale = false
     try {
       this.current(record)
@@ -521,7 +532,7 @@ export class IntegrationAssembly {
     }
     const repositories = record.assembly.repositories.map((repo) => {
       const selected = steps.filter((s) => s.repository.repository === repo.repository),
-        results = selected.map((s) => effects.find((e) => e.intent.key === s.key)),
+        results = selected.map((s) => effects.get(s.key)),
         last = results.at(-1),
         head = last?.observations.at(-1)?.resource?.revision
       let status: 'not-run' | 'assembled' | 'conflict' | 'failed' | 'unknown' | 'stale' = 'not-run'
