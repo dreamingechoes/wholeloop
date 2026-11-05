@@ -460,7 +460,7 @@ if(mode==='overflow'){console.log('x'.repeat(1048577));return}
 if(mode==='changed-git'){fs.writeFileSync(${JSON.stringify(join(workspace, '.git'))},'gitdir: /missing-fixture-gitdir\\n')}
 if(mode==='read-only-change'){fs.writeFileSync(${JSON.stringify(join(workspace, 'app.txt'))},'Unexpected fixture edit.')}
 const proof=mode==='inline-empty'?'':'Fixture proof.\\n';if(!mode.startsWith('inline'))fs.writeFileSync(path.join(process.cwd(),'outputs','artifacts','proof.txt'),proof);
-const result=mode.startsWith('inline')?{schema:'wholeloop/delivery-worker-proposal@1',assignment:mode==='inline-wrong-fence'?'f'.repeat(64):assignment.assignment,status:'complete',summary:'Observed fixture proposal.',artifacts:[{ref:'artifacts/proof.txt',kind:'evidence',text:proof}],criteria:[{id:'search',status:'pass',evidence:['artifacts/proof.txt']}],findings:[],unknowns:[]}:{schema:'wholeloop/delivery-worker-result@1',assignment:assignment.assignment,identity:assignment.identity,status:mode==='blocked'?'blocked':'complete',origin:'worker-claim',summary:'Observed fixture output.',artifacts:[{ref:'artifacts/proof.txt',sha256:crypto.createHash('sha256').update(proof).digest('hex'),bytes:Buffer.byteLength(proof),kind:'report'}],criteria:[],findings:[],unknowns:[]};
+const result=mode.startsWith('inline')?{schema:'wholeloop/delivery-worker-proposal@1',assignment:mode==='inline-wrong-fence'?'f'.repeat(64):assignment.assignment,status:'complete',summary:mode==='inline-empty-summary'?'':'Observed fixture proposal.',artifacts:[{ref:'artifacts/proof.txt',kind:'evidence',text:proof}],criteria:[{id:'search',status:'pass',evidence:['artifacts/proof.txt']}],findings:[],unknowns:[]}:{schema:'wholeloop/delivery-worker-result@1',assignment:assignment.assignment,identity:assignment.identity,status:mode==='blocked'?'blocked':'complete',origin:'worker-claim',summary:'Observed fixture output.',artifacts:[{ref:'artifacts/proof.txt',sha256:crypto.createHash('sha256').update(proof).digest('hex'),bytes:Buffer.byteLength(proof),kind:'report'}],criteria:[],findings:[],unknowns:[]};
 if(mode==='wrong-fence')result.identity.generation++;
 if(${JSON.stringify(target)}==='codex'){console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(result)}}));console.log(JSON.stringify({type:'turn.completed'}))}
 else console.log(JSON.stringify({is_error:false,structured_output:result,usage:{input_tokens:3,output_tokens:2,cache_read_input_tokens:0,cache_creation_input_tokens:0}}));
@@ -503,6 +503,37 @@ else console.log(JSON.stringify({is_error:false,structured_output:result,usage:{
 }
 
 describe('actual synthetic native processes', () => {
+  it.each(['claude', 'codex'])(
+    'binds a private schema-field diagnostic to the rejected %s output',
+    (target) =>
+      nativeFixture(
+        async ({ queue, lease, context, options }) => {
+          const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
+            ...options,
+            output: 'inline-proposal',
+          })
+          expect(receipt.status).toBe('failed')
+          expect(receipt.reason).toBe('invalid-output')
+          const diagnostic = JSON.parse(
+            readFileSync(
+              queue.lifecycle.journal.files.path(`${receipt.directory}/output-diagnostic.json`),
+              'utf8',
+            ),
+          )
+          expect(diagnostic).toEqual({
+            schema: 'wholeloop/native-output-diagnostic@1',
+            assignment: receipt.assignment,
+            stdout: receipt.execution?.stdout,
+            phase: 'proposal',
+            problem: 'invalid-or-unsafe-proposal',
+            detail: { boundary: 'shape', field: 'proposal.summary' },
+          })
+          expect(receipt.artifacts).toBeUndefined()
+        },
+        'inline-empty-summary',
+        target,
+      ),
+  )
   it.each(['claude', 'codex'])(
     'retains exact empty %s inline artifact bytes as a claim',
     (target) =>

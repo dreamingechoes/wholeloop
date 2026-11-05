@@ -235,6 +235,8 @@
 
 | [0221](./0221-native-role-criterion-scope.md) | Advertise only the assigned role's criterion results | Accepted | 2026-11-05 |
 
+| [0222](./0222-private-proposal-failure-fields.md) | Classify private proposal failures without retaining rejected data | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

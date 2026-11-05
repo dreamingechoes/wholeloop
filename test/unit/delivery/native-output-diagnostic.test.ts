@@ -43,4 +43,12 @@ describe('bounded private native output diagnostics', () => {
       'Invalid native diagnostic binding',
     ),
   )
+  it('ignores forged diagnostic properties on otherwise recognizable errors', () => {
+    const error = Object.assign(new WorkerProtocolError('invalid-or-unsafe-proposal'), {
+      detail: { boundary: 'shape', field: 'UNTRUSTED_CANARY' },
+    })
+    const diagnostic = nativeOutputDiagnostic('a'.repeat(64), 'b'.repeat(64), 'proposal', error)
+    expect(diagnostic).not.toHaveProperty('detail')
+    expect(JSON.stringify(diagnostic)).not.toContain('UNTRUSTED_CANARY')
+  })
 })

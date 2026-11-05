@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
 import { validate } from '../../../src/config/schema.js'
+import { nativeOutputDiagnostic } from '../../../src/delivery/native-output-diagnostic.js'
 import { DEFAULT_DELIVERY_BUDGETS } from '../../../src/delivery/plan.js'
 import {
   decodeWorkerProposal,
@@ -67,6 +68,76 @@ function proposal(selected = assignment()): WorkerProposal {
 }
 const encode = (value: unknown) => Buffer.from(JSON.stringify(value))
 describe('bounded inline artifact proposals from read-only workers', () => {
+  it.each([
+    'encoding',
+    'text',
+    'json',
+    'root',
+    'summary',
+    'assignment',
+    'extra',
+    'ref',
+    'owner',
+    'evidence',
+  ])('classifies a rejected %s proposal without retaining values or unknown names', (kind) => {
+    const selected = assignment(),
+      value = proposal(selected)
+    let input = encode(value)
+    const detail: { boundary: string; field?: string } = { boundary: 'shape' }
+    if (kind === 'encoding') {
+      input = Buffer.from([255])
+      detail.boundary = kind
+    } else if (kind === 'text') {
+      input = Buffer.from('\0')
+      detail.boundary = kind
+    } else if (kind === 'json') {
+      input = Buffer.from('{')
+      detail.boundary = kind
+    } else {
+      detail.field = `proposal.${kind}`
+      if (kind === 'root') {
+        input = encode('UNTRUSTED_CANARY')
+        detail.field = 'proposal'
+      }
+      if (kind === 'summary') {
+        value.summary = ''
+        input = encode(value)
+      }
+      if (kind === 'assignment') {
+        const { assignment: _digest, ...rest } = value
+        input = encode(rest)
+      }
+      if (kind === 'extra') {
+        input = encode({ ...value, UNTRUSTED_CANARY: 'UNTRUSTED_CANARY' })
+        detail.field = 'proposal.*'
+      }
+      if (kind === 'ref') {
+        value.artifacts[0] = { ref: 'UNTRUSTED_CANARY', kind: 'report', text: '' }
+        input = encode(value)
+        detail.field = 'proposal.artifacts[].ref'
+      }
+      if (kind === 'owner') {
+        value.unknowns = [{ question: 'Missing?', reason: 'Unknown.', owner: '' }]
+        input = encode(value)
+        detail.field = 'proposal.unknowns[].owner'
+      }
+      if (kind === 'evidence') {
+        value.criteria = [{ id: 'search', status: 'pass', evidence: [] }]
+        input = encode(value)
+        detail.field = 'proposal.criteria[].evidence'
+      }
+    }
+    let caught: unknown
+    try {
+      decodeWorkerProposal(input, selected)
+    } catch (error) {
+      caught = error
+    }
+    expect(caught).toMatchObject({ problem: 'invalid-or-unsafe-proposal' })
+    const diagnostic = nativeOutputDiagnostic('a'.repeat(64), 'b'.repeat(64), 'proposal', caught)
+    expect(diagnostic).toHaveProperty('detail', detail)
+    expect(JSON.stringify(diagnostic)).not.toContain('UNTRUSTED_CANARY')
+  })
   it.each(['definition', 'plan', 'acceptance-definition', 'build-plan'])(
     'pins the %s producer transport while preserving rejected historical claims',
     (purpose) => {

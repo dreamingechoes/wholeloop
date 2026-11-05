@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { type Schema, validate } from '../config/schema.js'
+import { isObject, type Schema, validate } from '../config/schema.js'
 import { safeSourceText } from './input.js'
 import proposalSchema from './schemas/worker-proposal-v1.json' with { type: 'json' }
 import {
@@ -15,6 +15,31 @@ import {
 export const WORKER_PROPOSAL_SCHEMA = proposalSchema
 export const INLINE_ARTIFACT_LIMIT = 256 * 1024
 export const WORKER_PROPOSAL_LIMIT = 1024 * 1024
+type ProposalBoundary = 'encoding' | 'text' | 'json' | 'shape'
+const failures = new WeakMap<WorkerProtocolError, { boundary: ProposalBoundary; field?: string }>()
+
+/** Only errors created here have metadata; arbitrary thrown properties never enter a diagnostic. */
+export function workerProposalFailure(error: unknown) {
+  const detail = error instanceof WorkerProtocolError ? failures.get(error) : undefined
+  return detail ? { ...detail } : undefined
+}
+
+/** Walk trusted schema names only; unknown keys and array offsets must not become retained text. */
+function shapeFailureField(value: unknown, rule: Schema, path = 'proposal'): string {
+  if (rule.type === 'object' && isObject(value)) {
+    for (const key of rule.required ?? []) if (!Object.hasOwn(value, key)) return `${path}.${key}`
+    if (Object.keys(value).some((key) => !Object.hasOwn(rule.properties ?? {}, key)))
+      return `${path}.*`
+    for (const [key, child] of Object.entries(rule.properties ?? {}))
+      if (Object.hasOwn(value, key) && validate(value[key], child).length)
+        return shapeFailureField(value[key], child, `${path}.${key}`)
+  } else if (rule.type === 'array' && Array.isArray(value) && rule.items) {
+    for (const child of value)
+      if (validate(child, rule.items).length)
+        return shapeFailureField(child, rule.items, `${path}[]`)
+  }
+  return path
+}
 export interface WorkerProposal
   extends Pick<WorkerResult, 'status' | 'summary' | 'criteria' | 'findings' | 'unknowns'> {
   schema: 'wholeloop/delivery-worker-proposal@1'
@@ -54,13 +79,25 @@ export function decodeWorkerProposal(input: Uint8Array, assignment: WorkerAssign
   const bytes = Buffer.from(input),
     text = bytes.toString('utf8')
   let value: unknown
+  let boundary: ProposalBoundary = 'encoding'
   try {
     if (!Buffer.from(text).equals(bytes)) throw new Error('Invalid UTF-8')
+    boundary = 'text'
     safeSourceText(text, WORKER_PROPOSAL_LIMIT)
+    boundary = 'json'
     value = JSON.parse(text)
+    boundary = 'shape'
     if (validate(value, proposalSchema as Schema).length) throw new Error('Invalid shape')
   } catch {
-    throw new WorkerProtocolError('invalid-or-unsafe-proposal')
+    const error = new WorkerProtocolError('invalid-or-unsafe-proposal')
+    let field: string | undefined
+    try {
+      if (boundary === 'shape') field = shapeFailureField(value, proposalSchema)
+    } catch {
+      // Failure classification cannot replace the original decoder refusal.
+    }
+    failures.set(error, { boundary, ...(field ? { field } : {}) })
+    throw error
   }
   const proposal = value as WorkerProposal
   if (proposal.assignment !== assignment.assignment)

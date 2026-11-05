@@ -1,3 +1,4 @@
+import { workerProposalFailure } from './worker-proposal.js'
 import { WorkerProtocolError } from './worker-protocol.js'
 
 const PHASES = ['frame', 'proposal', 'result', 'execution'] as const
@@ -35,6 +36,7 @@ export function nativeOutputDiagnostic(
     !PHASES.includes(phase)
   )
     throw new Error('Invalid native diagnostic binding')
+  const detail = phase === 'proposal' ? workerProposalFailure(error) : undefined
   return {
     schema: 'wholeloop/native-output-diagnostic@1',
     assignment,
@@ -44,5 +46,6 @@ export function nativeOutputDiagnostic(
       error instanceof WorkerProtocolError && PROBLEMS.has(error.problem)
         ? error.problem
         : 'unclassified',
+    ...(detail ? { detail } : {}),
   }
 }
