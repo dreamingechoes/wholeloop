@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { StoreFiles } from '../../../src/state/files.js'
 import {
+  groupReadResources,
   inReadObservation,
   observedRead,
   withReadObservation,
@@ -228,5 +229,87 @@ describe('one bounded independently revalidated read observation', () => {
         observedRead('large', () => ({ bytes: Buffer.alloc(64 * 1024 * 1024 + 1), value: '' }))
       }),
     ).rejects.toThrow('Read observation')
+  })
+
+  it('groups already selected members without duplicating their physical reads', async () => {
+    let reads = 0
+    const read = () => {
+      reads++
+      return { bytes: Buffer.from('fixture'), value: 'fixture' }
+    }
+    await withReadObservation(signal(), async () => {
+      observedRead('path', read, 'file')
+      groupReadResources('registration', ['file'])
+      groupReadResources('registration', ['file'])
+      for (let i = 0; i < 100; i++) observedRead('path', read, 'file')
+      observedRead('content', read, 'file')
+      expect(reads).toBe(2)
+    })
+    expect(reads).toBe(4)
+  })
+
+  it('refuses changed, overlapping or nested group membership', async () => {
+    for (const mode of ['changed', 'overlapping', 'nested'])
+      await expect(
+        withReadObservation(signal(), async () => {
+          groupReadResources('first', ['file'])
+          expect(() => {
+            if (mode === 'changed') groupReadResources('first', ['different'])
+            else if (mode === 'overlapping') groupReadResources('second', ['file'])
+            else groupReadResources('second', ['first'])
+          }).toThrow('Read observation')
+        }),
+      ).rejects.toThrow('Read observation')
+  })
+
+  it('retains projection limits when merging existing members and forgets groups between actions', async () => {
+    await expect(
+      withReadObservation(signal(), async () => {
+        for (let i = 0; i < 9; i++)
+          observedRead(
+            String(i),
+            () => ({ bytes: Buffer.from('fixture'), value: i }),
+            i < 5 ? 'a' : 'b',
+          )
+        groupReadResources('group', ['a', 'b'])
+      }),
+    ).rejects.toThrow('Read observation')
+    for (const group of ['first', 'second'])
+      await expect(
+        withReadObservation(signal(), async () => {
+          groupReadResources(group, ['file'])
+          return observedRead('key', () => ({ bytes: Buffer.from(group), value: group }), 'file')
+        }),
+      ).resolves.toBe(group)
+  })
+
+  it('bounds grouped member and projection counts even without successful captures', async () => {
+    for (const mode of ['members', 'projections', 'empty-groups'])
+      await expect(
+        withReadObservation(signal(), async () => {
+          if (mode === 'members') groupReadResources('group', Array.from({ length: 9 }, String))
+          else if (mode === 'empty-groups')
+            for (let i = 0; i <= 1024; i++) groupReadResources(`group-${i}`, [`file-${i}`])
+          else {
+            groupReadResources('group', ['file'])
+            for (let i = 0; i < 9; i++)
+              observedRead(String(i), () => ({ bytes: Buffer.from('fixture'), value: i }), 'file')
+          }
+        }),
+      ).rejects.toThrow('Read observation')
+  })
+
+  it('refuses regrouping an in-progress capture or creating a group during revalidation', async () => {
+    for (const mode of ['pending', 'validation'])
+      await expect(
+        withReadObservation(signal(), async () => {
+          let reads = 0
+          observedRead('key', () => {
+            if (mode === 'pending' || reads++)
+              expect(() => groupReadResources('group', ['key'])).toThrow('Read observation')
+            return { bytes: Buffer.from('fixture'), value: 'fixture' }
+          })
+        }),
+      ).rejects.toThrow('Read observation')
   })
 })

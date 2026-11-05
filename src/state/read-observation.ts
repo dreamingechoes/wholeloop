@@ -14,6 +14,8 @@ interface Observation {
     { resource: string; evidence: ReadEvidence<unknown>; read: () => ReadEvidence<unknown> }
   >
   resources: Map<string, Set<string>>
+  groups: Map<string, readonly string[]>
+  aliases: Map<string, string>
   validation: Map<string, ReadEvidence<unknown>>
 }
 const observations = new AsyncLocalStorage<Observation>()
@@ -34,6 +36,8 @@ export async function withReadObservation<T>(signal: AbortSignal, operation: () 
     bytes: 0,
     reads: new Map(),
     resources: new Map(),
+    groups: new Map(),
+    aliases: new Map(),
     validation: new Map(),
   }
   try {
@@ -78,10 +82,63 @@ export function assertObservationWritable(): void {
   }
 }
 
+/** Fixed readers may declare one resource's complete bounded set of physical members. */
+export function groupReadResources(resource: string, members: readonly string[]): void {
+  const scope = observations.getStore()
+  if (!scope) return
+  const refuse = (): never => {
+    scope.failed = true
+    throw new ReadObservationError()
+  }
+  if ((!scope.open && !scope.checking) || scope.failed) refuse()
+  const selected = [...members].sort(),
+    existing = scope.groups.get(resource)
+  if (!selected.length || selected.length > 8 || new Set(selected).size !== selected.length)
+    refuse()
+  if (existing) {
+    if (JSON.stringify(existing) !== JSON.stringify(selected)) refuse()
+    return
+  }
+  if (
+    scope.checking ||
+    scope.aliases.has(resource) ||
+    scope.resources.has(resource) ||
+    selected.some(
+      (member) => member === resource || scope.aliases.has(member) || scope.groups.has(member),
+    )
+  )
+    refuse()
+  const projections = new Set<string>()
+  let merged = 0
+  for (const member of selected) {
+    const prior = scope.resources.get(member)
+    if (prior) merged++
+    for (const key of prior ?? []) {
+      // Never reclassify an in-progress capture: its evidence is not sealed yet.
+      if (scope.reads.get(key)?.resource !== member) refuse()
+      projections.add(key)
+    }
+  }
+  if (projections.size > 8 || scope.resources.size - merged + 1 > 1024) refuse()
+  // Keep the original read keys and every captured byte. Grouping cannot create
+  // a second cache or duplicate opens when an ordinary reader shares a member.
+  scope.groups.set(resource, selected)
+  for (const member of selected) {
+    scope.aliases.set(member, resource)
+    scope.resources.delete(member)
+  }
+  scope.resources.set(resource, projections)
+  for (const key of projections) {
+    const entry = scope.reads.get(key)
+    if (entry) entry.resource = resource
+  }
+}
+
 /** Values stay module-private: public readers must copy their selected view. */
 export function observedRead<T>(key: string, read: () => ReadEvidence<T>, resource = key): T {
   const scope = observations.getStore()
   if (!scope) return read().value
+  resource = scope.aliases.get(resource) ?? resource
   // Validation is wholly synchronous: inherited asynchronous continuations
   // cannot run until this flag is cleared and the closed scope refuses them.
   if (scope.checking) {
@@ -127,7 +184,7 @@ export function observedRead<T>(key: string, read: () => ReadEvidence<T>, resour
     evidence = read()
   } catch (error) {
     projections.delete(key)
-    if (!projections.size) scope.resources.delete(resource)
+    if (!projections.size && !scope.groups.has(resource)) scope.resources.delete(resource)
     throw error
   }
   scope.bytes += evidence.bytes.length

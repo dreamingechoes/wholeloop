@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync } from 'node:fs'
+import { join } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
@@ -7,7 +8,7 @@ import { type operationGroup, operationGroups } from '../environment/operations.
 import { operationWrapper } from '../fanout/operation-wrapper.js'
 import { type ProcessResult, unmanagedWorkerProcess } from '../fanout/process.js'
 import type { StoreFiles } from '../state/files.js'
-import { assertObservationWritable } from '../state/read-observation.js'
+import { assertObservationWritable, groupReadResources } from '../state/read-observation.js'
 import { DeliveryRunnerError } from './route.js'
 import outcomeSchema from './schemas/process-outcome-v1.json' with { type: 'json' }
 
@@ -199,8 +200,14 @@ export class ManagedRunnerProcess {
   ): ManagedProcessObservation[] {
     if (invocations.length > 1000) throw new DeliveryRunnerError('native-observation-limit')
     const selected = invocations.map((invocation) => {
-        const manager = new ManagedRunnerProcess(files, invocation),
-          intent = manager.original('intent'),
+        const manager = new ManagedRunnerProcess(files, invocation)
+        groupReadResources(
+          JSON.stringify(['native-registration', files.root, invocation]),
+          ['intent', 'started', 'outcome'].map(
+            (name) => `filesystem:${join(files.root, manager.relative, `${name}.json`)}`,
+          ),
+        )
+        const intent = manager.original('intent'),
           started = manager.original('started'),
           outcome = manager.original('outcome')
         return {

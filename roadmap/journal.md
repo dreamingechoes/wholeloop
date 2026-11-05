@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-39 · Group original native registration resources
+
+- Commit 0647c2c passes corrected immutable Linux CHECK PASS fast in 144s, with 2828 tests plus the existing macOS-only omission in 201 files. Both compiled bundles match macOS; 35 focused macOS store/lock controls and strict types pass. Preserve the preceding harness-mapping failure and owned-child differential evidence. No complete current gate, full-route overhead or source push is inferred.
+- A 400-registration filesystem control reproduces the resource-limit refusal while every incomplete original correctly remains unknown. Group each original native registration's intent, started and outcome as one resource ([ADR-0229](../docs/decisions/0229-native-registration-observation-resources.md)). Retain all path/body projections, original read keys, final checks and existing quotas. Declare at most eight distinct members, reserve even empty groups and reject changed/overlapping/nested membership, pending captures and unknown validation groups. Keep the current process and authority rules.
+- Reject a first prototype's separate cache namespace: it adds twelve projections on the same state. An earlier comparison against pre-retirement measurements incorrectly attributed 274 cleanup-added projections to that prototype; retain and explicitly correct this comparison. On identical post-retirement state, the diagnostic expanded-cap original needs 1217 resources/1859 projections/1769341 bytes. The final current-source read needs 921 resources with exactly the same projections and bytes and returns ready under unchanged production quotas; original report and current journal remain unchanged. This is a component diagnosis, not a route pass or latency result. Specific controls, actual native-process regressions and required gates remain pending for the final increment.
+
+---
+
 ## 2026-11-05 · P6-39 · Bound lock contention with monotonic elapsed time
 
 - Commit edb12e0 passes immutable Linux CHECK PASS fast in 143s (3281 tests plus the existing macOS-only omission in 228 files) and CHECK PASS in 184s (4468 tests plus that omission in 265 files). All 47 focused actual macOS controls and strict types pass; both runtime bundles match Linux. Source remains local on main.

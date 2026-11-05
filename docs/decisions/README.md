@@ -249,6 +249,8 @@
 
 | [0228](./0228-bounded-resource-observation-projections.md) | Bound observed resources and their independent projections | Accepted | 2026-11-05 |
 
+| [0229](./0229-native-registration-observation-resources.md) | Group each original native registration without duplicating reads | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

@@ -8,7 +8,7 @@
 version: 1
 rules:
   - id: delivery-read-observation
-    enforcers: [src/state/read-observation.ts#withReadObservation, src/state/read-observation.ts#observedRead, src/state/paths.ts#externalStorePath, src/state/files.ts#locked, src/worktrees/git.ts#gitBytes, src/environment/operations.ts#operationGroups, test/unit/state/read-observation.test.ts, test/unit/state/store-path-observation.test.ts, test/unit/delivery/journal-observation.test.ts, test/unit/delivery/source-observation.test.ts, test/unit/worktrees/git-observation.test.ts, test/unit/environment/process-observation.test.ts, test/unit/discovery/observation.test.ts]
+    enforcers: [src/state/read-observation.ts#withReadObservation, src/state/read-observation.ts#observedRead, src/state/read-observation.ts#groupReadResources, src/state/paths.ts#externalStorePath, src/state/files.ts#locked, src/runner/native-process.ts#observeAll, src/worktrees/git.ts#gitBytes, src/environment/operations.ts#operationGroups, test/unit/state/read-observation.test.ts, test/unit/state/store-path-observation.test.ts, test/unit/runner/native-observation.test.ts, test/unit/delivery/journal-observation.test.ts, test/unit/delivery/source-observation.test.ts, test/unit/worktrees/git-observation.test.ts, test/unit/environment/process-observation.test.ts, test/unit/discovery/observation.test.ts]
   - id: research-minority-counterevidence
     enforcers: [src/research/report.ts#researchReport, src/research/report.ts#renderResearchBrief, test/unit/research/research.test.ts, test/unit/runner/research-stages.test.ts]
   - id: delivery-reviewed-public-research-plan
