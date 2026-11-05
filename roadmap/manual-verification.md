@@ -74,6 +74,8 @@ A read-only stdio probe observes ChatGPT Plus and actual quota metadata through 
 
 ## Implementation-to-PR trial procedure (2026-11-04)
 
+The first actual Codex attempt on 2026-11-05 blocks at workspace allocation after one successful native acceptance-definition call. The live preparer persisted a null hooksPath that the unchanged assembly guard correctly refuses. Keep its original failed report and zero-publication result; the corrected checkout setup has a real Git red/green regression, and a fresh hosted attempt remains required. It does not count as a campaign pass. No original hosted base, guard or authority is weakened.
+
 `npm run eval:live-implementation` runs one EVAL-09 attempt through the built public `wl delivery run`. It pins a fresh clone of the campaign repository's `main`, the source, rubric, environment recipe and declared suite, and delegates only build-plan approval and acceptance. The grant permits non-force publication and readying, with no merge. It checks the repository's exact private identity and initial fixture bytes before launching a worker.
 
 The small application reads `status.txt` through its public HTTP endpoint. The initial value is `pending`; the requested value is `public fixture`. The unchanged suite must fail before implementation. Its code, the HTTP entrypoint, package and review rubric stay pinned. The CI fixture reuses this project's pinned checkout/setup-node actions and runs the same suite without dependencies. This small trial exercises transport and QA; complex feature delivery remains separate evidence.

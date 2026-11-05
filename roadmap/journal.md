@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-05 · P6-27 · Live implementation checkout refuses its own persisted hook path
+
+- The first actual Codex EVAL-09 attempt completes its native acceptance-definition call, then stops at workspace allocation after 47 seconds with zero human waits and no Git effect, PR or merge. Its original report remains failed: SHA-256 55708462da763a1fcbe6391a608ccb0e4f2645b8bb12827654ad4bef9af0a756. Usage is client-reported 15749 input and 1665 output tokens, with no currency measurement. The hosted base remains unchanged. A read-only quota probe outside the sandbox reports 20 percent used; the sandboxed probe exits before observing account/quota data and is retained separately.
+- The live preparer persists core.hooksPath=/dev/null in its checkout. The unchanged assembly guard correctly refuses every repository-level hook helper, including that null path; the model-free rehearsal did not use this real-only setup. Extract the actual setup into a shared helper and reproduce its refusal in a real Git regression. Keep hook suppression in the existing per-command fixture/controller arguments instead of persisting it. The same control proves the old persisted path still refuses. The new control fails before the change and all seven live-fixture tests plus strict types pass afterward. This is a trial-preparation correction, not a reason to loosen the guard, restore the failed request or claim a native pass. The per-commit gate passes all seven related tests and every other step: CHECK PASS (fast) in 8s. The same compiled component accepts the corrected checkout and refuses the old null hook path with actual Git 2.39.5 in read-only, network-disabled Linux arm64 containers on Node 24.22.0 and 20.0.0. These are component observations, not a full Linux suite or native certification. The full gate and a fresh real attempt remain required.
+
+---
+
 ## 2026-11-05 · P6-27 · Corrected research gates and live Codex framing regression verified
 
 - Commit the research-plan evidence fix as a76a70d and the minority-counterevidence projection as 4ad01bc. The latter passes all 35 focused tests, strict types and the complete per-commit gate: 1034 tests in 59 files, CHECK PASS (fast) in 324s. The six minority controls fail before the change and pass afterward. Both actual failed research pilots remain failed, with their original report hashes and decisions intact; no current native research campaign pass is claimed.

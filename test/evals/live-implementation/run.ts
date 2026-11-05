@@ -29,7 +29,14 @@ import {
   SYNTHETIC_GH,
 } from '../../support/public-implementation.js'
 import { type LiveTrial, trialVerdict } from '../campaign/report.js'
-import { TASK, TRIAL_FILES, TRIAL_REPOSITORY, trialRecipe, verifyTrialSeed } from './fixture.js'
+import {
+  configureTrialCheckout,
+  TASK,
+  TRIAL_FILES,
+  TRIAL_REPOSITORY,
+  trialRecipe,
+  verifyTrialSeed,
+} from './fixture.js'
 import { trialPlan } from './plan.js'
 import { trialObservations } from './report.js'
 
@@ -184,11 +191,7 @@ try {
       `git@github.com:${TRIAL_REPOSITORY}.git`,
       root,
     ])
-    // Avoid importing personal signing/hooks into controller-owned trial commits.
-    git(root, ['config', 'user.name', 'Trial Owner'])
-    git(root, ['config', 'user.email', 'trial@example.test'])
-    git(root, ['config', 'commit.gpgsign', 'false'])
-    git(root, ['config', 'core.hooksPath', '/dev/null'])
+    configureTrialCheckout(root)
   }
   verifyTrialSeed(root)
   const baseline = spawnSync(process.execPath, ['suite.cjs'], { cwd: root, encoding: 'utf8' })

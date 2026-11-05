@@ -12,8 +12,10 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { DeliveryPlanning } from '../../../src/delivery/planning-store.js'
+import { assertAssemblyGit } from '../../../src/integration/git-process.js'
 import { campaignReport, type LiveTrial } from '../../evals/campaign/report.js'
 import {
+  configureTrialCheckout,
   TASK,
   TRIAL_FILES,
   TRIAL_REPOSITORY,
@@ -23,6 +25,15 @@ import { trialPlan } from '../../evals/live-implementation/plan.js'
 import { fixture, git } from '../../support/delivery.js'
 
 describe('EVAL-09 live implementation trial', () => {
+  it('admits the real checkout setup without relaxing the repository-helper guard', async () => {
+    await fixture(({ root }) => {
+      configureTrialCheckout(root)
+      expect(() => assertAssemblyGit(root)).not.toThrow()
+      // Even the former null hook path remains forbidden as repository input.
+      git(root, ['config', 'core.hooksPath', '/dev/null'])
+      expect(() => assertAssemblyGit(root)).toThrow('controller-git-helper-unavailable')
+    })
+  })
   it.each([
     [[], {}, 'spend-quota-and-publish'],
     [

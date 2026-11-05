@@ -11,6 +11,14 @@ export const TRIAL_REPOSITORY = 'dreamingechoes/wholeloop-trials'
 export const TASK =
   'Change status.txt from pending to public fixture. GET / must return the JSON object {"status":"public fixture"}. Keep app.cjs, suite.cjs, package.json, REVIEW.md and the CI workflow unchanged. No dependencies, credentials, merge or other feature.'
 
+export function configureTrialCheckout(root: string) {
+  // Both fixture Git calls and owned assembly commands disable hooks per
+  // command. A persisted hooksPath would itself be rejected as a repo helper.
+  git(root, ['config', 'user.name', 'Trial Owner'])
+  git(root, ['config', 'user.email', 'trial@example.test'])
+  git(root, ['config', 'commit.gpgsign', 'false'])
+}
+
 // Only status.txt needs implementation. The pre-existing suite and HTTP entry
 // point stay pinned, so a builder cannot satisfy this trial by weakening QA.
 export const TRIAL_FILES: Record<string, string> = {
