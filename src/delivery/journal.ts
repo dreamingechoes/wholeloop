@@ -1,8 +1,16 @@
-import { existsSync, readdirSync, statSync } from 'node:fs'
+import {
+  closeSync,
+  constants,
+  existsSync,
+  fstatSync,
+  openSync,
+  readdirSync,
+  statSync,
+} from 'node:fs'
 import { resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { StoreFiles } from '../state/files.js'
-import { canonicalPath, storePath } from '../state/paths.js'
+import { storePath } from '../state/paths.js'
 import {
   type DeliveryActor,
   type DeliveryEvent,
@@ -13,7 +21,8 @@ import {
   validateDeliveryEvent,
   validateDeliveryProjection,
 } from './events.js'
-import { readSourceBytes, readSourceFile, safeSourceText } from './input.js'
+import { readSourceFile, safeSourceText } from './input.js'
+import { readJournalSegment } from './journal-segment.js'
 import { replayDelivery } from './reducer.js'
 
 // Readers reconstruct authority from current bytes hundreds of times per run.
@@ -38,88 +47,89 @@ export class DeliveryJournal {
   }
 
   /** One fresh read per observation; reuse a replay only for identical current segment bytes. */
-  snapshot() {
+  private readSnapshot() {
     const directory = this.ownedPath('delivery/journal')
     if (!existsSync(directory))
       return { events: [] as DeliveryEvent[], states: new Map<string, DeliveryProjection>() }
-    const original = statSync(directory),
-      events: DeliveryEvent[] = [],
-      segments: NonNullable<typeof replayed>['segments'] = [],
-      prior = replayed?.directory === directory ? replayed.segments : []
-    let unchanged = prior.length > 0
-    if (!original.isDirectory()) throw new DeliveryJournalError('unreadable-journal-segment')
-    for (const name of readdirSync(directory).sort()) {
-      if (!/^\d{16}\.ndjson$/.test(name)) {
-        if (name.endsWith('.ndjson')) throw new DeliveryJournalError('unknown-journal-segment')
-        continue
-      }
-      let bytes: Buffer
-      // Segments are plain leaves in one already checked external directory.
-      // Keep exact alias refusal per leaf without rechecking every common
-      // ancestor thousands of times; reobserve directory ownership before return.
-      const selected = resolve(directory, name)
-      if (canonicalPath(selected) !== selected)
-        throw new DeliveryJournalError('aliased-journal-path')
-      try {
-        bytes = readSourceBytes(this.files.root, `delivery/journal/${name}`, 8 * 1024 * 1024)
-      } catch {
-        throw new DeliveryJournalError('unreadable-journal-segment')
-      }
-      const same = prior[segments.length]
-      if (unchanged && same?.name === name && same.bytes.equals(bytes)) {
-        segments.push(same)
-        events.push(...structuredClone(same.events))
-        continue
-      }
-      unchanged = false
-      let raw: string
-      try {
-        raw = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes)
-        safeSourceText(raw, 8 * 1024 * 1024)
-      } catch {
-        throw new DeliveryJournalError('unreadable-journal-segment')
-      }
-      if (!raw.endsWith('\n')) throw new DeliveryJournalError('incomplete-journal-segment')
-      const lines = raw.slice(0, -1).split('\n'),
-        parsed: DeliveryEvent[] = []
-      if (lines.length > 1000) throw new DeliveryJournalError('segment-event-limit')
-      for (const [index, line] of lines.entries()) {
-        let value: unknown
-        try {
-          if (Buffer.byteLength(line) > 65536) throw new Error()
-          value = JSON.parse(line)
-        } catch {
-          throw new DeliveryJournalError('invalid-journal-line')
+    const fd = openSync(
+      directory,
+      constants.O_RDONLY | constants.O_DIRECTORY | constants.O_NOFOLLOW,
+    )
+    try {
+      const original = fstatSync(fd, { bigint: true }),
+        events: DeliveryEvent[] = [],
+        segments: NonNullable<typeof replayed>['segments'] = [],
+        prior = replayed?.directory === directory ? replayed.segments : []
+      let unchanged = prior.length > 0
+      if (!original.isDirectory()) throw new DeliveryJournalError('unreadable-journal-segment')
+      for (const name of readdirSync(directory).sort()) {
+        if (!/^\d{16}\.ndjson$/.test(name)) {
+          if (name.endsWith('.ndjson')) throw new DeliveryJournalError('unknown-journal-segment')
+          continue
         }
-        validateDeliveryEvent(value)
-        if (index === 0 && this.segment(value.sequence) !== `delivery/journal/${name}`)
-          throw new DeliveryJournalError('segment-sequence')
-        parsed.push(value)
+        const bytes = readJournalSegment(directory, original, name)
+        const same = prior[segments.length]
+        if (unchanged && same?.name === name && same.bytes.equals(bytes)) {
+          segments.push(same)
+          events.push(...same.events)
+          continue
+        }
+        unchanged = false
+        let raw: string
+        try {
+          raw = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes)
+          safeSourceText(raw, 8 * 1024 * 1024)
+        } catch {
+          throw new DeliveryJournalError('unreadable-journal-segment')
+        }
+        if (!raw.endsWith('\n')) throw new DeliveryJournalError('incomplete-journal-segment')
+        const lines = raw.slice(0, -1).split('\n'),
+          parsed: DeliveryEvent[] = []
+        if (lines.length > 1000) throw new DeliveryJournalError('segment-event-limit')
+        for (const [index, line] of lines.entries()) {
+          let value: unknown
+          try {
+            if (Buffer.byteLength(line) > 65536) throw new Error()
+            value = JSON.parse(line)
+          } catch {
+            throw new DeliveryJournalError('invalid-journal-line')
+          }
+          validateDeliveryEvent(value)
+          if (index === 0 && this.segment(value.sequence) !== `delivery/journal/${name}`)
+            throw new DeliveryJournalError('segment-sequence')
+          parsed.push(value)
+        }
+        segments.push({ name, bytes: Buffer.from(bytes), events: structuredClone(parsed) })
+        events.push(...parsed)
       }
-      segments.push({ name, bytes: Buffer.from(bytes), events: structuredClone(parsed) })
-      events.push(...parsed)
+      const current = statSync(this.ownedPath('delivery/journal'), { bigint: true })
+      if (current.dev !== original.dev || current.ino !== original.ino || !current.isDirectory())
+        throw new DeliveryJournalError('changed-journal-directory')
+      if (unchanged && replayed && segments.length === prior.length)
+        return { events, states: replayed.states }
+      const states = replayDelivery(events)
+      replayed = { directory, segments, states: structuredClone(states) }
+      return { events, states }
+    } finally {
+      closeSync(fd)
     }
-    const current = statSync(this.ownedPath('delivery/journal'))
-    if (current.dev !== original.dev || current.ino !== original.ino || !current.isDirectory())
-      throw new DeliveryJournalError('changed-journal-directory')
-    if (unchanged && replayed && segments.length === prior.length)
-      return { events, states: structuredClone(replayed.states) }
-    const states = replayDelivery(events)
-    replayed = { directory, segments, states: structuredClone(states) }
-    return { events, states }
   }
 
+  snapshot() {
+    const observed = this.readSnapshot()
+    return { events: structuredClone(observed.events), states: structuredClone(observed.states) }
+  }
   events(): DeliveryEvent[] {
-    return this.snapshot().events
+    return structuredClone(this.readSnapshot().events)
   }
   list(): DeliveryProjection[] {
-    return [...this.snapshot().states.values()]
+    return structuredClone([...this.readSnapshot().states.values()])
   }
   get(run: string): DeliveryProjection {
     this.run(run)
-    const state = this.snapshot().states.get(run)
+    const state = this.readSnapshot().states.get(run)
     if (!state) throw new DeliveryJournalError('unknown-run')
-    return state
+    return structuredClone(state)
   }
 
   transaction<T>(

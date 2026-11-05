@@ -53,6 +53,13 @@ describe('journal replay reuse bound to identical current segment bytes (RUN-02)
       event.sequence = 99
       state.state = 'completed'
       state.units.length = 0
+      const events = lifecycle.journal.events(),
+        single = lifecycle.journal.get(original.run),
+        listed = lifecycle.journal.list()
+      if (!events[0] || !listed[0]) throw new Error('Original public journal views required')
+      events[0].sequence = 100
+      single.units.length = 0
+      listed[0].state = 'completed'
       const second = lifecycle.journal.snapshot()
       expect(second.events[0]?.sequence).toBe(1)
       expect(second.events[0]?.payload).not.toMatchObject({ source: 'f'.repeat(64) })

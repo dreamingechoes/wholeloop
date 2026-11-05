@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest'
+import { readdirSync } from 'node:fs'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import * as segments from '../../../src/delivery/journal-segment.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { authorization, envelope, fixture } from '../../support/delivery.js'
 
 const owner = 'controller-0123456789abcdef0123456789abcdef'
+afterEach(() => vi.restoreAllMocks())
 async function setup(
   run: (store: RunnerStore, request: RunnerRequest) => void,
   withinEnvelope = false,
@@ -50,19 +53,17 @@ describe('private prepared foreground controller requests', () => {
   it('uses one fresh journal observation per live poll and immediately sees pause or revocation', async () => {
     await setup((store, request) => {
       const prepared = store.prepare(request),
-        snapshot = store.lifecycle.journal.snapshot.bind(store.lifecycle.journal)
-      let lease = store.claim(prepared.digest, owner),
-        reads = 0
-      store.lifecycle.journal.snapshot = () => {
-        reads++
-        return snapshot()
-      }
+        reads = vi.spyOn(segments, 'readJournalSegment')
+      let lease = store.claim(prepared.digest, owner)
       const live = (expected: boolean) => {
-        reads = 0
+        const names = readdirSync(store.files.path('delivery/journal')).filter((name) =>
+          name.endsWith('.ndjson'),
+        )
+        reads.mockClear()
         expect(store.live(lease, false)).toBe(expected)
-        // Growing histories must be validated once per poll, without caching
-        // a projection that would conceal a later operator control.
-        expect(reads).toBe(1)
+        // Count actual selected leaves, independent of which public view the
+        // poll requests. A metadata-only cache cannot conceal later control.
+        expect(reads.mock.calls.map(([, , name]) => name).sort()).toEqual(names.sort())
       }
       live(true)
       store.lifecycle.transition(request.run, {

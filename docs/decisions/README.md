@@ -243,6 +243,8 @@
 
 | [0225](./0225-process-local-original-group-closure.md) | Retain witnessed original group closure within its controller | Accepted | 2026-11-05 |
 
+| [0226](./0226-physical-journal-leaf-observations.md) | Read journal leaves through one pinned physical directory | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid
