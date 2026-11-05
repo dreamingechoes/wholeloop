@@ -50,6 +50,7 @@ import { RunnerMilestoneReadiness } from './milestone-readiness.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments, type RunnerProductProduction } from './product-environments.js'
 import { publicAcceptanceContext } from './public-acceptance-context.js'
+import { PublicBuildPlanInputs } from './public-build-plan-inputs.js'
 import type { PublicHostComposer } from './public-host.js'
 import { PublicResearchPlan } from './public-research-plan.js'
 import { GithubCliCodeHost } from './publication-host.js'
@@ -295,12 +296,13 @@ function evidenceHost(store: RunnerStore) {
   }
 }
 
-function requests(store: RunnerStore) {
+function requests(store: RunnerStore, buildPlanInputs?: PublicBuildPlanInputs) {
   return (context: RunnerStageContext, artifact: { ref: string; sha256: string }) => {
     const research =
-      context.stage.kind === 'plan' && context.plan.policy.endpoint === 'research-report'
-        ? new PublicResearchPlan(store).prepare(context)
-        : undefined
+        context.stage.kind === 'plan' && context.plan.policy.endpoint === 'research-report'
+          ? new PublicResearchPlan(store).prepare(context)
+          : undefined,
+      planning = context.stage.kind === 'build-plan' ? buildPlanInputs?.read(context) : undefined
     return runnerDecisionRequirements(
       context.plan as DeliveryPlan,
       context.stage,
@@ -314,10 +316,15 @@ function requests(store: RunnerStore) {
         revision: context.plan.revision,
         plan: context.request.plan,
         decision: id,
-        artifacts: [artifact, ...(id === 'research-plan' && research ? [research] : [])],
+        artifacts: [
+          artifact,
+          ...(id === 'research-plan' && research ? [research] : []),
+          ...(planning ? [planning] : []),
+        ],
         evidence: [
           { id: 'production', ...artifact },
           ...(id === 'research-plan' && research ? [{ id: 'research-plan', ...research }] : []),
+          ...(planning ? [{ id: 'build-plan-inputs', ...planning }] : []),
         ],
         unknowns: [],
       }),
@@ -571,12 +578,17 @@ export function composeInstalledImplementation(
         environment,
         provenance: 'host-observed',
       }),
-    decide = requests(store),
-    artifact = (): RunnerArtifactInput => ({
+    buildPlanInputs = new PublicBuildPlanInputs(store, runtime),
+    decide = requests(store, buildPlanInputs),
+    artifact = (context: RunnerStageContext): RunnerArtifactInput => ({
       // The adapter writes the brief from the pinned plan and source.
       brief: '',
       environment,
       ...guidance,
+      context: [
+        ...guidance.context,
+        ...(context.stage.kind === 'build-plan' ? [buildPlanInputs.prepare(context).context] : []),
+      ],
       provenance: 'host-observed',
     }),
     production = { identity: request.host, native: judging, context: artifact },

@@ -31,10 +31,10 @@ import {
 import { type LiveTrial, trialVerdict } from '../campaign/report.js'
 import {
   configureTrialCheckout,
-  TASK,
   TRIAL_FILES,
   TRIAL_REPOSITORY,
   trialRecipe,
+  trialSource,
   verifyTrialSeed,
 } from './fixture.js'
 import { trialPlan } from './plan.js'
@@ -203,8 +203,7 @@ try {
         schema: 'wholeloop/delivery-source-request@1',
         kind: 'inline',
         ref: 'eval-09',
-        body: TASK,
-        mapping: [{ id: 'status', role: 'criterion', startLine: 1, endLine: 1 }],
+        ...trialSource(root),
       },
       root,
     ),

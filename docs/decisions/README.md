@@ -237,6 +237,8 @@
 
 | [0222](./0222-private-proposal-failure-fields.md) | Classify private proposal failures without retaining rejected data | Accepted | 2026-11-05 |
 
+| [0223](./0223-pinned-build-plan-context.md) | Share selected source and pinned acceptance with plan reviewers | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { lstatSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { sourceHash } from '../../../src/delivery/input.js'
+import { readSourceFile, sourceHash } from '../../../src/delivery/input.js'
 import { DeliveryEnvironments } from '../../../src/environment/provision.js'
 import { git } from '../../support/delivery.js'
 import { environmentRecipe } from '../../support/environment.js'
@@ -10,6 +10,20 @@ import { SEED } from '../../support/public-implementation.js'
 export const TRIAL_REPOSITORY = 'dreamingechoes/wholeloop-trials'
 export const TASK =
   'Change status.txt from pending to public fixture. GET / must return the JSON object {"status":"public fixture"}. Keep app.cjs, suite.cjs, package.json, REVIEW.md and the CI workflow unchanged. No dependencies, credentials, merge or other feature.'
+
+/** Mutable product input is source context, never an immutable runtime recipe pin. */
+export function trialSource(root: string) {
+  const text = readSourceFile(root, 'status.txt'),
+    sha256 = sourceHash(text)
+  assert.equal(sha256, sourceHash(TRIAL_FILES['status.txt'] ?? ''), 'Changed initial status source')
+  return {
+    body: `${TASK}\n${JSON.stringify({ repository: 'app', base: git(root, ['rev-parse', 'HEAD']), files: [{ ref: 'status.txt', sha256, text }], meaning: 'Initial repository input only; no implementation, execution or approval is established.' })}`,
+    mapping: [
+      { id: 'status', role: 'criterion' as const, startLine: 1, endLine: 1 },
+      { id: 'initial-status', role: 'context' as const, startLine: 2, endLine: 2 },
+    ],
+  }
+}
 
 export function configureTrialCheckout(root: string) {
   // Both fixture Git calls and owned assembly commands disable hooks per

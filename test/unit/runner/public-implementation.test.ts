@@ -4,13 +4,18 @@ import {
   mkdtempSync,
   readFileSync,
   realpathSync,
+  renameSync,
+  symlinkSync,
+  unlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
 import type { NativeRuntime } from '../../../src/delivery/native-runtime.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
+import { PublicBuildPlanInputs } from '../../../src/runner/public-build-plan-inputs.js'
 import { composePublicHost, runtimeGithub } from '../../../src/runner/public-composition.js'
 import { runnerRoute } from '../../../src/runner/route.js'
 import { RunnerStageDispatcher } from '../../../src/runner/stage-dispatcher.js'
@@ -203,6 +208,11 @@ describe('public to-pr composition (ADR-0207)', () => {
         const plan = store.basis(request).plan,
           // Verification is not executed here; the recipe is pinned, never provisioned.
           recipe = prepareSuiteRecipe(store.files.root, root),
+          installed: NativeRuntime = {
+            ...runtime,
+            repositories: [REPOSITORY(recipe)],
+            codeHost: { kind: 'github-cli', client: '/opt/fixture/gh' },
+          },
           host = composePublicHost({
             store,
             request,
@@ -210,11 +220,7 @@ describe('public to-pr composition (ADR-0207)', () => {
             stages: runnerRoute(plan),
             configuration: {
               bindings,
-              runtime: {
-                ...runtime,
-                repositories: [REPOSITORY(recipe)],
-                codeHost: { kind: 'github-cli', client: '/opt/fixture/gh' },
-              },
+              runtime: installed,
             },
           })
         if (!host) throw new Error('The front of the route must compose')
@@ -226,10 +232,109 @@ describe('public to-pr composition (ADR-0207)', () => {
           'implementation:search',
           'commit:search',
         ]) {
-          const observed = await host.execute(dispatch(id))
+          const current = dispatch(id),
+            observed = await host.execute(current)
           expect(observed, `${id}: ${observed.reason}`).toMatchObject({ status: 'passed' })
           if (id !== 'plan' && id !== 'workspace:search' && id !== 'commit:search')
             expect(observed.provenance, id).toBe('host-observed')
+          if (id === 'build-plan:search') {
+            const binding = JSON.parse(
+              readFileSync(
+                store.files.path(`delivery/runner-artifacts/${current.invocation}.json`),
+                'utf8',
+              ),
+            )
+            const selected = binding.lease.assignment.context.find(
+              (entry: { kind: string }) => entry.kind === 'source',
+            )
+            expect(
+              selected,
+              'Planning needs selected source and its pinned acceptance prerequisite',
+            ).toBeDefined()
+            const inputs = JSON.parse(
+              readFileSync(join(binding.lease.contextRoot, selected.artifact.ref), 'utf8'),
+            )
+            expect(inputs.acceptance.production).toMatchObject({
+              stage: 'acceptance-definition',
+              provenance: 'host-observed',
+              status: 'passed',
+            })
+            expect(inputs.acceptance.cases.length).toBeGreaterThan(0)
+            expect(inputs.acceptance.digest).toBe(
+              new DeliveryAcceptance(store.files.root).pinnedFor(request.run, plan.revision).digest,
+            )
+            for (const entry of inputs.acceptance.cases)
+              expect(Object.keys(entry).sort()).toEqual([
+                'applicability',
+                'criteria',
+                'id',
+                'owner',
+              ])
+            expect(inputs.repository.files.map((file: { path: string }) => file.path)).toEqual([
+              'app.cjs',
+              'package.json',
+              'suite.cjs',
+            ])
+            expect(
+              inputs.repository.files.some(
+                (file: { path: string; text: string }) =>
+                  file.path === 'app.cjs' && file.text === SEED['app.cjs'],
+              ),
+            ).toBe(true)
+            const decision = JSON.parse(
+              readFileSync(
+                store.files.path(`delivery/runner-decisions/${current.invocation}.json`),
+                'utf8',
+              ),
+            )
+            const reader = new PublicBuildPlanInputs(store, installed),
+              artifact = reader.read(current),
+              original = readFileSync(store.files.path(artifact.ref), 'utf8'),
+              eventCount = store.lifecycle.journal.events().length,
+              callCount = new RunnerNativeScope(store.files, current.invocation).calls().length
+            expect(decision.requests[0].artifacts).toContainEqual(artifact)
+            expect(decision.requests[0].evidence).toContainEqual({
+              id: 'build-plan-inputs',
+              ...artifact,
+            })
+            expect(reader.prepare(current).context.artifact).toEqual(selected.artifact)
+            for (const changed of [
+              { ...current, current: () => false },
+              { ...current, invocation: 'f'.repeat(64) },
+              { ...current, stage: { ...current.stage, unit: 'foreign' } },
+              { ...current, plan: { ...current.plan, revision: current.plan.revision + 1 } },
+            ])
+              expect(() => reader.read(changed)).toThrow()
+            store.files.atomic(artifact.ref, `${original} `)
+            expect(() => reader.read(current)).toThrow('public-build-plan-inputs-changed')
+            expect(() => reader.prepare(current)).toThrow('public-build-plan-inputs-changed')
+            expect(readFileSync(store.files.path(artifact.ref), 'utf8')).toBe(`${original} `)
+            store.files.atomic(artifact.ref, original)
+            const workspace = git.workspace(request, 'search').repository.path,
+              sourcePath = join(workspace, 'app.cjs'),
+              source = readFileSync(sourcePath)
+            try {
+              writeFileSync(sourcePath, `${source.toString()}\n`)
+              expect(() => reader.read(current)).toThrow('public-build-plan-inputs-changed')
+              writeFileSync(sourcePath, 'x'.repeat(128 * 1024 + 1))
+              expect(() => reader.read(current)).toThrow()
+            } finally {
+              writeFileSync(sourcePath, source)
+            }
+            renameSync(sourcePath, `${sourcePath}.retained`)
+            try {
+              symlinkSync(join(root, 'app.cjs'), sourcePath)
+              expect(() => reader.read(current)).toThrow()
+            } finally {
+              unlinkSync(sourcePath)
+              renameSync(`${sourcePath}.retained`, sourcePath)
+            }
+            expect(reader.read(current)).toEqual(artifact)
+            expect(store.lifecycle.journal.events()).toHaveLength(eventCount)
+            expect(new RunnerNativeScope(store.files, current.invocation).calls()).toHaveLength(
+              callCount,
+            )
+          }
           observe(observed)
         }
         const candidate = git.candidate(request, 'search')

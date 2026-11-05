@@ -3,6 +3,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  realpathSync,
   rmSync,
   symlinkSync,
   unlinkSync,
@@ -13,6 +14,7 @@ import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { sourceHash } from '../../../src/delivery/input.js'
 import { DeliveryPlanning } from '../../../src/delivery/planning-store.js'
+import { EnvironmentRecipes } from '../../../src/environment/recipe-store.js'
 import { assertAssemblyGit } from '../../../src/integration/git-process.js'
 import { campaignReport, type LiveTrial } from '../../evals/campaign/report.js'
 import {
@@ -20,6 +22,8 @@ import {
   TASK,
   TRIAL_FILES,
   TRIAL_REPOSITORY,
+  trialRecipe,
+  trialSource,
   verifyTrialSeed,
 } from '../../evals/live-implementation/fixture.js'
 import { trialPlan } from '../../evals/live-implementation/plan.js'
@@ -64,7 +68,8 @@ describe('EVAL-09 live implementation trial', () => {
   )
 
   it('starts with a genuinely failing suite and passes only after the status change', () => {
-    const root = mkdtempSync(join(tmpdir(), 'wholeloop-eval09-suite-'))
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-eval09-suite-'))),
+      store = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-eval09-selected-source-')))
     try {
       for (const [ref, body] of Object.entries(TRIAL_FILES)) {
         mkdirSync(dirname(join(root, ref)), { recursive: true })
@@ -82,11 +87,27 @@ describe('EVAL-09 live implementation trial', () => {
         'Provide a clean tree for refusing changed campaign inputs before trial launch.',
       ])
       verifyTrialSeed(root)
+      const source = trialSource(root),
+        initial = JSON.parse(source.body.split('\n')[1] ?? '{}')
+      expect(source.body.split('\n')[0]).toBe(TASK)
+      expect(source.mapping[1]).toMatchObject({ role: 'context', startLine: 2, endLine: 2 })
+      expect(initial).toMatchObject({
+        base: git(root, ['rev-parse', 'HEAD']),
+        files: [{ ref: 'status.txt', sha256: sourceHash('pending'), text: 'pending' }],
+      })
+      const recipe = new EnvironmentRecipes(store).get(trialRecipe(store, root))
+      expect(recipe.files.map((file) => file.ref).sort()).toEqual([
+        'app.cjs',
+        'package.json',
+        'suite.cjs',
+      ])
+      expect(recipe.files.some((file) => file.ref === 'status.txt')).toBe(false)
       const check = () =>
         spawnSync(process.execPath, ['suite.cjs'], { cwd: root, encoding: 'utf8' })
       expect(check().status).toBe(1)
       writeFileSync(join(root, 'status.txt'), 'public fixture')
       expect(check().status).toBe(0)
+      expect(() => trialSource(root)).toThrow('Changed initial status source')
       writeFileSync(join(root, 'status.txt'), 'public fixture\n')
       expect(check().status).toBe(1)
       expect(() => verifyTrialSeed(root)).toThrow('Changed campaign input: status.txt')
@@ -108,6 +129,7 @@ describe('EVAL-09 live implementation trial', () => {
       expect(() => verifyTrialSeed(root)).toThrow('Unexpected campaign tree')
     } finally {
       rmSync(root, { recursive: true, force: true })
+      rmSync(store, { recursive: true, force: true })
     }
   })
 
