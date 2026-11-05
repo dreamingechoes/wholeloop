@@ -405,6 +405,43 @@ describe('effect intent and exact read reconciliation', () => {
 })
 
 describe('finite read-only recovery retries', () => {
+  it.each(['resolve', 'reject'] as const)(
+    'refuses a late %s when synchronous work prevents the timeout callback',
+    async (settlement) => {
+      let observed: AbortSignal | undefined,
+        calls = 0
+      const result = await boundedRecoveryCall(async (signal) => {
+        observed = signal
+        calls++
+        // A real blocked event loop must not turn a late read into current evidence.
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 40)
+        if (settlement === 'reject') throw new Error('Late provider failure')
+        return 'late observation'
+      }, 5)
+      expect(result).toEqual({ available: false, reason: 'deadline' })
+      expect(observed?.aborted).toBe(true)
+      expect(calls).toBe(1)
+    },
+  )
+  it('preserves on-time reads and failures without aborting or retrying', async () => {
+    for (const rejected of [false, true]) {
+      let observed: AbortSignal | undefined,
+        calls = 0
+      const result = await boundedRecoveryCall(async (signal) => {
+        observed = signal
+        calls++
+        if (rejected) throw new Error('Provider failure')
+        return 'current observation'
+      }, 1000)
+      expect(result).toEqual(
+        rejected
+          ? { available: false, reason: 'unavailable-read' }
+          : { available: true, value: 'current observation' },
+      )
+      expect(observed?.aborted).toBe(false)
+      expect(calls).toBe(1)
+    }
+  })
   it('bounds an unresponsive host and aborts its observation without authorizing a retry', async () => {
     let observed: AbortSignal | undefined
     const result = await boundedRecoveryCall((signal) => {

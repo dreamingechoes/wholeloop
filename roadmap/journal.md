@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-05 · P6-27 · Enforce elapsed read deadlines
+
+- The exact build-plan-context increment committed as 9e1465f passes the serial isolated Linux gates: CHECK PASS fast in 13s (15 tests in three files), then complete CHECK PASS in 180s (4396 tests plus the existing macOS-only omission in 256 files). Preserve its checked base/patch/new-file hashes and equivalent committed archive separately. Twelve focused macOS controls and strict types pass; both compiled bundles match Linux. No complete current macOS, Node 20 floor or new native certification is inferred.
+- A temporary diagnostic copy of that CLI/controller repeats the actual Docker/Git rehearsal with synthetic model/GitHub transports. All thirteen stages pass in 619 seconds, with fourteen successful synthetic native receipts, zero human waits and both exact environments observed retired. Preserve report SHA-256 e69f0eb81769eb5c27b1dbe4d209d6294dbdce386d506b767e530508b6379e06 and the separate diagnostic/source bundle identities. The prior unmodified rehearsal's final handoff failure is not reproduced and its lower cause remains unknown. Neither result is a native or hosted campaign pass.
+- Independently confirm that the timer race accepts a read after 43.329ms against its five-millisecond budget when synchronous work blocks the event loop. Both late-success and late-rejection regressions fail before correction. Enforce the same original budget with a monotonic elapsed check after settlement ([ADR-0224](../docs/decisions/0224-recovery-read-elapsed-deadlines.md)); abort the original signal, retain deadline ambiguity and never retry it. All 26 focused recovery controls and strict types pass. This cannot preempt synchronous work; it prevents late evidence from being accepted. The diagnostic route's apparent success therefore does not certify bounded endpoint reads. Required increment gates and bounded-reader performance work remain pending before another paid trial; do not increase the existing read deadlines to hide the issue.
+- All 109 focused macOS recovery/fault/process controls pass. The first isolated Linux fast gate passes all 1581 related tests in 124 files, then fails the Markdown paragraph rule for adjacent new index rows. Preserve CHECK FAIL (markdown), restore the index's existing row separation and rerun the required gates; no runtime test is waived.
+
+---
+
 ## 2026-11-05 · P6-27 · Supply missing build-plan prerequisite context
 
 - Commit 67fc8c7 passes both serial isolated Linux gates against its exact preceding archive, tracked patch and new-file archive: CHECK PASS fast in 109s (963 tests plus one existing macOS-only omission, 75 files), then complete CHECK PASS in 200s (4396 tests plus that omission, 256 files). Current macOS actual synthetic-process controls pass 119 tests and strict types; both built bundles match Linux byte-for-byte. Node 20.0.0 runtime/offline packaging/docs/harness/baseline evaluator commands also exit zero with their existing limited scope. Fourteen original source commits pass the history guard. The final committed source matches the checked increment; no source push occurs.

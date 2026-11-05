@@ -239,6 +239,8 @@
 
 | [0223](./0223-pinned-build-plan-context.md) | Share selected source and pinned acceptance with plan reviewers | Accepted | 2026-11-05 |
 
+| [0224](./0224-recovery-read-elapsed-deadlines.md) | Refuse recovery reads completed past their elapsed deadline | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

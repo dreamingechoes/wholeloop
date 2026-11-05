@@ -1,3 +1,5 @@
+import { performance } from 'node:perf_hooks'
+
 export type RecoveryReadFailure =
   | 'transient-provider'
   | 'denied-access'
@@ -25,16 +27,15 @@ export async function boundedRecoveryCall<T>(
   if (!Number.isFinite(milliseconds) || milliseconds <= 0)
     return { available: false, reason: 'deadline' }
   const controller = new AbortController()
+  const budget = Math.min(milliseconds, 2147483647),
+    started = performance.now()
   let timer: ReturnType<typeof setTimeout> | undefined
   try {
     const timeout = new Promise<RecoveryRead<T>>((resolve) => {
-      timer = setTimeout(
-        () => {
-          controller.abort()
-          resolve({ available: false, reason: 'deadline' })
-        },
-        Math.min(milliseconds, 2147483647),
-      )
+      timer = setTimeout(() => {
+        controller.abort()
+        resolve({ available: false, reason: 'deadline' })
+      }, budget)
     })
     const request = Promise.resolve()
       .then(() => operation(controller.signal))
@@ -42,7 +43,14 @@ export async function boundedRecoveryCall<T>(
         (value) => ({ available: true as const, value }),
         () => ({ available: false as const, reason: 'unavailable-read' as const }),
       )
-    return await Promise.race([request, timeout])
+    const result = await Promise.race([request, timeout])
+    // Synchronous host work or a microtask chain can starve the timer. Its
+    // delayed callback must not make an observation completed past budget current.
+    if (performance.now() - started >= budget) {
+      controller.abort()
+      return { available: false, reason: 'deadline' }
+    }
+    return result
   } finally {
     if (timer) clearTimeout(timer)
   }

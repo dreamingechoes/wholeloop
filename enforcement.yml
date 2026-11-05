@@ -236,7 +236,7 @@ rules:
   - id: delivery-checkpoint-inputs
     enforcers: [src/delivery/checkpoints.ts#DeliveryCheckpoints, src/delivery/checkpoint-events.ts#reduceDeliveryCheckpoint, test/unit/delivery/recovery.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/recovery-cli.test.ts]
   - id: delivery-effect-reconciliation
-    enforcers: [src/delivery/effects.ts#DeliveryEffects, src/delivery/effect-events.ts#reduceDeliveryEffect, src/delivery/read-retry.ts#recoveryRead, test/unit/delivery/recovery.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/fault-boundaries.test.ts, test/evals/runner/faults.ts]
+    enforcers: [src/delivery/effects.ts#DeliveryEffects, src/delivery/effect-events.ts#reduceDeliveryEffect, src/delivery/read-retry.ts#recoveryRead, src/delivery/read-retry.ts#boundedRecoveryCall, test/unit/delivery/recovery.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/fault-boundaries.test.ts, test/evals/runner/faults.ts]
   - id: delivery-recovery-ownership
     enforcers: [src/delivery/recovery.ts#DeliveryRecovery, src/delivery/recovery-events.ts#reduceDeliveryRecovery, src/delivery/queue.ts#DeliveryQueue, test/unit/delivery/recovery-process.test.ts]
   - id: delivery-stopped-writer-repair
