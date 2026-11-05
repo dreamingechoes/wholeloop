@@ -1,7 +1,7 @@
 import { mkdtempSync, realpathSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import type { DockerTransport } from '../../../src/environment/docker-command.js'
 import {
@@ -13,6 +13,8 @@ import { DockerResources } from '../../../src/environment/docker-resources.js'
 import { type EnvironmentResource, EnvironmentResources } from '../../../src/environment/runtime.js'
 import { StoreFiles } from '../../../src/state/files.js'
 import inspector from '../../fixtures/environment/container-inspect.json' with { type: 'json' }
+
+afterEach(() => vi.restoreAllMocks())
 
 function required<T>(value: T | undefined): T {
   if (value === undefined) throw new Error('Fixture resource missing')
@@ -190,7 +192,10 @@ const mountedSpec = (): ContainerSpec => ({
 describe('fresh batched owned environment observation', () => {
   it('validates reordered complete tuples and mounted volumes with one query per kind', async () => {
     await setup(async ({ owned, objects, calls }) => {
+      const reads = vi.spyOn(owned.records, 'get')
       const snapshot = await owned.ownedSnapshot()
+      expect(reads).toHaveBeenCalledTimes(4)
+      reads.mockRestore()
       expect(snapshot).toHaveLength(4)
       expect(calls).toHaveLength(3)
       expect(calls.find((args) => args[0] === 'volume')?.length).toBe(4)
@@ -198,6 +203,33 @@ describe('fresh batched owned environment observation', () => {
         expect(entry.observed).toEqual(objects.get(entry.resource.id ?? ''))
       required(objects.get('fixture-data')).CreatedAt = '2026-01-01T00:00:00.000Z'
       await expect(owned.ownedSnapshot()).rejects.toThrow('resource-identity-changed')
+    })
+  })
+  it.each([1, 2, 3])(
+    'revalidates local ownership history after backend response %i',
+    async (query) => {
+      await setup(async ({ owned, calls }) => {
+        const original = owned.driver.call.bind(owned.driver)
+        vi.spyOn(owned.driver, 'call').mockImplementation(async (...args) => {
+          const response = await original(...args)
+          if (calls.length === query)
+            owned.records.files.atomic(
+              `delivery/environments/${owned.environment}/0001.json`,
+              '{}\n',
+            )
+          return response
+        })
+        await expect(owned.ownedSnapshot()).rejects.toThrow()
+        expect(calls).toHaveLength(query)
+      })
+    },
+  )
+  it('never carries a validated ownership snapshot into the next inspection', async () => {
+    await setup(async ({ owned, calls }) => {
+      expect(await owned.ownedSnapshot()).toHaveLength(4)
+      owned.records.files.atomic(`delivery/environments/${owned.environment}/0001.json`, '{}\n')
+      await expect(owned.ownedSnapshot()).rejects.toThrow()
+      expect(calls).toHaveLength(3)
     })
   })
   it('retains fresh single-container mount validation in one owned volume query', async () => {
@@ -279,7 +311,9 @@ describe('fresh batched owned environment observation', () => {
       owned.records.update(owned.environment, (record) => {
         record.resources.push(...additional)
       })
+      const reads = vi.spyOn(owned.records, 'get')
       expect(await owned.ownedSnapshot()).toHaveLength(21)
+      expect(reads).toHaveBeenCalledTimes(5)
       expect(calls).toHaveLength(4)
       expect(calls.every((args) => args.length <= 18)).toBe(true)
     })

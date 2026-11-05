@@ -257,6 +257,8 @@
 
 | [0232](./0232-fresh-controller-and-effect-vector-selections.md) | Select controller and effect facts from one fresh view | Accepted | 2026-11-06 |
 
+| [0233](./0233-fresh-batch-ownership-and-linear-object-matching.md) | Validate ownership once per fresh backend batch | Accepted | 2026-11-06 |
+
 ## Lifecycle
 
 ```mermaid

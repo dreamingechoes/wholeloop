@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-06 · P6-39 · Remove repeated ownership-history validation
+
+- Commit 0a5be53 passes exact isolated Linux CHECK PASS fast in 97s (1584 tests in 125 files) and CHECK PASS in 143s (4522 tests plus the existing macOS-only omission in 273 files). Both bundles match macOS; 47 focused actual macOS process/authority controls and strict types pass. No complete-route performance pass is inferred.
+- Backend snapshot queries already batch sixteen IDs. An actual owned-history counter reveals the remaining local amplification: four resources need nine complete runtime-history reads/eighteen history-file opens/441 exists calls; 21 need 43/129/2107, despite only three/four backend queries. The first standalone measurement bundle lacks its CommonJS builtin bridge and yields no counts; rebuild it with the bridge, then independently calibrate three lstat and one open/fstat/read/exists before recording these results.
+- Index exact response IDs and share one freshly validated immutable owner only within the synchronous checks following each backend response ([ADR-0233](../docs/decisions/0233-fresh-batch-ownership-and-linear-object-matching.md)). Retain names, labels, creation stamps, every policy, complete responses, existing bounds and next-call freshness. Partition retained resources/index mounted volumes once; replace two nested mount deduplication passes with one ordered Set. With unchanged three/four backend queries, history reads become four/five, opens eight/fifteen and exists calls 196/245.
+- Original-source controls have two expected count failures and eighteen passes. All 65 corrected focused snapshot/Docker controls and strict types pass, including history corruption after each backend response and before the next inspection. All 153 final focused actual macOS process/containment controls in seven files and strict types pass. Required increment gates remain pending. P6-39 is still open; no paid model, hosted effect or source push runs.
+
+---
+
 ## 2026-11-06 · P6-39 · Reuse fresh controller and effect selections
 
 - Commit 76224b8 passes exact isolated Linux CHECK PASS fast in 120s (2602 tests plus the existing macOS-only omission in 183 files) and CHECK PASS in 148s (4522 tests plus that omission in 273 files). Both bundles match macOS; all 48 focused macOS controls and strict types pass. The preceding documentation precheck finds a malformed new ADR-index row separation; fix it before pinning these gates. No total-route overhead pass is inferred.

@@ -22,7 +22,9 @@ export class DockerResources {
     readonly admit?: (record: EnvironmentRuntime, resource: EnvironmentResource) => void,
   ) {}
   labels(resource: EnvironmentResource) {
-    const record = this.records.get(this.environment).record
+    return this.resourceLabels(resource, this.records.get(this.environment).record)
+  }
+  private resourceLabels(resource: EnvironmentResource, record: EnvironmentRuntime) {
     return {
       'org.wholeloop.environment': record.id,
       'org.wholeloop.run': record.run,
@@ -213,18 +215,13 @@ export class DockerResources {
     this.assertOwned(latest, value, policy)
     if (policy && latest.kind === 'container') {
       const resources = this.records.get(this.environment).record.resources,
-        mounted = dockerObjects(value.Mounts)
-          .map((mount) => {
-            const volume = resources.find(
-              (entry) => entry.kind === 'volume' && entry.id === mount.Name,
-            )
-            if (!volume) throw new DockerEnvironmentError('unowned-mounted-volume')
-            return volume
-          })
-          .filter(
-            (volume, index, values) =>
-              values.findIndex((value) => value.id === volume.id) === index,
+        mounted = dockerObjects(value.Mounts).map((mount) => {
+          const volume = resources.find(
+            (entry) => entry.kind === 'volume' && entry.id === mount.Name,
           )
+          if (!volume) throw new DockerEnvironmentError('unowned-mounted-volume')
+          return volume
+        })
       await this.ownedVolumes(mounted)
     }
     return value
@@ -232,27 +229,32 @@ export class DockerResources {
   /** Validate all mount dependencies before creating or starting their container.
    * Each boundary takes a new observation; repeated mounts share no cached authority. */
   private async ownedVolumes(resources: EnvironmentResource[]) {
-    const mounted = resources.filter(
-      (volume, index, values) => values.findIndex((value) => value.id === volume.id) === index,
-    )
+    const ids = new Set<string | undefined>(),
+      mounted = resources.filter((volume) => {
+        if (ids.has(volume.id)) return false
+        ids.add(volume.id)
+        return true
+      })
     for (let offset = 0; offset < mounted.length; offset += 16) {
       const batch = mounted.slice(offset, offset + 16),
-        volumes = dockerObjects(
-          dockerJson(
-            await this.driver.call([
-              'volume',
-              'inspect',
-              ...batch.map((volume) => this.id(volume)),
-            ]),
+        volumes = this.indexObserved(
+          'volume',
+          dockerObjects(
+            dockerJson(
+              await this.driver.call([
+                'volume',
+                'inspect',
+                ...batch.map((volume) => this.id(volume)),
+              ]),
+            ),
           ),
-        )
-      if (volumes.length !== batch.length)
-        throw new DockerEnvironmentError('resource-identity-changed')
+          batch.length,
+        ),
+        owner = this.records.get(this.environment).record
       for (const volume of batch) {
-        const matching = volumes.filter((observed) => this.matches(volume, observed))
-        if (matching.length !== 1 || !matching[0])
-          throw new DockerEnvironmentError('resource-identity-changed')
-        this.assertOwned(volume, matching[0], true)
+        const observed = volumes.get(this.id(volume))
+        if (!observed) throw new DockerEnvironmentError('resource-identity-changed')
+        this.assertOwned(volume, observed, true, owner)
       }
     }
   }
@@ -260,14 +262,27 @@ export class DockerResources {
    * Reusing earlier reads could miss a replaced resource; batching avoids that cache. */
   async ownedSnapshot() {
     const resources = this.records.get(this.environment).record.resources,
-      observed = new Map<string, Record<string, unknown>>()
-    if (
-      new Set(resources.map((r) => `${r.kind}:${this.id(r)}`)).size !== resources.length ||
-      new Set(resources.map((r) => r.slot)).size !== resources.length
-    )
-      throw new DockerEnvironmentError('duplicate-owned-resource')
+      observed = new Map<string, Record<string, unknown>>(),
+      groups: Record<EnvironmentResource['kind'], EnvironmentResource[]> = {
+        container: [],
+        volume: [],
+        network: [],
+      },
+      ids = new Set<string>(),
+      slots = new Set<string>(),
+      volumes = new Map<string, EnvironmentResource>()
+    for (const resource of resources) {
+      const id = this.id(resource),
+        identity = `${resource.kind}:${id}`
+      if (ids.has(identity) || slots.has(resource.slot))
+        throw new DockerEnvironmentError('duplicate-owned-resource')
+      ids.add(identity)
+      slots.add(resource.slot)
+      groups[resource.kind].push(resource)
+      if (resource.kind === 'volume') volumes.set(id, resource)
+    }
     for (const kind of ['container', 'volume', 'network'] as const) {
-      const selected = resources.filter((r) => r.kind === kind)
+      const selected = groups[kind]
       if (!selected.length) continue
       // Each query keeps the existing transport output cap. Bound the ID vector
       // too; a growing history must not become one unbounded inspect request.
@@ -281,23 +296,24 @@ export class DockerResources {
             }),
           ),
         )
-        if (values.length !== batch.length)
-          throw new DockerEnvironmentError('resource-identity-changed')
+        const indexed = this.indexObserved(kind, values, batch.length),
+          // The backend call is an asynchronous boundary. Revalidate the complete
+          // local history after it, then share only this synchronous batch's owner.
+          owner = this.records.get(this.environment).record
         for (const resource of batch) {
-          const matching = values.filter((value) => this.matches(resource, value))
-          if (matching.length !== 1 || !matching[0])
-            throw new DockerEnvironmentError('resource-identity-changed')
-          this.assertOwned(resource, matching[0], true)
-          observed.set(resource.slot, matching[0])
+          const value = indexed.get(this.id(resource))
+          if (!value) throw new DockerEnvironmentError('resource-identity-changed')
+          this.assertOwned(resource, value, true, owner)
+          observed.set(resource.slot, value)
         }
         this.current()
       }
     }
-    for (const resource of resources.filter((r) => r.kind === 'container')) {
+    for (const resource of groups.container) {
       const value = observed.get(resource.slot)
       if (!value) throw new DockerEnvironmentError('resource-identity-changed')
       for (const mount of dockerObjects(value.Mounts)) {
-        const volume = resources.find((r) => r.kind === 'volume' && r.id === mount.Name)
+        const volume = typeof mount.Name === 'string' ? volumes.get(mount.Name) : undefined
         if (!volume || !observed.has(volume.slot))
           throw new DockerEnvironmentError('unowned-mounted-volume')
       }
@@ -308,12 +324,28 @@ export class DockerResources {
       return { resource, observed: value }
     })
   }
+  private indexObserved(
+    kind: EnvironmentResource['kind'],
+    values: Record<string, unknown>[],
+    expected: number,
+  ) {
+    if (values.length !== expected) throw new DockerEnvironmentError('resource-identity-changed')
+    const indexed = new Map<string, Record<string, unknown>>()
+    for (const value of values) {
+      const id = kind === 'volume' ? value.Name : value.Id
+      if (typeof id !== 'string' || indexed.has(id))
+        throw new DockerEnvironmentError('resource-identity-changed')
+      indexed.set(id, value)
+    }
+    return indexed
+  }
   private assertOwned(
     resource: EnvironmentResource,
     value: Record<string, unknown>,
     policy: boolean,
+    owner?: EnvironmentRuntime,
   ) {
-    if (!this.matches(resource, value) || this.stamp(resource, value) !== resource.stamp)
+    if (!this.matches(resource, value, owner) || this.stamp(resource, value) !== resource.stamp)
       throw new DockerEnvironmentError('resource-identity-changed')
     if (
       policy &&
@@ -437,7 +469,11 @@ export class DockerResources {
     this.current()
     return current
   }
-  private matches(resource: EnvironmentResource, value: Record<string, unknown>) {
+  private matches(
+    resource: EnvironmentResource,
+    value: Record<string, unknown>,
+    owner?: EnvironmentRuntime,
+  ) {
     // A batch contains other owned IDs. Reject those before reading the private
     // environment history; only the exact identity needs its full label tuple.
     if (
@@ -449,7 +485,7 @@ export class DockerResources {
     )
       return false
     const labels = resource.kind === 'container' ? this.object(value.Config).Labels : value.Labels
-    const expected = this.labels(resource)
+    const expected = owner ? this.resourceLabels(resource, owner) : this.labels(resource)
     if (
       !labels ||
       typeof labels !== 'object' ||
