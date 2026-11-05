@@ -225,6 +225,7 @@
 | [0214](./0214-versioned-ci-correction-production.md) | Versioned CI correction production | Accepted | 2026-11-05 |
 | [0215](./0215-reviewed-public-research-plan.md) | Review the actual public research plan before source work | Accepted | 2026-11-05 |
 | [0216](./0216-minority-research-counterevidence.md) | Retain minority research counterevidence as uncertainty | Accepted | 2026-11-05 |
+| [0217](./0217-acceptance-producer-contracts.md) | Bind acceptance production to current identity and installed inputs | Accepted | 2026-11-05 |
 
 ## Lifecycle
 

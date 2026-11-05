@@ -72,6 +72,8 @@ export interface RunnerArtifactOptions {
    * a produced case with the same id refuses the plan rather than replacing it.
    */
   cases?(context: RunnerStageContext): AcceptanceCase[]
+  /** Installed input formats and fixture identifiers inform production, never authority. */
+  acceptanceContext?(context: RunnerStageContext): Record<string, unknown>
 }
 
 /** Artifact production precedes its independent decisions; it never completes a root stage alone. */
@@ -178,7 +180,21 @@ export class RunnerArtifactStages {
     return { binding, ...selected }
   }
   private response(kind: string, plan: Readonly<DeliveryPlan>) {
-    if (kind === 'acceptance-definition') return ACCEPTANCE_SCHEMAS.plan
+    if (kind === 'acceptance-definition') {
+      const schema = ACCEPTANCE_SCHEMAS.plan
+      // Acceptance cases describe this revision. Only a delivery-plan proposal
+      // creates a successor; never repair a producer's wrong identity on readback.
+      return {
+        ...schema,
+        properties: {
+          ...schema.properties,
+          run: { ...schema.properties.run, const: plan.run },
+          revision: { ...schema.properties.revision, const: plan.revision },
+          plan: { ...schema.properties.plan, const: contractDigest(plan) },
+          source: { ...schema.properties.source, const: plan.source },
+        },
+      }
+    }
     if (kind === 'build-plan') return BUILDER_PLAN_SCHEMA
     if (kind === 'definition' || kind === 'plan') return deliveryPlanSchema(plan)
     throw new DeliveryRunnerError('artifact-stage-purpose')
@@ -231,8 +247,11 @@ export class RunnerArtifactStages {
                 'The controller appends these exact cases to the plan. Do not redefine their ids; define every other case the criteria need.',
             }
           : {}),
+        ...(context.stage.kind === 'acceptance-definition' && this.options.acceptanceContext
+          ? { acceptanceContext: this.options.acceptanceContext(context) }
+          : {}),
         instruction:
-          'Produce exactly one report artifact at artifacts/production.json containing JSON that follows response. Preserve original scope, source, ownership, exclusions, guidance, policy and unknowns. Definition/plan proposals use the next revision and original digest as previous. Define complete acceptance cases before any builder; never waive human ownership or claim tests, execution, approval or delivery completion. Keep outer criteria/findings/unknowns empty; encode missing facts explicitly in the artifact.',
+          'Produce exactly one report artifact at artifacts/production.json containing JSON that follows response. Preserve original scope, source, ownership, exclusions, guidance, policy and unknowns. Only delivery-plan proposals for definition or plan stages use the next revision and original digest as previous. Acceptance definitions retain the exact current run/revision/plan/source constants in response. Use the installed acceptanceContext input formats and fixture identifiers when supplied; never invent capabilities or waive a criterion because its required observation is unavailable. Define complete acceptance cases before any builder; never waive human ownership or claim tests, execution, approval or delivery completion. Keep outer criteria/findings/unknowns empty; encode missing facts explicitly in the artifact.',
       })
     safeSourceText(brief, 1024 * 1024)
     // Capture before selecting files, so a changed workspace cannot label old

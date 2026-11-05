@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-27 · Bind acceptance generation to current identity and installed inputs
+
+- The fresh actual Codex EVAL-09 attempt ends blocked after 45 seconds at acceptance-definition with one successful host-observed native call, zero human waits and no Git/publication effect. Retain its failed report SHA-256 f57a918849ebb22af0f367604d9d844be1cbb54633ca3d8bea791feaa3ca1420. Client-reported usage is 15662 input and 1681 output tokens; currency is unreported. Its artifact increments the current revision, following the ambiguous definition/plan instruction, and invents observation inputs absent from the supplied contract. Existing validation correctly refuses; do not reclassify this route failure as infrastructure or claim a campaign pass.
+- Pin current run/revision/plan/source constants in the acceptance response contract. Supply the public controller's installed CLI/API input schema, assertion subjects, observable headers and actual recipe/service/test-command identities before production ([ADR-0217](../docs/decisions/0217-acceptance-producer-contracts.md)). Preserve strict readback, public schemas, original authority and unavailable-host refusal. Do not rewrite stale produced identities or add a repository inspection capability for an invented request. Retain both failed implementation pilots and all earlier research failures.
+- Two generation-contract controls fail before the change and pass afterward. The expanded focused run first finds one new fixture missing its service seed; provide that original seed rather than weakening the assertion. All 34 focused tests in four files and strict types then pass. A successor-revision artifact remains blocked with unchanged captured bytes and one original call; the installed context round-trips through the actual behavior parser, makes no journal change, refuses unavailable recipes and cannot mutate its shared schema. The stricter public-route fixture requires both identity and execution input metadata. The per-commit gate passes 437 related tests in 37 files and every remaining step: CHECK PASS (fast) in 251s. The complete gate and fresh native acceptance remain required.
+
+---
+
 ## 2026-11-05 · P6-27 · Live implementation checkout refuses its own persisted hook path
 
 - The first actual Codex EVAL-09 attempt completes its native acceptance-definition call, then stops at workspace allocation after 47 seconds with zero human waits and no Git effect, PR or merge. Its original report remains failed: SHA-256 55708462da763a1fcbe6391a608ccb0e4f2645b8bb12827654ad4bef9af0a756. Usage is client-reported 15749 input and 1665 output tokens, with no currency measurement. The hosted base remains unchanged. A read-only quota probe outside the sandbox reports 20 percent used; the sandboxed probe exits before observing account/quota data and is retained separately.

@@ -49,6 +49,7 @@ import {
 import { RunnerMilestoneReadiness } from './milestone-readiness.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments, type RunnerProductProduction } from './product-environments.js'
+import { publicAcceptanceContext } from './public-acceptance-context.js'
 import type { PublicHostComposer } from './public-host.js'
 import { PublicResearchPlan } from './public-research-plan.js'
 import { GithubCliCodeHost } from './publication-host.js'
@@ -542,11 +543,13 @@ export function composeInstalledImplementation(
     gating = gates && publicNativeParts(store, gates, runtime, 'inline-proposal'),
     guidance = guidanceContext(store, plan),
     cases = suiteCases(store, plan, runtime),
+    acceptanceContext = publicAcceptanceContext(store, plan, runtime),
     products = guidance && productInputs(store, plan, runtime),
     codeHost = runtime.codeHost
   if (
     !codeHost ||
     !cases ||
+    !acceptanceContext ||
     !products ||
     !judging ||
     !building ||
@@ -578,7 +581,11 @@ export function composeInstalledImplementation(
     }),
     production = { identity: request.host, native: judging, context: artifact },
     // The repository suites join the produced acceptance plan as controller cases.
-    definition = { ...production, cases: () => structuredClone(cases) },
+    definition = {
+      ...production,
+      cases: () => structuredClone(cases),
+      acceptanceContext: () => structuredClone(acceptanceContext),
+    },
     // Queued work is admitted only for a role some binding allows.
     admitted = contractDigest({ bindings, runtime }),
     admit = (candidate: { entry: { role: string } }): QueueReadiness =>

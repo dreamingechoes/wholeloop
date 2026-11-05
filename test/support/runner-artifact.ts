@@ -41,6 +41,7 @@ export async function runnerArtifactFixture(
       | 'policy'
       | 'incomplete'
       | 'decision-reject'
+      | 'next-revision'
     withinEnvelope?: boolean
     delegate?: boolean
     stageBudget?: 'plan'
@@ -77,7 +78,7 @@ const payload=JSON.parse(input),a=payload.assignment;
 let b={};try{b=JSON.parse(a.brief)}catch{}
 const mode=${JSON.stringify(options.mode ?? 'valid')};let output={purpose:'fixture',role:a.identity.role};
 if(b.response?.$id==='wholeloop/builder-plan@1')output={schema:b.response.$id,steps:['Implement title filtering in the declared task entrypoint.'],tests:['Search seeded titles and assert exact matching task IDs.'],assumptions:[]};
-if(b.response?.$id==='wholeloop/acceptance-plan@1')output={schema:b.response.$id,run:a.identity.run,revision:b.plan.revision,plan:mode==='wrong-basis'?'f'.repeat(64):a.identity.plan,source:b.plan.source,cases:[{id:'find-title',criteria:['search'],owner:'machine',applicability:'applicable',rationale:'Exercise the exact agreed search criterion.',initial:'Two seeded tasks have distinct titles.',actions:['Search for the second task title.'],assertions:[{id:'matching-ids',description:'Return the matching task ID.',subject:'json',operator:'equals',path:'/ids',expected:'["task-2"]'}],failureConditions:['Missing or extra IDs fail the case.'],runner:{kind:'api',capability:'http.request',input:'{"method":"GET","path":"/tasks?title=Second"}'},fixture:{ref:'fixture:two-tasks',sha256:'b'.repeat(64)},timeoutMs:5000}],retention:{reviewAfterMs:86400000,expiryAction:'retain'}};
+if(b.response?.$id==='wholeloop/acceptance-plan@1')output={schema:b.response.$id,run:a.identity.run,revision:mode==='next-revision'?b.plan.revision+1:b.plan.revision,plan:mode==='wrong-basis'?'f'.repeat(64):a.identity.plan,source:b.plan.source,cases:[{id:'find-title',criteria:['search'],owner:'machine',applicability:'applicable',rationale:'Exercise the exact agreed search criterion.',initial:'Two seeded tasks have distinct titles.',actions:['Search for the second task title.'],assertions:[{id:'matching-ids',description:'Return the matching task ID.',subject:'json',operator:'equals',path:'/ids',expected:'["task-2"]'}],failureConditions:['Missing or extra IDs fail the case.'],runner:{kind:'api',capability:'http.request',input:'{"method":"GET","path":"/tasks?title=Second"}'},fixture:{ref:'fixture:two-tasks',sha256:'b'.repeat(64)},timeoutMs:5000}],retention:{reviewAfterMs:86400000,expiryAction:'retain'}};
 if(b.response?.$id==='wholeloop/delivery-plan@1')output={...b.plan,revision:b.plan.revision+1,previous:mode==='wrong-basis'?'f'.repeat(64):a.identity.plan,definition:mode==='incomplete'?b.plan.definition:{ready:true,missing:[]}};
 if(b.response?.$id==='wholeloop/delegated-native-judgment@1'||b.response?.$id==='wholeloop/delegated-native-challenge@1'){const inner=JSON.parse(payload.inputs[0].content);output={schema:b.response.$id,basis:inner.basis,rationale:'Independently inspect the exact produced builder plan.',uncertainties:[]};if(a.identity.role==='planner')output.outcome=inner.request.decision==='frame-outcome'?(mode==='decision-reject'?'on-hold':'go'):(mode==='decision-reject'?'reject':'accept');else{output.judgment=b.judgment;output.verdict='supported'}};
 if(mode==='policy'&&output.policy)output.policy={...output.policy,endpoint:'to-merge'};

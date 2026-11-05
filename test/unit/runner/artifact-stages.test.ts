@@ -1,4 +1,4 @@
-import { readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
@@ -19,6 +19,80 @@ function stages(fixture: Parameters<Parameters<typeof setup>[0]>[0]) {
   })
 }
 describe('owned artifact stages preserve proposals separately from decisions and behavioral evidence', () => {
+  it('keeps a next-revision acceptance proposal blocked without rewriting its captured bytes', async () => {
+    await setup(
+      async (fixture) => {
+        const host = stages(fixture),
+          result = await host.execute(fixture.context),
+          root = fixture.store.files.path(`delivery/artifacts/${fixture.context.request.run}`),
+          refs = readdirSync(root)
+        expect(result.status).toBe('blocked')
+        expect(result.prepared).toBeUndefined()
+        expect(refs).toHaveLength(1)
+        const file = join(root, refs[0] ?? ''),
+          original = readFileSync(file, 'utf8')
+        expect(JSON.parse(original).revision).toBe(fixture.context.plan.revision + 1)
+        const record = fixture.store.stage(
+          contractDigest(fixture.context.request),
+          fixture.context.stage.id,
+        )
+        if (!record) throw new Error('Expected retained acceptance producer')
+        expect((await host.inspect(fixture.context.request, record)).status).toBe('blocked')
+        expect(readFileSync(file, 'utf8')).toBe(original)
+        expect(
+          new RunnerNativeScope(fixture.store.files, fixture.context.invocation).calls(),
+        ).toHaveLength(1)
+      },
+      'host-observed',
+      { mode: 'next-revision' },
+    )
+  })
+  it('pins acceptance response identity to the current plan before invoking its producer', async () => {
+    await setup(async (fixture) => {
+      await stages(fixture).execute(fixture.context)
+      const binding = JSON.parse(
+          readFileSync(
+            fixture.store.files.path(
+              `delivery/runner-artifacts/${fixture.context.invocation}.json`,
+            ),
+            'utf8',
+          ),
+        ),
+        brief = JSON.parse(binding.lease.assignment.brief)
+      for (const [field, value] of Object.entries({
+        run: fixture.context.plan.run,
+        revision: fixture.context.plan.revision,
+        plan: fixture.context.request.plan,
+        source: fixture.context.plan.source,
+      }))
+        expect(brief.response.properties[field].const).toBe(value)
+      expect(brief.instruction).not.toContain('Definition/plan proposals')
+    })
+  })
+  it('supplies the installed acceptance input contract without changing the native assignment scope', async () => {
+    await setup(async (fixture) => {
+      const execution = { runners: [{ kind: 'api', capability: 'http.request' }] },
+        host = new RunnerArtifactStages(fixture.store, {
+          identity: fixture.context.request.host,
+          native: (process) => ({ ...fixture.native, process }),
+          context: () => fixture.input,
+          acceptanceContext: () => execution,
+        })
+      await host.execute(fixture.context)
+      const binding = JSON.parse(
+          readFileSync(
+            fixture.store.files.path(
+              `delivery/runner-artifacts/${fixture.context.invocation}.json`,
+            ),
+            'utf8',
+          ),
+        ),
+        brief = JSON.parse(binding.lease.assignment.brief)
+      expect(brief.acceptanceContext).toEqual(execution)
+      expect(binding.lease.assignment.tools.broker).toEqual([])
+      expect(binding.lease.assignment.tools.workspace).toBe('none')
+    })
+  })
   it('does not recreate a locator lost before native input or dispatch its consumed attempt', async () => {
     await setup(async (fixture) => {
       const host = new RunnerArtifactStages(fixture.store, {
