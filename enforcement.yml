@@ -8,7 +8,7 @@
 version: 1
 rules:
   - id: read-only-change-feed
-    enforcers: [src/overview/watch.ts#watchOverview, src/overview/watch.ts#stateActivity, src/overview/watch.ts#deliveryActivity, src/cli/watch.ts#watchCommand, test/unit/overview/watch.test.ts, test/unit/overview/watch-integrity.test.ts, test/unit/overview/watch-cli.test.ts, test/unit/overview/watch-recording.test.ts, test/unit/overview/watch-activity.test.ts, test/unit/overview/watch-command.test.ts, test/fixtures/overview/read-only-guard.mjs]
+    enforcers: [src/overview/watch.ts#watchOverview, src/overview/watch.ts#stateActivity, src/overview/watch.ts#deliveryActivity, src/cli/watch.ts#watchCommand, test/unit/overview/watch.test.ts, test/unit/overview/watch-integrity.test.ts, test/unit/overview/watch-cli.test.ts, test/unit/overview/watch-recording.test.ts, test/unit/overview/watch-activity.test.ts, test/unit/overview/watch-command.test.ts, test/unit/overview/watch-clock.test.ts, test/fixtures/overview/read-only-guard.mjs]
   - id: verified-overview-prefix
     enforcers: [src/overview/cursor.ts#journalPosition, src/overview/cursor.ts#decodeCursor, src/overview/cursor.ts#cursorPrefix, test/unit/overview/cursor.test.ts, src/overview/read.ts#readOverview, src/overview/project.ts#projectOverview, src/overview/attention.ts#orderedAttention, src/overview/attention.ts#overviewHeadline, src/runner/operator-report.ts#projectDeliveryReport, test/unit/overview/read.test.ts, test/unit/overview/project.test.ts, test/unit/overview/fixtures.test.ts]
   - id: descriptive-event-attribution

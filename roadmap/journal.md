@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-38 · Watch observation clock — in progress
+
+- The implementation at `5b81460` passes the full macOS arm64/Node 24.22.0 gate: 4169 tests in 233 files, offline archive/install and every remaining check; `CHECK PASS in 740s`. The archive digest is `333cc7706d57462e1e09039fa7b78e81ec853208434d81ed4e292014e59c9ce8`.
+- Final caller review finds that watch still passed a default timestamp sampled before reading, bypassing the reader's concurrent-clock fix. A deterministic actual-journal commit reproduces a false blocked headline and budget-boundary attention. Preserve explicitly supplied replay clocks but let ordinary watch reads sample their own observation time after captured journals. The differential assertion fails before this fix and passes afterward. The first corrected run also exposes a test-only assumption that an unstarted fixture has a budget ledger; assert the actual timestamp and absence of the false attention instead.
+- Repeat focused, per-commit, compiled Linux and full verification on the corrected tree before closure. No task completion, model/account operation, hosted mutation or source push is inferred from the earlier full pass.
+
+---
+
 ## 2026-11-05 · P6-38 · Output failure regression — in progress
 
 - Reproduce a distinct output failure deterministically: a synchronous EPIPE from the sink was treated as an unreadable store, attempted a second frame on the broken output and exited 1. A synchronous EIO similarly retried the sink. Cancel on caught output errors as well as emitted stdout errors, retain the first code only, and leave unexpected I/O failures nonzero. No raw error text enters a frame. Both regressors fail before the fix and pass after it; no extra platform error code is guessed from the earlier unretained failure.

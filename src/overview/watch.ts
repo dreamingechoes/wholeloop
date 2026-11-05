@@ -234,7 +234,9 @@ export async function watchOverview(
           root: options.root,
           ...(options.store ? { store: options.store } : {}),
           ...(options.userFile ? { userFile: options.userFile } : {}),
-          at: now(),
+          // Default reads sample time after their captured journals. Pinning
+          // it here can put a concurrent commit after its observation clock.
+          ...(options.at !== undefined ? { at: options.at } : {}),
         })
       } catch (error) {
         if (error instanceof OverviewError && error.problem === 'store-busy') {
