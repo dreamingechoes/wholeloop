@@ -507,8 +507,10 @@ export function event(
 
 export function replay(events: readonly StateEvent[]): Map<string, Item> {
   const items = new Map<string, Item>()
+  if (!events.length) return items
   const ids = new Set<string>()
   const buildRuns = new Map<string, string>()
+  const starts = new Set<string>()
   const agreements = new Set<string>()
   for (const entry of events) {
     validateEvent(entry)
@@ -531,8 +533,12 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
     }
     const item = items.get(entry.subject)
     if (!item) throw new Error(`Missing item: ${entry.subject}`)
-    if (entry.type === 'step.started' && entry.data.step === 'build-slice')
-      buildRuns.set(entry.subject, entry.data.run)
+    if (entry.type === 'step.started') {
+      // Only the validated chronological prefix can establish an earlier start;
+      // a completion must never borrow another subject, step or future event.
+      starts.add(JSON.stringify([entry.subject, entry.data.step, entry.data.run]))
+      if (entry.data.step === 'build-slice') buildRuns.set(entry.subject, entry.data.run)
+    }
     if (
       (entry.type === 'step.completed' || entry.type === 'step.skipped') &&
       entry.data.step === 'build-slice'
@@ -572,15 +578,8 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
     )
       throw new Error('Decision basis must reference an earlier event')
     if (entry.type === 'step.completed') {
-      const started = events.find(
-        (candidate) =>
-          candidate.type === 'step.started' &&
-          candidate.subject === entry.subject &&
-          candidate.data.step === entry.data.step &&
-          candidate.data.run === entry.data.run &&
-          ids.has(candidate.id),
-      )
-      if (!started) throw new Error('Step completion needs a matching start')
+      if (!starts.has(JSON.stringify([entry.subject, entry.data.step, entry.data.run])))
+        throw new Error('Step completion needs a matching start')
     }
     switch (entry.type) {
       case 'item.updated':

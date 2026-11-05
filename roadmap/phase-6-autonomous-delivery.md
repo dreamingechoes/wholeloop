@@ -1060,7 +1060,7 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 **Tests** — Differential current-proof controls, operation-count limits, cold/warm/scaling fixtures, bounded wait/retry/cancellation cases and end-to-end overhead checks. Development test-suite duration is a separate metric from runtime overhead.
 
-**Docs** — Determinism and testing, ADR-0227, v1 acceptance, the audit ledger and the journal. Neither this first read-sharing increment nor a single endpoint benchmark closes P6-39.
+**Docs** — Determinism and testing, ADR-0227, v1 acceptance, the [executed audit ledger](./performance-audit.md) and the journal. Neither this first read-sharing increment nor a single endpoint benchmark closes P6-39.
 
 ---
 

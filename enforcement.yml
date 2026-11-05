@@ -512,7 +512,7 @@ rules:
   - id: research-journaled-brief
     enforcers: [src/flow/engine.ts#researchBrief, test/unit/research/research.test.ts]
   - id: missing-input-blocks-mutation
-    enforcers: [src/flow/engine.ts#begin, test/unit/utilities/utilities.test.ts]
+    enforcers: [src/flow/engine.ts#begin, src/flow/engine.ts#activeStep, src/discovery/tree.ts#discover, src/state/events.ts#replay, test/unit/flow/preflight.test.ts, test/unit/state/replay-starts.test.ts, test/unit/discovery/cache-read.test.ts, test/unit/utilities/utilities.test.ts]
   - id: external-runtime-state
     enforcers: [src/state/paths.ts#assertExternal, src/state/paths.ts#canonicalPath, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts]
   - id: recorded-step-skips

@@ -6,7 +6,7 @@
 
 Current manual checks and maintainer-only actions: [manual verification](./manual-verification.md). Start with the [V1 acceptance runbook](../docs/v1-acceptance.md) for executable trials, expected results and the distinction between maintainer decisions, implementation work and deferred service certification.
 
-**Release blocker:** P6-27 has confirmed excessive controller read/process amplification. Total wholeloop overhead must be measured separately from models and actual project tests, with an initial five-second ceiling and no unnecessary operations. Component improvements do not close this requirement or certify 1.0; see [ADR-0227](../docs/decisions/0227-verified-read-observation-scopes.md).
+**Release blocker:** P6-27 has confirmed excessive controller read/process amplification. Total wholeloop overhead must be measured separately from models and actual project tests, with an initial five-second ceiling and no unnecessary operations. Component improvements do not close this requirement or certify 1.0; see the [executed audit ledger](./performance-audit.md) and [ADR-0227](../docs/decisions/0227-verified-read-observation-scopes.md).
 
 ## Expanded 1.0 review
 

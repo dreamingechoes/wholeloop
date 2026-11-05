@@ -178,6 +178,7 @@ export function remembered(
     if (typeof configuration.providers.tracker === 'string')
       values['tracker.destination'] = configuration.providers.tracker
   }
+  if (!subject) return values
   for (const scope of ['initiative', 'run'])
     for (const entry of events)
       if (

@@ -117,7 +117,12 @@ function scanInventory(input: ReturnType<typeof discoveryInput>, home: string) {
   }
 }
 
-export function discover(root: string, store: StoreFiles, home = homedir()) {
+export function discover(
+  root: string,
+  store: StoreFiles,
+  home = homedir(),
+  options: { persist?: boolean } = {},
+) {
   if (inReadObservation())
     return structuredClone(
       observedRead(`discovery:${canonicalPath(root)}\0${canonicalPath(home)}`, () => {
@@ -128,7 +133,7 @@ export function discover(root: string, store: StoreFiles, home = homedir()) {
   const input = discoveryInput(root, home),
     { repo, user, fingerprint } = input
   const file = `cache/discovery/${hash(`${canonicalPath(root)}\n${canonicalPath(home)}`)}.json`
-  return store.locked(() => {
+  const readCached = () => {
     const content = store.read(file)
     if (content) {
       try {
@@ -154,8 +159,18 @@ export function discover(root: string, store: StoreFiles, home = homedir()) {
         /* A cache is disposable; never treat it as source of truth. */
       }
     }
-    const result = scanInventory(input, home),
-      repoMap = result.repo,
+    return undefined
+  }
+  const cached = readCached()
+  if (cached) return cached
+  const result = scanInventory(input, home)
+  if (options.persist === false) return result
+  return store.locked(() => {
+    // Another writer may have populated the disposable cache while this
+    // inventory was scanned. A cache hit never needs a writer lock itself.
+    const current = readCached()
+    if (current) return current
+    const repoMap = result.repo,
       userMap = result.user
     store.atomic(
       file,

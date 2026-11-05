@@ -37,7 +37,7 @@ import { publishSlices } from '../slices/publish.js'
 import { blockingDependencies } from '../slices/routing.js'
 import { checkSpec } from '../spec/contract.js'
 import { specTemplate } from '../spec/template.js'
-import { itemId, replay } from '../state/events.js'
+import { itemId, replay, type StateEvent } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 import type { StateStore } from '../state/store.js'
 import { verificationCriteria } from '../verification/contracts.js'
@@ -47,6 +47,27 @@ import { beginPlan, decisions, decisionTrail, flowPlan, itemFlow, remembered } f
 import { checkShape, decisionBlocks, STEPS, stepDefinition } from './registry.js'
 
 const newRun = () => `run-${randomBytes(8).toString('hex')}`
+const beginWrite = Symbol('begin-write')
+const probeBeginWrite = () => {
+  throw beginWrite
+}
+function activeStep(events: readonly StateEvent[], subject: string, name: string) {
+  const ended = new Set<string>()
+  // A skipped run stays ended even if a later duplicate start appears.
+  for (const entry of events)
+    if (
+      entry.subject === subject &&
+      (entry.type === 'step.completed' || entry.type === 'step.skipped')
+    )
+      ended.add(entry.data.run)
+  return events.findLast(
+    (entry) =>
+      entry.subject === subject &&
+      entry.type === 'step.started' &&
+      entry.data.step === name &&
+      !ended.has(entry.data.run),
+  )
+}
 export interface BeginOptions {
   profile?: Record<string, unknown>
   subject?: string
@@ -93,7 +114,7 @@ export class FlowEngine {
           loaded.presets,
         ).values
       : loaded.values
-    const inventory = discover(this.root, this.store.files, this.home)
+    const inventory = discover(this.root, this.store.files, this.home, { persist: false })
     const bindings = Object.fromEntries(
       step.slots.map((slot) => {
         const binding =
@@ -114,21 +135,19 @@ export class FlowEngine {
         ? specTemplate(this.root, this.userFile, configuration, bindings['spec.template']?.selected)
         : null
     if (options.impact && name !== 'write-spec') throw new CliError('--impact is for write-spec')
-    return this.store.transaction((events, append) => {
+    const prepare = ((events, append) => {
       const items = replay(events)
       let subject = options.subject ? items.get(options.subject) : undefined
       if (options.from && name !== 'frame-problem')
         throw new CliError('--from is for framing a completed research brief')
       const source = options.from ? items.get(options.from) : undefined
       const sourceArtifact = source
-        ? [...events]
-            .reverse()
-            .find(
-              (entry) =>
-                entry.subject === source.id &&
-                entry.type === 'step.completed' &&
-                entry.data.step === 'research',
-            )
+        ? events.findLast(
+            (entry) =>
+              entry.subject === source.id &&
+              entry.type === 'step.completed' &&
+              entry.data.step === 'research',
+          )
         : undefined
       if (options.from && (source?.kind !== 'brief' || sourceArtifact?.type !== 'step.completed'))
         throw new CliError('--from needs a completed research brief', EXIT.precondition)
@@ -216,31 +235,16 @@ export class FlowEngine {
 
       if (options.subject && !subject)
         throw new CliError(`Unknown item: ${options.subject}`, EXIT.precondition)
-      const active = [...events]
-        .reverse()
-        .find(
-          (entry) =>
-            entry.subject === subject?.id &&
-            entry.type === 'step.started' &&
-            entry.data.step === name &&
-            !events.some(
-              (later) =>
-                later.subject === entry.subject &&
-                (later.type === 'step.completed' || later.type === 'step.skipped') &&
-                later.data.run === entry.data.run,
-            ),
-        )
+      const active = subject ? activeStep(events, subject.id, name) : undefined
       const run = active?.type === 'step.started' ? active.data.run : newRun()
       const owner = options.owner ?? parent?.owner ?? source?.owner
       const frameArtifact = subject
-        ? [...events]
-            .reverse()
-            .find(
-              (entry) =>
-                entry.subject === subject.id &&
-                entry.type === 'step.completed' &&
-                entry.data.step === 'frame-problem',
-            )
+        ? events.findLast(
+            (entry) =>
+              entry.subject === subject.id &&
+              entry.type === 'step.completed' &&
+              entry.data.step === 'frame-problem',
+          )
         : undefined
       const frameImpact =
         frameArtifact?.type === 'step.completed'
@@ -293,11 +297,11 @@ export class FlowEngine {
           payload.questions.push(...resolution.questions)
         }
       if (payload.missing.length) return { payload, code: EXIT.input }
-      if (name === 'build-slice' && subject && blockingDependencies(events, subject.id).length)
-        throw new CliError(
-          `Blocked by: ${blockingDependencies(events, subject.id).join(', ')}`,
-          EXIT.precondition,
-        )
+      if (name === 'build-slice' && subject) {
+        const blocked = blockingDependencies(events, subject.id)
+        if (blocked.length)
+          throw new CliError(`Blocked by: ${blocked.join(', ')}`, EXIT.precondition)
+      }
       if (!step.available) return { payload, code: EXIT.precondition }
       const pending = subject
         ? decisions(events, subject.id, [
@@ -391,7 +395,16 @@ export class FlowEngine {
         payload: { ...payload, subject: { id, kind: subject?.kind ?? step.kind } },
         code: EXIT.ok,
       }
-    })
+    }) satisfies Parameters<StateStore['transaction']>[0]
+    try {
+      // This fixed preparation only reads until append. A no-op or question
+      // must not create a lock/cache; admitted work recomputes under the real
+      // writer lock, so an intervening close or decision cannot be bypassed.
+      return prepare(this.store.events(), probeBeginWrite)
+    } catch (error) {
+      if (error !== beginWrite) throw error
+    }
+    return this.store.transaction(prepare)
   }
 
   plan(subject: string) {

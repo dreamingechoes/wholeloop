@@ -55,6 +55,8 @@ These layers describe coverage, not a guaranteed gate duration. This repository'
 
 A complete unattended implementation route also pays for planning, independent decisions, environment setup and current-proof observations. The small model-free implementation rehearsals recorded in the [journal](../../roadmap/journal.md) take several minutes, including a 663-second attempt whose thirteen stages pass but whose final endpoint refuses. Those runs expose material runtime overhead; they are not native-client passes or comparisons against an equivalent prompt-driven delivery. [ADR-0226](../decisions/0226-physical-journal-leaf-observations.md) removes measured redundant journal work while preserving fresh bytes and ownership checks. Its local query benchmark does not establish a full-flow speedup.
 
+The [performance audit ledger](../../roadmap/performance-audit.md) records executed operation counts, growth controls and remaining caller coverage across canonical steps, autonomous stages and utilities. A fast result containing unnecessary reads, executions or loops cannot close the release blocker. Keep logical event accesses, physical opens, metadata API calls, supervised requests and observed process launches distinct.
+
 ## Workflow tests with stubbed agents
 
 Gate and fan-out workflows are tested by running the **real workflow code** with a fake `agent()` that returns scripted results. This catches the failure an extracted unit test cannot: a guard that exists but is never called.

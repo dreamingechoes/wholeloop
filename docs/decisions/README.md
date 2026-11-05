@@ -251,6 +251,8 @@
 
 | [0229](./0229-native-registration-observation-resources.md) | Group each original native registration without duplicating reads | Accepted | 2026-11-05 |
 
+| [0230](./0230-read-only-step-admission-and-linear-history.md) | Read step admission before acquiring a writer lock | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid
