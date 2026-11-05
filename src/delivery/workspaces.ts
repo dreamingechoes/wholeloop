@@ -14,6 +14,7 @@ import {
 import { observeCommittedWorktree } from '../integration/observe.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { ancestor, git, registeredWorktrees, repository } from '../worktrees/git.js'
+import { ciCorrectionSeed } from './ci-seed.js'
 import {
   currentWorkspaceCommit,
   readCandidateCommit,
@@ -283,15 +284,16 @@ export class DeliveryWorkspaces {
       !/^[a-f0-9]{40}(?:[a-f0-9]{24})?$/.test(head)
     )
       throw new IntegrationError('workspace-seed-commit')
+    const seededHead = ciCorrectionSeed(this.effects.lifecycle, plan, declared, head) ?? head
     let object = ''
     try {
-      object = git(declared.root, ['cat-file', '-t', head]).trim()
+      object = git(declared.root, ['cat-file', '-t', seededHead]).trim()
     } catch {
       object = ''
     }
-    if (object !== 'commit' || !ancestor(declared.root, declared.base, head))
+    if (object !== 'commit' || !ancestor(declared.root, declared.base, seededHead))
       throw new IntegrationError('workspace-seed-head')
-    return { commit: record.digest, head }
+    return { commit: record.digest, head: seededHead }
   }
   private path(digest: string) {
     if (!/^[a-f0-9]{64}$/.test(digest)) throw new IntegrationError('workspace-digest')

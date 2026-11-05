@@ -37,9 +37,22 @@ export async function runnerCiFailureFixture(
   }) => void | Promise<void>,
   overrides: Partial<CiObservation> = {},
   conclusion: CiCheck['conclusion'] | null = 'failure',
+  options: { integratedHead?: boolean } = {},
 ) {
   await runnerGitFixture(
     async ({ store, request, root, digest, dispatch, observe }) => {
+      const head = options.integratedHead
+        ? git(root, [
+            'commit-tree',
+            git(root, ['rev-parse', 'HEAD^{tree}']),
+            '-p',
+            git(root, ['rev-parse', 'HEAD']),
+            '-m',
+            'test: retain an integrated fixture candidate',
+            '-m',
+            'Keep the published fixture root distinct without moving the declared base.',
+          ])
+        : git(root, ['rev-parse', 'HEAD'])
       const host = new StubCodeHost(),
         publisher = new RunnerPublisher(store, host),
         context = dispatch('publication'),
@@ -49,7 +62,7 @@ export async function runnerCiFailureFixture(
           remote: 'origin',
           branch: 'wl/ci-history',
           base: 'main',
-          head: git(root, ['rev-parse', 'HEAD']),
+          head,
         },
         binding: PublicationBinding = {
           version: 1,

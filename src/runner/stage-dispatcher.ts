@@ -171,6 +171,11 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     // A merge also needs the installed runtime allowance, separate from plan and grant.
     if (plan.policy.endpoint === 'to-merge' && !this.adapters.merge?.options.runtime.allowsMerge)
       return unavailable('dispatcher-merge-runtime-denied')
+    if (
+      plan.schema === 'wholeloop/delivery-plan@2' &&
+      !this.adapters.correction?.configured(request, plan)
+    )
+      return unavailable('dispatcher-ci-correction-host-required')
     // The engine cannot supply a caller selection, so each milestone needs its fixed input.
     if (
       route.some(

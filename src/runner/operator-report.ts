@@ -113,6 +113,17 @@ export function nextActions(
           actions.push(
             `wl delivery continue --run ${state.run} --request ${record.request} --stage ${stage.id} --unit <work-id>`,
           )
+        else if (
+          stage.basis === state.basis.digest &&
+          stage.id === 'ci' &&
+          stage.status === 'failed' &&
+          !stage.origin &&
+          stage.provenance === 'host-observed' &&
+          stage.runtime?.backend === 'owned-core'
+        )
+          actions.push(
+            `wl delivery continue-ci --run ${state.run} --request ${record.request} --unit <work-id>`,
+          )
   return [...new Set(actions)]
 }
 

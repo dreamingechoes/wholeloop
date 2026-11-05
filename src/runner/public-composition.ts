@@ -35,11 +35,18 @@ import { RunnerAcceptanceStages } from './acceptance-stages.js'
 import type { RunnerArtifactInput } from './artifact-attempts.js'
 import { RunnerAssemblyReadiness } from './assembly-readiness.js'
 import { RunnerBuilderPlanningStages } from './builder-planning-stages.js'
+import { RunnerCiCorrectionAdmission } from './ci-correction-admission.js'
 import { RunnerCorrectionStages } from './correction-stages.js'
 import type { RunnerStageContext } from './engine.js'
 import { RunnerFeatureReadiness } from './feature-readiness.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerIntegrationStages } from './integration-stages.js'
+import {
+  type RunnerCiStageOptions,
+  RunnerCiStages,
+  type RunnerMergeStageOptions,
+  RunnerMergeStages,
+} from './merge-stages.js'
 import { RunnerMilestoneReadiness } from './milestone-readiness.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments, type RunnerProductProduction } from './product-environments.js'
@@ -319,8 +326,8 @@ function requests(store: RunnerStore) {
 }
 
 /**
- * The controller bundle's composer (ADR-0205). It composes only the research
- * route for now; any other endpoint, a missing runtime client or a role no
+ * The controller bundle's composer (ADR-0205). It composes only the listed research and to-pr
+ * routes; any other endpoint, a missing runtime client or a role no
  * single binding covers leaves the route unsupported before dispatch.
  */
 export const composePublicHost: PublicHostComposer = (input) => {
@@ -386,8 +393,8 @@ export const composePublicHost: PublicHostComposer = (input) => {
  * Git keeps the core's own resolution, as every other Git effect does.
  */
 export function runtimeGithub(client: string): CommandExecutor {
-  return (binary, args, cwd, input) =>
-    executeCodehostCommand(binary === 'gh' ? client : binary, args, cwd, input)
+  return (binary, args, cwd, input, signal) =>
+    executeCodehostCommand(binary === 'gh' ? client : binary, args, cwd, input, signal)
 }
 
 /**
@@ -523,7 +530,20 @@ function unitRepository(
  * the whole route. A runtime without a code host, or anything another helper
  * refuses, composes nothing, so no part of the route runs.
  */
-const composeImplementation: PublicHostComposer = ({ store, request, plan, configuration }) => {
+export function composeInstalledImplementation(
+  { store, request, plan, configuration }: Parameters<PublicHostComposer>[0],
+  installed?: { ci: RunnerCiStageOptions; merge: RunnerMergeStageOptions },
+): RunnerStageDispatcher | undefined {
+  // Only trusted installed SDK code supplies merge hosts and its independent
+  // runtime allowance. The public composer and native-runtime@1 never do.
+  if (
+    plan.policy.endpoint !== 'to-pr' &&
+    (plan.policy.endpoint !== 'to-merge' ||
+      !installed?.merge.runtime.allowsMerge ||
+      contractDigest(installed.ci.identity) !== contractDigest(request.host) ||
+      contractDigest(installed.merge.identity) !== contractDigest(request.host))
+  )
+    return undefined
   const { bindings, runtime } = configuration,
     judges = bindingFor(bindings, ['planner', 'challenger']),
     builders = bindingFor(bindings, ['builder']),
@@ -639,7 +659,12 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
       requests: decide,
       host,
     }),
-    github = runtimeGithub(codeHost.client)
+    github = runtimeGithub(codeHost.client),
+    code = new GithubCliCodeHost(github),
+    publication = new RunnerPublicationStages(store, acceptance, {
+      identity: request.host,
+      host: code,
+    })
   return new RunnerStageDispatcher(
     store,
     request.host,
@@ -661,17 +686,31 @@ const composeImplementation: PublicHostComposer = ({ store, request, plan, confi
       implementation: new RunnerWorkerStages(store, queue(), builder),
       // ADR-0208: a continuation's correction reruns the unit's builder with
       // the retained failure; integration supplies its failed product cases.
-      correction: new RunnerCorrectionStages(store, queue(), builder, integration),
+      correction: new RunnerCorrectionStages(
+        store,
+        queue(),
+        builder,
+        integration,
+        installed
+          ? new RunnerCiCorrectionAdmission(store, { identity: request.host, host: code })
+          : undefined,
+      ),
       verification,
       review,
       integration,
       acceptance,
       // The to-pr handoff also belongs to the publication adapter.
-      publication: new RunnerPublicationStages(store, acceptance, {
-        identity: request.host,
-        host: new GithubCliCodeHost(github),
-      }),
+      publication,
+      ...(installed
+        ? {
+            ci: new RunnerCiStages(store, publication, installed.ci),
+            merge: new RunnerMergeStages(store, publication, installed.merge),
+          }
+        : {}),
     },
     new RunnerProductEnvironments(store, assembly, products),
   )
 }
+
+// This public wrapper never installs conditional merge capability.
+const composeImplementation: PublicHostComposer = (input) => composeInstalledImplementation(input)

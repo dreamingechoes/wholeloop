@@ -423,9 +423,28 @@
     "output:wholeloop/overview@1": "89a023a1f695be5af22be68790eeee286ce98e11d45cc6b50565284702cf2b70",
     "output:wholeloop/overview-schema@1": "a019499a6eb80a59abaab7b10f1cc43bd1c0f228dad1e2e74684ebda55b4641a",
     "output:wholeloop/watch-frame@1": "76810df046479209336c417aaaad387595d2d1670e257cac11c62a1216a1b083",
-    "schema:wholeloop/delivery-ci-feedback@1": "f1fb8b190d88be0514d79a40e15c5abcfc4778dfdab116072f7ebbb9aaab6fb8"
+    "schema:wholeloop/delivery-ci-feedback@1": "f1fb8b190d88be0514d79a40e15c5abcfc4778dfdab116072f7ebbb9aaab6fb8",
+    "output:wholeloop/delivery-planning-schema@2": "966511c9b4354abd76fd76591b55ea33d0ae9648b88bf0a0f79f5537f31c3f69",
+    "output:wholeloop/delivery-plan-prepared@2": "cac147b3c7c7a89858bceff144733aba46c2c52f962a0b3dd88192b79339e3a4",
+    "schema:wholeloop/delivery-plan@2": "4bc78cc4b465622d19ed1711856ad1698ba1cc9da1b4c82689ad9dfbe4bc3b70",
+    "schema:wholeloop/delivery-planning-record@2": "857a9f20c5eead2da99d87b8f0a89ae3ba556ad120c9aec0d4b75dc67a2e1e9c",
+    "output:wholeloop/delivery-ci-continue@1": "f27f6abed74ec3d0cc4552e74d7f18d527d2ee16e3c1a46bd2373a7abd21c130"
   },
   "commands": [
+    {
+      "path": "delivery continue-ci",
+      "schema": "wholeloop/delivery-ci-continue@1",
+      "options": [
+        "--run <delivery-id>",
+        "--request <sha256>",
+        "--unit <work-id>",
+        "--accept",
+        "--operator <name>",
+        "--reason <text>",
+        "--store <path>"
+      ],
+      "arguments": ""
+    },
     {
       "path": "release notes",
       "arguments": "",
@@ -1493,13 +1512,18 @@
     {
       "path": "delivery plan-schema",
       "arguments": "",
-      "options": [],
+      "options": ["--schema-version <1|2>"],
       "schema": "wholeloop/delivery-planning-schema@1"
     },
     {
       "path": "delivery plan",
       "arguments": "",
-      "options": ["--file <proposal.json>", "--root <directory>", "--store <path>"],
+      "options": [
+        "--schema-version <1|2>",
+        "--file <proposal.json>",
+        "--root <directory>",
+        "--store <path>"
+      ],
       "schema": "wholeloop/delivery-plan-prepared@1"
     },
     {
@@ -1511,7 +1535,12 @@
     {
       "path": "delivery inspect-plan",
       "arguments": "",
-      "options": ["--run <delivery-id>", "--revision <number>", "--store <path>"],
+      "options": [
+        "--schema-version <1|2>",
+        "--run <delivery-id>",
+        "--revision <number>",
+        "--store <path>"
+      ],
       "schema": "wholeloop/delivery-plan-prepared@1"
     },
     {

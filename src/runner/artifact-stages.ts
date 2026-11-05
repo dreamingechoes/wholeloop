@@ -15,8 +15,8 @@ import type {
 } from '../delivery/native-host.js'
 import {
   checkPlanEnvelope,
-  DELIVERY_PLAN_SCHEMA,
   type DeliveryPlan,
+  deliveryPlanSchema,
   observePlanBases,
   validateDeliveryPlan,
   validateDeliveryShape,
@@ -177,10 +177,10 @@ export class RunnerArtifactStages {
       throw new DeliveryRunnerError('artifact-stage-workspace-missing')
     return { binding, ...selected }
   }
-  private response(kind: string) {
+  private response(kind: string, plan: Readonly<DeliveryPlan>) {
     if (kind === 'acceptance-definition') return ACCEPTANCE_SCHEMAS.plan
     if (kind === 'build-plan') return BUILDER_PLAN_SCHEMA
-    if (kind === 'definition' || kind === 'plan') return DELIVERY_PLAN_SCHEMA
+    if (kind === 'definition' || kind === 'plan') return deliveryPlanSchema(plan)
     throw new DeliveryRunnerError('artifact-stage-purpose')
   }
   async execute(context: RunnerStageContext): Promise<RunnerArtifactResult> {
@@ -223,7 +223,7 @@ export class RunnerArtifactStages {
         ...(candidate ? { candidate } : {}),
         source: source.body,
         plan: context.plan,
-        response: this.response(context.stage.kind),
+        response: this.response(context.stage.kind, context.plan),
         ...(context.stage.kind === 'acceptance-definition' && this.options.cases
           ? {
               controllerCases: this.options.cases(context),
@@ -363,7 +363,10 @@ export class RunnerArtifactStages {
             const body = readSourceFile(this.store.files.root, captured.ref, 256 * 1024)
             try {
               const value: unknown = JSON.parse(body)
-              validateDeliveryShape(value, this.response(selected.context.stage.kind))
+              validateDeliveryShape(
+                value,
+                this.response(selected.context.stage.kind, selected.context.plan),
+              )
               if (selected.context.stage.kind === 'acceptance-definition') {
                 const produced = value as AcceptancePlan,
                   appended = this.options.cases?.(selected.context) ?? []

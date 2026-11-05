@@ -43,6 +43,7 @@ export class GithubCliCodeHost implements RunnerCodeHost {
     endpoint: string,
     method = 'GET',
     body?: Record<string, unknown>,
+    signal?: AbortSignal,
   ): Promise<unknown> {
     const repo = this.repository(target),
       output = await this.execute(
@@ -58,6 +59,7 @@ export class GithubCliCodeHost implements RunnerCodeHost {
         ],
         target.path,
         body ? JSON.stringify(body) : undefined,
+        signal,
       )
     try {
       return JSON.parse(output) as unknown
@@ -90,12 +92,14 @@ export class GithubCliCodeHost implements RunnerCodeHost {
       },
     })
   }
-  async remoteHead(target: Readonly<RunnerPublicationTarget>, _signal?: AbortSignal) {
+  async remoteHead(target: Readonly<RunnerPublicationTarget>, signal?: AbortSignal) {
     this.repository(target)
     const output = await this.execute(
         'git',
         ['ls-remote', '--heads', '--', target.remote, `refs/heads/${target.branch}`],
         target.path,
+        undefined,
+        signal,
       ),
       lines = output.split('\n').filter((line) => line.trim())
     if (lines.length > 1) throw new DeliveryRunnerError('publication-host-ambiguous-ref')
@@ -121,12 +125,15 @@ export class GithubCliCodeHost implements RunnerCodeHost {
       target.path,
     )
   }
-  async pullRequests(target: Readonly<RunnerPublicationTarget>, _signal?: AbortSignal) {
+  async pullRequests(target: Readonly<RunnerPublicationTarget>, signal?: AbortSignal) {
     const repo = this.repository(target),
       owner = repo.path.split('/')[0] ?? '',
       value = await this.api(
         target,
         `pulls?state=all&per_page=100&head=${encodeURIComponent(`${owner}:${target.branch}`)}`,
+        'GET',
+        undefined,
+        signal,
       )
     if (!Array.isArray(value) || value.length >= 100)
       throw new DeliveryRunnerError('publication-host-incomplete')

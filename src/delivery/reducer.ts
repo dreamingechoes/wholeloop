@@ -65,7 +65,7 @@ const EDGES: Record<DeliveryState, readonly DeliveryState[]> = {
 const ACTIVE = new Set(['claimed', 'started', 'stopping'])
 /**
  * The named predecessor request must hold the exact failed or blocked
- * integration or acceptance observation, the run must have no effect awaiting
+ * integration, acceptance or exact owned CI observation, the run must have no effect awaiting
  * reconciliation, and the journal-derived repair budget must remain.
  */
 function continuationAdmission(
@@ -74,14 +74,25 @@ function continuationAdmission(
 ) {
   const facet = deliveryRunner(state),
     record = facet.records.find((entry) => entry.request === continues.request),
-    stage = record?.stages.findLast((entry) => entry.id === continues.stage)
+    stage = record?.stages.findLast((entry) => entry.id === continues.stage),
+    publication = record?.stages.findLast((entry) => entry.id === 'publication'),
+    ci =
+      continues.stage === 'ci' &&
+      stage?.status === 'failed' &&
+      stage.provenance === 'host-observed' &&
+      stage.runtime?.backend === 'owned-core' &&
+      stage.runtime.instance === stage.invocation &&
+      publication?.status === 'passed' &&
+      publication.provenance === 'host-observed' &&
+      publication.basis === stage.basis &&
+      publication.sequence < stage.sequence
   if (
     !record ||
     !stage ||
     stage.basis !== state.basis.digest ||
     !['failed', 'blocked'].includes(stage.status) ||
     stage.evidence !== continues.failure ||
-    !(continues.stage === 'acceptance' || continues.stage.startsWith('integration:')) ||
+    !(ci || continues.stage === 'acceptance' || continues.stage.startsWith('integration:')) ||
     ['active', 'unknown'].includes(record.ownership) ||
     record.stages.some((entry) =>
       ['prepared', 'running', 'pending', 'unknown'].includes(entry.status),

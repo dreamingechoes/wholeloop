@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceBytes } from '../delivery/input.js'
-import { DELIVERY_PLAN_SCHEMA, type DeliveryPlan, validateDeliveryShape } from '../delivery/plan.js'
+import { type DeliveryPlan, deliveryPlanSchema, validateDeliveryShape } from '../delivery/plan.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { canonicalPath } from '../state/paths.js'
 import { ancestor, git, repository } from '../worktrees/git.js'
@@ -19,7 +19,7 @@ export function observeContractArtifacts(
   workspace: string,
   refs: Readonly<Record<string, string>>,
 ) {
-  validateDeliveryShape(plan, DELIVERY_PLAN_SCHEMA)
+  validateDeliveryShape(plan, deliveryPlanSchema(plan))
   const work = plan.work.find((entry) => entry.id === unit)
   if (work?.role !== 'contract' || work.criteria.length || !work.produces.length)
     throw new ContractArtifactError('contract-only-unit-required')

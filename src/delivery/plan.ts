@@ -1,5 +1,5 @@
 import { isAbsolute, resolve } from 'node:path'
-import { type Schema, validate } from '../config/schema.js'
+import { isObject, type Schema, validate } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { type Criterion, lintCriteria } from '../definition/criteria.js'
 import { knownSlot } from '../discovery/rules.js'
@@ -11,9 +11,15 @@ import { namedBase, repository } from '../worktrees/git.js'
 import { SOURCE_LIMIT, safeSourceText } from './input.js'
 import envelopeSchema from './schemas/envelope-v1.json' with { type: 'json' }
 import planSchema from './schemas/plan-v1.json' with { type: 'json' }
+import planV2Schema from './schemas/plan-v2.json' with { type: 'json' }
 import type { SourceSnapshot } from './source.js'
 
 export const DELIVERY_PLAN_SCHEMA = planSchema
+export const DELIVERY_PLAN_V2_SCHEMA = planV2Schema
+/** Explicit new identity; the frozen version-one declaration is never widened. */
+export function deliveryPlanSchema(value: unknown) {
+  return isObject(value) && value.schema === 'wholeloop/delivery-plan@2' ? planV2Schema : planSchema
+}
 export const DELIVERY_ENVELOPE_SCHEMA = envelopeSchema
 export const DELIVERY_DECISIONS = [
   'delivery-plan',
@@ -110,7 +116,7 @@ export interface DeliveryWork {
   produces: { id: string; revision: string; sha256: string; description: string }[]
 }
 export interface DeliveryPlan extends DeliveryBasis {
-  schema: 'wholeloop/delivery-plan@1'
+  schema: 'wholeloop/delivery-plan@1' | 'wholeloop/delivery-plan@2'
   run: string
   revision: number
   previous?: string
@@ -133,7 +139,9 @@ export interface DeliveryPlan extends DeliveryBasis {
 /** ADR-0197: the owning unit is named, never guessed from failure text. */
 export interface DeliveryCorrection {
   unit: string
-  origin: 'integration' | 'acceptance'
+  origin: 'integration' | 'acceptance' | 'ci'
+  /** Version two binds production to one revision; older entries stay historical. */
+  revision?: number
   request: string
   stage: string
   failure: string
@@ -298,7 +306,7 @@ export function validateDeliveryEnvelope(value: unknown, source: SourceSnapshot)
 }
 
 export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): DeliveryPlan {
-  validateDeliveryShape(value, planSchema)
+  validateDeliveryShape(value, deliveryPlanSchema(value))
   const plan = structuredClone(value) as DeliveryPlan
   basis(plan, source)
   if ((plan.revision === 1) !== (plan.previous === undefined))
@@ -429,7 +437,27 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
     throw new DeliveryPlanError('observation-link')
   if (plan.observation && !plan.definition.ready)
     throw new DeliveryPlanError('observation-definition')
+  if (
+    plan.schema === 'wholeloop/delivery-plan@2' &&
+    !plan.corrections?.some((entry) => entry.origin === 'ci')
+  )
+    throw new DeliveryPlanError('ci-version-requires-original-correction')
   if (plan.corrections) {
+    if (plan.schema === 'wholeloop/delivery-plan@2') {
+      let last = 1,
+        versioned = false
+      for (const entry of plan.corrections) {
+        if (entry.revision === undefined) {
+          if (entry.origin === 'ci' || versioned)
+            throw new DeliveryPlanError('correction-producer-revision')
+        } else {
+          if (entry.revision <= last || entry.revision > plan.revision)
+            throw new DeliveryPlanError('correction-producer-revision')
+          last = entry.revision
+          versioned = true
+        }
+      }
+    }
     // A correction is always a revision of an executed plan and stays inside the
     // finite repair budget; its stage must be one this plan's route actually has.
     if (
@@ -447,13 +475,20 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
       const unit = plan.work.find((entry) => entry.id === correction.unit)
       if (!unit || unit.role === 'research') throw new DeliveryPlanError('correction-unit')
       if (
-        correction.origin === 'acceptance'
-          ? correction.stage !== 'acceptance'
-          : !plan.milestones.some(
-              (milestone) =>
-                correction.stage === `integration:${milestone.id}` &&
-                milestone.work.includes(correction.unit),
-            )
+        correction.origin === 'ci'
+          ? plan.schema !== 'wholeloop/delivery-plan@2' ||
+            plan.policy.endpoint !== 'to-merge' ||
+            correction.stage !== 'ci' ||
+            // A CI continuation rebuilds every code unit from the product root;
+            // refusing only the selected owner would admit an unsupported seed later.
+            plan.work.some((work) => work.role !== 'research' && work.after.length > 0)
+          : correction.origin === 'acceptance'
+            ? correction.stage !== 'acceptance'
+            : !plan.milestones.some(
+                (milestone) =>
+                  correction.stage === `integration:${milestone.id}` &&
+                  milestone.work.includes(correction.unit),
+              )
       )
         throw new DeliveryPlanError('correction-stage')
     }

@@ -222,6 +222,7 @@
 | [0211](./0211-seeded-correction-roots-for-qa-repairs.md) | Seeded correction roots for QA repairs | Accepted | 2026-11-05 |
 | [0212](./0212-retained-ci-correction-evidence.md) | Retained CI correction evidence | Accepted | 2026-11-05 |
 | [0213](./0213-complete-bodyless-ci-feedback.md) | Complete bodyless CI feedback | Accepted | 2026-11-05 |
+| [0214](./0214-versioned-ci-correction-production.md) | Versioned CI correction production | Accepted | 2026-11-05 |
 
 ## Lifecycle
 

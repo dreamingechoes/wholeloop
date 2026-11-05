@@ -1,4 +1,7 @@
 import { contractDigest } from '../contracts/compatibility.js'
+import { originalCiFailure } from '../runner/ci-failure.js'
+import { ciRepairAdmission } from '../runner/ci-repair.js'
+import { RunnerStore } from '../runner/store.js'
 import { DeliveryAuthority } from './authority.js'
 import { type BudgetLimits, findBudget } from './budget-events.js'
 import {
@@ -69,6 +72,35 @@ export class DeliveryLifecycle {
         )
           throw new DeliveryJournalError('correction-history')
         const added = corrections.length > earlier.length ? corrections.at(-1) : undefined
+        if (
+          added &&
+          plan.schema === 'wholeloop/delivery-plan@2' &&
+          added.revision !== plan.revision
+        )
+          throw new DeliveryJournalError('correction-producer-revision')
+        if (added?.origin === 'ci') {
+          const previous = this.authority.planning.getPlan(input.run, plan.revision - 1),
+            expected = {
+              ...previous.plan,
+              schema: 'wholeloop/delivery-plan@2',
+              revision: plan.revision,
+              previous: previous.digest,
+              corrections,
+            },
+            unit = plan.work.find((entry) => entry.id === added.unit),
+            store = new RunnerStore(this.journal.files.root, this.journal.now)
+          // A CI repair changes production, never its approved requirements,
+          // scope or budget. Requirement changes need their separate revision.
+          if (contractDigest(expected) !== receipt.digest || !unit?.repository)
+            throw new DeliveryJournalError('ci-correction-exact-predecessor')
+          const original = originalCiFailure(store, {
+            request: added.request,
+            failure: added.failure,
+            repository: unit.repository,
+          })
+          if (original.plan !== previous.digest || !ciRepairAdmission(store, input.run).allowed)
+            throw new DeliveryJournalError('ci-correction-original-failure-or-budget')
+        }
         registration = {
           schema: 'wholeloop/delivery-registration-event@1',
           basis: { kind: 'plan', digest: receipt.digest, revision: plan.revision },

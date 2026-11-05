@@ -7,8 +7,16 @@ import type { DeliveryPlan } from '../delivery/plan.js'
 import type { RecoveryRead } from '../delivery/read-retry.js'
 import { hasToolAttribution } from '../git/commit.js'
 import { IntegrationCandidates } from '../integration/store.js'
+import { publicationKey, publicationMarker, publicationRecords } from './publication-evidence.js'
+
+export { publicationMarker, publicationRecords } from './publication-evidence.js'
+
 import { RunnerAcceptanceStages } from './acceptance-stages.js'
+import { ciCorrectionAdmitted } from './ci-correction-admission.js'
+import { stableCiCorrectionTarget } from './ci-correction-remote.js'
 import type { CiFeedbackRead } from './ci-feedback.js'
+import { ciPublicationOrigin, ciPublicationTargets, ciPublishedTarget } from './ci-publication.js'
+import { ciRepairAdmission } from './ci-repair.js'
 import type {
   RunnerEndpointObservation,
   RunnerStageContext,
@@ -97,11 +105,6 @@ const OPERATION: Record<Step, EffectIntent['operation']> = {
 }
 const iso = (value: string) =>
   Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value
-/** The marker that makes a pull request this run's own; another one is never edited. */
-export function publicationMarker(run: string, repository: string) {
-  return `<!-- wholeloop-delivery: ${run} ${repository} -->`
-}
-
 /** Pure: the accepted candidate's owned topic per repository, refused outside the grant. */
 export function publicationTargets(
   plan: Readonly<DeliveryPlan>,
@@ -156,28 +159,6 @@ export interface RunnerPublication {
   targets: RunnerPublicationTarget[]
   texts: { title: string; body: string }[]
 }
-const publicationKey = (step: Step, repository: string) =>
-  `publish-${step}-${contractDigest(repository).slice(0, 16)}`
-export function publicationRecords(
-  store: RunnerStore,
-  run: string,
-  binding: Readonly<RunnerPublication>,
-) {
-  const all = new DeliveryEffects(store.files.root, store.now, store.budgets.clock).inspect(run)
-  return binding.targets.map((target) =>
-    Object.fromEntries(
-      ORDER.map((step) => [
-        step,
-        all.find(
-          (record) =>
-            record.intent.key === publicationKey(step, target.repository) &&
-            record.intent.basis === binding.plan,
-        ),
-      ]),
-    ),
-  ) as Partial<Record<Step, EffectRecord>>[]
-}
-
 /** Owned non-force push, one owned draft PR and an optional ready transition per repository. */
 export class RunnerPublisher {
   readonly effects: DeliveryEffects
@@ -200,11 +181,15 @@ export class RunnerPublisher {
     text: { title: string; body: string },
     run: string,
     admission: { allowed: boolean; evidence: string },
+    originalPr?: string,
   ): EffectHost {
     const code = this.code,
       marker = publicationMarker(run, target.repository),
       owned = (pr: RunnerPullRequest) =>
-        pr.branch === target.branch && pr.base === target.base && pr.body.includes(marker),
+        pr.branch === target.branch &&
+        pr.base === target.base &&
+        pr.body.includes(marker) &&
+        (!originalPr || pr.url === originalPr),
       observation = (
         intent: Readonly<EffectIntent>,
         applied: boolean,
@@ -229,6 +214,8 @@ export class RunnerPublisher {
         const listed = await code.pullRequests(target, signal),
           mine = listed.filter((pr) => owned(pr) && pr.state === 'open')
         if (step === 'create') {
+          if (originalPr && (mine.length !== 1 || mine[0]?.sha !== target.head))
+            throw new DeliveryRunnerError('ci-publication-original-pr-required')
           if (!mine.length) await code.create(target, text, signal)
           return
         }
@@ -283,9 +270,41 @@ export class RunnerPublisher {
     target: RunnerPublicationTarget,
     run: string,
     signal: AbortSignal,
+    publication: Readonly<RunnerPublication>,
+    current: () => void,
   ) {
     const code = this.code
     try {
+      const correction = ciPublicationOrigin(this.store, run, publication, target)
+      if (correction) {
+        if (step === 'push' && !ciRepairAdmission(this.store, run).allowed)
+          throw new DeliveryRunnerError('ci-publication-push-budget')
+        const repository = correction.basis.plan.repositories.find(
+          (value) => value.id === target.repository,
+        )
+        if (!repository) throw new DeliveryRunnerError('ci-publication-original-targets')
+        const value = await stableCiCorrectionTarget({
+          run,
+          repository,
+          target: step === 'push' ? { ...target, head: correction.original.head } : target,
+          pr: correction.original.pr,
+          host: code,
+          signal,
+          since: this.store.now(),
+          now: this.store.now,
+          current,
+        })
+        current()
+        return {
+          allowed: true,
+          evidence: contractDigest({
+            step,
+            origin: correction.origin?.proof,
+            candidate: target.head,
+            observed: value,
+          }),
+        }
+      }
       if (step === 'push') {
         const tip = await code.remoteHead(target, signal)
         return {
@@ -323,7 +342,7 @@ export class RunnerPublisher {
       for (const step of ORDER) {
         if (step === 'ready' && !publication.ready) continue
         current()
-        const admission = await this.admission(step, target, run, signal)
+        const admission = await this.admission(step, target, run, signal, publication, current)
         current()
         if (!admission.allowed) return false
         const prepared = this.effects.prepare(run, {
@@ -337,7 +356,14 @@ export class RunnerPublisher {
         const effect = await this.effects.execute(
           run,
           prepared.intent.id,
-          this.host(step, target, text, run, admission),
+          this.host(
+            step,
+            target,
+            text,
+            run,
+            admission,
+            ciPublicationOrigin(this.store, run, publication, target)?.original.pr,
+          ),
         )
         this.resume(run)
         if (effect.status !== 'applied') return false
@@ -356,7 +382,14 @@ export class RunnerPublisher {
           await this.effects.reconcile(
             run,
             effect.intent.id,
-            this.host(step, target, text, run, { allowed: false, evidence: '' }),
+            this.host(
+              step,
+              target,
+              text,
+              run,
+              { allowed: false, evidence: '' },
+              ciPublicationOrigin(this.store, run, publication, target)?.original.pr,
+            ),
           )
       }
     this.resume(run)
@@ -478,6 +511,7 @@ export class RunnerPublicationStages {
       new RunnerNativeScope(this.store.files, record.invocation).calls().length
     )
       return this.inspect(context.request, record)
+    ciCorrectionAdmitted(this.store, context.request)
     let accepted: AcceptedProduct
     try {
       accepted = await this.handoff.accepted(context.request)
@@ -496,10 +530,14 @@ export class RunnerPublicationStages {
       throw new DeliveryRunnerError('publication-stage-authority')
     const candidate = accepted.input.product.candidate
     if (!candidate) throw new DeliveryRunnerError('publication-complete-candidate-required')
-    const targets = publicationTargets(
+    const targets = ciPublicationTargets(
+        this.store,
         pinned.basis.plan,
-        new IntegrationCandidates(this.store.files.root).get(candidate).candidate.assemblies,
-        grant.repositories,
+        publicationTargets(
+          pinned.basis.plan,
+          new IntegrationCandidates(this.store.files.root).get(candidate).candidate.assemblies,
+          grant.repositories,
+        ),
       ),
       binding: PublicationBinding = {
         version: 1,
@@ -580,16 +618,15 @@ export class RunnerPublicationStages {
       return undefined
     const targets: (RunnerPublicationTarget & { pr: string })[] = []
     for (const target of binding.targets) {
-      const marker = publicationMarker(request.run, target.repository),
-        mine = (await this.options.host.pullRequests(target, signal)).filter(
-          (pr) =>
-            pr.branch === target.branch &&
-            pr.base === target.base &&
-            pr.body.includes(marker) &&
-            pr.state === 'open',
-        )
-      if (mine.length !== 1 || mine[0]?.sha !== target.head) return undefined
-      targets.push({ ...target, pr: mine[0].url })
+      const observed = ciPublishedTarget(
+        this.store,
+        request.run,
+        binding,
+        target,
+        await this.options.host.pullRequests(target, signal),
+      )
+      if (!observed) return undefined
+      targets.push(observed)
     }
     return {
       invocation: record.invocation,

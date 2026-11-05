@@ -122,10 +122,15 @@ export function runnerRoute(plan: DeliveryPlan): RunnerStage[] {
     )
     return stages
   }
+  const ciOrigin =
+    plan.schema === 'wholeloop/delivery-plan@2'
+      ? plan.corrections?.findLast((entry) => entry.origin === 'ci')
+      : undefined
+  if (ciOrigin) add('ci-correction-admission', 'correction', ['plan'], [], { unit: ciOrigin.unit })
   add(
     'acceptance-definition',
     'acceptance-definition',
-    ['plan'],
+    [ciOrigin ? 'ci-correction-admission' : 'plan'],
     plan.criteria.map((c) => c.id),
   )
   // Implementation work ends after review and its re-entry verification of the reviewed head.
@@ -156,10 +161,14 @@ export function runnerRoute(plan: DeliveryPlan): RunnerStage[] {
         ['build-plan', 'build-plan'],
         ['implementation', 'implementation'],
         ['commit', 'commit'],
-        ...corrections.map((_, index): [string, RunnerStageKind] => [
-          `correction-${index + 1}`,
-          'correction',
-        ]),
+        ...corrections.flatMap((entry, index): [string, RunnerStageKind][] =>
+          // Version two keeps old failures as history, never as another worker.
+          // Preserve the original index so the fixed entry reader cannot borrow
+          // a different failure when only the current producer is scheduled.
+          plan.schema === 'wholeloop/delivery-plan@2' && entry.revision !== plan.revision
+            ? []
+            : [[`correction-${index + 1}`, 'correction']],
+        ),
         ['verification', 'verification'],
         ['review', 'review'],
       ]

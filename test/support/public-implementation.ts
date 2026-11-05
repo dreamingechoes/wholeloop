@@ -35,7 +35,7 @@ export const RUBRIC = 'Review the exact diff for correctness and scope.\n',
  */
 export const SYNTHETIC_CODEX = (
   log: string,
-  mode: 'pass' | 'correction' = 'pass',
+  mode: 'pass' | 'correction' | 'ci-correction' = 'pass',
 ) => `#!${process.execPath}
 const args=process.argv.slice(2),fs=require('node:fs'),path=require('node:path'),conf=args.join(' ');
 fs.appendFileSync(${JSON.stringify(log)},JSON.stringify(args.filter(a=>!a.startsWith('{')&&a.length<200))+'\\n');
@@ -50,7 +50,7 @@ console.log(JSON.stringify({nonce:v.nonce,read:fs.readFileSync(v.read,'utf8')===
 const payload=JSON.parse(input),a=payload.assignment;let b={};try{b=JSON.parse(a.brief)}catch{}
 const emit=(ref,text)=>{const proposal={schema:'wholeloop/delivery-worker-proposal@1',assignment:a.assignment,status:'complete',summary:'Synthetic output.',artifacts:[{ref,kind:'report',text}],criteria:[],findings:[],unknowns:[]};
 console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify(proposal)}}));console.log(JSON.stringify({type:'turn.completed'}))};
-if(a.identity.role==='builder'){const ws=writes.find(p=>!p.startsWith(process.cwd())),repair=b.task&&b.task.kind==='repair';fs.writeFileSync(path.join(ws,'app.txt'),'Synthetic public implementation.\\n');fs.writeFileSync(path.join(ws,'status.txt'),repair||${JSON.stringify(mode)}==='pass'?'public fixture':'broken');emit('artifacts/report.txt','Synthetic builder report.\\n');return}
+if(a.identity.role==='builder'){const ws=writes.find(p=>!p.startsWith(process.cwd())),repair=b.task&&b.task.kind==='repair';fs.writeFileSync(path.join(ws,'app.txt'),'Synthetic public implementation.\\n');fs.writeFileSync(path.join(ws,'status.txt'),repair||${JSON.stringify(mode)}!=='correction'?'public fixture':'broken');if(${JSON.stringify(mode)}==='ci-correction')fs.writeFileSync(path.join(ws,'ci-status.txt'),repair?'passed':'failed');emit('artifacts/report.txt','Synthetic builder report.\\n');return}
 const gate=(payload.inputs||[]).find(i=>i.artifact&&i.artifact.ref==='artifacts/gate-input.json');
 if(gate){const input=JSON.parse(gate.content),report=a.identity.role==='refuter'?{finding:input.assignment.finding,verifier:input.assignment.verifier,outcome:'refute',reason:'Synthetic counterexample.',evidence:['Synthetic observation.']}:{unit:input.assignment.id,status:'ok',evidence:['Synthetic inspection of the candidate.'],findings:[]};emit('artifacts/gate.json',JSON.stringify(report));return}
 const id=b.response&&b.response.$id;

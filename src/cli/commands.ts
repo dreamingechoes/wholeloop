@@ -634,6 +634,21 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Preview a correction revision for a retained failure; record it only when accepted',
   },
   {
+    path: 'delivery continue-ci',
+    arguments: '',
+    options: [
+      '--run <delivery-id>',
+      '--request <sha256>',
+      '--unit <work-id>',
+      '--accept',
+      '--operator <name>',
+      '--reason <text>',
+      '--store <path>',
+    ],
+    schema: 'wholeloop/delivery-ci-continue@1',
+    summary: 'Preview an exact CI correction proposal without granting execution',
+  },
+  {
     path: 'delivery diagnostics',
     arguments: '',
     options: ['--run <delivery-id>', '--store <path>'],
@@ -699,14 +714,19 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'delivery plan-schema',
     arguments: '',
-    options: [],
+    options: ['--schema-version <1|2>'],
     schema: 'wholeloop/delivery-planning-schema@1',
     summary: 'Show the closed delivery plan and initial request-envelope contracts',
   },
   {
     path: 'delivery plan',
     arguments: '',
-    options: ['--file <proposal.json>', '--root <directory>', '--store <path>'],
+    options: [
+      '--schema-version <1|2>',
+      '--file <proposal.json>',
+      '--root <directory>',
+      '--store <path>',
+    ],
     schema: 'wholeloop/delivery-plan-prepared@1',
     summary: 'Validate and preserve an exact delivery proposal without granting execution',
   },
@@ -720,7 +740,12 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'delivery inspect-plan',
     arguments: '',
-    options: ['--run <delivery-id>', '--revision <number>', '--store <path>'],
+    options: [
+      '--schema-version <1|2>',
+      '--run <delivery-id>',
+      '--revision <number>',
+      '--store <path>',
+    ],
     schema: 'wholeloop/delivery-plan-prepared@1',
     summary: 'Read a stored plan revision, proposed route and dependency waves',
   },

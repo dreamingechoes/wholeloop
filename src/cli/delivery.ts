@@ -157,6 +157,7 @@ export function deliveryCommand(
       'delivery report',
       'delivery revise',
       'delivery continue',
+      'delivery continue-ci',
       'delivery diagnostics',
       'delivery recovery-export',
       'delivery recovery-import',

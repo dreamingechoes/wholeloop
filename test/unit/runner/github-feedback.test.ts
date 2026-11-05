@@ -162,3 +162,28 @@ describe('complete bodyless CI feedback', () => {
     })
   })
 })
+
+it('forwards cancellation to both live original-head prerequisite reads', async () => {
+  await fixture(async ({ root }) => {
+    git(root, ['remote', 'add', 'origin', 'https://github.com/fixture/app.git'])
+    const signal = new AbortController().signal,
+      target = {
+        repository: 'app',
+        path: root,
+        remote: 'origin',
+        branch: 'wl/test',
+        head,
+        base: 'main',
+      },
+      calls: string[] = []
+    const host = new GithubCliCodeHost(async (binary, _args, _cwd, input, actualSignal) => {
+      expect(actualSignal).toBe(signal)
+      expect(input).toBeUndefined()
+      calls.push(binary)
+      return binary === 'git' ? `${head}\trefs/heads/wl/test\n` : '[]'
+    })
+    expect(await host.remoteHead(target, signal)).toBe(head)
+    expect(await host.pullRequests(target, signal)).toEqual([])
+    expect(calls).toEqual(['git', 'gh'])
+  })
+})

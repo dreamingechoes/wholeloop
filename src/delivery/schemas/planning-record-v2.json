@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/delivery-planning-record@2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "kind", "digest", "value"],
+  "properties": {
+    "schema": {
+      "const": "wholeloop/delivery-planning-record@2"
+    },
+    "kind": {
+      "enum": ["plan"]
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "value": {
+      "$ref": "wholeloop/delivery-plan@2"
+    }
+  }
+}

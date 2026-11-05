@@ -1,8 +1,10 @@
 import { resolve } from 'node:path'
+import { isObject } from '../config/schema.js'
 import { readSourceFile } from '../delivery/input.js'
 import {
   DELIVERY_ENVELOPE_SCHEMA,
   DELIVERY_PLAN_SCHEMA,
+  DELIVERY_PLAN_V2_SCHEMA,
   DeliveryPlanError,
 } from '../delivery/plan.js'
 import { DeliveryPlanning } from '../delivery/planning-store.js'
@@ -17,12 +19,16 @@ export function deliveryPlanningCommand(
   json: boolean,
   io: Io,
 ): number {
+  const version = options['--schema-version'] ?? '1'
+  if (version !== '1' && version !== '2')
+    throw new CliError('Provide --schema-version 1 or 2', EXIT.input)
+  const expected = `wholeloop/delivery-plan@${version}`
   if (command === 'delivery plan-schema') {
     io.out(
       JSON.stringify(
         {
-          schema: 'wholeloop/delivery-planning-schema@1',
-          planSchema: DELIVERY_PLAN_SCHEMA,
+          schema: `wholeloop/delivery-planning-schema@${version}`,
+          planSchema: version === '2' ? DELIVERY_PLAN_V2_SCHEMA : DELIVERY_PLAN_SCHEMA,
           envelopeSchema: DELIVERY_ENVELOPE_SCHEMA,
         },
         null,
@@ -48,7 +54,10 @@ export function deliveryPlanningCommand(
         !/^[1-9]\d{0,3}$/.test(revision)
       )
         throw new CliError('Provide --run <delivery-id> --revision <number>', EXIT.input)
-      receipt = planning.getPlan(run, Number(revision))
+      const retained = planning.getPlan(run, Number(revision))
+      if (retained.plan.schema !== expected)
+        throw new CliError('Select the exact plan with --schema-version 1 or 2', EXIT.precondition)
+      receipt = retained
     } else {
       if (typeof file !== 'string') throw new CliError('Provide --file <proposal.json>', EXIT.input)
       let value: unknown
@@ -65,6 +74,10 @@ export function deliveryPlanningCommand(
           'Provide one bounded regular UTF-8 proposal file under the selected root; contents omitted',
         )
       }
+      // Refuse before preparation: selecting an older wire contract must not
+      // persist a newer proposal and then fail to describe it to that caller.
+      if (command !== 'delivery envelope' && (!isObject(value) || value.schema !== expected))
+        throw new CliError('Select the exact plan with --schema-version 1 or 2', EXIT.precondition)
       receipt =
         command === 'delivery envelope'
           ? {

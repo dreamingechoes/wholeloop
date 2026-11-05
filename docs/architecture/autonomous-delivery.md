@@ -15,9 +15,13 @@ Pinned acceptance cases execute objective [API/CLI](../tutorials/delivery-behavi
 
 The [decision controller](../tutorials/delivery-decisions.md) pins original private rubrics, exact artifacts/evidence and independent planner/challenger observations. It preserves machine provenance and current eligibility separately from legacy human approvals. Fixture judgments cannot enable actual envelope execution. Policy-only preflight and no-prompt fallbacks preserve missing facts, mandatory gates, original budgets and runtime limitations; complete native delivery/research routes remain under implementation.
 
+## Versioned CI correction production
+
+The explicit version-two plan and matching planning record support original CI corrections ([ADR-0214](../decisions/0214-versioned-ci-correction-production.md)). The public proposal command requires a new exact-plan grant and reports the separate installed-SDK requirement. The SDK composition binds complete stable current feedback, original-topic scope and retained budgets before builders; it seeds the exact published product root, reruns current QA and uses non-force publication to the original PR. Readback also binds the original URL, so another matching marker cannot substitute. No public runtime flag, envelope continuation or credential authority is added. Local fixtures and real Git/Docker execution supply no native/model or hosted certification.
+
 ## Current CI feedback reads
 
-The optional GitHub code-host feedback reader returns a complete bounded, bodyless observation of issue comments, inline comments and reviews for an exact open PR/head/base ([ADR-0213](../decisions/0213-complete-bodyless-ci-feedback.md)). Missing permissions, malformed or truncated pages and moved heads refuse completeness. Raw bodies and author identities stay inside the adapter; every projected item remains unadopted. This read capability supplies no correction, approval or publication authority. CI-origin execution remains under implementation.
+The optional GitHub code-host feedback reader returns a complete bounded, bodyless observation of issue comments, inline comments and reviews for an exact open PR/head/base ([ADR-0213](../decisions/0213-complete-bodyless-ci-feedback.md)). Missing permissions, malformed or truncated pages and moved heads refuse completeness. Raw bodies and author identities stay inside the adapter; every projected item remains unadopted. This read capability supplies no correction, approval or publication authority. CI-origin execution is implemented in the separately installed SDK composition; final task verification and native/hosted acceptance remain separate.
 
 ## Read the proposal
 

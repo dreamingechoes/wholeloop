@@ -3,11 +3,8 @@ import { readSourceFile } from '../delivery/input.js'
 import { type CiObservation, ciVerdict, validateCiObservation } from './ci-observations.js'
 import { type CiRepairRequest, ciRepairRequest } from './ci-repair.js'
 import type { CiResult, StageBinding } from './merge-stages.js'
-import {
-  type PublicationBinding,
-  publicationMarker,
-  publicationRecords,
-} from './publication-stages.js'
+import { publicationMarker, publicationRecords } from './publication-evidence.js'
+import type { PublicationBinding } from './publication-stages.js'
 import { DeliveryRunnerError } from './route.js'
 import type { RunnerStore } from './store.js'
 

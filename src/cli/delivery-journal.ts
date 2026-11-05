@@ -9,6 +9,7 @@ import {
 import { readSourceFile } from '../delivery/input.js'
 import { DeliveryLifecycle } from '../delivery/lifecycle.js'
 import { DeliveryPlanError } from '../delivery/plan.js'
+import { continueCiDelivery } from '../runner/ci-continuation.js'
 import { continueDelivery } from '../runner/continuation.js'
 import {
   deliveryDiagnostics,
@@ -122,7 +123,8 @@ export function deliveryJournalCommand(
       })
       return EXIT.ok
     }
-    if (command === 'delivery continue') {
+    if (command === 'delivery continue' || command === 'delivery continue-ci') {
+      const ci = command === 'delivery continue-ci'
       const value = (name: string, hint: string) => {
         const option = options[name]
         if (typeof option !== 'string' || !option.trim())
@@ -131,22 +133,25 @@ export function deliveryJournalCommand(
       }
       const input = {
           request: value('--request', 'sha256'),
-          stage: value('--stage', 'stage-id'),
+          stage: ci ? 'ci' : value('--stage', 'stage-id'),
           unit: value('--unit', 'work-id'),
         },
         accepted = options['--accept'] === true
       if (!/^[a-f0-9]{64}$/.test(input.request))
         throw new CliError('Provide --request <sha256>', EXIT.input)
-      const result = continueDelivery(
-        lifecycle,
-        run,
-        input,
-        accepted
+      const decision = accepted
           ? { operator: value('--operator', 'name'), reason: value('--reason', 'text') }
           : undefined,
-      )
+        result = ci
+          ? continueCiDelivery(
+              lifecycle,
+              run,
+              { request: input.request, unit: input.unit },
+              decision,
+            )
+          : continueDelivery(lifecycle, run, input, decision)
       emit({
-        schema: 'wholeloop/delivery-continue@1',
+        schema: ci ? 'wholeloop/delivery-ci-continue@1' : 'wholeloop/delivery-continue@1',
         admission: result.admission,
         impact: result.impact,
         accepted: result.accepted,
@@ -154,10 +159,19 @@ export function deliveryJournalCommand(
         // The reducer refuses the failed run's grant and any envelope grant here.
         next: result.accepted
           ? [
+              ...(ci
+                ? [
+                    `wl delivery inspect-plan --run ${run} --revision ${result.record.revision} --schema-version 2`,
+                  ]
+                : []),
               `wl delivery authorize --file <operator-request.json> (exact plan ${result.record.digest})`,
               `wl delivery track --run ${run} --revision ${result.record.revision} --grant <new-authorization-id>`,
-              'wl delivery runner-prepare --file <continuation-request.json>',
-              'wl delivery run --digest <continuation-request-digest>',
+              ...(!ci
+                ? [
+                    'wl delivery runner-prepare --file <continuation-request.json>',
+                    'wl delivery run --digest <continuation-request-digest>',
+                  ]
+                : []),
             ]
           : [],
       })

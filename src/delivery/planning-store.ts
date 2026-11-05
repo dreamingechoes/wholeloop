@@ -135,7 +135,7 @@ export class DeliveryPlanning {
   ): void {
     this.sources.files.atomic(
       path,
-      `${JSON.stringify({ schema: 'wholeloop/delivery-planning-record@1', kind, digest: contractDigest(value), value })}\n`,
+      `${JSON.stringify({ schema: value.schema === 'wholeloop/delivery-plan@2' ? 'wholeloop/delivery-planning-record@2' : 'wholeloop/delivery-planning-record@1', kind, digest: contractDigest(value), value })}\n`,
     )
   }
 
@@ -149,7 +149,12 @@ export class DeliveryPlanning {
     if (
       !isObject(record) ||
       Object.keys(record).some((key) => !['schema', 'kind', 'digest', 'value'].includes(key)) ||
-      record.schema !== 'wholeloop/delivery-planning-record@1' ||
+      record.schema !==
+        (kind === 'plan' &&
+        isObject(record.value) &&
+        record.value.schema === 'wholeloop/delivery-plan@2'
+          ? 'wholeloop/delivery-planning-record@2'
+          : 'wholeloop/delivery-planning-record@1') ||
       record.kind !== kind ||
       typeof record.digest !== 'string' ||
       !isObject(record.value) ||
@@ -161,7 +166,10 @@ export class DeliveryPlanning {
 
   private receipt(plan: DeliveryPlan, digest: string) {
     return {
-      schema: 'wholeloop/delivery-plan-prepared@1',
+      schema:
+        plan.schema === 'wholeloop/delivery-plan@2'
+          ? 'wholeloop/delivery-plan-prepared@2'
+          : 'wholeloop/delivery-plan-prepared@1',
       digest,
       plan,
       route: deliveryPlanRoute(plan),

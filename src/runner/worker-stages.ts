@@ -15,6 +15,7 @@ import type {
 } from '../delivery/queue.js'
 import type { workerContextForClaim } from '../delivery/worker-context.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
+import { ciCorrectionAdmitted } from './ci-correction-admission.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerGitStages } from './git-stages.js'
@@ -144,6 +145,7 @@ export class RunnerWorkerStages {
     )
       throw new DeliveryRunnerError('worker-stage-not-current')
     if (this.read(context.request, record)) return this.inspect(context.request, record)
+    ciCorrectionAdmitted(this.store, context.request)
     // Validate the actual original basis and selected context before consuming a queue slot.
     this.store.basis(context.request)
     const unit = pinned.basis.plan.work.find((work) => work.id === pinned.stage.unit)

@@ -5,6 +5,7 @@ import { NativeDeliveryHost } from '../delivery/native-host.js'
 import { DeliveryQueue, type QueueAssignment } from '../delivery/queue.js'
 import { deliveryAttempts } from '../delivery/reducer.js'
 import { DeliveryWorkspaces } from '../delivery/workspaces.js'
+import { ciCorrectionFeedback } from './ci-correction-feedback.js'
 import { CORRECTION_MESSAGE, correctionTask } from './correction-input.js'
 import type { RunnerCorrectionFeedback } from './correction-stages.js'
 import type { RunnerStageRecord } from './events.js'
@@ -72,7 +73,9 @@ export function correctionProduction(
       new Date(binding.deadline).toISOString() !== binding.deadline ||
       binding.feedback.origin !== entry.origin ||
       binding.feedback.stage !== entry.stage ||
-      binding.feedback.failure !== entry.failure
+      binding.feedback.failure !== entry.failure ||
+      (entry.origin === 'ci' &&
+        contractDigest(binding.feedback) !== contractDigest(ciCorrectionFeedback(store, entry)))
     )
       throw new DeliveryRunnerError('correction-production-binding')
     const failure = store.stage(entry.request, entry.stage),
@@ -89,7 +92,9 @@ export function correctionProduction(
       !failure ||
       !['failed', 'blocked'].includes(failure.status) ||
       failure.evidence !== entry.failure ||
-      binding.feedback.reason !== (failure.reason ?? '') ||
+      // CI has its fixed, recomputed historical projection above; only legacy
+      // origins carry the stage's original explanation verbatim.
+      (entry.origin !== 'ci' && binding.feedback.reason !== (failure.reason ?? '')) ||
       prior.run !== request.run ||
       prior.plan !== basis.digest ||
       prior.grant !== request.grant ||

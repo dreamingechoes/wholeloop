@@ -6,6 +6,13 @@ import type { DeliveryCorrection, DeliveryPlan } from '../delivery/plan.js'
 import type { DeliveryQueue, QueueAssignment } from '../delivery/queue.js'
 import { DeliveryWorkspaces } from '../delivery/workspaces.js'
 import type { AssemblyGitControl } from '../integration/git-process.js'
+import {
+  CI_CORRECTION_ADMISSION,
+  ciCorrectionAdmitted,
+  RunnerCiCorrectionAdmission,
+} from './ci-correction-admission.js'
+import { ciCorrectionFeedback } from './ci-correction-feedback.js'
+import type { originalCiFailure } from './ci-failure.js'
 import { correctionTask, CORRECTION_MESSAGE as MESSAGE } from './correction-input.js'
 import { type CorrectionBinding, correctionProduction } from './correction-production.js'
 import { RunnerDecisionStages } from './decision-stages.js'
@@ -27,6 +34,14 @@ export interface RunnerCorrectionFeedback {
   failure: string
   reason: string
   cases: ReturnType<RunnerIntegrationStages['failedCases']>
+  ci?: {
+    historical: true
+    observation: string
+    repair: string
+    publication: string
+    head: string
+    failures: ReturnType<typeof originalCiFailure>['failures']
+  }
   acceptance?: {
     delegated: ReturnType<RunnerDecisionStages['originalFeedback']>
     person: ReturnType<RunnerHumanDecisions['originalFeedback']> | null
@@ -47,6 +62,7 @@ export class RunnerCorrectionStages {
     readonly queue: DeliveryQueue,
     readonly options: RunnerWorkerOptions,
     readonly integration?: RunnerIntegrationStages,
+    readonly ci?: RunnerCiCorrectionAdmission,
   ) {
     if (
       integration !== undefined &&
@@ -54,8 +70,20 @@ export class RunnerCorrectionStages {
         integration.store.files.root !== store.files.root)
     )
       throw new DeliveryRunnerError('correction-stage-fixed-integration-required')
+    if (
+      ci !== undefined &&
+      (!(ci instanceof RunnerCiCorrectionAdmission) ||
+        ci.store.files.root !== store.files.root ||
+        contractDigest(ci.options.identity) !== contractDigest(options.identity))
+    )
+      throw new DeliveryRunnerError('correction-stage-fixed-ci-required')
     this.workers = new RunnerWorkerStages(store, queue, options)
     this.git = new RunnerGitStages(store)
+  }
+  configured(request: Readonly<RunnerRequest>, plan: Readonly<DeliveryPlan>) {
+    return (
+      plan.schema === 'wholeloop/delivery-plan@1' || this.ci?.configured(request, plan) === true
+    )
   }
   private path(invocation: string) {
     if (!/^[a-f0-9]{64}$/.test(invocation))
@@ -105,6 +133,7 @@ export class RunnerCorrectionStages {
     return entry
   }
   private feedback(entry: DeliveryCorrection): RunnerCorrectionFeedback {
+    if (entry.origin === 'ci') return ciCorrectionFeedback(this.store, entry)
     const record = this.store.stage(entry.request, entry.stage)
     if (
       !record ||
@@ -177,6 +206,11 @@ export class RunnerCorrectionStages {
       : undefined
   }
   async execute(context: RunnerStageContext): Promise<RunnerStageObservation> {
+    if (context.stage.id === CI_CORRECTION_ADMISSION) {
+      if (!this.ci) throw new DeliveryRunnerError('correction-stage-fixed-ci-required')
+      return this.ci.execute(context)
+    }
+    ciCorrectionAdmitted(this.store, context.request)
     const record = this.store.stage(contractDigest(context.request), context.stage.id)
     if (!record || record.invocation !== context.invocation)
       throw new DeliveryRunnerError('correction-stage-not-dispatched')
@@ -294,6 +328,10 @@ export class RunnerCorrectionStages {
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,
   ): Promise<RunnerStageObservation> {
+    if (record.id === CI_CORRECTION_ADMISSION) {
+      if (!this.ci) throw new DeliveryRunnerError('correction-stage-fixed-ci-required')
+      return this.ci.inspect(request, record)
+    }
     const digest = contractDigest(request)
     let status: RunnerStageObservation['status'] = 'unknown',
       provenance: RunnerStageObservation['provenance'] = 'fixture',
@@ -340,6 +378,10 @@ export class RunnerCorrectionStages {
     }
   }
   stop(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>, signal: AbortSignal) {
+    if (record.id === CI_CORRECTION_ADMISSION) {
+      if (!this.ci) throw new DeliveryRunnerError('correction-stage-fixed-ci-required')
+      return this.ci.stop(request, record, signal)
+    }
     // Cleanup observes the original private owner, even after execution authority ends.
     this.context(request, record, false)
     if (!signal.aborted)
