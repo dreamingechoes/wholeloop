@@ -31,6 +31,30 @@ describe('exact source bytes shared only within a verified read', () => {
       })
     }))
 
+  it('shares bytes across equivalent selections and independently checks each allowance', () =>
+    fixture(async ({ root }) => {
+      vi.mocked(openSync).mockClear()
+      await withReadObservation(new AbortController().signal, async () => {
+        for (let i = 0; i < 30; i++) {
+          expect(readSourceBytes(root, 'app.txt', 64).toString()).toBe('Original application.\n')
+          expect(readSourceBytes(root, join(root, 'app.txt'), 128).toString()).toBe(
+            'Original application.\n',
+          )
+          expect(() => readSourceBytes(root, 'app.txt', 1)).toThrow('oversized')
+        }
+      })
+      expect(openSync).toHaveBeenCalledTimes(2)
+    }))
+
+  it('refuses invalid allowances even after capturing valid bytes', () =>
+    fixture(async ({ root }) => {
+      await withReadObservation(new AbortController().signal, async () => {
+        readSourceBytes(root, 'app.txt')
+        for (const limit of [-1, NaN, Infinity, 1.5])
+          expect(() => readSourceBytes(root, 'app.txt', limit)).toThrow('unsafe-file')
+      })
+    }))
+
   it('rejects a same-length source edit by another caller', () =>
     fixture(async ({ root }) => {
       let release: () => void = () => undefined

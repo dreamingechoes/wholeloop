@@ -155,9 +155,12 @@ export function readSourceFile(root: string, file: string, limit = SOURCE_LIMIT)
 /** Checkpoint binary inputs use the same stable descriptor boundary without decoding/copying them. */
 export function readSourceBytes(root: string, file: string, limit = SOURCE_LIMIT): Buffer {
   if (!inReadObservation()) return readPhysicalSourceBytes(root, file, limit)
-  const path = resolve(root)
-  return Buffer.from(
-    observedRead(JSON.stringify(['source', path, file, limit]), () => {
+  if (!Number.isSafeInteger(limit) || limit < 0) throw new SourceInputError('unsafe-file')
+  const path = resolve(root),
+    selection = resolve(path, file)
+  const value = observedRead(
+    JSON.stringify(['source', path, selection]),
+    () => {
       try {
         const boundary = realpathSync(path),
           selected = realpathSync(resolve(boundary, file)),
@@ -167,8 +170,13 @@ export function readSourceBytes(root: string, file: string, limit = SOURCE_LIMIT
         if (error instanceof SourceInputError) throw error
         throw new SourceInputError('unsafe-file')
       }
-    }),
+    },
+    `filesystem:${selection}`,
   )
+  // A smaller caller allowance is still enforced even when another reader
+  // already captured this same file with a larger bound.
+  if (value.length > limit) throw new SourceInputError('oversized')
+  return Buffer.from(value)
 }
 
 function readPhysicalSourceBytes(root: string, file: string, limit: number): Buffer {

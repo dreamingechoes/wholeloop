@@ -19,6 +19,8 @@ Store writes, locks and native dispatch refuse before any mutation, including a 
 
 Queries must not reconcile effects, populate discovery caches or restore missing suite/verdict submissions. Existing explicit recovery paths remain outside the read-only scope. A passed assembly already has applied effects: reconciling it only repeated its inspection. Keep unresolved or damaged originals unavailable. Preserve current cancellation, grants, original-process binding, private evidence and the original elapsed deadlines.
 
+The resource/projection refinement in [ADR-0228](./0228-bounded-resource-observation-projections.md) retains separate current checks while counting path protection and source bytes against one selected resource. It explicitly bounds both dimensions; the original entry-count policy is no longer the complete quota definition.
+
 ## Rejected alternatives
 
 - Increasing deadlines or excluding these failures would hide the defect.

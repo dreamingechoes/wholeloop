@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-39 · Bound resources separately from proof projections
+
+- Commit 545f42c passes exact isolated Linux fast/full gates: CHECK PASS in 131s (3271 tests plus the existing macOS-only omission in 228 files), then CHECK PASS in 145s (4458 tests plus that omission in 265 files). Thirty focused actual macOS controls and strict types pass; both compiled bundles match Linux. No source push occurs.
+- Its fresh unmodified model-free rehearsal passes integration, then blocks acceptance after 134s with twelve successful synthetic receipts and no publication. Preserve failed report SHA-256 a8684880e195aaa630e824fa9d02b531463a64bf1f2b1e39bcb9f77a922b7c95. Separate read-only diagnosis reaches 1024 entries at 950227 bytes, dominated by 483 source and 418 protected-path views. Both exact original environments are subsequently observed retired. No failed report is rewritten or promoted.
+- A 700-file differential control refuses on the preceding source and passes with resource accounting. Keep 1024 resources, at most eight independently validated projections per resource and the unchanged 64 MiB aggregate byte cap; explicitly permit at most 8192 captured projections ([ADR-0228](../docs/decisions/0228-bounded-resource-observation-projections.md)). Normalize source spelling within its original root and enforce every caller's byte allowance even on a reused buffer. Keep containment, physical descriptor guards and every fresh projection check. Specific tests and required complete gates are pending for this final increment; no total-overhead or complete-route pass is claimed.
+
+---
+
 ## 2026-11-05 · P6-39 · Coalesce duplicated physical store selections
 
 - Commit 981a19e passes the exact isolated Linux gates: CHECK PASS fast in 134s (3269 tests plus the existing macOS-only omission in 227 files), then CHECK PASS in 146s (4456 tests plus that omission in 264 files). All 112 focused macOS controls in sixteen files pass with actual process-table access, and strict types pass. Both runtime bundles match Linux. Source remains local on main.

@@ -247,6 +247,8 @@
 
 | [0227](./0227-verified-read-observation-scopes.md) | Share inputs within a verified read-only observation | Accepted | 2026-11-05 |
 
+| [0228](./0228-bounded-resource-observation-projections.md) | Bound observed resources and their independent projections | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

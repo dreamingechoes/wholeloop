@@ -167,4 +167,66 @@ describe('one bounded independently revalidated read observation', () => {
       }),
     ).rejects.toThrow('Read observation')
   })
+
+  it('retains every independent projection and bounds projections of one resource', async () => {
+    let reads = 0
+    await expect(
+      withReadObservation(signal(), async () => {
+        for (let i = 0; i < 9; i++)
+          observedRead(
+            String(i),
+            () => {
+              reads++
+              return { bytes: Buffer.from('fixture'), value: i }
+            },
+            'one-resource',
+          )
+      }),
+    ).rejects.toThrow('Read observation')
+    expect(reads).toBe(8)
+  })
+
+  it('refuses a changed projection even when another view of its resource remains stable', async () => {
+    let bytes = 'before'
+    await expect(
+      withReadObservation(signal(), async () => {
+        observedRead('path', () => ({ bytes: Buffer.from('stable'), value: 'path' }), 'resource')
+        observedRead('content', () => ({ bytes: Buffer.from(bytes), value: bytes }), 'resource')
+        bytes = 'after'
+      }),
+    ).rejects.toThrow('Read observation')
+  })
+
+  it('does not let the same read identity change resource accounting', async () => {
+    await expect(
+      withReadObservation(signal(), async () => {
+        const read = () => ({ bytes: Buffer.from('fixture'), value: 'fixture' })
+        observedRead('key', read, 'original')
+        expect(() => observedRead('key', read, 'replacement')).toThrow('Read observation')
+      }),
+    ).rejects.toThrow('Read observation')
+  })
+
+  it('poisons a caught resource substitution during independent revalidation', async () => {
+    let reads = 0
+    const inner = () => ({ bytes: Buffer.from('inner'), value: 'inner' })
+    await expect(
+      withReadObservation(signal(), async () => {
+        observedRead('inner', inner, 'original')
+        observedRead('outer', () => {
+          if (reads++)
+            expect(() => observedRead('inner', inner, 'replacement')).toThrow('Read observation')
+          return { bytes: Buffer.from('outer'), value: 'outer' }
+        })
+      }),
+    ).rejects.toThrow('Read observation')
+  })
+
+  it('still bounds aggregate bytes independently of resource and projection counts', async () => {
+    await expect(
+      withReadObservation(signal(), async () => {
+        observedRead('large', () => ({ bytes: Buffer.alloc(64 * 1024 * 1024 + 1), value: '' }))
+      }),
+    ).rejects.toThrow('Read observation')
+  })
 })

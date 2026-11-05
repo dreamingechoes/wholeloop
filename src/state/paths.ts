@@ -52,10 +52,14 @@ export function assertExternal(path: string): void {
 export function externalStorePath(path: string, boundary?: string, label = path): string {
   const selected = resolve(path)
   if (!inReadObservation()) return physicalStorePath(selected, boundary, label)
-  return observedRead(JSON.stringify(['store-path', boundary ?? null, selected]), () => {
-    const value = physicalStorePath(selected, boundary, label)
-    return { bytes: Buffer.from(JSON.stringify([value, existsSync(selected)])), value }
-  })
+  return observedRead(
+    JSON.stringify(['store-path', boundary ?? null, selected]),
+    () => {
+      const value = physicalStorePath(selected, boundary, label)
+      return { bytes: Buffer.from(JSON.stringify([value, existsSync(selected)])), value }
+    },
+    `filesystem:${selected}`,
+  )
 }
 
 function physicalStorePath(selected: string, boundary: string | undefined, label: string) {
