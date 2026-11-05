@@ -12537,6 +12537,12 @@
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": { "schema": { "type": "string", "const": "wholeloop/watch-frame@1" } },
+      "required": ["schema"],
+      "$ref": "watch-frame@1"
     }
   ],
   "$defs": {

@@ -24,6 +24,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Read bounded operator attention, progress and exact next commands without writes',
   },
   {
+    path: 'watch',
+    arguments: '',
+    options: ['--since <cursor>', '--poll'],
+    schema: 'wholeloop/watch-frame@1',
+    summary: 'Follow bounded local activity and overviews without writes or listeners',
+  },
+  {
     path: 'delivery runner-schema',
     arguments: '',
     options: [],

@@ -3,7 +3,7 @@
 > **TL;DR** — A long-running flow has finite work and effect limits, visible progress and inspectable reasons for every pause or terminal result. Usage is observed or unknown. Operators retain control without a mandatory web service.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-07 persistent budget admission, usage accounting and no-progress controls are implemented and process/fixture-tested. P6-25 adds the read-only report with next permitted actions, allow-listed diagnostics and checksum-verified recovery bundles that import as inert archives ([ADR-0190](../../../docs/decisions/0190-operator-report-diagnostics-and-recovery-bundles.md)); a live event watch is not provided. Existing gate-round and worker-timeout limits are preserved.
+> **Status: 🚧 partial.** P6-07 persistent budget admission, usage accounting and no-progress controls are implemented and process/fixture-tested. P6-25 adds the read-only report with next permitted actions, allow-listed diagnostics and checksum-verified recovery bundles that import as inert archives ([ADR-0190](../../../docs/decisions/0190-operator-report-diagnostics-and-recovery-bundles.md)); P6-37 adds the deterministic operator overview, and P6-38 implements a local read-only change feed under final verification ([ADR-0210](../../../docs/decisions/0210-operator-overview-and-change-feed.md)). Existing gate-round and worker-timeout limits are preserved.
 
 ## Implemented budget boundary
 
@@ -43,7 +43,7 @@ Repeated signatures include role, normalized failure category, candidate digest 
 
 ## Inspection surfaces
 
-Proposed `wl delivery status|events|report` emits versioned JSON and a concise terminal rendering. A watch option may stream events from the local controller; it does not start a network listener.
+`wl delivery status|events|report` provides versioned local reads. `wl overview` orders the complete operator view using the same core rules, and `wl watch [--since <cursor>] [--poll]` streams complete overviews, bounded redacted activity, non-progress liveness and fixed problems. The feed uses verified journal-prefix checkpoints, keeps auxiliary observation changes distinct from journal progress, writes no store state and starts no network listener. Consumers persist only the outer resume checkpoint from complete frames; see the [overview and feed contract](../../../docs/architecture/operator-overview.md).
 
 Show endpoint, intervention, grant status, plan/source revisions, active attempts, ready/blocked work, checkpoints, environment ownership, criterion coverage, gate budgets, CI state, pending effects, deadline, usage provenance and exact next permitted action. Explain why a run did not proceed.
 

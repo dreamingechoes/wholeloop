@@ -4,6 +4,31 @@
 
 ---
 
+## 2026-11-05 · P6-38 · Output failure regression — in progress
+
+- Reproduce a distinct output failure deterministically: a synchronous EPIPE from the sink was treated as an unreadable store, attempted a second frame on the broken output and exited 1. A synchronous EIO similarly retried the sink. Cancel on caught output errors as well as emitted stdout errors, retain the first code only, and leave unexpected I/O failures nonzero. No raw error text enters a frame. Both regressors fail before the fix and pass after it; no extra platform error code is guessed from the earlier unretained failure.
+- Wait for child stdio closure in the CLI test helper so final diagnostics cannot be truncated at the process-exit event. The complete focused overview/watch suite passes 170 tests in fifteen files with the concurrent-reader and output fixes. Type checking and lint pass. The compiled final reader/output code passes the repeated Linux arm64 feature checks on Node 20.0.0 and 24.22.0: forced poll, actual file notifications, SIGKILL resumption, guarded zero mutations/listeners, interrupted output and closed consumers. The fresh broad per-commit gate passes 1633 tests in 67 files and every remaining fast check: `CHECK PASS (fast) in 256s`. The full task-closure gate remains required; P6-38 stays in progress.
+
+---
+
+## 2026-11-05 · P6-38 · Concurrent reader regressions — in progress
+
+- The first broad fast gate reports `CHECK FAIL (test)`: one CLI resume case times out, while 1622 tests in the other cases pass. Preserve that failure and add control-frame diagnostics; ten isolated CLI repetitions then pass, so the original missing frame is not attributed to an unobserved cause.
+- Independently reproduce a real reader race with physical partial JSON under the normal store lock: a writer starts after the reader's lock check and finishes before error classification. Retry full validation within the existing three-attempt bound; never publish partial facts, repair the journal or suppress persistent corruption. A second controlled commit proves that sampling the default clock before captured events falsely reports `clock-invalid`. Sample after each attempt's captured prefixes and keep its two observations pinned; explicit replay clocks remain unchanged. Both cases fail before their fixes and pass afterward.
+- A later focused run records one closed-consumer exit-code failure with no then-retained stdout code. Add test-only error-code diagnostics; twenty isolated closed-consumer attempts and three subsequent complete overview-suite runs each pass (168 tests in fourteen files per suite). Keep the earlier failure in the record, preserve the unchanged deadlines and require a fresh broad fast/full gate rather than treating these stress runs as closure.
+
+---
+
+## 2026-11-05 · P6-38 · Local feed implementation and platform checks — in progress
+
+- Implement `wl watch [--since <cursor>] [--poll]` over the verified overview reader. Emit full current views, at most 128 redacted activity records per batch, non-progress liveness and fixed terminal problems. Preserve delivered activity checkpoints separately from a resumed initial view's newer cursor; validate both prefixes before advancing. Rapid commits may coalesce into an observed stable view, while activity retains every event; do not fabricate historical auxiliary observations.
+- Use optional nonrecursive filesystem hints with a one-second poll fallback and fifteen-second idle liveness. Keep explicit provenance and a conservative progress allow-list. Add a real-reader five-frame consumer recording and cases for held/initial locks, same-cursor configuration changes, both journal rollovers, changed/truncated prefixes, sequence gaps and hash mismatches. Add only the new CLI output variant and command baseline; the already exposed schemas remain unchanged.
+- Bound stdout backpressure and cancellation. Node standard output refuses ordinary destruction; destroy and unref left a pending write alive in the temporary probes. After reader cleanup the binary explicitly exits only for a cancelled observer stream, discarding an incomplete final line. Existing command exits remain buffered. Real compiled CLI cases cover SIGTERM and closed-consumer cancellation with a preloader that refuses store mutations and listeners before their effect; its negative control refuses both attempts.
+- Actual Linux arm64 checks pass on Node 24.22.0 and the published Node 20.0.0 floor, with forced poll and observed file notifications, SIGKILL/restart from complete checkpoints, exact current overview digests and guarded zero writes/listeners. Both versions also pass interrupted output and closed consumers under real pending output. The first Node 20 closed-consumer experiment had already drained its small frame (observed zero queued bytes), so it tested idle liveness instead of EPIPE; enlarge the fixture beyond one MiB with pending decisions and retain the unchanged shutdown bound. No product behavior or deadline is weakened.
+- Focused SDK, integrity, recording, CLI and provenance checks pass; the broad per-commit and complete task gates remain pending. P6-38 stays in progress. No native/model account, hosted effect or source push runs.
+
+---
+
 ## 2026-11-05 · P6-37 · Operator overview complete
 
 - Close P6-37 after the corrected fixture/rebuild commit `fb1e03d` passes the repeated full macOS arm64/Node 24.22.0 gate: 4121 tests in 227 files, offline npm archive/install and every remaining check; final line `CHECK PASS in 674s`. The verified archive digest is `4c992e31c21ee42d0e68ef32358090bfb955160ea2fb98812327815afc864029`. The corrected two-file fixture/rebuild suite also passed the per-commit gate: `CHECK PASS (fast) in 8s`.

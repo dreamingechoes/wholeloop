@@ -11,7 +11,7 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
 import { itemFlow } from '../../../src/flow/plan.js'
@@ -141,6 +141,93 @@ describe('stable read-only overview inputs', () => {
       })
       expect(paused.reports.get(plan.run)?.state).toBe('paused')
       expect(paused.cursor).not.toBe(value.cursor)
+    })
+  })
+  it('samples the default observation clock after capturing a newly committed journal', async () => {
+    await fixture(({ planning, plan, root, dir }) => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      try {
+        vi.setSystemTime('2026-11-05T01:00:00.000Z')
+        const runner = new RunnerStore(planning.sources.files.root, () => new Date().toISOString()),
+          prepared = planning.preparePlan(plan),
+          grant = runner.lifecycle.authority.authorize(authorization(plan, prepared.digest))
+        runner.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
+        const original = StateStore.prototype.events
+        let entered = false
+        const barrier = vi.spyOn(StateStore.prototype, 'events').mockImplementation(function (
+          this: StateStore,
+        ) {
+          if (!entered) {
+            entered = true
+            vi.setSystemTime('2026-11-05T01:00:01.000Z')
+            runner.lifecycle.transition(plan.run, {
+              to: 'paused',
+              reason: 'A controller committed after the read began.',
+            })
+          }
+          return original.call(this)
+        })
+        try {
+          const value = readOverview({
+            root,
+            store: runner.files.root,
+            userFile: join(dir, 'user.yml'),
+          })
+          expect(value.budgetReports.get(plan.run)?.problem).toBeNull()
+          expect(value.at).toBe('2026-11-05T01:00:01.000Z')
+        } finally {
+          barrier.mockRestore()
+        }
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+  })
+  it('retries a read interrupted by a writer that finishes before error classification', async () => {
+    await temporary((root) => {
+      const store = new StateStore(join(root, 'store')),
+        item = store.create({
+          kind: 'initiative',
+          title: 'Committed item',
+          owner: 'Owner',
+          body: '',
+        }),
+        name = readdirSync(store.files.path('journal'))[0]
+      if (!name) throw new Error('Committed fixture journal required')
+      const path = store.files.path(`journal/${name}`),
+        originalBytes = readFileSync(path, 'utf8'),
+        original = StateStore.prototype.events
+      let entered = false
+      const barrier = vi.spyOn(StateStore.prototype, 'events').mockImplementation(function (
+        this: StateStore,
+      ) {
+        if (entered) return original.call(this)
+        entered = true
+        // Force the writer to start after the reader's initial lock check and
+        // finish before the failed read reaches its catch. Actual bytes and
+        // the ordinary store lock exercise validation, rather than mocking an error.
+        return this.files.locked(() => {
+          writeFileSync(path, '{"PRIVATE_WRITER_CANARY":')
+          try {
+            return original.call(this)
+          } finally {
+            writeFileSync(path, originalBytes)
+          }
+        })
+      })
+      try {
+        const value = readOverview({
+          root,
+          store: store.files.root,
+          at,
+          userFile: join(root, 'user.yml'),
+        })
+        expect(value.items.has(item.id)).toBe(true)
+        expect(readFileSync(path, 'utf8')).toBe(originalBytes)
+        expect(existsSync(store.files.path('.lock'))).toBe(false)
+      } finally {
+        barrier.mockRestore()
+      }
     })
   })
   it('reports a held writer as busy without creating a competing lock or modifying ownership', async () => {

@@ -1003,7 +1003,7 @@ Also `wl overview schema`, and fixture stores with expected output for every hea
 
 ## P6-38 · Local change feed
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-37
+**Status:** 🔄 · **Size:** M · **Depends on:** P6-37
 
 **Design review:** added on 2026-11-04 · **Release:** 1.0
 
@@ -1023,6 +1023,8 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 - [ ] When a fixture journal is replayed event by event, every overview frame equals `wl overview` at its cursor. A sequence gap or digest mismatch emits a problem frame and stops the feed advancing.
 - [ ] A feed killed and restarted with `--since` misses and repeats no change, and a heartbeat never reads as progress.
 - [ ] It works on macOS and Linux, both with file events and with the poll forced, and a guard shows that it writes nothing in the store and opens no port.
+
+**Progress** — The public CLI, read-only observer, bounded redaction, delivered-prefix resumption, liveness/problem frames and recorded consumer fixture are implemented. Actual compiled-CLI and SDK cases cover interrupted backlogs, held locks, both journal rollovers, sequence/hash/prefix failures, observation-only changes, guarded no-write/no-listener behavior and cancellation under output pressure. Cross-platform verification and the complete closure gate remain in progress; all acceptance criteria stay open until they pass.
 
 **Tests** — Replay equality, kill and resume, forced poll, journal rollover, a held writer lock, and a Linux container run.
 

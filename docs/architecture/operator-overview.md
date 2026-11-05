@@ -1,15 +1,15 @@
 # Operator overview and local change feed
 
-> **TL;DR** — `wl overview` orders the harness's attention and exposes exact next commands. The core owns this meaning; an interface renders it. The local feed contract is available, with its runtime implementation pending P6-38.
+> **TL;DR** — `wl overview` orders the harness's attention and exposes exact next commands. The core owns this meaning; an interface renders it. The local feed delivers complete views and bounded activity without a listener.
 
 > [!NOTE]
-> **Status: 🚧 partial.** P6-36 attribution is complete. P6-37’s read-only overview, schemas and consumer fixtures are implemented and verified. P6-38's feed remains pending. See [ADR-0210](../decisions/0210-operator-overview-and-change-feed.md).
+> **Status: 🚧 partial.** P6-36 attribution is complete. P6-37’s read-only overview, schemas and consumer fixtures are implemented and verified. P6-38 implements the local feed; its complete verification remains in progress. See [ADR-0210](../decisions/0210-operator-overview-and-change-feed.md).
 
 ## Reading the harness
 
 `wl overview --json` emits `wholeloop/overview@1`. Its readable default is the same document indented. `wl overview schema --json` returns the overview and feed JSON Schemas without opening a store, with explicit runtime availability. The overview reads the configured external store and local flow/checkpoint configuration; it acquires no writer lock, repairs no cache, starts no worker and opens no listener.
 
-The reader checks the writer lock and observes the canonical journals and required auxiliary facts twice at one pinned time. It retries a changed snapshot three times, then reports `store-busy` rather than mixing facts from different reads. Held locks produce that same conservative result. Invalid inputs produce fixed, redacted problems and exit 3. An unavailable view has unknown totals and cursor, not fabricated empty or complete results.
+The reader checks the writer lock and observes the canonical journals and required auxiliary facts twice on one attempt clock, sampled after capturing its journals. This prevents a new legitimate commit from looking like a clock rollback. Explicit as-of replay clocks stay fixed. Interrupted validation retries within the same three-attempt bound; persistently invalid bytes still fail closed. It retries a changed snapshot three times, then reports `store-busy` rather than mixing facts from different reads. Held locks produce that same conservative result. Invalid inputs produce fixed, redacted problems and exit 3. An unavailable view has unknown totals and cursor, not fabricated empty or complete results.
 
 Item flow reuses the execution engine's inherited decisions and dependency rules. Delivery actions and outcomes share the delivery report projector; runner facts and budget boundaries use their existing inspectors. A journaled active grant and a currently active authority observation are distinct facts. Missing or changed basis, expired authority and budget boundaries suppress new work. Uncertain controller ownership suppresses a second run or resume and retains reconciliation.
 
@@ -39,11 +39,21 @@ The view excludes item text, source payloads, prompts, conversations, person nam
 
 Schemas live in `src/overview/schemas/`; `wl overview schema` exposes the installed versions. `test/fixtures/overview/` includes static archives and expected output for every headline and attention kind. Each archive contains canonical journals plus explicitly synthetic auxiliary observations. Tests replay the journals and compare the frozen output through the actual projector and JSON Schema. These archives are inert consumer examples, never runtime state or imported authority. Separate real-store differential tests exercise the reader, existing inspectors, rebuilds and private canaries.
 
-## Local feed contract
+## Following local changes
 
-P6-38 will emit newline-delimited `wholeloop/watch-frame@1` documents: complete overviews, bounded redacted event batches, liveness and problems. Liveness is never progress. File events are hints and polling is the fallback; no listener or store writes are allowed.
+`wl watch [--since <cursor>] [--poll]` emits compact newline-delimited `wholeloop/watch-frame@1` documents, including when `--json` is omitted. `--poll` disables filesystem watchers; otherwise nonrecursive file events are hints and a one-second poll is the correctness fallback. The default idle liveness interval is fifteen seconds. The reader serializes snapshots and output, awaits backpressure and cleans up watchers and timers on interruption. There are no store writes or network listeners.
 
-A frame's `resumeCursor` acknowledges only activity already delivered. With `--since`, the initial current overview may have a newer nested `overview.cursor`; its resume checkpoint must remain the supplied cursor until subsequent event batches have been emitted. Consumers persist the outer resume checkpoint. An observation-only refresh may change the digest without advancing journal activity. This contract preparation does not establish P6-38's replay, resume, Linux or no-write acceptance.
+The four frame kinds are complete overviews, activity batches of at most 128 events, liveness and problems. Process-local sequence numbers start at one. Each activity identifies its journal and ordinal/global sequence, typed event ID, digest, category, actor kind and provenance. It copies no payload, names, reason, source contents or prompt. Independent journals have no invented total time ordering: each batch consumes the next state prefix, then the next delivery prefix. Rapid commits may coalesce into one observed stable view; activity retains every event. The feed does not fabricate historical auxiliary observations at skipped intermediate positions.
+
+Initial views, observation-only refreshes, journal views and liveness all carry `progress: false`. Only activity records can establish progress: a completed state step, a committed delivery budget-progress record or a completed delivery control transition. Fixture evidence stays fixture evidence, and a process observation establishes neither model execution nor native acceptance. Heartbeats never count as work.
+
+A frame's outer `resumeCursor` acknowledges delivered activity. With `--since`, an initial current overview may have a newer nested `overview.cursor`; the outer checkpoint remains the supplied cursor until subsequent activity batches are delivered. Consumers persist only the outer checkpoint of a complete parsed NDJSON line. Full views may repeat after restart; activity resumes from the saved prefix without inventing historical auxiliary observations. Without `--since`, the first healthy read establishes the starting checkpoint and follows later activity.
+
+Configuration, expiry or a retained human decision can change the semantic digest with the same cursor. Such an observation emits a full view without an activity acknowledgement. Held writer locks produce non-progress liveness and retry; an initially busy store also gets an unavailable initial view with unknown facts. Changed/truncated retained prefixes, invalid sequences/digests or unreadable input emit a fixed redacted problem and exit 3, without advancing the last good checkpoint.
+
+SIGINT, SIGTERM and a broken output pipe cancel the reader. A slow or closed consumer cannot leave a blocked drain holding the process forever. Node's standard output intentionally refuses ordinary stream destruction, so the binary discards an interrupted stream only after the reader has cleaned up. An incomplete final line supplies no resume checkpoint; normal commands and non-interrupted problems keep ordinary buffered output behavior.
+
+The consumer kit includes `test/fixtures/overview/recorded-feed.json`, generated by the actual reader/emitter over a deterministic fixture timeline and checked against both schemas. Static archives remain consumer examples rather than runtime authority. Cross-platform runtime checks and the complete task gate are recorded in the roadmap; no native/client acceptance follows from the feed.
 
 <!-- docnav -->
 [◀ State and messaging](state-and-messaging.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Orchestration and gates ▶](orchestration-and-gates.md)

@@ -1,6 +1,8 @@
 export interface Io {
   out: (text: string) => void
   err: (text: string) => void
+  flush?: (signal?: AbortSignal) => Promise<void>
+  cancelOutput?: () => void
 }
 
 export const EXIT = {

@@ -13,7 +13,7 @@ export function overviewCommand(command: string, root: string, json: boolean, io
         {
           schema: 'wholeloop/overview-schema@1',
           contracts: { overview, watch },
-          available: { overview: true, watch: false },
+          available: { overview: true, watch: true },
         },
         null,
         json ? undefined : 2,

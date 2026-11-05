@@ -2,6 +2,7 @@
 
 The deterministic CLI owns these rules; skills consume the returned contracts.
 
+- ⛔ `read-only-change-feed` — use stable committed reads, acknowledge only delivered activity, keep liveness separate from progress and retain explicit provenance. A feed writes no store state, opens no listener and grants no authority or approval.
 - ⛔ `verified-overview-prefix` — verify both journal positions and prefix digests before accepting a resume cursor; reject edited, truncated, unknown-version or malformed prefixes. A cursor grants no authority.
 - ⛔ `external-runtime-state` — keep all runtime state outside repositories, including worktrees and symlinked destinations. Project configuration is an explicit settings action, not runtime state.
 - ⛔ `recorded-step-skips` — skipping a step requires a durable reason, visible in subsequent preflights.

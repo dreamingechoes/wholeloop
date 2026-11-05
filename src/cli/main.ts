@@ -61,6 +61,7 @@ import { stateCommand } from './state.js'
 import { syncCommand } from './sync.js'
 import { utilityCommand } from './utilities.js'
 import { verificationCommand, verificationSuiteCommand } from './verification.js'
+import { watchCommand } from './watch.js'
 import { worktreeCommand } from './worktree.js'
 
 export { EXIT, type Io } from './io.js'
@@ -246,7 +247,8 @@ export async function runAsync(
   const args = argv.filter((arg) => arg !== '--json')
   const command = COMMANDS.find(
     (command) =>
-      ((command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
+      (command.path === 'watch' ||
+        (command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
         command.path === 'fanout run' ||
         command.path === 'delivery recover' ||
         command.path === 'delivery run' ||
@@ -300,6 +302,7 @@ export async function runAsync(
         .map((option) => option.split(' ')[0] ?? option),
     )
     return await withCommandAttribution(command.path, parsed, root, async () => {
+      if (command.path === 'watch') return await watchCommand(parsed, root, io)
       if (command.path.startsWith('guard '))
         return await guardCommand(command.path, parsed, root, json, io)
       if (

@@ -51,12 +51,12 @@ function stateJournal(store: StateStore) {
 
 /** Required facts are observed twice at one time; no cache repair, lock write or listener. */
 export function readOverview(options: OverviewReadOptions) {
-  const at = options.at ?? new Date().toISOString()
+  let at = options.at ?? new Date().toISOString()
   if (!Number.isFinite(Date.parse(at)) || new Date(at).toISOString() !== at)
     throw new OverviewError('store-unreadable')
   try {
+    let clock = deliveryBudgetClock(() => at)
     const store = new StateStore(options.store ?? storePath()),
-      clock = deliveryBudgetClock(() => at),
       runner = new RunnerStore(
         store.files.root,
         () => at,
@@ -151,55 +151,74 @@ export function readOverview(options: OverviewReadOptions) {
             { problem: report.problem, limits: report.limits, deadline: report.deadline },
           ]),
         })
+    let lastProblem: OverviewError | undefined
     for (let attempt = 0; attempt < 3; attempt++) {
-      if (locked()) throw new OverviewError('store-busy')
-      const stateEvents = stateJournal(store),
-        items = replay(stateEvents),
-        delivery = snapshot(),
-        position = journalPosition(stateEvents, delivery.events),
-        facts = observe(delivery.states)
-      if (locked()) throw new OverviewError('store-busy')
-      const confirmedState = stateJournal(store),
-        confirmedDelivery = snapshot(),
-        confirmed = observe(confirmedDelivery.states)
-      if (locked()) throw new OverviewError('store-busy')
-      if (
-        encodeCursor(position) !==
-          encodeCursor(journalPosition(confirmedState, confirmedDelivery.events)) ||
-        fingerprint(facts) !== fingerprint(confirmed)
-      )
-        continue
-      return {
-        at,
-        root: options.root,
-        store: store.files.root,
-        cursor: encodeCursor(position),
-        position,
-        stateEvents,
-        deliveryEvents: delivery.events,
-        items,
-        states: delivery.states,
-        configuration: facts.config,
-        configurationDigest: contractDigest(facts.config),
-        grants: facts.grants,
-        runners: facts.runners,
-        humans: facts.humans,
-        decidedHumans: facts.decidedHumans,
-        budgetReports: facts.budgetReports,
-        reports: new Map(
-          [...delivery.states.values()].map((state) => [
-            state.run,
-            projectDeliveryReport(
-              state,
-              delivery.events,
-              facts.grants.get(state.run),
-              facts.budgetReports.get(state.run)?.problem ?? null,
-            ),
-          ]),
-        ),
+      try {
+        if (locked()) throw new OverviewError('store-busy')
+        const stateEvents = stateJournal(store),
+          items = replay(stateEvents),
+          delivery = snapshot(),
+          position = journalPosition(stateEvents, delivery.events)
+        if (options.at === undefined) {
+          // A commit captured after invocation began must not look like a
+          // clock rollback. Keep both observations on this attempt's clock;
+          // an explicit as-of clock remains fixed for deterministic replay.
+          at = new Date().toISOString()
+          clock = deliveryBudgetClock(() => at)
+        }
+        const facts = observe(delivery.states)
+        if (locked()) throw new OverviewError('store-busy')
+        const confirmedState = stateJournal(store),
+          confirmedDelivery = snapshot(),
+          confirmed = observe(confirmedDelivery.states)
+        if (locked()) throw new OverviewError('store-busy')
+        if (
+          encodeCursor(position) !==
+            encodeCursor(journalPosition(confirmedState, confirmedDelivery.events)) ||
+          fingerprint(facts) !== fingerprint(confirmed)
+        ) {
+          lastProblem = undefined
+          continue
+        }
+        return {
+          at,
+          root: options.root,
+          store: store.files.root,
+          cursor: encodeCursor(position),
+          position,
+          stateEvents,
+          deliveryEvents: delivery.events,
+          items,
+          states: delivery.states,
+          configuration: facts.config,
+          configurationDigest: contractDigest(facts.config),
+          grants: facts.grants,
+          runners: facts.runners,
+          humans: facts.humans,
+          decidedHumans: facts.decidedHumans,
+          budgetReports: facts.budgetReports,
+          reports: new Map(
+            [...delivery.states.values()].map((state) => [
+              state.run,
+              projectDeliveryReport(
+                state,
+                delivery.events,
+                facts.grants.get(state.run),
+                facts.budgetReports.get(state.run)?.problem ?? null,
+              ),
+            ]),
+          ),
+        }
+      } catch (error) {
+        if (locked() || (error instanceof OverviewError && error.problem === 'store-busy'))
+          throw new OverviewError('store-busy')
+        // A writer can finish between an interrupted read and this catch.
+        // Retry validation of actual bytes; a consistently bad journal still
+        // fails closed, without publishing a partial view or repairing state.
+        lastProblem = error instanceof OverviewError ? error : new OverviewError('store-unreadable')
       }
     }
-    throw new OverviewError('store-busy')
+    throw lastProblem ?? new OverviewError('store-busy')
   } catch (error) {
     if (error instanceof OverviewError) throw error
     // Legacy validators can include private IDs, paths or payload fragments in errors.

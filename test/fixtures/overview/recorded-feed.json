@@ -1,0 +1,314 @@
+{
+  "schema": "wholeloop/recorded-watch-fixture@1",
+  "provenance": "fixture",
+  "at": "2026-11-04T20:00:00.000Z",
+  "journals": {
+    "state": [
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000001",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "item.created",
+        "data": {
+          "kind": "initiative",
+          "title": "PRIVATE_FIXTURE_TITLE",
+          "owner": "PRIVATE_FIXTURE_OWNER",
+          "body": "PRIVATE_FIXTURE_BODY"
+        }
+      },
+      {
+        "v": 1,
+        "id": "ev-00000000-0000-4000-8000-000000000002",
+        "ts": "2026-11-04T20:00:00.000Z",
+        "actor": {
+          "kind": "person",
+          "name": "local"
+        },
+        "subject": "init-00000001",
+        "type": "step.skipped",
+        "data": {
+          "step": "write-spec",
+          "run": "run-0123456789abcdef",
+          "reason": "PRIVATE_FIXTURE_REASON"
+        }
+      }
+    ],
+    "delivery": []
+  },
+  "frames": [
+    {
+      "schema": "wholeloop/watch-frame@1",
+      "sequence": 1,
+      "at": "2026-11-04T20:00:00.000Z",
+      "resumeCursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MCwidGlwIjpudWxsLCJkaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1In0sImRlbGl2ZXJ5Ijp7InNlcXVlbmNlIjowLCJkaWdlc3QiOm51bGx9fQ",
+      "kind": "overview",
+      "change": "initial",
+      "progress": false,
+      "overview": {
+        "schema": "wholeloop/overview@1",
+        "nativeAcceptance": "not-established-by-inspection",
+        "health": {
+          "status": "healthy",
+          "problems": []
+        },
+        "headline": "empty",
+        "attention": [],
+        "items": [],
+        "deliveries": [],
+        "agents": [],
+        "worktrees": [],
+        "scheduled": [],
+        "outcomes": [],
+        "counts": {
+          "attention": 0,
+          "items": 0,
+          "deliveries": 0,
+          "agents": 0,
+          "worktrees": 0,
+          "scheduled": 0,
+          "outcomes": 0
+        },
+        "omitted": {
+          "attention": 0,
+          "items": 0,
+          "deliveries": 0,
+          "agents": 0,
+          "worktrees": 0,
+          "scheduled": 0,
+          "outcomes": 0
+        },
+        "unreadCount": 0,
+        "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MCwidGlwIjpudWxsLCJkaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1In0sImRlbGl2ZXJ5Ijp7InNlcXVlbmNlIjowLCJkaWdlc3QiOm51bGx9fQ",
+        "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+        "asOf": "2026-11-04T20:00:00.000Z",
+        "digest": "ac21a6afd0282bc1468e245a0858a51f0b5bfbc9b156ba5fad16cf5fced5baa8"
+      }
+    },
+    {
+      "schema": "wholeloop/watch-frame@1",
+      "sequence": 2,
+      "at": "2026-11-04T20:00:00.000Z",
+      "resumeCursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MSwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwiZGlnZXN0IjoiYjFjMjA5YTM3NzUzMDE4NmU2Yjk4ODJhM2RlY2ZmYmU1ODE0NzYzOWIxN2RjYTI2ZTAyMDZjYWEwZjA2NTBhNSJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+      "kind": "events",
+      "fromCursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MCwidGlwIjpudWxsLCJkaWdlc3QiOiI0ZjUzY2RhMThjMmJhYTBjMDM1NGJiNWY5YTNlY2JlNWVkMTJhYjRkOGUxMWJhODczYzJmMTExNjEyMDJiOTQ1In0sImRlbGl2ZXJ5Ijp7InNlcXVlbmNlIjowLCJkaWdlc3QiOm51bGx9fQ",
+      "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MSwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwiZGlnZXN0IjoiYjFjMjA5YTM3NzUzMDE4NmU2Yjk4ODJhM2RlY2ZmYmU1ODE0NzYzOWIxN2RjYTI2ZTAyMDZjYWEwZjA2NTBhNSJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+      "progress": false,
+      "events": [
+        {
+          "journal": "state",
+          "position": 1,
+          "id": "ev-00000000-0000-4000-8000-000000000001",
+          "at": "2026-11-04T20:00:00.000Z",
+          "digest": "a22362cb27bf60f829fbb6f2471021eb9b2af95d89d3fa3b74ae12641d7116aa",
+          "category": "item.created",
+          "actor": "person",
+          "provenance": "person-record",
+          "progress": false
+        }
+      ]
+    },
+    {
+      "schema": "wholeloop/watch-frame@1",
+      "sequence": 3,
+      "at": "2026-11-04T20:00:00.000Z",
+      "resumeCursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MSwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwiZGlnZXN0IjoiYjFjMjA5YTM3NzUzMDE4NmU2Yjk4ODJhM2RlY2ZmYmU1ODE0NzYzOWIxN2RjYTI2ZTAyMDZjYWEwZjA2NTBhNSJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+      "kind": "overview",
+      "change": "journal",
+      "progress": false,
+      "overview": {
+        "schema": "wholeloop/overview@1",
+        "nativeAcceptance": "not-established-by-inspection",
+        "health": {
+          "status": "healthy",
+          "problems": []
+        },
+        "headline": "ready",
+        "attention": [],
+        "items": [
+          {
+            "id": "init-00000001",
+            "kind": "initiative",
+            "parent": null,
+            "status": "open",
+            "flow": {
+              "next": "frame-problem",
+              "available": true,
+              "completed": [],
+              "pending": [],
+              "omittedPending": 0
+            },
+            "blockedBy": [],
+            "omittedDependencies": 0
+          }
+        ],
+        "deliveries": [],
+        "agents": [],
+        "worktrees": [],
+        "scheduled": [],
+        "outcomes": [],
+        "counts": {
+          "attention": 0,
+          "items": 1,
+          "deliveries": 0,
+          "agents": 0,
+          "worktrees": 0,
+          "scheduled": 0,
+          "outcomes": 0
+        },
+        "omitted": {
+          "attention": 0,
+          "items": 0,
+          "deliveries": 0,
+          "agents": 0,
+          "worktrees": 0,
+          "scheduled": 0,
+          "outcomes": 0
+        },
+        "unreadCount": 0,
+        "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MSwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwiZGlnZXN0IjoiYjFjMjA5YTM3NzUzMDE4NmU2Yjk4ODJhM2RlY2ZmYmU1ODE0NzYzOWIxN2RjYTI2ZTAyMDZjYWEwZjA2NTBhNSJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+        "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+        "asOf": "2026-11-04T20:00:00.000Z",
+        "digest": "23c9b84de48bf6200045d0b567fd079c96da4f3bd1318e48fc0cb222b36a912f"
+      }
+    },
+    {
+      "schema": "wholeloop/watch-frame@1",
+      "sequence": 4,
+      "at": "2026-11-04T20:00:00.000Z",
+      "resumeCursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MiwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwiZGlnZXN0IjoiYzU2Yjg4MzM5MjcwODQzYmFmMzE4Nzg0MzBlYTg3MjdiMTllNzVkMzJjM2Y5ZjQ0ZGM1NjY4NzhkZTE2ZDIxNyJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+      "kind": "events",
+      "fromCursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MSwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwiZGlnZXN0IjoiYjFjMjA5YTM3NzUzMDE4NmU2Yjk4ODJhM2RlY2ZmYmU1ODE0NzYzOWIxN2RjYTI2ZTAyMDZjYWEwZjA2NTBhNSJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+      "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MiwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwiZGlnZXN0IjoiYzU2Yjg4MzM5MjcwODQzYmFmMzE4Nzg0MzBlYTg3MjdiMTllNzVkMzJjM2Y5ZjQ0ZGM1NjY4NzhkZTE2ZDIxNyJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+      "progress": false,
+      "events": [
+        {
+          "journal": "state",
+          "position": 2,
+          "id": "ev-00000000-0000-4000-8000-000000000002",
+          "at": "2026-11-04T20:00:00.000Z",
+          "digest": "a834a25bd1e7deb6ec8b9584d4e8b0bc0688c2cc4b11d75b990f532eb81caf03",
+          "category": "step.skipped",
+          "actor": "person",
+          "provenance": "person-record",
+          "progress": false
+        }
+      ]
+    },
+    {
+      "schema": "wholeloop/watch-frame@1",
+      "sequence": 5,
+      "at": "2026-11-04T20:00:00.000Z",
+      "resumeCursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MiwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwiZGlnZXN0IjoiYzU2Yjg4MzM5MjcwODQzYmFmMzE4Nzg0MzBlYTg3MjdiMTllNzVkMzJjM2Y5ZjQ0ZGM1NjY4NzhkZTE2ZDIxNyJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+      "kind": "overview",
+      "change": "journal",
+      "progress": false,
+      "overview": {
+        "schema": "wholeloop/overview@1",
+        "nativeAcceptance": "not-established-by-inspection",
+        "health": {
+          "status": "healthy",
+          "problems": []
+        },
+        "headline": "attention",
+        "attention": [
+          {
+            "id": "1049b798a0b8cb6097521aee612648c1aab2412395160a404e6ac60689b59257",
+            "reason": "item-decision",
+            "target": {
+              "kind": "item",
+              "id": "init-00000001"
+            },
+            "next": [
+              {
+                "argv": [
+                  "wl",
+                  "answer",
+                  {
+                    "input": "outcome",
+                    "prefix": "decision.approve-spec="
+                  },
+                  "--for",
+                  "init-00000001",
+                  "--by",
+                  {
+                    "input": "operator"
+                  },
+                  "--basis",
+                  "ev-00000000-0000-4000-8000-000000000002"
+                ],
+                "inputs": [
+                  {
+                    "name": "outcome",
+                    "kind": "choice",
+                    "values": ["approved", "rejected"]
+                  },
+                  {
+                    "name": "operator",
+                    "kind": "person"
+                  }
+                ]
+              }
+            ],
+            "omittedNext": 0
+          }
+        ],
+        "items": [
+          {
+            "id": "init-00000001",
+            "kind": "initiative",
+            "parent": null,
+            "status": "open",
+            "flow": {
+              "next": "frame-problem",
+              "available": true,
+              "completed": ["write-spec"],
+              "pending": [
+                {
+                  "id": "approve-spec",
+                  "basis": "ev-00000000-0000-4000-8000-000000000002",
+                  "subject": "init-00000001"
+                }
+              ],
+              "omittedPending": 0
+            },
+            "blockedBy": [],
+            "omittedDependencies": 0
+          }
+        ],
+        "deliveries": [],
+        "agents": [],
+        "worktrees": [],
+        "scheduled": [],
+        "outcomes": [],
+        "counts": {
+          "attention": 1,
+          "items": 1,
+          "deliveries": 0,
+          "agents": 0,
+          "worktrees": 0,
+          "scheduled": 0,
+          "outcomes": 0
+        },
+        "omitted": {
+          "attention": 0,
+          "items": 0,
+          "deliveries": 0,
+          "agents": 0,
+          "worktrees": 0,
+          "scheduled": 0,
+          "outcomes": 0
+        },
+        "unreadCount": 0,
+        "cursor": "v1.eyJ2ZXJzaW9uIjoxLCJzdGF0ZSI6eyJjb3VudCI6MiwidGlwIjoiZXYtMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwiZGlnZXN0IjoiYzU2Yjg4MzM5MjcwODQzYmFmMzE4Nzg0MzBlYTg3MjdiMTllNzVkMzJjM2Y5ZjQ0ZGM1NjY4NzhkZTE2ZDIxNyJ9LCJkZWxpdmVyeSI6eyJzZXF1ZW5jZSI6MCwiZGlnZXN0IjpudWxsfX0",
+        "configurationDigest": "2d920782ec8f41f5edb69f236c0aa067c4502743f2737358356d5a37ebba84eb",
+        "asOf": "2026-11-04T20:00:00.000Z",
+        "digest": "513eec4c51eeaaf836d2cbe2a0e8af7b620eb266038c768d77a62eb53c19adcc"
+      }
+    }
+  ]
+}

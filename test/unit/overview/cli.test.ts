@@ -79,7 +79,7 @@ describe('compiled overview inspection', () => {
       expect(value.errors).toBe('')
       expect(value.value).toMatchObject({
         schema: 'wholeloop/overview-schema@1',
-        available: { overview: true, watch: false },
+        available: { overview: true, watch: true },
         contracts: {
           overview: { $id: 'wholeloop/overview@1' },
           watch: { $id: 'wholeloop/watch-frame@1' },
