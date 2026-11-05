@@ -1,7 +1,11 @@
 import { existsSync } from 'node:fs'
 import { browserInput } from '../acceptance/browser-input.js'
 import { browserReferenceCommand } from '../acceptance/browser-reference.js'
-import { type AcceptanceCase, acceptanceShape } from '../acceptance/contracts.js'
+import {
+  type AcceptanceCase,
+  type AcceptanceCaseResult,
+  acceptanceShape,
+} from '../acceptance/contracts.js'
 import { privateEvaluatorSource } from '../acceptance/docker-private.js'
 import { PrivateAcceptance } from '../acceptance/private-plan.js'
 import { contractDigest } from '../contracts/compatibility.js'
@@ -36,6 +40,28 @@ export function rootIntegrationCaseOwner(test: Pick<AcceptanceCase, 'runner'> | 
   if (test?.runner.kind === 'browser' && test.runner.capability === 'browser.journey')
     return 'browser-exec'
   return 'unsupported'
+}
+
+/** Builder feedback is a projection of verified receipts, never their private artifacts. */
+export function integrationCorrectionCases(
+  definitions: readonly AcceptanceCase[],
+  results: readonly Pick<AcceptanceCaseResult, 'case' | 'status'>[],
+) {
+  return results.map((result) => {
+    const definition = definitions.find((test) => test.id === result.case),
+      owner = rootIntegrationCaseOwner(definition)
+    return {
+      case: result.case,
+      status: result.status,
+      ...(definition && ['controller-http', 'container-start', 'browser-exec'].includes(owner)
+        ? {
+            actions: [...definition.actions],
+            assertions: definition.assertions.map(({ id, description }) => ({ id, description })),
+            failureConditions: [...definition.failureConditions],
+          }
+        : {}),
+    }
+  })
 }
 
 interface IntegrationStageBinding {
@@ -280,21 +306,12 @@ export class RunnerIntegrationStages {
       plan = new IntegrationVerification(this.store.files.root).acceptance.get(
         proof.report.acceptancePlan,
       ).plan
-    return proof.cases.map(({ result }) => {
-      const definition = plan.cases.find((test) => test.id === result.case)
-      return {
-        case: result.case,
-        status: result.status,
-        ...(definition && rootIntegrationCaseOwner(definition) !== 'evaluator-container'
-          ? {
-              actions: definition.actions,
-              assertions: definition.assertions.map(({ id, description }) => ({ id, description })),
-              failureConditions: definition.failureConditions,
-            }
-          : {}),
-      }
-    })
+    return integrationCorrectionCases(
+      plan.cases,
+      proof.cases.map(({ result }) => result),
+    )
   }
+
   async inspect(
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,

@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { acceptanceShape } from '../../../src/acceptance/contracts.js'
+import { type AcceptanceCase, acceptanceShape } from '../../../src/acceptance/contracts.js'
+import { PrivateAcceptance } from '../../../src/acceptance/private-plan.js'
 import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
@@ -18,6 +19,13 @@ import evaluationSchema from '../../../src/integration/schemas/assembly-evaluati
 import { IntegrationCandidates } from '../../../src/integration/store.js'
 import { IntegrationVerification } from '../../../src/integration/verification.js'
 import { observedIntegrationVerification } from '../../../src/integration/verification-observation.js'
+import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
+import {
+  integrationCorrectionCases,
+  RunnerIntegrationStages,
+} from '../../../src/runner/integration-stages.js'
+import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readiness.js'
+import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { authorization, entry, fixture, git } from '../../support/delivery.js'
 import { environmentRecipe } from '../../support/environment.js'
 
@@ -42,7 +50,8 @@ const check = (id: string, value: unknown) => {
 }
 const backend = (fixed: boolean) =>
   `const http=require('node:http'),assert=require('node:assert/strict');const payload={${fixed ? 'ids' : 'results'}:['task-1']};if(process.argv.includes('--unit')){assert.equal(Object.values(payload)[0][0],'task-1');console.log('backend unit passed');process.exit(0)}http.createServer((_q,r)=>{r.setHeader('content-type','application/json');r.end(JSON.stringify(payload))}).listen(3001,'0.0.0.0');\n`
-const frontend = `const http=require('node:http'),assert=require('node:assert/strict');const render=data=>{if(!Array.isArray(data.ids))throw Error('API contract mismatch');return {ids:data.ids}};if(process.argv.includes('--unit')){assert.deepEqual(render({ids:['task-1']}),{ids:['task-1']});console.log('frontend unit passed');process.exit(0)}http.createServer(async(_q,r)=>{r.setHeader('content-type','application/json');try{const data=await(await fetch('http://backend:3001/tasks')).json();r.end(JSON.stringify(render(data)))}catch{r.statusCode=502;r.end(JSON.stringify({error:'API contract mismatch'}))}}).listen(3000,'0.0.0.0');\n`
+// The private probe uses the existing web endpoint, keeping the backend port internal.
+const frontend = `const http=require('node:http'),assert=require('node:assert/strict');const render=data=>{if(!Array.isArray(data.ids))throw Error('API contract mismatch');return {ids:data.ids}};if(process.argv.includes('--unit')){assert.deepEqual(render({ids:['task-1']}),{ids:['task-1']});console.log('frontend unit passed');process.exit(0)}http.createServer(async(_q,r)=>{r.setHeader('content-type','application/json');if(_q.url==='/private-status'){r.end(JSON.stringify({ready:true}));return}try{const data=await(await fetch('http://backend:3001/tasks')).json();r.end(JSON.stringify(render(data)))}catch{r.statusCode=502;r.end(JSON.stringify({error:'API contract mismatch'}))}}).listen(3000,'0.0.0.0');\n`
 try {
   await fixture(
     async ({ planning, plan, root, dir }) => {
@@ -151,6 +160,60 @@ try {
           fixture: { ref: 'fixture:combined-title-search', sha256: contract.sha256 },
           timeoutMs: 60000,
         }
+      // An actually executed opaque case precedes the public failure. Its
+      // private objective and even its public stub must stay out of repair feedback.
+      const privateCanary = 'PRIVATE_CORRECTION_OBJECTIVE_CANARY',
+        hidden = new PrivateAcceptance(acceptance).prepare({
+          schema: 'wholeloop/private-acceptance@1',
+          run: plan.run,
+          revision: plan.revision,
+          plan: prepared.digest,
+          source: plan.source,
+          case: 'b-private',
+          behavior: {
+            schema: 'wholeloop/behavior-input@1',
+            kind: 'api',
+            service: 'web',
+            port: 3000,
+            steps: [
+              { id: 'owned-request', kind: 'request', method: 'GET', path: '/private-status' },
+            ],
+          },
+          assertions: [
+            {
+              id: 'owned-status',
+              subject: 'status',
+              operator: 'equals',
+              expected: '200',
+              description: privateCanary,
+            },
+          ],
+          sensitivity: { mode: 'not-applicable', relevant: ['owned-status'] },
+        }),
+        privateCase: AcceptanceCase = {
+          ...baseCase,
+          id: 'b-private',
+          actions: ['OPAQUE_CORRECTION_STUB_CANARY'],
+          assertions: [
+            {
+              id: 'private-outcome',
+              subject: 'state',
+              operator: 'equals',
+              path: '/passed',
+              expected: 'true',
+              description: 'OPAQUE_CORRECTION_ASSERTION_CANARY',
+            },
+          ],
+          runner: {
+            kind: 'api',
+            capability: 'evaluator.private-http',
+            input: JSON.stringify({
+              schema: 'wholeloop/private-case-input@1',
+              manifest: hidden.digest,
+            }),
+          },
+          fixture: { ref: 'fixture:private-owned-status', sha256: hidden.digest },
+        }
       const pinned = acceptance.prepare({
         schema: 'wholeloop/acceptance-plan@1',
         run: plan.run,
@@ -183,6 +246,7 @@ try {
               }),
             },
           })),
+          privateCase,
           {
             ...baseCase,
             id: 'c-combined',
@@ -486,6 +550,92 @@ try {
           second.request,
           passedArtifact,
         )
+      for (const [proof, selection] of [
+        [originalFailed, first.request],
+        [originalPassed, second.request],
+      ] as const) {
+        const feedback = integrationCorrectionCases(
+            pinned.plan.cases,
+            proof.cases.map(({ result }) => result),
+          ),
+          opaque = feedback.find((test) => test.case === privateCase.id),
+          publicCase = feedback.find((test) => test.case === 'c-combined'),
+          text = JSON.stringify(feedback)
+        assert.deepEqual(opaque, { case: 'b-private', status: 'passed' })
+        assert.ok(publicCase?.actions?.length)
+        for (const canary of [
+          privateCanary,
+          'OPAQUE_CORRECTION_STUB_CANARY',
+          'OPAQUE_CORRECTION_ASSERTION_CANARY',
+          hidden.digest,
+        ])
+          assert.equal(text.includes(canary), false)
+        // The reader locator is synthetic; the original Docker/Git proof it
+        // references is real. This does not certify a native root-stage launch.
+        const store = new RunnerStore(planning.sources.files.root),
+          request: RunnerRequest = {
+            schema: 'wholeloop/delivery-runner-request@1',
+            key: `feedback-${proof.report.status}`,
+            run: plan.run,
+            revision: plan.revision,
+            plan: prepared.digest,
+            grant: grant.grant.id,
+            host: { id: 'fixture', version: '1', configuration: 'a'.repeat(64) },
+            pollMs: 50,
+          },
+          digest = store.prepare(request).digest,
+          lease = store.claim(digest, `controller-${contractDigest(request).slice(0, 32)}`),
+          stage = 'integration:feature',
+          invocation = contractDigest({ digest, stage }),
+          base = `delivery/runner-integrations/${invocation}`
+        store.append(lease, { action: 'dispatched', stage, invocation })
+        store.append(lease, {
+          action: 'started',
+          stage,
+          invocation,
+          runtime: { backend: 'fixture', instance: invocation, worker: stage },
+        })
+        store.append(lease, {
+          action: 'observed',
+          stage,
+          invocation,
+          status: proof === originalFailed ? 'failed' : 'passed',
+          evidence: proof.evidence,
+          provenance: 'fixture',
+          reason: 'Synthetic locator for original product-proof privacy inspection.',
+        })
+        store.files.atomic(
+          `${base}/binding.json`,
+          JSON.stringify({
+            version: 1,
+            request: digest,
+            plan: prepared.digest,
+            stage,
+            invocation,
+            at: proof.cases[0]?.result.startedAt,
+            deadline: new Date(
+              Date.parse(proof.cases.at(-1)?.result.endedAt ?? '') + 1,
+            ).toISOString(),
+            selection,
+          }),
+        )
+        store.files.atomic(
+          `${base}/report.json`,
+          JSON.stringify({ artifact: proof === originalFailed ? failed.artifact : passedArtifact }),
+        )
+        const reader = new RunnerIntegrationStages(
+            store,
+            new RunnerAssemblyReadiness(store, new RunnerMilestoneReadiness(store, new Map())),
+          ),
+          record = store.stage(digest, stage)
+        assert.ok(record)
+        assert.deepEqual(reader.failedCases(request, record), feedback)
+        store.release(lease, 'Retain this synthetic locator without running controller work.')
+        check(
+          `verified-${proof.report.status}-correction-feedback-keeps-private-cases-opaque`,
+          feedback,
+        )
+      }
       assert.equal(originalFailed.report.status, 'failed')
       assert.equal(originalPassed.report.status, 'passed')
       assert.equal(originalPassed.nativeOwnership, 'not-established')

@@ -93,9 +93,12 @@ The hybrid case runs a real builder and real Git stages and synthetic stages for
 
 Removing the candidate fallback or the queue change fails the case.
 
+**Private feedback follow-up.** The fixed historical reader now shares a pure closed-field projection with eight dedicated cases. Only known public owners expose guidance; private, unknown and unsupported definitions expose case ID/status only. Actions and assertion descriptions are copied so consuming feedback cannot edit the pinned definition.
+
+The actual `eval:assembly` control executes an opaque private evaluator before the public combined failure, then observes the repaired product. Both retained original Git/Docker proofs pass through `RunnerIntegrationStages.failedCases`: private objective, descriptor, assertion and manifest canaries remain absent while public guidance remains available. Root-stage locators and their runtime are explicitly synthetic fixture metadata; this proves the real product-proof reader boundary, not a native root-controller launch. Existing journal start rules and declared-port policy remain unchanged.
+
 Not covered yet:
 
-- **Hiding private cases in the feedback.** This needs a real integration proof with a private case, so it has no dedicated case yet.
 - **Acceptance-origin corrections.** They carry only the stage reason and evidence for now.
 - **A verification repair on top of a correction.** It is not supported: its repair chain would root at the correction's commit and lease, so it blocks honestly.
 

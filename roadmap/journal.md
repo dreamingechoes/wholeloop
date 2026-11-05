@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-29 · Private correction feedback — in progress
+
+- Extract the fixed feedback projection from the historical integration reader. Only known public HTTP, CLI and browser owners expose copied actions, assertion IDs/descriptions and failure conditions. Private, unsupported and missing definitions expose case ID/status only; result reasons, inputs, expected values and artifacts never enter the projection. Eight new projection cases plus seventeen integration cases pass, with types and lint.
+- Extend the opt-in assembly evaluation with a real private evaluator case before the public integration failure. Inspect both retained failed/passed product proofs through the actual feedback reader, using explicitly synthetic root-stage locators rather than claiming a native stage launch. The first run fails honestly because its private case requests an unpublished backend port (`undeclared-behavior-port`); later authority checks consequently refuse continuation. Use a stable health path on the already declared web endpoint, keep the port policy unchanged and retire the failed run's exact environment before retrying.
+- The second run observes the private evaluator, expected combined failure, repaired combined pass and failed-proof feedback privacy, then refuses the passed-proof locator as `runner-stage-late-result`: the synthetic locator omitted its required fixture runtime. Record that explicit fixture start, preserve the production rule, and retire both exact environments before repeating. The final actual evaluation exits zero with fourteen passing observations, both feedback readers verified and both exact environments retired. Retain all earlier failures and the three earlier exact-environment retirement receipts. Report SHA-256: `5629d82de21e704d46121b4dc71b90ade4839e1e3a82737697f0a2f459861998`. This is a macOS arm64 controller/Linux aarch64 Docker-daemon proof; no independent Linux controller or native client is certified. The mandatory per-commit gate passes: `CHECK PASS (fast) in 121s`. P6-29 stays in progress; no native/model account, hosted service or wholeloop source push runs.
+
+---
+
 ## 2026-11-05 · P6-38 · Local change feed complete
 
 - Close P6-38 after the corrected watch-clock commit `5713435` passes the complete macOS arm64/Node 24.22.0 gate: 4170 tests in 234 files, offline npm archive/install and all remaining checks; `CHECK PASS in 706s`. The archive digest is `8bc67aac8ac38e1632b8b674525893dd40f7ff05aedac23596df32131d32d87f`. The focused overview/watch suite passes 171 tests in sixteen files and the per-commit gate passes in ten seconds.
