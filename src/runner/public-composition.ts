@@ -21,7 +21,6 @@ import {
 } from '../delivery/native-runtime.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { DeliveryQueue, type QueueReadiness } from '../delivery/queue.js'
-import { DeliverySources } from '../delivery/source.js'
 import type { WorkerAssignment, WorkerContext, WorkerRole } from '../delivery/worker-protocol.js'
 import { EnvironmentRecipes } from '../environment/recipe-store.js'
 import { FlowEngine } from '../flow/engine.js'
@@ -51,6 +50,7 @@ import { RunnerMilestoneReadiness } from './milestone-readiness.js'
 import { RunnerPlanStages } from './plan-stages.js'
 import { RunnerProductEnvironments, type RunnerProductProduction } from './product-environments.js'
 import type { PublicHostComposer } from './public-host.js'
+import { PublicResearchPlan } from './public-research-plan.js'
 import { GithubCliCodeHost } from './publication-host.js'
 import { RunnerPublicationStages } from './publication-stages.js'
 import { RunnerResearchStages } from './research-stages.js'
@@ -66,15 +66,6 @@ import { type RunnerWorkerOptions, RunnerWorkerStages } from './worker-stages.js
 
 /** Routes the public host composes so far; every other route stays unsupported. */
 const COMPOSED = ['research-report', 'to-pr']
-/** The only built-in source chosen for unattended research (ADR-0204). */
-const WEB = {
-  id: 'native-web:source.web',
-  provider: 'native-web',
-  capability: 'source.web',
-  operation: 'source.web.query',
-  available: true,
-  evidence: "Built-in native web provider: the bound client's own read-only search and fetch.",
-}
 
 /** One binding must cover every role in the list; the client is chosen by roles, never by model text. */
 function bindingFor(bindings: Readonly<NativeBindings>, roles: WorkerRole[]) {
@@ -304,8 +295,12 @@ function evidenceHost(store: RunnerStore) {
 }
 
 function requests(store: RunnerStore) {
-  return (context: RunnerStageContext, artifact: { ref: string; sha256: string }) =>
-    runnerDecisionRequirements(
+  return (context: RunnerStageContext, artifact: { ref: string; sha256: string }) => {
+    const research =
+      context.stage.kind === 'plan' && context.plan.policy.endpoint === 'research-report'
+        ? new PublicResearchPlan(store).prepare(context)
+        : undefined
+    return runnerDecisionRequirements(
       context.plan as DeliveryPlan,
       context.stage,
       store.lifecycle.authority.inspect(context.request.grant).grant.basis.kind,
@@ -318,11 +313,15 @@ function requests(store: RunnerStore) {
         revision: context.plan.revision,
         plan: context.request.plan,
         decision: id,
-        artifacts: [artifact],
-        evidence: [{ id: 'production', ...artifact }],
+        artifacts: [artifact, ...(id === 'research-plan' && research ? [research] : [])],
+        evidence: [
+          { id: 'production', ...artifact },
+          ...(id === 'research-plan' && research ? [{ id: 'research-plan', ...research }] : []),
+        ],
         unknowns: [],
       }),
     )
+  }
 }
 
 /**
@@ -361,18 +360,7 @@ export const composePublicHost: PublicHostComposer = (input) => {
     plan: new RunnerPlanStages(store, { identity: request.host, requests: decide, host }),
     research: new RunnerResearchStages(store, {
       identity: request.host,
-      plan: (context) => ({
-        schema: 'wholeloop/research-plan@1',
-        subject: context.request.run,
-        run: context.request.run,
-        // The pinned source snapshot the plan names, never live intake text.
-        question: new DeliverySources(store.files.root).get(context.plan.source).body,
-        owner: context.plan.owner,
-        verifiers: 3,
-        refutations: 2,
-        angles: [WEB],
-        openQuestions: [],
-      }),
+      plan: (context) => new PublicResearchPlan(store).read(context),
       workers: (process, context) =>
         new NativeResearchWorkers(new RunnerResearchAttempts(queue()), {
           run: context.request.run,

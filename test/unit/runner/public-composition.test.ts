@@ -55,7 +55,10 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
 if(b.job){const j=b.job;emit('artifacts/research.json',a.identity.role==='planner'?{angle:j.angle.id,status:'ok',claims:[{id:'index',text:'A title index serves search.',confidence:'high',loadBearing:true,evidence:[{ref:'https://web.example/index',excerpt:'A title index serves search.'}]}],openQuestions:[]}:{claim:j.claim.id,verifier:j.verifier,outcome:'confirm',reason:'The cited excerpt states the claim.',evidence:[]});return}
 const inner=JSON.parse(payload.inputs[0].content);
 const output={schema:b.response.$id,basis:inner.basis,rationale:'Synthetic judgment of exact cited evidence.',uncertainties:[]};
-if(a.identity.role==='planner')output.outcome='accept';else{output.judgment=b.judgment;output.verdict='supported'}
+if(a.identity.role==='planner'){
+const research=inner.request.decision==='research-plan'?inner.inputs.artifacts.map(x=>JSON.parse(x.text)).find(x=>x.schema==='wholeloop/research-plan@1'):undefined;
+output.outcome=inner.request.decision==='research-plan'&&(!research||research.question!==inner.source.body||!research.angles.length)?'reject':'accept';
+}else{output.judgment=b.judgment;output.verdict='supported'}
 emit('artifacts/decision.json',output);
 });
 `
@@ -194,6 +197,20 @@ describe('public host composition (ADR-0205)', () => {
         expect(receipt).toMatchObject({ state: 'completed', outcome: 'research-report-complete' })
         const record = store.stage(digest, 'research')
         if (!record) throw new Error('Research stage required')
+        const original = store.stage(digest, 'plan')
+        if (!original) throw new Error('Plan stage required')
+        const decision = JSON.parse(
+            store.files.read(`delivery/runner-decisions/${original.invocation}.json`) ?? '{}',
+          ).requests.find((entry: { decision: string }) => entry.decision === 'research-plan'),
+          artifact = decision.artifacts.find((entry: { ref: string }) =>
+            entry.ref.startsWith('delivery/public-research-plans/'),
+          ),
+          pinned = store.files.read(artifact.ref),
+          research = JSON.parse(
+            store.files.read(`delivery/runner-research/${record.invocation}/binding.json`) ?? '{}',
+          )
+        expect(pinned).toBe(JSON.stringify(research.research))
+        expect(decision.evidence).toContainEqual({ id: 'research-plan', ...artifact })
         expect(record.provenance).toBe('host-observed')
         expect(
           new RunnerNativeScope(store.files, record.invocation)
