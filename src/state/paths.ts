@@ -48,6 +48,23 @@ export function assertExternal(path: string): void {
   })
 }
 
+/** A store selection has one identity; do not register canonical and external halves separately. */
+export function externalStorePath(path: string, boundary?: string, label = path): string {
+  const selected = resolve(path)
+  if (!inReadObservation()) return physicalStorePath(selected, boundary, label)
+  return observedRead(JSON.stringify(['store-path', boundary ?? null, selected]), () => {
+    const value = physicalStorePath(selected, boundary, label)
+    return { bytes: Buffer.from(JSON.stringify([value, existsSync(selected)])), value }
+  })
+}
+
+function physicalStorePath(selected: string, boundary: string | undefined, label: string) {
+  const value = canonicalPhysicalPath(selected)
+  if (boundary && !inside(boundary, value)) throw new Error(`Store path escapes its root: ${label}`)
+  assertPhysicalExternal(value)
+  return value
+}
+
 function assertPhysicalExternal(path: string): void {
   let ancestor = canonicalPhysicalPath(path)
   while (true) {

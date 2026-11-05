@@ -11,22 +11,18 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { assertExternal, canonicalPath, inside } from './paths.js'
+import { externalStorePath } from './paths.js'
 import { assertObservationWritable } from './read-observation.js'
 
 /** All store mutations pass through this boundary, including locks and temp files. */
 export class StoreFiles {
   readonly root: string
   constructor(root: string) {
-    this.root = canonicalPath(root)
-    assertExternal(this.root)
+    this.root = externalStorePath(root)
   }
 
   path(relative: string): string {
-    const path = canonicalPath(resolve(this.root, relative))
-    if (!inside(this.root, path)) throw new Error(`Store path escapes its root: ${relative}`)
-    assertExternal(path)
-    return path
+    return externalStorePath(resolve(this.root, relative), this.root, relative)
   }
 
   read(relative: string): string | undefined {

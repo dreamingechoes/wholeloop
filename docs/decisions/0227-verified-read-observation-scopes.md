@@ -11,7 +11,7 @@ The maintainer makes performance a 1.0 release blocker. Measure total controller
 
 ## Decision
 
-Fixed read-only product observers share one process-local observation. Capture complete current bytes once for each distinct input, reuse them only within that observation and independently reread every captured input before its result escapes. Changed, absent-to-present, oversized, cancelled or unavailable inputs refuse the result. Keep public copies independent. There is no retained cache between actions.
+Fixed read-only product observers share one process-local observation. Capture complete current bytes once for each distinct input, reuse them only within that observation and independently reread every captured input before its result escapes. Changed, absent-to-present, oversized, cancelled or unavailable inputs refuse the result. Keep public copies independent. There is no retained cache between actions. A physical store selection coalesces canonical resolution, containment, external-store checks and existence into one entry. Separate overlapping path entries exhausted the unchanged 1024-input cap on the first full rehearsal; raising that cap would retain unnecessary work.
 
 The initial scope covers delivery/state journals, bounded source files, canonical/external paths, exact read-only Git queries and discovery inputs. Raw file names and bytes bind journal observations, including whitespace changes and appended segments. Git keys bind the working directory, complete arguments, hooks selection and environment identity; mutation and unsupported query shapes refuse before launch. Final synchronous validation bypasses sharing while retaining the write barrier. Late asynchronous continuations remain closed.
 

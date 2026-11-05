@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-05 · P6-39 · Coalesce duplicated physical store selections
+
+- Commit 981a19e passes the exact isolated Linux gates: CHECK PASS fast in 134s (3269 tests plus the existing macOS-only omission in 227 files), then CHECK PASS in 146s (4456 tests plus that omission in 264 files). All 112 focused macOS controls in sixteen files pass with actual process-table access, and strict types pass. Both runtime bundles match Linux. Source remains local on main.
+- Its fresh unmodified model-free rehearsal passes implementation, verification, review and re-verification, then blocks integration before product preparation after 82 seconds, with twelve successful synthetic receipts and no publication. Preserve failed report SHA-256 3fd18b32046e42b5efb6d959cd5cecaa3067064bac4adc5d8dd2c1688b6888c3. Read-only diagnosis confirms the new observation reaches its unchanged 1024-entry limit at only 652196 bytes: 337 source entries, 314 canonical-path entries and 310 external-path entries dominate the map. This is a regression in the first optimization, not a performance pass. The original environment is subsequently observed retired; no original report is rewritten.
+- Capture canonical resolution, containment, external-store protection and selected-path existence as one physical store selection instead of separate overlapping entries. Preserve error order, public path helpers, current revalidation and the original cap. A 350-file control initially has a test syntax error; the corrected differential control fails at the original observation limit while the nested-Git refusal passes. All 29 final path/store/observation controls pass after coalescing. The same retained unit's verification/re-verification/review and complete unit vector subsequently read ready, with failed-report/journal hashes unchanged; this separate readback does not promote the failed run to a pass. Exact gates and a fresh whole-route trial remain required.
+- The broader audit inventories 503 TypeScript modules, 2156 candidate I/O/proof call sites and 689 loops, including six literal while-true loops. These are review candidates, not 689 bugs. Independently reproduce an unbounded held-lock wait for NaN and Infinity in owned children terminated by a 200ms watchdog; a finite fifteen-millisecond control refuses in 26.189ms. Validate the timeout and use a monotonic wait in a separate next increment. No model, hosted service or source push runs.
+
+---
+
 ## 2026-11-05 · P6-27 · Audit controller amplification as a release blocker
 
 - The 9b7b9a2 increment passes exact Linux fast/full gates: CHECK PASS in 96s (1596 tests in 125 files), then CHECK PASS in 140s (4420 tests plus the existing macOS-only omission in 258 files). Seventy focused macOS controls and strict types pass; both compiled bundles match Linux. Node 20.0.0 runtime/offline package/docs/harness/baseline evaluator commands exit zero within their existing limited scope. Nineteen original source commits pass the history guard. No source push occurs.
