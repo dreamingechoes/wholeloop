@@ -227,6 +227,8 @@
 | [0216](./0216-minority-research-counterevidence.md) | Retain minority research counterevidence as uncertainty | Accepted | 2026-11-05 |
 | [0217](./0217-acceptance-producer-contracts.md) | Bind acceptance production to current identity and installed inputs | Accepted | 2026-11-05 |
 
+| [0218](./0218-controller-owned-repository-diff.md) | Observe committed repository scope through the original controller | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

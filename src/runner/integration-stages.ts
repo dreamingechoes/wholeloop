@@ -26,6 +26,7 @@ import { RunnerAssemblyReadiness } from './assembly-readiness.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import { RunnerEnvironmentScope } from './environment-scope.js'
 import type { RunnerStageRecord } from './events.js'
+import { assertRepositoryDiffOwnership } from './repository-diff-observation.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 
@@ -33,6 +34,8 @@ import type { RunnerRequest, RunnerStore } from './store.js'
 export function rootIntegrationCaseOwner(test: Pick<AcceptanceCase, 'runner'> | undefined) {
   if (test?.runner.kind === 'cli' && test.runner.capability === 'process.exec')
     return 'container-start'
+  if (test?.runner.kind === 'cli' && test.runner.capability === 'repository.diff')
+    return 'controller-git'
   if (test?.runner.kind === 'api' && test.runner.capability === 'http.request')
     return 'controller-http'
   if (test?.runner.kind === 'api' && test.runner.capability === 'evaluator.private-http')
@@ -53,7 +56,8 @@ export function integrationCorrectionCases(
     return {
       case: result.case,
       status: result.status,
-      ...(definition && ['controller-http', 'container-start', 'browser-exec'].includes(owner)
+      ...(definition &&
+      ['controller-http', 'controller-git', 'container-start', 'browser-exec'].includes(owner)
         ? {
             actions: [...definition.actions],
             assertions: definition.assertions.map(({ id, description }) => ({ id, description })),
@@ -252,12 +256,17 @@ export class RunnerIntegrationStages {
     })
     const scope = new RunnerEnvironmentScope(this.store, record.invocation)
     try {
-      await scope.run(context, selection.environment, driver, async (owned) => {
-        const result = await new IntegrationVerification(this.store.files.root, owned, {
-          deadline: binding.deadline,
-          signal: context.signal,
-          current: context.current,
-        }).run(selection)
+      await scope.run(context, selection.environment, driver, async (owned, repositoryRead) => {
+        const result = await new IntegrationVerification(
+          this.store.files.root,
+          owned,
+          {
+            deadline: binding.deadline,
+            signal: context.signal,
+            current: context.current,
+          },
+          repositoryRead,
+        ).run(selection)
         current()
         if (!result.artifact) throw new DeliveryRunnerError('integration-stage-report-required')
         this.store.files.atomic(
@@ -441,6 +450,17 @@ export class RunnerIntegrationStages {
             )
           )
             throw new DeliveryRunnerError('integration-stage-original-case-owner')
+        } else if (owner === 'controller-git' && definition) {
+          assertRepositoryDiffOwnership(
+            this.store,
+            record.invocation,
+            binding.selection.environment,
+            definition,
+            result,
+            observed.execution,
+            closed.reads,
+            intent.deadline,
+          )
         } else if (
           rootIntegrationCaseOwner(definition) !== 'controller-http' ||
           result.host.id !== 'docker-behavior' ||

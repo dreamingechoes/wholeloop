@@ -629,3 +629,46 @@ it('does not dispatch after intent persistence consumes its deadline and retains
     { now: () => new Date(wall).toISOString() },
   )
 })
+
+it.each(['absent', 'claimed'] as const)(
+  'refuses %s CLI process metadata without actual repository-diff read receipts',
+  (mode) =>
+    acceptanceFixture(async ({ acceptance, plan, boundary, host, root }) => {
+      const test = entry(plan.cases, 0)
+      test.runner = {
+        kind: 'cli',
+        capability: 'repository.diff',
+        input: JSON.stringify({ schema: 'wholeloop/repository-diff-input@1', repository: 'app' }),
+      }
+      host.id = 'docker-repository-diff'
+      host.capability = 'repository.diff'
+      if (mode === 'claimed') {
+        const execute = host.execute
+        host.execute = async (test, context) => {
+          const observed = await execute(test, context),
+            now = new Date().toISOString()
+          return {
+            ...observed,
+            process: {
+              argv: ['git', 'diff-tree'],
+              cwd: root,
+              pid: process.pid,
+              code: 0,
+              startedAt: now,
+              endedAt: now,
+            },
+          }
+        }
+      }
+      const pinned = acceptance.prepare(plan)
+      const result = await acceptance.executeCase(
+        pinned.digest,
+        test.id,
+        'unowned-diff',
+        boundary,
+        host,
+      )
+      expect(result.status).toBe('unavailable')
+      expect(result.assertions).toEqual([])
+    }),
+)

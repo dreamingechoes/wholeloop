@@ -31,9 +31,13 @@ export function assemblyGitEnvironment(home: string): NodeJS.ProcessEnv {
 }
 /** Repository helpers would execute on the controller during checkout/merge; refuse rather than approximate containment. */
 export function assertAssemblyGit(root: string) {
-  const entries = git(root, ['config', '--local', '--no-includes', '--null', '--list'])
-    .split('\0')
-    .filter(Boolean)
+  assertAssemblyGitConfiguration(
+    git(root, ['config', '--local', '--no-includes', '--null', '--list']),
+  )
+}
+/** Bounded read hosts use the same guard with their own sanitized Git invocation. */
+export function assertAssemblyGitConfiguration(configuration: string) {
+  const entries = configuration.split('\0').filter(Boolean)
   for (const entry of entries) {
     const key = entry.split('\n')[0] ?? ''
     if (

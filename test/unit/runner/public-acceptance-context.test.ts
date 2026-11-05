@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { behaviorInput } from '../../../src/acceptance/behavior-input.js'
 import type { AcceptanceCase } from '../../../src/acceptance/contracts.js'
+import { repositoryDiffInput } from '../../../src/acceptance/repository-diff-input.js'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import type { NativeRuntime } from '../../../src/delivery/native-runtime.js'
 import { publicAcceptanceContext } from '../../../src/runner/public-acceptance-context.js'
@@ -25,6 +26,7 @@ describe('installed public acceptance production context', () => {
         expect(context.runners.map((runner) => runner.capability)).toEqual([
           'process.exec',
           'http.request',
+          'repository.diff',
         ])
         const fixture = context.fixtures[0]
         expect(fixture?.fixture).toEqual({ ref: `recipe:${recipe}`, sha256: recipe })
@@ -67,6 +69,33 @@ describe('installed public acceptance production context', () => {
               timeoutMs: 5000,
             }
           expect(behaviorInput(test)).toEqual(input)
+          if (kind === 'cli') {
+            test.runner = {
+              kind: 'cli',
+              capability: 'repository.diff',
+              input: JSON.stringify({
+                schema: 'wholeloop/repository-diff-input@1',
+                repository: fixture?.repository,
+              }),
+            }
+            test.assertions = [
+              {
+                id: 'paths',
+                description: 'Observe exact committed scope.',
+                subject: 'json',
+                operator: 'equals',
+                path: '/changedPaths',
+                expected: '["status.txt"]',
+              },
+            ]
+            test.fixture = fixture?.repositoryDiffFixture ?? { ref: '', sha256: '' }
+            expect(repositoryDiffInput(test)).toEqual({ repository: fixture?.repository })
+            expect(fixture?.base).toBe(plan.repositories[0]?.base)
+            expect(
+              context.runners.find((runner) => runner.capability === 'repository.diff')?.inputSchema
+                ?.$id,
+            ).toBe('wholeloop/repository-diff-input@1')
+          }
         }
         expect(contractDigest(store.lifecycle.journal.events())).toBe(before)
         context.inputSchema.properties.kind.enum.push('semantic')

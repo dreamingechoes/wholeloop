@@ -1,4 +1,8 @@
 import { existsSync, readdirSync } from 'node:fs'
+import {
+  type RepositoryDiffReader,
+  repositoryDiffArguments,
+} from '../acceptance/repository-diff.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
 import {
@@ -10,6 +14,7 @@ import { EnvironmentOperations } from '../environment/operations.js'
 import { DeliveryEnvironments, type EnvironmentProvisionRequest } from '../environment/provision.js'
 import { EnvironmentResources } from '../environment/runtime.js'
 import { withWorkerOwnership } from '../fanout/ownership.js'
+import { assemblyGitEnvironment } from '../integration/git-process.js'
 import type { RunnerStageContext } from './engine.js'
 import {
   captureEnvironmentPreparation,
@@ -188,7 +193,7 @@ export class RunnerEnvironmentScope {
     context: RunnerStageContext,
     environment: string,
     driver: DockerTransport,
-    operation: (driver: DockerTransport) => Promise<T>,
+    operation: (driver: DockerTransport, repositoryRead: RepositoryDiffReader) => Promise<T>,
   ): Promise<T> {
     return this.runOwned(context, environment, driver, operation)
   }
@@ -230,7 +235,7 @@ export class RunnerEnvironmentScope {
     context: RunnerStageContext,
     environment: string,
     driver: DockerTransport,
-    operation: (driver: DockerTransport) => Promise<T>,
+    operation: (driver: DockerTransport, repositoryRead: RepositoryDiffReader) => Promise<T>,
     preparation?: EnvironmentPreparation,
   ): Promise<T> {
     const request = contractDigest(context.request),
@@ -489,8 +494,94 @@ export class RunnerEnvironmentScope {
         }
       },
     }
+    const repositoryRead: RepositoryDiffReader = async (repository, read, input) => {
+      const retained = this.read(),
+        candidate = selected.record.candidates.find((c) => c.repository === repository),
+        declared = basis.plan.repositories.find((r) => r.id === repository),
+        current = () => {
+          const grant = this.store.lifecycle.authority.inspect(actual.grant)
+          return (
+            open &&
+            !context.signal.aborted &&
+            !input.signal.aborted &&
+            context.current() &&
+            Date.now() < Math.min(Date.parse(context.deadline), Date.parse(input.deadline)) &&
+            grant.status === 'active' &&
+            grant.digest === authority.digest &&
+            grant.grant.effects.includes('source.read') &&
+            grant.grant.repositories.some((r) => r.repository === repository)
+          )
+        }
+      if (
+        !retained ||
+        !candidate ||
+        !declared ||
+        !Number.isFinite(Date.parse(input.deadline)) ||
+        !current()
+      )
+        throw new DeliveryRunnerError('environment-repository-read-unavailable')
+      const args = repositoryDiffArguments(read, declared.base, candidate.head)
+      let invocation = ''
+      this.store.files.locked(() => {
+        const original = this.read()
+        if (
+          !original ||
+          original.binding.operations.length + original.binding.reads.length >= 1000 ||
+          !current()
+        )
+          throw new DeliveryRunnerError('environment-stage-read-capacity')
+        invocation = contractDigest({
+          stage: this.invocation,
+          ...(this.phase ? { phase: this.phase } : {}),
+          read: original.binding.reads.length,
+          kind: 'repository.diff',
+          repository,
+          operation: read,
+          case: input.invocation,
+        })
+        original.binding.reads.push(invocation)
+        this.store.files.atomic(this.path, `${JSON.stringify(original.binding)}\n`)
+      })
+      const manager = new ManagedRunnerProcess(this.store.files, invocation),
+        abort = new AbortController(),
+        cancel = () => abort.abort()
+      for (const signal of [context.signal, input.signal])
+        signal.addEventListener('abort', cancel, { once: true })
+      try {
+        if (context.signal.aborted || input.signal.aborted) abort.abort()
+        const result = await manager.invoke('git', args, '', {
+          cwd: candidate.path,
+          env: { ...assemblyGitEnvironment(this.store.files.root), GIT_NO_REPLACE_OBJECTS: '1' },
+          timeoutMs: Math.max(
+            1,
+            Math.min(
+              5000,
+              Date.parse(context.deadline) - Date.now(),
+              Date.parse(input.deadline) - Date.now(),
+            ),
+          ),
+          signal: abort.signal,
+          current,
+          started: (pid) => registerRoot(`pid-${pid}`),
+        })
+        if (!current()) throw new DeliveryRunnerError('environment-stage-fenced')
+        return {
+          ...result,
+          binding: {
+            repository,
+            path: candidate.path,
+            base: declared.base,
+            head: candidate.head,
+            snapshot: candidate.snapshot,
+          },
+        }
+      } finally {
+        for (const signal of [context.signal, input.signal])
+          signal.removeEventListener('abort', cancel)
+      }
+    }
     try {
-      return await operation(wrapped)
+      return await operation(wrapped, repositoryRead)
     } finally {
       open = false
     }

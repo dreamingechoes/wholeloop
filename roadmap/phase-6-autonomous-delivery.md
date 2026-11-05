@@ -715,6 +715,8 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 ---
 
+The third 2026-11-05 Codex implementation pilot retains correct response identity/HTTP input but returns blocked on missing committed scope observation. ADR-0218 installs a fixed original-owner repository.diff reader within existing source/test/report authority; focused controls pass while complete platform gates and fresh native acceptance remain open. All five failed research/implementation pilots retain their original outcomes, and Windows/WSL2 are explicitly deferred.
+
 ## P6-28 · Crash, race and autonomy failure evaluations
 
 **Status:** ✅ · **Size:** M · **Depends on:** P6-26, P6-10, P6-06, P6-24

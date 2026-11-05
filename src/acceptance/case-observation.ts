@@ -20,7 +20,9 @@ export function observedDockerAcceptanceCase(
           ? 'docker-browser-mcp'
           : test?.runner.capability === 'evaluator.private-http'
             ? 'docker-private-http'
-            : 'docker-behavior'
+            : test?.runner.kind === 'cli' && test.runner.capability === 'repository.diff'
+              ? 'docker-repository-diff'
+              : 'docker-behavior'
     if (
       test?.owner !== 'machine' ||
       test.applicability !== 'applicable' ||

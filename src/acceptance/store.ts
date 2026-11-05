@@ -31,6 +31,7 @@ import {
   acceptanceTime,
   validateAcceptancePlan,
 } from './contracts.js'
+import { observedRepositoryDiff } from './repository-diff-observation.js'
 
 export interface AcceptanceHost {
   id: string
@@ -606,12 +607,14 @@ export class DeliveryAcceptance {
     if (report.problem) throw new AcceptanceError('acceptance-budget')
   }
   private validateResult(result: AcceptanceCaseResult, test: AcceptanceCase, plan: AcceptancePlan) {
-    if (
-      result.status === 'passed' &&
-      test.runner.kind === 'cli' &&
-      (!result.process || !Number.isInteger(result.process.code))
-    )
-      throw new AcceptanceError('missing-observed-process')
+    if (result.status === 'passed' && test.runner.kind === 'cli') {
+      // Committed scope is six controller-owned reads, not an application
+      // command. Reopen their actual private receipts rather than inventing
+      // one process or trusting a host/capability name alone.
+      if (test.runner.capability === 'repository.diff') observedRepositoryDiff(this, result, test)
+      else if (!result.process || !Number.isInteger(result.process.code))
+        throw new AcceptanceError('missing-observed-process')
+    }
     acceptanceTime(result.startedAt)
     acceptanceTime(result.endedAt)
     if (result.endedAt < result.startedAt) throw new AcceptanceError('invalid-observation-time')

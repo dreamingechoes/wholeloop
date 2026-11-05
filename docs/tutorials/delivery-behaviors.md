@@ -15,6 +15,12 @@ npm run build
 node dist/wl.mjs delivery behavior-schema --json
 ```
 
+## Verify committed file scope in the public implementation route
+
+The installed public implementation controller also supports CLI capability repository.diff during integrated verification ([ADR-0218](../decisions/0218-controller-owned-repository-diff.md)). The producer receives its exact input schema and the selected repositoryDiffFixture. Set runner.input to a JSON string containing only schema wholeloop/repository-diff-input@1 and the declared repository ID; use that repository/base fixture instead of the recipe fixture. A JSON assertion at /changedPaths can compare the complete sorted path array, with its expected value encoded as JSON text. Other observable fields are base, head, baseAncestor and changes; every change includes path, status and before/after mode and oid.
+
+The controller chooses the owned candidate and both revisions. It refuses dirty/moved candidates and retains each bounded Git read under the original case/root owner. Existing source.read, test.run and report.write grants are required. This host is installed by the public integrated route; the standalone behavior command and SDK compositions without its reader cannot execute it. It establishes committed-tree facts only; PR/CI/merge evidence still comes from the hosted adapters.
+
 ## Define a case before the builder runs
 
 Follow [acceptance planning](./delivery-acceptance.md) and [Docker environment setup](./delivery-docker.md). The acceptance case's runner.input is a JSON string containing the behavior-input object. These fragments are definition data; replace the service, command, paths and expectations with the actual reviewed application's contract before pinning the plan.

@@ -7,6 +7,8 @@ import type {
 } from '../acceptance/contracts.js'
 import { acceptanceShape } from '../acceptance/contracts.js'
 import { DockerBehaviorHost } from '../acceptance/docker-behavior.js'
+import { DockerRepositoryDiffHost } from '../acceptance/docker-repository-diff.js'
+import type { RepositoryDiffReader } from '../acceptance/repository-diff.js'
 import { requiredPrivateSensitivity } from '../acceptance/sensitivity.js'
 import { type AcceptanceExecutionControl, DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
@@ -86,6 +88,7 @@ export class IntegrationVerification {
     store?: string,
     readonly driver: DockerTransport = new DockerCli(),
     control?: AcceptanceExecutionControl,
+    readonly repositoryRead?: RepositoryDiffReader,
   ) {
     this.candidates = new IntegrationCandidates(store)
     this.assembly = new IntegrationAssembly(this.candidates.planning.sources.files.root)
@@ -177,13 +180,18 @@ export class IntegrationVerification {
                 id,
                 this.driver,
               )
-            : new DockerBehaviorHost(
-                this.acceptance,
-                pinned.digest,
-                request.environment,
-                id,
-                this.driver,
-              )
+            : test.runner.kind === 'cli' && test.runner.capability === 'repository.diff'
+              ? new DockerRepositoryDiffHost(
+                  [this.acceptance, pinned.digest, request.environment, id, this.driver],
+                  this.repositoryRead,
+                )
+              : new DockerBehaviorHost(
+                  this.acceptance,
+                  pinned.digest,
+                  request.environment,
+                  id,
+                  this.driver,
+                )
       const result = await this.acceptance.executeCase(
         pinned.digest,
         id,
