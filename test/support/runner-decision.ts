@@ -1,5 +1,6 @@
 import { contractDigest } from '../../src/contracts/compatibility.js'
 import { NativeDelegatedDecisionHost } from '../../src/decisions/native-host.js'
+import type { DecisionId } from '../../src/decisions/policy.js'
 import type { DecisionRequest } from '../../src/decisions/store.js'
 import { RunnerDecisionStages } from '../../src/runner/decision-stages.js'
 import type { RunnerStageContext } from '../../src/runner/engine.js'
@@ -16,6 +17,7 @@ export async function runnerDecisionFixture(
     host: Parameters<RunnerDecisionStages['execute']>[2]
   }) => Promise<void>,
   stageId = 'build-plan:contract',
+  options: { decision?: DecisionId; mode?: Parameters<typeof nativeDecisionFixture>[1] } = {},
 ) {
   await nativeDecisionFixture(
     async ({ request: decision, purposes, host }) => {
@@ -62,8 +64,8 @@ export async function runnerDecisionFixture(
           }),
       })
     },
-    'valid',
+    options.mode ?? 'valid',
     'codex',
-    { decision: 'approve-build-plan', none: true },
+    { decision: options.decision ?? 'approve-build-plan', none: true },
   )
 }

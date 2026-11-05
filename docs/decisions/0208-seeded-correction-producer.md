@@ -97,9 +97,12 @@ Removing the candidate fallback or the queue change fails the case.
 
 The actual `eval:assembly` control executes an opaque private evaluator before the public combined failure, then observes the repaired product. Both retained original Git/Docker proofs pass through `RunnerIntegrationStages.failedCases`: private objective, descriptor, assertion and manifest canaries remain absent while public guidance remains available. Root-stage locators and their runtime are explicitly synthetic fixture metadata; this proves the real product-proof reader boundary, not a native root-controller launch. Existing journal start rules and declared-port policy remain unchanged.
 
+**Acceptance feedback follow-up.** Corrections retain the original acceptance explanations as explicitly historical, untrusted repair input. Delegated feedback carries the exact immutable decision digest, outcome, challenger verdict, rationales and uncertainties without input artifacts or actor identities. A person's rejected subject carries its note and record digest without their name; accepted human decisions supply no rejection feedback. Missing consumed bindings, damaged receipts and changed human subjects refuse rather than substituting a newer decision.
+
+Read-only feedback survives grant revocation and later revisions, while current human pending/open/record paths retain active-basis validation. The actual owned-builder/Git hybrid continuation now covers both integration and acceptance failures: the acceptance branch records a fixture human rejection, renews the exact-plan grant, and verifies that the correction's private binding carries that note. Forty focused reader, authority-refusal and continuation cases pass. This does not certify an actual native client/model or hosted acceptance.
+
 Not covered yet:
 
-- **Acceptance-origin corrections.** They carry only the stage reason and evidence for now.
 - **A verification repair on top of a correction.** It is not supported: its repair chain would root at the correction's commit and lease, so it blocks honestly.
 
 **Increment 4.** The public `to-pr` composition registers the correction adapter, with the integration stages supplying failed product cases, so a continuation route is covered as a whole.

@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-29 · Historical acceptance feedback — in progress
+
+- Add read-only original-decision feedback and feed it into acceptance-origin corrections. Preserve immutable delegated outcomes, challenger verdicts, rationales and bounded uncertainties, with explicit historical/provenance labels. Preserve only a rejected human subject, note and record digest. Omit actor identities and input artifacts; accepted human decisions create no rejection feedback. Treat every explanation as untrusted repair data, never as current approval.
+- Keep historical human reads private to the new feedback method. Existing pending/open/record methods still require the active original basis; revocation tests exercise their refusals. Missing consumed bindings, missing/damaged exact delegated receipts and changed/missing human request bindings fail instead of borrowing a newer decision. Historical reads append no event and launch no worker.
+- Extend the owned-builder/Git hybrid continuation to both integration and acceptance failures. The acceptance branch records its exact fixture rejection, continues under a new exact-plan grant and verifies that the correction's private binding carries the note without the person's identity. All forty focused cases in five files pass, together with types and lint. The mandatory per-commit gate passes: `CHECK PASS (fast) in 173s`. P6-29 stays in progress for CI-origin continuation and verification repairs; no actual native/model account, hosted service or wholeloop source push runs.
+
+---
+
 ## 2026-11-05 · P6-29 · Private correction feedback — in progress
 
 - Extract the fixed feedback projection from the historical integration reader. Only known public HTTP, CLI and browser owners expose copied actions, assertion IDs/descriptions and failure conditions. Private, unsupported and missing definitions expose case ID/status only; result reasons, inputs, expected values and artifacts never enter the projection. Eight new projection cases plus seventeen integration cases pass, with types and lint.

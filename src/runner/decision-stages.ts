@@ -384,6 +384,48 @@ export class RunnerDecisionStages {
     if (contractDigest(receipt.record.request) !== contractDigest(request)) return undefined
     return receipt
   }
+  /** Historical explanations carry no current approval and forward no input artifacts. */
+  originalFeedback(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    const binding = this.read(request, record)
+    if (!binding) {
+      if (
+        existsSync(
+          this.store.files.path(`delivery/runner-decision-claims/${record.invocation}.txt`),
+        )
+      )
+        throw new DeliveryRunnerError('decision-stage-missing-binding')
+      return []
+    }
+    return binding.requests.map((selected) => {
+      const receipt = this.receipt(selected)
+      if (!receipt) throw new DeliveryRunnerError('decision-stage-original-receipt-required')
+      const original = receipt.record,
+        uncertainty = ({ id, missing }: { id: string; missing: string }) => ({ id, missing })
+      // inspect validates immutable bytes even when a later revision or revoked
+      // grant makes the receipt stale. Staleness never restores its authority.
+      return {
+        decision: selected.decision,
+        historical: true as const,
+        digest: receipt.digest,
+        status: original.status,
+        provenance:
+          original.judgment.identity.provenance === 'host-observed' &&
+          original.challenge.identity.provenance === 'host-observed'
+            ? ('host-observed' as const)
+            : ('fixture' as const),
+        judgment: {
+          outcome: original.judgment.outcome,
+          rationale: original.judgment.rationale,
+          uncertainties: original.judgment.uncertainties.map(uncertainty),
+        },
+        challenge: {
+          verdict: original.challenge.verdict,
+          rationale: original.challenge.rationale,
+          uncertainties: original.challenge.uncertainties.map(uncertainty),
+        },
+      }
+    })
+  }
   async inspect(
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,

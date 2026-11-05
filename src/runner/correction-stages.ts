@@ -6,9 +6,11 @@ import type { DeliveryCorrection, DeliveryPlan } from '../delivery/plan.js'
 import type { DeliveryQueue, QueueAssignment } from '../delivery/queue.js'
 import { DeliveryWorkspaces } from '../delivery/workspaces.js'
 import type { AssemblyGitControl } from '../integration/git-process.js'
+import { RunnerDecisionStages } from './decision-stages.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerGitStages } from './git-stages.js'
+import { RunnerHumanDecisions } from './human-decisions.js'
 import { RunnerIntegrationStages } from './integration-stages.js'
 import { RunnerNativeScope } from './native-scope.js'
 import { RunnerNativeStage } from './native-stage.js'
@@ -26,6 +28,10 @@ export interface RunnerCorrectionFeedback {
   failure: string
   reason: string
   cases: ReturnType<RunnerIntegrationStages['failedCases']>
+  acceptance?: {
+    delegated: ReturnType<RunnerDecisionStages['originalFeedback']>
+    person: ReturnType<RunnerHumanDecisions['originalFeedback']> | null
+  }
 }
 interface CorrectionBinding {
   version: 1
@@ -107,18 +113,31 @@ export class RunnerCorrectionStages {
       record.evidence !== entry.failure
     )
       throw new DeliveryRunnerError('correction-stage-failure-unavailable')
-    // Acceptance failures carry their decision record; this version retains the
-    // stage reason and evidence for them and the failed product cases for integration.
+    // Read original decisions as history: a later grant makes them ineligible
+    // for approval, but cannot erase the rejection the builder must address.
     const cases =
-      entry.origin === 'integration' && this.integration
-        ? this.integration.failedCases(this.store.get(entry.request), record)
-        : []
+        entry.origin === 'integration' && this.integration
+          ? this.integration.failedCases(this.store.get(entry.request), record)
+          : [],
+      request = this.store.get(entry.request),
+      acceptance =
+        entry.origin === 'acceptance'
+          ? {
+              delegated: new RunnerDecisionStages(this.store, request.host).originalFeedback(
+                request,
+                record,
+              ),
+              person:
+                new RunnerHumanDecisions(this.store).originalFeedback(request, record) ?? null,
+            }
+          : undefined
     return {
       origin: entry.origin,
       stage: entry.stage,
       failure: entry.failure,
       reason: record.reason ?? '',
       cases,
+      ...(acceptance && (acceptance.delegated.length || acceptance.person) ? { acceptance } : {}),
     }
   }
   private read(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {

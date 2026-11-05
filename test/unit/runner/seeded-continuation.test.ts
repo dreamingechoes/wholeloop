@@ -14,6 +14,7 @@ import {
   type RunnerStageObservation,
 } from '../../../src/runner/engine.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
+import { RunnerHumanDecisions } from '../../../src/runner/human-decisions.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { type RunnerWorkerOptions, RunnerWorkerStages } from '../../../src/runner/worker-stages.js'
 import { authorization, fixture, git } from '../../support/delivery.js'
@@ -24,12 +25,13 @@ const FAILURE = 'f'.repeat(64),
 /**
  * Real owned Git workspace and commit stages; every other stage is a
  * synthetic observation. The first run's implementation edits the unit and
- * its integration fails; the continuation's implementation changes nothing.
+ * its selected product stage fails; the continuation's implementation changes nothing.
  */
 function hybridHost(
   store: RunnerStore,
   identity: RunnerRequest['host'],
   builders?: RunnerWorkerOptions,
+  failureKind: 'integration' | 'acceptance' = 'integration',
 ) {
   const git = new RunnerGitStages(store),
     queue = new DeliveryQueue(store.files.root),
@@ -59,21 +61,39 @@ function hybridHost(
           join(git.workspace(context.request, 'search').repository.path, 'app.txt'),
           'Original owned implementation.\n',
         )
-      const failed = state.failing && context.stage.kind === 'integration',
-        observation: RunnerStageObservation = {
-          schema: 'wholeloop/delivery-runner-stage-observation@1',
-          plan: contractDigest(context.plan),
+      const failed = state.failing && context.stage.kind === failureKind
+      if (failed && failureKind === 'acceptance') {
+        const humans = new RunnerHumanDecisions(store),
+          record = store.stage(contractDigest(context.request), context.stage.id),
+          subject = contractDigest({ request: context.request, product: 'synthetic-product' })
+        if (!record) throw new Error('Original synthetic acceptance stage required')
+        humans.open(context.request, record, subject)
+        humans.record({
           request: contractDigest(context.request),
           stage: context.stage.id,
-          invocation: context.invocation,
-          status: failed ? 'failed' : 'passed',
-          invocationState: 'stopped',
-          evidence: failed ? FAILURE : contractDigest({ stage: context.stage.id }),
-          provenance: 'fixture',
-          reason: failed
-            ? 'Original bounded product QA fails at the current QA-ready assembly.'
-            : 'The selected normalized fixture host observed its exact stage.',
-        }
+          decision: 'acceptance',
+          subject,
+          outcome: 'reject',
+          by: 'Fixture Operator',
+          note: 'Correct the documented acceptance mismatch.',
+        })
+      }
+      const observation: RunnerStageObservation = {
+        schema: 'wholeloop/delivery-runner-stage-observation@1',
+        plan: contractDigest(context.plan),
+        request: contractDigest(context.request),
+        stage: context.stage.id,
+        invocation: context.invocation,
+        status: failed ? 'failed' : 'passed',
+        invocationState: 'stopped',
+        evidence: failed ? FAILURE : contractDigest({ stage: context.stage.id }),
+        provenance: 'fixture',
+        reason: failed
+          ? failureKind === 'acceptance'
+            ? 'The fixture person rejects the exact product with repair guidance.'
+            : 'Original bounded product QA fails at the current QA-ready assembly.'
+          : 'The selected normalized fixture host observed its exact stage.',
+      }
       issued.set(context.invocation, observation)
       return observation
     },
@@ -257,9 +277,9 @@ describe('seeded workspaces in a correction continuation (ADR-0208)', () => {
     // Two complete engine runs with real Git stages; parallel suites need headroom.
     120000,
   )
-  it(
-    'corrects the failed unit from its retained failure and commits the result',
-    () =>
+  it.each(['integration', 'acceptance'] as const)(
+    'corrects the failed unit from retained %s feedback and commits the result',
+    (failureKind) =>
       fixture(async ({ planning, plan }) => {
         // The builder's context must carry every guidance pin the plan names.
         for (const pin of plan.guidance)
@@ -283,10 +303,17 @@ describe('seeded workspaces in a correction continuation (ADR-0208)', () => {
             host: { id: 'fixture', version: '1', configuration: 'a'.repeat(64) },
             pollMs: 50,
           },
-          hybrid = hybridHost(store, request.host, builderOptions(store, request.host)),
+          hybrid = hybridHost(
+            store,
+            request.host,
+            builderOptions(store, request.host),
+            failureKind,
+          ),
           first = store.prepare(request),
           result = await new DeliveryRunner(store).run(first.digest, hybrid.host),
-          failure = result.stages.find((stage) => stage.id.startsWith('integration:'))
+          failure = result.stages.find(
+            (stage) => stage.id === failureKind || stage.id.startsWith(`${failureKind}:`),
+          )
         expect(result.stages.find((stage) => stage.id === 'implementation:search')).toMatchObject({
           status: 'passed',
           provenance: 'host-observed',
@@ -295,7 +322,7 @@ describe('seeded workspaces in a correction continuation (ADR-0208)', () => {
           store.lifecycle,
           plan.run,
           { request: first.digest, stage: failure?.id ?? '', unit: 'search' },
-          { operator: 'Fixture Operator', reason: 'Repair the failed integration case.' },
+          { operator: 'Fixture Operator', reason: 'Repair the retained product failure.' },
         )
         const next = store.planning.getPlan(plan.run, 2),
           renewed = store.lifecycle.authority.authorize({
@@ -336,11 +363,22 @@ describe('seeded workspaces in a correction continuation (ADR-0208)', () => {
           )
         expect(bindings).toHaveLength(1)
         expect(binding.feedback).toMatchObject({
-          origin: 'integration',
+          origin: failureKind,
           stage: failure?.id,
           failure: FAILURE,
           cases: [],
         })
+        if (failureKind === 'acceptance') {
+          expect(binding.feedback.acceptance).toMatchObject({
+            delegated: [],
+            person: {
+              outcome: 'reject',
+              note: 'Correct the documented acceptance mismatch.',
+              provenance: 'person-record',
+            },
+          })
+          expect(binding.feedback.acceptance.person).not.toHaveProperty('by')
+        }
         expect(
           continued.stages
             .filter(

@@ -48,9 +48,20 @@ export class RunnerHumanDecisions {
       throw new DeliveryRunnerError('human-decision-invocation')
     return `delivery/runner-human-decisions/${invocation}`
   }
-  private original(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+  private original(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    historical = false,
+  ) {
     const digest = contractDigest(request),
-      basis = this.store.basis(request),
+      basis = historical
+        ? this.store.planning.getPlan(
+            request.run,
+            this.store.lifecycle.journal
+              .get(request.run)
+              .plans.find((entry) => entry.digest === record.basis)?.revision ?? 0,
+          )
+        : this.store.basis(request),
       stage = runnerRoute(basis.plan).find((entry) => entry.id === record.id),
       retained = this.store
         .record(digest)
@@ -98,9 +109,16 @@ export class RunnerHumanDecisions {
     })
   }
   pending(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    return this.readPending(request, record, false)
+  }
+  private readPending(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    historical: boolean,
+  ) {
     const path = `${this.path(record.invocation)}/request.json`
     if (!existsSync(this.store.files.path(path))) return undefined
-    const { digest, decision } = this.original(request, record),
+    const { digest, decision } = this.original(request, record, historical),
       value = JSON.parse(readSourceFile(this.store.files.root, path, 4096)) as RunnerHumanRequest
     if (
       Object.keys(value).sort().join(',') !==
@@ -117,7 +135,14 @@ export class RunnerHumanDecisions {
     return value
   }
   decided(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
-    const opened = this.pending(request, record),
+    return this.readDecision(request, record, false)
+  }
+  private readDecision(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    historical: boolean,
+  ) {
+    const opened = this.readPending(request, record, historical),
       path = `${this.path(record.invocation)}/decision.json`
     if (!opened || !existsSync(this.store.files.path(path))) return undefined
     const value = JSON.parse(
@@ -139,6 +164,26 @@ export class RunnerHumanDecisions {
     )
       throw new DeliveryRunnerError('human-decision-record-binding')
     return value
+  }
+  /** A retained rejection can explain repair without becoming a current approval. */
+  originalFeedback(request: Readonly<RunnerRequest>, record: Readonly<RunnerStageRecord>) {
+    const decision = this.readDecision(request, record, true)
+    if (!decision) {
+      if (existsSync(this.store.files.path(`${this.path(record.invocation)}/decision.json`)))
+        throw new DeliveryRunnerError('human-decision-original-request-required')
+      return undefined
+    }
+    return decision.outcome === 'reject'
+      ? {
+          decision: decision.decision,
+          historical: true as const,
+          subject: decision.subject,
+          outcome: decision.outcome,
+          note: decision.note,
+          digest: contractDigest(decision),
+          provenance: 'person-record' as const,
+        }
+      : undefined
   }
   /** The person names the exact subject they reviewed; a changed subject records nothing. */
   record(input: {
