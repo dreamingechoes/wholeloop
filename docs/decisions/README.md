@@ -241,6 +241,8 @@
 
 | [0224](./0224-recovery-read-elapsed-deadlines.md) | Refuse recovery reads completed past their elapsed deadline | Accepted | 2026-11-05 |
 
+| [0225](./0225-process-local-original-group-closure.md) | Retain witnessed original group closure within its controller | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

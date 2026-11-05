@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import {
   chmodSync,
@@ -10,7 +11,8 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { delimiter, join } from 'node:path'
+import { delimiter, join, resolve } from 'node:path'
+import { buildSync } from 'esbuild'
 import { describe, expect, it } from 'vitest'
 import { operationWrapper } from '../../../src/fanout/operation-wrapper.js'
 import { ManagedRunnerProcess } from '../../../src/runner/native-process.js'
@@ -26,6 +28,109 @@ async function fixture(run: (manager: ManagedRunnerProcess, root: string) => Pro
   }
 }
 describe('actual managed native process ownership', () => {
+  it('retains witnessed original closure across numeric group reuse without restoring it from disk', async () => {
+    await fixture(async (manager, root) => {
+      const result = await manager.invoke(process.execPath, ['-e', 'process.exit(7)'], '', {
+          cwd: root,
+          env: { PATH: process.env.PATH },
+          timeoutMs: 3000,
+          signal: new AbortController().signal,
+          current: () => true,
+        }),
+        original = structuredClone(result.ownership),
+        names = ['intent', 'started', 'outcome'] as const,
+        retained = new Map(
+          names.map((name) => [
+            name,
+            readFileSync(manager.files.path(`${manager.relative}/${name}.json`)),
+          ]),
+        ),
+        started = JSON.parse(retained.get('started')?.toString() ?? ''),
+        foreign = new ManagedRunnerProcess(
+          new StoreFiles(join(root, 'foreign')),
+          manager.invocation,
+        ),
+        bin = join(root, 'observer-bin'),
+        table = join(root, 'process-table'),
+        unavailable = join(root, 'unavailable'),
+        originalPath = process.env.PATH
+      expect(original).toMatchObject({ invocationState: 'stopped', code: 7 })
+      for (const name of names)
+        foreign.files.atomic(`${foreign.relative}/${name}.json`, retained.get(name) ?? '')
+      // A copied/private certificate cannot reconstruct an in-process observation.
+      foreign.files.atomic(`${foreign.relative}/closed.json`, JSON.stringify(original))
+      mkdirSync(bin)
+      writeFileSync(
+        join(bin, 'ps'),
+        `#!${process.execPath}\nconst fs=require('node:fs');if(fs.existsSync(${JSON.stringify(unavailable)}))process.exit(1);process.stdout.write(fs.readFileSync(${JSON.stringify(table)}));\n`,
+      )
+      chmodSync(join(bin, 'ps'), 0o700)
+      writeFileSync(table, `${started.pid} ${started.pid}\n`)
+      process.env.PATH = `${bin}${delimiter}${originalPath ?? ''}`
+      try {
+        result.ownership.evidence = 'f'.repeat(64)
+        expect(new ManagedRunnerProcess(manager.files, manager.invocation).observe()).toEqual(
+          original,
+        )
+        expect(foreign.observe().invocationState).toBe('unknown')
+        const foreignOutcome = foreign.files.path(`${foreign.relative}/outcome.json`)
+        rmSync(foreignOutcome)
+        writeFileSync(table, '')
+        expect(foreign.observe().reason).toBe(
+          'original-native-group-absent-without-semantic-result',
+        )
+        foreign.files.atomic(`${foreign.relative}/outcome.json`, retained.get('outcome') ?? '')
+        writeFileSync(table, `${started.pid} ${started.pid}\n`)
+        expect(foreign.observe().invocationState).toBe('unknown')
+        for (const name of names) {
+          const bytes = retained.get(name)
+          if (!bytes) throw new Error('Original process bytes required')
+          manager.files.atomic(`${manager.relative}/${name}.json`, `${bytes.toString()} `)
+          expect(manager.observe().invocationState).toBe('unknown')
+          manager.files.atomic(`${manager.relative}/${name}.json`, bytes)
+        }
+        const cold = join(root, 'cold-read.mjs')
+        manager.files.atomic(`${manager.relative}/closed.json`, JSON.stringify(original))
+        buildSync({
+          stdin: {
+            contents: `import {ManagedRunnerProcess} from ${JSON.stringify(resolve('src/runner/native-process.ts'))};import {StoreFiles} from ${JSON.stringify(resolve('src/state/files.ts'))};console.log(JSON.stringify(new ManagedRunnerProcess(new StoreFiles(${JSON.stringify(manager.files.root)}),${JSON.stringify(manager.invocation)}).observe()));`,
+            resolveDir: process.cwd(),
+            loader: 'ts',
+          },
+          outfile: cold,
+          bundle: true,
+          platform: 'node',
+          format: 'esm',
+          banner: {
+            js: "import {createRequire} from 'node:module';const require=createRequire(import.meta.url);",
+          },
+          define: { __WL_VERSION__: '"0.0.0"', __WL_HARNESS__: '{}' },
+        })
+        const readback = spawnSync(process.execPath, [cold], {
+          encoding: 'utf8',
+          env: { PATH: process.env.PATH },
+          timeout: 5000,
+        })
+        expect(readback.status).toBe(0)
+        expect(JSON.parse(readback.stdout).invocationState).toBe('unknown')
+        const outcome = retained.get('outcome')
+        if (!outcome) throw new Error('Original outcome required')
+        manager.files.atomic(
+          `${manager.relative}/outcome.json`,
+          JSON.stringify({ ...JSON.parse(outcome.toString()), code: 0 }),
+        )
+        expect(manager.observe().invocationState).toBe('unknown')
+        manager.files.atomic(`${manager.relative}/outcome.json`, outcome)
+        writeFileSync(unavailable, '')
+        expect(manager.observe().invocationState).toBe('unknown')
+        rmSync(unavailable)
+        expect(manager.observe()).toEqual(original)
+      } finally {
+        if (originalPath === undefined) delete process.env.PATH
+        else process.env.PATH = originalPath
+      }
+    })
+  })
   it('observes a group with one fresh process query and preserves unavailable registration or table', async () => {
     await fixture(async (first, root) => {
       const second = new ManagedRunnerProcess(first.files, 'b'.repeat(64)),

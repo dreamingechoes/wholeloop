@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
-import { readSourceFile, safeSourceText } from '../delivery/input.js'
+import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { type operationGroup, operationGroups } from '../environment/operations.js'
 import { operationWrapper } from '../fanout/operation-wrapper.js'
@@ -54,6 +54,11 @@ interface NativeIntent {
   command: string
   deadline: string
 }
+// A witnessed original group cannot revive when its numeric ID is reused.
+// Keep this fact only in this process, bound to freshly reread original bytes;
+// a file claiming closure must never reconstruct it in a cold controller.
+const closedGroups = new Map<string, { input: string; evidence: string }>()
+const CLOSED_GROUP_LIMIT = 1024
 /** Private nonce-bound cancellation is recoverable; no controller ever signals a stored PID. */
 export class ManagedRunnerProcess {
   readonly relative: string
@@ -65,11 +70,14 @@ export class ManagedRunnerProcess {
       throw new DeliveryRunnerError('invalid-native-invocation')
     this.relative = `delivery/runner-native/${invocation}`
   }
-  private read(name: string): Record<string, unknown> | undefined {
+  private original(name: string) {
     const path = `${this.relative}/${name}.json`
-    return existsSync(this.files.path(path))
-      ? (JSON.parse(readSourceFile(this.files.root, path, 65536)) as Record<string, unknown>)
-      : undefined
+    if (!existsSync(this.files.path(path))) return undefined
+    const bytes = readSourceFile(this.files.root, path, 65536)
+    return { value: JSON.parse(bytes) as Record<string, unknown>, digest: sourceHash(bytes) }
+  }
+  private read(name: string): Record<string, unknown> | undefined {
+    return this.original(name)?.value
   }
   async invoke(
     command: string,
@@ -189,14 +197,22 @@ export class ManagedRunnerProcess {
   ): ManagedProcessObservation[] {
     if (invocations.length > 1000) throw new DeliveryRunnerError('native-observation-limit')
     const selected = invocations.map((invocation) => {
-        const manager = new ManagedRunnerProcess(files, invocation)
+        const manager = new ManagedRunnerProcess(files, invocation),
+          intent = manager.original('intent'),
+          started = manager.original('started'),
+          outcome = manager.original('outcome')
         return {
           manager,
           input: {
-            intent: manager.read('intent'),
-            started: manager.read('started'),
-            outcome: manager.read('outcome'),
+            intent: intent?.value,
+            started: started?.value,
+            outcome: outcome?.value,
           },
+          digest: contractDigest([
+            intent?.digest ?? null,
+            started?.digest ?? null,
+            outcome?.digest ?? null,
+          ]),
         }
       }),
       // Read all exact registrations before observing process groups together.
@@ -209,8 +225,8 @@ export class ManagedRunnerProcess {
             : [],
         ),
       )
-    return selected.map(({ manager, input }) =>
-      manager.observation(input, groups.get(Number(input.started?.pid))),
+    return selected.map(({ manager, input, digest }) =>
+      manager.observation(input, groups.get(Number(input.started?.pid)), digest),
     )
   }
   observe(): ManagedProcessObservation {
@@ -225,6 +241,7 @@ export class ManagedRunnerProcess {
       outcome: Record<string, unknown> | undefined
     },
     group: ReturnType<typeof operationGroup> | undefined,
+    digest: string,
   ): ManagedProcessObservation {
     const { intent, started, outcome } = input
     const unknown = (reason: string): ManagedProcessObservation => ({
@@ -244,13 +261,22 @@ export class ManagedRunnerProcess {
       Number(started.pid) < 1
     )
       return unknown('original-native-registration-unavailable')
-    if (group?.status !== 'absent') return unknown('original-native-group-not-confirmed-absent')
+    const key = JSON.stringify([this.files.root, this.invocation]),
+      retained = closedGroups.get(key),
+      // Still require an available fresh common table. Only a previously
+      // witnessed, byte-identical original may outlive numeric group reuse.
+      originalGroup =
+        group?.status === 'present' && retained?.input === digest
+          ? { status: 'absent' as const, evidence: retained.evidence }
+          : group
+    if (originalGroup?.status !== 'absent')
+      return unknown('original-native-group-not-confirmed-absent')
     if (!outcome)
       return {
         invocation: this.invocation,
         invocationState: 'stopped',
         reason: 'original-native-group-absent-without-semantic-result',
-        evidence: contractDigest({ intent, started, group }),
+        evidence: contractDigest({ intent, started, group: originalGroup }),
       }
     try {
       validateDeliveryShape(outcome, outcomeSchema)
@@ -264,13 +290,20 @@ export class ManagedRunnerProcess {
     )
       return unknown('original-native-outcome-binding')
 
+    closedGroups.delete(key)
+    closedGroups.set(key, { input: digest, evidence: originalGroup.evidence })
+    if (closedGroups.size > CLOSED_GROUP_LIMIT) {
+      const oldest = closedGroups.keys().next().value
+      if (oldest !== undefined) closedGroups.delete(oldest)
+    }
+
     return {
       invocation: this.invocation,
       invocationState: outcome.reason === 'not-started' ? 'not-started' : 'stopped',
       reason: String(outcome.reason),
       ...(typeof outcome.code === 'number' ? { code: outcome.code } : {}),
       ...(typeof outcome.signal === 'string' ? { signal: outcome.signal } : {}),
-      evidence: contractDigest({ intent, started, outcome, group }),
+      evidence: contractDigest({ intent, started, outcome, group: originalGroup }),
     }
   }
 }

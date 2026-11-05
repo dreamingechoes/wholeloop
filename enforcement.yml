@@ -238,7 +238,7 @@ rules:
   - id: delivery-effect-reconciliation
     enforcers: [src/delivery/effects.ts#DeliveryEffects, src/delivery/effect-events.ts#reduceDeliveryEffect, src/delivery/read-retry.ts#recoveryRead, src/delivery/read-retry.ts#boundedRecoveryCall, test/unit/delivery/recovery.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/fault-boundaries.test.ts, test/evals/runner/faults.ts]
   - id: delivery-recovery-ownership
-    enforcers: [src/delivery/recovery.ts#DeliveryRecovery, src/delivery/recovery-events.ts#reduceDeliveryRecovery, src/delivery/queue.ts#DeliveryQueue, test/unit/delivery/recovery-process.test.ts]
+    enforcers: [src/delivery/recovery.ts#DeliveryRecovery, src/delivery/recovery-events.ts#reduceDeliveryRecovery, src/delivery/queue.ts#DeliveryQueue, src/runner/native-process.ts#ManagedRunnerProcess, test/unit/runner/native-process.test.ts, test/unit/delivery/recovery-process.test.ts]
   - id: delivery-stopped-writer-repair
     enforcers: [src/delivery/lock-recovery.ts#DeliveryLockRecovery, src/state/files.ts#StoreFiles, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/recovery-cli.test.ts]
   - id: delivery-queue-fencing
