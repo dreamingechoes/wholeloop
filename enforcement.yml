@@ -7,6 +7,8 @@
 # This source convention is not exported as a rule for users' runtime artifacts.
 version: 1
 rules:
+  - id: research-minority-counterevidence
+    enforcers: [src/research/report.ts#researchReport, src/research/report.ts#renderResearchBrief, test/unit/research/research.test.ts, test/unit/runner/research-stages.test.ts]
   - id: delivery-reviewed-public-research-plan
     enforcers: [src/runner/public-research-plan.ts#PublicResearchPlan, src/runner/public-composition.ts#composePublicHost, test/unit/runner/public-research-plan.test.ts, test/unit/runner/public-composition.test.ts]
   - id: delivery-case-evidence-map

@@ -150,6 +150,32 @@ describe('source-bound planning and refutation arithmetic', () => {
       expect(unexamined).not.toContain('active refutations')
       expect(unexamined).toContain('not load-bearing, so not independently examined')
     }))
+  it.each([3, 5, 7, 9])(
+    'keeps minority refutation disputed with all %i planned verifiers present',
+    (verifiers) =>
+      fixture((dir) => {
+        const original = plan(dir, verifiers),
+          first = original.angles[0]
+        if (!first) throw new Error('A source angle is required')
+        const p = { ...original, angles: [first] },
+          source = result(first.id),
+          id = `${first.id}:claim-1`,
+          votes = Array.from({ length: verifiers }, (_, index) =>
+            vote(id, index + 1, index === 0 ? 'refute' : 'confirm'),
+          ),
+          report = researchReport(p, [source], votes)
+        expect(report.dropped).toEqual([])
+        expect(report.claims[0]).toMatchObject({
+          text: source.claims[0]?.text,
+          confidence: 'low',
+          refutations: 1,
+        })
+        expect(report.openQuestions).toHaveLength(1)
+        expect(report.openQuestions[0]?.missing).toContain(votes[0]?.reason)
+        expect(renderResearchBrief(p, report)).toContain('Confidence: low; active refutations: 1/')
+        expect(source.claims[0]?.confidence).toBe('high')
+      }),
+  )
   it('rejects duplicate voters, unplanned angles and evidence-free refutations', () =>
     fixture((dir) => {
       const p = plan(dir)

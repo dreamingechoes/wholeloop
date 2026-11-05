@@ -224,6 +224,7 @@
 | [0213](./0213-complete-bodyless-ci-feedback.md) | Complete bodyless CI feedback | Accepted | 2026-11-05 |
 | [0214](./0214-versioned-ci-correction-production.md) | Versioned CI correction production | Accepted | 2026-11-05 |
 | [0215](./0215-reviewed-public-research-plan.md) | Review the actual public research plan before source work | Accepted | 2026-11-05 |
+| [0216](./0216-minority-research-counterevidence.md) | Retain minority research counterevidence as uncertainty | Accepted | 2026-11-05 |
 
 ## Lifecycle
 

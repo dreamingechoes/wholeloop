@@ -123,6 +123,8 @@ A `research-report` route runs `plan → research → handoff` through the fixed
 
 Before the public plan judgment, the controller pins the concrete research plan and supplies it alongside the delivery plan. Source work consumes those same private bytes; absent, changed or foreign plans refuse. A generic research work item alone supplies no evidence about the selected angles. See [ADR-0215](../decisions/0215-reviewed-public-research-plan.md).
 
+A refutation below the dropping quorum remains visible as a disputed low-confidence claim and an open question containing its counterargument. Confirming votes do not erase the conflict; the final independent source decision still decides whether the brief meets its rubric ([ADR-0216](../decisions/0216-minority-research-counterevidence.md)).
+
 ## Report, diagnose and move a run
 
 `wl delivery report --run <id>` explains a run read-only: its outcome category, waits, effects, unresolved work and the exact next commands you may run. `wl delivery diagnostics --run <id>` is safe to share: it lists event categories, digests and enumerated states only, never reasons, prompts, source text, provider responses or credentials. To move records to another machine, `wl delivery recovery-export --run <id> --out <dir> --include-private` writes a private bundle with checksums, and `wl delivery recovery-import --bundle <dir> --rebind app=/path/to/repo` verifies every byte and each repository's base before archiving the records under `delivery/imports`. Imported runs hold no active claim or grant; authorize again on the new machine. See [ADR-0190](../decisions/0190-operator-report-diagnostics-and-recovery-bundles.md).

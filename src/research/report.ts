@@ -56,8 +56,20 @@ export function researchReport(
         throw new Error('Only load-bearing claims are cross-examined')
       const refutations = examinations.filter((vote) => vote.outcome === 'refute').length
       const dropped = claim.loadBearing && refutations >= plan.refutations
+      // The dropping quorum is not a quorum for certainty: a retained minority
+      // counterexample must remain unresolved rather than disappear under a majority.
+      const disputed = !dropped && refutations > 0
       const incomplete = claim.loadBearing && examinations.length < plan.verifiers
       const uncertain = examinations.some((vote) => vote.outcome === 'uncertain')
+      if (disputed)
+        openQuestions.push({
+          question: `What qualification is needed for claim ${id}?`,
+          missing: `Independent counterevidence disputes the current wording: ${examinations
+            .filter((vote) => vote.outcome === 'refute')
+            .map((vote) => vote.reason)
+            .join(' ')} The dropping quorum was not reached; support remains unresolved.`,
+          who: plan.owner,
+        })
       if (uncertain)
         openQuestions.push({
           question: `Is claim ${id} supported?`,
@@ -77,7 +89,7 @@ export function researchReport(
         dropped,
         refutations,
         examinations,
-        confidence: incomplete || uncertain ? ('low' as const) : claim.confidence,
+        confidence: incomplete || uncertain || disputed ? ('low' as const) : claim.confidence,
       })
     }
   }
@@ -106,6 +118,11 @@ export function renderResearchBrief(
     [
       `### ${claim.id}`,
       `Claim: ${claim.text}`,
+      ...(claim.refutations > 0 && !claim.dropped
+        ? [
+            'Status: disputed; retained below the dropping quorum, not established as unqualified fact.',
+          ]
+        : []),
       // A claim the worker did not mark load-bearing is never examined. Printing
       // a refutation count for it read as a verified claim in the first live
       // trial, and both delegated judges rejected the brief for it.

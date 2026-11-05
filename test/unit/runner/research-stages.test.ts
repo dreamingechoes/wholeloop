@@ -67,6 +67,44 @@ const journal = (store: RunnerStore, run: string) =>
   store.lifecycle.journal.events().filter((event) => event.run === run)
 
 describe('unattended research route (P6-33)', () => {
+  it.each([
+    ['blocked', 'blocked', 'blocked'],
+    ['complete-with-unknowns', 'completed', 'completed-with-unknowns'],
+  ] as const)(
+    'preserves minority refutation under %s policy',
+    async (uncertainty, state, outcome) => {
+      await setup(
+        async ({ store, digest, dispatcher }) => {
+          const receipt = await new DeliveryRunner(store).run(digest, dispatcher)
+          expect(receipt).toMatchObject({ state, outcome })
+          const { synthesis, text } = brief(store, digest)
+          expect(synthesis.outcome).toBe(uncertainty === 'blocked' ? 'blocked' : 'unknowns')
+          if (state === 'completed') {
+            expect(text).toContain('Confidence: low; active refutations: 1/2')
+            expect(text).toContain('The cited behavior has a documented exception.')
+          }
+        },
+        {
+          angles: [angle('docs')],
+          scripts: { 'docs:source.web': [docs] },
+          uncertainty,
+          examine: (job) => ({
+            claim: job.claim.id,
+            verifier: job.verifier,
+            outcome: job.verifier === 1 ? 'refute' : 'confirm',
+            reason:
+              job.verifier === 1
+                ? 'The cited behavior has a documented exception.'
+                : 'Consistent with the excerpt.',
+            evidence:
+              job.verifier === 1
+                ? [{ ref: 'https://docs.example/exception', excerpt: 'The index is optional.' }]
+                : [],
+          }),
+        },
+      )
+    },
+  )
   it('plans, queries, challenges, stores and completes the brief with no later human turn', async () => {
     await setup(
       async ({ store, digest, dispatcher, calls, request }) => {
