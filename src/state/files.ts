@@ -11,6 +11,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { dirname, resolve } from 'node:path'
+import { performance } from 'node:perf_hooks'
 import { externalStorePath } from './paths.js'
 import { assertObservationWritable } from './read-observation.js'
 
@@ -88,20 +89,27 @@ export class StoreFiles {
 
   locked<T>(operation: () => T, timeoutMs = 5000): T {
     assertObservationWritable()
+    if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 0 || timeoutMs > 2147483647)
+      throw new Error('Invalid store lock timeout')
     mkdirSync(this.path('.'), { recursive: true, mode: 0o700 })
     const lock = this.path('.lock')
-    const deadline = Date.now() + timeoutMs
+    const deadline = performance.now() + timeoutMs
+    let wait: Int32Array | undefined
     while (true) {
       try {
         mkdirSync(lock, { mode: 0o700 })
         break
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error
-        if (Date.now() >= deadline)
+        // Wall-clock adjustment cannot extend contention or consume its budget
+        // early. Zero still permits the initial uncontended acquisition.
+        const remaining = deadline - performance.now()
+        if (remaining <= 0)
           throw new Error(
             `Store is locked: ${lock}. Inspect owner.json; remove the lock only after confirming its writer has stopped.`,
           )
-        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10)
+        wait ??= new Int32Array(new SharedArrayBuffer(4))
+        Atomics.wait(wait, 0, 0, Math.min(10, remaining))
       }
     }
     try {

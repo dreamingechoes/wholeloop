@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-05 · P6-39 · Bound lock contention with monotonic elapsed time
+
+- Commit edb12e0 passes immutable Linux CHECK PASS fast in 143s (3281 tests plus the existing macOS-only omission in 228 files) and CHECK PASS in 184s (4468 tests plus that omission in 265 files). All 47 focused actual macOS controls and strict types pass; both runtime bundles match Linux. Source remains local on main.
+- Its unmodified model-free rehearsal again blocks acceptance after 134s, following passed integration and twelve successful synthetic receipts, without publication. Preserve failed report SHA-256 1e64fc4b449e1a32d39e800461dc196d5053ad213b74ef6955ff1bf6519100f7. Separate read-only diagnosis reaches 1024 resources/1580 projections at 1270278 bytes. A diagnostic-only 8192-resource variant completes the same retained product read with 1029 resources/1585 projections and 1281975 bytes; 444 source files are original registrations for 148 managed processes. This variant is not installed, a route pass or a performance result. Both exact original environments are subsequently observed retired. Audit supervised read creation before another quota change.
+- Reproduce seven failing lock controls against the original source: invalid waits reach the writer, and a forward wall-clock jump consumes a fifteen-millisecond budget in 0.291ms. Separate owned-child controls require a 200ms watchdog for NaN, Infinity and a backward clock jump. Validate internal integer waits in 0–2147483647 before state creation; retain the five-second default and one immediate zero-wait attempt. Measure contention monotonically, reuse one lazily allocated wait buffer and cap each sleep to the remaining budget. This is a conservative internal refinement; never steal a lock or change writer authority.
+- All 35 final focused store/observation/lock controls and strict types pass. Owned-child differential checks preserve the original held owner: the fifteen-millisecond wait falls from 23.921ms to 16.423ms, a backward clock jump refuses in 16.166ms, and NaN/Infinity refuse in under one millisecond without a watchdog. These are component controls, not complete-flow performance evidence. The first pinned Linux fast gate passes 2828 tests plus the existing macOS-only omission in 201 files, then ends CHECK FAIL (harness): a new enforcer row has no corresponding declared rule. Attach the controls to the existing stopped-writer rule and explicitly retain finite monotonic waits there; required increment checks remain pending. The all-step preflight writes, supervised-read amplification and complete P6-39 coverage remain open; no model, hosted publication or source push runs.
+
+---
+
 ## 2026-11-05 · P6-39 · Bound resources separately from proof projections
 
 - Commit 545f42c passes exact isolated Linux fast/full gates: CHECK PASS in 131s (3271 tests plus the existing macOS-only omission in 228 files), then CHECK PASS in 145s (4458 tests plus that omission in 265 files). Thirty focused actual macOS controls and strict types pass; both compiled bundles match Linux. No source push occurs.
