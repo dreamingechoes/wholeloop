@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31, P6-34, P6-36 and P6-37 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28, P6-30, P6-31, P6-34 and P6-36–P6-38 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-24 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 70 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 6 new pending implementation tasks; P6-35–P6-38 were added on 2026-11-04.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 92 tasks: 71 complete, fourteen original open tasks, two implemented tasks awaiting native or hosted acceptance and 5 new pending implementation tasks; P6-35–P6-38 were added on 2026-11-04.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -1003,7 +1003,7 @@ Also `wl overview schema`, and fixture stores with expected output for every hea
 
 ## P6-38 · Local change feed
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P6-37
+**Status:** ✅ · **Size:** M · **Depends on:** P6-37
 
 **Design review:** added on 2026-11-04 · **Release:** 1.0
 
@@ -1020,11 +1020,11 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 **Acceptance criteria:**
 
-- [ ] When a fixture journal is replayed event by event, every overview frame equals `wl overview` at its cursor. A sequence gap or digest mismatch emits a problem frame and stops the feed advancing.
-- [ ] A feed killed and restarted with `--since` misses and repeats no change, and a heartbeat never reads as progress.
-- [ ] It works on macOS and Linux, both with file events and with the poll forced, and a guard shows that it writes nothing in the store and opens no port.
+- [x] When a fixture journal is replayed event by event, every overview frame equals `wl overview` at its cursor. A sequence gap or digest mismatch emits a problem frame and stops the feed advancing.
+- [x] A feed killed and restarted with `--since` misses and repeats no change, and a heartbeat never reads as progress.
+- [x] It works on macOS and Linux, both with file events and with the poll forced, and a guard shows that it writes nothing in the store and opens no port.
 
-**Progress** — The public CLI, read-only observer, bounded redaction, delivered-prefix resumption, liveness/problem frames and recorded consumer fixture are implemented. Actual compiled-CLI and SDK cases cover interrupted backlogs, held locks, both journal rollovers, sequence/hash/prefix failures, observation-only changes, guarded no-write/no-listener behavior and cancellation under output pressure. Cross-platform verification and the complete closure gate remain in progress; all acceptance criteria stay open until they pass.
+**Evidence** — The public CLI, SDK differential reads, actual-journal clock race, recorded consumer feed, both rollovers, held locks, sequence/hash/prefix refusal, observation-only changes and output-pressure cancellation pass. The corrected implementation at `5713435` passes 4170 tests in 234 files, offline npm archive/install and every other full macOS arm64/Node 24.22.0 gate: `CHECK PASS in 706s`. Actual compiled-CLI feature checks pass on Linux arm64 with Node 20.0.0 and 24.22.0, including forced poll, observed filesystem hints, SIGKILL/resumption, interrupted output, closed consumers and guards observing zero store mutations and zero listeners. These Linux feature checks are not a full Linux suite or native/model acceptance. Earlier failed checks and the final clock correction remain recorded in the journal.
 
 **Tests** — Replay equality, kill and resume, forced poll, journal rollover, a held writer lock, and a Linux container run.
 

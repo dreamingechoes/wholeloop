@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-05 · P6-38 · Local change feed complete
+
+- Close P6-38 after the corrected watch-clock commit `5713435` passes the complete macOS arm64/Node 24.22.0 gate: 4170 tests in 234 files, offline npm archive/install and all remaining checks; `CHECK PASS in 706s`. The archive digest is `8bc67aac8ac38e1632b8b674525893dd40f7ff05aedac23596df32131d32d87f`. The focused overview/watch suite passes 171 tests in sixteen files and the per-commit gate passes in ten seconds.
+- Repeat actual compiled Linux arm64 checks on Node 20.0.0 and 24.22.0 after the final caller fix: forced poll, observed filesystem hints, SIGKILL/resumption, exact current overview cursors/digests, interrupted output and closed consumers all pass, with guards observing zero store mutations and zero listeners. No full Linux suite or native/model acceptance is claimed.
+- Preserve the earlier broad/focused failures, deterministic output/reader regressions and the final caller clock correction. Mark all three acceptance criteria and reconcile counts to 71 complete of 92 overall: 31 completed Phase 6 tasks, two implemented awaiting native/hosted acceptance and five with implementation or acceptance work remaining. Refresh the acceptance page's stale Phase 6 count.
+- Continue P6-29's private-case feedback, historical acceptance explanations and verification repairs. The next increments were prepared only in an external preview while the checked tree stayed unchanged. No actual model/account operation, hosted mutation or wholeloop source push runs.
+
+---
+
 ## 2026-11-05 · P6-38 · Watch observation clock — in progress
 
 - The implementation at `5b81460` passes the full macOS arm64/Node 24.22.0 gate: 4169 tests in 233 files, offline archive/install and every remaining check; `CHECK PASS in 740s`. The archive digest is `333cc7706d57462e1e09039fa7b78e81ec853208434d81ed4e292014e59c9ce8`.
