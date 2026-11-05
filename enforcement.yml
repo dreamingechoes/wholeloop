@@ -126,7 +126,7 @@ rules:
   - id: delivery-stage-candidate-lineage
     enforcers: [src/runner/review-stages.ts#context, src/runner/review-stages.ts#continuationPath, src/runner/verification-stages.ts#context, src/runner/verification-stages.ts#continuationPath, src/runner/git-stages.ts#candidate, test/unit/runner/review-stages.test.ts, test/unit/runner/verification-stages.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-original-repeated-qa
-    enforcers: [src/runner/review-stages.ts#continuationPath, src/runner/verification-stages.ts#continuationPath, src/runner/suite-stages.ts#originalPhase, src/runner/native-process.ts#observeAll, src/runner/native-scope.ts#inspect, src/environment/operations.ts#operationGroups, test/unit/runner/native-process.test.ts, src/delivery/journal.ts#snapshot, src/delivery/journal-segment.ts#readJournalSegment, src/delivery/input.ts#readSourceBytes, src/acceptance/store.ts#authority, src/acceptance/docker-effect.ts#DockerObservedHost, test/unit/delivery/source.test.ts, test/unit/delivery/journal.test.ts, test/unit/delivery/journal-segment.test.ts, test/unit/runner/store.test.ts, test/evals/runner/repeated-review.ts, test/evals/runner/verification-continuation.ts]
+    enforcers: [src/runner/review-stages.ts#continuationPath, src/runner/verification-stages.ts#continuationPath, src/runner/suite-stages.ts#originalPhase, src/runner/native-process.ts#observeAll, src/runner/native-scope.ts#inspect, src/environment/operations.ts#operationGroups, test/unit/runner/native-process.test.ts, src/delivery/journal.ts#snapshot, src/delivery/journal-segment.ts#readJournalSegment, src/delivery/input.ts#readSourceBytes, src/acceptance/store.ts#authority, src/acceptance/docker-effect.ts#DockerObservedHost, test/unit/delivery/source.test.ts, test/unit/delivery/journal.test.ts, test/unit/delivery/journal-segment.test.ts, test/unit/delivery/descriptor-reads.test.ts, test/unit/runner/store.test.ts, test/evals/runner/repeated-review.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-owned-correction-successors
     enforcers: [src/runner/repair-workers.ts#after, src/runner/repair-workers.ts#execute, src/runner/repair-commits.ts#historical, src/runner/repair-commits.ts#candidate, test/unit/runner/repair-workers.test.ts, test/evals/runner/verification-continuation.ts]
   - id: delivery-historical-native-completion
@@ -256,7 +256,7 @@ rules:
   - id: delivery-plan-contract
     enforcers: [src/delivery/plan.ts#validateDeliveryPlan, src/delivery/plan.ts#checkPlanEnvelope, src/delivery/plan.ts#deliveryPlanRoute, src/delivery/planning-store.ts#DeliveryPlanning, test/unit/delivery/plan.test.ts]
   - id: delivery-source-identity
-    enforcers: [src/delivery/input.ts#sourceRequest, src/delivery/input.ts#readSourceFile, src/delivery/source.ts#DeliverySources, src/delivery/source-host.ts#readProviderSource, test/unit/delivery/source.test.ts]
+    enforcers: [src/delivery/input.ts#sourceRequest, src/delivery/input.ts#readSourceFile, src/delivery/source.ts#DeliverySources, src/delivery/source-host.ts#readProviderSource, test/unit/delivery/descriptor-reads.test.ts, test/unit/delivery/source.test.ts]
   - id: headless-native-response-schema
     enforcers: [src/fanout/response-schema.ts#headlessResponseSchema, src/fanout/host.ts#HeadlessHost, src/fanout/adapters.ts#headlessAdapter, src/fanout/policy-files.ts#stageWorkerPolicy, test/unit/fanout/response-schema.test.ts, test/unit/fanout/fanout.test.ts]
   - id: conformance-scripted-final-approval

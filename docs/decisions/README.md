@@ -259,6 +259,8 @@
 
 | [0233](./0233-fresh-batch-ownership-and-linear-object-matching.md) | Validate ownership once per fresh backend batch | Accepted | 2026-11-06 |
 
+| [0234](./0234-complete-source-path-validation-and-bounded-read-loops.md) | Validate final source paths and bound buffer reads | Accepted | 2026-11-06 |
+
 ## Lifecycle
 
 ```mermaid

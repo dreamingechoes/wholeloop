@@ -44,6 +44,8 @@ export function readJournalSegment(
       leaf.ino !== before.ino
     )
       throw new DeliveryJournalError('unreadable-journal-segment')
+    // A virtual regular file can underreport its extent. Keep the extra byte
+    // and EOF proof; matching metadata alone does not prove complete contents.
     const bytes = Buffer.alloc(Number(before.size) + 1)
     let length = 0
     while (length < bytes.length) {

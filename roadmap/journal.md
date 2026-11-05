@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-06 · P6-39 · Preserve EOF proof and complete final source checks
+
+- Commit bdce611 passes exact isolated Linux CHECK PASS fast in 84s (1052 tests in 85 files) and CHECK PASS in 146s (4526 tests plus the existing macOS-only omission in 273 files). Both bundles match macOS; 153 focused actual macOS process/containment controls and strict types pass. No complete-route overhead pass is inferred.
+- Physical reader controls show one EOF call for an empty file and content plus EOF for declared 8/4096-byte source/journal fixtures. Four original post-descriptor controls also accept growth, truncation, same-size edits and replacement aliases. An exact-size prototype passes 118 focused controls but fails a new actual Linux comparison: a regular procfs input declares zero bytes while containing 1123; the original refuses it, the prototype returns an empty source. Reject that optimization and its eight proposed count reductions; those expectations are not product defects. Preserve the failed prototype separately.
+- Retain explicit EOF/extra-byte proof and actual-byte quotas. Bound the source loop by buffer capacity, eliminating the reproduced zero-length call when growth fills it. Replace the existing final stat with lstat and compare regular type, exact device/inode, size and nanosecond times, retaining descriptor checks and containment without another metadata syscall ([ADR-0234](../docs/decisions/0234-complete-source-path-validation-and-bounded-read-loops.md)). The final Linux reader again refuses the real virtual input. Correct test overload typing and a prototype's quota-error classification before final validation.
+- All 160 final focused actual macOS native controls in eight files and strict types pass. Required increment gates remain pending. The broader caller/replay/route audit remains open; no model, hosted effect or source push runs.
+
+---
+
 ## 2026-11-06 · P6-39 · Remove repeated ownership-history validation
 
 - Commit 0a5be53 passes exact isolated Linux CHECK PASS fast in 97s (1584 tests in 125 files) and CHECK PASS in 143s (4522 tests plus the existing macOS-only omission in 273 files). Both bundles match macOS; 47 focused actual macOS process/authority controls and strict types pass. No complete-route performance pass is inferred.

@@ -3,10 +3,10 @@ import {
   closeSync,
   constants,
   fstatSync,
+  lstatSync,
   openSync,
   readSync,
   realpathSync,
-  statSync,
 } from 'node:fs'
 import { resolve } from 'node:path'
 import { type Schema, validate } from '../config/schema.js'
@@ -189,31 +189,37 @@ function readPhysicalSourceBytes(root: string, file: string, limit: number): Buf
     // Judge its real destination while still opening the selected leaf with O_NOFOLLOW.
     if (!inside(boundary, realpathSync(selected))) throw new SourceInputError('unsafe-file')
     fd = openSync(selected, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK)
-    const before = fstatSync(fd)
-    if (!before.isFile()) throw new SourceInputError('unsafe-file')
-    if (before.size > limit) throw new SourceInputError('oversized')
-    // A quota is an upper bound, not the allocation size for every tiny journal
-    // segment. Retain one extra byte to detect growth, then recheck the descriptor.
-    const bytes = Buffer.alloc(Math.min(limit, before.size) + 1)
+    const before = fstatSync(fd, { bigint: true })
+    if (!before.isFile() || before.size < 0n) throw new SourceInputError('unsafe-file')
+    const maximum = BigInt(limit)
+    if (before.size > maximum) throw new SourceInputError('oversized')
+    // Virtual regular files can advertise zero or incomplete extents. Keep
+    // one extra byte and explicit EOF proof instead of trusting their size.
+    const bytes = Buffer.alloc(Number(before.size) + 1)
     let length = 0
-    while (length <= limit) {
+    while (length < bytes.length) {
       const read = readSync(fd, bytes, length, bytes.length - length, null)
       if (!read) break
       length += read
     }
     if (length > limit) throw new SourceInputError('oversized')
-    const after = fstatSync(fd)
-    if (after.size > limit) throw new SourceInputError('oversized')
-    const current = statSync(selected)
-    // Refuse a file changed while reading; no mixed revision should become authoritative.
+    const after = fstatSync(fd, { bigint: true })
+    if (after.size > maximum) throw new SourceInputError('oversized')
+    // lstat must not follow a replacement alias to the old descriptor. Exact
+    // inode/timestamp integers also keep distinct observations from rounding equal.
+    const current = lstatSync(selected, { bigint: true })
     if (
-      length !== before.size ||
+      BigInt(length) !== before.size ||
       before.size !== after.size ||
-      before.mtimeMs !== after.mtimeMs ||
-      before.ctimeMs !== after.ctimeMs ||
+      before.mtimeNs !== after.mtimeNs ||
+      before.ctimeNs !== after.ctimeNs ||
       !inside(boundary, realpathSync(selected)) ||
+      !current.isFile() ||
       current.dev !== after.dev ||
-      current.ino !== after.ino
+      current.ino !== after.ino ||
+      current.size !== after.size ||
+      current.mtimeNs !== after.mtimeNs ||
+      current.ctimeNs !== after.ctimeNs
     )
       throw new SourceInputError('unsafe-file')
     return bytes.subarray(0, length)
