@@ -4,15 +4,24 @@ import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'nod
 
 /** Resolve even a not-yet-created destination through its existing symlink ancestors. */
 export function canonicalPath(path: string): string {
-  const suffix: string[] = []
-  let ancestor = resolve(path)
-  while (!existsSync(ancestor)) {
-    const parent = dirname(ancestor)
-    if (parent === ancestor) throw new Error(`Cannot resolve store path: ${path}`)
-    suffix.unshift(basename(ancestor))
-    ancestor = parent
+  const selected = resolve(path)
+  for (let attempt = 0; ; attempt++) {
+    const suffix: string[] = []
+    let ancestor = selected
+    while (!existsSync(ancestor)) {
+      const parent = dirname(ancestor)
+      if (parent === ancestor) throw new Error(`Cannot resolve store path: ${path}`)
+      suffix.unshift(basename(ancestor))
+      ancestor = parent
+    }
+    try {
+      return join(realpathSync(ancestor), ...suffix)
+    } catch (error) {
+      // Another writer can release .lock between exists and realpath. Resolve
+      // the entire path again so a replacement alias cannot escape containment.
+      if (attempt >= 2 || (error as NodeJS.ErrnoException)?.code !== 'ENOENT') throw error
+    }
   }
-  return join(realpathSync(ancestor), ...suffix)
 }
 
 export function assertExternal(path: string): void {

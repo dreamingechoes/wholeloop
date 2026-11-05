@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-27 · Reobserve a concurrently removed path ancestor
+
+- The pinned journal-reader increment passes CHECK PASS fast in 103s with 1596 tests in 125 files. Its complete isolated Linux gate then passes 4414 tests but fails the concurrent artifact-budget control, retaining CHECK FAIL (test). The stack identifies ENOENT between existsSync and realpathSync while another controller releases .lock, before that contender acquires its write lock. This does not certify oversubscription or the complete gate. Preserve the exact increment, new files, failed output and scoped 61-test macOS evidence separately; temporarily restore clean 210bb03 to isolate this correction rather than mix concerns or discard the performance work.
+- Independently reproduce disappearing-ancestor and replacement-alias failures using actual filesystem changes at the resolution boundary. Resolve the complete original absolute selection again at most three times, only after ENOENT. A replacement alias still passes normal containment/external-store checks; never guess a safe suffix, retry EACCES/ELOOP, steal a lock, repeat an artifact write or extend a deadline. This is a conservative internal read refinement, not a new authority or recovery policy.
+- The first test counter includes fixture construction; clear it before the controlled interleaving. All three corrected differential controls fail against the original implementation, while both non-transient refusals pass. All 18 final macOS path/store/actual-process budget controls and strict types pass after the change, including the original two-process artifact case. Required exact fast/full gates remain pending, followed by reapplying and verifying the retained journal optimization. No native model or hosted/source push occurs.
+
+---
+
 ## 2026-11-05 · P6-27 · Distinguish witnessed original closure from numeric group reuse
 
 - Commit 9842c5e passes both isolated Linux gates: CHECK PASS fast in 132s (1581 tests in 124 files), then complete CHECK PASS in 219s (4399 tests plus the existing macOS-only omission in 256 files). Both built bundles match the current macOS build; 109 focused actual macOS recovery controls and strict types pass. All sixteen original source commits pass the history guard. No complete current macOS or Node 20 rerun is inferred, and no source push occurs.
