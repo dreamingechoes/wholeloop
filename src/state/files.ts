@@ -12,6 +12,7 @@ import {
 } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { assertExternal, canonicalPath, inside } from './paths.js'
+import { assertObservationWritable } from './read-observation.js'
 
 /** All store mutations pass through this boundary, including locks and temp files. */
 export class StoreFiles {
@@ -39,6 +40,7 @@ export class StoreFiles {
   }
 
   atomic(relative: string, content: string | Uint8Array): void {
+    assertObservationWritable()
     const path = this.path(relative)
     mkdirSync(dirname(path), { recursive: true, mode: 0o700 })
     const temporary = this.path(`${relative}.${randomUUID()}.tmp`)
@@ -64,6 +66,7 @@ export class StoreFiles {
 
   /** Preserve a verified stopped writer's lock instead of deleting its ownership evidence. */
   retainLock(destination: string): void {
+    assertObservationWritable()
     const lock = this.path('.lock'),
       target = this.path(destination)
     if (
@@ -88,6 +91,7 @@ export class StoreFiles {
   }
 
   locked<T>(operation: () => T, timeoutMs = 5000): T {
+    assertObservationWritable()
     mkdirSync(this.path('.'), { recursive: true, mode: 0o700 })
     const lock = this.path('.lock')
     const deadline = Date.now() + timeoutMs

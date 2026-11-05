@@ -7,6 +7,8 @@
 
 ## Start with these distinctions
 
+Runtime performance currently blocks release. P6-27 exposes thousands of redundant Git queries and repeated journal/path reads for one final observation. Measure the total controller overhead separately from models and actual project tests; the maintainer's initial ceiling is five seconds, with lower overhead and bounded operation growth required. This is implementation work, not a manual account check. A focused benchmark or unchanged correctness suite cannot close it ([ADR-0227](./decisions/0227-verified-read-observation-scopes.md)).
+
 | Surface | Examples | What counts |
 | --- | --- | --- |
 | Local core | State, routing, gates, artifacts, worktrees | Executed automated tests and a representative real workflow |
@@ -62,7 +64,7 @@ Independent local implementation is authorized to proceed before the remaining o
 
 ### 1. Finish implementation defects first
 
-The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external maintainer decisions. The [Phase 6 ledger](../roadmap/phase-6-autonomous-delivery.md) now records 32 completed tasks, four implemented tasks awaiting native or hosted acceptance, and two tasks with implementation or acceptance work remaining. P6-12 includes actual macOS and independent Linux-host backend acceptance; P6-36–P6-38 include attribution, the operator overview and a local read-only feed. Their model-free local and platform checks do not certify native clients, hosted services or the expanded release. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
+The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external maintainer decisions. The [Phase 6 ledger](../roadmap/phase-6-autonomous-delivery.md) now records 32 completed tasks, four implemented tasks awaiting native or hosted acceptance, and three tasks with implementation or acceptance work remaining. P6-12 includes actual macOS and independent Linux-host backend acceptance; P6-36–P6-38 include attribution, the operator overview and a local read-only feed. Their model-free local and platform checks do not certify native clients, hosted services or the expanded release. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
@@ -175,7 +177,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 92 tasks, 72 complete and 20 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38 are complete; P6-22, P6-24, P6-32 and P6-33 are implemented and await native or hosted acceptance, and two new implementation/acceptance tasks remain pending. The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 93 tasks, 72 complete and 21 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38 are complete; P6-22, P6-24, P6-32 and P6-33 are implemented and await native or hosted acceptance, and three implementation/acceptance tasks remain pending, including the complete P6-39 performance audit. The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Maintainer involvement |
 | --- | --- | --- |

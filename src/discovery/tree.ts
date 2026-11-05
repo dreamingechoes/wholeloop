@@ -4,6 +4,7 @@ import { homedir } from 'node:os'
 import { join, relative, sep } from 'node:path'
 import type { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
+import { inReadObservation, observedRead } from '../state/read-observation.js'
 import { fileKind, isGeneratedDistribution, scan } from './scan.js'
 import type { CapabilityMap } from './types.js'
 
@@ -82,13 +83,13 @@ export function readInventory(
 
 const hash = (value: string) => createHash('sha256').update(value).digest('hex')
 
-export function discover(root: string, store: StoreFiles, home = homedir()) {
+function discoveryInput(root: string, home: string) {
   const repo = readInventory(root)
   const user = readInventory(
     home,
     TOOL_DIRS.map((tool) => `${tool}/skills`),
   )
-  const fingerprint = hash(
+  const bytes = Buffer.from(
     JSON.stringify({
       // The parser now distinguishes harness entrypoints even when another core cached the same bytes.
       v: 2,
@@ -97,6 +98,35 @@ export function discover(root: string, store: StoreFiles, home = homedir()) {
       warnings: [...repo.warnings, ...user.warnings],
     }),
   )
+  return { repo, user, bytes, fingerprint: hash(bytes.toString()) }
+}
+
+function scanInventory(input: ReturnType<typeof discoveryInput>, home: string) {
+  return {
+    repo: scan(input.repo.files),
+    user: scan(
+      new Map(
+        [...input.user.files]
+          .filter(([path]) => fileKind(path) === 'skill')
+          .map(([path, content]) => [join(home, path).split(sep).join('/'), content]),
+      ),
+    ),
+    fingerprint: input.fingerprint,
+    cached: false,
+    warnings: [...input.repo.warnings, ...input.user.warnings],
+  }
+}
+
+export function discover(root: string, store: StoreFiles, home = homedir()) {
+  if (inReadObservation())
+    return structuredClone(
+      observedRead(`discovery:${canonicalPath(root)}\0${canonicalPath(home)}`, () => {
+        const input = discoveryInput(root, home)
+        return { bytes: input.bytes, value: scanInventory(input, home) }
+      }),
+    )
+  const input = discoveryInput(root, home),
+    { repo, user, fingerprint } = input
   const file = `cache/discovery/${hash(`${canonicalPath(root)}\n${canonicalPath(home)}`)}.json`
   return store.locked(() => {
     const content = store.read(file)
@@ -124,14 +154,9 @@ export function discover(root: string, store: StoreFiles, home = homedir()) {
         /* A cache is disposable; never treat it as source of truth. */
       }
     }
-    const repoMap = scan(repo.files)
-    const userMap = scan(
-      new Map(
-        [...user.files]
-          .filter(([path]) => fileKind(path) === 'skill')
-          .map(([path, content]) => [join(home, path).split(sep).join('/'), content]),
-      ),
-    )
+    const result = scanInventory(input, home),
+      repoMap = result.repo,
+      userMap = result.user
     store.atomic(
       file,
       `${JSON.stringify({ fingerprint, repo: repoMap, user: userMap, checksum: hash(JSON.stringify([repoMap, userMap])) })}\n`,

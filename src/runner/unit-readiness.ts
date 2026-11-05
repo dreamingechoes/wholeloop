@@ -1,5 +1,6 @@
 import { contractDigest } from '../contracts/compatibility.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
+import { shareReadObservation } from '../state/read-observation.js'
 import type { RunnerStageObservation } from './engine.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerReviewStages } from './review-stages.js'
@@ -34,6 +35,12 @@ export class RunnerUnitReadiness {
     this.store = verification.store
   }
   async inspect(
+    request: Readonly<RunnerRequest>,
+    unit: string,
+  ): Promise<RunnerUnitReadinessResult> {
+    return shareReadObservation(() => this.observe(request, unit))
+  }
+  private async observe(
     request: Readonly<RunnerRequest>,
     unit: string,
   ): Promise<RunnerUnitReadinessResult> {

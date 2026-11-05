@@ -5,6 +5,7 @@ import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import type { StoreFiles } from '../state/files.js'
+import { inReadObservation, observedRead } from '../state/read-observation.js'
 import {
   DockerEnvironmentError,
   type DockerResult,
@@ -425,6 +426,15 @@ export class EnvironmentOperations {
 }
 /** Presence is deliberately unknown, never permission to signal a stored or reused PID. */
 function processTable(): { pid: number; group: number }[] | undefined {
+  if (!inReadObservation()) return readProcessTable()
+  return observedRead('process-table', () => {
+    const value = readProcessTable()
+    // Seal availability here and exact requested members below. Unrelated
+    // processes may change; each validation still gets a fresh common table.
+    return { bytes: Buffer.from([Number(value !== undefined)]), value }
+  })
+}
+function readProcessTable(): { pid: number; group: number }[] | undefined {
   const result = spawnSync('ps', ['-axo', 'pid=,pgid='], {
     encoding: 'utf8',
     timeout: 2000,
@@ -451,18 +461,28 @@ function processObservation(pid: number, group: boolean, table: ReturnType<typeo
   }
 }
 export function operationGroup(pid: number) {
-  return processObservation(pid, true, processTable())
+  return observedProcess(pid, true)
+}
+function observedProcess(pid: number, group: boolean) {
+  if (!inReadObservation()) return processObservation(pid, group, processTable())
+  return {
+    ...observedRead(`process-presence:${group}:${pid}`, () => {
+      const value = processObservation(pid, group, processTable())
+      return { bytes: Buffer.from(JSON.stringify(value)), value }
+    }),
+  }
 }
 /** One fresh table for a bounded ownership observation, never a cached grant to signal. */
 export function operationGroups(pids: readonly number[]) {
   if (pids.length > 1000 || pids.some((pid) => !Number.isSafeInteger(pid) || pid < 1))
     throw new DockerEnvironmentError('invalid-operation-pid')
   if (!pids.length) return new Map<number, ReturnType<typeof operationGroup>>()
+  if (inReadObservation()) return new Map(pids.map((pid) => [pid, observedProcess(pid, true)]))
   const table = processTable()
   return new Map(pids.map((pid) => [pid, processObservation(pid, true, table)]))
 }
 export function processPresence(pid: number) {
-  return processObservation(pid, false, processTable()).status
+  return observedProcess(pid, false).status
 }
 export class TrackedDockerTransport implements DockerTransport {
   readonly provenance: DockerTransport['provenance']

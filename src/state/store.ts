@@ -13,6 +13,7 @@ import {
 import { StoreFiles } from './files.js'
 import { storePath } from './paths.js'
 import { projections } from './projections.js'
+import { inReadObservation, observedRead } from './read-observation.js'
 
 export class StateStore {
   readonly files: StoreFiles
@@ -21,16 +22,25 @@ export class StateStore {
   }
 
   events(): StateEvent[] {
+    if (!inReadObservation()) return this.readEvents().value
+    return structuredClone(observedRead(`state-events:${this.files.root}`, () => this.readEvents()))
+  }
+
+  private readEvents() {
     const directory = this.files.path('journal')
-    if (!existsSync(directory)) return []
+    if (!existsSync(directory)) return { bytes: Buffer.from('absent'), value: [] as StateEvent[] }
     const events: StateEvent[] = []
+    const segments: Buffer[] = []
     for (const name of readdirSync(directory).sort()) {
       if (!/^\d{4}-\d{2}\.ndjson$/.test(name)) continue
       const content = this.files.read(`journal/${name}`) ?? ''
+      if (inReadObservation())
+        segments.push(Buffer.from(`${name}:${Buffer.byteLength(content)}:${content}`))
       if (content && !content.endsWith('\n'))
         throw new Error(`Incomplete journal file: ${name}; preserve it and recover before writing`)
-      for (const [index, line] of content.split('\n').entries()) {
-        if (!line && index === content.split('\n').length - 1) continue
+      const lines = content.split('\n')
+      for (const [index, line] of lines.entries()) {
+        if (!line && index === lines.length - 1) continue
         try {
           const value: unknown = JSON.parse(line)
           validateEvent(value)
@@ -42,7 +52,7 @@ export class StateStore {
         }
       }
     }
-    return events
+    return { bytes: Buffer.concat(segments), value: events }
   }
 
   list(): Item[] {

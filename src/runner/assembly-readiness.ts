@@ -1,5 +1,6 @@
 import { contractDigest } from '../contracts/compatibility.js'
 import { IntegrationAssembly } from '../integration/assembly.js'
+import { shareReadObservation } from '../state/read-observation.js'
 import { RunnerMilestoneReadiness } from './milestone-readiness.js'
 import { DeliveryRunnerError } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
@@ -27,6 +28,13 @@ export class RunnerAssemblyReadiness {
     this.assembly = new IntegrationAssembly(store.files.root)
   }
   async inspect(
+    request: Readonly<RunnerRequest>,
+    milestone: string,
+    assembly: string,
+  ): Promise<RunnerAssemblyReadinessResult> {
+    return shareReadObservation(() => this.observe(request, milestone, assembly))
+  }
+  private async observe(
     request: Readonly<RunnerRequest>,
     milestone: string,
     assembly: string,
@@ -70,7 +78,8 @@ export class RunnerAssemblyReadiness {
           before.status === 'unknown' ? 'unknown' : 'blocked',
           'assembly-owned-candidate-unavailable',
         )
-      await this.assembly.reconcile(assembly)
+      // The assembled precondition already requires every original effect to
+      // be applied. Recovery here only repeated the same complete inspection.
       const reopened = await this.units.inspect(request, milestone),
         current = this.assembly.inspect(assembly),
         ids = current.repositories.flatMap((repository) => repository.effects),

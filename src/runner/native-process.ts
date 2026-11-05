@@ -7,6 +7,7 @@ import { type operationGroup, operationGroups } from '../environment/operations.
 import { operationWrapper } from '../fanout/operation-wrapper.js'
 import { type ProcessResult, unmanagedWorkerProcess } from '../fanout/process.js'
 import type { StoreFiles } from '../state/files.js'
+import { assertObservationWritable } from '../state/read-observation.js'
 import { DeliveryRunnerError } from './route.js'
 import outcomeSchema from './schemas/process-outcome-v1.json' with { type: 'json' }
 
@@ -93,6 +94,7 @@ export class ManagedRunnerProcess {
       observe?(stream: 'stdout' | 'stderr', chunk: Buffer): void
     },
   ): Promise<ProcessResult & { ownership: ManagedProcessObservation }> {
+    assertObservationWritable()
     if (this.read('intent')) throw new DeliveryRunnerError('native-invocation-already-issued')
     if (
       !Number.isSafeInteger(options.timeoutMs) ||

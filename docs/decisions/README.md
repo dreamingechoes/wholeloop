@@ -245,6 +245,8 @@
 
 | [0226](./0226-physical-journal-leaf-observations.md) | Read journal leaves through one pinned physical directory | Accepted | 2026-11-05 |
 
+| [0227](./0227-verified-read-observation-scopes.md) | Share inputs within a verified read-only observation | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

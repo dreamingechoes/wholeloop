@@ -12,6 +12,7 @@ import type { FlowEngine } from '../flow/engine.js'
 import { type GatePlan, validateGatePlan } from '../gates/contracts.js'
 import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
+import { inReadObservation } from '../state/read-observation.js'
 import type { SuitePlan, SuiteResult } from '../verification/contracts.js'
 import { runSuite, suiteGateResult, suitePlan } from '../verification/suite.js'
 import type { RunnerStageContext } from './engine.js'
@@ -447,7 +448,7 @@ export class RunnerSuiteStages {
           status: commands.every((c) => c.exitCode === 0 && !c.signal) ? 'passed' : 'failed',
         }
         // Restore only the original observed result, never execute another case.
-        engine.store.transaction((events, append) => {
+        const restore: Parameters<typeof engine.store.transaction>[0] = (events, append) => {
           const finished = events.find(
             (e) =>
               e.subject === binding.gate.subject &&
@@ -480,7 +481,12 @@ export class RunnerSuiteStages {
               },
             })
           }
-        })
+        }
+        if (inReadObservation())
+          restore(engine.store.events(), () => {
+            throw new DeliveryRunnerError('suite-stage-original-submission-required')
+          })
+        else engine.store.transaction(restore)
         const expected = suiteGateResult(result),
           actual = state.round.results.find((r) => r.unit === 'suite')
         if (actual && contractDigest(actual) !== contractDigest(expected))

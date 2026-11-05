@@ -9,6 +9,8 @@ import { knownSlot } from '../discovery/rules.js'
 import { discover } from '../discovery/tree.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { replay, type StateEvent } from '../state/events.js'
+import { assertObservationWritable, inReadObservation } from '../state/read-observation.js'
+import type { StateStore } from '../state/store.js'
 import {
   type ContractGateInput,
   contractGateInput,
@@ -349,48 +351,61 @@ export class GateWorkflow {
   }
 
   verdict(subject: string, gate: GateKind) {
-    return this.engine.store.transaction((events, append) => {
-      if (!replay(events).has(subject)) throw new Error('Unknown gate subject')
-      const run = latestRun(events, subject, gate)
-      const current = run?.rounds.at(-1)
-      if (!run || !current) throw new Error('Plan a gate round first')
-      let observed: string
-      try {
-        observed = workspaceSnapshot(current.plan.repository).digest
-      } catch {
-        observed = '0'.repeat(64)
-      }
-      const report =
-        current.decision?.report ??
-        gateReport(current.plan, current.results, current.votes, observed, run.budget)
-      if (!current.decision) {
-        append(subject, {
-          type: 'gate.decided',
-          data: { run: run.run, round: current.plan.round, observed, report },
-        })
-        append(subject, {
-          type: 'msg.sent',
-          data: {
-            to: 'builder',
-            from: `gate-${gate}`,
-            kind: 'status',
-            body: `${gate} round ${current.plan.round}/${run.budget}: ${report.verdict}; missing ${report.missing.length}, kept ${report.kept.length}, unchanged ${report.unchanged}. Findings: items/${subject}/gates/${run.run}/${current.plan.round}.json`,
-          },
-        })
-      }
-      const stale =
-        !!current.decision && report.verdict === 'PASS' && observed !== current.plan.snapshot.digest
-      return {
-        schema: 'wholeloop/gate-verdict@1',
-        subject,
-        run: run.run,
-        gate,
-        round: current.plan.round,
-        budget: run.budget,
-        report,
-        current: !stale,
-        verdict: stale ? 'STALE' : report.verdict,
-      }
-    })
+    if (inReadObservation())
+      return this.readVerdict(this.engine.store.events(), subject, gate, () => {
+        assertObservationWritable()
+      })
+    return this.engine.store.transaction((events, append) =>
+      this.readVerdict(events, subject, gate, append),
+    )
+  }
+
+  private readVerdict(
+    events: readonly StateEvent[],
+    subject: string,
+    gate: GateKind,
+    append: Parameters<Parameters<StateStore['transaction']>[0]>[1],
+  ) {
+    if (!replay(events).has(subject)) throw new Error('Unknown gate subject')
+    const run = latestRun(events, subject, gate)
+    const current = run?.rounds.at(-1)
+    if (!run || !current) throw new Error('Plan a gate round first')
+    let observed: string
+    try {
+      observed = workspaceSnapshot(current.plan.repository).digest
+    } catch {
+      observed = '0'.repeat(64)
+    }
+    const report =
+      current.decision?.report ??
+      gateReport(current.plan, current.results, current.votes, observed, run.budget)
+    if (!current.decision) {
+      append(subject, {
+        type: 'gate.decided',
+        data: { run: run.run, round: current.plan.round, observed, report },
+      })
+      append(subject, {
+        type: 'msg.sent',
+        data: {
+          to: 'builder',
+          from: `gate-${gate}`,
+          kind: 'status',
+          body: `${gate} round ${current.plan.round}/${run.budget}: ${report.verdict}; missing ${report.missing.length}, kept ${report.kept.length}, unchanged ${report.unchanged}. Findings: items/${subject}/gates/${run.run}/${current.plan.round}.json`,
+        },
+      })
+    }
+    const stale =
+      !!current.decision && report.verdict === 'PASS' && observed !== current.plan.snapshot.digest
+    return {
+      schema: 'wholeloop/gate-verdict@1',
+      subject,
+      run: run.run,
+      gate,
+      round: current.plan.round,
+      budget: run.budget,
+      report,
+      current: !stale,
+      verdict: stale ? 'STALE' : report.verdict,
+    }
   }
 }

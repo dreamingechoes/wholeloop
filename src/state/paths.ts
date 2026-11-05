@@ -1,9 +1,21 @@
 import { existsSync, realpathSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { inReadObservation, observedRead } from './read-observation.js'
 
 /** Resolve even a not-yet-created destination through its existing symlink ancestors. */
 export function canonicalPath(path: string): string {
+  if (!inReadObservation()) return canonicalPhysicalPath(path)
+  const selected = resolve(path)
+  return observedRead(`canonical-path:${selected}`, () => {
+    const value = canonicalPhysicalPath(selected)
+    // Absence is an input too: a newly created revocation or private marker
+    // must invalidate the observation even if its canonical name is unchanged.
+    return { bytes: Buffer.from(JSON.stringify([value, existsSync(selected)])), value }
+  })
+}
+
+function canonicalPhysicalPath(path: string): string {
   const selected = resolve(path)
   for (let attempt = 0; ; attempt++) {
     const suffix: string[] = []
@@ -25,7 +37,19 @@ export function canonicalPath(path: string): string {
 }
 
 export function assertExternal(path: string): void {
-  let ancestor = canonicalPath(path)
+  if (!inReadObservation()) {
+    assertPhysicalExternal(path)
+    return
+  }
+  const selected = resolve(path)
+  observedRead(`external-path:${selected}`, () => {
+    assertPhysicalExternal(selected)
+    return { bytes: Buffer.from('external'), value: undefined }
+  })
+}
+
+function assertPhysicalExternal(path: string): void {
+  let ancestor = canonicalPhysicalPath(path)
   while (true) {
     if (
       existsSync(join(ancestor, '.git')) ||

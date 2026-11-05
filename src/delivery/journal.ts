@@ -11,6 +11,7 @@ import { resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { StoreFiles } from '../state/files.js'
 import { storePath } from '../state/paths.js'
+import { inReadObservation, observedRead } from '../state/read-observation.js'
 import {
   type DeliveryActor,
   type DeliveryEvent,
@@ -48,9 +49,17 @@ export class DeliveryJournal {
 
   /** One fresh read per observation; reuse a replay only for identical current segment bytes. */
   private readSnapshot() {
+    if (!inReadObservation()) return this.readPhysicalSnapshot().value
+    return observedRead(`journal:${this.files.root}`, () => this.readPhysicalSnapshot())
+  }
+
+  private readPhysicalSnapshot() {
     const directory = this.ownedPath('delivery/journal')
     if (!existsSync(directory))
-      return { events: [] as DeliveryEvent[], states: new Map<string, DeliveryProjection>() }
+      return {
+        bytes: Buffer.from('absent'),
+        value: { events: [] as DeliveryEvent[], states: new Map<string, DeliveryProjection>() },
+      }
     const fd = openSync(
       directory,
       constants.O_RDONLY | constants.O_DIRECTORY | constants.O_NOFOLLOW,
@@ -105,11 +114,21 @@ export class DeliveryJournal {
       const current = statSync(this.ownedPath('delivery/journal'), { bigint: true })
       if (current.dev !== original.dev || current.ino !== original.ino || !current.isDirectory())
         throw new DeliveryJournalError('changed-journal-directory')
-      if (unchanged && replayed && segments.length === prior.length)
-        return { events, states: replayed.states }
-      const states = replayDelivery(events)
-      replayed = { directory, segments, states: structuredClone(states) }
-      return { events, states }
+      const previous =
+          unchanged && replayed && segments.length === prior.length ? replayed : undefined,
+        states = previous ? previous.states : replayDelivery(events)
+      if (!previous) replayed = { directory, segments, states: structuredClone(states) }
+      // Length framing binds exact segment names and bytes, including otherwise
+      // semantically equivalent whitespace edits. No file-metadata cache is used.
+      const bytes = inReadObservation()
+        ? Buffer.concat(
+            segments.flatMap((segment) => [
+              Buffer.from(`${segment.name}:${segment.bytes.length}:`),
+              segment.bytes,
+            ]),
+          )
+        : Buffer.alloc(0)
+      return { bytes, value: { events, states } }
     } finally {
       closeSync(fd)
     }

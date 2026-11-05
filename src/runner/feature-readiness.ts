@@ -5,6 +5,7 @@ import { integrationScope } from '../integration/contracts.js'
 import { IntegrationCandidates } from '../integration/store.js'
 import type { IntegrationVerificationRequest } from '../integration/verification.js'
 import { observedIntegrationVerification } from '../integration/verification-observation.js'
+import { shareReadObservation } from '../state/read-observation.js'
 import { RunnerEnvironmentScope } from './environment-scope.js'
 import { RunnerIntegrationStages } from './integration-stages.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
@@ -123,6 +124,9 @@ export class RunnerFeatureReadiness {
     }
   }
   async inspect(request: Readonly<RunnerRequest>): Promise<RunnerFeatureReadinessResult> {
+    return shareReadObservation(() => this.observe(request))
+  }
+  private async observe(request: Readonly<RunnerRequest>): Promise<RunnerFeatureReadinessResult> {
     const digest = contractDigest(request),
       proofs: unknown[] = [],
       unavailable = (

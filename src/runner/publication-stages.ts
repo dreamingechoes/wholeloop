@@ -7,6 +7,7 @@ import type { DeliveryPlan } from '../delivery/plan.js'
 import type { RecoveryRead } from '../delivery/read-retry.js'
 import { hasToolAttribution } from '../git/commit.js'
 import { IntegrationCandidates } from '../integration/store.js'
+import { inReadObservation, withReadObservation } from '../state/read-observation.js'
 import { publicationKey, publicationMarker, publicationRecords } from './publication-evidence.js'
 
 export { publicationMarker, publicationRecords } from './publication-evidence.js'
@@ -373,26 +374,28 @@ export class RunnerPublisher {
   }
   /** A lost response is resolved by reading the exact resource, never by writing again. */
   async observe(run: string, publication: Readonly<RunnerPublication>) {
-    for (const [index, records] of this.records(run, publication).entries())
-      for (const step of ORDER) {
-        const effect = records[step],
-          target = publication.targets[index],
-          text = publication.texts[index]
-        if (effect && target && text && ['pending', 'unknown'].includes(effect.status))
-          await this.effects.reconcile(
-            run,
-            effect.intent.id,
-            this.host(
-              step,
-              target,
-              text,
+    if (!inReadObservation()) {
+      for (const [index, records] of this.records(run, publication).entries())
+        for (const step of ORDER) {
+          const effect = records[step],
+            target = publication.targets[index],
+            text = publication.texts[index]
+          if (effect && target && text && ['pending', 'unknown'].includes(effect.status))
+            await this.effects.reconcile(
               run,
-              { allowed: false, evidence: '' },
-              ciPublicationOrigin(this.store, run, publication, target)?.original.pr,
-            ),
-          )
-      }
-    this.resume(run)
+              effect.intent.id,
+              this.host(
+                step,
+                target,
+                text,
+                run,
+                { allowed: false, evidence: '' },
+                ciPublicationOrigin(this.store, run, publication, target)?.original.pr,
+              ),
+            )
+        }
+      this.resume(run)
+    }
     const records = this.records(run, publication),
       steps = records.flatMap((entry) =>
         ORDER.filter((step) => step !== 'ready' || publication.ready).map((step) => entry[step]),
@@ -768,6 +771,13 @@ export class RunnerPublicationStages {
     }
   }
   async endpoint(
+    request: Readonly<RunnerRequest>,
+    plan: Readonly<DeliveryPlan>,
+    signal: AbortSignal,
+  ): Promise<RunnerEndpointObservation> {
+    return withReadObservation(signal, () => this.observeEndpoint(request, plan, signal))
+  }
+  private async observeEndpoint(
     request: Readonly<RunnerRequest>,
     plan: Readonly<DeliveryPlan>,
     signal: AbortSignal,

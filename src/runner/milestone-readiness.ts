@@ -1,5 +1,6 @@
 import { contractDigest } from '../contracts/compatibility.js'
 import { type IntegrationPart, integrationScope } from '../integration/contracts.js'
+import { shareReadObservation } from '../state/read-observation.js'
 import { RunnerGitStages } from './git-stages.js'
 import { DeliveryRunnerError } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
@@ -28,6 +29,12 @@ export class RunnerMilestoneReadiness {
         throw new DeliveryRunnerError('milestone-readiness-fixed-readers-required')
   }
   async inspect(
+    request: Readonly<RunnerRequest>,
+    milestone: string,
+  ): Promise<RunnerMilestoneReadinessResult> {
+    return shareReadObservation(() => this.observe(request, milestone))
+  }
+  private async observe(
     request: Readonly<RunnerRequest>,
     milestone: string,
   ): Promise<RunnerMilestoneReadinessResult> {

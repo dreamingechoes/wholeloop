@@ -11,6 +11,7 @@ import {
 import { resolve } from 'node:path'
 import { type Schema, validate } from '../config/schema.js'
 import { inside } from '../state/paths.js'
+import { inReadObservation, observedRead } from '../state/read-observation.js'
 import requestSchema from './schemas/source-request-v1.json' with { type: 'json' }
 
 export const SOURCE_LIMIT = 1024 * 1024
@@ -153,6 +154,24 @@ export function readSourceFile(root: string, file: string, limit = SOURCE_LIMIT)
 
 /** Checkpoint binary inputs use the same stable descriptor boundary without decoding/copying them. */
 export function readSourceBytes(root: string, file: string, limit = SOURCE_LIMIT): Buffer {
+  if (!inReadObservation()) return readPhysicalSourceBytes(root, file, limit)
+  const path = resolve(root)
+  return Buffer.from(
+    observedRead(JSON.stringify(['source', path, file, limit]), () => {
+      try {
+        const boundary = realpathSync(path),
+          selected = realpathSync(resolve(boundary, file)),
+          value = readPhysicalSourceBytes(path, file, limit)
+        return { bytes: Buffer.concat([Buffer.from(`${boundary}\0${selected}\0`), value]), value }
+      } catch (error) {
+        if (error instanceof SourceInputError) throw error
+        throw new SourceInputError('unsafe-file')
+      }
+    }),
+  )
+}
+
+function readPhysicalSourceBytes(root: string, file: string, limit: number): Buffer {
   let fd: number | undefined
   try {
     if (!Number.isSafeInteger(limit) || limit < 0) throw new SourceInputError('unsafe-file')
