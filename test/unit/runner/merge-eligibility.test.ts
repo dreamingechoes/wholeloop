@@ -312,6 +312,20 @@ describe('conditional merge eligibility', () => {
       'unsupported-merge-host',
     ],
     [
+      'CI for another base',
+      (v) => {
+        v.ci.base = 'foreign'
+      },
+      'ci-base-mismatch',
+    ],
+    [
+      'CI for another repository',
+      (v) => {
+        v.ci.repository = 'https://github.com/foreign/app'
+      },
+      'ci-repository-mismatch',
+    ],
+    [
       'CI for another PR',
       (v) => {
         v.ci.pr = 'https://github.com/fixture/app/pull/8'

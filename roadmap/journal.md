@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-05 · P6-29 · Retained CI correction evidence — in progress
+
+- Reproduce seven literal-conclusion/tied-attempt failures before their fix: completed timeout, action-required or absent conclusions wrongly became code-test, while equal latest attempts depended on array order. Preserve literal states and require one unique latest trusted required check at the candidate. Keep timeouts/action-required unsuccessful without licensing code repair; unknown/tied results never pass or admit repair.
+- Reproduce a later plan advertising a higher CI push allowance than the started run retained. Use the minimum of the current plan and pinned ledger, retaining issued-push counts. The initial fixture had no started ledger; its zero-limit result exposed that mistaken setup. Start the fixture's original budget before revising and retain legitimate pre-execution plan allowance. The corrected started-ledger control fails on the original implementation and passes with the ceiling fix.
+- Four further differential controls show another repository/base being retained as passing CI and admitted for merge. Bind both predicates to the requested repository/base; all four fail before the guards and pass afterward. Add a fixed private historical reader for exact original CI, consumed binding/result, owned publication effects, PR/head/base, observation and typed repair request ([ADR-0212](../docs/decisions/0212-retained-ci-correction-evidence.md)). Missing, changed and rehashed bindings refuse; revocation/revision preserves history without effects or host reads.
+- The component fixture uses actual publisher ledger effects and the fixed CI stage against synthetic accepted-product evidence and a stub remote. It certifies no complete current PR-comment set, native/model account or hosted route. The compiled final-tree component smoke passes on Linux arm64 with Node 20.0.0 and 24.22.0, in read-only network-disabled containers with disposable state and a stub remote. Original receipt equality, missing-proof refusal, zero new host calls/events and separation from revoked execution authority pass. This is not a full Linux suite. The mandatory per-commit gate passes 461 tests in 23 files and every fast check: `CHECK PASS (fast) in 115s`. The repeated full gate remains required. CI execution still needs a versioned correction contract, current feedback/authority/budget admission and original-topic/PR publication; P6-29 remains open. No wholeloop source push runs.
+
+---
+
 ## 2026-11-05 · P6-29 · Correction repair orchestration window — in progress
 
 - The full macOS arm64/Node 24.22.0 gate on committed `28244f0` ends `CHECK FAIL (test)`: 4191 tests pass in the other cases, while the positive three-restart component control exceeds Vitest's external 120-second timeout (reported case duration 124715 ms). The remaining full steps, including the offline archive/install, do not run after that failure. Keep the earlier focused and fast passes separate from this failed full result.

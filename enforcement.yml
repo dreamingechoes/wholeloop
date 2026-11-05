@@ -37,10 +37,12 @@ rules:
     enforcers: [src/runner/merge-execution.ts#RunnerMerger, src/runner/publication-host.ts#GithubCliMergeHost, src/delivery/effects.ts#DeliveryEffects, test/unit/runner/merge-execution.test.ts]
   - id: delivery-merge-eligibility
     enforcers: [src/runner/merge-eligibility.ts#mergeEligibility, src/runner/merge-eligibility.ts#pathMatches, src/runner/stage-dispatcher.ts#preflight, test/unit/runner/merge-eligibility.test.ts]
+  - id: delivery-original-ci-failure
+    enforcers: [src/runner/ci-failure.ts#originalCiFailure, src/runner/publication-stages.ts#publicationRecords, src/runner/ci-observations.ts#ciVerdict, src/runner/ci-repair.ts#ciRepairAdmission, src/runner/ci-repair.ts#ciRepairRequest, test/unit/runner/ci-failure.test.ts, test/unit/runner/ci-repair-boundary.test.ts, test/unit/runner/ci-repair-budget.test.ts]
   - id: delivery-bounded-ci-repair
-    enforcers: [src/runner/ci-repair.ts#classifyCiFailures, src/runner/ci-repair.ts#ciFeedback, src/runner/ci-repair.ts#ciRepairAdmission, src/runner/ci-repair.ts#ciRepairRequest, src/delivery/effect-events.ts#deliveryEffects, test/unit/runner/ci-repair.test.ts]
+    enforcers: [src/runner/ci-repair.ts#classifyCiFailures, src/runner/ci-repair.ts#ciFeedback, src/runner/ci-repair.ts#ciRepairAdmission, src/runner/ci-repair.ts#ciRepairRequest, src/delivery/effect-events.ts#deliveryEffects, test/unit/runner/ci-repair.test.ts, test/unit/runner/ci-repair-boundary.test.ts, test/unit/runner/ci-repair-budget.test.ts]
   - id: delivery-revision-bound-ci
-    enforcers: [src/runner/ci-observations.ts#ciVerdict, src/runner/ci-observations.ts#ciRetry, src/runner/ci-observations.ts#RunnerCiObserver, src/runner/ci-observations.ts#validateCiObservation, src/runner/publication-host.ts#GithubCliCiHost, test/unit/runner/ci-observations.test.ts]
+    enforcers: [src/runner/ci-observations.ts#ciVerdict, src/runner/ci-observations.ts#ciRetry, src/runner/ci-observations.ts#RunnerCiObserver, src/runner/ci-observations.ts#validateCiObservation, src/runner/publication-host.ts#GithubCliCiHost, src/runner/merge-eligibility.ts#mergeEligibility, test/unit/runner/ci-observations.test.ts, test/unit/runner/merge-eligibility.test.ts]
   - id: delivery-authorized-publication
     enforcers: [src/runner/publication-stages.ts#RunnerPublicationStages, src/runner/publication-stages.ts#RunnerPublisher, src/runner/publication-stages.ts#publicationTargets, src/runner/publication-stages.ts#publicationText, src/runner/publication-host.ts#GithubCliCodeHost, src/runner/stage-dispatcher.ts#preflight, test/unit/runner/publication-stages.test.ts, test/unit/runner/publication-host.test.ts, test/unit/pull-requests/pull-requests.test.ts, test/evals/runner/assembly-readiness.ts]
   - id: delivery-unattended-research-host

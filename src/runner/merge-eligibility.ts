@@ -135,6 +135,11 @@ export function mergeEligibility(input: Readonly<MergeEligibilityInput>): MergeE
   const verdict = ciVerdict(input.ci, input.policy.checks)
   fail(input.ci.candidate !== input.candidate.head, 'ci-candidate-mismatch')
   fail(input.ci.pr !== input.pr.url, 'ci-pull-request-mismatch')
+  fail(input.ci.base !== input.pr.base, 'ci-base-mismatch')
+  fail(
+    input.ci.repository !== input.pr.url.slice(0, input.pr.url.lastIndexOf('/pull/')),
+    'ci-repository-mismatch',
+  )
   fail(verdict.status === 'failed', 'required-check-failed')
   gap(verdict.status === 'pending', 'required-check-pending')
   if (verdict.status === 'unknown') unknown.push(...verdict.reasons.map((r) => `ci-${r}`))

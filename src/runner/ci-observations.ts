@@ -59,6 +59,10 @@ export type CiCheckState =
   | 'stale'
   | 'wrong-issuer'
   | 'unknown-issuer'
+  | 'timed_out'
+  | 'action_required'
+  | 'missing-conclusion'
+  | 'ambiguous-attempt'
 export interface CiVerdict {
   status: 'passed' | 'pending' | 'failed' | 'unknown'
   reasons: string[]
@@ -115,21 +119,17 @@ export function ciVerdict(
         const trusted = current.filter((check) => check.issuer === issuer)
         if (!trusted.length) state = 'wrong-issuer'
         else {
-          const latest = trusted.reduce((a, b) => (b.attempt > a.attempt ? b : a))
+          const attempt = Math.max(...trusted.map((check) => check.attempt)),
+            latest = trusted.filter((check) => check.attempt === attempt),
+            [only] = latest
+          // A tie has no trustworthy ordering. More importantly, a completed
+          // timeout or absent conclusion is not an observed code/test failure.
           state =
-            latest.status !== 'completed'
-              ? 'pending'
-              : latest.conclusion === 'success'
-                ? 'success'
-                : latest.conclusion === 'cancelled'
-                  ? 'cancelled'
-                  : latest.conclusion === 'skipped'
-                    ? 'skipped'
-                    : latest.conclusion === 'neutral'
-                      ? 'neutral'
-                      : latest.conclusion === 'stale'
-                        ? 'stale'
-                        : 'failure'
+            latest.length !== 1 || !only
+              ? 'ambiguous-attempt'
+              : only.status !== 'completed'
+                ? 'pending'
+                : (only.conclusion ?? 'missing-conclusion')
         }
       }
       return { name, issuer, state }
@@ -145,7 +145,7 @@ export function ciVerdict(
   const states = new Set(checks.map((check) => check.state))
   const status: CiVerdict['status'] = reasons.length
     ? 'unknown'
-    : states.has('failure')
+    : ['failure', 'timed_out', 'action_required'].some((state) => states.has(state as CiCheckState))
       ? 'failed'
       : [...states].every((state) => state === 'success')
         ? 'passed'
@@ -240,7 +240,12 @@ export class RunnerCiObserver {
       try {
         const observed = await this.host.observe(input.target, input.pr, input.signal)
         validateCiObservation(observed)
-        if (observed.candidate !== input.target.head || observed.pr !== input.pr)
+        if (
+          observed.candidate !== input.target.head ||
+          observed.pr !== input.pr ||
+          observed.base !== input.target.base ||
+          observed.repository !== input.pr.slice(0, input.pr.lastIndexOf('/pull/'))
+        )
           throw new DeliveryRunnerError('ci-observation-binding')
         observations.push(this.retain(input.run, observed))
         verdict = ciVerdict(observed, input.policy)

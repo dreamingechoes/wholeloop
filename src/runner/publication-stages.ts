@@ -60,7 +60,7 @@ export interface RunnerPublicationOptions {
   identity: RunnerRequest['host']
   host: RunnerCodeHost
 }
-interface PublicationBinding {
+export interface PublicationBinding {
   version: 1
   request: string
   plan: string
@@ -149,6 +149,28 @@ export interface RunnerPublication {
   targets: RunnerPublicationTarget[]
   texts: { title: string; body: string }[]
 }
+const publicationKey = (step: Step, repository: string) =>
+  `publish-${step}-${contractDigest(repository).slice(0, 16)}`
+export function publicationRecords(
+  store: RunnerStore,
+  run: string,
+  binding: Readonly<RunnerPublication>,
+) {
+  const all = new DeliveryEffects(store.files.root, store.now, store.budgets.clock).inspect(run)
+  return binding.targets.map((target) =>
+    Object.fromEntries(
+      ORDER.map((step) => [
+        step,
+        all.find(
+          (record) =>
+            record.intent.key === publicationKey(step, target.repository) &&
+            record.intent.basis === binding.plan,
+        ),
+      ]),
+    ),
+  ) as Partial<Record<Step, EffectRecord>>[]
+}
+
 /** Owned non-force push, one owned draft PR and an optional ready transition per repository. */
 export class RunnerPublisher {
   readonly effects: DeliveryEffects
@@ -159,22 +181,10 @@ export class RunnerPublisher {
     this.effects = new DeliveryEffects(store.files.root, store.now, store.budgets.clock)
   }
   key(step: Step, repository: string) {
-    return `publish-${step}-${contractDigest(repository).slice(0, 16)}`
+    return publicationKey(step, repository)
   }
   records(run: string, binding: Readonly<RunnerPublication>) {
-    const all = this.effects.inspect(run)
-    return binding.targets.map((target) =>
-      Object.fromEntries(
-        ORDER.map((step) => [
-          step,
-          all.find(
-            (record) =>
-              record.intent.key === this.key(step, target.repository) &&
-              record.intent.basis === binding.plan,
-          ),
-        ]),
-      ),
-    ) as Partial<Record<Step, EffectRecord>>[]
+    return publicationRecords(this.store, run, binding)
   }
   /** Effect host for one step: the async preconditions were read before issue. */
   private host(

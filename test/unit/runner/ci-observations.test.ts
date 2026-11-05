@@ -55,7 +55,7 @@ describe('revision-bound CI verdicts', () => {
     ['a queued check', { checks: [open('queued')] }, 'pending', 'pending'],
     ['an in-progress check', { checks: [open('in_progress')] }, 'pending', 'pending'],
     ['a failed check', { checks: [check({ conclusion: 'failure' })] }, 'failed', 'failure'],
-    ['a timed-out check', { checks: [check({ conclusion: 'timed_out' })] }, 'failed', 'failure'],
+    ['a timed-out check', { checks: [check({ conclusion: 'timed_out' })] }, 'failed', 'timed_out'],
     ['a cancelled check', { checks: [check({ conclusion: 'cancelled' })] }, 'unknown', 'cancelled'],
     ['a skipped check', { checks: [check({ conclusion: 'skipped' })] }, 'unknown', 'skipped'],
     ['a neutral check', { checks: [check({ conclusion: 'neutral' })] }, 'unknown', 'neutral'],
@@ -258,6 +258,32 @@ describe('finite CI waits (fake clock)', () => {
         verdict: { status: 'unknown', reasons: ['unknown-protection'] },
       })
     }))
+  it.each([{ base: 'foreign' }, { repository: 'https://github.com/foreign/app' }])(
+    'does not retain another base or repository as target evidence',
+    (overrides) =>
+      observer(async ({ store, runId, clock }) => {
+        const wait = await new RunnerCiObserver(
+          store,
+          {
+            observe: async () => observation(overrides),
+          },
+          clock,
+        ).wait({
+          run: runId,
+          target,
+          pr: observation().pr,
+          policy,
+          deadline: clock.at + 30000,
+          signal: new AbortController().signal,
+        })
+        expect(wait).toMatchObject({
+          outcome: 'deadline',
+          observations: [],
+          verdict: { status: 'unknown', reasons: ['unavailable-read'] },
+        })
+        expect(clock.sleeps).toEqual([15000, 15000])
+      }),
+  )
   it('refuses an observation of another candidate and stops when cancelled', () =>
     observer(async ({ store, runId, clock }) => {
       const abort = new AbortController(),

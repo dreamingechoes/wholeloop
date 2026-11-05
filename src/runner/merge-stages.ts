@@ -35,7 +35,7 @@ import type { RunnerRequest, RunnerStore } from './store.js'
 
 const iso = (value: string) =>
   Number.isFinite(Date.parse(value)) && new Date(value).toISOString() === value
-interface StageBinding {
+export interface StageBinding {
   version: 1
   request: string
   plan: string
@@ -191,7 +191,7 @@ export interface RunnerCiStageOptions {
   host: RunnerCiHost
   clock?: CiClock
 }
-interface CiResult {
+export interface CiResult {
   binding: string
   targets: {
     repository: string

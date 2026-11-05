@@ -1,4 +1,5 @@
 import { contractDigest } from '../contracts/compatibility.js'
+import { findBudget } from '../delivery/budget-events.js'
 import { deliveryEffects } from '../delivery/effect-events.js'
 import { safeSourceText } from '../delivery/input.js'
 import { type CiObservation, type CiPolicy, type CiVerdict, ciVerdict } from './ci-observations.js'
@@ -117,7 +118,12 @@ export function ciRepairAdmission(store: RunnerStore, run: string): CiRepairAdmi
     pushes = deliveryEffects(state).records.filter(
       (record) => record.intent.operation === 'git.push' && record.invocation !== undefined,
     ).length
-  return { pushes, limit: plan.budgets.ciPushes, allowed: pushes < plan.budgets.ciPushes }
+  // Plan revisions may tighten the run's original allowance, never replenish it.
+  const limit = Math.min(
+    plan.budgets.ciPushes,
+    findBudget(state)?.limits?.ciPushes ?? plan.budgets.ciPushes,
+  )
+  return { pushes, limit, allowed: pushes < limit }
 }
 
 /** Pure: one typed request per observation; it authorizes nothing by itself. */
