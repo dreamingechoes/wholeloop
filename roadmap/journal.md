@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-05 · P6-29 · Correction revisions complete at the local implementation boundary
+
+- The clean integrated tree at 8c08256 passes the complete macOS arm64/Node 24.22.0 gate: 4275 tests in 251 files, offline npm archive/install and every remaining check; final line `CHECK PASS in 717s`. Archive SHA-256: `c4f944a046e9adabe39af9275de09f0733b88c9d4b68f116e34ac2e2c3c5f648`. Its per-commit gate passed 4275 tests in 251 files; 499 focused controls and separate Linux arm64 Node 20.0.0/24.22.0 SDK component checks also pass. Explicit commit-range validation checks all nine commits in d3c2616..8c08256.
+- Close P6-29's implementation and correction criteria. Preserve both failed development SDK command reports, the corrected passing read-only verifier and its exact limits described below; the whole command was not repeated after the reporter-only correction. Actual Git/Docker evidence and synthetic native/API/CI facts remain separate. No native client, model, hosted service, containment or full Linux certification is inferred.
+- P6-22 now has its fixed CI producer and is implemented awaiting native/hosted acceptance; retain its second acceptance criterion open. Reconcile the ledger to 72 completed of 92 tasks, with 32 complete Phase 6 tasks, three implemented awaiting external acceptance and three with implementation/acceptance work remaining. Begin P6-32's locally implementable case map and source-installable release reconciliation next; P6-27 and the credential design decision remain deferred. No source push runs.
+
+---
+
 ## 2026-11-05 · P6-29 · Versioned CI correction producer — in progress
 
 - Add explicit version-two plans/planning records and schema selection, preserving every frozen declaration and version-one CLI default. The dedicated CI proposal previews/records only immutable metadata and explicitly requires a new exact-plan grant and installed SDK controller. The public composer still refuses to-merge and the native runtime gains no merge or credential flag. Producer revisions schedule only their own correction; reject any dependency-bearing code unit before accepting a CI proposal ([ADR-0214](../docs/decisions/0214-versioned-ci-correction-production.md)).
