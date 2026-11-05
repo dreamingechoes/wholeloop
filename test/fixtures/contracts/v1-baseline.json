@@ -428,7 +428,8 @@
     "output:wholeloop/delivery-plan-prepared@2": "cac147b3c7c7a89858bceff144733aba46c2c52f962a0b3dd88192b79339e3a4",
     "schema:wholeloop/delivery-plan@2": "4bc78cc4b465622d19ed1711856ad1698ba1cc9da1b4c82689ad9dfbe4bc3b70",
     "schema:wholeloop/delivery-planning-record@2": "857a9f20c5eead2da99d87b8f0a89ae3ba556ad120c9aec0d4b75dc67a2e1e9c",
-    "output:wholeloop/delivery-ci-continue@1": "f27f6abed74ec3d0cc4552e74d7f18d527d2ee16e3c1a46bd2373a7abd21c130"
+    "output:wholeloop/delivery-ci-continue@1": "f27f6abed74ec3d0cc4552e74d7f18d527d2ee16e3c1a46bd2373a7abd21c130",
+    "schema:wholeloop/repository-diff-input@1": "40dc8a252a8c4183fe969f95d2dcb170c7f9b82e860cd81d999e05fcf92b0db2"
   },
   "commands": [
     {

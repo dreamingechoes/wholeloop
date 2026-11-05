@@ -3,7 +3,7 @@
 > **TL;DR** — The v1 candidate freezes existing schema declarations, step contracts, command signatures and exit codes. New commands and optional flags are additive; changing an existing format needs a new identity and a migration path. Commit classifications alone do not establish compatibility.
 
 > [!NOTE]
-> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers 84 source JSON Schemas, 164 command-output variants, thirteen steps, 181 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
+> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers 184 source JSON Schemas, 231 command-output variants, thirteen steps, 241 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
 
 ## What is versioned
 
@@ -31,7 +31,7 @@ The normal unit suite compares source declarations with test/fixtures/contracts/
 
 Every current declaration must have a recorded baseline entry; old entries cannot disappear or change silently. New identities are appended with their tests, not used to overwrite old definitions. Existing commands keep their positional and output contracts and all prior flags. Run npm run check after changing a contract; its source/compiled inventory check also catches missing general-schema branches.
 
-A fingerprint change flags review; it is not a semantic compatibility proof. An annotation-only or equivalent edit may update its fixture after the reason and domain regression checks are recorded. Never refresh fixtures to hide changed constraints or meanings under an old identity. Parser, replay, workflow and native conformance evidence remain necessary for the behavior they exercise. The current checks ran on macOS and Debian Linux arm64/Node 24, including all 1925 tests, compiled fixtures and offline packaging. Other supported Node/platform combinations, real native clients and physical upgrade acceptance remain in the manual list.
+A fingerprint change flags review; it is not a semantic compatibility proof. An annotation-only or equivalent edit may update its fixture after the reason and domain regression checks are recorded. Never refresh fixtures to hide changed constraints or meanings under an old identity. Parser, replay, workflow and native conformance evidence remain necessary for the behavior they exercise. The original compatibility increment ran on macOS and Debian Linux arm64/Node 24, including its 1925 tests, compiled fixtures and offline packaging. Later gates retain their exact candidate scope in the [journal](../../roadmap/journal.md). Other supported Node/platform combinations, real native clients and physical upgrade acceptance remain in the manual list.
 
 ## Delivery event extensions
 
