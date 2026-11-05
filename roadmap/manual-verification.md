@@ -68,6 +68,8 @@ A Homebrew cask cannot be pinned, so no general `brew upgrade` runs during the c
 
 The dedicated Codex 0.166.0 ChatGPT home, GitHub keyring and private trial protection are available. All six model-free boundary controls pass. The first live research attempt completes two successful host-observed model calls with zero human waits, then blocks on the concrete research-plan evidence defect fixed by [ADR-0215](../docs/decisions/0215-reviewed-public-research-plan.md). Its failed report remains retained; the corrected-core campaign is separate.
 
+The fresh 2026-11-05 standalone framing control on Codex 0.166.0 passes through the actual native process and journal on the corrected core. It requests gpt-6.1-sol/high explicitly and passes no ambient API key. The scripted fictional-owner approval remains a protocol fixture, not actual human approval, semantic review, native isolation or complete supervised delivery acceptance. Original human workflow obligations remain open.
+
 A read-only stdio probe observes ChatGPT Plus and actual quota metadata through account/read and account/rateLimits/read, with no thread, turn or model call. The service reports 3 percent usage in its 10080-minute window and a reset timestamp. A reached-limit type is absent because this sample is not exhausted. The [official App Server rate-limit contract](https://learn.chatgpt.com/docs/app-server#6-rate-limits-chatgpt) and the locally generated 0.166.0 protocol support this read. Actual exhaustion, renewal, API-account authentication, Linux secret-store and WSL2 acceptance remain separate; this probe enables no credential or pause/resume feature.
 
 ## Implementation-to-PR trial procedure (2026-11-04)
@@ -125,7 +127,7 @@ The three-run report (`npm run eval:campaign -- --require EVAL-10:claude,EVAL-10
 
 The verdict follows the 2026-11-04 rule ([validation spec](./specifications/autonomous-delivery/09-validation-and-acceptance.md)): the six infrastructure failures are set aside, and the first three remaining attempts all passed.
 
-- [ ] A reference-client research route with an unsatisfiable mandatory prerequisite returns a terminal blocked receipt within its deadline (EVAL-11).
+- [ ] A reference-client research route with an unsatisfiable mandatory prerequisite returns a terminal blocked receipt within its deadline (EVAL-11). The 2026-11-05 public-CLI control with the actual Codex binding and deliberately undelegated research-plan decision returns blocked/exit 3 in less than one second, releases ownership and records zero model calls and human waits. Its ten-second deadline is unchanged. This verifies the pre-model policy boundary; actual native human/external-prerequisite observations remain open.
 
 ## Delegated machine decision checks (2026-10-25)
 
