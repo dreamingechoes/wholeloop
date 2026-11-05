@@ -35,6 +35,8 @@ rules:
     enforcers: [src/runner/revision-impact.ts#revisionImpact, src/runner/revision-impact.ts#reviseDelivery, src/cli/delivery-journal.ts#deliveryJournalCommand, test/unit/runner/revision-impact.test.ts]
   - id: delivery-correction-continuation
     enforcers: [src/runner/continuation.ts#continueDelivery, src/delivery/reducer.ts#continuationAdmission, src/delivery/lifecycle.ts#DeliveryLifecycle, src/runner/engine.ts#DeliveryRunner, src/runner/events.ts#reduceRunner, src/runner/route.ts#runnerRoute, src/cli/delivery-journal.ts#deliveryJournalCommand, test/unit/runner/continuation.test.ts]
+  - id: delivery-native-output-diagnostics
+    enforcers: [src/delivery/native-output-diagnostic.ts#nativeOutputDiagnostic, src/delivery/native-assignment-host.ts#NativeAssignmentHost, test/unit/delivery/native-output-diagnostic.test.ts, test/unit/delivery/native-host.test.ts]
   - id: delivery-operator-visibility
     enforcers: [src/runner/operator-report.ts#deliveryReport, src/runner/operator-report.ts#nextActions, src/runner/operator-report.ts#deliveryDiagnostics, src/runner/operator-report.ts#exportRecoveryBundle, src/runner/operator-report.ts#importRecoveryBundle, src/cli/delivery-journal.ts#deliveryJournalCommand, test/unit/runner/operator-report.test.ts]
   - id: delivery-merge-route

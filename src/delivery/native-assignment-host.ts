@@ -25,6 +25,7 @@ import {
   negotiateNativeDelivery,
 } from './native-capabilities.js'
 import type { NativeClaudeContainment } from './native-claude-sandbox.js'
+import { type NativeOutputPhase, nativeOutputDiagnostic } from './native-output-diagnostic.js'
 import { sealNativeGitControl } from './native-workspace.js'
 import { validateDeliveryShape } from './plan.js'
 import { boundedRecoveryCall } from './read-retry.js'
@@ -377,17 +378,36 @@ export class NativeAssignmentHost {
                 : undefined
       let result: WorkerResult | undefined
       let inlineArtifacts: Map<string, Buffer> | undefined
+      const outputDigest = stdout.copy().digest('hex'),
+        noteOutputFailure = (phase: NativeOutputPhase, error: unknown) => {
+          try {
+            const path = `${relative}/output-diagnostic.json`
+            if (!existsSync(files.path(path)))
+              files.atomic(
+                path,
+                `${JSON.stringify(nativeOutputDiagnostic(assignment.assignment, outputDigest, phase, error))}\n`,
+              )
+          } catch {
+            // A missing diagnostic must not hide the original terminal failure.
+          }
+        }
+      let outputPhase: NativeOutputPhase = 'frame'
       if (!reason) {
         try {
           const response = Buffer.from(recipe.response(observedProcess.stdout))
           if (options.output === 'inline-proposal') {
+            outputPhase = 'proposal'
             const proposal = decodeWorkerProposal(response, assignment)
             result = proposal.result
             inlineArtifacts = new Map(
               proposal.artifacts.map(({ artifact, bytes }) => [artifact.ref, bytes]),
             )
-          } else result = decodeWorkerResult(response, assignment)
-        } catch {
+          } else {
+            outputPhase = 'result'
+            result = decodeWorkerResult(response, assignment)
+          }
+        } catch (error) {
+          noteOutputFailure(outputPhase, error)
           const failure = nativeFailureReason(diagnostic)
           reason = failure === 'launch-failed' ? 'invalid-output' : failure
         }
@@ -486,7 +506,8 @@ export class NativeAssignmentHost {
             return bytes
           },
         })
-      } catch {
+      } catch (error) {
+        noteOutputFailure('execution', error)
         reason ??= current() ? 'invalid-output' : 'stale'
         execution = stampWorkerExecution(
           assignment,

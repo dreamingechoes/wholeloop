@@ -231,6 +231,8 @@
 
 | [0219](./0219-native-producer-transport.md) | Pin artifact producer transport before native generation | Accepted | 2026-11-05 |
 
+| [0220](./0220-private-native-output-diagnostics.md) | Retain closed private native output-failure categories | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

@@ -531,6 +531,19 @@ describe('actual synthetic native processes', () => {
             reason: 'invalid-output',
             acceptance: 'not-established',
           })
+          const diagnostic = JSON.parse(
+            readFileSync(
+              queue.lifecycle.journal.files.path(`${receipt.directory}/output-diagnostic.json`),
+              'utf8',
+            ),
+          )
+          expect(diagnostic).toEqual({
+            schema: 'wholeloop/native-output-diagnostic@1',
+            assignment: receipt.assignment,
+            stdout: receipt.execution?.stdout,
+            phase: 'proposal',
+            problem: 'result-identity',
+          })
           expect(receipt.artifacts).toBeUndefined()
           expect(
             new NativeDeliveryHost(queue).budgets.inspect(lease.run).counters.artifactBytes,
