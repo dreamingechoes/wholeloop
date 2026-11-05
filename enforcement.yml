@@ -422,7 +422,7 @@ rules:
   - id: gate-eval-observations
     enforcers: [src/gates/eval.ts#parseGatePredictions, src/gates/eval.ts#gateEvaluationReport, src/gates/report.ts#gateReport, test/unit/gates/eval.test.ts]
   - id: environment-traceable-undo
-    enforcers: [src/environment/contracts.ts#validEnvironmentData, src/environment/ledger.ts#EnvironmentLedger, src/environment/ledger.ts#environmentReceipt, test/unit/environment/environment.test.ts, test/unit/build/build.test.ts, test/unit/pull-requests/pull-requests.test.ts]
+    enforcers: [src/environment/contracts.ts#validEnvironmentData, src/environment/ledger.ts#EnvironmentLedger, src/environment/ledger.ts#environmentReceipt, src/environment/ledger.ts#environmentProjectionEntries, test/unit/environment/ledger-snapshot.test.ts, test/unit/state/projection-environments.test.ts, test/unit/environment/environment.test.ts, test/unit/build/build.test.ts, test/unit/pull-requests/pull-requests.test.ts]
   - id: environment-no-auto-undo
     enforcers: [src/environment/ledger.ts#EnvironmentLedger, test/unit/environment/environment.test.ts]
   - id: pr-tested-before-publication
@@ -514,7 +514,7 @@ rules:
   - id: missing-input-blocks-mutation
     enforcers: [src/flow/engine.ts#begin, src/flow/engine.ts#activeStep, src/discovery/tree.ts#discover, src/state/events.ts#replay, test/unit/flow/preflight.test.ts, test/unit/state/replay-starts.test.ts, test/unit/discovery/cache-read.test.ts, test/unit/utilities/utilities.test.ts]
   - id: external-runtime-state
-    enforcers: [src/state/paths.ts#assertExternal, src/state/paths.ts#canonicalPath, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts]
+    enforcers: [src/state/paths.ts#assertExternal, src/state/paths.ts#canonicalPath, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, src/state/store.ts#transaction, test/unit/state/projection-writes.test.ts, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts]
   - id: recorded-step-skips
     enforcers: [src/flow/engine.ts#skip, test/unit/flow/engine.test.ts]
   - id: required-human-decisions

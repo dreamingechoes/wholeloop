@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-05 · P6-39 · Share projection traversal and avoid unchanged basic writes
+
+- Commit bea453e passes exact isolated Linux CHECK PASS fast in 125s (2820 tests plus the existing macOS-only omission in 204 files) and CHECK PASS in 145s (4511 tests plus that omission in 270 files). Both bundles match macOS; 75 focused macOS controls and strict types pass. This verifies its no-op admission/history correction, not complete-route overhead.
+- Reproduce per-item full-history environment selection and synchronization-presence scans. Build one parent/child graph and propagate declarations to related subjects in original event order, excluding siblings; index historically synchronized subjects once. Reuse environment entries for both formats, and read one current journal snapshot per targeted environment report. The exact original mixed-tree formatted digest remains unchanged. Same 100/400-item counts fall from 47800/671200 to 7900/31600 logical field accesses, with the same 102/402 files. Dense required output and other domain reducers remain separate concerns.
+- Reproduce 36 atomic writes and 72 fsyncs for one note among 32 items, including 33 unchanged views. Compare authoritative in-memory before/after projection bytes only for basic item event batches; retain first-generation and workflow/artifact full refresh, journal-first durability, final validation and every planned path preflight ([ADR-0231](../docs/decisions/0231-shared-projection-traversal-and-selective-item-writes.md)). At both 8 and 32 items the actual note now needs three atomic writes, six fsyncs and zero unchanged rewrites. This intentionally stops incidental repair of unrelated interrupted caches by a basic note; explicit rebuild remains the recovery path and authoritative reads retain journal truth.
+- Differential growth, exact bytes, duplicate declaration refusal, one-read reports, injected projection failure, rebuild, workflow repair and unchanged-peer symlink containment controls pass: 48 focused actual macOS tests and strict types. Complete increment gates remain pending. P6-39 remains open; no native model, hosted effect or source push runs.
+
+---
+
 ## 2026-11-05 · P6-39 · Remove no-op admission writes and quadratic history searches
 
 - Commit a186e79 passes exact isolated Linux CHECK PASS fast in 146s (3301 tests plus the existing macOS-only omission in 230 files) and CHECK PASS in 184s (4488 tests plus that omission in 267 files). All 68 focused actual macOS process/recovery controls and strict types pass; both bundles match Linux. Its fresh unmodified local Docker/Git rehearsal passes all thirteen stages and the final endpoint in 182s, with fourteen successful synthetic receipts, zero human waits and both exact environments observed retired. Preserve original report SHA-256 c27d062953d09dcf3d251e1ffdee1e589e195c5bdc79ad498ba08155d82a6e1c. This is correction verification, not acceptable total overhead, native acceptance or hosted publication.

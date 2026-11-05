@@ -15,6 +15,14 @@ import { storePath } from './paths.js'
 import { projections } from './projections.js'
 import { inReadObservation, observedRead } from './read-observation.js'
 
+const BASIC_ITEM_EVENTS = new Set<StateEvent['type']>([
+  'item.created',
+  'item.updated',
+  'item.closed',
+  'note.added',
+  'link.added',
+])
+
 export class StateStore {
   readonly files: StoreFiles
   constructor(root = storePath()) {
@@ -76,7 +84,7 @@ export class StateStore {
   ): T {
     return this.files.locked(() => {
       const events = this.events()
-      replay(events)
+      const initial = replay(events)
       const originalLength = events.length
       const last = events.at(-1)?.ts
       // One batch belongs to one month and one atomic journal replacement.
@@ -94,6 +102,14 @@ export class StateStore {
       if (events.length > originalLength) {
         const files = projections(replay(events), events)
         for (const path of files.keys()) this.files.path(path)
+        // Compare authoritative versions in memory, never file mtimes or a
+        // retained cache. Workflow/artifact events keep their complete refresh;
+        // unrelated stale views have explicit rebuild as their recovery path.
+        const previous =
+          originalLength > 0 &&
+          events.slice(originalLength).every((entry) => BASIC_ITEM_EVENTS.has(entry.type))
+            ? projections(initial, events.slice(0, originalLength))
+            : undefined
         const month = `journal/${ts.slice(0, 7)}.ndjson`
         const batch = events
           .slice(originalLength)
@@ -101,7 +117,8 @@ export class StateStore {
           .join('\n')
         this.files.atomic(month, `${this.files.read(month) ?? ''}${batch}\n`)
         // Journal first: a crash here is repaired by rebuild; reads always replay.
-        for (const [path, content] of files) this.files.atomic(path, content)
+        for (const [path, content] of files)
+          if (previous?.get(path) !== content) this.files.atomic(path, content)
       }
       return result
     })

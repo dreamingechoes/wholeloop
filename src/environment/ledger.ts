@@ -1,5 +1,5 @@
 import { isDeepStrictEqual } from 'node:util'
-import type { StateEvent } from '../state/events.js'
+import { replay, type StateEvent } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 import type { StateStore } from '../state/store.js'
 import {
@@ -8,30 +8,71 @@ import {
   validEnvironmentData,
 } from './contracts.js'
 
-/** Include this subtree and shared ancestor declarations, never unrelated sibling work. */
-export function environmentEntries(events: readonly StateEvent[], subject: string) {
-  const parents = new Map(
-    events.flatMap((event) =>
-      event.type === 'item.created' && event.data.parent
-        ? [[event.subject, event.data.parent] as const]
-        : [],
-    ),
-  )
-  const selected = new Set([subject])
-  for (;;) {
-    const before = selected.size
-    for (const [child, parent] of parents) if (selected.has(parent)) selected.add(child)
-    if (selected.size === before) break
+type EnvironmentEntry = ReturnType<typeof environmentDeclarations>[number]
+function environmentGraph(events: readonly StateEvent[]) {
+  const parents = new Map<string, string>()
+  for (const entry of events)
+    if (entry.type === 'item.created' && entry.data.parent)
+      parents.set(entry.subject, entry.data.parent)
+  const children = new Map<string, string[]>()
+  for (const [child, parent] of parents) {
+    const entries = children.get(parent)
+    if (entries) entries.push(child)
+    else children.set(parent, [child])
   }
-  let ancestor = parents.get(subject)
+  return { parents, children }
+}
+function relatedSubjects(graph: ReturnType<typeof environmentGraph>, subject: string) {
+  const selected = new Set([subject])
+  const pending = [subject]
+  for (let current = pending.pop(); current !== undefined; current = pending.pop()) {
+    const children = graph.children.get(current)
+    if (!children) continue
+    for (const child of children) {
+      if (selected.has(child)) continue
+      selected.add(child)
+      pending.push(child)
+    }
+  }
+  let ancestor = graph.parents.get(subject)
   while (ancestor && !selected.has(ancestor)) {
     selected.add(ancestor)
-    ancestor = parents.get(ancestor)
+    ancestor = graph.parents.get(ancestor)
   }
-  return environmentDeclarations(events).filter((entry) => selected.has(entry.subject))
+  return selected
+}
+
+/** Include this subtree and shared ancestor declarations, never unrelated sibling work. */
+export function environmentEntries(events: readonly StateEvent[], subject: string) {
+  const entries = environmentDeclarations(events)
+  if (!entries.length) return entries
+  const selected = relatedSubjects(environmentGraph(events), subject)
+  return entries.filter((entry) => selected.has(entry.subject))
+}
+
+/** Full-store rendering visits each declaration relationship once, in original event order. */
+export function environmentProjectionEntries(events: readonly StateEvent[]) {
+  const result = new Map<string, EnvironmentEntry[]>()
+  const entries = environmentDeclarations(events)
+  if (!entries.length) return result
+  const graph = environmentGraph(events)
+  // Ancestor/descendant relatedness is symmetric. Propagate each declaration
+  // to its related views, without reconstructing all history for every item.
+  for (const entry of entries)
+    for (const subject of relatedSubjects(graph, entry.subject)) {
+      const selected = result.get(subject)
+      if (selected) selected.push(entry)
+      else result.set(subject, [entry])
+    }
+  return result
 }
 export function environmentReceipt(events: readonly StateEvent[], subject: string): string {
-  const entries = environmentEntries(events, subject)
+  return renderEnvironmentReceipt(subject, environmentEntries(events, subject))
+}
+export function renderEnvironmentReceipt(
+  subject: string,
+  entries: readonly EnvironmentEntry[],
+): string {
   return `${
     entries.length
       ? [...entries]
@@ -91,14 +132,15 @@ export class EnvironmentLedger {
     })
   }
   report(subject: string) {
-    this.store.get(subject)
     const events = this.store.events()
+    if (!replay(events).has(subject)) throw new Error(`Unknown item: ${subject}`)
+    const entries = environmentEntries(events, subject)
     return {
       schema: 'wholeloop/env-report@1',
       subject,
-      entries: environmentEntries(events, subject),
+      entries,
       executed: false,
-      receipt: environmentReceipt(events, subject),
+      receipt: renderEnvironmentReceipt(subject, entries),
     }
   }
 }

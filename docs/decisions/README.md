@@ -253,6 +253,8 @@
 
 | [0230](./0230-read-only-step-admission-and-linear-history.md) | Read step admission before acquiring a writer lock | Accepted | 2026-11-05 |
 
+| [0231](./0231-shared-projection-traversal-and-selective-item-writes.md) | Share projection traversal and skip unchanged basic item writes | Accepted | 2026-11-05 |
+
 ## Lifecycle
 
 ```mermaid

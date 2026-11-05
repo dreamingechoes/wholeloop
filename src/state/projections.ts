@@ -1,5 +1,5 @@
 import { stringify } from 'yaml'
-import { environmentEntries, environmentReceipt } from '../environment/ledger.js'
+import { environmentProjectionEntries, renderEnvironmentReceipt } from '../environment/ledger.js'
 import { gateRuns } from '../gates/state.js'
 import { impactRuns } from '../impact/contracts.js'
 import { impactDeliveries } from '../impact/publish.js'
@@ -26,6 +26,7 @@ export function projections(
   const files = new Map<string, string>()
   const links: Record<string, string[]> = {}
   const workspaces = new Map(worktreeRecords(events).map((record) => [record.subject, record]))
+  const environments = environmentProjectionEntries(events)
   for (const item of [...items.values()].sort((a, b) => a.id.localeCompare(b.id))) {
     const { body, notes, links: refs, ...metadata } = item
     const noteText = notes.length
@@ -43,14 +44,12 @@ export function projections(
       `---\n${stringify(metadata)}---\n\n${body}\n${workspaceText}${noteText}${linkText}`,
     )
     links[item.id] = refs
-    if (environmentEntries(events, item.id).length) {
-      files.set(
-        `items/${item.id}/environment.json`,
-        `${JSON.stringify(environmentEntries(events, item.id), null, 2)}\n`,
-      )
+    const environment = environments.get(item.id)
+    if (environment?.length) {
+      files.set(`items/${item.id}/environment.json`, `${JSON.stringify(environment, null, 2)}\n`)
       files.set(
         `items/${item.id}/environment.md`,
-        `# Environment receipt\n\n${environmentReceipt(events, item.id)}`,
+        `# Environment receipt\n\n${renderEnvironmentReceipt(item.id, environment)}`,
       )
     }
     if (workspace)
@@ -68,8 +67,10 @@ export function projections(
       `${JSON.stringify({ key, ...entry }, null, 2)}\n`,
     )
   const synchronization = syncState(events)
+  const synchronized = new Set<string>()
+  for (const entry of events) if (entry.type.startsWith('sync.')) synchronized.add(entry.subject)
   for (const [subject] of synchronization.items)
-    if (events.some((event) => event.subject === subject && event.type.startsWith('sync.')))
+    if (synchronized.has(subject))
       files.set(
         `items/${subject}/sync.json`,
         `${JSON.stringify({ basis: syncBasis(synchronization, subject) ?? null, deliveryReady: syncReady(synchronization, subject), merge: synchronization.merged.get(subject) ?? null, transitions: [...synchronization.transitions.values()].filter((entry) => entry.subject === subject) }, null, 2)}\n`,
