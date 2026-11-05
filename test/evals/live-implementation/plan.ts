@@ -45,12 +45,18 @@ export function trialPlan(
         const text = JSON.stringify({
           schema: 'wholeloop/delegated-decision-rubric@1',
           decision: id,
-          purpose: 'Accept only exact-revision evidence satisfying the pinned HTTP status task.',
+          purpose:
+            id === 'approve-build-plan'
+              ? 'Approve only a bounded implementation plan and its proposed falsifying checks before code changes.'
+              : 'Accept only exact-revision evidence satisfying the pinned HTTP status task.',
           rules: [
             { id: 'scope', text: TASK },
             {
-              id: 'evidence',
-              text: 'Acceptance requires the declared suite and a real HTTP response; a worker claim alone is insufficient.',
+              id: id === 'approve-build-plan' ? 'planned-validation' : 'evidence',
+              text:
+                id === 'approve-build-plan'
+                  ? 'Require a minimal scope-preserving implementation plan with pre-edit inspection, planned npm run check and exact GET / JSON assertions. Assess these proposed checks before implementation. Require actual execution evidence at the later acceptance decision. Unresolved scope or authority assumptions remain blocking.'
+                  : 'Acceptance requires the declared suite and a real HTTP response; a worker claim alone is insufficient.',
             },
           ],
           outcomes: ['accept', 'reject'],

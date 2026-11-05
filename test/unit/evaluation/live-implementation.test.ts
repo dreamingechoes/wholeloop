@@ -11,6 +11,7 @@ import {
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { sourceHash } from '../../../src/delivery/input.js'
 import { DeliveryPlanning } from '../../../src/delivery/planning-store.js'
 import { assertAssemblyGit } from '../../../src/integration/git-process.js'
 import { campaignReport, type LiveTrial } from '../../evals/campaign/report.js'
@@ -146,6 +147,22 @@ describe('EVAL-09 live implementation trial', () => {
         const rubric = JSON.parse(readFileSync(join(files.root, delegation.rubric.ref), 'utf8'))
         expect(rubric.rules[0].text).toBe(TASK)
         expect(rubric.unknowns.allowed).toEqual([])
+        const bytes = readFileSync(join(files.root, delegation.rubric.ref), 'utf8')
+        expect(sourceHash(bytes)).toBe(delegation.rubric.sha256)
+        if (delegation.id === 'approve-build-plan') {
+          expect(rubric.rules.map((rule: { id: string }) => rule.id)).toEqual([
+            'scope',
+            'planned-validation',
+          ])
+          expect(rubric.decision).toBe('approve-build-plan')
+        } else {
+          // This is the exact pre-fix acceptance rubric, including observed
+          // execution requirements. Fixing plan approval must not relax it.
+          expect(sourceHash(bytes)).toBe(
+            'b42e65fd78ec8bb10d542cce1ded8edb4f9d80fdb518eb91bd9dd4b7657e9869',
+          )
+          expect(rubric.rules.map((rule: { id: string }) => rule.id)).toEqual(['scope', 'evidence'])
+        }
       }
     })
   })
