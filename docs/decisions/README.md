@@ -226,39 +226,22 @@
 | [0215](./0215-reviewed-public-research-plan.md) | Review the actual public research plan before source work | Accepted | 2026-11-05 |
 | [0216](./0216-minority-research-counterevidence.md) | Retain minority research counterevidence as uncertainty | Accepted | 2026-11-05 |
 | [0217](./0217-acceptance-producer-contracts.md) | Bind acceptance production to current identity and installed inputs | Accepted | 2026-11-05 |
-
 | [0218](./0218-controller-owned-repository-diff.md) | Observe committed repository scope through the original controller | Accepted | 2026-11-05 |
-
 | [0219](./0219-native-producer-transport.md) | Pin artifact producer transport before native generation | Accepted | 2026-11-05 |
-
 | [0220](./0220-private-native-output-diagnostics.md) | Retain closed private native output-failure categories | Accepted | 2026-11-05 |
-
 | [0221](./0221-native-role-criterion-scope.md) | Advertise only the assigned role's criterion results | Accepted | 2026-11-05 |
-
 | [0222](./0222-private-proposal-failure-fields.md) | Classify private proposal failures without retaining rejected data | Accepted | 2026-11-05 |
-
 | [0223](./0223-pinned-build-plan-context.md) | Share selected source and pinned acceptance with plan reviewers | Accepted | 2026-11-05 |
-
 | [0224](./0224-recovery-read-elapsed-deadlines.md) | Refuse recovery reads completed past their elapsed deadline | Accepted | 2026-11-05 |
-
 | [0225](./0225-process-local-original-group-closure.md) | Retain witnessed original group closure within its controller | Accepted | 2026-11-05 |
-
 | [0226](./0226-physical-journal-leaf-observations.md) | Read journal leaves through one pinned physical directory | Accepted | 2026-11-05 |
-
 | [0227](./0227-verified-read-observation-scopes.md) | Share inputs within a verified read-only observation | Accepted | 2026-11-05 |
-
 | [0228](./0228-bounded-resource-observation-projections.md) | Bound observed resources and their independent projections | Accepted | 2026-11-05 |
-
 | [0229](./0229-native-registration-observation-resources.md) | Group each original native registration without duplicating reads | Accepted | 2026-11-05 |
-
 | [0230](./0230-read-only-step-admission-and-linear-history.md) | Read step admission before acquiring a writer lock | Accepted | 2026-11-05 |
-
 | [0231](./0231-shared-projection-traversal-and-selective-item-writes.md) | Share projection traversal and skip unchanged basic item writes | Accepted | 2026-11-05 |
-
 | [0232](./0232-fresh-controller-and-effect-vector-selections.md) | Select controller and effect facts from one fresh view | Accepted | 2026-11-06 |
-
 | [0233](./0233-fresh-batch-ownership-and-linear-object-matching.md) | Validate ownership once per fresh backend batch | Accepted | 2026-11-06 |
-
 | [0234](./0234-complete-source-path-validation-and-bounded-read-loops.md) | Validate final source paths and bound buffer reads | Accepted | 2026-11-06 |
 
 ## Lifecycle
