@@ -10,7 +10,7 @@ import {
 import { STEP_NAMES, type StepName } from '../flow/registry.js'
 import { type FrameOutcome, validateFrameOutcome } from '../framing/contract.js'
 import type { GateEventData } from '../gates/contracts.js'
-import { gateRuns, validGateData } from '../gates/state.js'
+import { validGateData } from '../gates/state.js'
 import { type ImpactEventData, impactRuns, validImpactData } from '../impact/contracts.js'
 import { impactDeliveries } from '../impact/publish.js'
 import { type LaunchEventData, launchRuns, validLaunchData } from '../launch/contracts.js'
@@ -38,7 +38,7 @@ import { type SharingEventData, sharingState, validSharingData } from '../sharin
 import { type Repository, type SliceDefinition, validateSlice } from '../slices/contract.js'
 import { type SyncEventData, syncState, validSyncData } from '../sync/contracts.js'
 import { type VerificationEventData, validVerificationData } from '../verification/contracts.js'
-import { verificationRuns } from '../verification/state.js'
+import { replayVerification } from '../verification/state.js'
 import {
   validWorktreeData,
   type WorktreeEventData,
@@ -505,7 +505,48 @@ export function event(
   return value
 }
 
+const domainReaders = {
+  mailbox: (events) => replayMailbox(events),
+  workspaces: (events) => worktreeRecords(events),
+  verification: (events) => replayVerification(events),
+  reviews: (events) => reviewInputs(events),
+  pullRequests: (events) => pullRequestPlans(events),
+  environment: (events) => environmentDeclarations(events),
+  launches: (events) => launchRuns(events),
+  launchDeliveries: (events) => launchDeliveries(events),
+  sharing: (events) => sharingState(events),
+  sync: (events) => syncState(events),
+  learning: (events) => learningRuns(events),
+  impact: (events) => impactRuns(events),
+  impactDeliveries: (events) => impactDeliveries(events),
+  ramps: (events) => rampRuns(events),
+  rampProposals: (events) => rampProposals(events),
+} satisfies Record<string, (events: readonly StateEvent[]) => unknown>
+const stateReaders = Object.entries(domainReaders)
+type StateDomains = {
+  [Key in keyof typeof domainReaders]: ReturnType<(typeof domainReaders)[Key]>
+}
+
 export function replay(events: readonly StateEvent[]): Map<string, Item> {
+  const items = replayItems(events)
+  // Ordinary validation does not retain domain views that its caller never
+  // consumes. The same fixed table owns validation order in both entry points.
+  if (events.length) for (const [, read] of stateReaders) read(events)
+  return items
+}
+
+/** Fixed synchronous consumers may use the facts this same replay validated. */
+export function replayState(events: readonly StateEvent[]) {
+  const items = replayItems(events)
+  // Entries and their return types come from the same private fixed table;
+  // callers cannot substitute a reader or supply previously trusted facts.
+  const domains = Object.fromEntries(
+    stateReaders.map(([name, read]) => [name, read(events)]),
+  ) as StateDomains
+  return { items, domains }
+}
+
+function replayItems(events: readonly StateEvent[]): Map<string, Item> {
   const items = new Map<string, Item>()
   if (!events.length) return items
   const ids = new Set<string>()
@@ -597,21 +638,5 @@ export function replay(events: readonly StateEvent[]): Map<string, Item> {
     }
     item.updatedAt = entry.ts
   }
-  replayMailbox(events)
-  worktreeRecords(events)
-  gateRuns(events)
-  verificationRuns(events)
-  reviewInputs(events)
-  pullRequestPlans(events)
-  environmentDeclarations(events)
-  launchRuns(events)
-  launchDeliveries(events)
-  sharingState(events)
-  syncState(events)
-  learningRuns(events)
-  impactRuns(events)
-  impactDeliveries(events)
-  rampRuns(events)
-  rampProposals(events)
   return items
 }

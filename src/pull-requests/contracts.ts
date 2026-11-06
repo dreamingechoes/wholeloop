@@ -36,78 +36,121 @@ export function validPullRequestData(type: string, data: Record<string, unknown>
   const rule = schema.properties[type as keyof typeof schema.properties]
   return !!rule && validate(data, rule).length === 0
 }
-export function pullRequestPlans(events: readonly StateEvent[]) {
-  const plans = new Map<
-    string,
-    {
-      subject: string
-      event: string
-      plan: PullRequestPlan
-      tested?: string
-      requested?: string
-      pr?: PullRequest
-    }
-  >()
-  const latest = new Map<string, string>()
-  for (const event of events) {
-    if (event.type === 'pr.planned') {
-      const pending = [...plans.values()].find(
-        (plan) => plan.subject === event.subject && plan.requested && !plan.pr,
-      )
-      if (pending) throw new Error('Reconcile the pending PR request before changing its plan')
-      plans.set(event.id, { subject: event.subject, event: event.id, plan: event.data.plan })
-      latest.set(event.subject, event.id)
-    }
-    if (
-      event.type === 'pr.tested' ||
-      event.type === 'pr.requested' ||
-      event.type === 'pr.published'
-    ) {
-      const entry = plans.get(event.data.plan)
-      if (!entry || entry.subject !== event.subject || latest.get(event.subject) !== entry.event)
-        throw new Error('PR event must reference its current earlier plan')
-      if (event.type === 'pr.tested') {
-        if (event.data.snapshot !== entry.plan.snapshot || entry.requested)
-          throw new Error('Human testing must match the planned snapshot before publication')
-        entry.tested = event.id
+interface PullRequestRecord {
+  subject: string
+  event: string
+  plan: PullRequestPlan
+  tested?: string
+  requested?: string
+  pr?: PullRequest
+}
+class PullRequestReplay {
+  readonly plans = new Map<string, PullRequestRecord>()
+  private readonly latest = new Map<string, string>()
+  private readonly selected = new Map<string, PullRequestRecord>()
+  private readonly pending = new Map<string, PullRequestRecord>()
+  private readonly approvals = new Map<string, Map<string, 'approved' | 'rejected'>>()
+
+  append(event: StateEvent) {
+    switch (event.type) {
+      case 'decision.recorded': {
+        const data = event.data
+        if (data.decision !== 'test-it') return
+        let approvals = this.approvals.get(event.subject)
+        if (!approvals) {
+          approvals = new Map()
+          this.approvals.set(event.subject, approvals)
+        }
+        approvals.set(data.basis, data.outcome)
+        return
       }
-      if (event.type === 'pr.requested') {
-        const approved = events
-          .slice(0, events.indexOf(event))
-          .findLast(
-            (candidate) =>
-              candidate.subject === event.subject &&
-              candidate.type === 'decision.recorded' &&
-              candidate.data.decision === 'test-it' &&
-              candidate.data.basis === entry.event,
+      case 'pr.planned': {
+        const subject = event.subject,
+          id = event.id
+        if (this.pending.has(subject))
+          throw new Error('Reconcile the pending PR request before changing its plan')
+        const previous = this.plans.get(id)
+        if (previous && this.pending.get(previous.subject) === previous)
+          this.pending.delete(previous.subject)
+        const entry = { subject, event: id, plan: event.data.plan }
+        this.plans.set(id, entry)
+        this.latest.set(subject, id)
+        if (previous) {
+          // Ordinary journals have unique ids. Preserve the old Map-order result
+          // for direct reducer callers that replace an existing plan id anyway.
+          this.selected.delete(previous.subject)
+          this.selected.delete(subject)
+          for (const plan of this.plans.values())
+            if (plan.subject === previous.subject || plan.subject === subject)
+              this.selected.set(plan.subject, plan)
+        } else this.selected.set(subject, entry)
+        return
+      }
+      case 'pr.tested':
+      case 'pr.requested':
+      case 'pr.published': {
+        const entry = this.plans.get(event.data.plan),
+          subject = event.subject
+        if (!entry || entry.subject !== subject || this.latest.get(subject) !== entry.event)
+          throw new Error('PR event must reference its current earlier plan')
+        if (event.type === 'pr.tested') {
+          if (event.data.snapshot !== entry.plan.snapshot || entry.requested)
+            throw new Error('Human testing must match the planned snapshot before publication')
+          entry.tested = event.id
+        }
+        if (event.type === 'pr.requested') {
+          if (
+            !entry.tested ||
+            entry.requested ||
+            this.approvals.get(subject)?.get(entry.event) !== 'approved'
           )
-        if (
-          !entry.tested ||
-          entry.requested ||
-          approved?.type !== 'decision.recorded' ||
-          approved.data.outcome !== 'approved'
-        )
-          throw new Error('One PR request needs prior human testing and its exact-plan approval')
-        entry.requested = event.id
-      }
-      if (event.type === 'pr.published') {
-        const pr = event.data.pr
-        if (
-          !entry.requested ||
-          entry.pr ||
-          !pr.draft ||
-          pr.merged ||
-          pr.state !== 'open' ||
-          pr.sha !== entry.plan.head ||
-          pr.head !== entry.plan.branch ||
-          pr.base !== entry.plan.base ||
-          pr.repository !== entry.plan.repository ||
-          !pr.url.startsWith(`${pr.repository}/`)
-        )
-          throw new Error('Publication must be a matching open draft for its unique request')
-        entry.pr = pr
+            throw new Error('One PR request needs prior human testing and its exact-plan approval')
+          entry.requested = event.id
+          this.pending.set(subject, entry)
+        }
+        if (event.type === 'pr.published') {
+          const pr = event.data.pr
+          if (
+            !entry.requested ||
+            entry.pr ||
+            !pr.draft ||
+            pr.merged ||
+            pr.state !== 'open' ||
+            pr.sha !== entry.plan.head ||
+            pr.head !== entry.plan.branch ||
+            pr.base !== entry.plan.base ||
+            pr.repository !== entry.plan.repository ||
+            !pr.url.startsWith(`${pr.repository}/`)
+          )
+            throw new Error('Publication must be a matching open draft for its unique request')
+          entry.pr = pr
+          this.pending.delete(subject)
+        }
       }
     }
   }
-  return [...plans.values()]
+  forSubject(subject: string) {
+    return this.selected.get(subject)
+  }
+}
+export function pullRequestPlans(events: readonly StateEvent[]) {
+  const replay = new PullRequestReplay()
+  for (const event of events) replay.append(event)
+  return [...replay.plans.values()]
+}
+/** One synchronous chronological consumer; never admits facts beyond the requested prefix. */
+export function pullRequestPlanSelection(events: readonly StateEvent[]) {
+  const replay = new PullRequestReplay()
+  let cursor = 0
+  return (end: number, subject: string) => {
+    if (!Number.isSafeInteger(end) || end < cursor || end > events.length)
+      throw new Error('PR prefix selection must advance within the original event vector')
+    while (cursor < end) {
+      const event = events[cursor]
+      if (!event) throw new Error('PR prefix selection requires a complete event vector')
+      replay.append(event)
+      cursor++
+    }
+    return replay.forSubject(subject)
+  }
 }

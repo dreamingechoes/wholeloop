@@ -245,6 +245,7 @@
 | [0234](./0234-complete-source-path-validation-and-bounded-read-loops.md) | Validate final source paths and bound buffer reads | Accepted | 2026-11-06 |
 | [0235](./0235-bound-schema-and-text-validation-allocations.md) | Bound schema and text validation allocations | Accepted | 2026-11-06 |
 | [0236](./0236-index-fresh-gate-launch-integration-and-environment-selections.md) | Index fresh gate, launch, integration and environment selections | Accepted | 2026-11-06 |
+| [0237](./0237-render-validated-state-facts-and-replay-sync-in-order.md) | Render validated state facts and replay sync in order | Accepted | 2026-11-06 |
 
 ## Lifecycle
 

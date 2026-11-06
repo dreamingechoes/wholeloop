@@ -12,7 +12,7 @@ import {
 } from './events.js'
 import { StoreFiles } from './files.js'
 import { storePath } from './paths.js'
-import { projections } from './projections.js'
+import { projections, replayProjectionSnapshot, replayProjections } from './projections.js'
 import { inReadObservation, observedRead } from './read-observation.js'
 
 const BASIC_ITEM_EVENTS = new Set<StateEvent['type']>([
@@ -100,7 +100,7 @@ export class StateStore {
       }
       const result = operation(events, append)
       if (events.length > originalLength) {
-        const files = projections(replay(events), events)
+        const files = replayProjections(events)
         for (const path of files.keys()) this.files.path(path)
         // Compare authoritative versions in memory, never file mtimes or a
         // retained cache. Workflow/artifact events keep their complete refresh;
@@ -110,52 +110,92 @@ export class StateStore {
           events.slice(originalLength).every((entry) => BASIC_ITEM_EVENTS.has(entry.type))
             ? projections(initial, events.slice(0, originalLength))
             : undefined
-        const month = `journal/${ts.slice(0, 7)}.ndjson`
-        const batch = events
-          .slice(originalLength)
-          .map((entry) => JSON.stringify(entry))
-          .join('\n')
-        this.files.atomic(month, `${this.files.read(month) ?? ''}${batch}\n`)
-        // Journal first: a crash here is repaired by rebuild; reads always replay.
-        for (const [path, content] of files)
-          if (previous?.get(path) !== content) this.files.atomic(path, content)
+        this.publishProjectionBatch(events, originalLength, ts, files, previous)
       }
       return result
     })
   }
 
-  create(input: ItemInput): Item {
-    const id = this.transaction((events, append) => {
-      const existing = replay(events)
-      let id = itemId(input.kind)
-      while (existing.has(id)) id = itemId(input.kind)
-      append(id, { type: 'item.created', data: input })
+  /** Both callers hold the writer lock and have validated every planned path. */
+  private publishProjectionBatch(
+    events: readonly StateEvent[],
+    originalLength: number,
+    ts: string,
+    files: ReadonlyMap<string, string>,
+    previous?: ReadonlyMap<string, string>,
+  ) {
+    const month = `journal/${ts.slice(0, 7)}.ndjson`,
+      batch = events
+        .slice(originalLength)
+        .map((entry) => JSON.stringify(entry))
+        .join('\n')
+    this.files.atomic(month, `${this.files.read(month) ?? ''}${batch}\n`)
+    // Journal first: a crash here is repaired by rebuild; reads always replay.
+    for (const [path, content] of files)
+      if (previous?.get(path) !== content) this.files.atomic(path, content)
+  }
+
+  private appendBasic(
+    input: Extract<
+      Parameters<typeof event>[1],
+      { type: 'item.created' | 'item.updated' | 'note.added' | 'link.added' }
+    >,
+    subject?: string,
+  ) {
+    return this.files.locked(() => {
+      const events = this.events(),
+        originalLength = events.length,
+        before =
+          originalLength && input.type === 'item.created'
+            ? replayProjectionSnapshot(events)
+            : undefined,
+        previous = originalLength ? (before?.files ?? replayProjections(events)) : undefined,
+        last = events.at(-1)?.ts,
+        ts = new Date(Math.max(Date.now(), last ? Date.parse(last) + 1 : 0)).toISOString()
+      // This fixed action has no callback or effect between its owned before
+      // view and complete final validation. Generic append callbacks keep all
+      // intermediate replays; their inputs may not borrow this assumption.
+      let id = subject ?? ''
+      if (input.type === 'item.created') {
+        id = ''
+        // A broken/randomness-test source must not hold the writer forever.
+        // Sixteen refused collisions leave the original journal untouched.
+        for (let attempt = 0; attempt < 16; attempt++) {
+          const candidate = itemId(input.data.kind)
+          if (before?.items.has(candidate)) continue
+          id = candidate
+          break
+        }
+        if (!id) throw new Error('Unable to allocate a unique item id')
+      }
+      events.push(event(id, input, ts))
+      const files = replayProjections(events)
+      for (const path of files.keys()) this.files.path(path)
+      this.publishProjectionBatch(events, originalLength, ts, files, previous)
       return id
     })
+  }
+
+  create(input: ItemInput): Item {
+    const id = this.appendBasic({ type: 'item.created', data: input })
     return this.get(id)
   }
   update(id: string, patch: ItemPatch): Item {
-    this.transaction((_events, append) => {
-      append(id, { type: 'item.updated', data: patch })
-    })
+    this.appendBasic({ type: 'item.updated', data: patch }, id)
     return this.get(id)
   }
   note(id: string, text: string): Item {
-    this.transaction((_events, append) => {
-      append(id, { type: 'note.added', data: { text } })
-    })
+    this.appendBasic({ type: 'note.added', data: { text } }, id)
     return this.get(id)
   }
   link(id: string, url: string): Item {
-    this.transaction((_events, append) => {
-      append(id, { type: 'link.added', data: { url } })
-    })
+    this.appendBasic({ type: 'link.added', data: { url } }, id)
     return this.get(id)
   }
   rebuild(): number {
     return this.files.locked(() => {
       const events = this.events()
-      const files = projections(replay(events), events)
+      const files = replayProjections(events)
       for (const [path, content] of files) this.files.atomic(path, content)
       return files.size
     })

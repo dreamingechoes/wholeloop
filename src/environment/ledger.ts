@@ -1,5 +1,5 @@
 import { isDeepStrictEqual } from 'node:util'
-import { replay, type StateEvent } from '../state/events.js'
+import { type Item, replay, type StateEvent } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'
 import type { StateStore } from '../state/store.js'
 import {
@@ -14,6 +14,9 @@ function environmentGraph(events: readonly StateEvent[]) {
   for (const entry of events)
     if (entry.type === 'item.created' && entry.data.parent)
       parents.set(entry.subject, entry.data.parent)
+  return childGraph(parents)
+}
+function childGraph(parents: ReadonlyMap<string, string>) {
   const children = new Map<string, string[]>()
   for (const [child, parent] of parents) {
     const entries = children.get(parent)
@@ -52,10 +55,27 @@ export function environmentEntries(events: readonly StateEvent[], subject: strin
 
 /** Full-store rendering visits each declaration relationship once, in original event order. */
 export function environmentProjectionEntries(events: readonly StateEvent[]) {
-  const result = new Map<string, EnvironmentEntry[]>()
   const entries = environmentDeclarations(events)
-  if (!entries.length) return result
-  const graph = environmentGraph(events)
+  return entries.length
+    ? projectEntries(environmentGraph(events), entries)
+    : new Map<string, EnvironmentEntry[]>()
+}
+
+/** Rendering consumes already validated declarations and immutable item parents. */
+export function renderEnvironmentProjections(
+  items: ReadonlyMap<string, Item>,
+  entries: readonly EnvironmentEntry[],
+) {
+  if (!entries.length) return new Map<string, EnvironmentEntry[]>()
+  const parents = new Map<string, string>()
+  for (const item of items.values()) if (item.parent) parents.set(item.id, item.parent)
+  return projectEntries(childGraph(parents), entries)
+}
+function projectEntries(
+  graph: ReturnType<typeof childGraph>,
+  entries: readonly EnvironmentEntry[],
+) {
+  const result = new Map<string, EnvironmentEntry[]>()
   // Ancestor/descendant relatedness is symmetric. Propagate each declaration
   // to its related views, without reconstructing all history for every item.
   for (const entry of entries)

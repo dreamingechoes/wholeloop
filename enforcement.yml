@@ -380,11 +380,11 @@ rules:
   - id: grounding-blind-boundary
     enforcers: [src/grounding/eval.ts#groundingInputs, src/grounding/eval.ts#groundingEval, test/unit/grounding/grounding.test.ts]
   - id: sync-exact-merges
-    enforcers: [src/sync/contracts.ts#syncState, src/sync/contracts.ts#syncProofs, src/sync/workflow.ts#SyncWorkflow, test/unit/sync/sync.test.ts]
+    enforcers: [src/sync/contracts.ts#syncState, src/sync/contracts.ts#syncProofs, src/sync/contracts.ts#indexChild, src/sync/contracts.ts#scopeProofs, src/sync/workflow.ts#SyncWorkflow, test/unit/sync/sync.test.ts, src/pull-requests/contracts.ts#pullRequestPlans, src/pull-requests/contracts.ts#pullRequestPlanSelection, test/unit/sync/publication-replay-performance.test.ts]
   - id: sync-delivery-outcome
-    enforcers: [src/sync/contracts.ts#syncReady, src/sync/contracts.ts#syncState, src/flow/plan.ts#flowPlan, test/unit/sync/sync.test.ts]
+    enforcers: [src/sync/contracts.ts#syncReady, src/sync/contracts.ts#syncState, src/flow/plan.ts#flowPlan, test/unit/sync/sync.test.ts, test/unit/sync/readiness-performance.test.ts, test/unit/sync/proof-selection-performance.test.ts, src/pull-requests/contracts.ts#pullRequestPlans, src/pull-requests/contracts.ts#pullRequestPlanSelection, test/unit/sync/publication-replay-performance.test.ts]
   - id: sync-tracker-recovery
-    enforcers: [src/sync/workflow.ts#transition, src/sync/contracts.ts#syncState, test/unit/sync/sync.test.ts]
+    enforcers: [src/sync/workflow.ts#transition, src/sync/contracts.ts#syncState, test/unit/sync/sync.test.ts, src/pull-requests/contracts.ts#pullRequestPlans, src/pull-requests/contracts.ts#pullRequestPlanSelection, test/unit/sync/publication-replay-performance.test.ts]
   - id: sync-conservative-cleanup
     enforcers: [src/sync/workflow.ts#SyncWorkflow, src/worktrees/manager.ts#prune, test/unit/sync/sync.test.ts, test/unit/worktrees/worktrees.test.ts]
   - id: learning-human-call
@@ -514,7 +514,7 @@ rules:
   - id: missing-input-blocks-mutation
     enforcers: [src/flow/engine.ts#begin, src/flow/engine.ts#activeStep, src/discovery/tree.ts#discover, src/state/events.ts#replay, test/unit/flow/preflight.test.ts, test/unit/state/replay-starts.test.ts, test/unit/discovery/cache-read.test.ts, test/unit/utilities/utilities.test.ts]
   - id: external-runtime-state
-    enforcers: [src/state/paths.ts#assertExternal, src/state/paths.ts#canonicalPath, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, src/state/store.ts#transaction, test/unit/state/projection-writes.test.ts, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts]
+    enforcers: [src/state/paths.ts#assertExternal, src/state/paths.ts#canonicalPath, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, src/state/store.ts#transaction, test/unit/state/projection-writes.test.ts, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts, src/state/events.ts#replayState, src/state/projections.ts#replayProjections, test/unit/state/projection-replay.test.ts, src/state/store.ts#appendBasic, src/state/store.ts#publishProjectionBatch, src/state/projections.ts#replayProjectionSnapshot, test/unit/state/basic-actions-performance.test.ts]
   - id: recorded-step-skips
     enforcers: [src/flow/engine.ts#skip, test/unit/flow/engine.test.ts]
   - id: required-human-decisions
