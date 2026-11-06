@@ -10,7 +10,7 @@ import {
 } from 'node:fs'
 import { resolve } from 'node:path'
 import { type Schema, validate } from '../config/schema.js'
-import { inside } from '../state/paths.js'
+import { inside, resolvedStoreRoot } from '../state/paths.js'
 import { inReadObservation, observedRead } from '../state/read-observation.js'
 import requestSchema from './schemas/source-request-v1.json' with { type: 'json' }
 
@@ -188,7 +188,10 @@ function readPhysicalSourceBytes(root: string, file: string, limit: number): Buf
   let fd: number | undefined
   try {
     if (!Number.isSafeInteger(limit) || limit < 0) throw new SourceInputError('unsafe-file')
-    const boundary = realpathSync(root)
+    // Only wl writes a resolved store (ADR-0243): its root is already canonical,
+    // and the post-read alias/identity proof below guards other sources only.
+    const store = resolvedStoreRoot(root)
+    const boundary = store ? root : realpathSync(root)
     const selected = resolve(boundary, file)
     // An absolute selection may use an OS alias such as /var for /private/var.
     // Judge its real destination while still opening the selected leaf with O_NOFOLLOW.
@@ -210,6 +213,14 @@ function readPhysicalSourceBytes(root: string, file: string, limit: number): Buf
     if (length > limit) throw new SourceInputError('oversized')
     const after = fstatSync(fd, { bigint: true })
     if (after.size > maximum) throw new SourceInputError('oversized')
+    if (
+      store &&
+      BigInt(length) === before.size &&
+      before.size === after.size &&
+      before.mtimeNs === after.mtimeNs &&
+      before.ctimeNs === after.ctimeNs
+    )
+      return bytes.subarray(0, length)
     // lstat must not follow a replacement alias to the old descriptor. Exact
     // inode/timestamp integers also keep distinct observations from rounding equal.
     const current = lstatSync(selected, { bigint: true })

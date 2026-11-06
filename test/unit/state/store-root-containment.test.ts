@@ -1,12 +1,22 @@
-import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  realpathSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { readSourceFile } from '../../../src/delivery/input.js'
 import { StoreFiles } from '../../../src/state/files.js'
 
 vi.mock('node:fs', async (original) => {
   const fs = await original<typeof import('node:fs')>()
-  return { ...fs, existsSync: vi.fn(fs.existsSync) }
+  return { ...fs, existsSync: vi.fn(fs.existsSync), realpathSync: vi.fn(fs.realpathSync) }
 })
 const roots: string[] = []
 afterEach(() => {
@@ -60,5 +70,25 @@ describe('single-writer store containment (ADR-0243)', () => {
     symlinkSync(outside, join(root, 'escape'))
     expect(() => files.path('escape/record.json')).toThrow('escapes its root')
     expect(existsSync(join(outside, 'record.json'))).toBe(false)
+  })
+
+  it('reads a resolved store file with one canonicalization and keeps its refusals', () => {
+    const { base, root } = deepStore(2),
+      files = new StoreFiles(root)
+    writeFileSync(join(root, 'delivery', 'record.json'), '{}\n')
+    vi.mocked(realpathSync).mockClear()
+    expect(readSourceFile(files.root, 'delivery/record.json')).toBe('{}\n')
+    expect(vi.mocked(realpathSync)).toHaveBeenCalledTimes(1)
+    // Any other root keeps the complete alias and identity proof.
+    mkdirSync(join(base, 'source'))
+    writeFileSync(join(base, 'source', 'file.txt'), 'text\n')
+    vi.mocked(realpathSync).mockClear()
+    expect(readSourceFile(join(base, 'source'), 'file.txt')).toBe('text\n')
+    expect(vi.mocked(realpathSync)).toHaveBeenCalledTimes(3)
+    writeFileSync(join(base, 'secret.txt'), 'outside\n')
+    symlinkSync(join(base, 'secret.txt'), join(root, 'delivery', 'link.json'))
+    expect(() => readSourceFile(files.root, 'delivery/link.json')).toThrow()
+    execFileSync('mkfifo', [join(root, 'delivery', 'pipe.json')])
+    expect(() => readSourceFile(files.root, 'delivery/pipe.json')).toThrow()
   })
 })

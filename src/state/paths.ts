@@ -71,6 +71,11 @@ export function externalStorePath(path: string, boundary?: string, label = path)
 const verifiedRoots = new Set<string>()
 const VERIFIED_ROOT_LIMIT = 4096
 
+/** A store root this process resolved with its complete ancestry walk (ADR-0243). */
+export function resolvedStoreRoot(path: string): boolean {
+  return verifiedRoots.has(path)
+}
+
 function physicalStorePath(selected: string, boundary: string | undefined, label: string) {
   const value = canonicalPhysicalPath(selected)
   if (boundary && !inside(boundary, value)) throw new Error(`Store path escapes its root: ${label}`)
