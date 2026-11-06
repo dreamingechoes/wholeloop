@@ -159,9 +159,17 @@ export class DeliveryPlanError extends Error {
 function unique(values: string[], category: string): void {
   if (new Set(values).size !== values.length) throw new DeliveryPlanError(category)
 }
-function references(values: string[], known: string[], category: string): void {
+function referenceIndex(values: string[]): string[] | ReadonlySet<string> {
+  return values.length > 1 ? new Set(values) : values
+}
+function references(
+  values: string[],
+  known: string[] | ReadonlySet<string>,
+  category: string,
+): void {
   unique(values, category)
-  if (values.some((id) => !known.includes(id))) throw new DeliveryPlanError(category)
+  if (values.some((id) => !(Array.isArray(known) ? known.includes(id) : known.has(id))))
+    throw new DeliveryPlanError(category)
 }
 
 /** Proposals bind evidence descriptors; they do not certify caller-supplied capabilities. */
@@ -316,18 +324,43 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
   const criteria = plan.criteria.map((entry) => entry.id),
     outcomes = plan.scope.outcomes.map((entry) => entry.id)
   unique(criteria, 'duplicate-criterion')
-  for (const criterion of plan.criteria) references(criterion.outcomes, outcomes, 'unknown-outcome')
-  if (outcomes.some((id) => !plan.criteria.some((criterion) => criterion.outcomes.includes(id))))
+  const outcomeIds = referenceIndex(outcomes),
+    coveredOutcomes = new Set<string>()
+  for (const criterion of plan.criteria) {
+    references(criterion.outcomes, outcomeIds, 'unknown-outcome')
+    for (const id of criterion.outcomes) coveredOutcomes.add(id)
+  }
+  if (outcomes.some((id) => !coveredOutcomes.has(id)))
     throw new DeliveryPlanError('uncovered-outcome')
-  for (const mapped of source.mapping.filter((entry) => entry.role === 'criterion')) {
-    const selected = source.body
-      .split('\n')
-      .slice(mapped.startLine - 1, mapped.endLine)
-      .join('\n')
-    if (
-      !plan.criteria.some((criterion) => criterion.id === mapped.id && criterion.text === selected)
-    )
-      throw new DeliveryPlanError('changed-source-criterion')
+  const mappedCriteria = source.mapping.filter((entry) => entry.role === 'criterion')
+  if (mappedCriteria.length) {
+    const lines = source.body.split('\n'),
+      index =
+        mappedCriteria.length > 1 ? new Map<string, DeliveryPlan['criteria'][number]>() : undefined
+    let scanned = 0
+    for (const mapped of mappedCriteria) {
+      const selected = lines.slice(mapped.startLine - 1, mapped.endLine).join('\n')
+      if (index) {
+        let criterion = index.get(mapped.id)
+        // Index only the declaration prefix needed so far, using the ids already
+        // validated above. A few mapped ids must not force a scan of an unrelated tail.
+        while (!criterion && scanned < criteria.length) {
+          const id = criteria[scanned],
+            entry = plan.criteria[scanned]
+          scanned++
+          if (id !== undefined && entry) {
+            index.set(id, entry)
+            if (id === mapped.id) criterion = entry
+          }
+        }
+        if (criterion?.text !== selected) throw new DeliveryPlanError('changed-source-criterion')
+      } else if (
+        !plan.criteria.some(
+          (criterion) => criterion.id === mapped.id && criterion.text === selected,
+        )
+      )
+        throw new DeliveryPlanError('changed-source-criterion')
+    }
   }
   const work = plan.work.map((entry) => entry.id),
     repos = plan.repositories.map((entry) => entry.id)
@@ -338,14 +371,22 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
   )
   const contracts = plan.work.flatMap((entry) => entry.produces.map((contract) => contract.id))
   unique(contracts, 'duplicate-contract')
+  const workIds = referenceIndex(work),
+    criterionIds = referenceIndex(criteria),
+    repositoryIds = referenceIndex(repos),
+    contractIds = referenceIndex(contracts),
+    criterionOwners = new Map<string, string>()
+  let duplicateOwner = false,
+    consumptions = 0
   for (const unit of plan.work) {
     if (unit.subject !== undefined && !ITEM_ID.test(unit.subject))
       throw new DeliveryPlanError('invalid-subject')
-    if (unit.repository !== undefined) references([unit.repository], repos, 'unknown-repository')
+    if (unit.repository !== undefined)
+      references([unit.repository], repositoryIds, 'unknown-repository')
     else if (unit.role !== 'research') throw new DeliveryPlanError('missing-work-repository')
-    references(unit.criteria, criteria, 'unknown-criterion')
-    references(unit.after, work, 'unknown-dependency')
-    references(unit.consumes, contracts, 'unknown-contract')
+    references(unit.criteria, criterionIds, 'unknown-criterion')
+    references(unit.after, workIds, 'unknown-dependency')
+    references(unit.consumes, contractIds, 'unknown-contract')
     if (
       ['research-report', 'learning-observation'].includes(plan.policy.endpoint) &&
       (unit.role !== 'research' || unit.produces.length)
@@ -354,8 +395,15 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
     if (unit.produces.length && unit.role !== 'contract')
       throw new DeliveryPlanError('contract-owner-role')
     if (!unit.criteria.length && !unit.produces.length) throw new DeliveryPlanError('empty-work')
+    consumptions += unit.consumes.length
+    for (const id of unit.criteria) {
+      if (criterionOwners.has(id)) duplicateOwner = true
+      else criterionOwners.set(id, unit.id)
+    }
   }
-  if (criteria.some((id) => plan.work.filter((unit) => unit.criteria.includes(id)).length !== 1))
+  // References and per-unit uniqueness are already checked. Delay cross-unit
+  // ownership refusal until all work checks finish, preserving error precedence.
+  if (duplicateOwner || criterionOwners.size !== criteria.length)
     throw new DeliveryPlanError('criterion-ownership')
   const graph = new Map(plan.work.map((unit) => [unit.id, unit.after]))
   try {
@@ -371,58 +419,87 @@ export function validateDeliveryPlan(value: unknown, source: SourceSnapshot): De
     closures.set(id, result)
     return result
   }
+  const producerIndex = consumptions > 1 ? new Map<string, string>() : undefined
+  let producerUnit = 0,
+    producerContract = 0
   for (const unit of plan.work)
     for (const id of unit.consumes) {
-      const producer = plan.work.find((entry) =>
-        entry.produces.some((contract) => contract.id === id),
-      )
-      if (!producer || !ancestors(unit.id).has(producer.id))
+      let producer: string | undefined
+      if (producerIndex) {
+        producer = producerIndex.get(id)
+        // Advance only as far as requested. One early consumer must not index
+        // the unused tail, including other contracts from the same producer.
+        while (producer === undefined && producerUnit < plan.work.length) {
+          const entry = plan.work[producerUnit]
+          if (!entry) break
+          const contract = entry.produces[producerContract++]
+          if (!contract) {
+            producerUnit++
+            producerContract = 0
+            continue
+          }
+          producerIndex.set(contract.id, entry.id)
+          if (contract.id === id) producer = entry.id
+        }
+      } else
+        producer = plan.work.find((entry) =>
+          entry.produces.some((contract) => contract.id === id),
+        )?.id
+      if (producer === undefined || !ancestors(unit.id).has(producer))
         throw new DeliveryPlanError('contract-order')
     }
   unique(
     plan.milestones.map((entry) => entry.id),
     'duplicate-milestone',
   )
-  const milestones = plan.milestones.map((entry) => entry.id)
+  const milestones = plan.milestones.map((entry) => entry.id),
+    milestoneIds = referenceIndex(milestones),
+    milestoneWork = new Set<string>(),
+    milestoneCriteria = new Set<string>()
   for (const milestone of plan.milestones) {
-    references(milestone.work, work, 'unknown-milestone-work')
-    references(milestone.criteria, criteria, 'unknown-milestone-criterion')
-    references(milestone.after, milestones, 'unknown-milestone-dependency')
+    references(milestone.work, workIds, 'unknown-milestone-work')
+    references(milestone.criteria, criterionIds, 'unknown-milestone-criterion')
+    references(milestone.after, milestoneIds, 'unknown-milestone-dependency')
+    const owned = new Set(milestone.work)
     if (
-      milestone.criteria.some(
-        (id) =>
-          !plan.work.some((unit) => unit.criteria.includes(id) && milestone.work.includes(unit.id)),
-      )
+      milestone.criteria.some((id) => {
+        const owner = criterionOwners.get(id)
+        return owner === undefined || !owned.has(owner)
+      })
     )
       throw new DeliveryPlanError('milestone-ownership')
+    for (const id of owned) milestoneWork.add(id)
+    for (const id of milestone.criteria) milestoneCriteria.add(id)
   }
-  if (
-    work.some((id) => !plan.milestones.some((entry) => entry.work.includes(id))) ||
-    criteria.some((id) => !plan.milestones.some((entry) => entry.criteria.includes(id)))
-  )
+  if (milestoneWork.size !== work.length || milestoneCriteria.size !== criteria.length)
     throw new DeliveryPlanError('uncovered-milestone')
+  const milestoneGraph = new Map(plan.milestones.map((entry) => [entry.id, entry.after]))
   try {
-    checkDependencies(new Map(plan.milestones.map((entry) => [entry.id, entry.after])))
+    checkDependencies(milestoneGraph)
   } catch {
     throw new DeliveryPlanError('milestone-cycle')
   }
   const milestoneAncestors = (id: string): Set<string> => {
     const seen = new Set<string>(),
-      pending = [...(plan.milestones.find((entry) => entry.id === id)?.after ?? [])]
+      pending = [...(milestoneGraph.get(id) ?? [])]
     while (pending.length) {
       const next = pending.pop() ?? ''
       if (seen.has(next)) continue
       seen.add(next)
-      pending.push(...(plan.milestones.find((entry) => entry.id === next)?.after ?? []))
+      pending.push(...(milestoneGraph.get(next) ?? []))
     }
     return seen
   }
   for (const milestone of plan.milestones) {
+    // Unique known work references and both cycle checks are already proven.
+    // Complete coverage cannot omit an ancestor, so no closure is needed.
+    if (milestone.work.length === work.length) continue
     const earlier = milestoneAncestors(milestone.id)
     const available = new Set([
       ...milestone.work,
       ...plan.milestones.filter((entry) => earlier.has(entry.id)).flatMap((entry) => entry.work),
     ])
+    if (available.size === work.length) continue
     if (
       milestone.work.some((id) =>
         [...ancestors(id)].some((dependency) => !available.has(dependency)),

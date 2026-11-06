@@ -249,6 +249,7 @@
 | [0238](./0238-select-budget-and-queue-facts-in-one-pass.md) | Select budget and queue facts in one pass | Accepted | 2026-11-06 |
 | [0239](./0239-witnessed-journal-ranges-and-owned-incremental-replay.md) | Witnessed journal ranges and owned incremental replay | Accepted | 2026-11-06 |
 | [0240](./0240-sealed-observations-bounded-cancellation-and-drain.md) | Sealed observations, bounded cancellation and drain | Accepted | 2026-11-06 |
+| [0241](./0241-index-current-plan-relations.md) | Index current plan relations | Accepted | 2026-11-06 |
 
 ## Lifecycle
 

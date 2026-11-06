@@ -159,12 +159,17 @@ export function checkSlicePlan(plan: SlicePlan, context: SlicingContext): void {
 }
 
 export function checkDependencies(graph: ReadonlyMap<string, readonly string[]>): void {
-  const checked = new Set<string>()
-  const visit = (id: string, stack: Set<string>): void => {
-    if (stack.has(id)) throw new Error('Slice dependencies contain a cycle')
+  const checked = new Set<string>(),
+    active = new Set<string>()
+  const visit = (id: string): void => {
+    if (active.has(id)) throw new Error('Slice dependencies contain a cycle')
     if (checked.has(id)) return
-    for (const next of graph.get(id) ?? []) visit(next, new Set([...stack, id]))
+    // One private depth-first branch preserves cycle detection without copying
+    // every ancestor for each edge. Completed siblings must leave the branch.
+    active.add(id)
+    for (const next of graph.get(id) ?? []) visit(next)
+    active.delete(id)
     checked.add(id)
   }
-  for (const id of graph.keys()) visit(id, new Set())
+  for (const id of graph.keys()) visit(id)
 }
