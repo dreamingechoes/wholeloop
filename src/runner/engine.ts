@@ -253,7 +253,7 @@ export class DeliveryRunner {
           )
           const status = this.observe(lease, stage, invocation, basis, observed)
           if (status !== 'passed') {
-            const state = this.store.lifecycle.journal.get(request.run)
+            const state = this.store.lifecycle.journal.view(request.run)
             if (state.state === 'stopping' || state.state === 'paused')
               return this.store.inspect(digest)
             return this.limit(
@@ -279,7 +279,7 @@ export class DeliveryRunner {
             context = this.store.basis(request)
           }
         }
-        const state = this.store.lifecycle.journal.get(request.run)
+        const state = this.store.lifecycle.journal.view(request.run)
         if (abort.signal.aborted || !this.store.current(lease)) {
           if (['queued', 'running'].includes(state.state))
             return this.limit(
@@ -320,7 +320,7 @@ export class DeliveryRunner {
             context.plan.policy.intervention === 'none' ? 'blocked' : 'paused',
             'Current independently observed endpoint evidence is unavailable or fixture-only.',
           )
-        const executed = this.store.lifecycle.journal.get(request.run)
+        const executed = this.store.lifecycle.journal.view(request.run)
         if (
           !['running', 'waiting-external'].includes(executed.state) &&
           // A run whose last execution was an observed effect, such as
@@ -444,7 +444,7 @@ export class DeliveryRunner {
       }
     }
     const status = this.store.inspect(digest),
-      state = this.store.lifecycle.journal.get(request.run)
+      state = this.store.lifecycle.journal.view(request.run)
     if (
       options.cancel &&
       state.state === 'stopping' &&
@@ -478,7 +478,7 @@ export class DeliveryRunner {
     context: ReturnType<RunnerStore['basis']>,
   ): Promise<boolean> {
     const request = this.store.get(lease.request),
-      state = this.store.lifecycle.journal.get(request.run),
+      state = this.store.lifecycle.journal.view(request.run),
       facet = deliveryRunner(state),
       continuation = facet.continuations?.at(-1)
     if (!continuation || continuation.revision !== context.plan.revision) return true
@@ -820,7 +820,7 @@ export class DeliveryRunner {
     reason: string,
   ) {
     const request = this.store.get(lease.request),
-      state = this.store.lifecycle.journal.get(request.run)
+      state = this.store.lifecycle.journal.view(request.run)
     safeSourceText(reason, 4096)
     if (state.state !== to && !TERMINAL.has(state.state)) {
       // Stopped is only observable after draining; an abort cannot assert it on its own.

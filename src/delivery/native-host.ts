@@ -100,7 +100,7 @@ export class NativeDeliveryHost {
   binding(lease: Readonly<QueueAssignment>): NativeQueueBinding | undefined {
     if (!existsSync(this.queue.lifecycle.journal.files.path(this.path(lease.attempt))))
       return undefined
-    return this.bindingAt(lease, this.queue.lifecycle.journal.get(lease.run))
+    return this.bindingAt(lease, this.queue.lifecycle.journal.view(lease.run))
   }
   private bindingAt(
     lease: Readonly<QueueAssignment>,
@@ -142,7 +142,7 @@ export class NativeDeliveryHost {
   retained(lease: Readonly<QueueAssignment>) {
     if (!existsSync(this.queue.lifecycle.journal.files.path(this.path(lease.attempt))))
       return undefined
-    return this.retainedAt(lease, this.queue.lifecycle.journal.get(lease.run))
+    return this.retainedAt(lease, this.queue.lifecycle.journal.view(lease.run))
   }
   private retainedAt(lease: Readonly<QueueAssignment>, state: DeliveryProjection) {
     const binding = this.bindingAt(lease, state)
@@ -184,9 +184,9 @@ export class NativeDeliveryHost {
   /** Transport completion supplies neither current candidate acceptance nor semantic QA. */
   completed(lease: Readonly<QueueAssignment>): boolean {
     try {
-      if (!this.completeAt(lease, this.queue.lifecycle.journal.get(lease.run))) return false
+      if (!this.completeAt(lease, this.queue.lifecycle.journal.view(lease.run))) return false
       // Do not promote an original result if its slot advanced during the byte audit.
-      const current = this.queue.lifecycle.journal.get(lease.run),
+      const current = this.queue.lifecycle.journal.view(lease.run),
         entry = deliveryQueue(current).records.find((entry) => entry.attempt === lease.attempt),
         attempt = deliveryAttempts(current).records.find((attempt) => attempt.id === lease.attempt)
       return (

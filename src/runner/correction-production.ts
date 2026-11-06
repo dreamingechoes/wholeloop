@@ -80,7 +80,7 @@ export function correctionProduction(
       throw new DeliveryRunnerError('correction-production-binding')
     const failure = store.stage(entry.request, entry.stage),
       prior = binding.prior,
-      parent = deliveryAttempts(store.lifecycle.journal.get(request.run)).records.find(
+      parent = deliveryAttempts(store.lifecycle.journal.view(request.run)).records.find(
         (attempt) => attempt.id === prior.attempt,
       ),
       queue = new DeliveryQueue(store.files.root, store.now, undefined, store.budgets.clock),

@@ -65,7 +65,7 @@ export abstract class DockerObservedHost implements AcceptanceHost {
     const records = new EnvironmentResources(files)
     const original = records.get(this.environment).record
     const effects = new DeliveryEffects(files.root)
-    const state = effects.lifecycle.journal.get(plan.run)
+    const state = effects.lifecycle.journal.view(plan.run)
     const grant = state.grant ? effects.lifecycle.authority.inspect(state.grant.id) : undefined
     const primary = this.acceptance.planning.getPlan(plan.run, plan.revision).plan.repositories[0]
     const scope = grant?.grant.repositories.find((r) => r.repository === primary?.id)
@@ -104,7 +104,7 @@ export abstract class DockerObservedHost implements AcceptanceHost {
     const current = () => {
       const now = Date.now(),
         record = records.get(this.environment).record
-      const latest = effects.lifecycle.journal.get(plan.run)
+      const latest = effects.lifecycle.journal.view(plan.run)
       const authority = latest.grant
         ? effects.lifecycle.authority.inspect(latest.grant.id)
         : undefined

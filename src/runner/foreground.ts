@@ -67,7 +67,7 @@ export class OwnedForegroundRunner {
       }
       const current = this.store.record(digest),
         request = this.store.get(digest),
-        state = this.store.lifecycle.journal.get(request.run)
+        state = this.store.lifecycle.journal.view(request.run)
       if (
         current.controller === lease.controller &&
         current.generation === lease.generation &&
@@ -114,7 +114,7 @@ export async function receiveOwnedForeground(
     })
   } catch (error) {
     const request = store.get(message.lease.request),
-      state = store.lifecycle.journal.get(request.run)
+      state = store.lifecycle.journal.view(request.run)
     if (['queued', 'running'].includes(state.state)) {
       const to =
         store.lifecycle.authority.inspect(request.grant).grant.policy.intervention === 'none'

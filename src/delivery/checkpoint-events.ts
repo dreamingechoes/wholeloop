@@ -21,7 +21,9 @@ export function deliveryCheckpoints(state: DeliveryProjection): CheckpointsFacet
   let facet = state.facets.find((entry) => entry.schema === 'wholeloop/delivery-checkpoints@1')
   if (!facet) {
     facet = { schema: 'wholeloop/delivery-checkpoints@1', records: [] }
-    state.facets.push(facet)
+    // Reducers own mutable states; a frozen journal view (ADR-0239) only reads,
+    // so it gets the same empty facet without changing the shared projection.
+    if (!Object.isFrozen(state.facets)) state.facets.push(facet)
   }
   return facet
 }

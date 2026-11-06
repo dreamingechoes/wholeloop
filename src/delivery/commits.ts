@@ -168,7 +168,7 @@ export class DeliveryCommits {
       repo = allocation.repository
     this.owned(allocation)
     if (
-      !ACTIVE.has(this.effects.lifecycle.journal.get(record.run).state) ||
+      !ACTIVE.has(this.effects.lifecycle.journal.view(record.run).state) ||
       git(repo.path, ['rev-parse', 'HEAD']).trim() !== record.request.head ||
       contractDigest(candidateFiles(repo.path)) !== contractDigest(record.files)
     )
@@ -263,7 +263,7 @@ export class DeliveryCommits {
           () => {
             // Staging and commit change their own index/HEAD preconditions. Original
             // authority and run fencing remain mandatory until the actual group closes.
-            const state = this.effects.lifecycle.journal.get(record.run),
+            const state = this.effects.lifecycle.journal.view(record.run),
               grant = this.effects.lifecycle.authority.inspect(record.grant)
             if (
               state.basis.digest !== record.plan ||
@@ -406,7 +406,7 @@ export class DeliveryCommits {
         })
         effect = await this.effects.execute(record.run, effect.intent.id, this.host(record, step))
       }
-      const state = this.effects.lifecycle.journal.get(record.run)
+      const state = this.effects.lifecycle.journal.view(record.run)
       if (
         state.state === 'waiting-external' &&
         !this.effects

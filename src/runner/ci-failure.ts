@@ -22,7 +22,7 @@ export function originalCiFailure(
 ) {
   try {
     const request = store.get(input.request),
-      state = store.lifecycle.journal.get(request.run),
+      state = store.lifecycle.journal.view(request.run),
       owner = store.record(input.request),
       stage = owner.stages.find((entry) => entry.id === 'ci'),
       publication = owner.stages.find((entry) => entry.id === 'publication'),

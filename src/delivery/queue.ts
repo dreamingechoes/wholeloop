@@ -129,11 +129,11 @@ export class DeliveryQueue {
   }
 
   inspect(run: string): QueueRecord[] {
-    return deliveryQueue(this.lifecycle.journal.get(run)).records
+    return deliveryQueue(this.lifecycle.journal.view(run)).records
   }
 
   assigned(run: string, attempt: string): QueueAssignment {
-    const state = this.lifecycle.journal.get(run)
+    const state = this.lifecycle.journal.view(run)
     const record = deliveryQueue(state).records.find((record) => record.attempt === attempt)
     if (!record) throw new DeliveryJournalError('unknown-queue-assignment')
     return this.assignment(state, record)
@@ -406,7 +406,7 @@ export class DeliveryQueue {
   /** Read-only broker lease check; it performs no nested transaction or external effect. */
   current(scope: Readonly<BrokerScope>): boolean {
     try {
-      const state = this.lifecycle.journal.get(scope.run)
+      const state = this.lifecycle.journal.view(scope.run)
       const record = deliveryQueue(state).records.find((entry) => entry.attempt === scope.attempt)
       const attempt = deliveryAttempts(state).records.find((entry) => entry.id === scope.attempt)
       return (

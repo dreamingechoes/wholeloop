@@ -108,7 +108,7 @@ export class RunnerStore {
       authority = this.lifecycle.authority.inspect(request.grant)
     if (original.digest !== request.plan || authority.status !== 'active')
       throw new DeliveryRunnerError('inactive-runner-basis')
-    const state = this.lifecycle.journal.list().find((s) => s.run === request.run),
+    const state = this.lifecycle.journal.views().find((s) => s.run === request.run),
       record = state
         ? deliveryRunner(state).records.find((r) => r.request === contractDigest(request))
         : undefined
@@ -222,7 +222,7 @@ export class RunnerStore {
 
   record(digest: string): RunnerRecord {
     const request = this.get(digest),
-      state = this.lifecycle.journal.get(request.run)
+      state = this.lifecycle.journal.view(request.run)
     const record = deliveryRunner(state).records.find((r) => r.request === digest)
     if (!record) throw new DeliveryRunnerError('unprepared-runner')
     return record
@@ -320,7 +320,7 @@ export class RunnerStore {
 
   inspect(digest: string) {
     const request = this.get(digest),
-      state = this.lifecycle.journal.get(request.run),
+      state = this.lifecycle.journal.view(request.run),
       record = this.record(digest),
       problems: string[] = []
     if (state.basis.digest !== record.basis) problems.push('changed-current-plan')
@@ -359,7 +359,7 @@ export class RunnerStore {
   }
   observation(digest: string, stage: RunnerStageRecord): unknown {
     const request = this.get(digest),
-      state = this.lifecycle.journal.get(request.run),
+      state = this.lifecycle.journal.view(request.run),
       artifact = findBudget(state)?.artifacts.find(
         (entry) => entry.digest === stage.observation && entry.status === 'observed',
       )
@@ -395,7 +395,7 @@ export class RunnerStore {
   }
   control(digest: string, operation: 'pause' | 'stop' | 'resume', operator: string) {
     const request = this.get(digest),
-      state = this.lifecycle.journal.get(request.run)
+      state = this.lifecycle.journal.view(request.run)
     if (!operator.trim()) throw new DeliveryRunnerError('missing-control-operator')
     if (operation === 'resume') {
       this.basis(request)

@@ -344,7 +344,7 @@ export class RunnerArtifactStages {
               .map((call) => ({ invocation: call.invocation, evidence: call.observed.evidence }))
           : undefined
     if (selected?.binding.directory && closed && prefix) {
-      const attempt = deliveryAttempts(this.store.lifecycle.journal.get(request.run)).records.find(
+      const attempt = deliveryAttempts(this.store.lifecycle.journal.view(request.run)).records.find(
         (a) => a.id === selected.binding.lease.assignment.identity.attempt,
       )
       if (attempt?.evidence && /^[a-f0-9]{64}$/.test(attempt.evidence)) {

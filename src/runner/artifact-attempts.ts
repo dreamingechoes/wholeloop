@@ -45,7 +45,7 @@ export class RunnerArtifactAttempts extends NativeReadOnlyAttempts<RunnerArtifac
     const context = this.context,
       request = contractDigest(context.request),
       actual = this.store.get(request),
-      state = this.store.lifecycle.journal.get(actual.run),
+      state = this.store.lifecycle.journal.view(actual.run),
       record = this.store
         .record(request)
         .stages.find((s) => s.id === context.stage.id && s.invocation === context.invocation),

@@ -58,7 +58,7 @@ export class DeliveryRecovery {
     if (!Number.isSafeInteger(timeout) || timeout < 1 || timeout > 60000)
       throw new Error('Invalid bounded recovery host timeout')
     const problems = new Set<string>()
-    const initial = this.queue.lifecycle.journal.get(run)
+    const initial = this.queue.lifecycle.journal.view(run)
     if (this.queue.lifecycle.journal.now() < initial.maxObservedAt) problems.add('clock-regression')
     try {
       if (
@@ -84,7 +84,7 @@ export class DeliveryRecovery {
     for (const entry of entries) {
       if (!entry.attempt) continue
       const assignment = this.queue.assigned(run, entry.attempt)
-      let attempt = deliveryAttempts(this.queue.lifecycle.journal.get(run)).records.find(
+      let attempt = deliveryAttempts(this.queue.lifecycle.journal.view(run)).records.find(
         (record) => record.id === entry.attempt,
       )
       if (!attempt) {
@@ -116,7 +116,7 @@ export class DeliveryRecovery {
           continue
         }
         this.queue.finish(assignment, 'stopped', observed.evidence)
-        attempt = deliveryAttempts(this.queue.lifecycle.journal.get(run)).records.find(
+        attempt = deliveryAttempts(this.queue.lifecycle.journal.view(run)).records.find(
           (record) => record.id === entry.attempt,
         )
       }
@@ -138,7 +138,7 @@ export class DeliveryRecovery {
     } catch {
       problems.add('unavailable-budget-state')
     }
-    const state = this.queue.lifecycle.journal.get(run)
+    const state = this.queue.lifecycle.journal.view(run)
     const known = new Set(
       this.queue.inspect(run).flatMap((record) => (record.attempt ? [record.attempt] : [])),
     )
@@ -195,7 +195,7 @@ export class DeliveryRecovery {
       run,
       ready: problems.size === 0,
       problems: [...problems].sort(),
-      state: this.queue.lifecycle.journal.get(run),
+      state: this.queue.lifecycle.journal.view(run),
       workers: 'not-started' as const,
       effects: 'not-invoked' as const,
     }

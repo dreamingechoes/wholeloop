@@ -204,7 +204,7 @@ export class NativeAssignmentHost {
     if (!negotiated.available) return unavailable(negotiated.reason)
     if (this.owner.provenance() !== negotiated.observation.provenance)
       return unavailable('invalid-runtime-observation')
-    const budget = findBudget(this.budgets.lifecycle.journal.get(assignment.identity.run))
+    const budget = findBudget(this.budgets.lifecycle.journal.view(assignment.identity.run))
     if (
       budget?.requirements.tokens?.mode === 'hard' ||
       budget?.requirements.currency?.mode === 'hard'

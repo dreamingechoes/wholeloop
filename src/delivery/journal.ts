@@ -70,6 +70,17 @@ function currentLayout(directory: string) {
   return inventoried
 }
 
+/** Cached projections are shared by every borrowed view, so none may change. */
+function frozenStates(states: Map<string, DeliveryProjection>) {
+  const freeze = (value: unknown) => {
+    if (value === null || typeof value !== 'object' || Object.isFrozen(value)) return
+    Object.freeze(value)
+    for (const entry of Object.values(value)) freeze(entry)
+  }
+  for (const state of states.values()) freeze(state)
+  return states
+}
+
 type ProjectionCache = { path: string; status: 'missing' | 'stale' } | { path: string; raw: string }
 
 /** Immutable atomic segments avoid a multi-file journal commit or dependence on wall-clock order. */
@@ -162,7 +173,13 @@ export class DeliveryJournal {
         const context = deliveryReplay(events)
         // Independent reader views must not alias the context moved into a
         // later writer. Only private events, never caller state, seed it.
-        owner = { directory, segments, states: context.snapshot(), context, inventory: layout }
+        owner = {
+          directory,
+          segments,
+          states: frozenStates(context.snapshot()),
+          context,
+          inventory: layout,
+        }
       } else owner.inventory = layout
       replayed = owner
       const states = owner.states
@@ -242,10 +259,22 @@ export class DeliveryJournal {
     return structuredClone([...this.readSnapshot().states.values()])
   }
   get(run: string): DeliveryProjection {
+    return structuredClone(this.view(run))
+  }
+  /**
+   * The current validated projection itself, deeply frozen when it was cached,
+   * for synchronous read-only callers (ADR-0239). It costs no copy; any write
+   * throws. Never retain it across an await or a mutation: read it again.
+   */
+  view(run: string): DeliveryProjection {
     this.run(run)
     const state = this.readSnapshot().states.get(run)
     if (!state) throw new DeliveryJournalError('unknown-run')
-    return structuredClone(state)
+    return state
+  }
+  /** Every current frozen projection; see view(). */
+  views(): DeliveryProjection[] {
+    return [...this.readSnapshot().states.values()]
   }
 
   transaction<T>(
@@ -372,7 +401,7 @@ export class DeliveryJournal {
             events: structuredClone(events.slice(write.first - 1)),
           },
         ],
-        states: structuredClone(states),
+        states: frozenStates(structuredClone(states)),
         context: candidate,
       }
       // One replacement commits either a plain tail or its immutable packed range.

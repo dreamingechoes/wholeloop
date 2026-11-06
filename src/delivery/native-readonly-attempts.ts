@@ -209,7 +209,7 @@ export abstract class NativeReadOnlyAttempts<L extends NativeReadOnlyLease> {
   completed(lease: Readonly<L>, receipt: Readonly<NativeRunReceipt>): boolean {
     try {
       const record = this.record(lease),
-        state = this.journal.get(record.assignment.identity.run)
+        state = this.journal.view(record.assignment.identity.run)
       this.basis(state, record.grant, !this.historicalObservations)
       const attempt = deliveryAttempts(state).records.find(
         (item) => item.id === record.assignment.identity.attempt,
@@ -256,7 +256,7 @@ export abstract class NativeReadOnlyAttempts<L extends NativeReadOnlyLease> {
 
   private prepare(lease: Readonly<L>) {
     const record = this.record(lease),
-      state = this.journal.get(record.assignment.identity.run)
+      state = this.journal.view(record.assignment.identity.run)
     this.basis(state, record.grant)
     const attempt = deliveryAttempts(state).records.find(
       (item) => item.id === record.assignment.identity.attempt,
@@ -282,7 +282,7 @@ export abstract class NativeReadOnlyAttempts<L extends NativeReadOnlyLease> {
   ): boolean {
     try {
       const record = this.record(lease),
-        state = this.journal.get(assignment.identity.run)
+        state = this.journal.view(assignment.identity.run)
       this.basis(state, record.grant)
       const attempt = deliveryAttempts(state).records.find(
         (item) => item.id === assignment.identity.attempt,

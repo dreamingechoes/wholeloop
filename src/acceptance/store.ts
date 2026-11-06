@@ -559,7 +559,7 @@ export class DeliveryAcceptance {
   }
   private currentState(run: string) {
     try {
-      return this.budgets.lifecycle.journal.get(run)
+      return this.budgets.lifecycle.journal.view(run)
     } catch (error) {
       if (error instanceof DeliveryJournalError && error.problem === 'unknown-run') return undefined
       throw error

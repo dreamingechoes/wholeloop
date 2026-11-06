@@ -27,7 +27,9 @@ export function deliveryRecovery(state: DeliveryProjection): RecoveryFacet {
   let facet = state.facets.find((entry) => entry.schema === 'wholeloop/delivery-recovery@1')
   if (!facet) {
     facet = { schema: 'wholeloop/delivery-recovery@1', records: [] }
-    state.facets.push(facet)
+    // Reducers own mutable states; a frozen journal view (ADR-0239) only reads,
+    // so it gets the same empty facet without changing the shared projection.
+    if (!Object.isFrozen(state.facets)) state.facets.push(facet)
   }
   return facet
 }

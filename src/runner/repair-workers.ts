@@ -124,7 +124,7 @@ export class RunnerRepairWorkers {
       ) as RepairBinding,
       record = this.store.stage(contractDigest(request), binding.stage),
       feedback = binding.admission?.feedback,
-      failure = findBudget(this.store.lifecycle.journal.get(request.run))?.failures.find(
+      failure = findBudget(this.store.lifecycle.journal.view(request.run))?.failures.find(
         (item) => item.key === binding.admission?.failure,
       )
     if (
@@ -358,7 +358,7 @@ export class RunnerRepairWorkers {
           : observed,
       completion = historical ? this.native.historical(lease) : undefined,
       retained = historical ? completion : this.native.retained(lease),
-      prior = deliveryAttempts(this.queue.lifecycle.journal.get(request.run)).records.find(
+      prior = deliveryAttempts(this.queue.lifecycle.journal.view(request.run)).records.find(
         (item) => item.id === binding.prior.attempt,
       )
     if (

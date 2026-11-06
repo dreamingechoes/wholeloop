@@ -306,7 +306,7 @@ export class DeliveryEnvironments {
     return { ...result, status, environment: final, effect: effect.intent.id }
   }
   private authority(run: string) {
-    const state = this.effects.lifecycle.journal.get(run)
+    const state = this.effects.lifecycle.journal.view(run)
     const receipt = state.grant
       ? this.effects.lifecycle.authority.inspect(state.grant.id)
       : undefined

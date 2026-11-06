@@ -29,7 +29,7 @@ export class PrivateAcceptance {
         return this.get(digest)
       }
       try {
-        const state = this.acceptance.budgets.lifecycle.journal.get(plan.run)
+        const state = this.acceptance.budgets.lifecycle.journal.view(plan.run)
         if (
           deliveryAttempts(state).records.some((a) => a.role === 'builder' && a.basis === plan.plan)
         )

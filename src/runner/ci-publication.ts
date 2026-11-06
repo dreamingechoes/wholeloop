@@ -40,7 +40,7 @@ export function ciPublicationOrigin(
   publication: Readonly<RunnerPublication>,
   target: RunnerPublicationTarget,
 ) {
-  const state = store.lifecycle.journal.get(run),
+  const state = store.lifecycle.journal.view(run),
     basis = store.planning.getPlan(run, state.basis.revision ?? 0)
   if (basis.plan.schema !== 'wholeloop/delivery-plan@2') return undefined
   if (basis.digest !== publication.plan)

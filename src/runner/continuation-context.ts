@@ -13,7 +13,7 @@ export function continuationContext(
   input: { request: string; stage: string; unit: string },
   supported: boolean,
 ) {
-  const state = lifecycle.journal.get(run),
+  const state = lifecycle.journal.view(run),
     planning = lifecycle.authority.planning,
     revision = state.basis.revision
   if (state.basis.kind !== 'plan' || !revision)

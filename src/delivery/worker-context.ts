@@ -29,7 +29,7 @@ export function currentWorkerAssignment(
     validateWorkerAssignment(assignment)
     const identity = assignment.identity
     if (!identity.unit || ['planner', 'challenger'].includes(identity.role)) return false
-    const state = queue.lifecycle.journal.get(identity.run)
+    const state = queue.lifecycle.journal.view(identity.run)
     const authority = state.grant ? queue.lifecycle.authority.inspect(state.grant.id) : undefined
     const attempt = deliveryAttempts(state).records.find((item) => item.id === identity.attempt)
     if (
@@ -75,7 +75,7 @@ export function workerContextForClaim(
   },
 ) {
   return queue.lifecycle.journal.files.locked(() => {
-    const state = queue.lifecycle.journal.get(lease.run)
+    const state = queue.lifecycle.journal.view(lease.run)
     if (contractDigest(queue.assigned(lease.run, lease.attempt)) !== contractDigest(lease))
       throw new WorkerProtocolError('stale-lease')
     const attempt = deliveryAttempts(state).records.find((item) => item.id === lease.attempt)

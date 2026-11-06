@@ -221,7 +221,7 @@ export function reviseDelivery(
   proposedValue: unknown,
   accept?: { operator: string; reason: string; approveRemovals: boolean },
 ) {
-  const state = lifecycle.journal.get(run),
+  const state = lifecycle.journal.view(run),
     planning = lifecycle.authority.planning
   if (state.basis.kind !== 'plan' && state.basis.kind !== 'envelope')
     throw new DeliveryRunnerError('revision-basis')

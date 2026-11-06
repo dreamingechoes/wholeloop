@@ -97,7 +97,7 @@ export class DeliveryWorkspaces {
   }
 
   private authority(request: DeliveryWorkspaceRequest, observeGit = true) {
-    const state = this.effects.lifecycle.journal.get(request.run),
+    const state = this.effects.lifecycle.journal.view(request.run),
       authority = this.effects.lifecycle.authority,
       prepared = authority.planning.getPlan(request.run, request.revision),
       grant = state.grant ? authority.inspect(state.grant.id) : undefined
@@ -562,7 +562,7 @@ export class DeliveryWorkspaces {
           this.host(record, step),
         )
       }
-      const state = this.effects.lifecycle.journal.get(record.request.run)
+      const state = this.effects.lifecycle.journal.view(record.request.run)
       if (
         state.state === 'waiting-external' &&
         !this.effects

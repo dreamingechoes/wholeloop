@@ -89,7 +89,7 @@ export class IntegrationAssembly {
       throw new IntegrationError('assembly-controller-fenced')
   }
   private authority(request: AssemblyRequest, observeGit = true) {
-    const state = this.effects.lifecycle.journal.get(request.run),
+    const state = this.effects.lifecycle.journal.view(request.run),
       prepared = this.effects.lifecycle.authority.planning.getPlan(request.run, request.revision)
     const observed = state.grant
       ? this.effects.lifecycle.authority.inspect(state.grant.id)
@@ -437,7 +437,7 @@ export class IntegrationAssembly {
         provenance: 'host-observed',
       })
       if (
-        !findBudget(this.effects.lifecycle.journal.get(request.run))?.counters.some(
+        !findBudget(this.effects.lifecycle.journal.view(request.run))?.counters.some(
           (c) => c.key === `assembly-${digest}`,
         )
       )
@@ -460,7 +460,7 @@ export class IntegrationAssembly {
           this.effects.inspect(request.run).some((e) => ['pending', 'unknown'].includes(e.status))
         )
           throw new IntegrationError('unresolved-assembly-effect')
-        const state = this.effects.lifecycle.journal.get(request.run)
+        const state = this.effects.lifecycle.journal.view(request.run)
         if (!['queued', 'running'].includes(state.state))
           throw new IntegrationError('assembly-not-queued')
         effect ??= this.effects.prepare(request.run, {
@@ -473,7 +473,7 @@ export class IntegrationAssembly {
         })
         effect = await this.effects.execute(request.run, effect.intent.id, host)
       }
-      const state = this.effects.lifecycle.journal.get(request.run)
+      const state = this.effects.lifecycle.journal.view(request.run)
       if (
         state.state === 'waiting-external' &&
         !this.effects.inspect(request.run).some((e) => ['pending', 'unknown'].includes(e.status))

@@ -84,7 +84,7 @@ export class DeliveryCheckpoints {
   }
 
   inspect(run: string) {
-    const state = this.lifecycle.journal.get(run)
+    const state = this.lifecycle.journal.view(run)
     return deliveryCheckpoints(state).records.map((record) => {
       const manifest = this.manifest(run, record)
       const problems: string[] = []

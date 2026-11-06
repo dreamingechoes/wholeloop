@@ -48,7 +48,7 @@ export class IntegrationCandidates {
   }
   private current(run: string, plan: string, source: string) {
     try {
-      const state = this.lifecycle.journal.get(run)
+      const state = this.lifecycle.journal.view(run)
       if (
         state.basis.digest !== plan ||
         state.source !== source ||

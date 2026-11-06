@@ -18,7 +18,7 @@ export function publicationRecords(
   run: string,
   binding: Readonly<RunnerPublication>,
 ) {
-  const all = deliveryEffects(store.lifecycle.journal.get(run)).records
+  const all = deliveryEffects(store.lifecycle.journal.view(run)).records
   return binding.targets.map((target) =>
     Object.fromEntries(
       ORDER.map((step) => [

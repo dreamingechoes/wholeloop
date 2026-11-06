@@ -113,7 +113,7 @@ export function ciFeedback(comments: readonly CiComment[], candidate: string): C
 
 /** Journal-derived, so a restart can never reset the initial-plus-one-repair push budget. */
 export function ciRepairAdmission(store: RunnerStore, run: string): CiRepairAdmission {
-  const state = store.lifecycle.journal.get(run),
+  const state = store.lifecycle.journal.view(run),
     plan = store.planning.getPlan(run, state.basis.revision ?? 0).plan,
     pushes = deliveryEffects(state).records.filter(
       (record) => record.intent.operation === 'git.push' && record.invocation !== undefined,

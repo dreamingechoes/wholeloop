@@ -104,7 +104,7 @@ export class RunnerNativeGateHost implements GateHost {
   }
   private current(plan: GatePlan, active = true) {
     this.store.get(contractDigest(this.context.request))
-    const state = this.store.lifecycle.journal.get(this.context.request.run),
+    const state = this.store.lifecycle.journal.view(this.context.request.run),
       authority = this.store.lifecycle.authority.inspect(this.context.request.grant),
       pinned = this.store.basis(this.context.request),
       round = gateRuns(this.engine.store.events())

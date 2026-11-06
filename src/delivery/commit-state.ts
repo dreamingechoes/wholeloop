@@ -98,7 +98,7 @@ export function workspaceCommitEffects(
   lifecycle: DeliveryLifecycle,
   workspace: DeliveryWorkspaceRecord,
 ) {
-  const state = lifecycle.journal.get(workspace.request.run)
+  const state = lifecycle.journal.view(workspace.request.run)
   return deliveryEffects(state).records.filter(
     (effect) =>
       effect.intent.basis === workspace.request.plan &&
@@ -168,7 +168,7 @@ function validateOwnedWorkspaceCommit(
   validateDeliveryShape(receipt, receiptSchema)
   const { schema: _schema, digest: actual, ...binding } = receipt
   if (actual !== contractDigest(binding)) throw new CandidateCommitError('receipt-binding')
-  const state = lifecycle.journal.get(workspace.request.run),
+  const state = lifecycle.journal.view(workspace.request.run),
     records = workspaceCommitEffects(lifecycle, workspace),
     latest = records
       .filter((effect) => effect.intent.operation === 'git.commit' && effect.status === 'applied')

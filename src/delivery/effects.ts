@@ -164,7 +164,7 @@ export class DeliveryEffects {
     if (current.status !== 'pending' || current.invocation !== invocation) return current
     // A recorded intent never substitutes for the final live authority/fence check.
     try {
-      const state = this.lifecycle.journal.get(run)
+      const state = this.lifecycle.journal.view(run)
       this.scope(state, intent, this.grant(state))
       if (!currentBudgetReservation(state, invocation, this.budgetClock()))
         throw new DeliveryJournalError('expired-effect-budget')
@@ -245,10 +245,10 @@ export class DeliveryEffects {
   }
 
   inspect(run: string): EffectRecord[] {
-    return deliveryEffects(this.lifecycle.journal.get(run)).records
+    return deliveryEffects(this.lifecycle.journal.view(run)).records
   }
   get(run: string, id: string): EffectRecord {
-    return this.record(this.lifecycle.journal.get(run), id)
+    return this.record(this.lifecycle.journal.view(run), id)
   }
 
   private unknown(

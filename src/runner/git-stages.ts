@@ -145,7 +145,7 @@ export class RunnerGitStages {
    */
   private seed(request: Readonly<RunnerRequest>, plan: DeliveryPlan, unit: string) {
     const continuation = deliveryRunner(
-      this.store.lifecycle.journal.get(request.run),
+      this.store.lifecycle.journal.view(request.run),
     ).continuations?.find((entry) => entry.revision === plan.revision)
     if (!continuation) return {}
     const predecessor = this.store.get(continuation.request),
