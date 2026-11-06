@@ -150,7 +150,7 @@ rules:
   - id: delivery-runner-correction-commit
     enforcers: [src/runner/repair-commits.ts#RunnerRepairCommits, src/runner/repair-workers.ts#production, src/delivery/commits.ts#DeliveryCommits, test/unit/runner/repair-workers.test.ts, test/unit/delivery/commits.test.ts, test/evals/runner/repairs.ts]
   - id: git-worktree-runtime
-    enforcers: [src/diagnostics/doctor.ts#doctor, src/worktrees/git.ts#registeredWorktrees, src/worktrees/git.ts#repository, test/unit/diagnostics/doctor.test.ts, test/unit/worktrees/git.test.ts]
+    enforcers: [src/diagnostics/doctor.ts#doctor, src/worktrees/git.ts#registeredWorktrees, src/worktrees/git.ts#repository, src/worktrees/git.ts#repositoryBase, test/unit/diagnostics/doctor.test.ts, test/unit/worktrees/git.test.ts, test/unit/worktrees/git-joined-queries.test.ts]
   - id: delivery-runner-one-shot-correction
     enforcers: [src/runner/repair-workers.ts#RunnerRepairWorkers, src/runner/worker-stages.ts#productionLease, src/delivery/worker-context.ts#workerContextForClaim, test/unit/runner/repair-workers.test.ts, test/unit/delivery/worker-protocol.test.ts, test/evals/runner/repairs.ts, test/evals/runner/verification.ts]
   - id: delivery-parent-worker-deadline
@@ -514,7 +514,7 @@ rules:
   - id: missing-input-blocks-mutation
     enforcers: [src/flow/engine.ts#begin, src/flow/engine.ts#activeStep, src/discovery/tree.ts#discover, src/state/events.ts#replay, test/unit/flow/preflight.test.ts, test/unit/state/replay-starts.test.ts, test/unit/discovery/cache-read.test.ts, test/unit/utilities/utilities.test.ts]
   - id: external-runtime-state
-    enforcers: [src/state/paths.ts#assertExternal, src/state/paths.ts#canonicalPath, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, src/state/store.ts#transaction, test/unit/state/projection-writes.test.ts, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts, src/state/events.ts#replayState, src/state/projections.ts#replayProjections, test/unit/state/projection-replay.test.ts, src/state/store.ts#appendBasic, src/state/store.ts#publishProjectionBatch, src/state/projections.ts#replayProjectionSnapshot, test/unit/state/basic-actions-performance.test.ts]
+    enforcers: [src/state/paths.ts#assertExternal, src/state/paths.ts#canonicalPath, test/unit/state/path-suffix-performance.test.ts, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, src/state/store.ts#transaction, test/unit/state/projection-writes.test.ts, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts, src/state/events.ts#replayState, src/state/projections.ts#replayProjections, test/unit/state/projection-replay.test.ts, src/state/store.ts#appendBasic, src/state/store.ts#publishProjectionBatch, src/state/projections.ts#replayProjectionSnapshot, test/unit/state/basic-actions-performance.test.ts, src/state/paths.ts#physicalStorePath, test/unit/state/store-root-containment.test.ts]
   - id: recorded-step-skips
     enforcers: [src/flow/engine.ts#skip, test/unit/flow/engine.test.ts]
   - id: required-human-decisions

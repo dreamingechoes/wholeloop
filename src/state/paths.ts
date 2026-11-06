@@ -23,11 +23,14 @@ function canonicalPhysicalPath(path: string): string {
     while (!existsSync(ancestor)) {
       const parent = dirname(ancestor)
       if (parent === ancestor) throw new Error(`Cannot resolve store path: ${path}`)
-      suffix.unshift(basename(ancestor))
+      suffix.push(basename(ancestor))
       ancestor = parent
     }
     try {
-      return join(realpathSync(ancestor), ...suffix)
+      const physical = realpathSync(ancestor)
+      // Ancestors arrive leaf-first. Reverse once instead of shifting every earlier suffix.
+      if (suffix.length > 1) suffix.reverse()
+      return join(physical, ...suffix)
     } catch (error) {
       // Another writer can release .lock between exists and realpath. Resolve
       // the entire path again so a replacement alias cannot escape containment.
@@ -62,23 +65,44 @@ export function externalStorePath(path: string, boundary?: string, label = path)
   )
 }
 
+// Store roots whose complete ancestry this process verified while resolving them.
+// Only wl writes inside a store (ADR-0243), so an access below a verified root
+// checks the root and the components wl creates there, not the ancestry above it.
+const verifiedRoots = new Set<string>()
+const VERIFIED_ROOT_LIMIT = 4096
+
 function physicalStorePath(selected: string, boundary: string | undefined, label: string) {
   const value = canonicalPhysicalPath(selected)
   if (boundary && !inside(boundary, value)) throw new Error(`Store path escapes its root: ${label}`)
+  if (boundary && verifiedRoots.has(boundary)) {
+    // The components below the root and the root itself, where an accidental
+    // repository is likeliest; ancestors above it are checked on resolution.
+    assertNoMarkers(value, value, dirname(boundary))
+    return value
+  }
   assertPhysicalExternal(value)
+  if (!boundary) {
+    if (verifiedRoots.size >= VERIFIED_ROOT_LIMIT) verifiedRoots.clear()
+    verifiedRoots.add(value)
+  }
   return value
 }
 
 function assertPhysicalExternal(path: string): void {
-  let ancestor = canonicalPhysicalPath(path)
-  while (true) {
+  assertNoMarkers(path, canonicalPhysicalPath(path))
+}
+
+/** Refuse repository markers from `start` upward, stopping before `stop` or at the filesystem root. */
+function assertNoMarkers(label: string, start: string, stop?: string): void {
+  let ancestor = start
+  while (ancestor !== stop) {
     if (
       existsSync(join(ancestor, '.git')) ||
       (existsSync(join(ancestor, 'HEAD')) &&
         existsSync(join(ancestor, 'objects')) &&
         existsSync(join(ancestor, 'refs')))
     ) {
-      throw new Error(`Runtime state must stay outside git repositories: ${path}`)
+      throw new Error(`Runtime state must stay outside git repositories: ${label}`)
     }
     const parent = dirname(ancestor)
     if (parent === ancestor) return

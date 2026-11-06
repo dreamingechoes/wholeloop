@@ -7,7 +7,8 @@ import { codehostRepository } from '../pull-requests/codehost.js'
 import { checkDependencies } from '../slices/contract.js'
 import { ITEM_ID } from '../state/events.js'
 import { inside } from '../state/paths.js'
-import { namedBase, repository } from '../worktrees/git.js'
+import { effectEpoch, inReadObservation } from '../state/read-observation.js'
+import { repositoryBase } from '../worktrees/git.js'
 import { SOURCE_LIMIT, safeSourceText } from './input.js'
 import envelopeSchema from './schemas/envelope-v1.json' with { type: 'json' }
 import planSchema from './schemas/plan-v1.json' with { type: 'json' }
@@ -288,17 +289,38 @@ function basis(value: DeliveryBasis, source: SourceSnapshot): void {
 }
 
 /** Only preparation checks the current base; historic plans remain readable after it advances. */
+// The last successful base observation of this synchronous decision (ADR-0243).
+// Any effect this process announces, or the end of the current job, renews it.
+let observedBases: { key: string; epoch: number } | undefined
+
 export function observePlanBases(repositories: DeliveryRepository[]): void {
+  const sealed = inReadObservation(),
+    key = sealed
+      ? ''
+      : JSON.stringify(
+          repositories.map((repo) => [repo.root, repo.target, repo.base, repo.remote ?? null]),
+        )
+  if (!sealed && observedBases?.key === key && observedBases.epoch === effectEpoch()) return
+  observeBases(repositories)
+  if (sealed) return
+  const entry = { key, epoch: effectEpoch() }
+  observedBases = entry
+  queueMicrotask(() => {
+    if (observedBases === entry) observedBases = undefined
+  })
+}
+function observeBases(repositories: DeliveryRepository[]): void {
   const common = new Set<string>()
   for (const repo of repositories) {
     try {
-      const observed = repository(repo.root)
+      // Every failure below is the same refusal, so one joined identity/commit
+      // query preserves exactly the accepted set of the former five queries.
+      const observed = repositoryBase(repo.root, repo.target)
       if (observed.path !== repo.root || common.has(observed.commonDir)) throw new Error()
       common.add(observed.commonDir)
       if (repo.remote && codehostRepository(repo.root, repo.remote.name).url !== repo.remote.url)
         throw new Error()
-      const base = namedBase(repo.root, repo.target)
-      if (base.ref !== repo.target || base.sha !== repo.base) throw new Error()
+      if (observed.ref !== repo.target || observed.sha !== repo.base) throw new Error()
     } catch {
       throw new DeliveryPlanError('stale-or-missing-base')
     }

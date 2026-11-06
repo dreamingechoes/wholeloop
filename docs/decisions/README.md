@@ -251,6 +251,7 @@
 | [0240](./0240-sealed-observations-bounded-cancellation-and-drain.md) | Sealed observations, bounded cancellation and drain | Accepted | 2026-11-06 |
 | [0241](./0241-index-current-plan-relations.md) | Index current plan relations | Accepted | 2026-11-06 |
 | [0242](./0242-flush-only-committed-facts.md) | Flush only committed facts | Accepted | 2026-11-06 |
+| [0243](./0243-single-writer-store-trust-model.md) | Single-writer store trust model | Accepted | 2026-11-06 |
 
 ## Lifecycle
 

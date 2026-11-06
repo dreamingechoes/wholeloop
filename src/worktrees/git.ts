@@ -16,12 +16,31 @@ export function git(root: string, args: readonly string[], hooks?: string): stri
 }
 /** Byte-bound Git paths must be checked before UTF-8 decoding can replace invalid names. */
 export function gitBytes(root: string, args: readonly string[], hooks?: string): Buffer {
-  if (!inReadObservation()) return readGit(root, args, hooks)
+  if (!inReadObservation()) {
+    // Announce every possible Git write so observations reused within one
+    // decision are renewed after it (ADR-0243); queries are not effects.
+    if (!readOnlyGit(args)) assertObservationWritable()
+    return readGit(root, args, hooks)
+  }
   // A scoped observer cannot run even an accidentally supplied Git mutation.
   // The fixed readers use only these queries; unknown commands fail closed.
+  if (!readOnlyGit(args)) assertObservationWritable()
+  const path = resolve(root),
+    input = [...args],
+    environment = gitEnvironmentIdentity(),
+    key = JSON.stringify(['git', path, input, hooks ?? null, environment])
+  return Buffer.from(
+    observedRead(key, () => {
+      if (gitEnvironmentIdentity() !== environment) assertObservationWritable()
+      const bytes = readGit(path, input, hooks)
+      return { bytes, value: bytes }
+    }),
+  )
+}
+function readOnlyGit(args: readonly string[]): boolean {
   const command = args[0] === '-c' ? args[2] : args[0],
     query = args[0] === '-c' ? args.slice(2) : args
-  if (
+  return !(
     (args[0] === '-c' && args[1] !== 'diff.autoRefreshIndex=false') ||
     !command ||
     !(
@@ -41,18 +60,6 @@ export function gitBytes(root: string, args: readonly string[], hooks?: string):
           !query[2]?.startsWith('-')) ||
           query.join('\0') === 'config\0--local\0--no-includes\0--null\0--list'))
     )
-  )
-    assertObservationWritable()
-  const path = resolve(root),
-    input = [...args],
-    environment = gitEnvironmentIdentity(),
-    key = JSON.stringify(['git', path, input, hooks ?? null, environment])
-  return Buffer.from(
-    observedRead(key, () => {
-      if (gitEnvironmentIdentity() !== environment) assertObservationWritable()
-      const bytes = readGit(path, input, hooks)
-      return { bytes, value: bytes }
-    }),
   )
 }
 function readGit(root: string, args: readonly string[], hooks?: string): Buffer {
@@ -95,18 +102,31 @@ function readAncestor(root: string, head: string, base: string): boolean {
     throw new Error('Cannot establish branch ancestry; no cleanup is safe')
   return response.status === 0
 }
-export function repository(root: string) {
-  const path = canonicalPath(git(root, ['rev-parse', '--show-toplevel']).trim())
+/** Split one multi-query output only when every answer is a newline-terminated, newline-free line. */
+function lines(output: string, count: number): string[] | undefined {
+  const parts = output.split('\n')
+  return parts.length === count + 1 && parts[count] === '' ? parts.slice(0, count) : undefined
+}
+function repositoryFacts(root: string, toplevel: string, common: string) {
+  const path = canonicalPath(toplevel.trim())
   // Git returns a path relative to the command's cwd in a primary checkout.
   // Resolve there explicitly instead of treating output as relative to this process.
-  const commonDir = canonicalPath(
-    resolve(root, git(root, ['rev-parse', '--git-common-dir']).trim()),
-  )
+  const commonDir = canonicalPath(resolve(root, common.trim()))
   return { path, commonDir, key: createHash('sha256').update(commonDir).digest('hex').slice(0, 16) }
 }
-export function namedBase(root: string, input: string) {
+/** Both answers come from one repository discovery (ADR-0243). A path containing a
+ * newline makes the joined output ambiguous; it keeps the original separate queries. */
+export function repository(root: string) {
+  const joined = lines(git(root, ['rev-parse', '--show-toplevel', '--git-common-dir']), 2)
+  if (joined) return repositoryFacts(root, joined[0] ?? '', joined[1] ?? '')
+  const toplevel = git(root, ['rev-parse', '--show-toplevel'])
+  return repositoryFacts(root, toplevel, git(root, ['rev-parse', '--git-common-dir']))
+}
+function namedBaseInput(input: string): void {
   if (!input.trim() || input.startsWith('-') || /[\n\r\0]/.test(input))
     throw new Error('Provide a named base branch')
+}
+function namedRef(root: string, input: string): string {
   const ref = git(root, [
     'rev-parse',
     '--verify',
@@ -116,6 +136,37 @@ export function namedBase(root: string, input: string) {
   ]).trim()
   if (!/^refs\/(heads|remotes)\/.+/.test(ref) || /[\n\r]/.test(ref))
     throw new Error('Base must resolve to one named local or remote branch')
+  return ref
+}
+/**
+ * Repository identity plus a named base, for callers that accept only when the
+ * symbolic name equals the requested full ref. The commit is then peeled from
+ * that same name inside the identity query: three answers, one process. The
+ * symbolic resolution stays separate because it is a different rev-parse mode.
+ */
+export function repositoryBase(root: string, target: string) {
+  namedBaseInput(target)
+  const joined = lines(
+    git(root, [
+      'rev-parse',
+      '--show-toplevel',
+      '--git-common-dir',
+      '--verify',
+      '--end-of-options',
+      `${target}^{commit}`,
+    ]),
+    3,
+  )
+  if (!joined) return { ...repository(root), ...namedBase(root, target) }
+  return {
+    ...repositoryFacts(root, joined[0] ?? '', joined[1] ?? ''),
+    ref: namedRef(root, target),
+    sha: (joined[2] ?? '').trim(),
+  }
+}
+export function namedBase(root: string, input: string) {
+  namedBaseInput(input)
+  const ref = namedRef(root, input)
   const sha = git(root, ['rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`]).trim()
   return { ref, sha }
 }

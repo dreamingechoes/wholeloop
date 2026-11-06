@@ -73,8 +73,15 @@ export function shareReadObservation<T>(operation: () => Promise<T>) {
   return operation()
 }
 
+let effects = 0
+/** Increments before every store mutation, launch or Git write this process announces (ADR-0243). */
+export function effectEpoch(): number {
+  return effects
+}
+
 /** Store mutations and command launches must refuse before creating even a lock directory. */
 export function assertObservationWritable(): void {
+  effects++
   const scope = observations.getStore()
   if (scope) {
     scope.failed = true

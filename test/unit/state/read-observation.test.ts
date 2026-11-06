@@ -1,8 +1,17 @@
-import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { StoreFiles } from '../../../src/state/files.js'
+import { externalStorePath } from '../../../src/state/paths.js'
 import {
   groupReadResources,
   inReadObservation,
@@ -110,6 +119,37 @@ describe('one bounded independently revalidated read observation', () => {
       release()
       await expect(pending).rejects.toThrow('Read observation')
     }))
+
+  it.each(['directory', 'file', 'bare'] as const)(
+    'refuses an intermediate %s repository marker on a shared ancestor',
+    async (kind) =>
+      fixture(async (root) => {
+        const common = join(root, 'shared'),
+          markers = kind === 'bare' ? ['HEAD', 'objects', 'refs'] : ['.git']
+        mkdirSync(common)
+        await expect(
+          withReadObservation(signal(), async () => {
+            externalStorePath(join(common, 'first'), common)
+            if (kind === 'directory') mkdirSync(join(common, '.git'))
+            else if (kind === 'file')
+              writeFileSync(join(common, '.git'), 'Fixture repository marker.\n')
+            else {
+              writeFileSync(join(common, 'HEAD'), 'ref: refs/heads/main\n')
+              mkdirSync(join(common, 'objects'))
+              mkdirSync(join(common, 'refs'))
+            }
+            try {
+              externalStorePath(join(common, 'second'), common)
+            } finally {
+              // Restoration before final validation must not erase an observed refusal.
+              for (const marker of markers)
+                rmSync(join(common, marker), { recursive: true, force: true })
+            }
+          }),
+        ).rejects.toThrow('Runtime state must stay outside git repositories')
+        expect(externalStorePath(join(common, 'second'), common)).toBe(join(common, 'second'))
+      }),
+  )
 
   it('revalidates shared nested inputs once in the fresh phase', async () => {
     let reads = 0
