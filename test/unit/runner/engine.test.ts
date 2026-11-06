@@ -1,6 +1,7 @@
 import { readdirSync } from 'node:fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { journalLayout } from '../../../src/delivery/journal-layout.js'
 import * as segments from '../../../src/delivery/journal-segment.js'
 import { DeliveryRunner, type DeliveryRunnerHost } from '../../../src/runner/engine.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
@@ -91,11 +92,14 @@ describe('foreground runner refusals preserve truthful execution state', () => {
         reason: 'The explicit synthetic controller protocol is available.',
       })
       host.execute = async (context) => {
-        const leaves = readdirSync(store.files.path('delivery/journal')).filter((name) =>
-          name.endsWith('.ndjson'),
+        // Packed ranges retain filename witnesses; only active bodies are inputs.
+        const leaves = journalLayout(readdirSync(store.files.path('delivery/journal'))).map(
+          (file) => file.name,
         )
+        expect(leaves.length).toBeGreaterThan(0)
         reads.mockClear()
         const current = context.current()
+        expect(reads.mock.calls.map(([, , name]) => name)).toEqual(leaves)
         polls.push(reads.mock.calls.length / leaves.length)
         expect(current).toBe(true)
         context.started({

@@ -1,6 +1,7 @@
 import { readdirSync } from 'node:fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { journalLayout } from '../../../src/delivery/journal-layout.js'
 import * as segments from '../../../src/delivery/journal-segment.js'
 import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { authorization, envelope, fixture } from '../../support/delivery.js'
@@ -56,8 +57,8 @@ describe('private prepared foreground controller requests', () => {
         reads = vi.spyOn(segments, 'readJournalSegment')
       let lease = store.claim(prepared.digest, owner)
       const live = (expected: boolean) => {
-        const names = readdirSync(store.files.path('delivery/journal')).filter((name) =>
-          name.endsWith('.ndjson'),
+        const names = journalLayout(readdirSync(store.files.path('delivery/journal'))).map(
+          (file) => file.name,
         )
         for (const basis of [undefined, request.plan]) {
           reads.mockClear()

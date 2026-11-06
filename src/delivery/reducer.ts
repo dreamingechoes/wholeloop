@@ -63,6 +63,34 @@ const EDGES: Record<DeliveryState, readonly DeliveryState[]> = {
   blocked: [],
 }
 const ACTIVE = new Set(['claimed', 'started', 'stopping'])
+type DeliveryUnit = DeliveryProjection['units'][number]
+interface UnitSelection {
+  units: DeliveryProjection['units']
+  firstId: string
+  first: DeliveryUnit
+  index?: Map<string, DeliveryUnit>
+}
+function selectedUnit(
+  state: DeliveryProjection,
+  id: string,
+  selections: Map<string, UnitSelection>,
+) {
+  const units = state.units,
+    previous = selections.get(state.run)
+  if (previous?.units === units) {
+    if (previous.firstId === id) return previous.first
+    if (!previous.index) {
+      previous.index = new Map()
+      for (const unit of units) previous.index.set(unit.id, unit)
+    }
+    return previous.index.get(id)
+  }
+  const unit = units.find((unit) => unit.id === id)
+  // Registration owns unique unit ids and replaces this array on revision.
+  // Repeated work for one unit needs no complete index; a second id builds it.
+  if (unit) selections.set(state.run, { units, firstId: id, first: unit })
+  return unit
+}
 /**
  * The named predecessor request must hold the exact failed or blocked
  * integration, acceptance or exact owned CI observation, the run must have no effect awaiting
@@ -170,14 +198,16 @@ function control(state: DeliveryProjection, payload: ControlPayload): void {
   if (payload.outcome !== undefined) state.outcome = payload.outcome
 }
 
-/** Only registered payload/facet families participate; an unknown version never replays partially. */
-export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, DeliveryProjection> {
+/** The context owns every derived map; no projection/index is accepted from a caller. */
+function deliveryReducer() {
   const states = new Map<string, DeliveryProjection>(),
     ids = new Set<string>(),
-    attempts = new Set<string>(),
+    attempts = new Map<string, { run: string; record: AttemptRecord }>(),
     grants = new Map<string, { run: string; digest: string; terminal: boolean }>()
+  let lanes: Map<string, AttemptRecord> | undefined
+  let unitSelections: Map<string, UnitSelection> | undefined
   let previous: DeliveryEvent | undefined
-  for (const event of events) {
+  const admit = (event: DeliveryEvent) => {
     validateDeliveryEvent(event)
     if (
       ids.has(event.id) ||
@@ -185,6 +215,8 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
       event.previous !== previous?.digest
     )
       throw new DeliveryJournalError('event-order')
+  }
+  const apply = (event: DeliveryEvent) => {
     ids.add(event.id)
     previous = event
     const payload = event.payload
@@ -305,13 +337,9 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
             payload.status === 'active'
           )
             throw new DeliveryJournalError('revived-grant')
-          if (
-            payload.status === 'active' &&
-            [...states.values()].some(
-              (other) => other.run !== state?.run && other.grant?.id === payload.id,
-            )
-          )
-            throw new DeliveryJournalError('grant-bound-to-another-run')
+          // Every grant assignment enters this exact-owner map, including
+          // terminal/replaced observations; the earlier prior check is stronger
+          // than searching only grants still attached to current projections.
           state.grant = structuredClone(payload)
           grants.set(payload.id, {
             run: state.run,
@@ -333,13 +361,8 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
         case 'wholeloop/delivery-attempt-event@1': {
           if (event.actor.kind !== 'controller') throw new DeliveryJournalError('attempt-actor')
           const facet = deliveryAttempts(state)
-          const key = (record: Pick<AttemptRecord, 'unit' | 'role' | 'cell'>) =>
-            contractDigest({
-              unit: record.unit ?? null,
-              role: record.role,
-              cell: record.cell ?? null,
-            })
-          const record = facet.records.find((entry) => entry.id === payload.id)
+          const known = attempts.get(payload.id)
+          const record = known?.run === state.run ? known.record : undefined
           if (payload.action === 'claimed') {
             const budget = findBudget(state)
             if (
@@ -364,37 +387,56 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
               throw new DeliveryJournalError('attempt-admission')
             if (payload.role === 'builder' && payload.cell !== undefined)
               throw new DeliveryJournalError('builder-cell')
-            if (
-              ['planner', 'challenger'].includes(payload.role)
-                ? payload.unit !== undefined
-                : !state.units.some((unit) => unit.id === payload.unit)
-            )
+            const planning = payload.role === 'planner' || payload.role === 'challenger'
+            let unit: DeliveryUnit | undefined
+            if (!planning && payload.unit !== undefined) {
+              if (state.units.length < 2)
+                unit = state.units[0]?.id === payload.unit ? state.units[0] : undefined
+              else {
+                unitSelections ??= new Map()
+                unit = selectedUnit(state, payload.unit, unitSelections)
+              }
+            }
+            if (planning ? payload.unit !== undefined : !unit)
               throw new DeliveryJournalError('attempt-unit')
-            const unit = state.units.find((unit) => unit.id === payload.unit)
             if (
               (payload.role === 'builder' && unit?.role === 'research') ||
               (payload.role === 'researcher' && unit?.role !== 'research')
             )
               throw new DeliveryJournalError('attempt-role')
-            const siblings = facet.records.filter((entry) => key(entry) === key(payload))
+            // Generations strictly increase and terminal attempts cannot revive.
+            // Only this lane's latest claim can be active. Keep lanes across plan
+            // revisions, and separate runs/roles/cells without delimiter aliases.
+            const lane = JSON.stringify([
+              state.run,
+              payload.unit ?? null,
+              payload.role,
+              payload.cell ?? null,
+            ])
+            const latest = lanes?.get(lane)
             if (
-              siblings.some((entry) => ACTIVE.has(entry.state)) ||
-              payload.generation !== Math.max(0, ...siblings.map((entry) => entry.generation)) + 1
+              (latest && ACTIVE.has(latest.state)) ||
+              payload.generation !== (latest?.generation ?? 0) + 1
             )
               throw new DeliveryJournalError('attempt-generation')
             const { schema: _schema, action: _action, ...identity } = payload
-            facet.records.push({
+            const claimed: AttemptRecord = {
               ...structuredClone(identity),
               state: 'claimed',
               observedAt: event.ts,
-            })
-            attempts.add(payload.id)
+            }
+            facet.records.push(claimed)
+            attempts.set(payload.id, { run: state.run, record: claimed })
+            lanes ??= new Map()
+            lanes.set(lane, claimed)
           } else {
             if (
               !record ||
               record.generation !== payload.generation ||
               record.basis !== payload.basis ||
-              key(record) !== key(payload)
+              record.unit !== payload.unit ||
+              record.role !== payload.role ||
+              record.cell !== payload.cell
             )
               throw new DeliveryJournalError('attempt-identity')
             const allowed: Record<Exclude<typeof record.state, 'heartbeat'>, string[]> = {
@@ -458,6 +500,59 @@ export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, De
     state.clockWentBackwards ||= event.ts < state.maxObservedAt
     if (event.ts > state.maxObservedAt) state.maxObservedAt = event.ts
   }
-  for (const state of states.values()) validateDeliveryProjection(state)
-  return states
+  return {
+    admit,
+    apply,
+    validate() {
+      for (const state of states.values()) validateDeliveryProjection(state)
+      return states
+    },
+    snapshot: () => structuredClone(states),
+  }
+}
+
+/** Only registered payload/facet families participate; an unknown version never replays partially. */
+export function replayDelivery(events: readonly DeliveryEvent[]): Map<string, DeliveryProjection> {
+  const reducer = deliveryReducer()
+  for (const event of events) {
+    reducer.admit(event)
+    reducer.apply(event)
+  }
+  return reducer.validate()
+}
+
+/** Independent event ownership and cloned views keep incremental facts private. */
+export function deliveryReplay(events: readonly DeliveryEvent[]) {
+  const successful = structuredClone([...events])
+  let reducer = deliveryReducer()
+  for (const event of successful) {
+    reducer.admit(event)
+    reducer.apply(event)
+  }
+  reducer.validate()
+  return {
+    append(event: DeliveryEvent) {
+      const owned = structuredClone(event)
+      // Schema/digest/order refusal has not touched any private replay fact.
+      // Restoring the complete prefix is required only after mutation begins.
+      reducer.admit(owned)
+      try {
+        reducer.apply(owned)
+        // Generic callbacks still observe every append's full projection checks.
+        reducer.validate()
+      } catch (error) {
+        // A reducer can mutate before refusing. Restore only on failure, using
+        // successful owned events; a caught refusal must not poison later work.
+        reducer = deliveryReducer()
+        for (const prior of successful) {
+          reducer.admit(prior)
+          reducer.apply(prior)
+        }
+        reducer.validate()
+        throw error
+      }
+      successful.push(owned)
+    },
+    snapshot: () => reducer.snapshot(),
+  }
 }

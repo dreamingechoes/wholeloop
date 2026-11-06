@@ -4,6 +4,7 @@ import { loadConfig } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { deliveryBudgetClock } from '../delivery/budget-policy.js'
+import { journalLayout } from '../delivery/journal-layout.js'
 import { configuredCheckpoints } from '../impact/schedule.js'
 import { deliveryRunner } from '../runner/events.js'
 import { RunnerHumanDecisions } from '../runner/human-decisions.js'
@@ -21,8 +22,31 @@ export interface OverviewReadOptions {
   userFile?: string
 }
 
-/** Bound canonical input before legacy readers allocate complete journals. */
-function journalBounds(store: StateStore, relative: string, pattern: RegExp, perFile: number) {
+const STATE_SEGMENT = /^\d{4}-\d{2}\.ndjson$/
+function* stateSegments(names: readonly string[]) {
+  for (const name of names) {
+    if (!name.endsWith('.ndjson')) continue
+    if (!STATE_SEGMENT.test(name)) throw new OverviewError('store-unreadable')
+    yield name
+  }
+}
+function* deliverySegments(names: readonly string[]) {
+  if (names.length > 100000) {
+    let count = 0
+    for (const name of names)
+      if (name.endsWith('.ndjson') && ++count > 100000) throw new OverviewError('store-unreadable')
+  }
+  // Retained names witness the active ranges; their superseded bodies are not input.
+  // The journal reader still verifies every witness digest against current active bytes.
+  for (const file of journalLayout(names)) yield file.name
+}
+/** Bound canonical active inputs before readers allocate complete journals. */
+function journalBounds(
+  store: StateStore,
+  relative: string,
+  select: (names: readonly string[]) => Iterable<string>,
+  perFile: number,
+) {
   const directory = join(store.files.root, relative)
   if (store.files.path(relative) !== directory) throw new OverviewError('store-unreadable')
   if (!existsSync(directory)) return
@@ -30,9 +54,8 @@ function journalBounds(store: StateStore, relative: string, pattern: RegExp, per
   if (!parent.isDirectory() || parent.isSymbolicLink()) throw new OverviewError('store-unreadable')
   let total = 0,
     count = 0
-  for (const name of readdirSync(directory)) {
-    if (!name.endsWith('.ndjson')) continue
-    if (!pattern.test(name) || ++count > 100000) throw new OverviewError('store-unreadable')
+  for (const name of select(readdirSync(directory))) {
+    if (++count > 100000) throw new OverviewError('store-unreadable')
     const path = join(directory, name)
     if (store.files.path(`${relative}/${name}`) !== path)
       throw new OverviewError('store-unreadable')
@@ -43,7 +66,7 @@ function journalBounds(store: StateStore, relative: string, pattern: RegExp, per
   }
 }
 function stateJournal(store: StateStore) {
-  journalBounds(store, 'journal', /^\d{4}-\d{2}\.ndjson$/, 64 * 1024 * 1024)
+  journalBounds(store, 'journal', stateSegments, 64 * 1024 * 1024)
   const events = store.events()
   if (events.length > 100000) throw new OverviewError('store-unreadable')
   return events
@@ -65,7 +88,7 @@ export function readOverview(options: OverviewReadOptions) {
       journal = runner.lifecycle.journal,
       locked = () => existsSync(store.files.path('.lock')),
       snapshot = () => {
-        journalBounds(store, 'delivery/journal', /^\d{16}\.ndjson$/, 8 * 1024 * 1024)
+        journalBounds(store, 'delivery/journal', deliverySegments, 8 * 1024 * 1024)
         const value = journal.snapshot()
         if (value.events.length > 100000) throw new OverviewError('store-unreadable')
         return value

@@ -244,7 +244,7 @@ export function deliveryTimestamp(value: string): void {
   if (!Number.isFinite(Date.parse(value)) || new Date(value).toISOString() !== value)
     throw new DeliveryJournalError('invalid-time')
 }
-export function validateDeliveryEvent(value: unknown): asserts value is DeliveryEvent {
+function checkedEventFields(value: unknown): DeliveryEvent {
   if (!isObject(value) || value.schema !== 'wholeloop/delivery-event@1')
     throw new DeliveryJournalError('unsupported-event-version')
   const payload = value.payload
@@ -270,10 +270,17 @@ export function validateDeliveryEvent(value: unknown): asserts value is Delivery
   )
     throw new DeliveryJournalError('invalid-attribution')
   deliveryTimestamp(event.ts)
-  const { digest, ...binding } = event
-  if (contractDigest(binding) !== digest) throw new DeliveryJournalError('event-digest')
+  return event
+}
+function eventPredecessor(event: DeliveryEvent): void {
   if ((event.sequence === 1) !== (event.previous === undefined))
     throw new DeliveryJournalError('event-predecessor')
+}
+export function validateDeliveryEvent(value: unknown): asserts value is DeliveryEvent {
+  const event = checkedEventFields(value)
+  const { digest, ...binding } = event
+  if (contractDigest(binding) !== digest) throw new DeliveryJournalError('event-digest')
+  eventPredecessor(event)
 }
 export function deliveryEvent(
   run: string,
@@ -308,7 +315,10 @@ export function deliveryEvent(
     payload: structuredClone(payload),
   }
   const event = { ...value, digest: contractDigest(value) }
-  validateDeliveryEvent(event)
+  // Only this constructor owns the complete fresh binding and its new digest.
+  // External or later-mutated events always take the full public digest check.
+  checkedEventFields(event)
+  eventPredecessor(event)
   return event
 }
 

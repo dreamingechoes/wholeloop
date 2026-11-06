@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { journalLayout } from '../../../src/delivery/journal-layout.js'
 import { readJournalSegment } from '../../../src/delivery/journal-segment.js'
 import { DeliveryLifecycle } from '../../../src/delivery/lifecycle.js'
 import { withReadObservation } from '../../../src/state/read-observation.js'
@@ -25,7 +26,7 @@ describe('shared exact-byte journal observations', () => {
           issued = lifecycle.authority.authorize(authorization(plan, prepared.digest))
         const original = lifecycle.track({ run: plan.run, revision: 1, grant: issued.grant.id }),
           directory = lifecycle.journal.files.path('delivery/journal'),
-          names = readdirSync(directory).filter((name) => name.endsWith('.ndjson'))
+          names = journalLayout(readdirSync(directory)).map((file) => file.name)
         vi.mocked(readJournalSegment).mockClear()
         let release: () => void = () => undefined
         const gap = new Promise<void>((resolve) => {

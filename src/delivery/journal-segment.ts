@@ -9,8 +9,9 @@ import {
 } from 'node:fs'
 import { join } from 'node:path'
 import { DeliveryJournalError } from './events.js'
+import { JOURNAL_FILE_BYTES, journalFile } from './journal-layout.js'
 
-const SEGMENT_LIMIT = 8 * 1024 * 1024
+const SEGMENT_LIMIT = JOURNAL_FILE_BYTES
 
 /** The caller pins this canonical external directory with an open descriptor for its observation. */
 export function readJournalSegment(
@@ -29,7 +30,7 @@ export function readJournalSegment(
       throw new DeliveryJournalError('changed-journal-directory')
   }
   try {
-    if (!/^\d{16}\.ndjson$/.test(name)) throw new DeliveryJournalError('unreadable-journal-segment')
+    if (!journalFile(name)) throw new DeliveryJournalError('unreadable-journal-segment')
     parent()
     const selected = join(directory, name),
       leaf = lstatSync(selected, { bigint: true })

@@ -1,15 +1,15 @@
 import { readdirSync, readFileSync, statSync, utimesSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
+import { journalLayout } from '../../../src/delivery/journal-layout.js'
 import { DeliveryLifecycle } from '../../../src/delivery/lifecycle.js'
-import { replayDelivery } from '../../../src/delivery/reducer.js'
+import { deliveryReplay } from '../../../src/delivery/reducer.js'
 import { authorization, fixture } from '../../support/delivery.js'
 
-// The reducer keeps its real behavior; counting calls is the only observable
-// difference between reusing an identical replay and replaying again.
+// Count the journal's actual replay constructor, preserving its full behavior.
 vi.mock('../../../src/delivery/reducer.js', async (original) => {
   const reducer = await original<typeof import('../../../src/delivery/reducer.js')>()
-  return { ...reducer, replayDelivery: vi.fn(reducer.replayDelivery) }
+  return { ...reducer, deliveryReplay: vi.fn(reducer.deliveryReplay) }
 })
 
 const at = '2026-10-24T10:00:00.000Z'
@@ -24,10 +24,10 @@ const tracked = (context: Parameters<Parameters<typeof fixture>[0]>[0]) => {
 }
 
 describe('journal replay reuse bound to identical current segment bytes (RUN-02)', () => {
-  it('reuses a replay for repeated identical reads and replays after a committed change', () =>
+  it('reuses owned committed facts but replays after current input bytes change', () =>
     fixture((context) => {
       const { lifecycle, original } = tracked(context),
-        replays = vi.mocked(replayDelivery)
+        replays = vi.mocked(deliveryReplay)
       lifecycle.journal.snapshot()
       replays.mockClear()
       for (let index = 0; index < 5; index++)
@@ -36,7 +36,22 @@ describe('journal replay reuse bound to identical current segment bytes (RUN-02)
         ).toEqual(original)
       expect(replays).not.toHaveBeenCalled()
       lifecycle.transition(original.run, { to: 'queued', reason: 'Commit a later transition.' })
-      expect(replays).toHaveBeenCalled()
+      // An owned append already validates the new projection; a full prefix
+      // replay would duplicate that work. Its committed state must still appear.
+      const committed = lifecycle.journal.get(original.run)
+      expect(committed.state).toBe('queued')
+      expect(replays).not.toHaveBeenCalled()
+      const directory = lifecycle.journal.files.path('delivery/journal'),
+        active = journalLayout(readdirSync(directory))[0]
+      if (!active) throw new Error('Current active journal input required')
+      const path = join(directory, active.name),
+        bytes = readFileSync(path, 'utf8'),
+        changed = bytes.replace('"sequence":', '"sequence" :')
+      expect(changed).not.toBe(bytes)
+      // Valid JSON whitespace preserves events, but must invalidate byte reuse.
+      writeFileSync(path, changed)
+      expect(lifecycle.journal.get(original.run)).toEqual(committed)
+      expect(replays).toHaveBeenCalledTimes(1)
       replays.mockClear()
       expect(lifecycle.journal.get(original.run).state).toBe('queued')
       expect(replays).not.toHaveBeenCalled()

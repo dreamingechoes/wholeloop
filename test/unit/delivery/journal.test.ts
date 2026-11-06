@@ -25,6 +25,7 @@ import {
   validateDeliveryEvent,
 } from '../../../src/delivery/events.js'
 import { DeliveryJournal } from '../../../src/delivery/journal.js'
+import { journalLayout } from '../../../src/delivery/journal-layout.js'
 import { DeliveryLifecycle } from '../../../src/delivery/lifecycle.js'
 import { deliveryAttempts, replayDelivery } from '../../../src/delivery/reducer.js'
 import { pullRequestPlans } from '../../../src/pull-requests/contracts.js'
@@ -239,7 +240,7 @@ describe('external journal segments, projections and explicit recovery', () => {
           directory = journal.files.path('delivery/journal')
         expect(journal.get(plan.run)).toEqual(original)
         if (kind === 'segment') {
-          const name = readdirSync(directory).sort()[0]
+          const name = journalLayout(readdirSync(directory))[0]?.name
           if (!name) throw new Error('Original segment required')
           const path = join(directory, name),
             retained = join(directory, 'retained-original')
@@ -276,7 +277,7 @@ describe('external journal segments, projections and explicit recovery', () => {
       })
       expect(journal.snapshot().states.get(plan.run)?.state).toBe('queued')
       const directory = journal.files.path('delivery/journal'),
-        segment = readdirSync(directory).sort()[0]
+        segment = journalLayout(readdirSync(directory))[0]?.name
       if (!segment) throw new Error('Original immutable segment required')
       writeFileSync(join(directory, segment), '{}\n')
       for (const read of [

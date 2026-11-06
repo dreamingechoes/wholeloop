@@ -243,7 +243,15 @@ export class DeliveryBudgets {
   /** Share this fresh read within one controller check, never across polls.
    * Replaying the same journal repeatedly delays cancellation under growing histories. */
   observation(run: string) {
-    const state = this.lifecycle.journal.get(run),
+    return this.policyObservation(this.lifecycle.journal.get(run))
+  }
+  /** Report history and policy share a private journal read, never caller-supplied facts. */
+  reportObservation(run: string) {
+    const { state, events } = this.lifecycle.journal.runSnapshot(run)
+    return { ...this.policyObservation(state), events }
+  }
+  private policyObservation(state: DeliveryProjection) {
+    const run = state.run,
       facet = findBudget(state) ?? emptyBudget()
     const authority = state.grant ? this.lifecycle.authority.inspect(state.grant.id) : null
     const computed = authority

@@ -129,14 +129,10 @@ export function nextActions(
 
 /** Read-only: replays the journal and changes nothing. */
 export function deliveryReport(root: string | undefined, run: string, now?: () => string) {
-  const lifecycle = new DeliveryLifecycle(root, now),
-    state = lifecycle.journal.get(runId(run))
-  return projectDeliveryReport(
-    state,
-    lifecycle.journal.events(),
-    state.grant ? lifecycle.authority.inspect(state.grant.id) : undefined,
-    new DeliveryBudgets(root, now).inspect(run).problem,
+  const { state, events, authority, report } = new DeliveryBudgets(root, now).reportObservation(
+    runId(run),
   )
+  return projectDeliveryReport(state, events, authority ?? undefined, report.problem)
 }
 
 /** Project one exact validated snapshot without additional reads or mutations. */
@@ -223,8 +219,9 @@ const SAFE = /^[a-z][a-z0-9-]{0,63}$/
 /** Redacted by construction: categories, digests and enumerated states only. */
 export function deliveryDiagnostics(root: string | undefined, run: string) {
   const lifecycle = new DeliveryLifecycle(root),
-    state = lifecycle.journal.get(runId(run)),
-    events = lifecycle.journal.events().filter((event) => event.run === run),
+    snapshot = lifecycle.journal.runSnapshot(runId(run)),
+    state = snapshot.state,
+    events = snapshot.events.filter((event) => event.run === run),
     category = (event: DeliveryEvent) => {
       const payload = event.payload as unknown as Record<string, unknown>,
         kind = String(payload.schema ?? '').replace(/^wholeloop\/delivery-|@1$/g, ''),

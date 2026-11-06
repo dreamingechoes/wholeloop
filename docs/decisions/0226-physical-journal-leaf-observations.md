@@ -33,4 +33,6 @@ Actual macOS controls cover binary/empty leaves, invalid selections, alias/paren
 
 Twenty repeated queries of the same retained store fall from a 23.125ms median to 5.764ms with the identical state digest. This is one local read benchmark, not a complete workflow, model, platform-wide speedup or prompt baseline. Current full gates and a fresh unmodified end-to-end rehearsal remain required; preserve every earlier failed report.
 
+[ADR-0239](./0239-witnessed-journal-ranges-and-owned-incremental-replay.md) later extends the filename/persistence contract with digest-witnessed ranges while retaining these physical guards. It does not rewrite earlier committed files or silently retire legacy basenames; its rejected unbound prototype demonstrates why range naming alone is insufficient.
+
 [◀ Decisions index](./README.md)
