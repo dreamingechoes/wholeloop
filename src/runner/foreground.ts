@@ -1,3 +1,4 @@
+import { lstatSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { DeliveryRunner, type DeliveryRunnerHost } from './engine.js'
@@ -49,7 +50,9 @@ export class OwnedForegroundRunner {
         record.ownership === 'active'
       ) {
         const hasIntent =
-            this.store.files.read(`${owner.manager.relative}/intent.json`) !== undefined,
+            lstatSync(this.store.files.path(`${owner.manager.relative}/intent.json`), {
+              throwIfNoEntry: false,
+            }) !== undefined,
           observed = invoked && hasIntent ? owner.observe() : undefined
         if (
           !invoked ||

@@ -10,6 +10,7 @@ import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { prepareReviewInput } from '../review/input.js'
 import { itemId, replay } from '../state/events.js'
+import { shareReadObservation } from '../state/read-observation.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerGitStages } from './git-stages.js'
@@ -422,8 +423,21 @@ export class RunnerReviewStages {
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,
   ): Promise<RunnerStageObservation> {
-    const state = this.read(request, record),
-      calls = new RunnerNativeScope(this.store.files, record.invocation).inspect(),
+    const observed = await shareReadObservation(async () => {
+      const state = this.read(request, record)
+      // Only a sealed round is wholly read-only. A missing final decision keeps
+      // its original recovery path and rereads after this observation closes.
+      if (state && !state.round.decision) return undefined
+      return this.observe(request, record, state)
+    })
+    return observed ?? this.observe(request, record, this.read(request, record))
+  }
+  private async observe(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    state: ReturnType<RunnerReviewStages['read']>,
+  ): Promise<RunnerStageObservation> {
+    const calls = new RunnerNativeScope(this.store.files, record.invocation).inspect(),
       closed = calls.every((call) =>
         ['stopped', 'not-started'].includes(call.observed.invocationState),
       ),

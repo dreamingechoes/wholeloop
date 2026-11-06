@@ -7,6 +7,7 @@ import { validateDeliveryShape } from '../delivery/plan.js'
 import { processPresence } from '../environment/operations.js'
 import { workerGroupMember } from '../fanout/posix.js'
 import { canonicalPath } from '../state/paths.js'
+import { cancellationNonce, writeCancellationRequest } from './cancellation.js'
 import { type ManagedProcessObservation, ManagedRunnerProcess } from './native-process.js'
 import { DeliveryRunnerError } from './route.js'
 import schema from './schemas/foreground-invocation-v1.json' with { type: 'json' }
@@ -131,27 +132,17 @@ export class ForegroundOwner {
   }
   current(dispatch = false, draining = false): boolean {
     try {
-      const record = this.read(),
-        cancel = this.store.files.read(`${this.path}/cancel.json`)
-      if (!record || (cancel && JSON.parse(cancel).nonce === record.nonce)) return false
-      if (this.store.current(this.lease, dispatch, false)) return true
+      const record = this.read()
+      if (
+        !record ||
+        cancellationNonce(this.store.files, `${this.path}/cancel.json`) === record.nonce
+      )
+        return false
       // Releasing dispatch must not truncate the controller's final pipe drain.
       // This only keeps the already registered original group alive, never admits work.
-      if (!draining || dispatch) return false
-      const request = this.store.get(this.lease.request),
-        state = this.store.lifecycle.journal.get(request.run),
-        controller = this.store.record(this.lease.request),
-        grant = this.store.lifecycle.authority.inspect(request.grant)
-      return (
-        controller.ownership === 'released' &&
-        controller.owner?.invocation === this.invocation &&
-        controller.controller === this.lease.controller &&
-        controller.generation === this.lease.generation &&
-        state.basis.digest === controller.basis &&
-        state.grant?.digest === grant.digest &&
-        grant.status === 'active' &&
-        !this.store.budgets.inspect(request.run).problem
-      )
+      return draining && !dispatch
+        ? this.store.currentForDrain(this.lease, this.invocation)
+        : this.store.current(this.lease, dispatch, false)
     } catch {
       return false
     }
@@ -196,7 +187,7 @@ export class ForegroundOwner {
     const record = this.read()
     if (!record) throw new DeliveryRunnerError('foreground-owner-unavailable')
     // Fence a not-yet-started original parent before asking any live wrapper to cancel.
-    this.store.files.atomic(`${this.path}/cancel.json`, JSON.stringify({ nonce: record.nonce }))
+    writeCancellationRequest(this.store.files, `${this.path}/cancel.json`, record.nonce)
     if (existsSync(this.store.files.path(`${this.manager.relative}/intent.json`)))
       this.manager.requestCancellation()
   }

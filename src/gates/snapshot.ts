@@ -1,20 +1,68 @@
 import { createHash } from 'node:crypto'
 import { lstatSync, readFileSync, readlinkSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { readSourceBytes } from '../delivery/input.js'
-import { git } from '../worktrees/git.js'
+import {
+  assertObservationWritable,
+  inReadObservation,
+  observedRead,
+} from '../state/read-observation.js'
+import { git, gitEnvironmentIdentity } from '../worktrees/git.js'
 
 export interface WorkspaceSnapshot {
   digest: string
   head: string
   branch: string
 }
+interface SnapshotBounds {
+  maxFileBytes: number
+  maxBytes: number
+  maxFiles: number
+  denySymlinks: boolean
+}
+const validLimit = (value: number) => Number.isSafeInteger(value) && value >= 0
 
 /** Hash bytes and index entries, never copy project files (or credentials) into state. */
-export function workspaceSnapshot(
-  root: string,
-  bounds?: { maxFileBytes: number; maxBytes: number; maxFiles: number; denySymlinks: boolean },
-): WorkspaceSnapshot {
+export function workspaceSnapshot(root: string, bounds?: SnapshotBounds): WorkspaceSnapshot {
+  if (!inReadObservation()) return readWorkspaceSnapshot(root, bounds)
+  // Only fixed observers share a capture, then rehash before releasing their verdict.
+  // Own policy limits and bind the Git environment so later calls cannot borrow a weaker proof.
+  const limits = bounds
+    ? {
+        maxFileBytes: bounds.maxFileBytes,
+        maxBytes: bounds.maxBytes,
+        maxFiles: bounds.maxFiles,
+        denySymlinks: bounds.denySymlinks,
+      }
+    : undefined
+  // Malformed bounds keep their original physical refusal path; JSON keys must not
+  // collapse NaN/Infinity/undefined into an otherwise shareable policy input.
+  if (
+    limits &&
+    (!validLimit(limits.maxFileBytes) ||
+      !validLimit(limits.maxBytes) ||
+      !validLimit(limits.maxFiles) ||
+      typeof limits.denySymlinks !== 'boolean')
+  )
+    return readWorkspaceSnapshot(root, bounds)
+  const path = resolve(root),
+    environment = gitEnvironmentIdentity(),
+    key = JSON.stringify(['workspace-snapshot', path, limits ?? null, environment])
+  return {
+    ...observedRead(
+      key,
+      () => {
+        if (gitEnvironmentIdentity() !== environment) assertObservationWritable()
+        const value = readWorkspaceSnapshot(path, limits)
+        return { bytes: Buffer.from(JSON.stringify(value)), value }
+      },
+      `workspace:${path}`,
+    ),
+  }
+}
+
+/** Every tracked/untracked path, mode, link target and byte still feeds the same digest. */
+function readWorkspaceSnapshot(root: string, bounds?: SnapshotBounds): WorkspaceSnapshot {
   const head = git(root, ['rev-parse', 'HEAD']).trim()
   const branch = git(root, ['branch', '--show-current']).trim()
   const hash = createHash('sha256')

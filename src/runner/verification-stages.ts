@@ -12,6 +12,7 @@ import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { itemId, replay } from '../state/events.js'
+import { inReadObservation, shareReadObservation } from '../state/read-observation.js'
 import {
   type ContractGateInput,
   contractGateInput,
@@ -742,11 +743,58 @@ export class RunnerVerificationStages {
     request: Readonly<RunnerRequest>,
     record: Readonly<RunnerStageRecord>,
   ): Promise<RunnerStageObservation> {
+    const observed = await shareReadObservation(async () => {
+      const attestation = record.id.startsWith('reverification:')
+        ? this.attested(request, record)
+        : undefined
+      if (attestation) {
+        try {
+          const original = this.predecessors(request, record),
+            state = this.read(request, original)
+          if (state && !this.sealed(state)) return undefined
+        } catch {
+          // Match the existing attestation's unavailable result. Never retry a
+          // damaged predecessor or borrow a different original verification.
+          return this.attestationObservation(request, record, attestation, false)
+        }
+        return this.inspectAttestation(request, record, attestation)
+      }
+      const state = this.read(request, record)
+      if (state && !this.sealed(state)) return undefined
+      return this.observe(request, record, state)
+    })
+    return observed ?? this.inspectOriginal(request, record)
+  }
+  private sealed(state: NonNullable<ReturnType<RunnerVerificationStages['read']>>) {
+    return (
+      !!state.round.decision &&
+      state.round.results.some((result) => result.unit === 'suite') &&
+      state.engine.store
+        .events()
+        .some(
+          (event) =>
+            event.type === 'verify.suite-finished' &&
+            event.subject === state.binding.subject &&
+            event.data.run === state.binding.run &&
+            event.data.round === state.binding.round,
+        )
+    )
+  }
+  private async inspectOriginal(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+  ): Promise<RunnerStageObservation> {
     const attestation = record.id.startsWith('reverification:')
       ? this.attested(request, record)
       : undefined
     if (attestation) return this.inspectAttestation(request, record, attestation)
-    let state = this.read(request, record)
+    return this.observe(request, record, this.read(request, record))
+  }
+  private async observe(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    state: ReturnType<RunnerVerificationStages['read']>,
+  ): Promise<RunnerStageObservation> {
     const retained = this.continuation(request, record),
       phase = retained?.next ? contractDigest(retained.next.plan) : undefined
     if (retained && state?.binding.gate !== phase)
@@ -766,9 +814,9 @@ export class RunnerVerificationStages {
           })
         : undefined,
       ownedClosed = closed && suite?.invocationState === 'stopped'
-    // Suite recovery may have restored its original journal submission. Read
-    // that committed round before auditing it; stale projections are not facts.
-    if (state) state = this.read(request, record)
+    // Recovery outside a read scope may restore the original submission. Inside
+    // the scope writes are forbidden and its captured bytes are revalidated.
+    if (state && !inReadObservation()) state = this.read(request, record)
     let passed = false,
       failed = false,
       audited = false,
@@ -915,6 +963,14 @@ export class RunnerVerificationStages {
     } catch {
       passed = false
     }
+    return this.attestationObservation(request, record, attestation, passed)
+  }
+  private attestationObservation(
+    request: Readonly<RunnerRequest>,
+    record: Readonly<RunnerStageRecord>,
+    attestation: VerificationAttestation,
+    passed: boolean,
+  ): RunnerStageObservation {
     return {
       schema: 'wholeloop/delivery-runner-stage-observation@1',
       request: contractDigest(request),

@@ -9,11 +9,15 @@ import { operationWrapper } from '../fanout/operation-wrapper.js'
 import { type ProcessResult, unmanagedWorkerProcess } from '../fanout/process.js'
 import type { StoreFiles } from '../state/files.js'
 import { assertObservationWritable, groupReadResources } from '../state/read-observation.js'
+import { NATIVE_CANCELLATION_READER, writeCancellationRequest } from './cancellation.js'
 import { DeliveryRunnerError } from './route.js'
 import outcomeSchema from './schemas/process-outcome-v1.json' with { type: 'json' }
 
 const NATIVE_WRAPPER = operationWrapper('wholeloop/delivery-runner-operation-outcome@1')
-  .replace('existsSync, openSync', 'existsSync, readFileSync, openSync')
+  .replace(
+    'existsSync, openSync',
+    'existsSync, constants, fstatSync, lstatSync, readSync, openSync',
+  )
   .replaceAll('existsSync(request.cancel)', 'cancellationRequested()')
   .replace(
     'request = JSON.parse(text)',
@@ -24,10 +28,7 @@ const NATIVE_WRAPPER = operationWrapper('wholeloop/delivery-runner-operation-out
   )
   .replace(
     "process.on('SIGTERM'",
-    `const cancellationRequested = () => {
-  try { return JSON.parse(readFileSync(request.cancel, 'utf8')).nonce === request.nonce }
-  catch { return false }
-}
+    `${NATIVE_CANCELLATION_READER}
 // A dead controller's broken pipe cannot kill the owned client or prevent its close receipt.
 for (const [sink, source] of [[process.stdout, 'stdout'], [process.stderr, 'stderr']]) {
   sink.on('error', error => {
@@ -120,7 +121,7 @@ export class ManagedRunnerProcess {
       this.files.atomic(`${this.relative}/intent.json`, JSON.stringify(intent))
     })
     const cancel = () =>
-        this.files.atomic(`${this.relative}/cancel.json`, JSON.stringify({ nonce: intent.nonce })),
+        writeCancellationRequest(this.files, `${this.relative}/cancel.json`, intent.nonce),
       watch = setInterval(() => {
         if (!options.current()) cancel()
       }, 100)
@@ -185,6 +186,7 @@ export class ManagedRunnerProcess {
     }
   }
   requestCancellation(): void {
+    assertObservationWritable()
     const intent = this.read('intent')
     if (!intent || intent.invocation !== this.invocation || typeof intent.nonce !== 'string')
       throw new DeliveryRunnerError('unknown-native-intent')
@@ -192,7 +194,7 @@ export class ManagedRunnerProcess {
     if (started && (started.nonce !== intent.nonce || started.intent !== contractDigest(intent)))
       throw new DeliveryRunnerError('changed-native-registration')
     // This file is only a request. The original live wrapper checks it and owns any signal it sends.
-    this.files.atomic(`${this.relative}/cancel.json`, JSON.stringify({ nonce: intent.nonce }))
+    writeCancellationRequest(this.files, `${this.relative}/cancel.json`, intent.nonce)
   }
   static observeAll(
     files: StoreFiles,

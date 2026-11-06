@@ -7,6 +7,9 @@ import {
   inReadObservation,
   observedRead,
 } from '../state/read-observation.js'
+import { gitEnvironmentIdentity } from './git-environment.js'
+
+export { gitEnvironmentIdentity } from './git-environment.js'
 
 export function git(root: string, args: readonly string[], hooks?: string): string {
   return gitBytes(root, args, hooks).toString('utf8')
@@ -42,20 +45,15 @@ export function gitBytes(root: string, args: readonly string[], hooks?: string):
     assertObservationWritable()
   const path = resolve(root),
     input = [...args],
-    environment = environmentIdentity(),
+    environment = gitEnvironmentIdentity(),
     key = JSON.stringify(['git', path, input, hooks ?? null, environment])
   return Buffer.from(
     observedRead(key, () => {
-      if (environmentIdentity() !== environment) assertObservationWritable()
+      if (gitEnvironmentIdentity() !== environment) assertObservationWritable()
       const bytes = readGit(path, input, hooks)
       return { bytes, value: bytes }
     }),
   )
-}
-function environmentIdentity() {
-  return createHash('sha256')
-    .update(JSON.stringify(Object.entries(process.env).sort(([a], [b]) => a.localeCompare(b))))
-    .digest('hex')
 }
 function readGit(root: string, args: readonly string[], hooks?: string): Buffer {
   const response = spawnSync(
@@ -78,9 +76,9 @@ function readGit(root: string, args: readonly string[], hooks?: string): Buffer 
 export function ancestor(root: string, head: string, base: string): boolean {
   if (!inReadObservation()) return readAncestor(root, head, base)
   const path = resolve(root),
-    environment = environmentIdentity(),
+    environment = gitEnvironmentIdentity(),
     value = observedRead(JSON.stringify(['ancestor', path, head, base, environment]), () => {
-      if (environmentIdentity() !== environment) assertObservationWritable()
+      if (gitEnvironmentIdentity() !== environment) assertObservationWritable()
       const result = readAncestor(path, head, base)
       return { bytes: Buffer.from([Number(result)]), value: result }
     })

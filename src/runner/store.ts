@@ -227,7 +227,12 @@ export class RunnerStore {
     if (!record) throw new DeliveryRunnerError('unprepared-runner')
     return record
   }
-  private currentState(lease: RunnerLease, dispatch: boolean, observeBases: boolean) {
+  private currentState(
+    lease: RunnerLease,
+    dispatch: boolean,
+    observeBases: boolean,
+    drainingInvocation?: string,
+  ) {
     const request = this.get(lease.request),
       context = observeBases ? this.basis(request) : undefined,
       { state, authority, report } = this.budgets.observation(request.run),
@@ -241,7 +246,11 @@ export class RunnerStore {
       state.grant?.digest !== authority.digest ||
       record.controller !== lease.controller ||
       record.generation !== lease.generation ||
-      record.ownership !== 'active' ||
+      (record.ownership !== 'active' &&
+        (dispatch ||
+          drainingInvocation === undefined ||
+          record.ownership !== 'released' ||
+          record.owner?.invocation !== drainingInvocation)) ||
       (dispatch && !['queued', 'running'].includes(state.state)) ||
       report.problem
     )
@@ -251,6 +260,15 @@ export class RunnerStore {
   current(lease: RunnerLease, dispatch = true, observeBases = true): boolean {
     try {
       return !!this.currentState(lease, dispatch, observeBases)
+    } catch {
+      return false
+    }
+  }
+  /** Liveness only for the original controller's final pipe drain, never stage admission.
+   * Active and exact released ownership share one fresh policy read across the handoff. */
+  currentForDrain(lease: RunnerLease, invocation: string): boolean {
+    try {
+      return !!this.currentState(lease, false, false, invocation)
     } catch {
       return false
     }

@@ -1,3 +1,4 @@
+import { lstatSync } from 'node:fs'
 import { basename } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'
@@ -42,9 +43,12 @@ export class RunnerNativeScope {
     return `delivery/runner-native-scopes/${this.stage}.json`
   }
   calls(): NativeCall[] {
-    const body = this.files.read(this.path)
+    // Absence needs metadata, not an unbounded read before the descriptor
+    // guard. In particular, that earlier read could block forever on a FIFO.
+    if (lstatSync(this.files.path(this.path), { throwIfNoEntry: false }) === undefined) return []
+    const body = readSourceFile(this.files.root, this.path, 1024 * 1024)
     if (!body) return []
-    const value = JSON.parse(readSourceFile(this.files.root, this.path, 1024 * 1024))
+    const value = JSON.parse(body)
     if (
       value.stage !== this.stage ||
       !Array.isArray(value.calls) ||
