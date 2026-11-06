@@ -114,6 +114,7 @@ The skill never computes a verdict, a precedence or a next step. It asks the cor
 | [Core CLI](./core-cli.md) | The `wl` command surface and the step contract JSON |
 | [State and messaging](./state-and-messaging.md) | Journal, projections, mailbox, resume, sync adapters |
 | [Orchestration and gates](./orchestration-and-gates.md) | Engines, agents, lenses, verdicts, caps |
+| [Execution isolation](./execution-isolation.md) | Why project code runs only in owned Docker containers, and how secrets stay out |
 | [Determinism and testing](./determinism-and-testing.md) | What is tested how, and why evals are the last layer |
 
 ---

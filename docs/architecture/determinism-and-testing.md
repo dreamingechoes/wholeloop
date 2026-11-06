@@ -57,6 +57,8 @@ A complete unattended implementation route also pays for planning, independent d
 
 The [performance audit ledger](../../roadmap/performance-audit.md) records executed operation counts, growth controls and remaining caller coverage across canonical steps, autonomous stages and utilities. A fast result containing unnecessary reads, executions or loops cannot close the release blocker. Keep logical event accesses, physical opens, metadata API calls, supervised requests and observed process launches distinct.
 
+During P6-39, investigate with the existing Biome structural search and isolated component count/growth controls before consolidating complete suites and routes. [ADR-0240](../decisions/0240-sealed-observations-bounded-cancellation-and-drain.md) shares sealed gate-stage proofs without absorbing missing-write recovery; [ADR-0236](../decisions/0236-index-fresh-gate-launch-integration-and-environment-selections.md) bounds fresh report and ownership selections. Their focused evidence does not establish complete-flow overhead or platform parity.
+
 ## Workflow tests with stubbed agents
 
 Gate and fan-out workflows are tested by running the **real workflow code** with a fake `agent()` that returns scripted results. This catches the failure an extracted unit test cannot: a guard that exists but is never called.
@@ -143,4 +145,4 @@ A rule written only in prose is a suggestion the agent can reason around. `enfor
 ---
 
 <!-- docnav -->
-[◀ Orchestration and gates](orchestration-and-gates.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Decisions ▶](../decisions/README.md)
+[◀ Execution isolation](execution-isolation.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Decisions ▶](../decisions/README.md)

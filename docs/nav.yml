@@ -67,6 +67,7 @@ pages:
   - { path: architecture/state-and-messaging.md, title: State and messaging }
   - { path: architecture/operator-overview.md, title: Operator overview }
   - { path: architecture/orchestration-and-gates.md, title: Orchestration and gates }
+  - { path: architecture/execution-isolation.md, title: Execution isolation }
   - { path: architecture/determinism-and-testing.md, title: Determinism and testing }
   - { path: decisions/README.md, title: Decisions }
   - { path: contributing/authoring.md, title: Authoring }

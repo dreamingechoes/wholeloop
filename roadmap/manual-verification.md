@@ -24,6 +24,11 @@ Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 eac
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Execution isolation and secret handling (2026-11-06)
+
+- [ ] Restrict standalone headless gate workers (`src/fanout/host.ts`) to an allowlisted environment, as delivery workers already are. Each supported client needs its authentication variables (or credential-store paths) declared per adapter and verified with a signed-in client: today these workers inherit the caller's complete environment, including unrelated secrets. See [Execution isolation](../docs/architecture/execution-isolation.md#known-gaps).
+- [ ] Repeat the Docker preflight, owned environments and refusals of credential files on a second Linux daemon version and on a rootless or Colima socket before claiming them beyond the reference engines.
+
 ## CI correction SDK evidence (2026-11-05)
 
 The version-two CI producer has actual local Git/Docker execution with explicitly synthetic native clients, API, CI and protection facts. The initial command fails when its original-production reader compares CI's typed reason to the legacy reason. A read-only red/green control fixes that comparison while preserving its failed stage and both exact retired environments. The second command records a passed correction, fresh verification/review/integration/acceptance, the original PR's second non-force push and fresh CI, then correctly blocks merge without its grant. Its wrapper still fails by reading a stale synthetic-server JSON cache. Preserve report SHA-256 `a243d1077a4eda01108f1df916834809161d57dbf60a15a6ff29e414f0f282ce` as failed.

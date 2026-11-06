@@ -253,6 +253,7 @@
 | [0242](./0242-flush-only-committed-facts.md) | Flush only committed facts | Accepted | 2026-11-06 |
 | [0243](./0243-single-writer-store-trust-model.md) | Single-writer store trust model | Accepted | 2026-11-06 |
 | [0244](./0244-environment-and-docker-read-amplification.md) | Environment and Docker read amplification | Accepted | 2026-11-06 |
+| [0245](./0245-require-docker-for-project-code-execution.md) | Require Docker for project code execution | Accepted | 2026-11-06 |
 
 ## Lifecycle
 
