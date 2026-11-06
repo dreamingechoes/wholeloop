@@ -8,6 +8,7 @@ import {
   type BudgetMetering,
   type BudgetPayload,
   type BudgetReservation,
+  type BudgetUsage,
   budgetClockState,
   emptyBudget,
   findBudget,
@@ -41,7 +42,8 @@ export function unmeteredDeliveryWork(state: DeliveryProjection): number {
     0,
   )
 }
-export function effectiveBudget(
+function calculateBudget(
+  copy: (facet: BudgetFacet) => BudgetFacet,
   state: DeliveryProjection,
   grant: DeliveryGrant,
   clock: BudgetClock,
@@ -58,16 +60,19 @@ export function effectiveBudget(
       ),
     ]),
   ) as unknown as BudgetLimits
-  const previousWork = state.facets.some(
-    (facet) =>
-      (facet.schema === 'wholeloop/delivery-attempts@1' && facet.records.length > 0) ||
-      (facet.schema === 'wholeloop/delivery-effects@1' &&
-        facet.records.some((record) => record.invocation)),
-  )
   // Older runs lack a start marker. Use their original registration conservatively, never a fresh allowance.
-  const startedAt = stored.startedAt ?? (previousWork ? state.registeredAt : clock.wall)
+  const startedAt =
+    stored.startedAt ??
+    (state.facets.some(
+      (facet) =>
+        (facet.schema === 'wholeloop/delivery-attempts@1' && facet.records.length > 0) ||
+        (facet.schema === 'wholeloop/delivery-effects@1' &&
+          facet.records.some((record) => record.invocation)),
+    )
+      ? state.registeredAt
+      : clock.wall)
   const deadline = new Date(Date.parse(startedAt) + limits.wallTimeMs).toISOString()
-  const facet: BudgetFacet = { ...structuredClone(stored), limits, startedAt, deadline }
+  const facet: BudgetFacet = { ...copy(stored), limits, startedAt, deadline }
   Object.assign(facet, budgetClockState(facet, clock))
   facet.clockInvalid ||= state.clockWentBackwards || clock.wall < state.maxObservedAt
   const remainingMs = Math.max(
@@ -85,13 +90,39 @@ export function effectiveBudget(
           : null
   return { facet, limits, startedAt, deadline, remainingMs, problem }
 }
-export function budgetClockPayload(
+type BudgetReadValue<T> = T extends readonly (infer Item)[]
+  ? readonly BudgetReadValue<Item>[]
+  : T extends object
+    ? { readonly [Key in keyof T]: BudgetReadValue<T[Key]> }
+    : T
+const borrowBudget = (facet: BudgetFacet) => facet
+
+/** Public snapshots keep independent nested records for callers that retain or edit them. */
+export function effectiveBudget(
   state: DeliveryProjection,
   grant: DeliveryGrant,
   clock: BudgetClock,
   currentLimits?: BudgetLimits,
+) {
+  return calculateBudget(structuredClone, state, grant, clock, currentLimits)
+}
+
+/** Borrow nested records only for the current synchronous read, never across mutation or await.
+ * This is not an independent snapshot or an authority receipt. */
+export function effectiveBudgetView(
+  state: DeliveryProjection,
+  grant: DeliveryGrant,
+  clock: BudgetClock,
+  currentLimits?: BudgetLimits,
+): BudgetReadValue<ReturnType<typeof calculateBudget>> {
+  return calculateBudget(borrowBudget, state, grant, clock, currentLimits)
+}
+
+function clockPayload(
+  state: DeliveryProjection,
+  clock: BudgetClock,
+  budget: ReturnType<typeof effectiveBudgetView>,
 ): BudgetPayload {
-  const budget = effectiveBudget(state, grant, clock, currentLimits)
   return findBudget(state)?.startedAt
     ? {
         schema: 'wholeloop/delivery-budget-event@1',
@@ -110,6 +141,14 @@ export function budgetClockPayload(
         deadline: budget.deadline,
         grantDigest: state.grant?.digest ?? '',
       }
+}
+export function budgetClockPayload(
+  state: DeliveryProjection,
+  grant: DeliveryGrant,
+  clock: BudgetClock,
+  currentLimits?: BudgetLimits,
+): BudgetPayload {
+  return clockPayload(state, clock, effectiveBudgetView(state, grant, clock, currentLimits))
 }
 export interface BudgetProposal {
   /** Internal parent bound; narrowing never grants additional runtime. */
@@ -130,7 +169,7 @@ export function prepareBudgetAdmission(
   proposal: BudgetProposal,
   currentLimits?: BudgetLimits,
 ) {
-  const budget = effectiveBudget(state, grant, clock, currentLimits)
+  const budget = effectiveBudgetView(state, grant, clock, currentLimits)
   const parent = proposal.deadline === undefined ? undefined : Date.parse(proposal.deadline)
   let problem: string | null = budget.problem
   if (parent !== undefined) {
@@ -145,19 +184,23 @@ export function prepareBudgetAdmission(
     (proposal.generation ?? 1) - 1 > budget.limits.restarts
   )
     problem = 'restart-limit'
-  const pushes =
-    state.facets
-      .find((facet) => facet.schema === 'wholeloop/delivery-effects@1')
-      ?.records.filter((record) => record.intent.operation === 'git.push' && record.invocation)
-      .length ?? 0
-  if (!problem && proposal.operation === 'git.push' && pushes >= budget.limits.ciPushes)
-    problem = 'ci-push-limit'
+  if (!problem && proposal.operation === 'git.push') {
+    const pushes =
+      state.facets
+        .find((facet) => facet.schema === 'wholeloop/delivery-effects@1')
+        ?.records.reduce(
+          (total, record) =>
+            total + Number(record.intent.operation === 'git.push' && Boolean(record.invocation)),
+          0,
+        ) ?? 0
+    if (pushes >= budget.limits.ciPushes) problem = 'ci-push-limit'
+  }
   const requirements = budget.facet.requirements,
     metering = proposal.metering
   if (
     !problem &&
-    unmeteredDeliveryWork(state) > 0 &&
-    (requirements.tokens?.mode === 'hard' || requirements.currency?.mode === 'hard')
+    (requirements.tokens?.mode === 'hard' || requirements.currency?.mode === 'hard') &&
+    unmeteredDeliveryWork(state) > 0
   )
     problem = 'unmetered-hard-limit'
 
@@ -211,7 +254,7 @@ export function prepareBudgetAdmission(
   const payloads: BudgetPayload[] = problem
     ? []
     : [
-        budgetClockPayload(state, grant, clock, currentLimits),
+        clockPayload(state, clock, budget),
         {
           schema: 'wholeloop/delivery-budget-event@1',
           action: 'reserved',
@@ -257,24 +300,55 @@ function safeSum(values: number[]): number {
     throw new Error('Observed usage exceeds safe integer accounting')
   return result
 }
+function usageStreams(facet: BudgetFacet): BudgetUsage[][] {
+  if (!facet.reservations.length) return []
+  if (facet.reservations.length === 1) {
+    const id = facet.reservations[0]?.id
+    return [facet.usage.filter((report) => report.reservation === id)]
+  }
+  const byReservation = new Map<string, BudgetUsage[]>()
+  const streams = facet.reservations.map(({ id }) => {
+    let reports = byReservation.get(id)
+    if (!reports) {
+      reports = []
+      byReservation.set(id, reports)
+    }
+    return reports
+  })
+  // Preserve receipt order and duplicate reservation weighting. Orphan receipts
+  // still contribute currency inventory and provenance in the full report below.
+  for (const report of facet.usage) byReservation.get(report.reservation)?.push(report)
+  return streams
+}
+function addCurrencyUsage(
+  totals: Map<string, { micros: number; complete: number }>,
+  currency: string,
+  micros: number,
+  complete: boolean,
+) {
+  // Per-stream overflow must still refuse even if the aggregate happens to be safe.
+  safeSum([micros])
+  const prior = totals.get(currency)
+  totals.set(currency, {
+    micros: (prior?.micros ?? 0) + micros,
+    complete: (prior?.complete ?? 0) + Number(complete),
+  })
+}
 export function budgetUsage(facet: BudgetFacet, unmeteredInvocations = 0) {
-  const streams = facet.reservations.map((reservation) => ({
-    reservation,
-    reports: facet.usage.filter((report) => report.reservation === reservation.id),
-  }))
-  const tokenValues = streams.map((stream) => {
-    const known = stream.reports.filter((report) => report.tokens !== undefined)
+  const streams = usageStreams(facet)
+  const tokenValues = streams.map((reports) => {
+    const known = reports.filter((report) => report.tokens !== undefined)
     return {
       value: known.length
-        ? stream.reports[0]?.mode === 'cumulative'
+        ? reports[0]?.mode === 'cumulative'
           ? (known.at(-1)?.tokens ?? 0)
           : safeSum(known.map((report) => report.tokens ?? 0))
         : null,
       complete:
-        stream.reports.at(-1)?.final === true &&
-        stream.reports.at(-1)?.tokens !== undefined &&
-        (stream.reports[0]?.mode === 'cumulative' ||
-          stream.reports.every((report) => report.tokens !== undefined)),
+        reports.at(-1)?.final === true &&
+        reports.at(-1)?.tokens !== undefined &&
+        (reports[0]?.mode === 'cumulative' ||
+          reports.every((report) => report.tokens !== undefined)),
     }
   })
   const tokens = {
@@ -295,33 +369,46 @@ export function budgetUsage(facet: BudgetFacet, unmeteredInvocations = 0) {
   ].sort()
   if (facet.requirements.currency && !codes.includes(facet.requirements.currency.currency))
     codes.push(facet.requirements.currency.currency)
+  const totals = new Map<string, { micros: number; complete: number }>()
+  for (const reports of streams) {
+    const last = reports.at(-1)
+    if (reports.length === 1) {
+      const money = last?.currency
+      if (money) addCurrencyUsage(totals, money.currency, money.micros, last?.final === true)
+      continue
+    }
+    const cumulative = reports[0]?.mode === 'cumulative'
+    const known = new Map<string, { micros: number; count: number }>()
+    for (const report of reports) {
+      const money = report.currency
+      if (!money) continue
+      const prior = known.get(money.currency)
+      known.set(money.currency, {
+        micros: cumulative ? money.micros : (prior?.micros ?? 0) + money.micros,
+        count: (prior?.count ?? 0) + 1,
+      })
+    }
+    const finalCurrency = last?.currency?.currency
+    for (const [currency, value] of known) {
+      addCurrencyUsage(
+        totals,
+        currency,
+        value.micros,
+        last?.final === true &&
+          finalCurrency === currency &&
+          (cumulative || value.count === reports.length),
+      )
+    }
+  }
   const currencies = codes.map((currency) => {
-    const observations = streams.map((stream) => {
-      const known = stream.reports.filter((report) => report.currency?.currency === currency)
-      return {
-        value: known.length
-          ? stream.reports[0]?.mode === 'cumulative'
-            ? (known.at(-1)?.currency?.micros ?? 0)
-            : safeSum(known.map((report) => report.currency?.micros ?? 0))
-          : null,
-        complete:
-          stream.reports.at(-1)?.final === true &&
-          stream.reports.at(-1)?.currency?.currency === currency &&
-          (stream.reports[0]?.mode === 'cumulative' ||
-            stream.reports.every((report) => report.currency?.currency === currency)),
-      }
-    })
+    const value = totals.get(currency)
     return {
       currency,
-      micros: observations.some((entry) => entry.value !== null)
-        ? safeSum(observations.map((entry) => entry.value ?? 0))
-        : null,
+      micros: value ? safeSum([value.micros]) : null,
       completeness:
-        !unmeteredInvocations &&
-        observations.length &&
-        observations.every((entry) => entry.complete)
+        !unmeteredInvocations && streams.length && value?.complete === streams.length
           ? 'complete'
-          : observations.some((entry) => entry.value !== null)
+          : value
             ? 'partial'
             : 'unknown',
     }

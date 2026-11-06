@@ -325,45 +325,55 @@ export function reduceDeliveryBudget(
   } else if (payload.action === 'usage') {
     const usage = payload.usage,
       reservation = facet.reservations.find((entry) => entry.id === usage?.reservation)
-    if (!usage || !reservation || facet.usage.some((entry) => entry.key === usage.key))
-      throw new DeliveryJournalError('budget-usage-binding')
-    const previous = facet.usage.filter((entry) => entry.reservation === usage.reservation)
-    if (
-      previous.some(
-        (entry) => entry.meter !== usage.meter || entry.mode !== usage.mode || entry.final,
-      ) ||
-      (reservation.metering && reservation.metering.meter !== usage.meter) ||
+    if (!usage || !reservation) throw new DeliveryJournalError('budget-usage-binding')
+    const cumulative = usage.mode === 'cumulative',
+      monetary = cumulative || usage.currency !== undefined
+    let invalidStream =
+      (reservation.metering !== undefined && reservation.metering.meter !== usage.meter) ||
       (reservation.metering?.provenance === 'fixture' && usage.provenance !== 'fixture')
-    )
-      throw new DeliveryJournalError('budget-usage-stream')
-    const lastTokens = previous.filter((entry) => entry.tokens !== undefined).at(-1)?.tokens
-    const lastCurrency = previous.filter((entry) => entry.currency !== undefined).at(-1)?.currency
+    let lastTokens: number | undefined
+    let lastCurrency: BudgetMoney | undefined
+    let tokenTotal = 0
+    let moneyTotal = 0
+    for (const entry of facet.usage) {
+      // Key refusal precedes every stream/regression refusal, including when a
+      // later unrelated record duplicates this key. After a bad stream, finish
+      // only that key check instead of reading unusable accounting fields.
+      if (entry.key === usage.key) throw new DeliveryJournalError('budget-usage-binding')
+      if (invalidStream || entry.reservation !== usage.reservation) continue
+      if (entry.meter !== usage.meter || entry.mode !== usage.mode || entry.final) {
+        invalidStream = true
+        continue
+      }
+      const tokens = entry.tokens
+      if (cumulative) {
+        if (tokens !== undefined) lastTokens = tokens
+      } else tokenTotal += tokens ?? 0
+      if (monetary) {
+        const money = entry.currency
+        if (money !== undefined) lastCurrency = money
+        if (!cumulative) moneyTotal += money?.micros ?? 0
+      }
+    }
+    if (invalidStream) throw new DeliveryJournalError('budget-usage-stream')
     if (
-      (usage.mode === 'cumulative' &&
+      (cumulative &&
         usage.tokens !== undefined &&
         lastTokens !== undefined &&
         usage.tokens < lastTokens) ||
       (usage.currency &&
         lastCurrency &&
         (usage.currency.currency !== lastCurrency.currency ||
-          (usage.mode === 'cumulative' && usage.currency.micros < lastCurrency.micros)))
+          (cumulative && usage.currency.micros < lastCurrency.micros)))
     )
       throw new DeliveryJournalError('budget-usage-regression')
     facet.usage.push(structuredClone(usage))
-    const reports = facet.usage.filter((entry) => entry.reservation === usage.reservation)
-    const tokens =
-      usage.mode === 'cumulative'
-        ? reports.filter((entry) => entry.tokens !== undefined).at(-1)?.tokens
-        : reports.reduce((total, entry) => total + (entry.tokens ?? 0), 0)
-    const money =
-      usage.mode === 'cumulative'
-        ? reports.filter((entry) => entry.currency).at(-1)?.currency
-        : usage.currency
-          ? {
-              currency: usage.currency.currency,
-              micros: reports.reduce((total, entry) => total + (entry.currency?.micros ?? 0), 0),
-            }
-          : undefined
+    const tokens = cumulative ? (usage.tokens ?? lastTokens) : tokenTotal + (usage.tokens ?? 0)
+    const money = cumulative
+      ? (usage.currency ?? lastCurrency)
+      : usage.currency
+        ? { currency: usage.currency.currency, micros: moneyTotal + usage.currency.micros }
+        : undefined
     if (
       (reservation.metering?.hardTokens &&
         tokens !== undefined &&

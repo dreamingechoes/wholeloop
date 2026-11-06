@@ -19,7 +19,7 @@ import {
   budgetClockPayload,
   budgetUsage,
   deliveryBudgetClock,
-  effectiveBudget,
+  effectiveBudgetView,
   unmeteredDeliveryWork,
 } from './budget-policy.js'
 import { DeliveryJournalError, type DeliveryProjection } from './events.js'
@@ -128,7 +128,7 @@ export class DeliveryBudgets {
     this.lifecycle.journal.transaction(ACTOR, (view, append) => {
       const state = this.state(view(), run),
         grant = this.grant(state)
-      const budget = effectiveBudget(state, grant, this.clock(), this.planLimits(state))
+      const budget = effectiveBudgetView(state, grant, this.clock(), this.planLimits(state))
       const prior = budget.facet.counters.find((entry) => entry.key === value.key)
       if (prior) {
         if (contractDigest(prior) !== contractDigest(value))
@@ -170,7 +170,7 @@ export class DeliveryBudgets {
     this.lifecycle.journal.transaction(ACTOR, (view, append) => {
       const state = this.state(view(), run),
         grant = this.grant(state),
-        budget = effectiveBudget(state, grant, this.clock(), this.planLimits(state))
+        budget = effectiveBudgetView(state, grant, this.clock(), this.planLimits(state))
       if (!grant.effects.includes('report.write') || budget.problem)
         throw new DeliveryJournalError('artifact-admission-refused')
       const prior = budget.facet.artifacts.find((entry) => entry.digest === digest)
@@ -210,7 +210,7 @@ export class DeliveryBudgets {
       const state = this.state(view(), run),
         grant = this.grant(state)
       if (
-        effectiveBudget(state, grant, this.clock(), this.planLimits(state)).problem ||
+        effectiveBudgetView(state, grant, this.clock(), this.planLimits(state)).problem ||
         !grant.effects.includes('report.write')
       )
         throw new DeliveryJournalError('artifact-admission-refused')
@@ -247,7 +247,7 @@ export class DeliveryBudgets {
       facet = findBudget(state) ?? emptyBudget()
     const authority = state.grant ? this.lifecycle.authority.inspect(state.grant.id) : null
     const computed = authority
-      ? effectiveBudget(state, authority.grant, this.clock(), this.planLimits(state))
+      ? effectiveBudgetView(state, authority.grant, this.clock(), this.planLimits(state))
       : null
     const pushes =
       state.facets

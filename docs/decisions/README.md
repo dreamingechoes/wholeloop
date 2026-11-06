@@ -246,6 +246,7 @@
 | [0235](./0235-bound-schema-and-text-validation-allocations.md) | Bound schema and text validation allocations | Accepted | 2026-11-06 |
 | [0236](./0236-index-fresh-gate-launch-integration-and-environment-selections.md) | Index fresh gate, launch, integration and environment selections | Accepted | 2026-11-06 |
 | [0237](./0237-render-validated-state-facts-and-replay-sync-in-order.md) | Render validated state facts and replay sync in order | Accepted | 2026-11-06 |
+| [0238](./0238-select-budget-and-queue-facts-in-one-pass.md) | Select budget and queue facts in one pass | Accepted | 2026-11-06 |
 
 ## Lifecycle
 

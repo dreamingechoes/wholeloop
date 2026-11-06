@@ -7,7 +7,7 @@ import type { BudgetClock, BudgetMetering, BudgetPayload } from './budget-events
 import {
   currentBudgetReservation,
   deliveryBudgetClock,
-  effectiveBudget,
+  effectiveBudgetView,
   prepareBudgetAdmission,
 } from './budget-policy.js'
 import { type AttemptPayload, DeliveryJournalError, type DeliveryProjection } from './events.js'
@@ -20,6 +20,7 @@ import {
   type QueueRecord,
   queueAssignment,
 } from './queue-events.js'
+import { queueCapacity } from './queue-selection.js'
 import { deliveryAttempts } from './reducer.js'
 
 export type { QueueAssignment } from './queue-events.js'
@@ -462,48 +463,13 @@ export class DeliveryQueue {
     entry: QueueRecord,
     plan: DeliveryPlan,
   ): string {
-    const limits = effectiveBudget(
+    const limits = effectiveBudgetView(
       state,
       this.grant(state),
       this.budgetClock(),
       plan.budgets,
     ).limits
-    const active = [...states.values()].flatMap((run) =>
-      deliveryAttempts(run)
-        .records.filter((attempt) => ACTIVE.has(attempt.state))
-        .map((attempt) => ({
-          run: run.run,
-          attempt,
-          entry: deliveryQueue(run).records.find((record) => record.attempt === attempt.id),
-        })),
-    )
-    if (
-      active.some(
-        (value) => execution(value.attempt.role) === execution(entry.role) && !value.entry,
-      )
-    )
-      return 'unknown-reservation'
-    if (active.some((value) => value.run === state.run && slot(value.attempt) === slot(entry)))
-      return 'slot-reserved'
-    const group = active.filter((value) => execution(value.attempt.role) === execution(entry.role))
-    if (group.length >= (execution(entry.role) ? this.capacity.builders : this.capacity.evaluators))
-      return 'global-capacity'
-    if (
-      group.filter((value) => value.run === state.run).length >=
-      (execution(entry.role) ? limits.builders : limits.evaluators)
-    )
-      return 'run-capacity'
-    if (execution(entry.role) && entry.repositoryKey) {
-      const same = group.filter(
-        (value) =>
-          value.entry?.repositoryKey === entry.repositoryKey ||
-          (entry.remoteKey !== undefined && value.entry?.remoteKey === entry.remoteKey),
-      )
-      if (same.length >= this.capacity.buildersPerRepository) return 'repository-capacity'
-      if (same.filter((value) => value.run === state.run).length >= limits.buildersPerRepository)
-        return 'run-repository-capacity'
-    }
-    return ''
+    return queueCapacity(states, state, entry, limits, this.capacity)
   }
   private assignment(state: DeliveryProjection, record: QueueRecord): QueueAssignment {
     return queueAssignment(state, record)

@@ -5,7 +5,7 @@ import { assertExternal, canonicalPath } from '../state/paths.js'
 import type { DeliveryGrant } from './authority.js'
 import {
   currentBudgetReservation,
-  effectiveBudget,
+  effectiveBudgetView,
   prepareBudgetAdmission,
 } from './budget-policy.js'
 import { DeliveryBudgets } from './budgets.js'
@@ -23,7 +23,7 @@ import {
   observePlanBases,
 } from './plan.js'
 import type { DeliveryQueue } from './queue.js'
-import { deliveryQueue } from './queue-events.js'
+import { hasUnqueuedAttempts } from './queue-selection.js'
 import { deliveryAttempts } from './reducer.js'
 import {
   createWorkerAssignment,
@@ -97,25 +97,25 @@ export abstract class NativeReadOnlyAttempts<L extends NativeReadOnlyLease> {
       // Even known failures need a new authorized purpose; an unknown original stays held.
       if (records.some((item) => item.role === input.role && item.cell === cell))
         throw new DeliveryJournalError('purpose-already-claimed')
-      const active = [...view().values()].flatMap((run) =>
-          deliveryAttempts(run)
-            .records.filter((item) => ACTIVE.has(item.state))
-            .map((attempt) => ({ run, attempt })),
-        ),
-        evaluators = active.filter(
-          ({ attempt }) => !['builder', 'researcher'].includes(attempt.role),
+      const evaluators = [...view().values()].flatMap((run) => {
+        const attempts = deliveryAttempts(run).records.filter(
+          (item) => ACTIVE.has(item.state) && !['builder', 'researcher'].includes(item.role),
         )
-      if (
-        evaluators.some(
-          ({ run, attempt }) =>
-            !deliveryQueue(run).records.some((record) => record.attempt === attempt.id),
-        )
-      )
+        return attempts.length ? [{ run, attempts }] : []
+      })
+      if (evaluators.some(({ run, attempts }) => hasUnqueuedAttempts(run, attempts)))
         throw new DeliveryJournalError('purpose-unresolved-evaluator')
-      const budget = effectiveBudget(state, grant.grant, this.queue.budgetClock(), basis.budgets)
+      const budget = effectiveBudgetView(
+        state,
+        grant.grant,
+        this.queue.budgetClock(),
+        basis.budgets,
+      )
       if (
-        evaluators.length >= this.queue.capacity.evaluators ||
-        evaluators.filter(({ run }) => run.run === input.run).length >= budget.limits.evaluators
+        evaluators.reduce((total, group) => total + group.attempts.length, 0) >=
+          this.queue.capacity.evaluators ||
+        (evaluators.find(({ run }) => run.run === input.run)?.attempts.length ?? 0) >=
+          budget.limits.evaluators
       )
         throw new DeliveryJournalError('purpose-evaluator-capacity')
       const attempt = `attempt-${randomBytes(8).toString('hex')}`

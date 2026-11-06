@@ -234,7 +234,7 @@ rules:
   - id: delivery-worker-context
     enforcers: [src/delivery/worker-protocol.ts#workerTools, src/delivery/worker-protocol.ts#workerResumePack, src/delivery/worker-context.ts#workerContextForClaim, test/unit/delivery/worker-protocol.test.ts]
   - id: delivery-finite-budgets
-    enforcers: [src/delivery/budget-events.ts#reduceDeliveryBudget, src/delivery/budget-policy.ts#prepareBudgetAdmission, src/delivery/budgets.ts#DeliveryBudgets, test/unit/delivery/budgets.test.ts, test/unit/delivery/budget-process.test.ts, test/unit/delivery/budget-cli.test.ts]
+    enforcers: [src/delivery/budget-events.ts#reduceDeliveryBudget, test/unit/delivery/budget-replay-performance.test.ts, src/delivery/budget-policy.ts#prepareBudgetAdmission, src/delivery/budget-policy.ts#effectiveBudgetView, test/unit/delivery/budget-view-performance.test.ts, src/delivery/budget-policy.ts#budgetUsage, test/unit/delivery/budget-usage-performance.test.ts, src/delivery/budgets.ts#DeliveryBudgets, test/unit/delivery/budgets.test.ts, test/unit/delivery/budget-process.test.ts, test/unit/delivery/budget-cli.test.ts]
   - id: delivery-checkpoint-inputs
     enforcers: [src/delivery/checkpoints.ts#DeliveryCheckpoints, src/delivery/checkpoint-events.ts#reduceDeliveryCheckpoint, test/unit/delivery/recovery.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/recovery-cli.test.ts]
   - id: delivery-effect-reconciliation
@@ -244,7 +244,7 @@ rules:
   - id: delivery-stopped-writer-repair
     enforcers: [src/delivery/lock-recovery.ts#DeliveryLockRecovery, src/state/files.ts#StoreFiles, src/state/files.ts#locked, test/unit/state/lock.test.ts, test/unit/state/store.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/recovery-cli.test.ts]
   - id: delivery-queue-fencing
-    enforcers: [src/delivery/queue.ts#DeliveryQueue, src/delivery/queue-events.ts#reduceDeliveryQueue, src/delivery/broker.ts#DeliveryBroker, test/unit/delivery/queue.test.ts, test/unit/delivery/queue-cli.test.ts]
+    enforcers: [src/delivery/queue.ts#DeliveryQueue, src/delivery/queue-selection.ts#queueCapacity, src/delivery/queue-selection.ts#hasUnqueuedAttempts, src/delivery/native-readonly-attempts.ts#NativeReadOnlyAttempts, test/unit/delivery/queue-selection-performance.test.ts, src/delivery/queue-events.ts#reduceDeliveryQueue, src/delivery/broker.ts#DeliveryBroker, test/unit/delivery/queue.test.ts, test/unit/delivery/queue-cli.test.ts]
   - id: delivery-journal-replay
     enforcers: [src/delivery/journal.ts#DeliveryJournal, src/delivery/reducer.ts#replayDelivery, src/delivery/lifecycle.ts#DeliveryLifecycle, test/unit/delivery/journal.test.ts, test/unit/delivery/journal-cli.test.ts]
   - id: delivery-operator-authority
