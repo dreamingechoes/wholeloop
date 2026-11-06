@@ -254,9 +254,9 @@ rules:
   - id: delivery-worker-environment
     enforcers: [src/delivery/broker.ts#deliveryWorkerEnvironment, src/delivery/broker.ts#DeliveryBroker, test/unit/delivery/authority.test.ts]
   - id: delivery-plan-contract
-    enforcers: [src/delivery/plan.ts#validateDeliveryPlan, src/delivery/plan.ts#checkPlanEnvelope, src/delivery/plan.ts#deliveryPlanRoute, src/delivery/planning-store.ts#DeliveryPlanning, test/unit/delivery/plan.test.ts]
+    enforcers: [src/config/schema.ts#matchesPattern, src/config/schema.ts#validateInto, test/unit/config/diagnostic-accumulation-performance.test.ts, src/delivery/plan.ts#validateDeliveryShape, test/unit/config/validation-performance.test.ts, test/unit/config/utf8-validation-performance.test.ts, src/delivery/plan.ts#validateDeliveryPlan, src/delivery/plan.ts#checkPlanEnvelope, src/delivery/plan.ts#deliveryPlanRoute, src/delivery/planning-store.ts#DeliveryPlanning, test/unit/delivery/plan.test.ts]
   - id: delivery-source-identity
-    enforcers: [src/delivery/input.ts#sourceRequest, src/delivery/input.ts#readSourceFile, src/delivery/source.ts#DeliverySources, src/delivery/source-host.ts#readProviderSource, test/unit/delivery/descriptor-reads.test.ts, test/unit/delivery/source.test.ts]
+    enforcers: [src/delivery/input.ts#validateSourceShape, test/unit/config/validation-performance.test.ts, test/unit/config/utf8-validation-performance.test.ts, src/delivery/input.ts#sourceRequest, src/delivery/input.ts#readSourceFile, src/delivery/source.ts#DeliverySources, src/delivery/source-host.ts#readProviderSource, test/unit/delivery/descriptor-reads.test.ts, test/unit/delivery/source.test.ts]
   - id: headless-native-response-schema
     enforcers: [src/fanout/response-schema.ts#headlessResponseSchema, src/fanout/host.ts#HeadlessHost, src/fanout/adapters.ts#headlessAdapter, src/fanout/policy-files.ts#stageWorkerPolicy, test/unit/fanout/response-schema.test.ts, test/unit/fanout/fanout.test.ts]
   - id: conformance-scripted-final-approval

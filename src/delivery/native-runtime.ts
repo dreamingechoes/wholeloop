@@ -2,6 +2,9 @@ import { isAbsolute, normalize } from 'node:path'
 import { DOCKER_IMAGE } from '../environment/docker-policy.js'
 import { REFERENCE_NATIVE_VERSIONS } from './native-adapters.js'
 
+// biome-ignore lint/suspicious/noControlCharactersInRegex: Native paths and command references deliberately refuse C0 controls and DEL.
+const FORBIDDEN_RUNTIME_CONTROL = /[\x00-\x1f\x7f]/
+
 /**
  * Where the operator's trusted clients live on this machine (ADR-0205).
  * Paths only: the client binary to launch and the dedicated client home the
@@ -40,7 +43,7 @@ function path(value: unknown) {
     isAbsolute(value) &&
     normalize(value) === value &&
     !/["\\]/.test(value) &&
-    ![...value].some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)
+    !FORBIDDEN_RUNTIME_CONTROL.test(value)
   )
 }
 
@@ -49,7 +52,7 @@ const ref = (value: unknown) =>
   typeof value === 'string' &&
   value.length >= 1 &&
   value.length <= 256 &&
-  ![...value].some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)
+  !FORBIDDEN_RUNTIME_CONTROL.test(value)
 
 function validRepository(value: unknown) {
   if (typeof value !== 'object' || value === null) return false

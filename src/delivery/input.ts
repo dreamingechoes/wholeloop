@@ -14,6 +14,9 @@ import { inside } from '../state/paths.js'
 import { inReadObservation, observedRead } from '../state/read-observation.js'
 import requestSchema from './schemas/source-request-v1.json' with { type: 'json' }
 
+// biome-ignore lint/suspicious/noControlCharactersInRegex: Source metadata deliberately refuses every C0 control and DEL; body fields retain their explicit exemption.
+const FORBIDDEN_METADATA_CONTROL = /[\x00-\x1f\x7f]/
+
 export const SOURCE_LIMIT = 1024 * 1024
 export const SOURCE_REQUEST_SCHEMA = requestSchema
 export type SourceKind = 'inline' | 'file' | 'item' | 'tracker' | 'document'
@@ -77,7 +80,7 @@ export function validateSourceShape(value: unknown, schema: Schema): void {
     if (
       typeof value === 'string' &&
       rule.maxLength !== SOURCE_LIMIT &&
-      [...value].some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127)
+      FORBIDDEN_METADATA_CONTROL.test(value)
     )
       throw new SourceInputError('invalid-input')
     if (Array.isArray(value)) {
@@ -96,7 +99,9 @@ export function validateSourceShape(value: unknown, schema: Schema): void {
 /** Reject recognizable credentials before persistence; this is not a secret-free proof. */
 export function safeSourceText(text: string, limit = SOURCE_LIMIT): void {
   if (Buffer.byteLength(text) > limit) throw new SourceInputError('oversized')
-  if (Buffer.from(text).toString('utf8') !== text || text.includes('\0'))
+  // Node >= 20 checks unpaired surrogates directly, without encoding and
+  // decoding a disposable buffer. Keep the prior binary-input refusal too.
+  if (typeof text !== 'string' || !text.isWellFormed() || text.includes('\0'))
     throw new SourceInputError('invalid-input')
   rejectSourceCredentials(text)
 }

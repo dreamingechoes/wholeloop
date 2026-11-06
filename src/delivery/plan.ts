@@ -14,6 +14,10 @@ import planSchema from './schemas/plan-v1.json' with { type: 'json' }
 import planV2Schema from './schemas/plan-v2.json' with { type: 'json' }
 import type { SourceSnapshot } from './source.js'
 
+// Preserve multiline C0 exceptions without allocating one entry per code point.
+// biome-ignore lint/suspicious/noControlCharactersInRegex: This refusal deliberately matches forbidden C0 controls.
+const FORBIDDEN_TEXT_CONTROL = /[\x00-\x08\x0b\x0c\x0e-\x1f]/
+
 export const DELIVERY_PLAN_SCHEMA = planSchema
 export const DELIVERY_PLAN_V2_SCHEMA = planV2Schema
 /** Explicit new identity; the frozen version-one declaration is never widened. */
@@ -165,14 +169,9 @@ export function validateDeliveryShape(value: unknown, schema: Schema): void {
   if (validate(value, schema).length) throw new DeliveryPlanError('invalid-shape')
   const bound = (value: unknown, rule: Schema & { maxLength?: number; maxItems?: number }) => {
     if (typeof value === 'string') {
-      if (
-        value.length > Number(rule.maxLength ?? 4096) ||
-        !value.trim() ||
-        Buffer.from(value).toString('utf8') !== value
-      )
+      if (value.length > Number(rule.maxLength ?? 4096) || !value.trim() || !value.isWellFormed())
         throw new DeliveryPlanError('invalid-text')
-      if ([...value].some((char) => char.charCodeAt(0) < 32 && !'\n\r\t'.includes(char)))
-        throw new DeliveryPlanError('invalid-text')
+      if (FORBIDDEN_TEXT_CONTROL.test(value)) throw new DeliveryPlanError('invalid-text')
     } else if (Array.isArray(value)) {
       if (value.length > Number(rule.maxItems ?? 1000))
         throw new DeliveryPlanError('limit-exceeded')

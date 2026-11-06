@@ -243,6 +243,7 @@
 | [0232](./0232-fresh-controller-and-effect-vector-selections.md) | Select controller and effect facts from one fresh view | Accepted | 2026-11-06 |
 | [0233](./0233-fresh-batch-ownership-and-linear-object-matching.md) | Validate ownership once per fresh backend batch | Accepted | 2026-11-06 |
 | [0234](./0234-complete-source-path-validation-and-bounded-read-loops.md) | Validate final source paths and bound buffer reads | Accepted | 2026-11-06 |
+| [0235](./0235-bound-schema-and-text-validation-allocations.md) | Bound schema and text validation allocations | Accepted | 2026-11-06 |
 
 ## Lifecycle
 

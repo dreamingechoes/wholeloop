@@ -22,16 +22,18 @@ export const RATIONALE_BYTES = 4096
 const token = (value: unknown) => typeof value === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value)
 const keys = (value: Record<string, unknown>, allowed: string[]) =>
   Object.keys(value).every((key) => allowed.includes(key))
+// biome-ignore lint/suspicious/noControlCharactersInRegex: Client identity text refuses all C0 controls and DEL.
+const INLINE_CONTROL = /[\x00-\x1f\x7f]/
+// biome-ignore lint/suspicious/noControlCharactersInRegex: Rationale text allows tab/newlines but refuses the remaining C0 controls and DEL.
+const MULTILINE_CONTROL = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/
+
 function bounded(value: unknown, bytes: number, multiline = false): value is string {
   return (
     typeof value === 'string' &&
     value.trim().length > 0 &&
     Buffer.byteLength(value, 'utf8') <= bytes &&
-    Buffer.from(value).toString('utf8') === value &&
-    ![...value].some((char) => {
-      const code = char.charCodeAt(0)
-      return (code < 32 && !(multiline && '\n\r\t'.includes(char))) || code === 127
-    })
+    value.isWellFormed() &&
+    !(multiline ? MULTILINE_CONTROL : INLINE_CONTROL).test(value)
   )
 }
 
