@@ -132,7 +132,8 @@ describe('actual owned foreground controller admission and recovery', () => {
     'retains safe authority after an injected %s publication failure',
     async (target) => {
       await setup(async ({ store, digest, core, ready }) => {
-        const write = store.files.atomic.bind(store.files)
+        const write = store.files.atomic.bind(store.files),
+          view = store.files.project.bind(store.files)
         let ownerPublished = false,
           fired = false
         const fault = vi.spyOn(store.files, 'atomic').mockImplementation((path, body) => {
@@ -141,10 +142,7 @@ describe('actual owned foreground controller admission and recovery', () => {
           const selected =
             target === 'private-owner'
               ? owner
-              : ownerPublished &&
-                (target === 'journal'
-                  ? path.startsWith('delivery/journal/')
-                  : path.startsWith('delivery/state/'))
+              : ownerPublished && target === 'journal' && path.startsWith('delivery/journal/')
           if (selected && !fired) {
             fired = true
             throw new Error('Injected foreground publication interruption.')
@@ -152,12 +150,26 @@ describe('actual owned foreground controller admission and recovery', () => {
           write(path, body)
           if (owner) ownerPublished = true
         })
+        // Projections are journal-derived views with their own writer (ADR-0242).
+        const viewFault = vi.spyOn(store.files, 'project').mockImplementation((path, body) => {
+          if (
+            target === 'projection' &&
+            ownerPublished &&
+            path.startsWith('delivery/state/') &&
+            !fired
+          ) {
+            fired = true
+            throw new Error('Injected foreground publication interruption.')
+          }
+          view(path, body)
+        })
         try {
           await expect(new OwnedForegroundRunner(store).run(digest, core)).rejects.toThrow(
             'Injected foreground',
           )
         } finally {
           fault.mockRestore()
+          viewFault.mockRestore()
         }
         expect(fired).toBe(true)
         expect(store.record(digest).ownership).toBe(

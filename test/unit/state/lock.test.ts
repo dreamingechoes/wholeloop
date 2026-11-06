@@ -1,9 +1,22 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import {
+  existsSync,
+  fsyncSync,
+  mkdtempSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  statSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { describe, expect, it, vi } from 'vitest'
 import { StoreFiles } from '../../../src/state/files.js'
+
+vi.mock('node:fs', async (original) => {
+  const fs = await original<typeof import('node:fs')>()
+  return { ...fs, fsyncSync: vi.fn(fs.fsyncSync), renameSync: vi.fn(fs.renameSync) }
+})
 
 function fixture(run: (files: StoreFiles) => void) {
   const root = mkdtempSync(join(tmpdir(), 'wholeloop-lock-'))
@@ -72,5 +85,27 @@ describe('bounded store lock acquisition', () => {
           waits.every(({ milliseconds }) => milliseconds !== undefined && milliseconds <= 10),
         ).toBe(true)
       })
+    }))
+
+  it('writes diagnostic owner metadata once without flushing or renaming it (ADR-0242)', () =>
+    fixture((files) => {
+      files.locked(() => {})
+      vi.mocked(fsyncSync).mockClear()
+      vi.mocked(renameSync).mockClear()
+      let owner: { pid: number; started: string } | undefined
+      let mode = 0
+      files.locked(() => {
+        owner = JSON.parse(readFileSync(files.path('.lock/owner.json'), 'utf8'))
+        mode = statSync(files.path('.lock/owner.json')).mode & 0o777
+      })
+      expect(fsyncSync).not.toHaveBeenCalled()
+      expect(renameSync).not.toHaveBeenCalled()
+      expect(owner?.pid).toBe(process.pid)
+      expect(new Date(owner?.started ?? '').toISOString()).toBe(owner?.started)
+      expect(mode).toBe(0o600)
+      expect(existsSync(files.path('.lock'))).toBe(false)
+      // Committed store writes keep their file and directory flushes.
+      files.locked(() => files.atomic('fact.json', '{}\n'))
+      expect(fsyncSync).toHaveBeenCalledTimes(2)
     }))
 })

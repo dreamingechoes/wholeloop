@@ -132,7 +132,7 @@ export class StateStore {
     this.files.atomic(month, `${this.files.read(month) ?? ''}${batch}\n`)
     // Journal first: a crash here is repaired by rebuild; reads always replay.
     for (const [path, content] of files)
-      if (previous?.get(path) !== content) this.files.atomic(path, content)
+      if (previous?.get(path) !== content) this.files.project(path, content)
   }
 
   private appendBasic(
@@ -196,7 +196,7 @@ export class StateStore {
     return this.files.locked(() => {
       const events = this.events()
       const files = replayProjections(events)
-      for (const [path, content] of files) this.files.atomic(path, content)
+      for (const [path, content] of files) this.files.project(path, content)
       return files.size
     })
   }

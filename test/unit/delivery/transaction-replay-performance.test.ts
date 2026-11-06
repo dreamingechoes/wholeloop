@@ -133,12 +133,19 @@ describe('owned transaction replay', () => {
     'recovers the exact committed prefix after a %s writer failure',
     (point) =>
       fixture((journal) => {
-        const atomic = journal.files.atomic.bind(journal.files),
-          observed = vi.spyOn(journal.files, 'atomic').mockImplementation((path, body) => {
-            if (path.startsWith(point === 'journal' ? 'delivery/journal/' : 'delivery/state/'))
-              throw new Error('fixture-publication-refusal')
-            atomic(path, body)
-          })
+        // Segments use the durable writer; projections use the view writer (ADR-0242).
+        const writer = point === 'journal' ? 'atomic' : 'project',
+          original = journal.files[writer].bind(journal.files) as (
+            path: string,
+            body: string | Uint8Array,
+          ) => void,
+          observed = vi
+            .spyOn(journal.files, writer)
+            .mockImplementation((path: string, body: string | Uint8Array) => {
+              if (path.startsWith(point === 'journal' ? 'delivery/journal/' : 'delivery/state/'))
+                throw new Error('fixture-publication-refusal')
+              original(path, body)
+            })
         try {
           expect(() =>
             journal.transaction(actor, (_, append) => append(run, transition(true))),

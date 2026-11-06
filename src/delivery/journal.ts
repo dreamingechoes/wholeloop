@@ -379,7 +379,7 @@ export class DeliveryJournal {
       // Earlier files remain untouched; projection failure never erases committed events.
       this.files.atomic(target, content)
       replayed = published
-      for (const projection of projections) this.files.atomic(projection.path, projection.body)
+      for (const projection of projections) this.files.project(projection.path, projection.body)
       return result
     })
   }
@@ -435,7 +435,7 @@ export class DeliveryJournal {
       let written = 0
       for (const projection of planned)
         if (projection.changed) {
-          this.files.atomic(projection.path, projection.body)
+          this.files.project(projection.path, projection.body)
           written++
         }
       return { runs: states.length, written }

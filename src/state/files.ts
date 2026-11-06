@@ -36,20 +36,42 @@ export class StoreFiles {
     }
   }
 
+  /** Durable replacement for committed facts: file and directory are flushed before return. */
   atomic(relative: string, content: string | Uint8Array): void {
     assertObservationWritable()
+    this.replace(relative, this.path(relative), content, true)
+  }
+
+  /**
+   * Journal-derived views only (ADR-0242). Readers replay the flushed journal and
+   * rebuild regenerates these files, so a crash may leave a view stale but never
+   * changes a fact. Replacement stays atomic for concurrent readers; identical
+   * current bytes already are the planned view, so nothing is rewritten.
+   */
+  project(relative: string, content: string): void {
+    assertObservationWritable()
     const path = this.path(relative)
+    try {
+      if (readFileSync(path).equals(Buffer.from(content))) return
+    } catch {
+      // Absent or unreadable views take the ordinary replacement and its errors.
+    }
+    this.replace(relative, path, content, false)
+  }
+
+  private replace(relative: string, path: string, content: string | Uint8Array, durable: boolean) {
     mkdirSync(dirname(path), { recursive: true, mode: 0o700 })
     const temporary = this.path(`${relative}.${randomUUID()}.tmp`)
     const fd = openSync(temporary, 'wx', 0o600)
     try {
       try {
         writeFileSync(fd, content)
-        fsyncSync(fd)
+        if (durable) fsyncSync(fd)
       } finally {
         closeSync(fd)
       }
       renameSync(temporary, path)
+      if (!durable) return
       const directory = openSync(dirname(path), 'r')
       try {
         fsyncSync(directory)
@@ -113,9 +135,15 @@ export class StoreFiles {
       }
     }
     try {
-      this.atomic(
-        '.lock/owner.json',
+      // Diagnostic owner metadata, not a committed fact (ADR-0242). The lock
+      // directory's own mkdir/rmdir are never flushed, so syncing this file gave
+      // no coherent power-loss guarantee; an absent or partial owner is already
+      // "unknown" and blocks recovery. Exclusive creation inside the directory
+      // this writer just created keeps the containment-checked path.
+      writeFileSync(
+        this.path('.lock/owner.json'),
         `${JSON.stringify({ pid: process.pid, started: new Date().toISOString() })}\n`,
+        { flag: 'wx', mode: 0o600 },
       )
       return operation()
     } finally {

@@ -242,7 +242,7 @@ rules:
   - id: delivery-recovery-ownership
     enforcers: [src/delivery/recovery.ts#DeliveryRecovery, src/delivery/recovery-events.ts#reduceDeliveryRecovery, src/delivery/queue.ts#DeliveryQueue, src/runner/native-process.ts#ManagedRunnerProcess, test/unit/runner/native-process.test.ts, test/unit/delivery/recovery-process.test.ts]
   - id: delivery-stopped-writer-repair
-    enforcers: [src/delivery/lock-recovery.ts#DeliveryLockRecovery, src/state/files.ts#StoreFiles, src/state/files.ts#locked, test/unit/state/lock.test.ts, test/unit/state/store.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/recovery-cli.test.ts]
+    enforcers: [src/delivery/lock-recovery.ts#DeliveryLockRecovery, src/state/files.ts#StoreFiles, src/state/files.ts#locked, src/state/files.ts#project, test/unit/state/lock.test.ts, test/unit/state/projection-writes.test.ts, test/unit/state/store.test.ts, test/unit/delivery/recovery-process.test.ts, test/unit/delivery/recovery-cli.test.ts]
   - id: delivery-queue-fencing
     enforcers: [src/delivery/queue.ts#DeliveryQueue, src/delivery/queue-selection.ts#queueCapacity, src/delivery/queue-selection.ts#hasUnqueuedAttempts, src/delivery/native-readonly-attempts.ts#NativeReadOnlyAttempts, test/unit/delivery/queue-selection-performance.test.ts, src/delivery/queue-events.ts#reduceDeliveryQueue, src/delivery/broker.ts#DeliveryBroker, test/unit/delivery/queue.test.ts, test/unit/delivery/queue-cli.test.ts]
   - id: delivery-journal-replay

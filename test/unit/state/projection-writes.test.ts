@@ -25,15 +25,15 @@ function fixture(run: (store: StateStore, ids: string[]) => void, count = 2) {
 describe('projection refresh for basic item mutations', () => {
   it.each([8, 32])('writes only the changed view of one note among %i existing items', (count) =>
     fixture((store, ids) => {
-      const atomic = vi.spyOn(store.files, 'atomic')
+      const atomic = vi.spyOn(store.files, 'atomic'),
+        project = vi.spyOn(store.files, 'project')
       store.note(ids[0] ?? '', 'One fixture note')
-      const paths = atomic.mock.calls.map(([path]) => path)
-      expect(paths).toHaveLength(3)
-      expect(paths.filter((path) => path.startsWith('items/'))).toEqual([
-        `items/${ids[0]}/initiative.md`,
+      // Only the journal is a durable fact; the lock owner is written inside the
+      // new lock (ADR-0242) and the changed view is a journal-derived projection (ADR-0242).
+      expect(atomic.mock.calls.map(([path]) => path)).toEqual([
+        expect.stringMatching(/^journal\/\d{4}-\d{2}\.ndjson$/),
       ])
-      expect(paths).toContain('.lock/owner.json')
-      expect(paths.some((path) => /^journal\/\d{4}-\d{2}\.ndjson$/.test(path))).toBe(true)
+      expect(project.mock.calls.map(([path]) => path)).toEqual([`items/${ids[0]}/initiative.md`])
       expect(store.get(ids[0] ?? '').notes).toHaveLength(1)
     }, count),
   )
@@ -42,10 +42,10 @@ describe('projection refresh for basic item mutations', () => {
     fixture((store, ids) => {
       const path = `items/${ids[0]}/initiative.md`,
         before = store.files.read(path),
-        atomic = store.files.atomic.bind(store.files)
-      const fail = vi.spyOn(store.files, 'atomic').mockImplementation((selected, content) => {
+        project = store.files.project.bind(store.files)
+      const fail = vi.spyOn(store.files, 'project').mockImplementation((selected, content) => {
         if (selected === path) throw new Error('Fixture cache failure')
-        return atomic(selected, content)
+        return project(selected, content)
       })
       expect(() => store.note(ids[0] ?? '', 'Committed fixture note')).toThrow(
         'Fixture cache failure',
@@ -87,5 +87,38 @@ describe('projection refresh for basic item mutations', () => {
       const events = store.events()
       expect(() => store.note(ids[0] ?? '', 'Must not commit')).toThrow('escapes its root')
       expect(store.events()).toEqual(events)
+    }))
+
+  it('rewrites only changed views in a complete refresh and never flushes views (ADR-0242)', () =>
+    fixture((store, ids) => {
+      const path = `items/${ids[0]}/initiative.md`,
+        fresh = store.files.read(path)
+      store.files.project(path, 'Fixture stale projection')
+      const replace = vi.spyOn(
+        store.files as unknown as { replace: (...args: unknown[]) => void },
+        'replace',
+      )
+      store.transaction((_events, append) =>
+        append(ids[1] ?? '', {
+          type: 'step.started',
+          data: {
+            step: 'frame-problem',
+            run: 'run-0000000000000001',
+            mode: 'standalone',
+            input: 'Fixture idea',
+          },
+        }),
+      )
+      const written = replace.mock.calls.map(([relative, , , durable]) => ({ relative, durable }))
+      expect(store.files.read(path)).toBe(fresh)
+      expect(written.filter(({ durable }) => durable)).toEqual([
+        { relative: expect.stringMatching(/^journal\//), durable: true },
+      ])
+      // The stale view, the changed peer and the changed shared views are rewritten;
+      // every byte-identical view, including an unchanged mailbox cursor file, is not.
+      expect(written.map(({ relative }) => relative)).toContain(path)
+      expect(written.map(({ relative }) => relative)).not.toContain('cursors.json')
+      store.rebuild()
+      expect(store.files.read(path)).toBe(fresh)
     }))
 })
