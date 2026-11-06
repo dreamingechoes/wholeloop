@@ -107,7 +107,17 @@ export function safeSourceText(text: string, limit = SOURCE_LIMIT): void {
 }
 
 /** Binary artifact capture reuses recognizable-text credential refusal without requiring UTF-8 data. */
+// SHA-256 digests of texts that already passed the scan below (ADR-0235). The
+// scan is a pure function of the text, so an identical text needs no rescan;
+// a refused text is never remembered and always scans and refuses again.
+const scannedClean = new Set<string>()
+const SCANNED_CLEAN_LIMIT = 4096
+const SCAN_DIGEST_MINIMUM = 1024
+
 export function rejectSourceCredentials(text: string): void {
+  const digest =
+    text.length >= SCAN_DIGEST_MINIMUM ? createHash('sha256').update(text).digest('hex') : undefined
+  if (digest && scannedClean.has(digest)) return
   if (
     /-----BEGIN (?:[A-Z ]+ )?PRIVATE KEY-----|\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|sk-[A-Za-z0-9_-]{40,}|AKIA[A-Z0-9]{16})\b|\b[a-z][a-z0-9+.-]*:\/\/[^\s/]+:[^\s/]+@/i.test(
       text,
@@ -118,6 +128,9 @@ export function rejectSourceCredentials(text: string): void {
     /\bBearer\s+[A-Za-z0-9._~+/-]{16,}/i.test(text)
   )
     throw new SourceInputError('credential-bearing')
+  if (!digest) return
+  if (scannedClean.size >= SCANNED_CLEAN_LIMIT) scannedClean.clear()
+  scannedClean.add(digest)
 }
 
 export function sourceRequest(value: unknown): SourceRequest {
