@@ -470,33 +470,39 @@ export class RunnerReviewStages {
           true,
           this.options.correction,
         ),
-        review = prepareReviewInput(state.engine, state.round.plan)
+        round = state.round
       try {
-        const selection = gateAuditSelection(state.round.results, state.round.votes)
-        for (const unit of state.round.plan.units) {
-          const result = selection.result(unit.id)
-          if (!result) throw new DeliveryRunnerError('review-stage-missing-result')
-          const proof = reader.observe(state.round.plan, 'reviewer', unit, review)
-          if (contractDigest(proof.value) !== contractDigest(result))
-            throw new DeliveryRunnerError('review-stage-result-binding')
-          proofs.push(proof.evidence)
-        }
-        // Audit submitted votes, then let the existing strict-majority policy
-        // decide. An unavailable third refuter is not a fabricated negative vote.
-        for (const vote of state.round.votes) {
-          const source = selection.source(vote.finding)
-          if (!source || vote.verifier < 1 || vote.verifier > state.round.plan.verifiers)
-            throw new DeliveryRunnerError('review-stage-vote-scope')
-          const observed = reader.observe(
-            state.round.plan,
-            'refuter',
-            { finding: vote.finding, verifier: vote.verifier, source },
-            review,
-          )
-          if (contractDigest(observed.value) !== contractDigest(vote))
-            throw new DeliveryRunnerError('review-stage-vote-binding')
-          proofs.push(observed.evidence)
-        }
+        // The proof audit only reads; share its repeated review-input, Git and
+        // store reads in one sealed observation that rereads every input before
+        // returning (ADR-0240). A recovery write below stays outside it.
+        await shareReadObservation(async () => {
+          const review = prepareReviewInput(state.engine, round.plan)
+          const selection = gateAuditSelection(round.results, round.votes)
+          for (const unit of round.plan.units) {
+            const result = selection.result(unit.id)
+            if (!result) throw new DeliveryRunnerError('review-stage-missing-result')
+            const proof = reader.observe(state.round.plan, 'reviewer', unit, review)
+            if (contractDigest(proof.value) !== contractDigest(result))
+              throw new DeliveryRunnerError('review-stage-result-binding')
+            proofs.push(proof.evidence)
+          }
+          // Audit submitted votes, then let the existing strict-majority policy
+          // decide. An unavailable third refuter is not a fabricated negative vote.
+          for (const vote of state.round.votes) {
+            const source = selection.source(vote.finding)
+            if (!source || vote.verifier < 1 || vote.verifier > state.round.plan.verifiers)
+              throw new DeliveryRunnerError('review-stage-vote-scope')
+            const observed = reader.observe(
+              state.round.plan,
+              'refuter',
+              { finding: vote.finding, verifier: vote.verifier, source },
+              review,
+            )
+            if (contractDigest(observed.value) !== contractDigest(vote))
+              throw new DeliveryRunnerError('review-stage-vote-binding')
+            proofs.push(observed.evidence)
+          }
+        })
         // A lost final metadata write may seal only already-observed exact work;
         // inspection never invokes a model, suite, repair or new gate round.
         const verdict = new GateWorkflow(state.engine).verdict(state.binding.subject, 'review')

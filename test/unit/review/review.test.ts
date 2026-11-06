@@ -10,7 +10,7 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { runReview } from '../../../harness/workflows/review.js'
 import { FlowEngine } from '../../../src/flow/engine.js'
 import { workspaceSnapshot } from '../../../src/gates/snapshot.js'
@@ -141,6 +141,27 @@ describe('incremental private review inputs', () => {
       symlinkSync('b.txt', join(root, 'alias'))
       const second = snapshots.capture('HEAD', first.files)
       expect(snapshots.diff(second.before, second.after)).toMatch(/-a.txt[\s\S]*\+b.txt/)
+    }))
+
+  it('reuses one private patch within a synchronous decision and renews it after effects or awaits', async () =>
+    fixture(async ({ root, engine }) => {
+      writeFileSync(join(root, 'a.txt'), 'changed for reuse\n')
+      const snapshots = new ReviewSnapshots(engine.store, root),
+        captured = snapshots.capture('HEAD'),
+        command = vi.spyOn(
+          snapshots as unknown as { command: (...args: unknown[]) => string },
+          'command',
+        )
+      const patch = snapshots.diff(captured.before, captured.after)
+      expect(snapshots.diff(captured.before, captured.after)).toBe(patch)
+      expect(command).toHaveBeenCalledTimes(1)
+      await new Promise((resolve) => setImmediate(resolve))
+      expect(snapshots.diff(captured.before, captured.after)).toBe(patch)
+      expect(command).toHaveBeenCalledTimes(2)
+      engine.store.files.atomic('fixture-effect.json', '{}\n')
+      expect(snapshots.diff(captured.before, captured.after)).toBe(patch)
+      expect(command).toHaveBeenCalledTimes(3)
+      command.mockRestore()
     }))
 
   it('retains a prior deletion and compares a recreated file against absence', async () =>

@@ -4,6 +4,7 @@ import { lstatSync, mkdirSync, readFileSync, readlinkSync, rmSync } from 'node:f
 import { dirname, join } from 'node:path'
 import { changedPaths } from '../gates/snapshot.js'
 import { canonicalPath, inside } from '../state/paths.js'
+import { effectEpoch } from '../state/read-observation.js'
 import type { StateStore } from '../state/store.js'
 import { git, repository } from '../worktrees/git.js'
 
@@ -19,6 +20,8 @@ interface Entry {
 }
 
 /** Changed-code objects and scratch indexes live outside Git; alternates are read-only. */
+let decisionDiff: { key: string; epoch: number; patch: string } | undefined
+
 export class ReviewSnapshots {
   readonly objects: string
   private readonly env: NodeJS.ProcessEnv
@@ -161,7 +164,14 @@ export class ReviewSnapshots {
   diff(before: string, after: string): string {
     if (![before, after].every((oid) => /^[a-f0-9]{40,64}$/.test(oid)))
       throw new Error('Invalid private review tree reference')
-    return this.command([
+    // Both trees are content-addressed objects in the private store, which only
+    // wl writes. Within one synchronous decision and before any announced
+    // effect, the same pair has the same patch (ADR-0243); callers still compare
+    // its digest with the journal on every call.
+    const key = JSON.stringify([this.store.files.path(this.objects), before, after]),
+      epoch = effectEpoch()
+    if (decisionDiff?.key === key && decisionDiff.epoch === epoch) return decisionDiff.patch
+    const patch = this.command([
       'diff',
       '--binary',
       '--full-index',
@@ -179,5 +189,11 @@ export class ReviewSnapshots {
       after,
       '--',
     ])
+    const entry = { key, epoch, patch }
+    decisionDiff = entry
+    queueMicrotask(() => {
+      if (decisionDiff === entry) decisionDiff = undefined
+    })
+    return patch
   }
 }
