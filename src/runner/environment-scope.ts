@@ -46,6 +46,17 @@ interface EnvironmentStageBinding {
 }
 
 /** Join existing Docker operation owners, never infer application success from client closure. */
+/** Read-only Docker queries an environment stage may issue without an owned operation. */
+function inertRead(args: readonly string[], preparation: boolean) {
+  return (
+    args.length >= 1 &&
+    (['info', 'version'].includes(args[0] ?? '') ||
+      (preparation && args[0] === 'context' && args[1] === 'inspect') ||
+      (['container', 'image', 'network', 'volume'].includes(args[0] ?? '') &&
+        args[1] === 'inspect') ||
+      (args[0] === 'container' && ['logs', 'wait'].includes(args[1] ?? '')))
+  )
+}
 export class RunnerEnvironmentScope {
   constructor(
     readonly store: RunnerStore,
@@ -159,11 +170,8 @@ export class RunnerEnvironmentScope {
         binding.environment,
         binding.provenance,
       ),
-      retained = boundEnvironmentOperations(
-        binding.operations,
-        operations.list(),
-        binding.provenance,
-      )
+      listed = operations.list(),
+      retained = boundEnvironmentOperations(binding.operations, listed, binding.provenance)
     for (const original of retained) {
       const claim = JSON.parse(
         readSourceFile(
@@ -183,7 +191,7 @@ export class RunnerEnvironmentScope {
       )
         throw new DeliveryRunnerError('environment-stage-operation-claim')
     }
-    return { binding, operations }
+    return { binding, operations, listed }
   }
   async run<T>(
     context: RunnerStageContext,
@@ -306,12 +314,18 @@ export class RunnerEnvironmentScope {
       )
         throw new DeliveryRunnerError('environment-stage-fenced')
       safeSourceText(JSON.stringify(args), 65536)
+      const registration = options.registration
+      // An allowed inert read publishes its locator under the writer lock after
+      // reading this same complete binding again (ADR-0244). Reading it here too
+      // repeated every guarded access in the same synchronous span; that later
+      // read keeps its errors and maps an unresolved binding to the same refusal.
+      if (!registration && inertRead(args, !!preparation)) return { allowance: remaining }
       const current = this.read()
       if (!current) throw new DeliveryRunnerError('environment-stage-original-unresolved')
-      const registration = options.registration
       let allowance = remaining
       if (registration) {
-        const original = current.operations.list().find((o) => o.id === registration.operation),
+        // This read just listed and validated every operation; select from that list.
+        const original = current.listed.find((o) => o.id === registration.operation),
           directory = `delivery/environment-operations/${environment}/${registration.operation}`
         if (
           !original ||
@@ -350,17 +364,7 @@ export class RunnerEnvironmentScope {
           })
           this.store.files.atomic(this.path, `${JSON.stringify(retained.binding)}\n`)
         })
-      } else if (
-        !(
-          args.length >= 1 &&
-          (['info', 'version'].includes(args[0] ?? '') ||
-            (preparation && args[0] === 'context' && args[1] === 'inspect') ||
-            (['container', 'image', 'network', 'volume'].includes(args[0] ?? '') &&
-              args[1] === 'inspect') ||
-            (args[0] === 'container' && ['logs', 'wait'].includes(args[1] ?? '')))
-        )
-      )
-        throw new DeliveryRunnerError('environment-stage-unregistered-operation')
+      } else throw new DeliveryRunnerError('environment-stage-unregistered-operation')
 
       return {
         allowance,
@@ -435,13 +439,22 @@ export class RunnerEnvironmentScope {
           // would break their original started/outcome identity. Inert reads
           // have no environment operation and need a separate native owner.
           if (registration) return await driver.call(args, optionsForDriver)
+          // An inert query answered in-process starts no process, so it has no
+          // owner to register or recover (ADR-0244); any other outcome takes
+          // the original owned read path below with its original semantics.
+          if (driver.query && options.input === undefined && !options.observe && !options.process) {
+            const served = await driver.query(args, {
+              signal: abort.signal,
+              timeoutMs: optionsForDriver.timeoutMs ?? 10000,
+              ...(options.outputBytes !== undefined ? { outputBytes: options.outputBytes } : {}),
+            })
+            if (served) return served
+          }
           let reader: ManagedRunnerProcess | undefined
           this.store.files.locked(() => {
             const retained = this.read()
-            if (
-              !retained ||
-              retained.binding.operations.length + retained.binding.reads.length >= 1000
-            )
+            if (!retained) throw new DeliveryRunnerError('environment-stage-original-unresolved')
+            if (retained.binding.operations.length + retained.binding.reads.length >= 1000)
               throw new DeliveryRunnerError('environment-stage-read-capacity')
             const invocation = contractDigest({
               stage: this.invocation,

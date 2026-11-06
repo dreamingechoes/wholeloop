@@ -212,6 +212,14 @@ export class DockerResources {
     )
     const value = values[0]
     if (!value || values.length !== 1) throw new DockerEnvironmentError('resource-identity-changed')
+    return this.ownedValue(latest, value, policy)
+  }
+  /** Ownership, policy and current mounted volumes for one fresh inspection of this resource. */
+  private async ownedValue(
+    latest: EnvironmentResource,
+    value: Record<string, unknown>,
+    policy: boolean,
+  ): Promise<Record<string, unknown>> {
     this.assertOwned(latest, value, policy)
     if (policy && latest.kind === 'container') {
       const resources = this.records.get(this.environment).record.resources,
@@ -465,7 +473,11 @@ export class DockerResources {
       entry.status = 'observed'
     })
     const current = this.refresh(resource)
-    await this.owned(current)
+    // The inspection above already follows the create effect, and every later
+    // effect on this resource or its dependants inspects it again first. Check
+    // full ownership and policy on that same response after binding its stamp;
+    // a container's mounted volumes still get their own fresh query (ADR-0244).
+    await this.ownedValue(current, value, true)
     this.current()
     return current
   }

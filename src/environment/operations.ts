@@ -371,6 +371,9 @@ export class EnvironmentOperations {
       )
     )
       throw new DockerEnvironmentError('unknown-operation-format')
+    // Each record is read once: the process checks below use the same bytes this
+    // loop validated instead of a second, unvalidated read (ADR-0244).
+    const validated = new Map<string, Record<string, unknown>>()
     for (const [name, schema] of [
       ['started', startedSchema],
       ['outcome', outcomeSchema],
@@ -382,9 +385,10 @@ export class EnvironmentOperations {
       validateDeliveryShape(entry, schema)
       if (entry.operation !== id || entry.nonce !== value.nonce)
         throw new DockerEnvironmentError('changed-operation-binding')
+      validated.set(name, entry)
     }
-    const started = this.read(id, 'started'),
-      outcome = this.read(id, 'outcome')
+    const started = validated.get('started'),
+      outcome = validated.get('outcome')
     if (outcome && (!started || outcome.pid !== started.pid))
       throw new DockerEnvironmentError('changed-operation-process')
     const release = this.read(id, 'exec-release')

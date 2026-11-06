@@ -84,6 +84,15 @@ export interface EnvironmentRuntime {
 }
 export const ENVIRONMENT_RUNTIME_SCHEMA = runtimeSchema
 
+/** The validated history last read for one canonical environment directory (ADR-0244). */
+interface RetainedHistory {
+  schemas: string
+  entries: { name: string; text: string; record: EnvironmentRuntime; digest: string }[]
+}
+const retainedHistories = new Map<string, RetainedHistory>()
+const RETAINED_HISTORY_LIMIT = 64
+const RETAINED_HISTORY_TEXT_LIMIT = 16 * 1024 * 1024
+
 /** Immutable snapshots preserve partial startup and ownership even when disposable indices disappear. */
 export class EnvironmentResources {
   constructor(readonly files: StoreFiles) {}
@@ -102,23 +111,47 @@ export class EnvironmentResources {
     id: string,
     wanted?: string,
   ): { record: EnvironmentRuntime; digest: string; sequence: number } {
-    const directory = this.directory(id)
-    if (!existsSync(this.files.path(directory)))
-      throw new EnvironmentRecipeError('unknown-environment')
-    const names = readdirSync(this.files.path(directory))
+    const directory = this.directory(id),
+      physical = this.files.path(directory)
+    if (!existsSync(physical)) throw new EnvironmentRecipeError('unknown-environment')
+    const names = readdirSync(physical)
       .filter((name) => name.endsWith('.json'))
       .sort()
     if (!names.length || names.length > 1000)
       throw new EnvironmentRecipeError('invalid-environment-history')
+    // Every snapshot is still read and decoded through the guarded reader below.
+    // Only a leading run of byte-identical, already validated snapshots skips the
+    // pure parse/shape/digest/identity work, and only while both schemas are unchanged.
+    const schemas = JSON.stringify([snapshotSchema, runtimeSchema]),
+      retained = retainedHistories.get(physical),
+      reusable = retained?.schemas === schemas ? retained.entries : [],
+      entries: RetainedHistory['entries'] = []
+    let reusing = true,
+      retainedText = 0
     let previous: string | undefined
     let latest: ReturnType<EnvironmentResources['get']> | undefined
     let selected: ReturnType<EnvironmentResources['get']> | undefined
     for (const [index, name] of names.entries()) {
       if (name !== `${String(index + 1).padStart(4, '0')}.json`)
         throw new EnvironmentRecipeError('incomplete-environment-history')
-      const snapshot = JSON.parse(
-        readSourceFile(this.files.root, `${directory}/${name}`, 8 * 1024 * 1024),
-      ) as { schema: string; digest: string; previous?: string; sequence: number; record: unknown }
+      const text = readSourceFile(this.files.root, `${directory}/${name}`, 8 * 1024 * 1024),
+        prior = reusing ? reusable[index] : undefined
+      retainedText += text.length
+      if (prior && prior.name === name && prior.text === text) {
+        entries.push(prior)
+        previous = prior.digest
+        latest = { record: prior.record, digest: prior.digest, sequence: index + 1 }
+        if (prior.digest === wanted) selected = latest
+        continue
+      }
+      reusing = false
+      const snapshot = JSON.parse(text) as {
+        schema: string
+        digest: string
+        previous?: string
+        sequence: number
+        record: unknown
+      }
       validateDeliveryShape(snapshot, snapshotSchema)
       const { digest, ...body } = snapshot
       if (
@@ -163,12 +196,23 @@ export class EnvironmentResources {
       if (latest) this.next(latest.record, record)
       previous = digest
       latest = { record, digest, sequence: index + 1 }
+      entries.push({ name, text, record, digest })
       if (digest === wanted) selected = latest
     }
     if (!latest) throw new EnvironmentRecipeError('unknown-environment')
+    // Retain only a completely validated history; a refusal above leaves the
+    // previous entry, whose bytes must still match exactly before any reuse.
+    retainedHistories.delete(physical)
+    if (retainedText <= RETAINED_HISTORY_TEXT_LIMIT) {
+      if (retainedHistories.size >= RETAINED_HISTORY_LIMIT) {
+        const oldest = retainedHistories.keys().next().value
+        if (oldest !== undefined) retainedHistories.delete(oldest)
+      }
+      retainedHistories.set(physical, { schemas, entries })
+    }
     if (wanted && !selected) throw new EnvironmentRecipeError('unknown-runtime-snapshot')
-    if (selected) return selected
-    return latest
+    // Retained records are private: every caller receives an independent copy.
+    return structuredClone(selected ?? latest)
   }
   create(
     record: EnvironmentRuntime,

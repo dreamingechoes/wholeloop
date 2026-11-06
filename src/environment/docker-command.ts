@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { homedir } from 'node:os'
 import { workerProcess } from '../fanout/process.js'
+import { type EngineTarget, engineQuery, observeEngineTarget } from './docker-engine.js'
 import { DOCKER_OPERATION_WRAPPER } from './operation-wrapper.js'
 import type { DockerOperationRegistration } from './operations.js'
 
@@ -32,12 +33,22 @@ export interface DockerCallOptions {
 export interface DockerTransport {
   provenance: 'fixture' | 'host-observed'
   call(args: string[], options?: DockerCallOptions): Promise<DockerResult>
+  /**
+   * Answer an inert query in-process when possible (ADR-0244). Undefined means
+   * the caller must use call(); an in-process answer leaves no process to own.
+   */
+  query?(
+    args: string[],
+    options?: Pick<DockerCallOptions, 'timeoutMs' | 'signal' | 'outputBytes'>,
+  ): Promise<DockerResult | undefined>
   /** Private stdio cannot use call(); claim its original operation before spawning. */
   interactive?: {
     native: DockerCli
     register(args: string[], registration: DockerOperationRegistration): DockerOperationRegistration
   }
 }
+// Targets learned from owned preflight answers, per CLI and connection variables (ADR-0244).
+const learnedTargets = new Map<string, Partial<EngineTarget>>()
 /** Docker authenticates through its own native store; application containers receive none of this environment. */
 export class DockerCli implements DockerTransport {
   readonly provenance = 'host-observed' as const
@@ -45,6 +56,19 @@ export class DockerCli implements DockerTransport {
     readonly command = 'docker',
     readonly env: NodeJS.ProcessEnv = process.env,
   ) {}
+  private connection() {
+    const env = dockerCliEnvironment(this.env)
+    return JSON.stringify([this.command, env.DOCKER_HOST, env.DOCKER_CONTEXT, env.DOCKER_CONFIG])
+  }
+  async query(
+    args: string[],
+    options: Pick<DockerCallOptions, 'timeoutMs' | 'signal' | 'outputBytes'> = {},
+  ): Promise<DockerResult | undefined> {
+    // Only after an owned preflight of the same CLI and connection variables
+    // reported both facts: the same endpoint and negotiated API version.
+    const { socket, version } = learnedTargets.get(this.connection()) ?? {}
+    return engineQuery(socket && version ? { socket, version } : undefined, args, options)
+  }
   async call(args: string[], options: DockerCallOptions = {}): Promise<DockerResult> {
     const env = dockerCliEnvironment(this.env)
     const hash = createHash('sha256')
@@ -98,6 +122,13 @@ export class DockerCli implements DockerTransport {
         code: result.code,
         signal: result.signal,
       })
+    if (result.status === 'succeeded' && !registration) {
+      const key = this.connection()
+      learnedTargets.set(
+        key,
+        observeEngineTarget(args, result.stdout, learnedTargets.get(key) ?? {}),
+      )
+    }
     return {
       ...result,
       digest: hash.digest('hex'),
