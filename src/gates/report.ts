@@ -8,27 +8,50 @@ export function gateReport(
   observed: string,
   budget = plan.budget,
 ): GateReport {
-  const missing = plan.units
-    .filter((unit) => !results.some((result) => result.unit === unit.id && result.status === 'ok'))
-    .map(({ id }) => id)
-  if (results.some((result) => result.unit === 'suite' && result.execution?.status === 'failed'))
-    missing.push('suite-execution')
+  const firstResults = results.length ? new Map<string, GateResult>() : undefined,
+    covered = results.length ? new Set<string>() : undefined
+  let suiteFailed = false
+  if (firstResults && covered)
+    for (const result of results) {
+      const { unit, status } = result
+      // Preserve find's first match and some's any-ok coverage independently.
+      // Even a duplicate input must not silently become last-write-wins.
+      if (!firstResults.has(unit)) firstResults.set(unit, result)
+      if (status === 'ok') covered.add(unit)
+      if (unit === 'suite' && result.execution?.status === 'failed') suiteFailed = true
+    }
+  const missing: string[] = []
   const kept: GateReport['kept'] = []
   const dropped: GateReport['dropped'] = []
+  let examinations: Map<string, { count: number; refutations: number }> | undefined
   for (const unit of plan.units) {
-    const result = results.find((entry) => entry.unit === unit.id)
-    for (const finding of result?.findings ?? []) {
-      const id = `${unit.id}:${finding.id}`
-      const examinations = votes.filter((vote) => vote.finding === id)
-      const refutations = examinations.filter((vote) => vote.outcome === 'refute').length
-      const safe =
-        !unit.failSafe ||
-        (examinations.length === plan.verifiers &&
-          examinations.every((vote) => vote.outcome === 'refute'))
+    const unitId = unit.id
+    if (!covered?.has(unitId)) missing.push(unitId)
+    const findings = firstResults?.get(unitId)?.findings
+    if (!findings?.length) continue
+    const failSafe = unit.failSafe
+    for (const finding of findings) {
+      // No finding means no vote work. Otherwise aggregate once for this exact
+      // immutable input vector; duplicate votes retain their original weight.
+      if (!examinations) {
+        examinations = new Map()
+        for (const vote of votes) {
+          const { finding, outcome } = vote,
+            entry = examinations.get(finding) ?? { count: 0, refutations: 0 }
+          entry.count++
+          if (outcome === 'refute') entry.refutations++
+          examinations.set(finding, entry)
+        }
+      }
+      const id = `${unitId}:${finding.id}`
+      const examined = examinations.get(id),
+        count = examined?.count ?? 0,
+        refutations = examined?.refutations ?? 0
+      const safe = !failSafe || (count === plan.verifiers && refutations === count)
       const drop = refutations >= plan.refutations && safe
       const entry = {
         id,
-        unit: unit.id,
+        unit: unitId,
         finding,
         refutations,
         reason: drop
@@ -40,6 +63,7 @@ export function gateReport(
       ;(drop ? dropped : kept).push(entry)
     }
   }
+  if (suiteFailed) missing.push('suite-execution')
   const unchanged = observed === plan.snapshot.digest
   const green = unchanged && !missing.length && !kept.length
   return {

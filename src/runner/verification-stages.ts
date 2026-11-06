@@ -7,6 +7,7 @@ import { EnvironmentResources } from '../environment/runtime.js'
 import type { FlowEngine } from '../flow/engine.js'
 import type { GatePlan } from '../gates/contracts.js'
 import { inspectGateRound } from '../gates/execution.js'
+import { gateAuditSelection } from '../gates/selection.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
@@ -820,13 +821,14 @@ export class RunnerVerificationStages {
         } else {
           if (suite.status !== 'passed' || !suite.result)
             throw new DeliveryRunnerError('verification-stage-suite-not-passed')
-          const actualSuite = state.round.results.find((r) => r.unit === 'suite')
+          const selection = gateAuditSelection(state.round.results, state.round.votes),
+            actualSuite = selection.result('suite')
           if (contractDigest(actualSuite ?? null) !== contractDigest(suiteGateResult(suite.result)))
             throw new DeliveryRunnerError('verification-stage-suite-binding')
           proofs.push(suite.evidence)
           for (const unit of state.round.plan.units) {
             if (unit.id === 'suite') continue
-            const result = state.round.results.find((item) => item.unit === unit.id)
+            const result = selection.result(unit.id)
             if (!result) throw new DeliveryRunnerError('verification-stage-missing-result')
             const proof = reader.observe(state.round.plan, 'verifier', unit)
             if (contractDigest(proof.value) !== contractDigest(result))
@@ -836,15 +838,7 @@ export class RunnerVerificationStages {
           // Audit submitted votes, then let the existing strict-majority policy
           // decide. An unavailable third refuter is not a fabricated negative vote.
           for (const vote of state.round.votes) {
-            const source = state.round.results
-              .flatMap((result) =>
-                result.findings.map((finding) => ({
-                  id: `${result.unit}:${finding.id}`,
-                  unit: result.unit,
-                  finding,
-                })),
-              )
-              .find((item) => item.id === vote.finding)
+            const source = selection.source(vote.finding)
             if (!source || vote.verifier < 1 || vote.verifier > state.round.plan.verifiers)
               throw new DeliveryRunnerError('verification-stage-vote-scope')
             const observed = reader.observe(state.round.plan, 'refuter', {

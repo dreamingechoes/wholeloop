@@ -42,6 +42,30 @@ export type LaunchEventData =
       data: { run: string; key: string; result: { status: 'succeeded' | 'pending'; ref: string } }
     }
 
+/** Multiple artifacts may cover one value; coverage must still be exact in both directions. */
+function sameCoverage<Required, Supplied>(
+  required: readonly Required[],
+  supplied: readonly Supplied[],
+  requiredKey: (value: Required) => string,
+  suppliedKey: (value: Supplied) => string,
+) {
+  if (!required.length || !supplied.length) return !required.length && !supplied.length
+  if (required.length === 1 && supplied.length === 1) {
+    const first = required[0],
+      second = supplied[0]
+    return first !== undefined && second !== undefined && requiredKey(first) === suppliedKey(second)
+  }
+  const known = new Set<string>(),
+    covered = new Set<string>()
+  for (const entry of required) known.add(requiredKey(entry))
+  for (const entry of supplied) {
+    const id = suppliedKey(entry)
+    if (!known.has(id)) return false
+    covered.add(id)
+  }
+  return known.size === covered.size
+}
+
 export function validateLaunchDraft(
   value: unknown,
   plan: LaunchPlan,
@@ -55,16 +79,24 @@ export function validateLaunchDraft(
   if (new Set(all.map((item) => item.key)).size !== all.length)
     throw new Error('Launch artifact keys must be unique')
   if (
-    draft.dashboards.some((entry) => !metrics.some((metric) => metric.id === entry.metric)) ||
-    metrics.some((metric) => !draft.dashboards.some((entry) => entry.metric === metric.id))
+    !sameCoverage(
+      metrics,
+      draft.dashboards,
+      (metric) => metric.id,
+      (entry) => entry.metric,
+    )
   )
     throw new Error(
       'Every dashboard must implement a pinned metric and every owned metric needs a dashboard',
     )
   const stages = plan.source.plan.rollout.stages
   if (
-    draft.comms.some((entry) => !stages.some((stage) => stage.name === entry.stage)) ||
-    stages.some((stage) => !draft.comms.some((entry) => entry.stage === stage.name))
+    !sameCoverage(
+      stages,
+      draft.comms,
+      (stage) => stage.name,
+      (entry) => entry.stage,
+    )
   )
     throw new Error('Comms drafts must reference and cover the pinned rollout stages')
   const prose = [

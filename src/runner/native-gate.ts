@@ -17,6 +17,7 @@ import {
   validateGateVote,
 } from '../gates/contracts.js'
 import type { GateHost } from '../gates/execution.js'
+import { gateFindingSource } from '../gates/selection.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import type { ReviewContext } from '../review/contracts.js'
@@ -365,18 +366,11 @@ export class RunnerNativeGateHost implements GateHost {
     verifier: number,
     review?: ReviewContext,
   ): Promise<GateVote> {
-    const round = this.current(plan),
-      source = round.results
-        .flatMap((result) =>
-          result.findings.map((item) => ({
-            id: `${result.unit}:${item.id}`,
-            unit: result.unit,
-            finding: item,
-          })),
-        )
-        .find((item) => item.id === finding)
-    if (!source || !Number.isInteger(verifier) || verifier < 1 || verifier > plan.verifiers)
+    const round = this.current(plan)
+    if (!Number.isInteger(verifier) || verifier < 1 || verifier > plan.verifiers)
       throw new DeliveryRunnerError('native-gate-finding')
+    const source = gateFindingSource(round.results, finding)
+    if (!source) throw new DeliveryRunnerError('native-gate-finding')
     const value = await this.run(plan, 'refuter', { finding, verifier, source }, review)
     validateGateVote(value)
     if (value.finding !== finding || value.verifier !== verifier)

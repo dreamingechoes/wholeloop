@@ -18,8 +18,18 @@ export function launchArtifacts(
   const record = launchRuns(events).find(
     (entry) => entry.subject === subject && entry.plan.run === run,
   )
-  if (!record?.draft) return []
+  return record ? renderLaunchArtifacts(record) : []
+}
+
+/** Format the exact already validated record without reparsing its history. */
+export function renderLaunchArtifacts(
+  record: ReturnType<typeof launchRuns>[number],
+): LaunchArtifact[] {
+  if (!record.draft) return []
+  const subject = record.subject,
+    run = record.plan.run
   const { plan, draft } = record
+  const metrics = plan.source.plan.metrics
   const directory = `items/${subject}/launches/${run}`
   const artifacts: LaunchArtifact[] = [
     {
@@ -38,9 +48,22 @@ export function launchArtifacts(
       title: `${comm.audience} — ${comm.stage}`,
       body: `# Draft — ${comm.audience}\n\nStage: ${comm.stage}. Not sent.\n\n${comm.body}\n`,
     })
+  // Preserve the original first metric and its exact JSON-pointer position.
+  // Empty/single dashboard selections need no complete metric index.
+  const metricIndex = draft.dashboards.length > 1 ? new Map<string, number>() : undefined
+  if (metricIndex) {
+    let index = 0
+    for (const metric of metrics) {
+      const id = metric.id
+      if (!metricIndex.has(id)) metricIndex.set(id, index)
+      index++
+    }
+  }
   for (const dashboard of draft.dashboards) {
-    const index = plan.source.plan.metrics.findIndex((metric) => metric.id === dashboard.metric)
-    const metric = plan.source.plan.metrics[index]
+    const index = metricIndex
+      ? (metricIndex.get(dashboard.metric) ?? -1)
+      : metrics.findIndex((metric) => metric.id === dashboard.metric)
+    const metric = metrics[index]
     if (!metric) throw new Error('Dashboard lost its pinned measurement entry')
     const metricRef = `${directory}/measurement.json#/metrics/${index}`
     artifacts.push({

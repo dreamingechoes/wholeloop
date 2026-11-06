@@ -37,47 +37,47 @@ export function integrationVerificationSelection(
   candidate: IntegrationCandidate,
   plan: AcceptancePlan,
 ) {
-  const checks: { kind: 'criterion' | 'contract' | 'procedure'; id: string; cases: string[] }[] = []
-  for (const criterion of candidate.dependencies.criteria)
-    checks.push({
-      kind: 'criterion',
-      id: criterion,
-      cases: plan.cases
-        .filter((c) => c.applicability === 'applicable' && c.criteria.includes(criterion))
-        .map((c) => c.id),
-    })
+  const byCriterion = new Map<string, string[]>(),
+    byContract = new Map<string, string[]>(),
+    procedure: string[] = [],
+    selected = new Set<string>()
+  for (const id of candidate.dependencies.criteria)
+    if (!byCriterion.has(id)) byCriterion.set(id, [])
   for (const contract of candidate.contracts)
-    checks.push({
-      kind: 'contract',
-      id: contract.id,
-      cases: plan.cases
-        .filter(
-          (c) =>
-            c.applicability === 'applicable' &&
-            c.owner === 'machine' &&
-            c.fixture.sha256 === contract.sha256 &&
-            c.criteria.some((id) => candidate.dependencies.criteria.includes(id)),
-        )
-        .map((c) => c.id),
-    })
-  checks.push({
-    kind: 'procedure',
-    id: candidate.milestone,
-    cases: plan.cases
-      .filter(
-        (c) =>
-          c.applicability === 'applicable' &&
-          c.owner === 'machine' &&
-          c.actions.includes(candidate.dependencies.procedure) &&
-          c.criteria.some((id) => candidate.dependencies.criteria.includes(id)),
-      )
-      .map((c) => c.id),
-  })
-  return {
-    checks,
-    cases: [...new Set(checks.flatMap((c) => c.cases))].sort(),
-    missing: checks.filter((c) => !c.cases.length).map((c) => `${c.kind}:${c.id}`),
+    if (!byContract.has(contract.sha256)) byContract.set(contract.sha256, [])
+  if (byCriterion.size)
+    for (const test of plan.cases) {
+      if (test.applicability !== 'applicable') continue
+      const criteria = test.criteria
+      let relevant = false
+      // includes() selected a case once per criterion even if its list repeated an id.
+      for (const id of criteria.length > 1 ? new Set(criteria) : criteria) {
+        const cases = byCriterion.get(id)
+        if (cases) {
+          cases.push(test.id)
+          relevant = true
+        }
+      }
+      if (!relevant) continue
+      selected.add(test.id)
+      if (test.owner !== 'machine') continue
+      if (byContract.size) byContract.get(test.fixture.sha256)?.push(test.id)
+      if (test.actions.includes(candidate.dependencies.procedure)) procedure.push(test.id)
+    }
+  const checks: { kind: 'criterion' | 'contract' | 'procedure'; id: string; cases: string[] }[] =
+      [],
+    missing: string[] = []
+  const check = (kind: (typeof checks)[number]['kind'], id: string, cases: string[]) => {
+    // Repeated declarations still produce independently mutable check arrays.
+    checks.push({ kind, id, cases: [...cases] })
+    if (!cases.length) missing.push(`${kind}:${id}`)
   }
+  for (const id of candidate.dependencies.criteria)
+    check('criterion', id, byCriterion.get(id) ?? [])
+  for (const contract of candidate.contracts)
+    check('contract', contract.id, byContract.get(contract.sha256) ?? [])
+  check('procedure', candidate.milestone, procedure)
+  return { checks, cases: [...selected].sort(), missing }
 }
 /** Whole-milestone evidence is observed through existing fixed hosts, never imported from workers or isolated suites. */
 export class IntegrationVerification {

@@ -5,6 +5,7 @@ import type { NativeProcessRunner } from '../delivery/native-host.js'
 import type { FlowEngine } from '../flow/engine.js'
 import type { GatePlan } from '../gates/contracts.js'
 import { inspectGateRound } from '../gates/execution.js'
+import { gateAuditSelection } from '../gates/selection.js'
 import { gateRuns } from '../gates/state.js'
 import { GateWorkflow } from '../gates/workflow.js'
 import { prepareReviewInput } from '../review/input.js'
@@ -457,8 +458,9 @@ export class RunnerReviewStages {
         ),
         review = prepareReviewInput(state.engine, state.round.plan)
       try {
+        const selection = gateAuditSelection(state.round.results, state.round.votes)
         for (const unit of state.round.plan.units) {
-          const result = state.round.results.find((item) => item.unit === unit.id)
+          const result = selection.result(unit.id)
           if (!result) throw new DeliveryRunnerError('review-stage-missing-result')
           const proof = reader.observe(state.round.plan, 'reviewer', unit, review)
           if (contractDigest(proof.value) !== contractDigest(result))
@@ -468,15 +470,7 @@ export class RunnerReviewStages {
         // Audit submitted votes, then let the existing strict-majority policy
         // decide. An unavailable third refuter is not a fabricated negative vote.
         for (const vote of state.round.votes) {
-          const source = state.round.results
-            .flatMap((result) =>
-              result.findings.map((finding) => ({
-                id: `${result.unit}:${finding.id}`,
-                unit: result.unit,
-                finding,
-              })),
-            )
-            .find((item) => item.id === vote.finding)
+          const source = selection.source(vote.finding)
           if (!source || vote.verifier < 1 || vote.verifier > state.round.plan.verifiers)
             throw new DeliveryRunnerError('review-stage-vote-scope')
           const observed = reader.observe(

@@ -34,16 +34,16 @@ export function validGateData(type: string, data: Record<string, unknown>): bool
 
 /** Replay rejects impossible transitions even when callers bypass the workflow API. */
 export function gateRuns(events: readonly StateEvent[]): GateRun[] {
-  const runs = new Map<string, GateRun>()
+  const runs = new Map<string, GateRun>(),
+    latestBySubject = new Map<string, Map<GateKind, GateRun>>()
   for (const entry of events) {
     if (!entry.type.startsWith('gate.')) continue
     if (entry.type === 'gate.planned') {
-      const plan = entry.data.plan
-      if (plan.subject !== entry.subject) throw new Error('Gate plan subject mismatch')
+      const plan = entry.data.plan,
+        subject = entry.subject
+      if (plan.subject !== subject) throw new Error('Gate plan subject mismatch')
       let run = runs.get(plan.run)
-      const latest = [...runs.values()]
-        .filter((value) => value.subject === entry.subject && value.gate === plan.gate)
-        .at(-1)
+      const latest = latestBySubject.get(subject)?.get(plan.gate)
       if (!run) {
         if (
           plan.round !== 1 ||
@@ -51,19 +51,24 @@ export function gateRuns(events: readonly StateEvent[]): GateRun[] {
         )
           throw new Error('Finish the existing gate run; failed budgets cannot reset implicitly')
         run = {
-          subject: entry.subject,
+          subject,
           run: plan.run,
           gate: plan.gate,
           budget: plan.budget,
           rounds: [],
         }
         runs.set(plan.run, run)
+        // Latest means creation order, matching the original run-vector scan.
+        // Advancing an older run must never move this selector backwards.
+        const lanes = latestBySubject.get(subject) ?? new Map<GateKind, GateRun>()
+        lanes.set(plan.gate, run)
+        latestBySubject.set(subject, lanes)
       } else {
         const first = run.rounds[0]?.plan
         const previous = run.rounds.at(-1)
         if (
           latest !== run ||
-          run.subject !== entry.subject ||
+          run.subject !== subject ||
           run.gate !== plan.gate ||
           !previous?.decision ||
           previous.decision.report.verdict === 'PASS' ||

@@ -168,15 +168,15 @@ rules:
   - id: delivery-runner-criterion-verification
     enforcers: [src/verification/contract-gate.ts#contractGateUnits, src/verification/contract-gate.ts#contractGateInput, test/unit/verification/contract-gate.test.ts, src/runner/verification-stages.ts#RunnerVerificationStages, src/runner/store.ts#RunnerStore, src/delivery/budgets.ts#DeliveryBudgets, test/unit/runner/store.test.ts, test/unit/delivery/budgets.test.ts, src/runner/suite-stages.ts#RunnerSuiteStages, src/runner/native-gate.ts#RunnerNativeGateHost, src/gates/execution.ts#inspectGateRound, test/unit/runner/verification-stages.test.ts, test/unit/runner/native-gate.test.ts, test/unit/runner/review-stages.test.ts, test/evals/runner/verification.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-owned-suites
-    enforcers: [src/runner/suite-stages.ts#RunnerSuiteStages, src/acceptance/suite-observation.ts#observedDockerSuiteCommand, src/acceptance/docker-suite.ts#dockerSuiteExecutor, src/verification/suite.ts#runSuite, src/runner/environment-scope.ts#RunnerEnvironmentScope, test/unit/runner/suite-stages.test.ts, test/unit/acceptance/suite-observation.test.ts, test/evals/runner/suites.ts]
+    enforcers: [src/runner/suite-stages.ts#RunnerSuiteStages, src/acceptance/suite-observation.ts#observedDockerSuiteCommand, src/acceptance/docker-suite.ts#dockerSuiteExecutor, src/verification/suite.ts#runSuite, src/runner/environment-scope.ts#RunnerEnvironmentScope, test/unit/runner/suite-stages.test.ts, test/unit/acceptance/suite-observation.test.ts, test/evals/runner/suites.ts, src/gates/selection.ts#gateAuditSelection, test/unit/gates/selection-performance.test.ts]
   - id: delivery-runner-artifact-production
     enforcers: [src/delivery/worker-proposal.ts#workerProposalResponseSchema, test/unit/delivery/worker-proposal.test.ts, src/delivery/native-readonly-attempts.ts#NativeReadOnlyAttempts, src/delivery/native-purpose.ts#NativePurposeAttempts, src/runner/artifact-attempts.ts#RunnerArtifactAttempts, src/runner/artifact-stages.ts#RunnerArtifactStages, src/runner/public-build-plan-inputs.ts#PublicBuildPlanInputs, test/unit/runner/public-implementation.test.ts, src/acceptance/store.ts#DeliveryAcceptance, test/unit/runner/artifact-attempts.test.ts, test/unit/runner/artifact-stages.test.ts, test/unit/delivery/native-purpose.test.ts, test/unit/decisions/native-host.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-acceptance-generation-contract
     enforcers: [src/runner/artifact-stages.ts#RunnerArtifactStages, src/runner/public-acceptance-context.ts#publicAcceptanceContext, src/runner/public-composition.ts#composeInstalledImplementation, src/acceptance/behavior-input.ts#behaviorInput, test/unit/runner/artifact-stages.test.ts, test/unit/runner/public-acceptance-context.test.ts, test/unit/runner/public-implementation.test.ts]
   - id: delivery-runner-owned-environments
-    enforcers: [src/runner/environment-scope.ts#RunnerEnvironmentScope, src/environment/operations.ts#EnvironmentOperations, src/runner/native-process.ts#ManagedRunnerProcess, test/unit/runner/environment-scope.test.ts, test/unit/environment/operations.test.ts, test/support/runner-environment.ts, test/evals/runner/foreground.ts]
+    enforcers: [src/runner/environment-scope.ts#RunnerEnvironmentScope, src/environment/operations.ts#EnvironmentOperations, src/runner/native-process.ts#ManagedRunnerProcess, test/unit/runner/environment-scope.test.ts, test/unit/environment/operations.test.ts, test/support/runner-environment.ts, test/evals/runner/foreground.ts, src/runner/environment-bindings.ts#boundEnvironmentOperations, src/runner/environment-bindings.ts#selectEnvironmentObservations, test/unit/runner/environment-bindings.test.ts]
   - id: delivery-runner-owned-review
-    enforcers: [src/runner/native-gate.ts#RunnerNativeGateHost, src/runner/review-stages.ts#RunnerReviewStages, src/gates/report.ts#gateReport, test/unit/gates/gates.test.ts, src/runner/git-stages.ts#RunnerGitStages, src/delivery/worker-context.ts#workerContextForClaim, test/unit/runner/native-gate.test.ts, test/unit/runner/review-stages.test.ts, test/unit/runner/git-stages.test.ts, test/support/runner-review.ts, test/evals/runner/foreground.ts]
+    enforcers: [src/runner/native-gate.ts#RunnerNativeGateHost, src/runner/review-stages.ts#RunnerReviewStages, src/gates/report.ts#gateReport, test/unit/gates/gates.test.ts, src/runner/git-stages.ts#RunnerGitStages, src/delivery/worker-context.ts#workerContextForClaim, test/unit/runner/native-gate.test.ts, test/unit/runner/review-stages.test.ts, test/unit/runner/git-stages.test.ts, test/support/runner-review.ts, test/evals/runner/foreground.ts, src/gates/selection.ts#gateAuditSelection, src/gates/selection.ts#gateFindingSource, test/unit/gates/selection-performance.test.ts]
   - id: delivery-runner-decision-stages
     enforcers: [src/runner/plan-stages.ts#RunnerPlanStages, test/unit/runner/plan-stages.test.ts, test/evals/runner/definitions.ts, src/runner/decision-stages.ts#RunnerDecisionStages, src/runner/native-stage.ts#RunnerNativeStage, src/runner/route.ts#runnerDecisionRequirements, test/unit/runner/decision-stages.test.ts, test/unit/runner/worker-stages.test.ts, test/evals/runner/foreground.ts]
   - id: delivery-runner-worker-stages
@@ -200,7 +200,7 @@ rules:
   - id: delivery-evaluation-standards
     enforcers: [src/evaluation/catalog.ts#loadEvaluationCatalog, src/evaluation/store.ts#EvaluationSeeds, test/unit/evaluation/catalog.test.ts, test/unit/evaluation/oracle.test.ts, test/evals/delivery/self-check.ts, test/evals/delivery/run.ts, test/evals/delivery/browser.ts]
   - id: delivery-integration-assembly
-    enforcers: [src/integration/assembly.ts#IntegrationAssembly, src/integration/git-process.ts#AssemblyGitProcess, src/integration/parts.ts#observeRequiredParts, src/integration/verification.ts#IntegrationVerification, test/unit/integration/assembly.test.ts, test/unit/integration/git-process.test.ts, test/unit/integration/verification.test.ts, test/evals/assembly/run.ts]
+    enforcers: [src/integration/assembly.ts#IntegrationAssembly, src/integration/git-process.ts#AssemblyGitProcess, src/integration/parts.ts#observeRequiredParts, src/integration/verification.ts#IntegrationVerification, src/integration/verification.ts#integrationVerificationSelection, test/unit/integration/verification-selection-performance.test.ts, test/unit/integration/assembly.test.ts, test/unit/integration/git-process.test.ts, test/unit/integration/verification.test.ts, test/evals/assembly/run.ts]
   - id: delivery-integration-candidates
     enforcers: [src/integration/contracts.ts#integrationRequest, src/integration/contracts.ts#integrationScope, src/integration/observe.ts#observeIntegration, src/integration/store.ts#IntegrationCandidates, test/unit/integration/candidate.test.ts, test/evals/integration/run.ts]
   - id: delivery-private-acceptance
@@ -412,7 +412,7 @@ rules:
   - id: ramp-window-control
     enforcers: [src/ramp/contracts.ts#bindRampControl, src/ramp/contracts.ts#rampRuns, src/ramp/evidence.ts#collectRampEvidence, test/unit/ramp/ramp.test.ts]
   - id: launch-pinned-measurements
-    enforcers: [src/launch/measurement.ts#scopeMeasurement, src/launch/contracts.ts#validateLaunchDraft, src/launch/artifacts.ts#launchArtifacts, test/unit/launch/launch.test.ts]
+    enforcers: [src/launch/measurement.ts#scopeMeasurement, src/launch/contracts.ts#validateLaunchDraft, src/launch/artifacts.ts#launchArtifacts, test/unit/launch/launch.test.ts, src/launch/measurement.ts#validateMeasurement, src/launch/artifacts.ts#renderLaunchArtifacts, test/unit/launch/artifact-performance.test.ts]
   - id: launch-draft-boundary
     enforcers: [src/launch/run.ts#LauncherHost, src/launch/publish.ts#dispatchLaunchArtifact, src/providers/manifest.ts#validateProvider, test/unit/launch/launch.test.ts]
   - id: launch-once-publication
@@ -444,7 +444,7 @@ rules:
   - id: review-explicit-comment
     enforcers: [src/review/comments.ts#publishReviewComment, test/unit/review/review.test.ts]
   - id: verify-suite-once
-    enforcers: [src/verification/suite.ts#runSuite, src/verification/state.ts#verificationRuns, test/unit/verification/verification.test.ts]
+    enforcers: [src/verification/suite.ts#runSuite, src/verification/state.ts#verificationRuns, test/unit/verification/verification.test.ts, src/verification/state.ts#replayVerification, test/unit/gates/state-performance.test.ts]
   - id: verify-agreed-criteria
     enforcers: [src/verification/workflow.ts#VerificationWorkflow, src/gates/workflow.ts#GateWorkflow, test/unit/verification/verification.test.ts]
   - id: verify-observed-exit
@@ -458,7 +458,7 @@ rules:
   - id: build-repo-guidance
     enforcers: [src/build/workflow.ts#BuildWorkflow, test/unit/build/build.test.ts]
   - id: gate-deterministic-verdict
-    enforcers: [src/gates/report.ts#gateReport, src/gates/state.ts#gateRuns, test/unit/gates/gates.test.ts]
+    enforcers: [src/gates/report.ts#gateReport, src/gates/state.ts#gateRuns, test/unit/gates/gates.test.ts, test/unit/gates/report-performance.test.ts, test/unit/gates/state-performance.test.ts]
   - id: gate-explicit-budget
     enforcers: [src/gates/workflow.ts#GateWorkflow, src/gates/state.ts#gateRuns, test/unit/gates/gates.test.ts]
   - id: gate-observe-only

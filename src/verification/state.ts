@@ -1,16 +1,34 @@
+import type { GatePlan } from '../gates/contracts.js'
 import { gateRuns } from '../gates/state.js'
 import type { StateEvent } from '../state/events.js'
 import type { SuitePlan, SuiteResult } from './contracts.js'
 
 /** Reject duplicate intents and inconsistent process receipts during every replay. */
 export function verificationRuns(events: readonly StateEvent[]) {
+  return replayVerification(events).suites
+}
+
+/** One fixed replay exposes its validated gate and suite facts together. */
+export function replayVerification(events: readonly StateEvent[]) {
+  // Preserve validation of the complete gate history, including later corrupt
+  // transitions. Suite linkage itself needs only a validated earlier plan.
   const gates = gateRuns(events)
+  return { gates, suites: replaySuites(events) }
+}
+
+function replaySuites(events: readonly StateEvent[]) {
+  const planned = new Map<string, GatePlan>()
   const runs = new Map<
     string,
     { subject: string; run: string; round: number; plan: SuitePlan; result?: SuiteResult }
   >()
   const agreed = new Set<string>()
   for (const event of events) {
+    if (event.type === 'gate.planned') {
+      const plan = event.data.plan
+      planned.set(`${plan.run}/${plan.round}`, plan)
+      continue
+    }
     if (event.type === 'verify.agreed') {
       if (agreed.has(event.subject))
         throw new Error('Verification criteria already agreed for this item')
@@ -19,16 +37,8 @@ export function verificationRuns(events: readonly StateEvent[]) {
     if (event.type === 'verify.suite-planned') {
       const { run, round, plan } = event.data
       const key = `${run}/${round}`
-      const gate = gates
-        .find((gate) => gate.subject === event.subject && gate.run === run)
-        ?.rounds.find((entry) => entry.plan.round === round)
-      const gateEvent = events.findIndex(
-        (entry) =>
-          entry.type === 'gate.planned' &&
-          entry.data.plan.run === run &&
-          entry.data.plan.round === round,
-      )
-      if (runs.has(key) || gate?.plan.gate !== 'verify' || gateEvent >= events.indexOf(event))
+      const gate = planned.get(key)
+      if (runs.has(key) || gate?.subject !== event.subject || gate.gate !== 'verify')
         throw new Error('Suite needs one prior planned verify round')
       runs.set(key, { subject: event.subject, run, round, plan })
     }

@@ -40,6 +40,7 @@ export function validateMeasurement(value: unknown): asserts value is Measuremen
     (!plan.measurementException.reason.trim() || !plan.measurementException.who.trim())
   )
     throw new Error('Measurement exception needs its reason and answerer')
+  let validatedZones: Set<string> | undefined
   for (const metric of plan.metrics) {
     if (
       !metric.name.trim() ||
@@ -65,10 +66,19 @@ export function validateMeasurement(value: unknown): asserts value is Measuremen
       throw new Error(
         'Unknown baseline needs a missing-evidence reason and person, never an invented value',
       )
-    try {
-      new Intl.DateTimeFormat('en', { timeZone: metric.window.timezone })
-    } catch {
-      throw new Error('Measurement window needs a valid timezone')
+    const timezone = metric.window.timezone
+    // The constructor validates a zone identifier, not per-metric dates. Share
+    // exact identifiers only during this synchronous validation, never across calls.
+    if (!validatedZones?.has(timezone)) {
+      try {
+        new Intl.DateTimeFormat('en', { timeZone: timezone })
+      } catch {
+        throw new Error('Measurement window needs a valid timezone')
+      }
+      if (plan.metrics.length > 1) {
+        validatedZones ??= new Set()
+        validatedZones.add(timezone)
+      }
     }
   }
   const rollout = plan.rollout

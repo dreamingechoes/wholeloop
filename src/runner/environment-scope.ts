@@ -17,6 +17,10 @@ import { withWorkerOwnership } from '../fanout/ownership.js'
 import { assemblyGitEnvironment } from '../integration/git-process.js'
 import type { RunnerStageContext } from './engine.js'
 import {
+  boundEnvironmentOperations,
+  selectEnvironmentObservations,
+} from './environment-bindings.js'
+import {
   captureEnvironmentPreparation,
   type EnvironmentPreparation,
   validateEnvironmentPreparation,
@@ -155,27 +159,19 @@ export class RunnerEnvironmentScope {
         binding.environment,
         binding.provenance,
       ),
-      retained = operations.list()
-    for (const operation of binding.operations) {
-      const original = retained.find((o) => o.id === operation.id)
-      if (
-        Object.keys(operation).sort().join(',') !== 'command,id,nonce' ||
-        !original ||
-        original.nonce !== operation.nonce ||
-        original.command !== operation.command ||
-        original.provenance !== binding.provenance
+      retained = boundEnvironmentOperations(
+        binding.operations,
+        operations.list(),
+        binding.provenance,
       )
-        throw new DeliveryRunnerError('environment-stage-operation-binding')
-    }
-    for (const operation of binding.operations) {
-      const original = retained.find((o) => o.id === operation.id),
-        claim = JSON.parse(
-          readSourceFile(
-            this.store.files.root,
-            `delivery/runner-environment-claims/${operation.id}.json`,
-            65536,
-          ),
-        )
+    for (const original of retained) {
+      const claim = JSON.parse(
+        readSourceFile(
+          this.store.files.root,
+          `delivery/runner-environment-claims/${original.id}.json`,
+          65536,
+        ),
+      )
       if (
         contractDigest(claim) !==
         contractDigest({
@@ -609,9 +605,7 @@ export class RunnerEnvironmentScope {
         provenance: 'fixture' as const,
       }
     const observed = retained.operations.inspect(),
-      operations = retained.binding.operations.map((o) =>
-        observed.find((actual) => actual.operation.id === o.id),
-      ),
+      operations = selectEnvironmentObservations(retained.binding.operations, observed),
       // One common process-table observation avoids a subprocess per retained read.
       // The existing batch reader preserves exact nonces and fails closed as a group.
       reads = ManagedRunnerProcess.observeAll(this.store.files, retained.binding.reads),
