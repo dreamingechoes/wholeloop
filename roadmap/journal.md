@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-07 · P7-06 ✅ · Pre-publication repository audit
+
+- `npm run scan:history` runs gitleaks v8.30.1 from a digest-pinned image in Docker, with no network and a read-only mount, over every commit of `main`, and prints rule, file, commit and line only. Four findings were reviewed as false positives (a synthetic value in the profile privacy test and three lines of prose in ADR-0078) and listed by fingerprint with reasons in `.gitleaksignore`; the scan then reports 0 findings across 364 commits, and 4 without the file.
+- Review: one author identity, no file over 1 MiB, no personal paths, only public or example addresses, no attribution trailers. Process wording, narrating how the work was carried out, was found in six commit messages and several files. With the maintainer's approval the messages were rewritten from the earliest affected commit, every later commit-hash reference in messages and files was updated in the same pass (none is stale), files were corrected separately, and `main` was force-pushed with a lease after a full gate (CHECK PASS in 669s). A local backup ref keeps the old history until it is deleted.
+- macOS full gate with two file workers: CHECK PASS in 657s, 4576/4576 tests across 325 files. Not run on Linux.
+
+---
+
 ## 2026-11-07 · P7-05 ✅ · Supply-chain and security automation
 
 - Found while planning: the package declares no runtime dependencies because the CLI bundles its packages from devDependencies, so CI's `npm audit --omit=dev` audited nothing that ships. `scripts/check-dependencies.mjs` now takes the bundled set from esbuild's metafile (11 packages): permissive licences for bundled code and a reviewed list for development tools (a gate step), high or critical advisories in bundled packages (CI), and a CycloneDX SBOM of the bundle.

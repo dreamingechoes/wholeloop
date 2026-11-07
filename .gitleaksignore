@@ -1,0 +1,12 @@
+# Reviewed gitleaks false positives on main (P7-06). Each entry is a
+# fingerprint: commit:file:rule:line. A history rewrite changes the commit
+# part, so rerun npm run scan:history after one and review again.
+#
+# Synthetic secret-shaped value in the profile privacy test; it exists to
+# prove the profiler never records environment values.
+ed0fe4e7e499f907ddaddabfc667a296c3788e5d:test/unit/perf/preload.test.ts:generic-api-key:38
+# Prose "API access, SDK/application ..." in ADR-0078, read as a key by the
+# generic rule; no credential is present.
+5b0524c1967e575cb2c7dbbc14dfbb4271111778:docs/decisions/0078-published-growthbook-rules-and-explicit-hash-cohorts.md:generic-api-key:26
+56c382326f9c188929ffcd11a8f7b918073ded16:docs/decisions/0078-published-growthbook-rules-and-explicit-hash-cohorts.md:generic-api-key:26
+285443a00a5d5bf52c12d7032512fb7151afad98:docs/decisions/0078-published-growthbook-rules-and-explicit-hash-cohorts.md:generic-api-key:65

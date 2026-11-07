@@ -24,6 +24,11 @@ Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 eac
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Pre-publication history audit (P7-06, 2026-11-07)
+
+- [ ] Immediately before switching the repository to public (P7-14), run `npm run scan:history` on the final `main`, review any new finding, and confirm no other ref is pushed.
+- [ ] Delete the local backup ref `refs/backup/pre-neutral-rewrite` once the rewritten history is confirmed.
+
 ## Supply-chain automation (P7-05, 2026-11-07)
 
 The workflows, Dependabot configuration, licence and advisory checks and the release SBOM are implemented and linted locally; none of the hosted runs has executed.

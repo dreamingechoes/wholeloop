@@ -96,6 +96,12 @@ node "$WHOLELOOP_CLI" release verify /tmp/new-wholeloop-release --context /tmp/r
 
 This verifies bytes/source, not authorization or archive extraction safety for arbitrary third-party input. Unknown files, linked payloads, changed hashes/sizes, mismatched cores and blocked source/context fail with exit 3. Each regular payload is bounded to 128 MiB and the manifest to 64 KiB; failure output omits contents. The reviewed workflow generates both archives itself and never extracts imported untrusted trees. See [ADR-0069](../decisions/0069-reviewed-release-bundles-and-explicit-activation.md).
 
+## Audit the history before it becomes public
+
+`npm run scan:history` scans every commit of `main` with gitleaks, from a digest-pinned image in Docker with no network and the repository mounted read-only, so it adds no project dependency and cannot change the repository. It prints only rule, file, commit and line, never a match. Reviewed false positives are listed by fingerprint in `.gitleaksignore`, each with its reason; a fingerprint names a commit, so a history rewrite needs a new scan and review.
+
+Run it before the repository becomes public and again on the final history immediately before the visibility switch. A real finding is resolved before publication: rotate the credential first, then decide with the maintainer whether to rewrite history. The same review covers personal data, local absolute paths, files over 1 MiB, fixture licences and neutral wording (no mention of the tools or work sessions behind the repository).
+
 ## Activate publication explicitly
 
 The [Release workflow](../../.github/workflows/release.yml) supports manual dispatch on the actual default branch only. Version is an exact already-committed package version; from is the previous release ref, empty only for the initial release. The publish input defaults to false. Preparation runs all checks, reads actual repository metadata and uploads a seven-day artifact. Its summary links the exact artifact and an independently retained manifest digest. Inspect bundle.json, the notes and both archives before approval; simulated metadata is not a CI run.

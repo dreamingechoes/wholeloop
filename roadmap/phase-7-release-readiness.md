@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-05 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-06 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -143,7 +143,7 @@ flowchart LR
 
 ## P7-06 · Pre-publication repository audit
 
-**Status:** ⬜ · **Size:** S · **Depends on:** —
+**Status:** ✅ · **Size:** S · **Depends on:** —
 
 **Goal** — Make sure nothing in the source or its history should stay private.
 
@@ -151,9 +151,11 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] gitleaks reports no unresolved finding on the full history.
-- [ ] Any history rewrite is the maintainer's explicit decision and happens before the repository is public.
+- [x] gitleaks reports no unresolved finding on the full history.
+- [x] Any history rewrite is the maintainer's explicit decision and happens before the repository is public.
 - [ ] The scan is repeated on the final history immediately before the visibility switch in P7-14.
+
+**Evidence** — `npm run scan:history` (gitleaks v8.30.1 by digest, Docker, no network, read-only mount) reports 0 findings across the 364 commits of `main`; without `.gitleaksignore` it reports the 4 reviewed false positives, so the ignore file is what clears them. The review found one author identity, no file over 1 MiB, no personal paths beyond `/Users/you` placeholders, only public or example addresses, and no attribution trailers. It also found process wording: six commit messages and several files narrated how the work was carried out. With the maintainer's explicit approval on 2026-11-07 the messages were rewritten from the earliest affected commit, every commit-hash reference in later messages and files was updated in place (no stale reference remains), the files were corrected, and `main` was force-pushed with a lease. The repeat scan immediately before the visibility switch stays open for P7-14.
 
 **Tests** — A reproducible scan command with a pinned image digest.
 
