@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-07 · P7-07 ✅ · Versioning policy and changelog
+
+- Versions are full `x.y.z`, with pre-releases on `next` before a final `latest`; the releasing guide and [ADR-0068](../docs/decisions/0068-read-only-release-consistency-preflight.md) state what counts as breaking and the version change each impact needs. `release notes --from v<previous>` now checks the requested version against the range's impact and keeps an insufficient change in review, which release preparation refuses.
+- `CHANGELOG.md` is generated from the same release-note drafts by `npm run changelog`, newest release first, and a new gate step fails on hand edits; a release pull request adds the untagged version with `--next`. Headings carry only the version, so that section stays byte-identical once its tag exists. No release is tagged yet, so the file says so.
+- The fixture run caught git's `v:refname` order placing `1.0.0` before `1.0.0-rc.1`; tags are sorted by semantic-version precedence instead.
+- No runtime hot path changed: the version rule is constant work per release-notes run and the changelog runs only in the gate and when a release is prepared. macOS full gate with two file workers: CHECK PASS in 662s, 4593/4593 tests across 326 files. Not run on Linux.
+
+---
+
 ## 2026-11-07 · P7-06 ✅ · Pre-publication repository audit
 
 - `npm run scan:history` runs gitleaks v8.30.1 from a digest-pinned image in Docker, with no network and a read-only mount, over every commit of `main`, and prints rule, file, commit and line only. Four findings were reviewed as false positives (a synthetic value in the profile privacy test and three lines of prose in ADR-0078) and listed by fingerprint with reasons in `.gitleaksignore`; the scan then reports 0 findings across 364 commits, and 4 without the file.

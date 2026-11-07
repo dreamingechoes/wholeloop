@@ -2200,6 +2200,24 @@
         "impact": {
           "enum": ["major", "minor", "patch", "none"]
         },
+        "bump": {
+          "type": "object",
+          "required": ["previous", "required", "allowed"],
+          "properties": {
+            "previous": {
+              "type": "string"
+            },
+            "required": {
+              "enum": ["major", "minor", "patch"]
+            },
+            "allowed": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string"
+            }
+          }
+        },
         "count": {
           "type": "integer",
           "minimum": 0,

@@ -5,6 +5,20 @@
 > [!NOTE]
 > **Status: 🚧 partial.** Local packaging/delivery/notes/preflight and reviewed-bundle publication automation are implemented. Package version 0.0.0 remains private; actual public hosting, ownership/OIDC/provenance and release/tag/announcement remain unverified. These maintainer checks do not block local client setup.
 
+## Versions
+
+Every version is a full semantic version, `x.y.z`; write `1.0.0`, never `1.0`. A pre-release adds an identifier such as `1.0.0-rc.1` and is published on the npm `next` dist-tag; a final version goes to `latest`. The first public release is preceded by `1.0.0-rc.1`.
+
+| Change in the range | Version change it needs |
+| --- | --- |
+| A breaking change: a Conventional Commit with `!` or a `BREAKING CHANGE:` footer, a changed frozen contract, or a removed command, flag or behaviour | Major |
+| A new feature (`feat`) | At least minor |
+| Fixes, performance, reverts | At least patch |
+
+What counts as breaking is the [compatibility policy](../extending/compatibility.md): version-one schemas are frozen, and removals follow the deprecation rules there. `wl release notes --from v<previous> --version <next>` computes the range's impact and refuses, with `needs-review` and exit 3, a version change smaller than it requires; release preparation refuses that draft. Before `1.0.0`, a breaking change needs a new minor version. A pre-release cycle (`1.0.0-rc.1` to `1.0.0-rc.2` or `1.0.0`) may carry any change, since the release is not final yet.
+
+`CHANGELOG.md` is generated from the same release notes by `npm run changelog` and checked by `npm run check`; never edit it by hand. A release pull request regenerates it with `npm run changelog -- --next`, which adds the untagged package version.
+
 ## Select the source-built core
 
 From the wholeloop source checkout with development Node 22 or newer:

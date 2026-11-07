@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-06 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-07 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -163,7 +163,7 @@ flowchart LR
 
 ## P7-07 · Versioning policy and changelog
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P7-16
+**Status:** ✅ · **Size:** S · **Depends on:** P7-16
 
 **Goal** — Make every version and its changes predictable for users and extension authors.
 
@@ -171,8 +171,10 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] The changelog is generated, never hand-edited, and contains no tool attribution.
-- [ ] A breaking change cannot be released under a minor or patch version.
+- [x] The changelog is generated, never hand-edited, and contains no tool attribution.
+- [x] A breaking change cannot be released under a minor or patch version.
+
+**Evidence** — The policy is in the releasing guide and [ADR-0068](../docs/decisions/0068-read-only-release-consistency-preflight.md). `versionBump` refuses a smaller version change than the range's impact, and `release notes --from v<previous>` reports it as `needs-review` with exit 3, which release preparation already refuses; fifteen version pairs are tested, including pre-release cycles and `0.y.z`. `scripts/changelog.mjs` builds `CHANGELOG.md` from the release-note drafts per tag, newest first, and `npm run check` fails on a hand edit; a fixture repository with two tags covers ordering, the check and the untagged next version. The first fixture run found that git's `v:refname` order puts `1.0.0` before `1.0.0-rc.1`; tags are now sorted by semantic-version precedence.
 
 **Tests** — Changelog generation from fixture commit ranges, including breaking markers and rejected subjects.
 

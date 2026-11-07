@@ -5,7 +5,7 @@ import { bundledCanonical } from '../adapters/canonical.js'
 import { generateDistribution } from '../adapters/distribution.js'
 import { writeOwnedArtifacts } from '../adapters/owned-output.js'
 import { releaseHistory, releaseSource } from '../release/history.js'
-import { releaseNotes } from '../release/notes.js'
+import { isReleaseVersion, releaseNotes } from '../release/notes.js'
 import { releasePreflight } from '../release/preflight.js'
 import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
@@ -89,7 +89,17 @@ export function releaseNotesCommand(
       typeof from === 'string' ? from : undefined,
       typeof to === 'string' ? to : 'HEAD',
     )
-    const notes = releaseNotes(history.commits, typeof version === 'string' ? version : VERSION)
+    // A version tag as the start of the range names the previous release, so the
+    // version change can be checked against the range's impact (P7-07).
+    const previous =
+      typeof from === 'string' && /^v/.test(from) && isReleaseVersion(from.slice(1))
+        ? from.slice(1)
+        : undefined
+    const notes = releaseNotes(
+      history.commits,
+      typeof version === 'string' ? version : VERSION,
+      previous ? { previous } : {},
+    )
     io.out(
       options['--markdown'] === true
         ? notes.markdown
@@ -99,7 +109,8 @@ export function releaseNotesCommand(
             json ? undefined : 2,
           ),
     )
-    return notes.rejected.length ? EXIT.shape : EXIT.ok
+    if (notes.rejected.length) return EXIT.shape
+    return notes.bump?.allowed === false ? EXIT.precondition : EXIT.ok
   } catch (error) {
     throw new CliError(
       error instanceof Error ? error.message : 'Release note generation failed',

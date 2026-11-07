@@ -63,6 +63,7 @@ const steps = [
   ['harness', ...npm('harness:check')],
   ['maintainer', ...npm('maintainer:check')],
   ['roadmap', ...npm('roadmap:check')],
+  ['changelog', ...node('scripts/changelog.mjs', '--check')],
   ['dependencies', ...node('scripts/check-dependencies.mjs')],
   ['markdown', ...npm('lint:md')],
   ['mermaid', ...npm('lint:mermaid')],
