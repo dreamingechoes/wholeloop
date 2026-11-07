@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01, P7-04 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -99,7 +99,7 @@ flowchart LR
 
 ## P7-04 · Performance investigation tooling
 
-**Status:** ⬜ · **Size:** S · **Depends on:** —
+**Status:** ✅ · **Size:** S · **Depends on:** —
 
 **Goal** — Keep the method used in the P6-39 audit available for the day a performance problem appears.
 
@@ -107,9 +107,11 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] One documented command produces a per-phase table and caller attribution for the model-free EVAL-09 rehearsal.
-- [ ] A calibration script verifies the counters before a measurement is trusted.
-- [ ] No preload is loaded by the shipped CLI.
+- [x] One documented command produces a per-phase table and caller attribution for the model-free EVAL-09 rehearsal.
+- [x] A calibration script verifies the counters before a measurement is trusted.
+- [x] No preload is loaded by the shipped CLI.
+
+**Evidence** — `npm run perf:route -- --callers` ran the model-free EVAL-09 rehearsal end to end on 2026-11-07 and printed per-phase tables for the CLI, controller and bundled eval runner, with top callers per phase and no overflow; `compare.mjs` reproduced an equivalent outcome on that run. `npm run perf:calibrate` and `test/unit/perf/preload.test.ts` check the counters, the privacy of a profile and that neither bundle references the preload. The tools came from the audit's own preload and comparison scripts, generalised and given caller attribution and memory peaks.
 
 **Tests** — Calibration control; a privacy test showing no raw argument or environment value is written.
 

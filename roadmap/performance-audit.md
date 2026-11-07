@@ -5,6 +5,10 @@
 > [!NOTE]
 > **Status: ✅ closed for 1.0 by maintainer decision (2026-11-07).** The initial five-second total-controller ceiling is withdrawn; it was set before its consequences were known. The measured state below stands: the complete model-free route takes 68–72 seconds, about 40 of them wholeloop overhead. Paths not traced here are unaudited, not claimed fast, and a future performance problem is handled as an ordinary defect. No complete coverage, platform parity or prompt comparison is claimed.
 
+## Tools
+
+The audit's preload, calibration and equivalence comparison are kept in [`scripts/perf/`](../scripts/perf/README.md) (P7-04): `npm run perf:calibrate`, then `npm run perf:route -- --callers` for a per-phase table and caller attribution of the model-free EVAL-09 rehearsal. On 2026-11-07 that command reported the controller at 71.9 instrumented seconds with no counter or caller overflow, consistent with the closing measurement below.
+
 ## Evidence boundaries
 
 Operation counts below are executed on macOS arm64 with Node 24.22.0. Linux gates establish their stated correctness scope; Linux runtime profiling remains open. Windows/WSL2 and unavailable native accounts remain unvalidated. Synthetic clients and local publication transports establish no native-client, hosted-PR or model acceptance.

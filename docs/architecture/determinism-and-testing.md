@@ -138,6 +138,10 @@ The [API/CLI](../tutorials/delivery-behaviors.md), [browser](../tutorials/delive
 
 Private HTTP assertions use the same complete-response/objective comparison core in a build-time embedded verifier. Unchanged cases must fail on the actual clean base and pass on the latest comparable candidate when regression sensitivity applies. Pinned inputs remain outside builder workspaces and private verifier mounts remain separate from application code. Fixtures, application-container denials and coding-client conformance have different scopes. Optional native mutation counters remain repository-reported with semantic sensitivity unknown; a constant scan or model statement cannot replace actual relevant execution.
 
+## Performance investigations
+
+Performance is not a release gate, but a problem found later is investigated with the same method as the P6-39 audit. [`scripts/perf/`](../../scripts/perf/README.md) holds the measurement-only preload, its calibration control, a one-command profiled EVAL-09 rehearsal with a per-phase table and caller attribution, and an equivalence comparison that refuses to compare runs with different functional outcomes. None of it is bundled into the CLI, and a test checks that a profile contains no argument, path, environment value or body.
+
 ## Enforcement — every hard rule executes somewhere
 
 A rule written only in prose is a suggestion the agent can reason around. `enforcement.yml` maps each hard rule to the code, test or lint that enforces it; the enforcement lint fails on a rule with no enforcer, an enforcer that is only a restatement, or a skill that contradicts a rule. Details: [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md).

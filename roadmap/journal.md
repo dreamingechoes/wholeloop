@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-07 · P7-04 ✅ · Performance investigation tooling
+
+- The P6-39 measurement-only preload and equivalence comparison move from temporary files into `scripts/perf/`, with caller attribution per phase (high-frequency calls sampled one in eight), memory peaks and a calibration control. `npm run perf:route -- --callers` runs the model-free EVAL-09 rehearsal with the preload and prints per-phase tables; `compare.mjs` refuses runs whose functional outcomes differ.
+- First real run: CLI 72.2 s, controller 71.9 s and the bundled eval runner 83.1 s instrumented, peak controller RSS 335 MB, no overflow. An earlier attempt overflowed the caller table (4096 keys) and attributed callers to the phase where they first appeared; the table is now keyed by phase with a 65536 bound and its overflow is counted apart from the phase counters.
+- macOS full gate with two file workers: CHECK PASS in 646s, 4526/4526 tests across 321 files. Not run on Linux.
+
+---
+
 ## 2026-11-07 · P7-01 ✅ · Repository maintenance design
 
 - Maintainer skills and agents are authored in `maintainer/` in the canonical format and rendered by `npm run maintainer:render` into every supported client's project directories, where they are committed; [ADR-0246](../docs/decisions/0246-dogfooded-maintainer-skills-and-agents.md). Skills are copied as written; agents go through each adapter with a new `runtime: false` option that keeps the native tool and read-only mapping and drops the packaged-core preamble and `wl-` namespace.
