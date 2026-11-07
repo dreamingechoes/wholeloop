@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-07 · Phase 7 · Plan release readiness and the public launch
+
+- The maintainer adds [Phase 7](./phase-7-release-readiness.md) as the final phase before the first public release: maintainer skills and agents for the repository itself, performance investigation tooling, supply-chain and security automation, a pre-publication history audit, versioning and changelog, release automation, the switch to pull requests, a user-facing README, documentation passes, the public repository with a release candidate, and 1.0.0.
+- Decided: maintainer tools are dogfooded (authored once in wholeloop's canonical format, rendered per client and committed, so contributors need no `wl`); publication keeps one maintainer approval; a `1.0.0-rc.1` release candidate on `next` precedes `1.0.0`, and versions are always written as full `x.y.z`; pull requests replace direct commits before the repository is public; gitleaks scans the history through Docker; the README is half story and half user guide.
+- npm generates provenance only from public source repositories, even for public packages, so the visibility switch precedes the first release candidate (P7-14).
+- P5-05, P5-07 and P6-32 move to Phase 7 as P7-14, P7-15 and P7-13, with their history and checked criteria unchanged; their former headings remain as redirects. The roadmap now has 105 tasks: 73 complete and 32 open.
+- Next: P7-01–P7-12 do not depend on native acceptance and can start while the Phase 6 native campaign runs.
+
+---
+
 ## 2026-11-07 · P6-39 ✅ · Close the performance audit at the measured state
 
 - The maintainer withdraws the initial five-second controller ceiling, set before its consequences were known, and closes P6-39 at the measured state; performance is no longer a 1.0 release blocker. [ADR-0227](../docs/decisions/0227-verified-read-observation-scopes.md) is amended; the matching criterion of P6-27 is withdrawn.

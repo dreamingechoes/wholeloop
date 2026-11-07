@@ -182,7 +182,7 @@ A local complete gate must identify the checked commit, supported Node/runtime f
 
 Claude Code and Codex remain the 1.0 autonomous reference clients. Their required three-run campaign threshold and supervised regression remain separate from synthetic SDK composition. Gemini, OpenCode, Copilot and Cursor retain their original harness/native checklist and planned 1.x worker scope. Antigravity remains unavailable as a headless worker without a credential path; its in-session harness remains separate. Conditional merge still needs its separately installed runtime capability, an exact current grant and fresh host eligibility; the public runtime document does not install it.
 
-P6-32 cannot close P5-07 or erase its original prerequisites. Publishing to npm, pushing this source or changing release authority requires its own existing authorization and accepted evidence.
+P7-13 (formerly P6-32) cannot close the 1.0.0 release (P7-15, formerly P5-07) or erase its original prerequisites. Publishing to npm, pushing this source or changing release authority requires its own existing authorization and accepted evidence.
 
 <!-- docnav -->
 [◀ Autonomous delivery design](../architecture/autonomous-delivery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Core CLI ▶](../architecture/core-cli.md)

@@ -83,9 +83,9 @@ Intervention is a separate axis: `supervised` keeps current stops, `on-exception
 
 ## Scope and release ordering
 
-Phase 6 is inside the expanded 1.0, numbered after the existing phases to retain stable task links. It runs before P5-07's release closure. Local implementation can proceed independently of unresolved original native/account checks under the maintainer's implementation authorization; those checks remain release obligations at their existing scope.
+Phase 6 is inside the expanded 1.0, numbered after the existing phases to retain stable task links. It runs before the release closure in [Phase 7](../../phase-7-release-readiness.md), which ends with the 1.0.0 release (P7-15, formerly P5-07). Local implementation can proceed independently of unresolved original native/account checks under the maintainer's implementation authorization; those checks remain release obligations at their existing scope.
 
-The expanded roadmap has 92 tasks: 54 original tasks (40 complete, fourteen open) and 38 new tasks (32 complete, four implemented and awaiting native or hosted acceptance, two with implementation/acceptance work remaining). The review hold is lifted and sequential implementation is authorized; pending tasks still need their actual tests and evidence before completion. P6-32 now reconciles all 86 cases through the [acceptance map](../../../docs/reference/delivery-acceptance.md), without turning local controls into native/hosted acceptance. Size estimates are planning hypotheses and may be split without weakening acceptance.
+The [roadmap index](../../README.md) holds the current task counts; P6-32 moved to Phase 7 as P7-13 on 2026-11-07. The review hold is lifted and sequential implementation is authorized; pending tasks still need their actual tests and evidence before completion. P6-32 now reconciles all 86 cases through the [acceptance map](../../../docs/reference/delivery-acceptance.md), without turning local controls into native/hosted acceptance. Size estimates are planning hypotheses and may be split without weakening acceptance.
 
 ## Opportunity disposition
 

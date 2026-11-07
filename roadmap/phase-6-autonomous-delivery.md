@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-22, P6-24, P6-32 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-32 moved to P7-13 on 2026-11-07. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 93 tasks: 73 complete, fourteen original open tasks, four implemented tasks awaiting native or hosted acceptance and 2 pending implementation/acceptance tasks; P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0.0 and precedes the release closure in [Phase 7](./phase-7-release-readiness.md); it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. P6-35–P6-38 were added on 2026-11-04 and P6-39 on 2026-11-05; P6-32 moved to Phase 7 as P7-13 on 2026-11-07. The [roadmap index](./README.md) holds the current task counts.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -32,7 +32,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 | Whole-product integration | P6-18–P6-19 | Integration and change impact |
 | PR, CI repair and conditional merge | P6-20–P6-24 | Publication, CI and merge |
 | Operator evidence and evaluations | P6-25–P6-28 | Controls and validation |
-| Changes, learning and release closure | P6-29–P6-32 | Integration, learning and validation |
+| Changes, learning and release closure | P6-29–P6-31 (P6-32 moved to P7-13) | Integration, learning and validation |
 | Fully unattended research/decisions | P6-33–P6-34 | Unattended decisions and research |
 | Worker credentials | P6-35 | Runner, validation |
 | Operator overview and live feed | P6-36–P6-38 | Controls and observability |
@@ -838,27 +838,7 @@ The third 2026-11-05 Codex implementation pilot retains correct response identit
 
 ## P6-32 · Expanded V1 documentation and release closure
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P6-35, P6-36, P6-37, P6-38, P5-06
-
-**Design review:** accepted on 2026-10-24 · **Release:** 1.0
-
-**Goal** — Ship only the expanded capabilities and evidence actually implemented and accepted.
-
-**Deliverables** — Updated ADRs, schemas/migrations, generated references, skills/guards/enforcement, operator tutorials and reconciled release/native/manual matrix.
-
-**Acceptance criteria:**
-
-- [x] All applicable specification case IDs map to concrete tests/enforcers and stated evidence-level results.
-- [x] Source-installable docs explain supervised/on-exception/none and report-to-PR-to-merge boundaries without claiming unsupported clients.
-- [x] Original native/runtime/release obligations remain explicit; P5-07 cannot close before this task and its original prerequisites.
-
-**Tests** — AUTH-01–AUTH-08, DEC-01–DEC-06, RUN-01–RUN-09, ENV-01–ENV-07, QA-01–QA-08, INT-01–INT-07, REL-01–REL-10, OPS-01–OPS-07, LEARN-01–LEARN-06, RSR-01–RSR-06 and EVAL-01–EVAL-12 at their required evidence levels; complete local checks and explicit commit-range validation.
-
-**Docs** — [Detailed contract](./specifications/autonomous-delivery/09-validation-and-acceptance.md); README, all affected docs, acceptance, roadmap and journal.
-
-**Completed technical work** — By the maintainer's instruction, implement local documentation/release controls before remaining native/account prerequisites. The acceptance map now retains all 86 accepted cases, exact definitions, concrete tests and registered enforcers, with required native/hosted/backend/platform classes and explicit local-only results. The docs gate checks that map without changing its public JSON identity; unrelated documentation trees remain independent. Source-installable docs distinguish policy from installed endpoint support, including public none-policy report/to-PR, required recorded-human SDK hosts and separately installed CI/merge composition. Final integrated focused controls pass 51 tests in four files, the per-commit gate passes 119 tests in five files, and the complete macOS arm64/Node 24.22.0 gate passes 4287 tests in 252 files, offline packaging and every remaining check (CHECK PASS in 737s). Separate compiled Linux arm64 Node 20.0.0/24.22.0 component controls pass. Explicit precommit validation accepts all ten commits in d3c2616..3c8d66f; the new commit retains the message guard and final range validation. External evidence is not waived.
-
-**Awaiting** — The documentation/release controls are implemented, but the task's required native/hosted evidence levels and release dependencies remain open under P6-27, P6-35 and the original acceptance matrix. No fixture becomes a native/service pass. P6-32 and P5-07 remain open; credential implementation still follows real account measurements and the maintainer's design decision.
+**Moved** — Now [P7-13 · Expanded 1.0.0 documentation and release closure](./phase-7-release-readiness.md#p7-13--expanded-100-documentation-and-release-closure) (2026-11-07), with its history and checked criteria unchanged.
 
 ---
 
@@ -1070,4 +1050,4 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 Every task is accepted for 1.0, with authorization for implementing all technically executable work one task at a time, committing tested changes and updating documentation without waiting for manual checks or another signal. Manual checks are deferred, not passed. Take pragmatic implementation decisions within this scope. Account/model choices, hosted mutations, actual project merges, publication and changing the bootstrap commit workflow remain separate execution authority.
 
-[◀ P5](./phase-5-reach-release.md) · [Roadmap](./README.md) · [Specification index](./specifications/autonomous-delivery/README.md) · [Journal](./journal.md)
+[◀ P5](./phase-5-reach-release.md) · [Roadmap](./README.md) · [P7 ▶](./phase-7-release-readiness.md) · [Specification index](./specifications/autonomous-delivery/README.md) · [Journal](./journal.md)

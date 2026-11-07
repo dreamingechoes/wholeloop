@@ -52,7 +52,7 @@ Accounts with every remote service are absent from this list deliberately.
 
 The [expanded acceptance map](./reference/delivery-acceptance.md) links all 86 specification cases to concrete tests, registered enforcers and their required evidence classes. The docs gate checks coverage and prevents local controls from claiming pending native/hosted acceptance. Its source-installable boundary table separates intervention policy from installed endpoint support; a public runtime supplies neither supervised human-decision hosts nor SDK-only CI/merge authority.
 
-The map records executable local coverage. Actual backend, platform, signed-in client and hosted-service observations keep their own evidence and failures. It does not waive the original seven-client obligations or permit P5-07 closure before P6-32 and the original release prerequisites.
+The map records executable local coverage. Actual backend, platform, signed-in client and hosted-service observations keep their own evidence and failures. It does not waive the original seven-client obligations or permit the 1.0.0 release (P7-15, formerly P5-07) before P7-13 (formerly P6-32) and the original release prerequisites.
 
 ## Practical order
 
@@ -177,7 +177,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phase 6 yields 93 tasks, 73 complete and 20 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24, P6-32 and P6-33 are implemented and await native or hosted acceptance, and two implementation/acceptance tasks remain pending: P6-27 native evaluations and P6-35 worker credentials. The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phases 6 and 7 yields 105 tasks, 73 complete and 32 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-27 native evaluations and P6-35 worker credentials remain pending; and the fifteen [Phase 7](../roadmap/phase-7-release-readiness.md) release-readiness tasks are planned, including P7-13 (formerly P6-32), P7-14 (formerly P5-05) and P7-15 (formerly P5-07). The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Maintainer involvement |
 | --- | --- | --- |
@@ -193,8 +193,8 @@ The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Pha
 | P5-01 | Real scenario passes Gemini and Antigravity | Native access when blocked |
 | P5-02 | Cursor real scenario and readonly behavior pass | Native access when blocked |
 | P5-04 | Actual latest regression creates the expected issue | CI credentials/protection/activation |
-| P5-05 | Reviewed distribution, approved visibility, fresh-machine timing and clean notes | Publication/ownership decision |
-| P5-07 | Actual 1.0 tag and announcement after remaining acceptance | Final release approval |
+| P7-14 (formerly P5-05) | History audit, approved visibility, published release candidate, fresh-machine timing and clean notes | Publication/ownership decision |
+| P7-15 (formerly P5-07) | Actual 1.0.0 tag, publication and announcement after remaining acceptance | Final release approval |
 
 P4-05 is complete with fixture-tested MCP priority, explicit HTTP selection and no automatic fallback. Its unavailable service contracts retain pending handoffs. Service-account certification is a deferred backlog, not one more release gate for every vendor. Other robustness cases in the manual backlog document limitations and follow-up scope rather than silently expanding the task table into hundreds of maintainer-only release prerequisites.
 

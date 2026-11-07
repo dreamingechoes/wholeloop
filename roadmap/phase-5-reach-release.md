@@ -1,8 +1,8 @@
 # Phase 5 — Reach & release
 
-> **Outcome** — Tier B CLIs are supported, the headless engine makes parallel gates available everywhere, conformance runs every night against pinned CLI versions, and 1.0 is published with documentation generated from the code it describes.
+> **Outcome** — Tier B CLIs are supported, the headless engine makes parallel gates available everywhere, conformance runs every night against pinned CLI versions, and documentation is generated from the code it describes.
 
-Expanded 1.0 also includes [Phase 6](./phase-6-autonomous-delivery.md). Its autonomous-delivery/research design is accepted for implementation; P5-07 now waits for that implementation and acceptance. Existing checked criteria and native failures in this phase retain their original scope.
+Expanded 1.0.0 also includes [Phase 6](./phase-6-autonomous-delivery.md) and [Phase 7](./phase-7-release-readiness.md). Distribution (P5-05) and the release (P5-07) moved to Phase 7 as P7-14 and P7-15 on 2026-11-07. Existing checked criteria and native failures in this phase retain their original scope.
 
 ---
 
@@ -73,21 +73,7 @@ Expanded 1.0 also includes [Phase 6](./phase-6-autonomous-delivery.md). Its auto
 
 ## P5-05 · Distribution
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-13
-
-**Goal** — One command to install, wherever you work.
-
-**Deliverables** — npm release automation (conventional-commit changelog, provenance), Claude Code marketplace entry with bundled core, Agent Plugins root manifest, Gemini extension, optional compiled binaries in GitHub Releases. Switching the repository from private to public is part of this task and is the maintainer's explicit decision.
-
-**Acceptance criteria:**
-
-- [ ] The repository is made public only after the maintainer explicitly approves it.
-- [ ] A fresh machine goes from nothing to `wl doctor` green in under five minutes for each tier-A CLI (documented run).
-- [ ] Release notes contain no tool attribution.
-
-**Local implementation:** release artifacts exports seven independently valid native delivery trees and a relative local Claude marketplace from one exact source/core/version. Root/child integrity manifests, read-only dry-run preflight, complete ownership validation, idempotency and backup-preserving upgrades are tested. Native Claude static marketplace validation passes without registration or models. Local Conventional Commit release-note drafts now share commit subject parsing, pin an explicit complete local range and omit bodies/trailers/attribution. Review entries identify rejected commits without copying unsafe subjects; a semantic version remains a label and changes no version/ref/tag/publication. Declared impact does not establish compatibility. Actual public hosting, npm ownership/provenance, optional binaries and publication remain separate maintainer decisions. Offline npm archive verification now preflights the four-file allowlist, checks actual tarball integrity and installs into an isolated prefix/HOME/config/cache. Both linked aliases and embedded managed-file install/idempotency/removal execute from the actual package. Source bytes, privacy/version and publication stay unchanged. Native discovery/fresh-machine timing remain manual checks. The explicit publication automation below covers hosted release assets and provenance requests. Read-only release preflight now checks exact build/package/lock/source and supplied CI metadata, refusing private/mismatched/dirty/masked input. Ready is consistency only, not authenticated context or authorization. No source/ref/publication changes or service call occurs. The actual current development package remains blocked. Reviewed-bundle automation now prepares actual offline npm/native archives and exact notes, binding all hashes/sizes to source/context. Manual dispatch defaults to preparation only; explicit publication uses a protected release environment, immutable artifact ID/independent manifest digest, no rebuild, OIDC/provenance and non-overwriting tags. Synthetic publication ordering/failure tests are local only. Actual public hosting, configured owner protection/npm ownership and real OIDC/provenance/release remain manual checks; no publication has run.
-
-**Docs** — getting-started, ADR-0015, ADR-0062, ADR-0063, ADR-0067, ADR-0068, ADR-0069.
+**Moved** — Now [P7-14 · Public repository and 1.0.0 release candidate](./phase-7-release-readiness.md#p7-14--public-repository-and-100-release-candidate) (2026-11-07), with its history and local implementation unchanged.
 
 ## P5-06 · Generated references and docs pass
 
@@ -108,21 +94,7 @@ Expanded 1.0 also includes [Phase 6](./phase-6-autonomous-delivery.md). Its auto
 
 ## P5-07 · 1.0
 
-**Status:** ⏸️ · **Size:** S · **Depends on:** P5-05, P5-06, P6-32
-
-**Goal** — A stable contract others can build extensions against.
-
-**Deliverables** — schema versions frozen at 1 (config, manifests, step contract, journal events), deprecation policy, release.
-
-**Acceptance criteria:**
-
-- [x] Every schema has a version and a compatibility test.
-- [ ] The 1.0 release is tagged and announced.
-- [ ] Phase 6's expanded contracts, zero-intervention research/implementation, actual QA/integration, authorized PR/merge and required capability-level acceptance are closed through P6-32.
-
-**Local implementation:** source/compiled command registration checks every declared output. The v1 candidate records fifty-three source schemas, 147 output variants, thirteen step definitions, 157 command signatures and five exit codes. Individual compatibility cases retain declaration identities, command options/signatures and exit meanings; public adapter/distribution manifests validate before emission. The compatibility/deprecation policy preserves existing 1.x contracts and requires new identities/migrations for changed formats. Conservative fingerprints do not prove runtime semantics or native support. Actual release/tag/announcement, released README status and remaining delivery/native acceptance remain open; package version/privacy are unchanged. Further collector, headless and distribution code does not wait for manual checks and adds new identities to this candidate.
-
-**Docs** — compatibility policy, ADR-0065, ADR-0066; released README status remains pending.
+**Moved** — Now [P7-15 · 1.0.0](./phase-7-release-readiness.md#p7-15--100) (2026-11-07), with its checked criterion and local implementation unchanged.
 
 ---
 
