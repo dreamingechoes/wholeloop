@@ -58,7 +58,6 @@ Workspace snapshots hash the bytes of every tracked and non-ignored file to prov
 ## Known gaps
 
 - **Standalone headless gate workers** (`src/fanout/host.ts`) start the native client with the caller's complete environment. Delivery workers do not. Restricting gate workers needs each client's authentication variables declared and verified against signed-in clients, so it remains open in [manual verification](../../roadmap/manual-verification.md).
-- **Directory durability.** Durable replacements flush the file and its directory, not directories created on the way.
 
 ## Decisions
 

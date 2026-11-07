@@ -141,7 +141,7 @@ export class AssemblyGitProcess {
     const timeoutMs = Math.min(30000, Date.parse(deadline) - Date.now())
     if (!Number.isFinite(timeoutMs) || timeoutMs < 1 || signal.aborted)
       throw new IntegrationError('assembly-operation-deadline')
-    mkdirSync(this.files.path(this.path), { recursive: true, mode: 0o700 })
+    this.files.directory(this.path)
     const cancel = this.files.path(`${this.path}/cancel.json`),
       outcome = this.files.path(`${this.path}/outcome.json`),
       home = this.files.path(`${this.path}/home`)

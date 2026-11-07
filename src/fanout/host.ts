@@ -1,5 +1,4 @@
 import { randomUUID } from 'node:crypto'
-import { mkdirSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import type { FlowEngine } from '../flow/engine.js'
 import {
@@ -100,8 +99,7 @@ export class HeadlessHost implements GateHost {
         ?.results.find((result) => result.unit === 'suite')
       const identity = measurementDigest({ plan, role, assignment, review, suite })
       const path = `fanout/${plan.run}/${plan.round}/${identity}/${randomUUID()}`
-      const directory = this.engine.store.files.path(path)
-      mkdirSync(directory, { recursive: true, mode: 0o700 })
+      const directory = this.engine.store.files.directory(path)
       const payload = {
         schema: 'wholeloop/headless-assignment@1',
         assignment: identity,

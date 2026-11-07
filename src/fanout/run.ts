@@ -45,10 +45,7 @@ export async function runHeadless(
     throw new Error('Run wl verify suite for this round before read-only headless workers')
   const path = `fanout/${plan.run}/${plan.round}/lock`
   const lock = engine.store.files.path(path)
-  mkdirSync(engine.store.files.path(`fanout/${plan.run}/${plan.round}`), {
-    recursive: true,
-    mode: 0o700,
-  })
+  engine.store.files.directory(`fanout/${plan.run}/${plan.round}`)
   try {
     mkdirSync(lock, { mode: 0o700 })
   } catch {

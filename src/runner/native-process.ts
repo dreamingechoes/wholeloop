@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { existsSync, mkdirSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'
@@ -115,7 +115,7 @@ export class ManagedRunnerProcess {
       command: contractDigest({ command, args, input: contractDigest(input) }),
       deadline: new Date(Date.now() + options.timeoutMs).toISOString(),
     }
-    mkdirSync(this.files.path(this.relative), { recursive: true, mode: 0o700 })
+    this.files.directory(this.relative)
     this.files.locked(() => {
       if (this.read('intent')) throw new DeliveryRunnerError('native-invocation-already-issued')
       this.files.atomic(`${this.relative}/intent.json`, JSON.stringify(intent))

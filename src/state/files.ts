@@ -60,7 +60,7 @@ export class StoreFiles {
   }
 
   private replace(relative: string, path: string, content: string | Uint8Array, durable: boolean) {
-    mkdirSync(dirname(path), { recursive: true, mode: 0o700 })
+    const created = mkdirSync(dirname(path), { recursive: true, mode: 0o700 })
     const temporary = this.path(`${relative}.${randomUUID()}.tmp`)
     const fd = openSync(temporary, 'wx', 0o600)
     try {
@@ -71,16 +71,21 @@ export class StoreFiles {
         closeSync(fd)
       }
       renameSync(temporary, path)
-      if (!durable) return
-      const directory = openSync(dirname(path), 'r')
-      try {
-        fsyncSync(directory)
-      } finally {
-        closeSync(directory)
-      }
+      // A view's own bytes stay unflushed, but a directory it creates may later
+      // hold committed facts, so every directory the store creates is durable.
+      if (durable) flushDirectory(dirname(path))
+      flushCreatedEntries(created, dirname(path))
     } finally {
       if (existsSync(temporary)) rmSync(temporary)
     }
+  }
+
+  /** Create a store directory whose entry survives power loss like a committed fact. */
+  directory(relative: string): string {
+    assertObservationWritable()
+    const path = this.path(relative)
+    flushCreatedEntries(mkdirSync(path, { recursive: true, mode: 0o700 }), path)
+    return path
   }
 
   /** Preserve a verified stopped writer's lock instead of deleting its ownership evidence. */
@@ -97,23 +102,19 @@ export class StoreFiles {
       existsSync(target)
     )
       throw new Error('Refuse an aliased or occupied lock retention destination')
-    mkdirSync(dirname(target), { recursive: true, mode: 0o700 })
+    const created = mkdirSync(dirname(target), { recursive: true, mode: 0o700 })
     renameSync(lock, target)
-    for (const path of [this.root, dirname(target)]) {
-      const directory = openSync(path, 'r')
-      try {
-        fsyncSync(directory)
-      } finally {
-        closeSync(directory)
-      }
-    }
+    for (const path of [this.root, dirname(target)]) flushDirectory(path)
+    flushCreatedEntries(created, dirname(target))
   }
 
   locked<T>(operation: () => T, timeoutMs = 5000): T {
     assertObservationWritable()
     if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 0 || timeoutMs > 2147483647)
       throw new Error('Invalid store lock timeout')
-    mkdirSync(this.path('.'), { recursive: true, mode: 0o700 })
+    // A store root created here must survive with the first fact flushed under it.
+    const root = this.path('.')
+    flushCreatedEntries(mkdirSync(root, { recursive: true, mode: 0o700 }), root)
     const lock = this.path('.lock')
     const deadline = performance.now() + timeoutMs
     let wait: Int32Array | undefined
@@ -149,5 +150,30 @@ export class StoreFiles {
     } finally {
       rmSync(this.path('.lock'), { recursive: true })
     }
+  }
+}
+
+function flushDirectory(path: string): void {
+  const directory = openSync(path, 'r')
+  try {
+    fsyncSync(directory)
+  } finally {
+    closeSync(directory)
+  }
+}
+
+/**
+ * Flushing a file and its directory does not make a directory created for it
+ * durable: each new directory's entry lives in its parent. `created` is the
+ * topmost directory mkdir created (undefined when none was), so every parent
+ * from `dirname(created)` down to `deepest`'s parent is flushed. `deepest`
+ * itself holds no entry this creation added; its writers flush it.
+ */
+function flushCreatedEntries(created: string | undefined, deepest: string): void {
+  if (created === undefined) return
+  for (let path = deepest; path !== dirname(path); ) {
+    path = dirname(path)
+    flushDirectory(path)
+    if (path === dirname(created)) return
   }
 }
