@@ -2,7 +2,7 @@
 
 - Use an explicit libpq service backed by a read-only database role; no password or connection URI in argv.
 - Credentials come from the host's encrypted/keyring integration; never create a plaintext password file.
-- The host executes the pinned query through psql stdin inside BEGIN READ ONLY and ROLLBACK.
+- The client runs the pinned query through psql stdin inside BEGIN READ ONLY and ROLLBACK; wholeloop does not run psql itself.
 - Reject transaction-control or multi-statement input; never permit a query to escape the read-only transaction.
 - Apply a statement timeout and bounded result size; preserve schema, parameters, timezone and query digest.
 - Read-only transaction semantics complement restricted role permissions; a SQL prefix check is insufficient.

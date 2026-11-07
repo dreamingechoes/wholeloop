@@ -25,6 +25,6 @@ The existing provider fixture runner reports remoteProbed=false; destination tra
 
 ## Current transport scope
 
-[ADR-0085](./0085-client-owned-mcp-first-provider-transport.md) gives client-owned MCP priority and retains this implementation or policy within that scope. Existing safety constraints remain in force; a dedicated HTTP bridge per catalogue service is not a 1.0 requirement. Missing MCP contracts remain explicit pending work.
+[ADR-0085](./0085-client-owned-mcp-first-provider-transport.md) makes the client's MCP connection, or a command-line client the person installed, the only way wholeloop reaches a service; the built-in HTTP bridges were retired on 2026-11-07 (P7-16). This policy now labels those client-side integrations. Missing MCP contracts remain explicit pending work.
 
 [◀ Decisions index](./README.md)

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "growthbook",
   "name": "GrowthBook",
-  "description": "Read through an explicit host bridge and store unapplied flag proposals; never toggle flags.",
+  "description": "Read flag state through a reviewed client MCP binding and store unapplied flag proposals; never toggle flags.",
   "capabilities": ["flags"],
   "access": {
     "native": true

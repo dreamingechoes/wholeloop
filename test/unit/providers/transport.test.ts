@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -47,9 +47,9 @@ const dashboard = {
 }
 
 describe('client-owned provider transport', () => {
-  it('prefers the client MCP tool without invoking the available HTTP host', async () => {
+  it('prefers the client MCP tool without invoking the available native host', async () => {
     const calls: OperationCall[] = []
-    let http = 0
+    let native = 0
     const host = clientProviderHost(provider(), {
       mcp: {
         inventory: inventory(),
@@ -58,9 +58,9 @@ describe('client-owned provider transport', () => {
           return observed
         },
       },
-      http: {
+      native: {
         invoke: async () => {
-          http++
+          native++
           return observed
         },
       },
@@ -74,13 +74,13 @@ describe('client-owned provider transport', () => {
       ),
     ).toEqual(observed)
     expect(calls.map((call) => call.tool)).toEqual(['execute-sql'])
-    expect(http).toBe(0)
+    expect(native).toBe(0)
   })
 
   it.each(['missing', 'wrong-server', 'tool-absent'])(
-    '%s MCP access does not select an available HTTP host',
+    '%s MCP access does not select an available native host',
     async (kind) => {
-      let http = 0
+      let native = 0
       const metadata =
         kind === 'missing'
           ? undefined
@@ -89,9 +89,9 @@ describe('client-owned provider transport', () => {
             : inventory('another-tool')
       const host = clientProviderHost(provider(), {
         ...(metadata ? { mcp: { inventory: metadata, invoke: async () => observed } } : {}),
-        http: {
+        native: {
           invoke: async () => {
-            http++
+            native++
             return observed
           },
         },
@@ -99,7 +99,7 @@ describe('client-owned provider transport', () => {
       await expect(
         performOperation(provider(), 'source.product-analytics.query', { query: 'SELECT 1' }, host),
       ).rejects.toThrow('unavailable')
-      expect(http).toBe(0)
+      expect(native).toBe(0)
     },
   )
 
@@ -110,12 +110,6 @@ describe('client-owned provider transport', () => {
         inventory: inventory('fixture-create', { 'dashboards.create': 'fixture-create' }),
         invoke: async () => {
           throw new Error('private-error-payload')
-        },
-      },
-      http: {
-        invoke: async () => {
-          fallback++
-          return observed
         },
       },
       native: {
@@ -131,35 +125,44 @@ describe('client-owned provider transport', () => {
     expect(fallback).toBe(0)
   })
 
-  it('uses HTTP only when explicitly selected and never falls back to MCP', async () => {
-    let mcp = 0,
-      http = 0
-    const host = clientProviderHost(provider(), {
-      transport: 'http',
-      mcp: {
-        inventory: inventory(),
-        invoke: async () => {
-          mcp++
-          return observed
+  it('has no HTTP transport and never turns an explicit native choice into MCP', async () => {
+    let mcp = 0
+    const host = (transport: string) =>
+      clientProviderHost(provider(), {
+        transport: transport as 'native',
+        mcp: {
+          inventory: inventory(),
+          invoke: async () => {
+            mcp++
+            return observed
+          },
         },
-      },
-      http: {
-        invoke: async () => {
-          http++
-          return observed
-        },
-      },
-    })
-    await performOperation(
-      provider(),
-      'source.product-analytics.query',
-      { query: 'SELECT 1' },
-      host,
-    )
-    expect({ mcp, http }).toEqual({ mcp: 0, http: 1 })
+      })
+    expect(() =>
+      planProviderTransport(provider(), 'source.product-analytics.query', {
+        transport: 'http' as 'native',
+      }),
+    ).toThrow('Unknown provider transport')
+    await expect(
+      performOperation(
+        provider(),
+        'source.product-analytics.query',
+        { query: 'SELECT 1' },
+        host('http'),
+      ),
+    ).rejects.toThrow('Unknown provider transport')
+    await expect(
+      performOperation(
+        provider(),
+        'source.product-analytics.query',
+        { query: 'SELECT 1' },
+        host('native'),
+      ),
+    ).rejects.toThrow('unavailable')
+    expect(mcp).toBe(0)
     expect(
-      planProviderTransport(provider(), 'dashboards.create', { transport: 'http' }),
-    ).toMatchObject({ transport: 'unavailable', effects: 'not-performed' })
+      planProviderTransport(provider(), 'dashboards.create', { transport: 'native' }),
+    ).toMatchObject({ transport: 'native', effects: 'not-performed' })
   })
 
   it('lets an observed reviewed MCP dashboard binding precede the native handoff', async () => {
@@ -202,12 +205,6 @@ describe('client-owned provider transport', () => {
       const host = clientProviderHost(amplitude, {
         mcp: {
           inventory: { ...inventory('fixture-create'), server: 'amplitude' },
-          invoke: async () => {
-            invoked++
-            return observed
-          },
-        },
-        http: {
           invoke: async () => {
             invoked++
             return observed
@@ -271,7 +268,6 @@ describe('client-owned provider transport', () => {
     'preserves ramp evidence semantics for an MCP %s read',
     async (kind) => {
       const registry = { providers: [provider()], problems: [] }
-      let http = 0
       const host = clientProviderHost(provider(), {
         mcp: {
           inventory: inventory('fixture-read', { 'flags.read-state': 'fixture-read' }),
@@ -292,12 +288,6 @@ describe('client-owned provider transport', () => {
             }
           },
         },
-        http: {
-          invoke: async () => {
-            http++
-            return observed
-          },
-        },
       })
       const evidence = await flagEvidence(
         {
@@ -313,18 +303,25 @@ describe('client-owned provider transport', () => {
       )
       expect(evidence.status).toBe(kind === 'observed' ? 'observed' : 'unknown')
       if (kind === 'observed') expect(evidence).toMatchObject({ exposure: 0, enabled: false })
-      expect(http).toBe(0)
     },
   )
 
   it.each(['comms.draft', 'flags.propose-change'])(
-    'preserves native-only %s even when HTTP is selected',
+    'preserves native-only %s whatever transport is selected',
     (operation) => {
       const entry = provider(operation === 'comms.draft' ? 'slack' : 'posthog')
       expect(planProviderTransport(entry, operation)).toMatchObject({ transport: 'native' })
-      expect(
-        planProviderTransport(entry, operation, { transport: 'http', httpAvailable: true }),
-      ).toMatchObject({ transport: 'unavailable' })
+      expect(planProviderTransport(entry, operation, { transport: 'native' })).toMatchObject({
+        transport: 'native',
+      })
+      expect(() =>
+        planProviderTransport(entry, operation, {
+          inventory: {
+            ...inventory('fixture-tool', { [operation]: 'fixture-tool' }),
+            server: 'slack',
+          },
+        }),
+      ).toThrow('remain native')
     },
   )
 
@@ -418,10 +415,69 @@ describe('client-owned provider transport', () => {
         transport: 'native',
         degrade: 'handoff-artifact',
       })
+      expect(cli('posthog', 'source.product-analytics.query', '--transport', 'http').status).toBe(4)
       symlinkSync(file, join(dir, 'linked.json'))
       expect(
         cli('posthog', 'source.product-analytics.query', '--mcp', join(dir, 'linked.json')).status,
       ).toBe(4)
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('plans flag reads through client MCP, a local file or an open question without reading', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'wl-read-flags-'))
+    try {
+      const file = join(dir, 'mcp.json')
+      writeFileSync(
+        file,
+        JSON.stringify(inventory('fixture-read', { 'flags.read-state': 'fixture-read' })),
+      )
+      const env = {
+        ...process.env,
+        XDG_CONFIG_HOME: join(dir, 'config'),
+        XDG_STATE_HOME: join(dir, 'state'),
+        FIXTURE_FLAG_TOKEN: 'never-read',
+      }
+      const cli = (...args: string[]) =>
+        spawnSync(process.execPath, [resolve('dist/wl.mjs'), 'provider', 'read-flags', ...args], {
+          cwd: dir,
+          encoding: 'utf8',
+          env,
+        })
+      const read = (...args: string[]) => {
+        const result = cli(...args, '--flag', 'orders', '--environment', 'production', '--json')
+        expect(result.status, result.stderr).toBe(0)
+        return JSON.parse(result.stdout)
+      }
+      expect(read('posthog', '--mcp', file)).toMatchObject({
+        schema: 'wholeloop/flag-read@2',
+        status: 'planned',
+        transport: 'mcp',
+        server: 'posthog',
+        tool: 'fixture-read',
+        args: { flag: 'orders', environment: 'production', service: 'posthog' },
+        effects: 'not-performed',
+        authentication: 'client-owned-unverified',
+      })
+      for (const id of ['posthog', 'launchdarkly', 'growthbook', 'unleash']) {
+        const unknown = read(id)
+        expect(unknown).toMatchObject({ status: 'open-question', transport: 'unavailable' })
+        expect(unknown.question).toContain('unknown')
+      }
+      expect(read('config-flags')).toMatchObject({
+        status: 'local',
+        transport: 'native',
+        args: { file: 'wholeloop.flags.json' },
+      })
+      for (const retired of [
+        ['posthog', '--bridge', file, '--flag', 'orders', '--environment', 'production'],
+        ['posthog', '--live', '--flag', 'orders', '--environment', 'production'],
+        ['posthog', '--flag', '../orders', '--environment', 'production'],
+        ['--flag', 'orders', '--environment', 'production'],
+      ])
+        expect(cli(...retired).status).toBe(4)
+      expect(existsSync(join(dir, 'state'))).toBe(false)
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }

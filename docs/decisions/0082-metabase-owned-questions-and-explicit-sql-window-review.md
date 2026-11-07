@@ -1,9 +1,11 @@
 # 0082 — Metabase-owned questions and explicit SQL window review
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0085](./0085-client-owned-mcp-first-provider-transport.md)
 - **Date:** 2026-10-21
 
 ## Context
+
+**Superseded 2026-11-07.** The built-in HTTP dashboard writer this decision describes was removed before the first release (P7-16): wholeloop never talks to a service itself, and dashboards are created only through the client's MCP connection ([ADR-0085](./0085-client-owned-mcp-first-provider-transport.md)). The record below is history; its safety reasoning informs how a client MCP binding is reviewed, but no code implements it any more.
 
 Metabase can create a question inside a new dashboard without updating another resource. It converts legacy native queries into MBQL 5; ordinary response equality would mistake that documented conversion for a changed query. Native SQL already contains its time predicates and timezone semantics, which cannot be inferred or safely rewritten from a generic measurement window.
 

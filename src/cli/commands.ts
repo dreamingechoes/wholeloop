@@ -801,16 +801,16 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'provider plan',
     arguments: '<id> <operation>',
-    options: ['--mcp <file>', '--transport <mcp|native|http>'],
+    options: ['--mcp <file>', '--transport <mcp|native>'],
     schema: 'wholeloop/provider-transport@1',
-    summary: 'Plan client-owned MCP or explicit native/HTTP transport without service access',
+    summary: 'Plan client-owned MCP or native transport without service access',
   },
   {
     path: 'provider read-flags',
-    arguments: '',
-    options: ['--bridge <file>', '--flag <key>', '--environment <key>', '--live'],
-    schema: 'wholeloop/flag-read@1',
-    summary: 'Plan or explicitly read a supported remote boolean flag without toggling it',
+    arguments: '<id>',
+    options: ['--flag <key>', '--environment <key>', '--mcp <file>'],
+    schema: 'wholeloop/flag-read@2',
+    summary: 'Plan a flag-state read through client MCP, a local file or an open question',
   },
   {
     path: 'conformance acquisition',
@@ -1137,9 +1137,9 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'launch dispatch',
     arguments: '',
-    options: ['--for <id>', '--key <artifact-key>', '--bridge <file>', '--live'],
-    schema: 'wholeloop/dashboard-dispatch@1',
-    summary: 'Preview or explicitly dispatch one metric-pinned dashboard creation',
+    options: ['--for <id>', '--key <artifact-key>', '--mcp <file>'],
+    schema: 'wholeloop/dashboard-dispatch@2',
+    summary: 'Plan one metric-pinned dashboard through client MCP or the local handoff',
   },
   {
     path: 'launch begin',

@@ -1,59 +1,81 @@
-import { lstatSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { flagReadPlan, remoteFlagHost } from '../providers/flag-bridge.js'
+import { loadExtensionOptions } from '../config/load.js'
+import { loadProviders, resolveProvider } from '../providers/load.js'
+import { type OperationCall, performOperation } from '../providers/operations.js'
+import { planProviderTransport } from '../providers/transport.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
+import { readClientInventory } from './mcp-inventory.js'
 
+const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/
+
+/**
+ * Plan one flag-state read without reading anything (ADR-0085).
+ *
+ * wholeloop has no service client: when the client reports a reviewed MCP
+ * binding, the output names the exact call for the client to make; a local
+ * provider reads its repository file during ramp evidence; otherwise the
+ * state stays an open question for a person. No route resolves a credential.
+ */
 export async function flagReadCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
   root: string,
   json: boolean,
   io: Io,
 ) {
-  if (
-    positional.length ||
-    typeof options['--bridge'] !== 'string' ||
-    typeof options['--flag'] !== 'string' ||
-    typeof options['--environment'] !== 'string'
+  const flag = options['--flag'],
+    environment = options['--environment']
+  if (positional.length !== 1 || typeof flag !== 'string' || typeof environment !== 'string')
+    throw new CliError(
+      'Use provider read-flags <id> --flag <key> --environment <key> [--mcp <file>]',
+    )
+  if (!IDENTIFIER.test(flag) || !IDENTIFIER.test(environment))
+    throw new CliError('Use bounded exact flag and environment identifiers')
+  const provider = resolveProvider(
+    loadProviders(loadExtensionOptions({ root })),
+    'flags.read-state',
+    positional[0],
   )
-    throw new CliError(
-      'Use provider read-flags --bridge <file> --flag <key> --environment <key> [--live]',
-    )
-  let config: unknown
-  try {
-    const file = resolve(root, options['--bridge']),
-      stat = lstatSync(file)
-    if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 65536) throw new Error()
-    const bytes = readFileSync(file)
-    if (bytes.length > 65536) throw new Error()
-    config = JSON.parse(bytes.toString('utf8'))
-  } catch {
-    throw new CliError(
-      'Provide one regular non-secret bridge JSON file under 64 KiB; contents omitted',
-    )
-  }
-  const plan = flagReadPlan(config, options['--flag'], options['--environment'])
-  if (options['--live'] !== true) {
-    io.out(JSON.stringify(plan, null, json ? undefined : 2))
-    return 0
-  }
-  const host = remoteFlagHost(config, { secret: (name) => process.env[name] })
-  const result = await host.invoke({
-    provider: plan.provider,
-    operation: 'flags.read-state',
-    tool: 'wholeloop.flags.read-state',
-    args: { flag: plan.flag, environment: plan.environment },
-    guidance: '',
-  })
+  const inventory =
+    typeof options['--mcp'] === 'string' ? readClientInventory(root, options['--mcp']) : undefined
+  const route = planProviderTransport(provider, 'flags.read-state', inventory ? { inventory } : {})
+  // Bind the manifest's arguments exactly as an invoking host would receive them.
+  let call: OperationCall | undefined
+  await performOperation(
+    provider,
+    'flags.read-state',
+    { flag, environment },
+    {
+      invoke: async (planned) => {
+        call = planned
+        return { status: 'pending', ref: 'not-performed' }
+      },
+    },
+  )
+  if (!call) throw new CliError('Flag read did not produce a validated call')
+  const status =
+    route.transport === 'mcp' ? 'planned' : route.transport === 'native' ? 'local' : 'open-question'
   io.out(
     JSON.stringify(
       {
-        ...plan,
-        status: 'observed',
-        observedAt: new Date().toISOString(),
-        effects: 'remote-read',
-        result,
+        schema: 'wholeloop/flag-read@2',
+        provider: provider.manifest.id,
+        flag,
+        environment,
+        status,
+        transport: route.transport,
+        ...(route.server ? { server: route.server } : {}),
+        tool: route.tool,
+        args: call.args,
+        degrade: route.degrade,
+        reason: route.reason,
+        ...(status === 'open-question'
+          ? {
+              question: `What is the current state of flag ${flag} in ${environment}? Its exposure is unknown until a person or a client tool reports it.`,
+            }
+          : {}),
+        effects: 'not-performed',
+        authentication: route.authentication,
       },
       null,
       json ? undefined : 2,

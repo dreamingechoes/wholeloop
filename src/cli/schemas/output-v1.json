@@ -1787,7 +1787,7 @@
           "type": "string"
         },
         "transport": {
-          "enum": ["mcp", "native", "http", "unavailable"]
+          "enum": ["mcp", "native", "unavailable"]
         },
         "status": {
           "enum": ["planned", "unavailable"]
@@ -1814,10 +1814,22 @@
     },
     {
       "type": "object",
-      "required": ["schema", "subject", "key", "status", "plan", "effects"],
+      "required": [
+        "schema",
+        "subject",
+        "key",
+        "provider",
+        "operation",
+        "status",
+        "transport",
+        "tool",
+        "reason",
+        "effects",
+        "authentication"
+      ],
       "properties": {
         "schema": {
-          "const": "wholeloop/dashboard-dispatch@1"
+          "const": "wholeloop/dashboard-dispatch@2"
         },
         "subject": {
           "type": "string"
@@ -1825,29 +1837,60 @@
         "key": {
           "type": "string"
         },
-        "status": {
-          "enum": ["planned", "dispatched"]
+        "provider": {
+          "type": "string"
         },
-        "plan": {
+        "operation": {
+          "const": "dashboards.create"
+        },
+        "status": {
+          "enum": ["planned", "handoff"]
+        },
+        "transport": {
+          "enum": ["mcp", "native", "unavailable"]
+        },
+        "server": {
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "args": {
           "type": "object"
+        },
+        "handoff": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
         },
         "effects": {
-          "enum": ["not-performed", "explicit-dispatch"]
+          "const": "not-performed"
         },
-        "result": {
-          "type": "object"
+        "authentication": {
+          "const": "client-owned-unverified"
         }
       }
     },
     {
       "type": "object",
-      "required": ["schema", "status", "provider", "flag", "environment", "request", "effects"],
+      "required": [
+        "schema",
+        "provider",
+        "flag",
+        "environment",
+        "status",
+        "transport",
+        "tool",
+        "args",
+        "degrade",
+        "reason",
+        "effects",
+        "authentication"
+      ],
       "properties": {
         "schema": {
-          "const": "wholeloop/flag-read@1"
-        },
-        "status": {
-          "enum": ["planned", "observed"]
+          "const": "wholeloop/flag-read@2"
         },
         "provider": {
           "type": "string"
@@ -1858,18 +1901,35 @@
         "environment": {
           "type": "string"
         },
-        "request": {
-          "type": "object",
-          "required": ["method", "url", "credentialEnv"]
+        "status": {
+          "enum": ["planned", "local", "open-question"]
         },
-        "effects": {
-          "enum": ["not-performed", "remote-read"]
+        "transport": {
+          "enum": ["mcp", "native", "unavailable"]
         },
-        "observedAt": {
+        "server": {
           "type": "string"
         },
-        "result": {
+        "tool": {
+          "type": "string"
+        },
+        "args": {
           "type": "object"
+        },
+        "degrade": {
+          "enum": ["open-question", "handoff-artifact", "skip-with-reason"]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "effects": {
+          "const": "not-performed"
+        },
+        "authentication": {
+          "const": "client-owned-unverified"
         }
       }
     },

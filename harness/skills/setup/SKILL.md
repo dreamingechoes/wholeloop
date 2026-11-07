@@ -11,7 +11,7 @@ Read the shared ask-never-guess, output-contract and installation protocols.
    --tracker <id> --scope user|project|run --json`. Any subset is valid. Run scope returns a transient override; user/project scope writes configuration.
 3. Show what was saved, its file/scope and effective values. Personal user preferences can still override the team's suggested profile.
 4. Inspect integrations through `wl provider list --json` and `wl provider test
-   <id> --json`. Detection is not authentication. For a requested MCP client, `wl mcp add <id> --target <cli> --json` prints a snippet to review and merge. Prefer that client's observed MCP tools/schemas; read source-evidence and destination-publication before calls. Use provider plan for the selected operation and external metadata. HTTP bridges require explicit selection; absent or failed MCP access never activates them automatically.
+   <id> --json`. Detection is not authentication. For a requested MCP client, `wl mcp add <id> --target <cli> --json` prints a snippet to review and merge. Prefer that client's observed MCP tools/schemas; read source-evidence and destination-publication before calls. Use provider plan for the selected operation and external metadata. wholeloop has no service client of its own: without client MCP access an operation stays an open question or local handoff.
 
 For local setup failures, call `wl doctor --json`; with a known generated artifact, pass its single --target and --artifact. Inspect its repair/diagnostic commands without running installation or permission changes automatically. ⛔ `diagnostics-observed-availability` — versions/declarations are observations, not authentication, actual client discovery or model/permission conformance.
 

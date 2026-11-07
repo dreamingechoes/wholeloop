@@ -1,9 +1,11 @@
 # 0076 — Explicit read-only flag bridges and conservative cohorts
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0085](./0085-client-owned-mcp-first-provider-transport.md)
 - **Date:** 2026-10-20
 
 ## Context
+
+**Superseded 2026-11-07.** The built-in HTTP flag reader this decision describes was removed before the first release (P7-16): wholeloop never talks to a service itself, and flag state is read only through the client's MCP connection ([ADR-0085](./0085-client-owned-mcp-first-provider-transport.md)). The record below is history; its safety reasoning informs how a client MCP binding is reviewed, but no code implements it any more.
 
 P4-05's virtual flag operation has no authenticated service implementation. This is code work, separate from capturing actual user credentials and service results. The ramp accepts a complete enabled/percentage/audience/revision observation; flattening arbitrary targeting rules into that shape would authorize false ramps.
 

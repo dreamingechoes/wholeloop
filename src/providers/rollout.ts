@@ -178,12 +178,10 @@ export function rolloutHost(
           }),
         }
       }
-      // Virtual service readers and MCP tools belong to the authenticated CLI host.
-      // Missing bridges fail explicitly; they never become an observed disabled flag.
+      // Virtual service operations run only through the client's MCP connection.
+      // A missing binding fails explicitly; it never becomes an observed disabled flag.
       if (!delegate)
-        throw new Error(
-          'The selected provider operation needs an explicit authenticated host bridge',
-        )
+        throw new Error('The selected provider operation needs a reviewed client MCP binding')
       return delegate.invoke(call)
     },
   }

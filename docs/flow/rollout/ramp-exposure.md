@@ -58,7 +58,7 @@ Give it a flag name and the criteria you care about ("`orders_csv_export`, watch
 
 ## Run it
 
-The CLI accepts explicit plans and host-normalized reads; it does not authenticate or query remote services itself. Use sanitized scalar/flag observations, never credentials or raw private logs in response files. Prefer the native client’s observed MCP tools through [client-owned transport planning](../../extending/providers.md#client-owned-mcp-transport). Missing or failed MCP reads remain unknown and never activate an HTTP bridge automatically. Proposals stay native and unapplied.
+The CLI accepts explicit plans and host-normalized reads; it does not authenticate or query remote services itself. Use sanitized scalar/flag observations, never credentials or raw private logs in response files. Prefer the native client’s observed MCP tools through [client-owned transport planning](../../extending/providers.md#client-owned-mcp-transport). Missing or failed MCP reads remain unknown; wholeloop has no service client to fall back to. `wl provider read-flags <id> --flag <key> --environment <key> --mcp <inventory> --json` shows which call the client would make, or that the state stays an open question. Proposals stay native and unapplied.
 
 ```bash
 wl ramp schema --json

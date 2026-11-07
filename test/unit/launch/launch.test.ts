@@ -321,7 +321,7 @@ describe('pinned launch kits and local handoffs', () => {
 
 describe('explicit bounded launcher publication boundary', () => {
   it.each(['succeeded', 'uncertain'])(
-    'retains once-only dispatch across an MCP %s outcome without HTTP fallback',
+    'retains once-only dispatch across an MCP %s outcome without another transport',
     async (outcome) =>
       fixture(async ({ root, engine, workflow }) => {
         mkdirSync(join(root, '.wholeloop'))
@@ -337,7 +337,7 @@ describe('explicit bounded launcher publication boundary', () => {
         const start = begun(workflow)
         workflow.complete(start.subject, draft(start.plan.source.digest))
         let mcp = 0
-        let http = 0
+        let native = 0
         const host = rolloutHost(
           engine.store.files,
           root,
@@ -358,10 +358,10 @@ describe('explicit bounded launcher publication boundary', () => {
                 return { status: 'succeeded', ref: 'https://example.invalid/fixture-chart' }
               },
             },
-            http: {
+            native: {
               invoke: async () => {
-                http++
-                throw new Error('Unexpected HTTP invocation')
+                native++
+                throw new Error('Unexpected native invocation')
               },
             },
           }),
@@ -382,7 +382,7 @@ describe('explicit bounded launcher publication boundary', () => {
             'https://example.invalid/fixture-chart',
           )
         }
-        expect({ mcp, http }).toEqual({ mcp: 1, http: 0 })
+        expect({ mcp, native }).toEqual({ mcp: 1, native: 0 })
       }),
   )
 
@@ -501,4 +501,82 @@ describe('explicit bounded launcher publication boundary', () => {
       ).toBe(true)
       expect(call('launch', 'schema').draft.$id).toBe('wholeloop/launch-kit@1')
     }))
+})
+
+describe('launch dispatch plans through client MCP or the local handoff', () => {
+  it('names the exact MCP call or the pending handoff and changes no state', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'wholeloop-dispatch-cli-'))
+    try {
+      const root = join(dir, 'repo')
+      mkdirSync(join(root, '.wholeloop'), { recursive: true })
+      writeFileSync(
+        join(root, '.wholeloop/config.yml'),
+        'version: 1\nproviders:\n  dashboards: posthog\n',
+      )
+      const env = {
+        ...process.env,
+        XDG_STATE_HOME: join(dir, 'state-home'),
+        XDG_CONFIG_HOME: join(dir, 'config-home'),
+      }
+      const engine = new FlowEngine(
+        new StateStore(join(env.XDG_STATE_HOME, 'wholeloop')),
+        root,
+        join(env.XDG_CONFIG_HOME, 'wholeloop/config.yml'),
+        join(dir, 'home'),
+      )
+      const workflow = new LaunchWorkflow(engine)
+      const start = begun(workflow)
+      workflow.complete(start.subject, draft(start.plan.source.digest))
+      const inventory = join(dir, 'mcp.json')
+      writeFileSync(
+        inventory,
+        JSON.stringify({
+          schema: 'wholeloop/client-mcp@1',
+          server: 'posthog',
+          tools: [{ name: 'fixture_create', inputSchema: { type: 'object' } }],
+          bindings: { 'dashboards.create': 'fixture_create' },
+        }),
+      )
+      const cli = (...args: string[]) =>
+        spawnSync(
+          process.execPath,
+          [resolve('dist/wl.mjs'), 'launch', 'dispatch', '--for', start.subject, ...args],
+          { cwd: root, encoding: 'utf8', env },
+        )
+      const events = engine.store.events().length
+      const mcp = cli('--key', 'dashboards/retrieval-chart', '--mcp', inventory, '--json')
+      expect(mcp.status, mcp.stderr).toBe(0)
+      const planned = JSON.parse(mcp.stdout)
+      expect(planned).toMatchObject({
+        schema: 'wholeloop/dashboard-dispatch@2',
+        provider: 'posthog',
+        status: 'planned',
+        transport: 'mcp',
+        server: 'posthog',
+        tool: 'fixture_create',
+        effects: 'not-performed',
+        authentication: 'client-owned-unverified',
+      })
+      expect(planned.args.measurementEntry).toContain('/measurement.json#/metrics/0')
+      expect(planned.args.dashboard).toMatchObject({ metric: { id: 'retrieval-time' } })
+      const local = cli('--key', 'dashboards/retrieval-chart', '--json')
+      expect(local.status, local.stderr).toBe(0)
+      const handoff = JSON.parse(local.stdout)
+      expect(handoff).toMatchObject({
+        status: 'handoff',
+        transport: 'native',
+        tool: 'wholeloop.dashboard.handoff',
+        effects: 'not-performed',
+      })
+      expect(handoff.args).toBeUndefined()
+      expect(typeof handoff.handoff).toBe('string')
+      for (const retired of [['--bridge', inventory], ['--live']])
+        expect(cli('--key', 'dashboards/retrieval-chart', ...retired).status).toBe(4)
+      expect(cli('--key', 'comms/pilot-note', '--json').status).toBe(4)
+      expect(engine.store.events()).toHaveLength(events)
+      expect(launchDeliveries(engine.store.events())).toEqual([])
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
 })

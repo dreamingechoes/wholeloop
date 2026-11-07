@@ -3,7 +3,7 @@
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). Registry, manifests, local/native defaults and destination/source/rollout fixture contracts are implemented. [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md) prioritizes client-owned MCP; deterministic routing, reviewed client bindings and no automatic HTTP fallback are implemented. See [transport setup](../extending/providers.md#client-owned-mcp-transport). Four HTTP flag readers and four HTTP dashboard hosts remain explicit experimental options. Amplitude retains a pending dashboard handoff, not a 1.0 requirement for another HTTP implementation. Real-service certification is deferred.
+> **Status: 🚧 partial.** Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md). Registry, manifests, local/native defaults and destination/source/rollout fixture contracts are implemented. Under [ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md) wholeloop never talks to a service itself: remote operations run through the client's MCP connection or a command-line client you installed, with deterministic routing and reviewed client bindings. See [transport setup](../extending/providers.md#client-owned-mcp-transport). The built-in HTTP flag readers, dashboard writers and PostgreSQL host were retired before the first release. Real-service certification is deferred.
 
 ---
 
@@ -54,10 +54,10 @@ A step never names a vendor, so swapping Confluence for Notion, or adding Zendes
 | Target | Implemented locally | Still pending |
 | --- | --- | --- |
 | Slack · Microsoft Teams · email | Destination-labelled unsent JSON drafts in the external store | A person reviews and posts; no sending operation exists |
-| LaunchDarkly · Unleash · GrowthBook · PostHog | Explicit REST readers/normalizers and stored unapplied proposals, tested with synthetic responses | Optional authenticated service and real cohort certification |
+| LaunchDarkly · Unleash · GrowthBook · PostHog | Flag reads planned through a reviewed client MCP binding and stored unapplied proposals; without a binding the state is an open question | A client MCP tool returning normalized flag state; LaunchDarkly, Unleash and GrowthBook declare no MCP server yet |
 | Config-file flags | Contained explicit JSON reads and unapplied proposals | A person changes configuration through normal review |
-| PostHog · Mixpanel · Metabase · Grafana | Explicit create-only dashboard hosts with exact readback and metric-linked handoffs, tested with synthetic responses | Optional real service, query/window and rendering certification |
-| Amplitude dashboards | Manifest and exact-metric pending handoff with source pointers | Known client MCP write contract and optional live certification; no HTTP host required |
+| PostHog · Mixpanel · Metabase · Grafana | Metric-linked dashboard handoffs; `wl launch dispatch` plans creation through a reviewed client MCP binding | A client MCP write contract and optional live certification |
+| Amplitude dashboards | Manifest and exact-metric pending handoff with source pointers | Known client MCP write contract and optional live certification |
 | Datadog · Grafana stack | Declared read-only query tool mappings and offline fixtures | Actual roster, site/datasource, auth and complete scalar normalization |
 | Figma | Official remote context-read mapping and offline fixture | Actual client access and referenced design observations |
 
@@ -70,14 +70,14 @@ wl provider test grafana --fixtures test/fixtures/providers/rollout/grafana.json
 
 All fourteen fixture files live under test/fixtures/providers/rollout. Each covers every declared operation with exact tool/argument bindings and normalized results. Missing coverage, changed calls or malformed results fail. remoteProbed=false is mandatory: these synthetic fixtures establish no actual server schema, credentials or permissions. `wl provider test <id>` without a fixture only inspects metadata.
 
-An explicit SDK conductor can wrap its actual ProviderHost with `rolloutHost` from src/providers/rollout.ts. It implements native unsent drafts, flag proposals, dashboard handoffs and config reads. Other calls require an explicit host bridge; missing service access stays unknown. Providers are selected explicitly in config; adding a catalogue entry never selects it or authorizes remote execution.
+An explicit SDK conductor can wrap its actual ProviderHost with `rolloutHost` from src/providers/rollout.ts. It implements native unsent drafts, flag proposals, dashboard handoffs and config reads. Other calls require a reviewed client MCP binding; missing service access stays unknown. Providers are selected explicitly in config; adding a catalogue entry never selects it or authorizes remote execution.
 
 Config flags default to wholeloop.flags.json under the repository. The versioned shape is `{ "schema": "wholeloop/config-flags@1", "flags": [{ "flag": "orders",
 "environment": "disposable", "enabled": false, "exposure": 0, "audience": "all" }] }`. Use a repository manifest override for another contained file. A boolean alone cannot establish audience or percentage. The reader changes no repository bytes.
 
 Provider references checked 2026-10-19: [Figma](https://help.figma.com/hc/en-us/articles/39216419318551-Get-started-with-the-Figma-MCP-server), [Datadog setup](https://github.com/datadog-labs/mcp-server) and [tools](https://docs.datadoghq.com/mcp_server/tools/), [Grafana](https://github.com/grafana/mcp-grafana), [LaunchDarkly representation](https://launchdarkly.com/docs/fed-docs/api/feature-flags), [Unleash environment](https://docs.getunleash.io/api/get-feature-environment), [GrowthBook versioning](https://docs.growthbook.io/api/introduction) and [PostHog tool surface](https://github.com/PostHog/posthog/blob/master/services/mcp/README.md). These references describe upstream surfaces; their raw schemas are not replaced by our normalized fixtures. The Grafana recipe is a pinned read-only Prometheus/Loki container invocation; it was not pulled or run. Keep credentials in the host's credential store and pass environment names rather than secret values in recipes.
 
-P4-05 implements tested MCP-first selection under ADR-0085. A dedicated Amplitude HTTP bridge is no longer a prerequisite. Per-vendor live certification remains optional under ADR-0084 and is not a 1.0 prerequisite. [ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md) explains why local handoffs remain explicit instead of fabricated integrations.
+P4-05 implements tested MCP-first selection under ADR-0085. Per-vendor live certification remains optional under ADR-0084 and is not a 1.0 prerequisite. [ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md) explains why local handoffs remain explicit instead of fabricated integrations.
 
 ## The capability taxonomy
 
@@ -207,7 +207,7 @@ Canonical resources live under harness/providers. Run `npm run providers:catalog
 | `amplitude` | product analytics | query_amplitude_data |
 | `metabase` | BI | query; requires actual instance endpoint |
 | `bigquery` | BI | execute_sql_readonly |
-| `postgresql` | BI | psql through a guarded read-only process host |
+| `postgresql` | BI | psql run by the client inside a read-only transaction |
 | `sentry` | errors | search_events |
 | `zendesk` | support | Official Search REST API through host-managed curl |
 | `intercom` | support | Official MCP search |
@@ -218,7 +218,7 @@ Each mapping includes tool-specific guidance within thirty lines and open-questi
 
 `querySource` pins the query, operation, owner and explicit timestamp/timezone window. A complete successful host result retains its observed content/ref; failed, pending or partial results become answerable open questions. It does not turn missing results into zero or infer claims from rows. The host translates vendor arguments without changing the pinned plan. Research offers exactly configured or detected sources, not every catalog entry. curl alone does not detect a Zendesk connection; configure the source and actual tenant in the host.
 
-PostgreSqlSource accepts a configured libpq service name, sends one conservatively validated SELECT/WITH statement over stdin, and wraps it in BEGIN READ ONLY, statement timeout and ROLLBACK. It rejects transaction escapes, modifying CTEs, psql commands and unsupported quoting. Tests execute a fixture process; live read-only role/function privileges still need verification. Credentials remain in the host/tool store. No driver or integration dependency was added.
+PostgreSQL is reached through the psql client you installed, run by your coding client under the provider guidance: an explicit libpq service, a read-only role, BEGIN READ ONLY with a statement timeout and ROLLBACK. wholeloop does not run psql itself; the read-only role is what actually protects the database.
 
 PostHog installation permits only mode=tools or mode=cli as one credential-free query parameter. Its built-in named tool uses tools mode; arbitrary parameters and credential values remain forbidden. Metabase's example host must be replaced with the real instance. See [ADR-0027](../decisions/0027-read-only-source-evidence-and-degradation.md).
 
@@ -288,7 +288,7 @@ With nothing configured, everything lands in the local store as Markdown — the
 
 `github` uses gh api; `gitlab` uses glab api. Both resolve one explicit remote, push a pinned tested commit and verify a matching open draft response. Read/status normalize source SHA/branch, target, repository, draft and merge state. Bodies use stdin and each CLI's credential store. Optional comments reconcile a stable round marker before posting. Local tests use synthetic API-shaped responses and a separate real push to a temporary local bare repository; live authentication, self-managed versions and network interruption remain manual verification.
 
-Explicit service execution: the [remote rollout bridge guide](../extending/remote-bridges.md) covers non-secret configuration, default-preview/live selection and the first conservative LaunchDarkly boolean reader. It does not make metadata-only provider tests authenticated health checks or convert dashboard handoffs into remote charts.
+Service execution stays in your client: `wl provider read-flags <id> --flag <key> --environment <key> --mcp <inventory>` and `wl launch dispatch --for <id> --key <key> --mcp <inventory>` name the exact client MCP call or fall back to the open question or local handoff. Neither reads a credential, makes metadata-only provider tests authenticated health checks or turns a dashboard handoff into a remote chart.
 
 <!-- docnav -->
 [◀ Interaction profile](profile.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Repo skills ▶](repo-skills.md)

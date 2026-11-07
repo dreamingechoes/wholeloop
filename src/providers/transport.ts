@@ -41,11 +41,16 @@ const nativeTools = new Set([
   'wholeloop.dashboard.handoff',
   'wholeloop.config-flags.read-state',
 ])
-export type ProviderTransport = 'mcp' | 'native' | 'http'
+/**
+ * wholeloop never opens a connection to a service itself (ADR-0085): a remote
+ * operation runs through the client's own MCP connection, and everything else
+ * stays a local operation, draft or handoff. There is deliberately no third
+ * transport; the retired HTTP bridges are the alternative that lost.
+ */
+export type ProviderTransport = 'mcp' | 'native'
 export interface TransportSelection {
   transport?: ProviderTransport
   inventory?: ClientMcpInventory
-  httpAvailable?: boolean
 }
 
 export function planProviderTransport(
@@ -58,7 +63,7 @@ export function planProviderTransport(
   const degrade = manifest.degrade[operation]
   if (!mapping || !degrade) throw new Error('Select a declared provider operation')
   const transport = options.transport ?? 'mcp'
-  if (!['mcp', 'native', 'http'].includes(transport)) throw new Error('Unknown provider transport')
+  if (transport !== 'mcp' && transport !== 'native') throw new Error('Unknown provider transport')
   const inventory = options.inventory ? clientMcpInventory(options.inventory) : undefined
   if (inventory) {
     for (const [name, tool] of Object.entries(inventory.bindings ?? {})) {
@@ -91,13 +96,7 @@ export function planProviderTransport(
     reason,
   })
   if (nativeOnly.has(operation) || manifest.access.local)
-    return transport === 'http'
-      ? answer('unavailable', 'This operation retains its native boundary')
-      : answer('native', 'Native local state, drafts and unapplied proposals stay local')
-  if (transport === 'http')
-    return options.httpAvailable
-      ? answer('http', 'Experimental HTTP host explicitly selected')
-      : answer('unavailable', 'Select an explicit HTTP host or the existing opt-in bridge command')
+    return answer('native', 'Native local state, drafts and unapplied proposals stay local')
   if (transport === 'mcp' && inventory && inventory.server === manifest.access.mcp?.server) {
     const tool = inventory.bindings?.[operation] ?? mapping.tool
     if (!tool.startsWith('wholeloop.') && inventory.tools.some((entry) => entry.name === tool))
@@ -107,9 +106,13 @@ export function planProviderTransport(
         tool,
       )
   }
+  // A virtual wholeloop.* tool outside nativeTools has no local implementation; only a
+  // client MCP binding can run it, so a native-access manifest must not route it natively.
   if (
     nativeTools.has(mapping.tool) ||
-    (!manifest.access.mcp && (manifest.access.native || manifest.access.cli))
+    (!manifest.access.mcp &&
+      (manifest.access.native || manifest.access.cli) &&
+      !mapping.tool.startsWith('wholeloop.'))
   )
     return answer('native', 'Use the declared native operation or explicit pending handoff')
   return answer(
@@ -118,23 +121,20 @@ export function planProviderTransport(
   )
 }
 
-/** Reuse the native client's connection. No MCP network client or automatic HTTP fallback lives here. */
+/** Reuse the native client's connection. No MCP or other network client lives here. */
 export function clientProviderHost(
   provider: LoadedProvider,
   options: {
     transport?: ProviderTransport
     mcp?: { inventory: ClientMcpInventory; invoke(call: OperationCall): Promise<OperationResult> }
     native?: ProviderHost
-    http?: ProviderHost
   } = {},
 ): ProviderHost {
   const selection = {
     ...(options.transport ? { transport: options.transport } : {}),
     ...(options.mcp ? { inventory: clientMcpInventory(options.mcp.inventory) } : {}),
-    httpAvailable: options.http !== undefined,
   }
   const mcpInvoke = options.mcp?.invoke.bind(options.mcp)
-  const http = options.http
   const native = options.native
   const plan = (call: OperationCall) => {
     if (
@@ -147,7 +147,7 @@ export function clientProviderHost(
   return {
     supports: (call) => {
       const route = plan(call)
-      return route.status === 'planned' && ['mcp', 'http'].includes(route.transport)
+      return route.status === 'planned' && route.transport === 'mcp'
     },
     invoke: async (call) => {
       const route = plan(call)
@@ -162,11 +162,9 @@ export function clientProviderHost(
       const selected =
         route.transport === 'mcp'
           ? mcpInvoke
-          : route.transport === 'http'
-            ? http?.invoke.bind(http)
-            : route.transport === 'native'
-              ? native?.invoke.bind(native)
-              : undefined
+          : route.transport === 'native'
+            ? native?.invoke.bind(native)
+            : undefined
       if (!selected)
         throw new Error(
           'Provider transport unavailable; retain its pending handoff or open question',

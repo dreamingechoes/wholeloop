@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -8,7 +8,6 @@ import { loadProviders } from '../../../src/providers/load.js'
 import { validateProvider } from '../../../src/providers/manifest.js'
 import { MCP_TARGETS, renderMcp } from '../../../src/providers/mcp.js'
 import { type OperationResult, performOperation } from '../../../src/providers/operations.js'
-import { PostgreSqlSource, readOnlyStatement } from '../../../src/providers/postgresql.js'
 import { querySource, type SourceQuery } from '../../../src/providers/sources.js'
 import { researchPlan } from '../../../src/research/plan.js'
 
@@ -203,61 +202,6 @@ describe('source evidence and failure boundary', () => {
       expect(calls).toBe(1)
       await expect(performOperation(selected, 'source.support.query', {}, host)).rejects.toThrow(
         'does not support',
-      )
-    }))
-})
-
-describe('PostgreSQL read-only execution boundary', () => {
-  it.each([
-    'SELECT 1; COMMIT; DELETE FROM orders',
-    'WITH changed AS (DELETE FROM orders RETURNING *) SELECT * FROM changed',
-    'SELECT * INTO TEMP orders_copy FROM orders',
-    'SELECT 1 \\gexec',
-    'SELECT $$COMMIT$$',
-    'SELECT 1; \\connect other',
-    "SELECT 'unterminated",
-    'SELECT 1 /* unterminated',
-    'SET transaction_read_only = off',
-  ])('rejects transaction escapes and unsupported statements: %s', (query) => {
-    expect(() => readOnlyStatement(query)).toThrow()
-  })
-
-  it('preserves quoted values, nested comments and a single optional terminator', () => {
-    for (const query of [
-      "SELECT 'DELETE; COMMIT' AS message",
-      '/* outer /* nested */ comment */ WITH x AS (SELECT 1) SELECT * FROM x;',
-      'SELECT "update" FROM orders -- note',
-      "SELECT 'can''t' AS message",
-    ]) {
-      expect(readOnlyStatement(query)).toBe(query)
-    }
-  })
-
-  it('runs psql through stdin with server read-only mode and no credential arguments', () =>
-    fixture(async (dir) => {
-      const binary = join(dir, 'fixture-psql')
-      const capture = join(dir, 'captured.json')
-      writeFileSync(
-        binary,
-        `#!${process.execPath}\nconst fs = require('node:fs'); const input = fs.readFileSync(0, 'utf8'); fs.writeFileSync(${JSON.stringify(capture)}, JSON.stringify({argv: process.argv.slice(2), input})); process.stdout.write('count\\n12\\n');\n`,
-      )
-      chmodSync(binary, 0o755)
-      const { selected, recorded } = inputs('postgresql', dir)
-      const result = await querySource(
-        selected,
-        recorded.request,
-        new PostgreSqlSource('analytics-readonly', binary),
-      )
-      expect(result.status).toBe('observed')
-      const actual = JSON.parse(readFileSync(capture, 'utf8'))
-      expect(actual.argv).toContain('service=analytics-readonly')
-      expect(actual.argv).not.toContain(recorded.request.query)
-      expect(actual.input).toContain('BEGIN READ ONLY;')
-      expect(actual.input).toContain("SET LOCAL statement_timeout = '30s';")
-      expect(actual.input).toContain(recorded.request.query)
-      expect(actual.input).toMatch(/ROLLBACK;\n$/)
-      expect(() => new PostgreSqlSource('postgres://user:credential@example/db')).toThrow(
-        'never a credential URI',
       )
     }))
 })

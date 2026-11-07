@@ -199,16 +199,10 @@
     "output:wholeloop/conformance-issues@1": "ca322dafae803d8374f6462fb22a103e01613e67c86d7d4a3384647d4d524844",
     "output:wholeloop/conformance-acquisition@1": "9f5be6ae500bf6c88846cf546a137a9493b3ad7d1fb21ef7fdbf1673ec92cd09",
     "schema:wholeloop/conformance-downloads@1": "dcfaf9025faac5c71541a6d4b6bb9e4cd5af316b1aae2b10ca115b6dbecf712f",
-    "output:wholeloop/flag-read@1": "f9117916f7ab116ba35c5eb93378f26fc151d679cf40ecc74be0b5d88b596a5b",
-    "schema:wholeloop/flag-bridge@1": "364b24446cda7df2a8a052b3e398c53907744e3081b1880ac3f97a820aeba59f",
-    "schema:wholeloop/posthog-flag-bridge@1": "154e11ae2fdb1f08c0c0b7349f1879527089c4656f2e2250a1f46b3171f706fb",
-    "schema:wholeloop/grafana-dashboard-bridge@1": "718d7af44a4093b85a6b467e5103d7eaca2f7f3ee11d2c50f18990c0667104c1",
-    "output:wholeloop/dashboard-dispatch@1": "4d3a451de7edef3a9d109609b36832346c5021df4cb7698724df8d9534f8656b",
-    "schema:wholeloop/posthog-dashboard-bridge@1": "977cc32f637c6bcd86983d92bf611e4599bd29aa20324312f9932b8dcc7c55ce",
-    "schema:wholeloop/metabase-dashboard-bridge@1": "8ffd7bb88830b5288d4c7dd7ace315a63066b9d7c468b2fd50e6f8364e5ade09",
-    "schema:wholeloop/mixpanel-dashboard-bridge@1": "b73c185575e57e5e7ff323b331a1fbc43d783dd4938e2d72c5040e28fde56479",
+    "output:wholeloop/flag-read@2": "b9078cdc23e9127a1b7c728c7e0d2b5736e3264275ffded1fbc46316c20e6961",
+    "output:wholeloop/dashboard-dispatch@2": "0478f70d55df22e8a3d316cf96f1903b92c856085b049cfe08596ba107c11e83",
     "schema:wholeloop/client-mcp@1": "ed1c71ccd86e62dcf624b17b63f4c6a70c54b87b8829295570f7a0096f703ea9",
-    "output:wholeloop/provider-transport@1": "125a305dfae540a8fd48fc61bebcf6337393ced73a2bcea8a334247ffb1694ef",
+    "output:wholeloop/provider-transport@1": "694260dab66674ff123c0dbb60cc343c493493488ff1c868f3f49dd98a51dd6e",
     "output:wholeloop/frame-schema@1": "2f31d3056c5385c0e4ef0c9dbbbeb785faf831668fc86d6dda83f2b1ad406056",
     "output:wholeloop/frame-draft@1": "00c35964f531e26621d1c5bee46a8df9e96f5b65f72fe8367859f54cd496676b",
     "output:wholeloop/frame-finalized@1": "16071ea97fa845b83a8e71ff4c31bab0066c56c4ab9a4c5416d61a8dfe042127",
@@ -1452,21 +1446,21 @@
     },
     {
       "path": "provider read-flags",
-      "arguments": "",
-      "schema": "wholeloop/flag-read@1",
-      "options": ["--bridge <file>", "--flag <key>", "--environment <key>", "--live"]
+      "arguments": "<id>",
+      "schema": "wholeloop/flag-read@2",
+      "options": ["--flag <key>", "--environment <key>", "--mcp <file>"]
     },
     {
       "path": "launch dispatch",
       "arguments": "",
-      "options": ["--for <id>", "--key <artifact-key>", "--bridge <file>", "--live"],
-      "schema": "wholeloop/dashboard-dispatch@1"
+      "options": ["--for <id>", "--key <artifact-key>", "--mcp <file>"],
+      "schema": "wholeloop/dashboard-dispatch@2"
     },
     {
       "path": "provider plan",
       "arguments": "<id> <operation>",
       "schema": "wholeloop/provider-transport@1",
-      "options": ["--mcp <file>", "--transport <mcp|native|http>"]
+      "options": ["--mcp <file>", "--transport <mcp|native>"]
     },
     {
       "path": "frame schema",

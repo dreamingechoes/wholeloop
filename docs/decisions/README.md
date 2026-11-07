@@ -86,14 +86,14 @@
 | [0073](./0073-structural-regression-drafts-and-explicit-issue-delivery.md) | Structural regression drafts and explicit issue delivery | Accepted | 2026-10-20 |
 | [0074](./0074-exact-native-acquisition-and-private-prefixes.md) | Exact native acquisition and private prefixes | Accepted | 2026-10-20 |
 | [0075](./0075-disabled-nightly-pipeline-and-separated-issue-authority.md) | Disabled nightly pipeline and separated issue authority | Accepted | 2026-10-20 |
-| [0076](./0076-explicit-read-only-flag-bridges-and-conservative-cohorts.md) | Explicit read-only flag bridges and conservative cohorts | Accepted | 2026-10-20 |
-| [0077](./0077-explicit-unleash-environments-and-unrestricted-strategies.md) | Explicit Unleash environments and unrestricted strategies | Accepted | 2026-10-20 |
-| [0078](./0078-published-growthbook-rules-and-explicit-hash-cohorts.md) | Published GrowthBook rules and explicit hash cohorts | Accepted | 2026-10-20 |
-| [0079](./0079-exact-posthog-reads-and-configured-environment-scope.md) | Exact PostHog reads and configured environment scope | Accepted | 2026-10-21 |
-| [0080](./0080-create-only-grafana-dashboards-from-pinned-metrics.md) | Create-only Grafana dashboards from pinned metrics | Accepted | 2026-10-21 |
-| [0081](./0081-posthog-dashboard-creation-and-partial-receipts.md) | PostHog dashboard creation and partial receipts | Accepted | 2026-10-21 |
-| [0082](./0082-metabase-owned-questions-and-explicit-sql-window-review.md) | Metabase-owned questions and explicit SQL window review | Accepted | 2026-10-21 |
-| [0083](./0083-mixpanel-workspace-bound-dashboards-and-native-reports.md) | Mixpanel workspace-bound dashboards and native reports | Accepted | 2026-10-21 |
+| [0076](./0076-explicit-read-only-flag-bridges-and-conservative-cohorts.md) | Explicit read-only flag bridges and conservative cohorts | Superseded by 0085 | 2026-10-20 |
+| [0077](./0077-explicit-unleash-environments-and-unrestricted-strategies.md) | Explicit Unleash environments and unrestricted strategies | Superseded by 0085 | 2026-10-20 |
+| [0078](./0078-published-growthbook-rules-and-explicit-hash-cohorts.md) | Published GrowthBook rules and explicit hash cohorts | Superseded by 0085 | 2026-10-20 |
+| [0079](./0079-exact-posthog-reads-and-configured-environment-scope.md) | Exact PostHog reads and configured environment scope | Superseded by 0085 | 2026-10-21 |
+| [0080](./0080-create-only-grafana-dashboards-from-pinned-metrics.md) | Create-only Grafana dashboards from pinned metrics | Superseded by 0085 | 2026-10-21 |
+| [0081](./0081-posthog-dashboard-creation-and-partial-receipts.md) | PostHog dashboard creation and partial receipts | Superseded by 0085 | 2026-10-21 |
+| [0082](./0082-metabase-owned-questions-and-explicit-sql-window-review.md) | Metabase-owned questions and explicit SQL window review | Superseded by 0085 | 2026-10-21 |
+| [0083](./0083-mixpanel-workspace-bound-dashboards-and-native-reports.md) | Mixpanel workspace-bound dashboards and native reports | Superseded by 0085 | 2026-10-21 |
 | [0084](./0084-experimental-integrations-and-scoped-live-verification.md) | Experimental integrations and scoped live verification | Accepted | 2026-10-22 |
 | [0085](./0085-client-owned-mcp-first-provider-transport.md) | Client-owned MCP-first provider transport | Accepted | 2026-10-22 |
 | [0086](./0086-exact-final-framing-review-and-owner-decisions.md) | Exact final framing review and owner decisions | Accepted | 2026-10-22 |

@@ -205,7 +205,7 @@ describe('rollout provider boundaries', () => {
       await expect(host.invoke(call)).rejects.toThrow('explicit enabled/exposure/audience')
     }))
 
-  it('leaves absent remote flag bridges unavailable and blocks recognized toggles even on read mappings', async () =>
+  it('leaves unbound remote flag reads unavailable and blocks recognized toggles even on read mappings', async () =>
     fixture(async (root, store) => {
       await expect(
         rolloutHost(store.files, root).invoke({
@@ -215,7 +215,7 @@ describe('rollout provider boundaries', () => {
           args: { flag: 'orders', environment: 'disposable' },
           guidance: '',
         }),
-      ).rejects.toThrow('host bridge')
+      ).rejects.toThrow('client MCP binding')
       const original = registry().providers.find(
         (entry) => entry.manifest.id === 'launchdarkly',
       )?.manifest

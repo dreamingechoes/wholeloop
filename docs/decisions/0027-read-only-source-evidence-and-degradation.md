@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-07 (P7-16).** The PostgreSQL process host described in item 3 was removed: nothing outside its tests used it, and wholeloop no longer runs service clients itself ([ADR-0085](./0085-client-owned-mcp-first-provider-transport.md)). The PostgreSQL provider remains a declarative psql mapping that the person's client runs under the provider guidance; a restricted read-only role is the protection that matters.
+
 Research and later measurement need reusable queries against actual sources. Authentication, pending jobs and truncated output cannot become fabricated observations. Generic HTTP availability also does not establish a connected Zendesk service, and PostgreSQL needs more than a prompt saying read-only.
 
 ## Decision

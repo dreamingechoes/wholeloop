@@ -3,7 +3,7 @@
 > **TL;DR** — The v1 candidate freezes existing schema declarations, step contracts, command signatures and exit codes. New commands and optional flags are additive; changing an existing format needs a new identity and a migration path. Commit classifications alone do not establish compatibility.
 
 > [!NOTE]
-> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers 184 source JSON Schemas, 231 command-output variants, thirteen steps, 241 commands and five exit codes. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
+> **Status: 🚧 partial — local v1 compatibility controls implemented.** The checked candidate covers 178 source JSON Schemas, 231 command-output variants, thirteen steps, 241 commands and five exit codes. Before the first release the six HTTP bridge configuration schemas were retired with their clients, and the planning outputs of `provider read-flags` and `launch dispatch` moved to `wholeloop/flag-read@2` and `wholeloop/dashboard-dispatch@2` rather than changing meaning under their old identities. Runtime delivery generators validate their public manifests. Package 0.0.0 remains unreleased; native acceptance, release activation and announcement remain open.
 
 ## What is versioned
 
@@ -44,4 +44,4 @@ Disposable delivery cache repair cannot recover private grants, erase revocation
 Review the candidate against supported user workflows, migrations and release-note breaking intent. Finish native and fresh-machine checks, then activate publication through the maintainer's chosen channels. The fixture is a compatibility candidate, not a version bump, published package, tag or announcement. See [ADR-0066](../decisions/0066-v1-compatibility-baseline-and-deprecation.md).
 
 <!-- docnav -->
-[◀ Remote rollout bridges](remote-bridges.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Lenses, templates, profiles ▶](lenses-templates-profiles.md)
+[◀ Writing a provider](providers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Lenses, templates, profiles ▶](lenses-templates-profiles.md)

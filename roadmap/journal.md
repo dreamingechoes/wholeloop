@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-11-07 · P7-16 ✅ · Retire built-in service clients
+
+- Removed the HTTP flag readers (LaunchDarkly, PostHog, GrowthBook, Unleash), the HTTP dashboard writers (Grafana, PostHog, Metabase, Mixpanel), their shared HTTP code, bridges and configuration schemas, the PostgreSQL process host and the `http` transport, with their tests. Only `mcp` and `native` remain. [ADR-0085](../docs/decisions/0085-client-owned-mcp-first-provider-transport.md) is amended with the final rule; ADR-0076–ADR-0083 are superseded and ADR-0027 and ADR-0084 note the change.
+- `wl provider read-flags <id>` and `wl launch dispatch` now only plan, with `--mcp <inventory>` instead of `--bridge`/`--live`: a reviewed client MCP binding yields the exact call for the client to make; otherwise a flag state is an open question (or a local configuration read for config-flags) and a dashboard is the local pending handoff. Neither writes state or reads a credential. Their outputs moved to `wholeloop/flag-read@2` and `wholeloop/dashboard-dispatch@2` rather than changing meaning under the old identities; the unreleased v1 candidate inventory drops the six bridge schemas.
+- Found and fixed while testing: the transport planner routed the virtual `wholeloop.flags.read-state` natively for providers with native access and no MCP server (LaunchDarkly, Unleash, GrowthBook), although nothing implements it locally. Such operations are now unavailable and read as unknown; those three providers need a reviewed MCP server declaration before a client binding can apply.
+- New enforcer `core-no-service-network`: a test scans `src/` for network primitives and allows only the Docker application probe and proxies, the local Docker Engine socket and two loopback sandbox probes, each by file and primitive; planted connections and stale exceptions fail. The PostgreSQL read-only hard rule left with its code; the provider stays a declarative psql mapping run by the client. The two remote rollout rules now describe the client MCP path instead of the HTTP hosts.
+- Docs, provider guidance and catalogue, generated command reference and the manual-verification backlog reflect the removal; the remote-bridges page is gone. No runner or store hot path changed beyond one constant-time check in transport planning.
+- macOS full gate with two file workers: CHECK PASS in 669s, 4505/4505 tests across 318 files (eight bridge and dashboard test files removed, one enforcer test added), offline package, docs 481 and harness 152. Not run on Linux in this change.
+- Next: P7-01, the design of the dogfooded maintenance skills and agents.
+
+---
+
 ## 2026-11-07 · P7-16 · Plan the retirement of built-in service clients
 
 - Service access was meant to go through MCP servers of the user's client or clients the user installed, not through code in this repository. The built-in HTTP flag readers (PostHog, GrowthBook, Unleash), HTTP dashboard writers (Grafana, PostHog, Metabase, Mixpanel) and an unused `psql` host remained as experimental options under ADR-0085.

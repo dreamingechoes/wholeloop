@@ -151,8 +151,8 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl frame schema` | `wholeloop/frame-schema@1` | Show final framing decision and semantic review contracts |
 | `wl frame draft` | `wholeloop/frame-draft@1` | Render exact owner-approved stop conditions before final review |
 | `wl frame finalize` | `wholeloop/frame-finalized@1` | Complete framing with matching final approval and semantic review |
-| `wl provider plan <id> <operation>` | `wholeloop/provider-transport@1` | Plan client-owned MCP or explicit native/HTTP transport without service access |
-| `wl provider read-flags` | `wholeloop/flag-read@1` | Plan or explicitly read a supported remote boolean flag without toggling it |
+| `wl provider plan <id> <operation>` | `wholeloop/provider-transport@1` | Plan client-owned MCP or native transport without service access |
+| `wl provider read-flags <id>` | `wholeloop/flag-read@2` | Plan a flag-state read through client MCP, a local file or an open question |
 | `wl conformance acquisition <downloads.json>` | `wholeloop/conformance-acquisition@1` | Validate exact native vendor downloads without installing or running clients |
 | `wl release verify <directory>` | `wholeloop/release-verified@1` | Verify prepared release bytes and source context without publishing |
 | `wl release preflight` | `wholeloop/release-preflight@1` | Check exact local release source and supplied CI metadata without publishing |
@@ -195,7 +195,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl ramp confirm` | `wholeloop/ramp-report@1` | Confirm an externally performed change before advancing one stage |
 | `wl ramp report` | `wholeloop/ramp-report@1` | Resume the current stage, evidence and explicit decision |
 | `wl ramp schema` | `wholeloop/ramp-schema@1` | Print the versioned ramp plan input contract |
-| `wl launch dispatch` | `wholeloop/dashboard-dispatch@1` | Preview or explicitly dispatch one metric-pinned dashboard creation |
+| `wl launch dispatch` | `wholeloop/dashboard-dispatch@2` | Plan one metric-pinned dashboard through client MCP or the local handoff |
 | `wl launch begin [<description>]` | `wholeloop/launch-begin@1` | Pin launch measurements and repository voice before drafting |
 | `wl launch complete` | `wholeloop/launch-complete@1` | Store a validated launch kit with metric-linked dashboard specs |
 | `wl launch report` | `wholeloop/launch-report@1` | Show local artifacts and explicit provider draft/create handoffs |

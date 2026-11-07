@@ -1,8 +1,8 @@
 # Conformance evidence
 
-- ⛔ `remote-dashboard-create-boundary` — bind explicit create authority to the exact completed artifact/query and reviewed deployment/datasource/folder. Journal intent before writes, verify stored identity/content, keep credentials in the host store and retain ambiguous outcomes without retries or overwrites.
+- ⛔ `remote-dashboard-create-boundary` — bind create authority to the exact completed artifact and metric pin. `wl launch dispatch` only plans; the conductor journals intent before the client's MCP write, records a reference only from a returned result and retains ambiguous outcomes without retries, overwrites or another transport.
 
-- ⛔ `remote-flag-read-boundary` — keep service execution explicit and credentials in the host store. Bind exact read identity, bound/redact transport, refuse mutation routes and normalize only supported complete targeting. Unsupported or failed reads stay unknown, never an inferred disabled flag or percentage.
+- ⛔ `remote-flag-read-boundary` — observe flag state only from a complete revision-bound result for the exact flag/environment, through a client MCP binding or a local configuration file. `wl provider read-flags` only plans; read mappings refuse toggle tools. Unsupported, missing or failed reads stay unknown, never an inferred disabled flag or percentage.
 
 - ⛔ `conformance-nightly-authority` — keep native execution and issue delivery separately activated. Reuse exact transferred core/result bytes, isolate each selected key/channel home, upload only structural evidence and serialize issue writers. Missing configuration stays UNRUN; mutate no source page or ref.
 

@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: ⬜ planned · added on 2026-11-07 for 1.0.0.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retires the built-in service clients before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -322,7 +322,7 @@ Moved from P5-07 on 2026-11-07; its checked criterion and local implementation a
 
 ## P7-16 · Retire built-in service clients
 
-**Status:** ⬜ · **Size:** M · **Depends on:** —
+**Status:** ✅ · **Size:** M · **Depends on:** —
 
 **Goal** — wholeloop never talks to a third-party service itself: it reaches services only through MCP servers of the user's client or through command-line clients the user installed.
 
@@ -332,10 +332,12 @@ Moved from P5-07 on 2026-11-07; its checked criterion and local implementation a
 
 **Acceptance criteria:**
 
-- [ ] No module in `src/` opens a connection to a third-party service; the enforcer fails on a new one.
-- [ ] Code hosts stay on the installed `gh` and `glab` clients; local providers are unchanged.
-- [ ] `read-flags` and `launch dispatch` work through a synthetic client MCP inventory and degrade to the local handoff without one, with no HTTP option left.
-- [ ] The v1 compatibility inventory, generated command and configuration references and every affected document reflect the removal; the manual-verification backlog no longer lists per-service HTTP certification.
+- [x] No module in `src/` opens a connection to a third-party service; the enforcer fails on a new one.
+- [x] Code hosts stay on the installed `gh` and `glab` clients; local providers are unchanged.
+- [x] `read-flags` and `launch dispatch` work through a synthetic client MCP inventory and degrade to the local handoff without one, with no HTTP option left.
+- [x] The v1 compatibility inventory, generated command and configuration references and every affected document reflect the removal; the manual-verification backlog no longer lists per-service HTTP certification.
+
+**Evidence** — The network-boundary test passes on the current tree and fails on planted fetch, HTTPS, TLS, curl and WebSocket uses and on a stale exception. Compiled-CLI tests plan read-flags and launch dispatch through a synthetic client MCP inventory, fall back to the open question, local configuration read or pending handoff, refuse `--bridge` and `--live`, and write no state. Transport tests show `http` is refused and an explicit native choice never becomes MCP. The macOS full gate passes (669s, 4505 tests); Linux was not run for this change.
 
 **Tests** — The network-client enforcer with a planted violation; transport selection limited to `mcp` and `native`; MCP and handoff paths of both commands; package allowlist and compatibility inventory.
 

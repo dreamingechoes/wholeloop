@@ -234,7 +234,7 @@ No Jira, Notion, analytics or flag account is required for local framing. The de
 node "$WHOLELOOP_CLI" setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
 ```
 
-Add remote providers when your workflow needs them. Operations prefer the coding client's existing MCP connection and must match its exact discovered tools. Existing HTTP bridges are explicit experimental alternatives, with no automatic fallback. Setup does not authenticate services or rewrite client MCP settings.
+Add remote providers when your workflow needs them. wholeloop never talks to a service itself: operations run through the coding client's existing MCP connection, matching its exact discovered tools, or through command-line clients you installed such as gh and glab. Setup does not authenticate services or rewrite client MCP settings.
 
 Remote integrations are **experimental · fixture-tested · service-unverified**. Certification is deferred; accounts with every listed vendor are not required for 1.0. Missing observations stay unknown and unknown contracts stay pending handoffs. [Provider configuration](./docs/configuration/providers.md) · [MCP transport](./docs/extending/providers.md#client-owned-mcp-transport).
 

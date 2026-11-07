@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "config-flags",
   "name": "Config-file flags",
-  "description": "Read through an explicit host bridge and store unapplied flag proposals; never toggle flags.",
+  "description": "Read flag state from a repository configuration file and store unapplied flag proposals; never toggle flags.",
   "capabilities": ["flags"],
   "access": {
     "native": true

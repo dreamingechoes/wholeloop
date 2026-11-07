@@ -93,9 +93,8 @@ Every step can be used on its own. The [flow overview](./flow/README.md) explain
 | [Providers](./configuration/providers.md) | Source/destination choices and the generated capability catalog |
 | [Repository guidance](./configuration/repo-skills.md) | Reusing project skills, conventions and build/review guidance |
 | [Client-owned MCP transport](./extending/providers.md#client-owned-mcp-transport) | Matching exact tools without duplicating client authentication |
-| [Experimental remote bridges](./extending/remote-bridges.md) | Explicit HTTP host boundaries and remaining service checks |
 
-Start locally. Remote providers are optional until your work needs their capabilities; accounts with every vendor are not required. [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md) defines experimental service status and [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md) defines MCP priority.
+Start locally. Remote providers are optional until your work needs their capabilities; accounts with every vendor are not required. [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md) defines experimental service status and [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md) makes the client's MCP connection, or a command-line client you installed, the only way wholeloop reaches a service.
 
 ## Architecture and extensions
 

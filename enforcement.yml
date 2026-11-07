@@ -269,12 +269,15 @@ rules:
     enforcers: [src/framing/finalize.ts#validateFrameReview, src/framing/finalize.ts#prepareFrame, src/flow/engine.ts#complete, test/unit/framing/finalize.test.ts]
   - id: provider-mcp-first
     enforcers: [src/providers/transport.ts#planProviderTransport, src/providers/transport.ts#clientProviderHost, src/providers/rollout.ts#rolloutHost, test/unit/providers/transport.test.ts]
+  - id: core-no-service-network
+    enforcers: [test/unit/providers/network-boundary.test.ts, src/providers/transport.ts#ProviderTransport, test/unit/providers/transport.test.ts]
+    forbid: ['[Hh][Tt][Tt][Pp] (bridge|host|transport)', 'remoteFlagHost', '--bridge']
   - id: docs-settled-decisions
     enforcers: [src/docs/check.ts#checkLinks, test/unit/docs/check.test.ts]
   - id: remote-dashboard-create-boundary
-    enforcers: [src/providers/mixpanel-dashboard.ts#mixpanelDashboardPlan, src/providers/mixpanel-dashboard.ts#mixpanelDashboardHost, src/providers/metabase-dashboard.ts#metabaseDashboardPlan, src/providers/metabase-dashboard.ts#metabaseDashboardHost, src/providers/dashboard-artifact.ts#dashboardArtifact, src/providers/posthog-dashboard.ts#postHogDashboardPlan, src/providers/posthog-dashboard.ts#postHogDashboardHost, src/providers/grafana-dashboard.ts#grafanaDashboardPlan, src/providers/grafana-dashboard.ts#grafanaDashboardHost, src/providers/dashboard-http.ts#withDashboardHttp, src/launch/publish.ts#dispatchLaunchArtifact, src/cli/launch-dispatch.ts#launchDispatchCommand, test/unit/providers/grafana-dashboard.test.ts, test/unit/providers/posthog-dashboard.test.ts, test/unit/providers/metabase-dashboard.test.ts, test/unit/providers/mixpanel-dashboard.test.ts]
+    enforcers: [src/launch/publish.ts#dispatchLaunchArtifact, src/cli/launch-dispatch.ts#launchDispatchCommand, src/providers/transport.ts#clientProviderHost, test/unit/launch/launch.test.ts]
   - id: remote-flag-read-boundary
-    enforcers: [src/providers/flag-bridge.ts#remoteFlagHost, src/providers/flag-bridge.ts#launchDarklyFlag, src/providers/unleash.ts#unleashFlag, src/providers/growthbook.ts#growthBookFlag, src/providers/posthog.ts#postHogFlag, src/providers/posthog.ts#postHogFlagId, src/cli/flag-read.ts#flagReadCommand, test/unit/providers/flag-bridge.test.ts, test/unit/providers/unleash.test.ts, test/unit/providers/growthbook.test.ts, test/unit/providers/posthog.test.ts]
+    enforcers: [src/ramp/evidence.ts#flagEvidence, src/cli/flag-read.ts#flagReadCommand, src/providers/manifest.ts#validateProvider, src/providers/rollout.ts#rolloutHost, test/unit/providers/transport.test.ts, test/unit/providers/rollout.test.ts, test/unit/ramp/ramp.test.ts]
   - id: conformance-nightly-authority
     enforcers: [scripts/conformance-nightly.mjs, .github/workflows/conformance.yml, test/unit/conformance/nightly.test.ts]
   - id: conformance-exact-acquisition
@@ -477,8 +480,6 @@ rules:
     enforcers: [src/slices/publish.ts#publishSlices, src/slices/routing.ts, src/utilities/next.ts, test/unit/slices/slices.test.ts]
   - id: source-explicit-unknowns
     enforcers: [src/providers/manifest.ts#validateProvider, src/providers/sources.ts#querySource, test/unit/providers/sources.test.ts]
-  - id: postgresql-read-only-query
-    enforcers: [src/providers/postgresql.ts#readOnlyStatement, src/providers/postgresql.ts#PostgreSqlSource, test/unit/providers/sources.test.ts]
   - id: docs-same-operation-read
     enforcers: [src/providers/operations.ts#updateDocument, src/providers/manifest.ts#validateProvider, test/unit/providers/destinations.test.ts]
   - id: repo-docs-contained-output
