@@ -72,7 +72,7 @@ wholeloop/
 │  ├─ lenses/*.yml · templates/*.md · profiles/*.yml
 ├─ test/                     unit · snapshot · workflow · conformance · evals
 ├─ docs/                     this documentation
-└─ roadmap/                  phases and session-sized tasks
+└─ roadmap/                  phases and small tasks
 ```
 
 ## How a step actually runs

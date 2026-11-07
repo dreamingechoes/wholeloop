@@ -1,6 +1,6 @@
 # Contributing to wholeloop
 
-`wholeloop` is built in small, session-sized tasks. Start with the working agreement and current journal; the repository remains private until the maintainer explicitly approves public release.
+`wholeloop` is built in small, self-contained tasks. Start with the working agreement and current journal; the repository remains private until the maintainer explicitly approves public release.
 
 To use wholeloop rather than change it, start with the [README](./README.md) and [getting started](./docs/getting-started.md). The agreement below concerns implementation of this repository.
 

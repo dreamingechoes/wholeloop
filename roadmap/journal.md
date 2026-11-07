@@ -2850,7 +2850,7 @@ What remains, and why:
 - Repository created: license, editor settings, README with the philosophy and the flow.
 - Documentation skeleton: philosophy, concepts, the flow and every step page, configuration (profile, providers, repo skills), extending, platforms, architecture, contributing guides, glossary, FAQ.
 - Foundational decisions recorded as ADR-0001 to ADR-0018.
-- Roadmap: six phases, 54 session-sized tasks with acceptance criteria.
+- Roadmap: six phases, 54 tasks with acceptance criteria.
 
 ### Decided
 

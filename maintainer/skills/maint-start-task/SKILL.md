@@ -5,7 +5,7 @@ description: Start the next roadmap task in this repository the way AGENTS.md pr
 
 # Start a roadmap task
 
-The working agreement is `AGENTS.md`; this skill is its session loop, not a replacement for it.
+The working agreement is `AGENTS.md`; this skill follows its task loop and does not replace it.
 
 ## Orient
 

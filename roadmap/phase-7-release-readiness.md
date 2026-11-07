@@ -68,7 +68,7 @@ flowchart LR
 
 **Goal** — Make the repository's own working agreement executable by any coding client.
 
-**Deliverables** — Skills for: starting a roadmap task (the session loop in AGENTS.md), closing a task (criteria, journal, status banners, counts, docnav), amending an existing ADR instead of adding one per fix, adding a provider, a client adapter or a shipped skill by following the authoring guide, preparing a release, triaging an issue, and investigating a performance problem with the tools from P7-04.
+**Deliverables** — Skills for: starting a roadmap task (the task loop in AGENTS.md), closing a task (criteria, journal, status banners, counts, docnav), amending an existing ADR instead of adding one per fix, adding a provider, a client adapter or a shipped skill by following the authoring guide, preparing a release, triaging an issue, and investigating a performance problem with the tools from P7-04.
 
 **Acceptance criteria:**
 

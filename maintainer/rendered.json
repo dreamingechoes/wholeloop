@@ -81,7 +81,7 @@
     },
     {
       "path": ".agents/skills/maint-start-task/SKILL.md",
-      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+      "sha256": "a88c4a3177985049f7b9b8ef1457df5a5e3ef048eb14771905ffe53896e34d66"
     },
     {
       "path": ".agents/skills/maint-triage-issue/SKILL.md",
@@ -129,7 +129,7 @@
     },
     {
       "path": ".claude/skills/maint-start-task/SKILL.md",
-      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+      "sha256": "a88c4a3177985049f7b9b8ef1457df5a5e3ef048eb14771905ffe53896e34d66"
     },
     {
       "path": ".claude/skills/maint-triage-issue/SKILL.md",
@@ -193,7 +193,7 @@
     },
     {
       "path": ".cursor/skills/maint-start-task/SKILL.md",
-      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+      "sha256": "a88c4a3177985049f7b9b8ef1457df5a5e3ef048eb14771905ffe53896e34d66"
     },
     {
       "path": ".cursor/skills/maint-triage-issue/SKILL.md",
@@ -241,7 +241,7 @@
     },
     {
       "path": ".gemini/skills/maint-start-task/SKILL.md",
-      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+      "sha256": "a88c4a3177985049f7b9b8ef1457df5a5e3ef048eb14771905ffe53896e34d66"
     },
     {
       "path": ".gemini/skills/maint-triage-issue/SKILL.md",
@@ -289,7 +289,7 @@
     },
     {
       "path": ".github/skills/maint-start-task/SKILL.md",
-      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+      "sha256": "a88c4a3177985049f7b9b8ef1457df5a5e3ef048eb14771905ffe53896e34d66"
     },
     {
       "path": ".github/skills/maint-triage-issue/SKILL.md",
@@ -337,7 +337,7 @@
     },
     {
       "path": ".opencode/skills/maint-start-task/SKILL.md",
-      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+      "sha256": "a88c4a3177985049f7b9b8ef1457df5a5e3ef048eb14771905ffe53896e34d66"
     },
     {
       "path": ".opencode/skills/maint-triage-issue/SKILL.md",

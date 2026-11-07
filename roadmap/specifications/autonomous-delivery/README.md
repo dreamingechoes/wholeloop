@@ -19,7 +19,7 @@
 | [Learning and maintenance](./08-learning-and-maintenance.md) | Scheduled observations and reviewable maintenance proposals |
 | [Validation and acceptance](./09-validation-and-acceptance.md) | Case IDs, executable fixtures, native trials, manual boundaries and release evidence |
 | [Fully unattended decisions and research](./10-unattended-decisions-and-research.md) | Zero-intervention execution, delegated decisions, ambiguity resolution and complete research flows |
-| [Phase 6 task breakdown](../../phase-6-autonomous-delivery.md) | Session-sized deliverables, dependencies, tests and acceptance checkboxes |
+| [Phase 6 task breakdown](../../phase-6-autonomous-delivery.md) | Task-sized deliverables, dependencies, tests and acceptance checkboxes |
 
 The specification defines intended contracts. Command names, schema names, event names and defaults below are proposed interfaces until implemented and compatibility-tested. Existing commands must not begin accepting these options merely because documentation describes them.
 
