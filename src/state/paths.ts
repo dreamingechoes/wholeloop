@@ -115,7 +115,17 @@ function assertNoMarkers(label: string, start: string, stop?: string): void {
   }
 }
 
+// Absolute POSIX paths with no empty, `.` or `..` component and no trailing
+// separator are already what `relative` would resolve them to.
+const UNNORMAL = /\/\.{0,2}(?:\/|$)/
+const normalAbsolute = (path: string) =>
+  sep === '/' && path.startsWith('/') && (path === '/' || !UNNORMAL.test(path))
+
 export function inside(root: string, path: string): boolean {
+  // Containment of two normalized absolute paths is a component prefix test,
+  // which `relative` computes after resolving both; other inputs take it.
+  if (normalAbsolute(root) && normalAbsolute(path))
+    return path === root || root === '/' || path.startsWith(`${root}/`)
   const rel = relative(root, path)
   return rel === '' || (!isAbsolute(rel) && rel !== '..' && !rel.startsWith(`..${sep}`))
 }
