@@ -34,7 +34,7 @@ For the expanded 1.0 scope, review the [autonomous-delivery design](./architectu
 
 | Page | What it answers |
 | --- | --- |
-| [Getting started](./getting-started.md) | Requirements, source build, installation, first skill, updates and removal |
+| [Getting started](./getting-started.md) | Requirements, installation from npm, client setup, first skill, updates and removal |
 | [Local client setup](./platforms/local-onboarding.md) | Targets, names, native directories and activation boundaries for seven clients |
 | [Local core tour](./tutorials/local-core.md) | What the deterministic CLI does without a model |
 | [First framing](./tutorials/first-framing.md) | Context, answers, owner outcome, exact final review and session recovery |
@@ -119,6 +119,7 @@ Start locally. Remote providers are optional until your work needs their capabil
 | --- | --- |
 | [Contributing](../CONTRIBUTING.md) | Anyone changing this repository |
 | [Working agreement](../AGENTS.md) | Humans and coding agents implementing wholeloop |
+| [Development](./contributing/development.md) | Building from source, the gates, Docker and the commit hook |
 | [Authoring](./contributing/authoring.md) | Skills, agents, protocols and enforcers |
 | [Documentation style](./contributing/docs-style.md) | Page structure, source layout and generated navigation |
 | [Roadmap](../roadmap/README.md) and [journal](../roadmap/journal.md) | Implementation status and executed evidence |

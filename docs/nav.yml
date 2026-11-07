@@ -69,6 +69,7 @@ pages:
   - { path: architecture/execution-isolation.md, title: Execution isolation }
   - { path: architecture/determinism-and-testing.md, title: Determinism and testing }
   - { path: decisions/README.md, title: Decisions }
+  - { path: contributing/development.md, title: Development }
   - { path: contributing/authoring.md, title: Authoring }
   - { path: contributing/releasing.md, title: Release preparation }
   - { path: contributing/conformance.md, title: Nightly conformance }

@@ -7,7 +7,7 @@
 
 ## Before you start
 
-Build the checkout following [getting started](../getting-started.md#build-the-source-checkout), keeping WHOLELOOP_CLI set to the absolute dist/wl.mjs path. Run the following Bash commands from any directory. They create a disposable working directory and a separate external store; they do not change your project or personal store.
+Build the checkout following the [development guide](../contributing/development.md#use-the-source-build), keeping WHOLELOOP_CLI set to the absolute dist/wl.mjs path. Run the following Bash commands from any directory. They create a disposable working directory and a separate external store; they do not change your project or personal store.
 
 ## Capture a local request
 

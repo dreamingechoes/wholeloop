@@ -314,4 +314,4 @@ What we do, stated plainly. One paragraph or a short list.
 ---
 
 <!-- docnav -->
-[◀ Determinism and testing](../architecture/determinism-and-testing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Authoring ▶](../contributing/authoring.md)
+[◀ Determinism and testing](../architecture/determinism-and-testing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Development ▶](../contributing/development.md)

@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08 and P7-16 complete; P7-09 prepared and awaiting the maintainer's switch.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08, P7-10 and P7-16 complete; P7-09 prepared and awaiting the maintainer's switch.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -221,7 +221,7 @@ flowchart LR
 
 ## P7-10 · Root README for users
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P7-07, P7-16
+**Status:** ✅ · **Size:** M · **Depends on:** P7-07, P7-16
 
 **Goal** — Make the README the place where a new user understands wholeloop and decides to use it.
 
@@ -229,9 +229,11 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] A reader who has never seen the project can say what `wl` is and install it from the README alone.
-- [ ] Every command in the README runs against the published package (verified in P7-14).
-- [ ] Development instructions exist only in the contributor documentation.
+- [x] A reader who has never seen the project can say what `wl` is and install it from the README alone.
+- [x] Every command in the README runs against the published package (verified in P7-14).
+- [x] Development instructions exist only in the contributor documentation.
+
+**Evidence** — The README now opens with why ad hoc prompting fails and what wholeloop changes, then the loop, what each step produces, installation with `npm install --global wholeloop`, client installation, a first skill, examples, the client/core split, principles, supported clients and a documentation map; it has no roadmap counts or source build, and a status note sends readers to the source build only until the first release is published. Cloning, building, the gates, Docker, the commit hook and other scripts moved to the new [development guide](../docs/contributing/development.md); getting started installs from npm and uses `wl`. Every README shell command was run against the source build with an empty home and store (all exit 0); the run against the published package belongs to P7-14 by design.
 
 **Tests** — Docs check and Markdown lint; README commands executed against the release candidate in P7-14.
 

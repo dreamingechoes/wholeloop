@@ -14,7 +14,7 @@ npm run build
 export WHOLELOOP_CLI="$PWD/dist/wl.mjs"
 ```
 
-You need the development dependencies already installed with `npm ci`, a supported Node runtime and Git. [Getting started](../getting-started.md#build-the-source-checkout) covers a fresh checkout.
+You need the development dependencies already installed with `npm ci`, a supported Node runtime and Git. The [development guide](../contributing/development.md#build-from-source) covers a fresh checkout.
 
 ## Run the tour
 

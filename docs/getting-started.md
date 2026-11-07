@@ -1,14 +1,14 @@
 # Getting started — install once, run a first skill
 
-> **TL;DR** — Build the source checkout, install for one named client, restart that client in your application repository and request the framing skill. Start with local storage; remote service accounts are optional. The core-only tour works without a model account.
+> **TL;DR** — Install the `wl` CLI from npm, install for one named client, restart that client in your application repository and request the framing skill. Start with local storage; remote service accounts are optional. The core-only tour works without a model account.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Source installation, all seven artifact targets and local workflows are implemented. Public npm/marketplace distribution is not released. Native discovery, authentication and permissions remain scoped to the observations in [V1 acceptance](./v1-acceptance.md).
+> **Status: 🚧 partial.** Installation, all seven artifact targets and local workflows are implemented. The first npm release is in preparation; until it is published, use the source build from the [development guide](./contributing/development.md) and run `node /absolute/path/to/dist/wl.mjs` wherever this page says `wl`. Native discovery, authentication and permissions remain scoped to the observations in [V1 acceptance](./v1-acceptance.md).
 
 ## Contents
 
 - [Choose a starting path](#choose-a-starting-path)
-- [Build the source checkout](#build-the-source-checkout)
+- [Install the CLI](#install-the-cli)
 - [Install for one client](#install-for-one-client)
 - [Check the installation](#check-the-installation)
 - [Run framing in your project](#run-framing-in-your-project)
@@ -29,40 +29,34 @@
 
 The core manages state and deterministic rules. Skills in your coding client perform the model-backed work. A successful terminal command alone does not prove native discovery, review or isolation.
 
-## Build the source checkout
+## Install the CLI
 
-Development requires Node 22 or newer and npm. Node 22.23.1 and 24.22.0 are checked development versions; use one of those rather than an early minor that cannot satisfy the installed tools' engine requirements. The built bundle supports Node 20 or newer. Use Git 2.36 or newer; individual coding clients have their own requirements. The Git minimum preserves unambiguous worktree ownership, including paths containing newlines; see [ADR-0138](decisions/0138-unambiguous-git-worktree-runtime.md).
+The CLI runs on Node 20 or newer. Use Git 2.36 or newer; individual coding clients have their own requirements. The Git minimum preserves unambiguous worktree ownership, including paths containing newlines; see [ADR-0138](decisions/0138-unambiguous-git-worktree-runtime.md). Steps that execute project code also need a local Docker daemon ([execution isolation](./architecture/execution-isolation.md)).
 
 ```bash
-git clone https://github.com/dreamingechoes/wholeloop.git
-cd wholeloop
-npm ci
-npm run build
-node ./dist/wl.mjs --version
-export WHOLELOOP_CLI="$PWD/dist/wl.mjs"
+npm install --global wholeloop
+wl --version
 ```
 
-Skip cloning if you already have the checkout. Access is required while the repository is private. The current version is 0.0.0: this is a source build, not an instruction to install an already published 1.0 package.
-
-Keep `WHOLELOOP_CLI` as an absolute path when changing directories. In a new terminal, export it again from the wholeloop checkout. You can always invoke `node /absolute/path/to/wholeloop/dist/wl.mjs ...` directly. Source installation does not create a global `wl` command.
+The package installs `wl` and the equivalent `wholeloop` command and has no runtime dependencies. To work from a source checkout instead, follow the [development guide](./contributing/development.md).
 
 ## Install for one client
 
 Choose a named target. This example uses Claude Code:
 
 ```bash
-node "$WHOLELOOP_CLI" install --target claude --scope user --dry-run --json
-node "$WHOLELOOP_CLI" install --target claude --scope user --json
+wl install --target claude --scope user --dry-run --json
+wl install --target claude --scope user --json
 ```
 
 Targets are `claude`, `codex`, `opencode`, `copilot`, `gemini`, `antigravity` and `cursor`. Start with the client you already use. [Local client setup](./platforms/local-onboarding.md) covers native directories, namespace differences, version-specific behavior and activation.
 
 | Scope | Run it from | What it writes |
 | --- | --- | --- |
-| `user` | The source checkout or an intended project | Owned native files in that client's user directories, with packaged resources and receipts in the external store |
+| `user` | Any directory | Owned native files in that client's user directories, with packaged resources and receipts in the external store |
 | `project` | The application repository that should receive it | Selected native project directories and `.wholeloop/distribution/<target>`; runtime state/receipts/backups stay external |
 
-For project scope, change into the application first and replace `--scope user` with `--scope project`. Avoid installing project scope into the wholeloop implementation checkout when you mean another application.
+For project scope, change into the application first and replace `--scope user` with `--scope project`.
 
 Installation does not install or log in to the client, select a model, rewrite general/MCP settings or call services. It creates owned files and reports native activation as unverified. Trust, actual role permissions and separately returned Git fallback commands remain explicit setup. [Installation boundaries](./platforms/README.md#installing).
 
@@ -71,7 +65,7 @@ Installation does not install or log in to the client, select a model, rewrite g
 Select the same explicit target:
 
 ```bash
-node "$WHOLELOOP_CLI" doctor --target claude --json
+wl doctor --target claude --json
 ```
 
 | Observation | Next action |
@@ -108,8 +102,8 @@ For direct core inspection, replace the variable's example value with the actual
 
 ```bash
 export INITIATIVE_ID="paste-the-returned-init-ID"
-node "$WHOLELOOP_CLI" status "$INITIATIVE_ID" --json
-node "$WHOLELOOP_CLI" resume "$INITIATIVE_ID" --json
+wl status "$INITIATIVE_ID" --json
+wl resume "$INITIATIVE_ID" --json
 ```
 
 State normally lives under `$XDG_STATE_HOME/wholeloop` or `$HOME/.local/state/wholeloop`; use the same store environment in each session. Status and resume inspect state. `next` can begin the next available contract, so do not use it merely to look around.
@@ -121,8 +115,8 @@ An on-hold/dropped framing has `status: closed` and no next step. The exact outc
 No Jira, Notion, analytics or flag account is required for local work. To persist local destinations and a communication preset:
 
 ```bash
-node "$WHOLELOOP_CLI" setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
-node "$WHOLELOOP_CLI" profile show --json
+wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
+wl profile show --json
 ```
 
 Use `mentor` for more explanation, `pair` for ordinary work, `sparring` for stronger challenge or `autopilot` for terser parallel work. Presets do not remove approval requirements or coverage. [Profiles](./configuration/profile.md).
@@ -131,13 +125,13 @@ When a workflow needs external tools, configure the client's MCP connection thro
 
 ## Update or uninstall
 
-After updating source and rebuilding, inspect the same target/scope's install dry run. Matching files report `already-correct`; owned upgrades retain external backups. Edited/unowned files and unsafe links are preserved and refused. There is no force/adoption shortcut. Inspect pending receipts after an interruption before choosing another operation.
+After updating the package (`npm install --global wholeloop@latest`), inspect the same target/scope's install dry run. Matching files report `already-correct`; owned upgrades retain external backups. Edited/unowned files and unsafe links are preserved and refused. There is no force/adoption shortcut. Inspect pending receipts after an interruption before choosing another operation.
 
 To retire the same installation:
 
 ```bash
-node "$WHOLELOOP_CLI" uninstall --target claude --scope user --dry-run --json
-node "$WHOLELOOP_CLI" uninstall --target claude --scope user --json
+wl uninstall --target claude --scope user --dry-run --json
+wl uninstall --target claude --scope user --json
 ```
 
 Keep the same target, scope and external store. Removal retires unchanged owned files; work history/backups remain. Separately activated Git fallbacks have their own uninstall command. Restart the client to verify removal. [Client-specific removal](./platforms/local-onboarding.md#verify-a-first-step-and-retire-the-same-installation).

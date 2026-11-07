@@ -7,7 +7,7 @@
 
 ## Before you start
 
-Build the checkout following [getting started](../getting-started.md#build-the-source-checkout), keeping WHOLELOOP_CLI set to the absolute dist/wl.mjs path. You need Git and the built CLI; no model or remote account is needed. Run these Bash commands from any directory. All Git changes below belong to a new disposable example repository. Proposal files, receipts and runtime state stay outside that repository.
+Build the checkout following the [development guide](../contributing/development.md#use-the-source-build), keeping WHOLELOOP_CLI set to the absolute dist/wl.mjs path. You need Git and the built CLI; no model or remote account is needed. Run these Bash commands from any directory. All Git changes below belong to a new disposable example repository. Proposal files, receipts and runtime state stay outside that repository.
 
 ## Capture the source and prepare proposals
 

@@ -36,6 +36,8 @@ From the switch, every change reaches `main` through a pull request, and the sam
 
 ## Checks
 
+The [development guide](./docs/contributing/development.md) covers requirements, building from source, every gate, Docker and the commit hook; the essentials:
+
 Node ≥ 22 and npm for development (the published CLI runs on Node ≥ 20):
 
 ```bash

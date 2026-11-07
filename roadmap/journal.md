@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-07 · P7-10 ✅ · Root README for users
+
+- The README is written for a first-time user: why ad hoc prompting fails and what wholeloop changes, the loop, what each step produces, installation from npm, client installation, a first skill, examples, the client/core split, principles, supported clients and a documentation map. Roadmap counts, acceptance details and the source build left it; a status note points to the source build only until the first release is on npm.
+- Development instructions moved to the new [development guide](../docs/contributing/development.md): requirements, building from source, using the build in place of `wl`, every gate, Docker, the commit hook and other scripts. Getting started now installs from npm and uses `wl`; the FAQ and four tutorials that linked the removed section point to the guide. The remaining pages that call the source build through `WHOLELOOP_CLI` are part of P7-11.
+- Every README shell command was run against the source build with an empty home and store, all exiting 0; running them against the published package is part of P7-14.
+- Documentation only; no code path changed. macOS full gate with two file workers: CHECK PASS in 643s, 4610/4610 tests across 328 files.
+- Next: P7-11, the user documentation pass.
+
+---
+
 ## 2026-11-07 · P7-09 ⏸️ · Pull-request contribution workflow prepared
 
 - The branch and tag rules are versioned files the maintainer applies: `.github/rulesets/main.json` admits changes to `main` only through squash-merged pull requests with up-to-date required checks and no bypass; `.github/rulesets/release-tags.json` lets the Release workflow create each tag once and forbids moving or deleting it. A test keeps the required checks equal to the expanded CI job names, which GitHub would otherwise only report after the rules were live.
