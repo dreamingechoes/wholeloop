@@ -288,8 +288,51 @@ Remaining attributed costs and their reasons:
 - Supervised requests: 161 remain — Docker effects, preflight, image inspection, 24 daemon identity checks that must follow the CLI's current target, and the synthetic model workers, whose time is external work with a real model.
 - Base guard: 312 decisions × three Git processes; the remote URL stays a separate query because reproducing `remote get-url --push --all` would mean reimplementing Git's rewrite rules.
 - Closure proofs: 234 `ps` tables, one per observed supervised process. A zombie-only process group is never `ESRCH` for `kill(-pgid, 0)` on macOS or Linux, so a kernel group query could replace most tables, but the current design defines the table as the observation source and an unavailable table as `unknown`.
-- Review input preparation recomputes 251 private patch diffs; the workspace snapshot of each integration observation hashes every tracked file twice.
-- Directory durability: replacements flush the file and its immediate directory, not directories created on the way. This predates the audit.
+- Review input preparation recomputed 251 private patch diffs (now shared within one decision, below); the workspace snapshot of each integration observation still hashes every tracked file twice, deliberately, to detect a change during the observation.
+- Directory durability: replacements flushed the file and its immediate directory, not directories created on the way. This predated the audit and is corrected below.
+
+## Borrowed views, joined queries and directory durability
+
+Changes after the route above, each with a count or equivalence control that fails on the preceding source:
+
+| Change | Decision |
+| --- | --- |
+| Lend deeply frozen validated journal projections to internal readers; `get` and `list` still copy | [ADR-0239](../docs/decisions/0239-witnessed-journal-ranges-and-owned-incremental-replay.md) |
+| Read resolved store files with one canonicalization | [ADR-0243](../docs/decisions/0243-single-writer-store-trust-model.md) |
+| Share the unsealed review audit and the private patch within one decision | [ADR-0240](../docs/decisions/0240-sealed-observations-bounded-cancellation-and-drain.md), [ADR-0243](../docs/decisions/0243-single-writer-store-trust-model.md) |
+| Remember clean credential scans by content digest; refusals are never remembered | [ADR-0235](../docs/decisions/0235-bound-schema-and-text-validation-allocations.md) |
+| Flush the entry of every directory the store creates (a durability correction that adds flushes) | [ADR-0242](../docs/decisions/0242-flush-only-committed-facts.md) |
+| Ask HEAD, branch and Git directory in joined `rev-parse` queries outside sealed observations | [ADR-0243](../docs/decisions/0243-single-writer-store-trust-model.md) |
+| One shared per-decision memo for the base guard and the review patch | [ADR-0243](../docs/decisions/0243-single-writer-store-trust-model.md) |
+| Containment of normalized absolute paths without `path.relative` | [ADR-0243](../docs/decisions/0243-single-writer-store-trust-model.md) |
+| Flush the installation backup directory once per batch | [ADR-0242](../docs/decisions/0242-flush-only-committed-facts.md) |
+
+The first four took the calibrated controller from 67.945 to 63.882 seconds. Complete route with the same calibrated profiler on the final source (report d72ec97a6d97e283818926c879edab2fad331f044e55f70c060ff41863a7db06, CLI c844aa1df0700328875191bc5c7e0847b4ce0a5076421b2a8c766db89ed2a4cb, controller 2a5149c0779e3bc3d0e3b32cae101a3eca78ac9fef7a91846151e0569ec7e321; equivalent to both earlier references, zero overflow). Seconds are controller phase intervals; counters are controller API calls before the last five changes → final:
+
+| Phase | Seconds | Git | fsyncSync |
+| --- | --- | --- | --- |
+| Bootstrap | 0.223 → 0.229 | 19 → 19 | 14 → 20 |
+| Plan | 0.174 → 0.173 | 18 → 18 | 16 → 20 |
+| Acceptance definition | 1.694 → 1.729 | 51 → 51 | 118 → 132 |
+| Workspace | 0.551 → 0.563 | 76 → 74 | 34 → 42 |
+| Build plan | 4.915 → 4.968 | 270 → 250 | 318 → 353 |
+| Implementation | 1.375 → 1.393 | 49 → 45 | 100 → 110 |
+| Commit | 1.189 → 1.089 | 183 → 156 | 52 → 62 |
+| Verification | 11.525 → 10.315 | 308 → 266 | 472 → 543 |
+| Review | 11.290 → 10.543 | 731 → 628 | 618 → 691 |
+| Reverification | 0.803 → 0.746 | 104 → 98 | 20 → 20 |
+| Integration | 17.173 → 15.862 | 928 → 846 | 552 → 620 |
+| Acceptance | 5.224 → 4.960 | 291 → 291 | 218 → 238 |
+| Publication | 3.950 → 3.914 | 316 → 316 | 44 → 46 |
+| Handoff | 2.823 → 2.819 | 260 → 260 | 14 → 16 |
+| Finalization | 0.974 → 0.976 | 70 → 70 | 6 → 6 |
+| **Controller** | **63.882 → 60.279** | 3674 → 3388 | 2596 → 2919 |
+
+The outer run takes 73.196 → 69.922 seconds and the waiting CLI 60.547. Two uninstrumented equivalent rehearsals of the final bundles take 68 and 72 seconds (74.55 and 74.35 after the route above). The controller's peak RSS stays at 318–324 MiB and its peak used heap between 70 and 87 MiB across runs; garbage collection is 0.17 seconds of its CPU profile. These are single observations, not distributions.
+
+A first version of the joined queries also ran inside sealed read observations, where every query is shared by key with the observation's other readers; it added six to eight Git processes to each of the acceptance, publication and handoff phases and was corrected before this measurement. A per-decision memo of the local Git configuration check was tried and dropped: two actions can run back to back in one job, and a helper configured between them must refuse the second.
+
+Remaining controller time, from a fresh CPU profile of the final source: about 19 seconds in synchronous Git and `ps` processes, 11.6 seconds flushing committed facts and about 20 seconds idle while supervised work runs. A Git process costs about 3.8 ms on this host even for `git --version`, independent of environment, so only the number of guard queries matters; the remaining ones are guard points around effects. The installation suite's complete round trips drop from about 16 to 11 seconds and the compiled install case from 29 to 20; what remains there is one flush per native file before it becomes visible.
 
 ## Findings and remaining work
 

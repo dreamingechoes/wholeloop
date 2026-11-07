@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-07 · P6-39 · Borrowed views, joined queries and directory durability
+
+- Internal readers borrow frozen journal projections, resolved store files are read with one canonicalization, the review audit and patch are shared within one decision and clean credential scans are remembered by content: the calibrated controller goes from 67.945 to 63.882 seconds.
+- Durability correction: a fact written into a directory the store had just created (for example each native invocation's intent record) could vanish with that directory after power loss, because only the file and its own directory were flushed. Every directory the store creates now has its entry flushed in its parent ([ADR-0242](../docs/decisions/0242-flush-only-committed-facts.md)); this adds about 320 flushes to the route and closes the gap listed in [execution isolation](../docs/architecture/execution-isolation.md).
+- HEAD, branch and Git directory are asked in joined `rev-parse` queries outside sealed observations; a shared `DecisionMemo` replaces two copies of the per-decision rule; path containment of normalized absolute paths skips `path.relative`; installation backups flush their directory once per batch ([ADR-0243](../docs/decisions/0243-single-writer-store-trust-model.md), [ADR-0242](../docs/decisions/0242-flush-only-committed-facts.md)). Final calibrated route: controller 60.279 seconds, 3388 Git processes (3674 before), 2919 flushes; uninstrumented rehearsals 68 and 72 seconds.
+- Rejected after measurement: joined queries inside sealed observations (they lose sharing by key) and a per-decision memo of the local Git configuration check (it missed a helper configured between two back-to-back actions).
+- macOS full gate: CHECK PASS in 650s, 4877/4877 tests across 325 files with two file workers. Offline Linux gate on the exact snapshot (1832 files; runtime e56f7ca207e394dbf3adcdab539875d2def14118f62767479223909be20fbd77): CHECK PASS in 157s, 4875 passes and the same two environment skips; the root-skipped file passes 7/7 as uid 65534; Linux-built bundles match macOS.
+- P6-39 stays open. Remaining controller time is synchronous Git and `ps` at guard points, committed-fact flushes and waiting on supervised work; details in the [audit ledger](./performance-audit.md).
+
+---
+
 ## 2026-11-06 · P6-39 · Attribute and remove write, Git and environment-read amplification
 
 - A measurement-only caller-attribution preload, run on the source measured in the previous entry, reproduces its controller counters exactly (fsync, rename, Git, ps, mkdir; exists/realpath/JSON within 0.2%) and attributes them: all 7020 flushes come from the durable writer (1298 lock owner records, 468 disposable delivery views, about 78 identical state views); the base guard causes 3546 of 6302 Git processes; environment history revalidation causes most of 11.85 million `JSON.stringify` calls; integration path checks come from repeated environment binding and operation listings.
