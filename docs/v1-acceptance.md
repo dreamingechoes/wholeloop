@@ -177,7 +177,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phases 6 and 7 yields 105 tasks, 73 complete and 32 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-27 native evaluations and P6-35 worker credentials remain pending; and the fifteen [Phase 7](../roadmap/phase-7-release-readiness.md) release-readiness tasks are planned, including P7-13 (formerly P6-32), P7-14 (formerly P5-05) and P7-15 (formerly P5-07). The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
+The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Phases 6 and 7 yields 106 tasks, 73 complete and 33 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-27 native evaluations, P6-35 worker credentials and P6-40 repository guidance in autonomous runs remain pending; and the fifteen [Phase 7](../roadmap/phase-7-release-readiness.md) release-readiness tasks are planned, including P7-13 (formerly P6-32), P7-14 (formerly P5-05) and P7-15 (formerly P5-07). The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Maintainer involvement |
 | --- | --- | --- |

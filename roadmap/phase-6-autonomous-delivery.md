@@ -9,7 +9,7 @@
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0.0 and precedes the release closure in [Phase 7](./phase-7-release-readiness.md); it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. P6-35–P6-38 were added on 2026-11-04 and P6-39 on 2026-11-05; P6-32 moved to Phase 7 as P7-13 on 2026-11-07. The [roadmap index](./README.md) holds the current task counts.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0.0 and precedes the release closure in [Phase 7](./phase-7-release-readiness.md); it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. P6-35–P6-38 were added on 2026-11-04, P6-39 on 2026-11-05 and P6-40 on 2026-11-07; P6-32 moved to Phase 7 as P7-13 on 2026-11-07. The [roadmap index](./README.md) holds the current task counts.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -36,6 +36,8 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 | Fully unattended research/decisions | P6-33–P6-34 | Unattended decisions and research |
 | Worker credentials | P6-35 | Runner, validation |
 | Operator overview and live feed | P6-36–P6-38 | Controls and observability |
+| Performance audit | P6-39 | Controls and validation |
+| Repository guidance in autonomous runs | P6-40 | Runner and unattended decisions |
 
 ---
 
@@ -1043,6 +1045,32 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 **Docs** — Determinism and testing, ADR-0227, v1 acceptance, the [executed audit ledger](./performance-audit.md) and the journal.
 
 **Closed** — 2026-11-07 by maintainer decision at the measured state: the controller of the complete model-free route went from 160.1 to 60.3 seconds and the whole rehearsal from about 175 to 68–72 seconds, with equivalent outcomes and passing macOS and Linux gates.
+
+---
+
+## P6-40 · Repository guidance in autonomous runs
+
+**Status:** ⬜ · **Size:** L · **Depends on:** P6-02, P6-08, P1-07
+
+**Design review:** requested and authorized on 2026-11-07 · **Release:** 1.0.0
+
+**Goal** — Let an autonomous run use the target repository's own skills, agents, rules and instructions as supervised steps already do, while keeping every worker's input pinned and deterministic.
+
+**Context** — Supervised steps resolve slots through `wl discover` and load the bound repository guidance. Autonomous workers run with native skill, rule and project-instruction loading disabled, and receive repository knowledge only through `plan.guidance`: single files pinned by slot, path and SHA-256 at the base commit. Nothing fills those pins from discovery today, a multi-file skill cannot be pinned, the repository's instruction files reach no worker unless pinned by hand, and every pin goes to every worker regardless of role.
+
+**Deliverables** — Plan preparation runs discovery and slot resolution on each repository's pinned base and proposes guidance pins: the repository's instruction files and the skills, agents and rules that resolve each slot, with the same precedence as supervised steps. Ambiguities are questions answered before authorization, because a run without intervention cannot ask later; the grant covers the exact pinned set through the plan digest. Directory pins carry a manifest of per-file digests for skills made of several files. Each worker receives only the slots of its role (builder, verifier, reviewer, planner, researcher), and the selection is recorded with the assignment.
+
+**Acceptance criteria:**
+
+- [ ] For the same repository and base, an autonomous plan proposes exactly the guidance a supervised step resolves for the same slots, and the proposal is deterministic.
+- [ ] A changed, moved or added guidance file after authorization refuses the affected stage instead of silently using different bytes.
+- [ ] Multi-file skills are pinned and delivered whole, within explicit size bounds.
+- [ ] Workers receive only their role's slots; a reviewer never receives build-only guidance unless a slot says so.
+- [ ] Native skill and project-instruction loading stays disabled in workers; pinned context remains the only channel.
+
+**Tests** — Equivalence between supervised resolution and the plan proposal on fixture repositories with skills for several clients; directory-pin manifests; stale-pin refusals; per-role delivery; an EVAL-09 variant whose builder must follow a repository skill to pass.
+
+**Docs** — Repo skills and slots, delivery planning tutorial, autonomous delivery architecture, ADR-0009, ADR-0054, ADR-0207 and v1 acceptance.
 
 ---
 

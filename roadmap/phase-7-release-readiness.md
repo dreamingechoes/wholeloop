@@ -254,7 +254,7 @@ flowchart LR
 
 Moved from P6-32 on 2026-11-07; its history and checked criteria are unchanged.
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P6-35, P6-36, P6-37, P6-38, P5-06, P7-11, P7-12
+**Status:** ⏸️ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P6-35, P6-36, P6-37, P6-38, P6-40, P5-06, P7-11, P7-12
 
 **Design review:** accepted on 2026-10-24 · **Release:** 1.0.0
 

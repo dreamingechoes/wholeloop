@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-07 · P6-40 · Plan repository guidance in autonomous runs
+
+- Supervised steps already resolve the target repository's skills, agents, rules and commands through `wl discover` and slot resolution. Autonomous workers deliberately run with native skill and project-instruction loading disabled and receive repository knowledge only through `plan.guidance` pins, which nothing fills from discovery; multi-file skills cannot be pinned and every pin reaches every worker.
+- The maintainer adds [P6-40](./phase-6-autonomous-delivery.md#p6-40--repository-guidance-in-autonomous-runs) for 1.0.0: plan preparation proposes deterministic guidance pins from discovery, ambiguities are settled before authorization, directory pins carry per-file digests and each worker receives only its role's slots. The roadmap now has 106 tasks: 73 complete and 33 open.
+
+---
+
 ## 2026-11-07 · Phase 7 · Plan release readiness and the public launch
 
 - The maintainer adds [Phase 7](./phase-7-release-readiness.md) as the final phase before the first public release: maintainer skills and agents for the repository itself, performance investigation tooling, supply-chain and security automation, a pre-publication history audit, versioning and changelog, release automation, the switch to pull requests, a user-facing README, documentation passes, the public repository with a release candidate, and 1.0.0.
