@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-07 · P7-03 ✅ · Maintainer specialist agents
+
+- Four read-only maintainer agents: convention reviewer, documentation auditor, security and dependency auditor, and release manager. Each reads its rules from their source files and reports every finding with the rule it comes from, where, what and the smallest fix; none edits, commits, pushes or publishes.
+- They render through each adapter's read-only mapping. Codex cannot sandbox a custom agent on its own; its render says so and the contributing guide asks for a read-only session.
+- The first full gate failed at markdown: agents rendered with a client preamble before their heading broke MD041. Rendered client directories are now outside markdownlint, since they follow each client's format and `maintainer:check` keeps them equal to their linted sources. Second run: CHECK PASS in 703s, 4554/4554 tests across 323 files on macOS. Not run on Linux.
+
+---
+
 ## 2026-11-07 · P7-02 ✅ · Maintainer workflow skills
 
 - Seven maintainer skills join `maint-check`: start and close a roadmap task, amend a decision record, extend wholeloop (provider, client adapter, shipped skill), prepare a release, triage an issue and investigate performance. They point at the repository's own checks and guides rather than restating them, and none commits, pushes, publishes or changes settings.

@@ -58,6 +58,15 @@ The repository ships its own skills and agents for the work described here, rend
 | `maint-investigate-performance` | Measure with `scripts/perf/` before changing a hot path |
 | `maint-check` | Run the gates and read the final line |
 
+| Agent | Reviews |
+| --- | --- |
+| `maint-convention-reviewer` | Docs style, no tool attribution, size budgets, Conventional Commits, English on disk |
+| `maint-docs-auditor` | Status banners, TL;DRs, claims against code, links and generated references |
+| `maint-security-auditor` | Secrets, network access, unsafe processes, dependency and workflow changes |
+| `maint-release-manager` | Version, notes, changelog, checklist and blocking manual checks |
+
+The agents are read-only and every finding cites the rule it comes from. Claude Code, OpenCode, Copilot, Gemini, Antigravity and Cursor enforce read-only from the agent file; Codex cannot sandbox a custom agent on its own, so run it from a read-only session, as the rendered agent itself says. `test/unit/maintainer/agents.test.ts` checks each client's mapping.
+
 None of them commits, pushes, publishes or changes repository settings; `test/unit/maintainer/skills.test.ts` checks that, and that every script and path a skill names exists. The roadmap totals in `roadmap/README.md` are checked against the phase files by `npm run roadmap:check`.
 
 Edit them only in `maintainer/` and run `npm run maintainer:render`; `npm run check` fails on a hand-edited rendered file or a stale render. Read-only agents are enforced where the client can do it from the agent file; `maintainer/rendered.json` records how each client enforces it, and Codex inherits its parent session's sandbox instead. See [ADR-0246](./docs/decisions/0246-dogfooded-maintainer-skills-and-agents.md).

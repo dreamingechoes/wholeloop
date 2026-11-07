@@ -19,6 +19,16 @@
     "node_modules/**",
     "dist/**",
     // CLAUDE.md only imports AGENTS.md.
-    "CLAUDE.md"
+    "CLAUDE.md",
+    // Maintainer tools rendered in each client's own format (ADR-0246). Their
+    // sources in maintainer/ are linted; maintainer:check keeps these in sync.
+    ".agents/**",
+    ".claude/**",
+    ".codex/**",
+    ".cursor/**",
+    ".gemini/**",
+    ".opencode/**",
+    ".github/agents/**",
+    ".github/skills/**"
   ]
 }

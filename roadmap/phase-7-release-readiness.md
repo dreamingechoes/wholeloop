@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01, P7-02, P7-04 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-04 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -84,7 +84,7 @@ flowchart LR
 
 ## P7-03 · Maintainer specialist agents
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P7-01
+**Status:** ✅ · **Size:** M · **Depends on:** P7-01
 
 **Goal** — Give contributors read-only reviewers that know this repository's rules.
 
@@ -92,8 +92,10 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] Reviewing agents are read-only in every client that can enforce it; where a client cannot, the limitation is stated.
-- [ ] Every finding an agent reports cites the rule it comes from.
+- [x] Reviewing agents are read-only in every client that can enforce it; where a client cannot, the limitation is stated.
+- [x] Every finding an agent reports cites the rule it comes from.
+
+**Evidence** — Four read-only agents, rendered for all seven clients. `test/unit/maintainer/agents.test.ts` checks each client's read-only mapping (Claude plan mode and disallowed write tools, Codex without shell, OpenCode deny-by-default, Copilot, Gemini and Antigravity without write or shell tools, Cursor `readonly`), that the Codex render states it cannot enforce read-only itself, and that every agent defines a `rule` field and cites existing sources.
 
 **Tests** — Role and permission mapping per client; budgets and front matter through `harness:check`.
 

@@ -40,6 +40,22 @@
   },
   "files": [
     {
+      "path": ".agents/agents/maint-convention-reviewer.md",
+      "sha256": "f4839a62d89f565c9db1418793cd16f78e3d735c39f5705e3a82a71945f086e6"
+    },
+    {
+      "path": ".agents/agents/maint-docs-auditor.md",
+      "sha256": "802ae8267b1dd1b456dd5fa7a85dd7cc307379e49a5dc42dc78c8f95db528bb2"
+    },
+    {
+      "path": ".agents/agents/maint-release-manager.md",
+      "sha256": "1b875fc340a9c2e1ba367aa2c4c05ec0804e4086316cc3ee1e8f9d6ea5a497f6"
+    },
+    {
+      "path": ".agents/agents/maint-security-auditor.md",
+      "sha256": "bed2386b5eec4b8a1658b80f5b70599d7b44a2bfe71e4d1d53d55895c24fd109"
+    },
+    {
       "path": ".agents/skills/maint-amend-adr/SKILL.md",
       "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
     },
@@ -70,6 +86,22 @@
     {
       "path": ".agents/skills/maint-triage-issue/SKILL.md",
       "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
+    },
+    {
+      "path": ".claude/agents/maint-convention-reviewer.md",
+      "sha256": "1f77edf04bef6cc8fc7dd92cf6c2e25e4917a591cbe830c9f3f8215d7f005b34"
+    },
+    {
+      "path": ".claude/agents/maint-docs-auditor.md",
+      "sha256": "fc887a844ece6e1116561cb4c305e2b04147a4339bed25cbbe1b4fb7016980c1"
+    },
+    {
+      "path": ".claude/agents/maint-release-manager.md",
+      "sha256": "0ba5fe228217fcce0a3b5307ea1bb71f491e4b0bab2ea4645a79f2beb40fa617"
+    },
+    {
+      "path": ".claude/agents/maint-security-auditor.md",
+      "sha256": "b5c4417bb66b8662ae2593cdf39948f7af13050881d8559ce22b56e729aa5f2b"
     },
     {
       "path": ".claude/skills/maint-amend-adr/SKILL.md",
@@ -104,6 +136,38 @@
       "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
     },
     {
+      "path": ".codex/agents/maint-convention-reviewer.toml",
+      "sha256": "cd7c7c6757d11a0ab1893e966f15426ec8bdfd3be21270962cfa698fada89c87"
+    },
+    {
+      "path": ".codex/agents/maint-docs-auditor.toml",
+      "sha256": "d3d0d0d6d984b38633bcc8ce13f150854d554394d75765751eef0ba57680cefb"
+    },
+    {
+      "path": ".codex/agents/maint-release-manager.toml",
+      "sha256": "5d897642c3bdf37ff922bc09a4d3147e2cf7c9dff620c2df4a44f3e35cfd3213"
+    },
+    {
+      "path": ".codex/agents/maint-security-auditor.toml",
+      "sha256": "577b443d9f483d9f0ccfedf78f3dc45dcb575a4a78e01e42fd7bce59f35c7716"
+    },
+    {
+      "path": ".cursor/agents/maint-convention-reviewer.md",
+      "sha256": "7d3988131ef174d2ef950ec94e76ee8d3eb6015379404d6b4d0b34cfac68acde"
+    },
+    {
+      "path": ".cursor/agents/maint-docs-auditor.md",
+      "sha256": "ccbd592d97a31a2a24a70aaf695e5ee844e5fdc90e4ccd0d582e144b7decd395"
+    },
+    {
+      "path": ".cursor/agents/maint-release-manager.md",
+      "sha256": "23f46b003c6f95c5cdcf11b3543338198b0de12a7250b8b2d20165467f4a4a3f"
+    },
+    {
+      "path": ".cursor/agents/maint-security-auditor.md",
+      "sha256": "f9a22a0fe5c6d6339c65f1201e5db96feffe8527896fe65cbb325690b41695e9"
+    },
+    {
       "path": ".cursor/skills/maint-amend-adr/SKILL.md",
       "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
     },
@@ -134,6 +198,22 @@
     {
       "path": ".cursor/skills/maint-triage-issue/SKILL.md",
       "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
+    },
+    {
+      "path": ".gemini/agents/maint-convention-reviewer.md",
+      "sha256": "d82229e12ff18f75a795895711362c961a7608cf4b8d0d4ec6e05142738113f0"
+    },
+    {
+      "path": ".gemini/agents/maint-docs-auditor.md",
+      "sha256": "5ea0e8278140c88ed504297c625000a2f85bd50d06b49262fbb0ec3c958a7099"
+    },
+    {
+      "path": ".gemini/agents/maint-release-manager.md",
+      "sha256": "7df91fb0aa48987df8266845205faa0a5a22dde198346941a32a4655fc64416a"
+    },
+    {
+      "path": ".gemini/agents/maint-security-auditor.md",
+      "sha256": "84a771d1dfe4cb2063423669fae058877d87086e86ad0d11e13137ef7bc3640f"
     },
     {
       "path": ".gemini/skills/maint-amend-adr/SKILL.md",
@@ -168,6 +248,22 @@
       "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
     },
     {
+      "path": ".github/agents/maint-convention-reviewer.agent.md",
+      "sha256": "56a730f06e0020056f37e71fdee23e8e669de55ff6ca82b62c123c7d72824fc3"
+    },
+    {
+      "path": ".github/agents/maint-docs-auditor.agent.md",
+      "sha256": "80e3171e00d1233046f613be123d794971d67f3110da0a1ec19ab9625e842034"
+    },
+    {
+      "path": ".github/agents/maint-release-manager.agent.md",
+      "sha256": "88cab1ad48d171b6cadf44e44ac64519798a7bf68ad478fe57a7cb88834e7762"
+    },
+    {
+      "path": ".github/agents/maint-security-auditor.agent.md",
+      "sha256": "d18f98c2ee0e40d84fb228cd54d8f5fe2646ed273764f0c1e574f1e6c84ac54b"
+    },
+    {
       "path": ".github/skills/maint-amend-adr/SKILL.md",
       "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
     },
@@ -198,6 +294,22 @@
     {
       "path": ".github/skills/maint-triage-issue/SKILL.md",
       "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
+    },
+    {
+      "path": ".opencode/agents/maint-convention-reviewer.md",
+      "sha256": "e77e22b4c3a8fd690d8f887cb44a336920c570ebeae51943d389bf15f49643c6"
+    },
+    {
+      "path": ".opencode/agents/maint-docs-auditor.md",
+      "sha256": "723caffb1ff316787b4cb5ad678d7358223f63b5204e8d84720d34318c1d4546"
+    },
+    {
+      "path": ".opencode/agents/maint-release-manager.md",
+      "sha256": "05e49fd7c3c91c6bb2a5d0824bf609a5945b64393881afdcd909fa2820f6dba0"
+    },
+    {
+      "path": ".opencode/agents/maint-security-auditor.md",
+      "sha256": "9b526b0218ff05219ffd9b21cd15f6cf563887d1477e44f15ff54aa50073621c"
     },
     {
       "path": ".opencode/skills/maint-amend-adr/SKILL.md",
