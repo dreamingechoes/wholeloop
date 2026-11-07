@@ -31,6 +31,8 @@ export async function runnerGitFixture(
   options: {
     singleUnit?: boolean
     guidance?: string
+    /** The pinned slot; workers receive only their role's slots (P6-40). */
+    guidanceSlot?: string
     stageBudget?: 'plan'
     withinEnvelope?: boolean
     definition?: boolean
@@ -67,6 +69,7 @@ export async function runnerGitFixture(
         const guidance = plan.guidance[0]
         if (!guidance) throw new Error('Fixture guidance missing')
         guidance.sha256 = createHash('sha256').update(options.guidance).digest('hex')
+        if (options.guidanceSlot) guidance.slot = options.guidanceSlot
       }
       if (options.singleUnit) {
         plan.work = plan.work

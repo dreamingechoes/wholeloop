@@ -1874,6 +1874,38 @@
     },
     {
       "type": "object",
+      "required": ["schema", "status", "pins", "questions", "skipped", "problems"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-guidance@1"
+        },
+        "status": {
+          "enum": ["proposed", "needs-answers", "blocked"]
+        },
+        "pins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["slot", "ref", "sha256", "repository"]
+          }
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "repository", "slot", "prompt", "options"]
+          }
+        },
+        "skipped": {
+          "type": "array"
+        },
+        "problems": {
+          "type": "array"
+        }
+      }
+    },
+    {
+      "type": "object",
       "required": [
         "schema",
         "provider",

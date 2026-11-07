@@ -1,5 +1,6 @@
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
+import { guidanceContextProblem } from '../delivery/guidance.js'
 import { safeSourceText } from '../delivery/input.js'
 import type { NativeRunReceipt } from '../delivery/native-host.js'
 import {
@@ -94,11 +95,8 @@ export class RunnerArtifactAttempts extends NativeReadOnlyAttempts<RunnerArtifac
       (context.stage.kind === 'plan' && authority.grant.basis.kind !== 'envelope')
     )
       throw new DeliveryRunnerError('artifact-purpose-not-current')
-    if (
-      selected.pinned.plan.guidance.some(
-        (g) => !input.context.some((c) => c.kind === 'guidance' && c.artifact.sha256 === g.sha256),
-      )
-    )
+    // Artifact purposes are claimed as planner work (below), so they carry planner guidance.
+    if (guidanceContextProblem(selected.pinned.plan.guidance, 'planner', input.context))
       throw new DeliveryRunnerError('artifact-purpose-guidance')
     // A deadline narrows this invocation; changing it must not buy a new cell.
     const { deadline: _deadline, ...scope } = selected.root

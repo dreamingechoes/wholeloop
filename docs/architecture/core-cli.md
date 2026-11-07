@@ -142,6 +142,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl delivery grant` | `wholeloop/delivery-authorization@1` | Inspect a grant, its finite deadline and any retained revocation |
 | `wl delivery plan-schema` | `wholeloop/delivery-planning-schema@1` | Show the closed delivery plan and initial request-envelope contracts |
 | `wl delivery plan` | `wholeloop/delivery-plan-prepared@1` | Validate and preserve an exact delivery proposal without granting execution |
+| `wl delivery guidance` | `wholeloop/delivery-guidance@1` | Propose repository guidance pins from each pinned base before authorization |
 | `wl delivery envelope` | `wholeloop/delivery-envelope-prepared@1` | Pin initial request bounds for later independent planning and authorization |
 | `wl delivery inspect-plan` | `wholeloop/delivery-plan-prepared@1` | Read a stored plan revision, proposed route and dependency waves |
 | `wl delivery source-schema` | `wholeloop/delivery-source-schema@1` | Show the bounded delivery request and imported observation contract |

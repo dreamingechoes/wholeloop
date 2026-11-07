@@ -731,6 +731,13 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Validate and preserve an exact delivery proposal without granting execution',
   },
   {
+    path: 'delivery guidance',
+    arguments: '',
+    options: ['--file <proposal.json>', '--root <directory>', '--answers <answers.json>'],
+    schema: 'wholeloop/delivery-guidance@1',
+    summary: 'Propose repository guidance pins from each pinned base before authorization',
+  },
+  {
     path: 'delivery envelope',
     arguments: '',
     options: ['--file <proposal.json>', '--root <directory>', '--store <path>'],

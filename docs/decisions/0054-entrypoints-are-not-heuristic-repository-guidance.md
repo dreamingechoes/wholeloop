@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-07 (P6-40).** The same exclusion applies when an autonomous plan proposes guidance from a pinned base: harness entrypoints never become pinned repository guidance unless explicitly tagged or bound.
+
 Native wholeloop skills and roles are entrypoints into the harness. Their names and descriptions also match slot rules such as frame.template. Coinstalling several clients therefore made standalone framing ask the user to choose among copies of the harness itself, even with no repository-specific guidance present. Excluding nested distribution output alone did not address native overlays.
 
 ## Decision

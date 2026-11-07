@@ -93,6 +93,10 @@ Bindings  build.backend   → .agents/skills/api-architecture   (repo, tagged)
 
 Remember a choice with `wl answer slot:build.frontend=.agents/skills/ui-kit/SKILL.md --remember project --json`. User scope is also available. Step begin payloads expose their slot resolutions and include unresolved choices in their missing-input questions.
 
+## In autonomous runs
+
+Autonomous workers cannot load your skills or instruction files themselves: native loading is disabled so every input stays inside the authorized plan. Before preparing a plan, run `wl delivery guidance --file <proposal.json> --json`. It resolves the same slots at each repository's pinned base commit and prints pins to copy into the plan's `guidance`: one per resolved slot (a skill directory as a whole, with a digest per file) and `repo.instructions` for AGENTS.md and its peers. Tied candidates come back as questions; answer them in a `wholeloop/delivery-guidance-answers@1` file passed with `--answers`, or choose `default` for harness guidance. Each worker then receives only its role's guidance: builders get build slots and conventions, reviewers the rubric, and everyone the instructions. User-level skills are not used in autonomous runs.
+
 ## Gotchas & FAQ
 
 **"My repo has Claude skills but I use Codex."** Discovery reads every CLI's folders, so a `.claude/skills/` guide still binds to a slot when you run in Codex.

@@ -199,6 +199,7 @@
     "output:wholeloop/conformance-issues@1": "ca322dafae803d8374f6462fb22a103e01613e67c86d7d4a3384647d4d524844",
     "output:wholeloop/conformance-acquisition@1": "9f5be6ae500bf6c88846cf546a137a9493b3ad7d1fb21ef7fdbf1673ec92cd09",
     "schema:wholeloop/conformance-downloads@1": "dcfaf9025faac5c71541a6d4b6bb9e4cd5af316b1aae2b10ca115b6dbecf712f",
+    "output:wholeloop/delivery-guidance@1": "40a980b37f1a5dea94c6eae96445388387a221ea61870fac0820ba0dade86312",
     "output:wholeloop/flag-read@2": "b9078cdc23e9127a1b7c728c7e0d2b5736e3264275ffded1fbc46316c20e6961",
     "output:wholeloop/dashboard-dispatch@2": "0478f70d55df22e8a3d316cf96f1903b92c856085b049cfe08596ba107c11e83",
     "schema:wholeloop/client-mcp@1": "ed1c71ccd86e62dcf624b17b63f4c6a70c54b87b8829295570f7a0096f703ea9",
@@ -218,7 +219,7 @@
     "output:wholeloop/delivery-source-intake@1": "2d6cacf6307d92bd1ebf2f4c767b1efdec0c50b4b42a4c49a8c8d215ae03f96d",
     "schema:wholeloop/delivery-plan@1": "7eaa34202e1bd384312da1b8e59821984cc741d7bf3dcdc029d61c0cee09dcae",
     "schema:wholeloop/delivery-planning-record@1": "524e0cb216e79abf4e35bb982bf06b0a76add05debe6c49c724b35445eefdd65",
-    "schema:wholeloop/delivery-envelope@1": "04e83173af3c3f231892bc73a4fab9327dfa0b0dcd292abd9641c86014fd15db",
+    "schema:wholeloop/delivery-envelope@1": "b79aa25fab57ede3ebd4a5532288dffc7062f327231fd68891dda1c89a8072e9",
     "output:wholeloop/delivery-planning-schema@1": "b32b1209068cd385f9fb5cba27463db9889cc5c9d5a7278fc8638f526c6c9ed4",
     "output:wholeloop/delivery-plan-prepared@1": "82b98f86533011ab4d4b5a698081d213b47f5aad1dd72e1544a43fdce6d5d483",
     "output:wholeloop/delivery-envelope-prepared@1": "13566c9b56f296df6379a76525f5ec86e239f84a000ad17610edf43970c77e75",
@@ -420,7 +421,7 @@
     "schema:wholeloop/delivery-ci-feedback@1": "f1fb8b190d88be0514d79a40e15c5abcfc4778dfdab116072f7ebbb9aaab6fb8",
     "output:wholeloop/delivery-planning-schema@2": "966511c9b4354abd76fd76591b55ea33d0ae9648b88bf0a0f79f5537f31c3f69",
     "output:wholeloop/delivery-plan-prepared@2": "cac147b3c7c7a89858bceff144733aba46c2c52f962a0b3dd88192b79339e3a4",
-    "schema:wholeloop/delivery-plan@2": "4bc78cc4b465622d19ed1711856ad1698ba1cc9da1b4c82689ad9dfbe4bc3b70",
+    "schema:wholeloop/delivery-plan@2": "d63cef420d3de471856a031cc21681011d61ccc4f1bc15aa2d50deda3fd18027",
     "schema:wholeloop/delivery-planning-record@2": "857a9f20c5eead2da99d87b8f0a89ae3ba556ad120c9aec0d4b75dc67a2e1e9c",
     "output:wholeloop/delivery-ci-continue@1": "f27f6abed74ec3d0cc4552e74d7f18d527d2ee16e3c1a46bd2373a7abd21c130",
     "schema:wholeloop/repository-diff-input@1": "40dc8a252a8c4183fe969f95d2dcb170c7f9b82e860cd81d999e05fcf92b0db2"
@@ -1449,6 +1450,12 @@
       "arguments": "<id>",
       "schema": "wholeloop/flag-read@2",
       "options": ["--flag <key>", "--environment <key>", "--mcp <file>"]
+    },
+    {
+      "path": "delivery guidance",
+      "arguments": "",
+      "schema": "wholeloop/delivery-guidance@1",
+      "options": ["--file <proposal.json>", "--root <directory>", "--answers <answers.json>"]
     },
     {
       "path": "launch dispatch",

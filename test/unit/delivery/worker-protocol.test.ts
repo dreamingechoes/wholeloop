@@ -390,6 +390,8 @@ describe('current queue context assembly', () => {
     fixture(({ planning, plan, root, dir }) => {
       const instructions = Buffer.from('Follow the fixture repository conventions.')
       entry(plan.guidance, 0).sha256 = hash(instructions)
+      // The claimed unit is builder work, which receives build guidance (P6-40).
+      entry(plan.guidance, 0).slot = 'build.backend'
       const prepared = planning.preparePlan(plan),
         queue = new DeliveryQueue(planning.sources.files.root, () => at)
       const grant = queue.lifecycle.authority.authorize(authorization(plan, prepared.digest))

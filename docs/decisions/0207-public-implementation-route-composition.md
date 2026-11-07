@@ -60,12 +60,26 @@ Publication also needs the GitHub CLI. ADR-0205 rejected resolving a client thro
 
   Until step 7, a `to-pr` route reports `public-host-unsupported-stage` before dispatch.
 
+## Repository guidance in workers (P6-40)
+
+**Amended 2026-11-07.** Workers run with native skill, rule and project-instruction loading disabled, so pinned guidance is their only channel for repository knowledge. Until now nothing filled those pins, a multi-file skill could not be pinned, and every pin reached every worker. The route now works as follows:
+
+- **Proposal.** `wl delivery guidance --file <proposal.json> [--answers <answers.json>]` runs discovery and slot resolution on each repository's pinned base commit, with the same precedence a supervised step uses: a configured binding, an explicit slot tag, then a name match. It proposes one pin per resolved slot plus `repo.instructions`, the repository's instruction files (AGENTS.md, CLAUDE.md, GEMINI.md, `.cursor/rules`, `.agents/rules`, Copilot instructions). Ambiguities are questions answered before authorization, because a run without intervention cannot ask later; the grant covers the exact pins through the plan digest. User-level skills are not candidates: they live outside the repository and could change after authorization, so a slot only a user skill fills uses harness guidance.
+- **Pins.** A skill pin covers its whole directory as a manifest of per-file digests; the pin digest is the digest of the canonical manifest. `review.rubric`, `spec.template` and `frame.template` stay single-file pins, because the core reads those files as bytes. Bounds: 32 files, 256 KiB per file and 512 KiB per pin; larger guidance blocks the proposal and asks for a smaller binding.
+- **Verification.** At composition the controller reads every pin of a repository at its base with one `ls-tree` and one `cat-file --batch`, instead of one `git show` per pin. A changed file, a file added to or removed from a pinned directory, or a different set of instruction files leaves the route unsupported rather than handing a worker unauthorized bytes.
+- **Roles.** Each worker receives only its role's slots: instructions reach every role; build slots and commit and PR conventions reach builders; the rubric reaches reviewers and refuters; planning and research slots reach planners, challengers and researchers. A slot no rule names reaches nobody. The claim checks that a worker holds every pin of its role; selection happens where context is composed.
+
+Research-report runs still carry no repository guidance: their workers read sources, not a repository. The model-backed EVAL-09 variant whose builder must follow a repository skill needs the hosted trial repository and model accounts, and is listed in manual verification.
+
 ## Alternatives rejected
 
 - **A separate environments document.** It would need its own CLI flag, retained bytes and identity term, but the result would be the same digest-bound configuration.
 - **Putting recipes into the plan.** That changes the plan contract and its revision impact, for inputs the recipe store already pins and verifies.
 - **Provisioning unit environments in a new route stage.** That changes every route digest. The verification invocation already owns the suite that needs the environment.
 - **Choosing suite commands from repository guidance at run time.** The suite refuses to guess on purpose, so a guessed command would weaken that rule.
+- **Letting workers load repository skills natively.** Native loading would read whatever the worktree holds at launch, outside the plan digest and the grant; pinned guidance keeps every worker input authorized and reproducible.
+- **Delivering every pin to every worker.** A reviewer told how to build, or a builder handed the rubric it is judged against, blurs the separation the gates rely on.
+- **Refusing extra guidance at the claim.** Role selection belongs to the composition; refusing extra context at the claim would turn a composition detail into a worker failure.
 
 ## Verification
 

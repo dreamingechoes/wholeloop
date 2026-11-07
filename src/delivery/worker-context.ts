@@ -5,6 +5,7 @@ import { canonicalPath } from '../state/paths.js'
 import { repository } from '../worktrees/git.js'
 import { findBudget } from './budget-events.js'
 import { currentBudgetReservation } from './budget-policy.js'
+import { guidanceContextProblem } from './guidance.js'
 import { readSourceBytes } from './input.js'
 import { checkPlanEnvelope } from './plan.js'
 import type { DeliveryQueue, QueueAssignment } from './queue.js'
@@ -129,15 +130,8 @@ export function workerContextForClaim(
     if (criteria.some((id) => !unit.criteria.includes(id)))
       throw new WorkerProtocolError('criteria-scope')
     const context = structuredClone(input.context)
-    if (
-      prepared.plan.guidance.some(
-        (item) =>
-          !context.some(
-            (entry) => entry.kind === 'guidance' && entry.artifact.sha256 === item.sha256,
-          ),
-      )
-    )
-      throw new WorkerProtocolError('missing-guidance')
+    const guidance = guidanceContextProblem(prepared.plan.guidance, lease.role, context)
+    if (guidance) throw new WorkerProtocolError(guidance)
     const consumed = prepared.plan.work
       .flatMap((item) => item.produces)
       .filter((item) => unit.consumes.includes(item.id))

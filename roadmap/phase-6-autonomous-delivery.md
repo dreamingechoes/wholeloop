@@ -1050,7 +1050,7 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 ## P6-40 · Repository guidance in autonomous runs
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-02, P6-08, P1-07
+**Status:** ✅ · **Size:** L · **Depends on:** P6-02, P6-08, P1-07
 
 **Design review:** requested and authorized on 2026-11-07 · **Release:** 1.0.0
 
@@ -1062,11 +1062,13 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 **Acceptance criteria:**
 
-- [ ] For the same repository and base, an autonomous plan proposes exactly the guidance a supervised step resolves for the same slots, and the proposal is deterministic.
-- [ ] A changed, moved or added guidance file after authorization refuses the affected stage instead of silently using different bytes.
-- [ ] Multi-file skills are pinned and delivered whole, within explicit size bounds.
-- [ ] Workers receive only their role's slots; a reviewer never receives build-only guidance unless a slot says so.
-- [ ] Native skill and project-instruction loading stays disabled in workers; pinned context remains the only channel.
+- [x] For the same repository and base, an autonomous plan proposes exactly the guidance a supervised step resolves for the same slots, and the proposal is deterministic.
+- [x] A changed, moved or added guidance file after authorization refuses the affected stage instead of silently using different bytes.
+- [x] Multi-file skills are pinned and delivered whole, within explicit size bounds.
+- [x] Workers receive only their role's slots; a reviewer never receives build-only guidance unless a slot says so.
+- [x] Native skill and project-instruction loading stays disabled in workers; pinned context remains the only channel.
+
+**Evidence** — `test/unit/delivery/guidance.test.ts` proposes pins from real Git fixtures and compares every slot with the supervised `discover` and `resolveSlot` result for the same tree; repeats the proposal deterministically; asks for tied candidates and honours answers and bindings; blocks oversized skills; refuses changed bytes, a file added to a pinned skill directory and a changed instruction set; counts two Git processes per repository for verification; and shows builders, reviewers and verifiers receiving only their slots through the composition's `guidanceContext`. Narrowed: user-level skills are not candidates (they live outside the repository), research-report workers receive no repository guidance, and the model-backed EVAL-09 variant waits on the hosted trial repository and model accounts in manual verification.
 
 **Tests** — Equivalence between supervised resolution and the plan proposal on fixture repositories with skills for several clients; directory-pin manifests; stale-pin refusals; per-role delivery; an EVAL-09 variant whose builder must follow a repository skill to pass.
 

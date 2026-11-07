@@ -2,13 +2,13 @@ import { isAbsolute, resolve } from 'node:path'
 import { isObject, type Schema, validate } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { type Criterion, lintCriteria } from '../definition/criteria.js'
-import { knownSlot } from '../discovery/rules.js'
 import { codehostRepository } from '../pull-requests/codehost.js'
 import { checkDependencies } from '../slices/contract.js'
 import { ITEM_ID } from '../state/events.js'
 import { inside } from '../state/paths.js'
 import { DecisionMemo, inReadObservation } from '../state/read-observation.js'
 import { repositoryBase } from '../worktrees/git.js'
+import { type GuidancePin, guidanceShapeProblem } from './guidance.js'
 import { SOURCE_LIMIT, safeSourceText } from './input.js'
 import envelopeSchema from './schemas/envelope-v1.json' with { type: 'json' }
 import planSchema from './schemas/plan-v1.json' with { type: 'json' }
@@ -90,7 +90,7 @@ export interface DeliveryBasis {
   owner: string
   scope: { outcomes: { id: string; text: string }[]; exclusions: string[] }
   repositories: DeliveryRepository[]
-  guidance: { slot: string; ref: string; sha256: string; repository?: string }[]
+  guidance: GuidancePin[]
   policy: DeliveryPolicy
   budgets: typeof DEFAULT_DELIVERY_BUDGETS
   capabilities: {
@@ -239,7 +239,8 @@ function basis(value: DeliveryBasis, source: SourceSnapshot): void {
     unique(value.policy.merge.exceptions, 'duplicate-merge-exception')
   }
   for (const entry of value.guidance) {
-    if (!knownSlot(entry.slot)) throw new DeliveryPlanError('unknown-guidance-slot')
+    const problem = guidanceShapeProblem(entry)
+    if (problem) throw new DeliveryPlanError(problem)
     if (entry.repository !== undefined)
       references(
         [entry.repository],

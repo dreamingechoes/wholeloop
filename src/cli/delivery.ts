@@ -15,6 +15,7 @@ import { deliveryAcceptanceCommand } from './delivery-acceptance.js'
 import { deliveryAuthorityCommand } from './delivery-authority.js'
 import { deliveryBudgetCommand } from './delivery-budgets.js'
 import { deliveryEnvironmentCommand } from './delivery-environment.js'
+import { deliveryGuidanceCommand } from './delivery-guidance.js'
 import { deliveryIntegrationCommand } from './delivery-integration.js'
 import { deliveryJournalCommand } from './delivery-journal.js'
 import { deliveryPlanningCommand } from './delivery-planning.js'
@@ -173,6 +174,8 @@ export function deliveryCommand(
     ].includes(command)
   )
     return deliveryAuthorityCommand(command, { options, positional: [] }, root, json, io)
+  if (command === 'delivery guidance')
+    return deliveryGuidanceCommand({ options, positional: [] }, root, json, io)
   if (!['delivery source', 'delivery source-schema'].includes(command))
     return deliveryPlanningCommand(command, { options, positional: [] }, root, json, io)
   if (command === 'delivery source-schema') {

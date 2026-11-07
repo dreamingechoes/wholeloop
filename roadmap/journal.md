@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-07 · P6-40 ✅ · Repository guidance in autonomous runs
+
+- `wl delivery guidance --file <proposal.json> [--answers <file>]` runs discovery and slot resolution on each repository's pinned base and proposes the plan's guidance pins with supervised precedence: one pin per resolved slot plus `repo.instructions` for AGENTS.md and its peers. Tied candidates are questions answered before authorization. [ADR-0207](../docs/decisions/0207-public-implementation-route-composition.md#repository-guidance-in-workers-p6-40) is amended; ADR-0009 and ADR-0054 note the change.
+- Skill directories are pinned whole as manifests of per-file digests (32 files, 256 KiB per file, 512 KiB per pin). The rubric and templates stay single-file pins because the core reads them as bytes. The plan v2 and envelope schemas gain the optional manifest field; the unreleased v1 candidate records the new fingerprints.
+- The composition reads every pin of a repository at its base with one `ls-tree` and one `cat-file --batch` instead of one `git show` per pin, refuses changed bytes, added or removed files in a pinned directory and a changed instruction set, and hands each role only its slots. Worker claims check completeness for the role; selection stays in the composition, since refusing extra context at the claim broke legitimate fixtures without adding protection.
+- Narrowed: user-level skills are not candidates in autonomous runs; research-report workers receive no repository guidance; the model-backed EVAL-09 variant needs the hosted trial repository and model accounts and is listed in manual verification.
+- Composition reads of pinned guidance drop from one Git process per pin to two per repository. macOS full gate with two file workers: CHECK PASS in 661s, 4519/4519 tests across 319 files. Not run on Linux.
+
+---
+
 ## 2026-11-07 · P7-16 ✅ · Retire built-in service clients
 
 - Removed the HTTP flag readers (LaunchDarkly, PostHog, GrowthBook, Unleash), the HTTP dashboard writers (Grafana, PostHog, Metabase, Mixpanel), their shared HTTP code, bridges and configuration schemas, the PostgreSQL process host and the `http` transport, with their tests. Only `mcp` and `native` remain. [ADR-0085](../docs/decisions/0085-client-owned-mcp-first-provider-transport.md) is amended with the final rule; ADR-0076–ADR-0083 are superseded and ADR-0027 and ADR-0084 note the change.

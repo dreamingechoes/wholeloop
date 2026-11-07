@@ -62,6 +62,33 @@ function readOnlyGit(args: readonly string[]): boolean {
     )
   )
 }
+/**
+ * Read-only object plumbing for pinned trees: `ls-tree` lists a commit once and
+ * `cat-file --batch` returns many blobs from one process, so reading a pinned
+ * guidance set costs two processes per repository rather than one per file.
+ * Sealed observations have their own fixed readers; this one refuses inside them.
+ */
+export function gitObjects(
+  root: string,
+  args: readonly ['ls-tree' | 'cat-file', ...string[]],
+  input?: Buffer,
+  maxBuffer = 64 * 1024 * 1024,
+): Buffer {
+  if (inReadObservation()) assertObservationWritable()
+  const response = spawnSync('git', [...args], {
+    cwd: root,
+    encoding: 'buffer',
+    env: { ...process.env, GIT_OPTIONAL_LOCKS: '0', GIT_TERMINAL_PROMPT: '0' },
+    timeout: 30_000,
+    maxBuffer,
+    ...(input ? { input } : {}),
+  })
+  if (response.error || response.status !== 0)
+    throw new Error(
+      `Git ${args[0]} failed; inspect repository permissions and the requested reference`,
+    )
+  return response.stdout
+}
 function readGit(root: string, args: readonly string[], hooks?: string): Buffer {
   const response = spawnSync(
     'git',

@@ -7,6 +7,8 @@ import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { NativeDelegatedDecisionHost } from '../decisions/native-host.js'
 import type { DecisionRequest } from '../decisions/store.js'
+import { guidanceRoles } from '../delivery/guidance.js'
+import { readPinnedGuidance } from '../delivery/guidance-tree.js'
 import { readSourceFile, sourceHash } from '../delivery/input.js'
 import type { NativeBoundaryHost } from '../delivery/native-assignment-host.js'
 import type { NativeBinding, NativeBindings } from '../delivery/native-bindings.js'
@@ -28,7 +30,6 @@ import { integrationScope } from '../integration/contracts.js'
 import { type CommandExecutor, executeCodehostCommand } from '../pull-requests/codehost.js'
 import { canonicalPath } from '../state/paths.js'
 import { StateStore } from '../state/store.js'
-import { gitBytes } from '../worktrees/git.js'
 import { RunnerAcceptanceDefinitionStages } from './acceptance-definition-stages.js'
 import { RunnerAcceptanceStages } from './acceptance-stages.js'
 import type { RunnerArtifactInput } from './artifact-attempts.js'
@@ -152,37 +153,68 @@ export function publicNativeOptions(
 }
 
 /**
- * The plan's pinned guidance as worker context. A pin names a file in one of
- * the plan's repositories; its bytes are read from the repository's pinned
- * base commit and must match the pinned digest, so a moved branch or edited
- * file cannot change what a worker is told. Anything else is unsupported.
+ * The plan's pinned guidance as worker context (P6-40). Bytes come from each
+ * repository's pinned base commit and must match their pins, so a moved branch
+ * or edited file cannot change what a worker is told; any mismatch leaves the
+ * route unsupported. A manifest pin (a skill directory or the repository's
+ * instruction files) contributes its manifest, whose digest is the pin, and
+ * each file. `forRole` hands a worker only the slots its role needs.
  */
-function guidanceContext(store: RunnerStore, plan: Readonly<DeliveryPlan>) {
+export function guidanceContext(
+  store: RunnerStore,
+  plan: Readonly<Pick<DeliveryPlan, 'guidance' | 'repositories'>>,
+) {
   const root = `delivery/public-guidance/${contractDigest(plan.guidance)}`,
-    context: WorkerContext[] = []
-  for (const [index, pin] of plan.guidance.entries()) {
-    const repository = plan.repositories.find((entry) => entry.id === pin.repository)
-    if (!repository) return undefined
-    let bytes: Buffer
-    try {
-      bytes = gitBytes(repository.root, ['show', `${repository.base}:${pin.ref}`])
-    } catch {
-      return undefined
-    }
-    if (
-      createHash('sha256').update(bytes).digest('hex') !== pin.sha256 ||
-      bytes.length > 256 * 1024
-    )
-      return undefined
-    const ref = `artifacts/guidance-${index}.txt`
+    pinned = readPinnedGuidance(plan.repositories, plan.guidance)
+  if (!pinned) return undefined
+  const entries: { slot: string; context: WorkerContext }[] = []
+  const write = (ref: string, bytes: Buffer) => {
+    // Content-addressed by the guidance digest: identical bytes are never rewritten.
     if (!existsSync(store.files.path(`${root}/${ref}`))) store.files.atomic(`${root}/${ref}`, bytes)
-    context.push({
-      kind: 'guidance',
-      audience: 'shared',
-      artifact: { ref, bytes: bytes.length, sha256: pin.sha256 },
-    })
+    return { ref, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') }
   }
-  return { contextRoot: store.files.path(root), context }
+  for (const [index, { pin, manifest, files }] of pinned.entries()) {
+    if (!manifest) {
+      const [file] = files
+      if (!file) return undefined
+      entries.push({
+        slot: pin.slot,
+        context: {
+          kind: 'guidance',
+          audience: 'shared',
+          artifact: write(`artifacts/guidance-${index}.txt`, file.bytes),
+        },
+      })
+      continue
+    }
+    entries.push({
+      slot: pin.slot,
+      context: {
+        kind: 'guidance',
+        audience: 'shared',
+        artifact: write(`artifacts/guidance-${index}.json`, manifest),
+      },
+    })
+    for (const [position, file] of files.entries())
+      entries.push({
+        slot: pin.slot,
+        context: {
+          kind: 'guidance',
+          audience: 'shared',
+          artifact: write(`artifacts/guidance-${index}-${position}.txt`, file.bytes),
+        },
+      })
+  }
+  const contextRoot = store.files.path(root)
+  return {
+    contextRoot,
+    forRole: (role: WorkerRole) => ({
+      contextRoot,
+      context: entries
+        .filter((entry) => guidanceRoles(entry.slot).includes(role))
+        .map((entry) => structuredClone(entry.context)),
+    }),
+  }
 }
 
 /**
@@ -584,9 +616,9 @@ export function composeInstalledImplementation(
       // The adapter writes the brief from the pinned plan and source.
       brief: '',
       environment,
-      ...guidance,
+      ...guidance.forRole('planner'),
       context: [
-        ...guidance.context,
+        ...guidance.forRole('planner').context,
         ...(context.stage.kind === 'build-plan' ? [buildPlanInputs.prepare(context).context] : []),
       ],
       provenance: 'host-observed',
@@ -610,7 +642,11 @@ export function composeInstalledImplementation(
     definitions = new RunnerAcceptanceDefinitionStages(store, definition),
     gate = (process: NativeProcessRunner, workspace: string) => ({
       native: { ...gating.base, process, host: gating.observer(process, workspace) },
-      context: () => ({ workspace, environment, ...guidance }),
+      context: (_lease: unknown, role: WorkerRole) => ({
+        workspace,
+        environment,
+        ...guidance.forRole(role),
+      }),
       admit,
     })
   const verification = new RunnerVerificationStages(store, {
@@ -657,7 +693,7 @@ export function composeInstalledImplementation(
       context: (_context, workspace) => ({
         ...(workspace ? { workspace } : {}),
         environment,
-        ...guidance,
+        ...guidance.forRole('builder'),
       }),
       admit,
     },

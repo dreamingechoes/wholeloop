@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-07 (P6-40).** Autonomous runs apply the same resolution at each repository's pinned base and pin the result into the plan, so workers that cannot load repository skills natively still receive them ([ADR-0207](./0207-public-implementation-route-composition.md#repository-guidance-in-workers-p6-40)). User-level skills are not candidates there.
+
 A repository often already knows how it wants to be worked on: an implementation skill for its backend, a design-system guide, a review checklist, a PR template, the one command that really runs its tests. A generic harness that ignores those writes generic code and gets rejected by the team that owns the repo. A harness that *guesses* which repo skill to use is worse: it follows the wrong guide with confidence.
 
 Repos also mix CLIs: a team on Codex may have its best guidance in `.claude/skills/`.

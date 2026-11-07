@@ -159,6 +159,8 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
       singleUnit: true,
       ...(options.withinEnvelope ? { withinEnvelope: true } : {}),
       guidance,
+      // Artifact purposes run as planner work, which receives planning guidance.
+      guidanceSlot: 'spec.template',
       ...(options.stage === 'definition' ? { definition: true } : {}),
       ...(options.stageBudget ? { stageBudget: options.stageBudget } : {}),
       ...(options.delegate

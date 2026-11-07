@@ -24,6 +24,13 @@ Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 eac
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Repository guidance in autonomous runs (P6-40, 2026-11-07)
+
+Guidance proposal, base-commit pins, manifest verification and per-role delivery are implemented and tested with real Git fixtures and the composition.
+
+- [ ] Add a repository skill to the hosted trial fixture that the task cannot be completed without (for example a required status format), prepare an EVAL-09 plan with `wl delivery guidance`, and confirm on each reference client that the builder follows it while the reviewer never receives it. This needs a push to the hosted trial repository and model accounts.
+- [ ] Repeat the proposal on a real repository whose skills span several clients and confirm the pins match what `wl resolve` shows for each slot.
+
 ## Execution isolation and secret handling (2026-11-06)
 
 - [ ] Restrict standalone headless gate workers (`src/fanout/host.ts`) to an allowlisted environment, as delivery workers already are. Each supported client needs its authentication variables (or credential-store paths) declared per adapter and verified with a signed-in client: today these workers inherit the caller's complete environment, including unrelated secrets. See [Execution isolation](../docs/architecture/execution-isolation.md#known-gaps).
