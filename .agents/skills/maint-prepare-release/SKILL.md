@@ -20,7 +20,8 @@ Versions are always full `x.y.z`, with pre-releases such as `1.0.0-rc.1` on the 
 4. Check the package with `npm run package:check`: it must contain exactly the files the release guide lists.
 5. Review the delivery preview with `node dist/wl.mjs release artifacts --out <empty directory> --dry-run`.
 6. Report the version, the notes, the package digest and anything still open in `roadmap/manual-verification.md`.
+7. Tell the maintainer how the release continues: dispatching the Release pull request workflow with this version opens the pull request, its merge prepares the bundle, and publication waits for their approval of the `release` environment.
 
 ## Never
 
-This skill never tags, pushes, publishes to npm, creates a GitHub Release or changes repository settings. Publication is the maintainer's single approval in the protected release environment.
+This skill never tags, pushes, dispatches workflows, publishes to npm, creates a GitHub Release or changes repository settings. Publication is the maintainer's single approval in the protected release environment.

@@ -77,7 +77,7 @@
     },
     {
       "path": ".agents/skills/maint-prepare-release/SKILL.md",
-      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+      "sha256": "7557909f69b5337d7f54978610283425ef3cd8af8514a80f55bbfa22e1607012"
     },
     {
       "path": ".agents/skills/maint-start-task/SKILL.md",
@@ -125,7 +125,7 @@
     },
     {
       "path": ".claude/skills/maint-prepare-release/SKILL.md",
-      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+      "sha256": "7557909f69b5337d7f54978610283425ef3cd8af8514a80f55bbfa22e1607012"
     },
     {
       "path": ".claude/skills/maint-start-task/SKILL.md",
@@ -189,7 +189,7 @@
     },
     {
       "path": ".cursor/skills/maint-prepare-release/SKILL.md",
-      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+      "sha256": "7557909f69b5337d7f54978610283425ef3cd8af8514a80f55bbfa22e1607012"
     },
     {
       "path": ".cursor/skills/maint-start-task/SKILL.md",
@@ -237,7 +237,7 @@
     },
     {
       "path": ".gemini/skills/maint-prepare-release/SKILL.md",
-      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+      "sha256": "7557909f69b5337d7f54978610283425ef3cd8af8514a80f55bbfa22e1607012"
     },
     {
       "path": ".gemini/skills/maint-start-task/SKILL.md",
@@ -285,7 +285,7 @@
     },
     {
       "path": ".github/skills/maint-prepare-release/SKILL.md",
-      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+      "sha256": "7557909f69b5337d7f54978610283425ef3cd8af8514a80f55bbfa22e1607012"
     },
     {
       "path": ".github/skills/maint-start-task/SKILL.md",
@@ -333,7 +333,7 @@
     },
     {
       "path": ".opencode/skills/maint-prepare-release/SKILL.md",
-      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+      "sha256": "7557909f69b5337d7f54978610283425ef3cd8af8514a80f55bbfa22e1607012"
     },
     {
       "path": ".opencode/skills/maint-start-task/SKILL.md",

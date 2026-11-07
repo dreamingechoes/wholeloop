@@ -7,6 +7,8 @@
 
 **Amended 2026-11-07 (P7-07).** Versions are full `x.y.z`, with pre-releases on `next` before a final `latest`. When `release notes` starts its range at a version tag, it compares the requested version with the range's impact: a breaking change needs a new major version (a new minor before `1.0.0`), a feature at least a minor one, and a pre-release cycle may carry any change until the release is final. A smaller change keeps the draft in review, and release preparation refuses it. `CHANGELOG.md` is generated from the same drafts by `npm run changelog` and checked by `npm run check`; it is never edited by hand. Rejected: a hand-maintained changelog, which drifts from the release notes and can carry wording no commit check has seen.
 
+**Amended 2026-11-07 (P7-08).** The event check accepts the default-branch push that merges a release pull request as well as an explicit dispatch, and its reason is now `not-release-event`. Every other condition is unchanged, and publication still waits for the protected release environment ([ADR-0069](0069-reviewed-release-bundles-and-explicit-activation.md)).
+
 Offline delivery and notes can be prepared locally, but a publication workflow still needs a consistent package/version/commit/context before it can act. A package's privacy flag and imported CI fields are distinct from actual npm ownership, native acceptance or authorization. Ordinary Git status also hides assume-unchanged/skip-worktree paths and can invoke a configured filesystem monitor.
 
 ## Decision

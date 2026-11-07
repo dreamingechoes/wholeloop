@@ -77,7 +77,10 @@ export function releasePreflight(input: {
   if (!context.public) reasons.push('repository-private')
   if (packageRepository(pkg) !== context.repository) reasons.push('repository-mismatch')
   if (context.ref !== `refs/heads/${context.defaultBranch}`) reasons.push('not-default-branch')
-  if (context.event !== 'workflow_dispatch') reasons.push('not-explicit-dispatch')
+  // A dispatch, or the default-branch push that merges a release pull request;
+  // publication still waits for the protected release environment (P7-08).
+  if (context.event !== 'workflow_dispatch' && context.event !== 'push')
+    reasons.push('not-release-event')
   if (context.commit !== input.source.head) reasons.push('commit-mismatch')
   if (!input.source.clean) reasons.push('source-dirty')
   if (!input.source.indexClean) reasons.push('source-index-flags')

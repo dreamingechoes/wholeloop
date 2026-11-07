@@ -1,9 +1,9 @@
 # Release preparation — local evidence before activation
 
-> **TL;DR** — Prepare offline package checks, native delivery previews, release-note drafts and a source consistency plan locally. Publication, provenance, visibility and actual native acceptance have their own activation boundary.
+> **TL;DR** — Prepare offline package checks, native delivery previews, release-note drafts and a source consistency plan locally. A dispatched release pull request carries the version and changelog; merging it prepares the reviewed bundle, and publication waits only for the `release` environment approval, then is verified from the registry. Visibility, npm ownership and provenance stay the maintainer's setup.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local packaging/delivery/notes/preflight and reviewed-bundle publication automation are implemented. Package version 0.0.0 remains private; actual public hosting, ownership/OIDC/provenance and release/tag/announcement remain unverified. These maintainer checks do not block local client setup.
+> **Status: 🚧 partial.** Local packaging/delivery/notes/preflight, the release pull request, reviewed-bundle publication on merge and post-publication verification are implemented. Package version 0.0.0 remains private; actual public hosting, ownership/OIDC/provenance and release/tag/announcement remain unverified. These maintainer checks do not block local client setup.
 
 ## Versions
 
@@ -116,18 +116,36 @@ This verifies bytes/source, not authorization or archive extraction safety for a
 
 Run it before the repository becomes public and again on the final history immediately before the visibility switch. A real finding is resolved before publication: rotate the credential first, then decide with the maintainer whether to rewrite history. The same review covers personal data, local absolute paths, files over 1 MiB, fixture licences and neutral wording (no mention of the tools or work sessions behind the repository).
 
-## Activate publication explicitly
+## Release through a pull request
 
-The [Release workflow](../../.github/workflows/release.yml) supports manual dispatch on the actual default branch only. Version is an exact already-committed package version; from is the previous release ref, empty only for the initial release. The publish input defaults to false. Preparation runs all checks, reads actual repository metadata and uploads a seven-day artifact. Its summary links the exact artifact and an independently retained manifest digest. Inspect bundle.json, the notes and both archives before approval; simulated metadata is not a CI run.
+The whole release runs in GitHub Actions; the maintainer's only release-specific action is approving the protected `release` environment.
 
-Before requesting publication, the maintainer completes these release setup steps:
+1. Dispatch the [Release pull request workflow](../../.github/workflows/release-pr.yml) on the default branch with the exact version, such as `1.0.0-rc.1`. It sets the version in `package.json` and the lock, regenerates `CHANGELOG.md` with `--next`, refuses a version change smaller than the range needs, runs the full gate, then commits exactly those three files through the GitHub API and opens a pull request from `release/v<version>`. Pull requests opened with the workflow token start no `pull_request` runs, so it dispatches CI on the branch; those runs report the required checks on the head commit.
+2. Review and merge it like any other pull request.
+3. The merge is a default-branch push that changes the package version to one without a tag. The [Release workflow](../../.github/workflows/release.yml) plans from that fact (any other push prepares nothing), runs all checks, reads actual repository metadata, prepares the reviewed bundle and uploads a seven-day artifact. Its summary links the exact artifact and an independently retained manifest digest. Inspect bundle.json, the notes and both archives.
+4. Approve the `release` environment. Publication checks the immutable artifact ID/digest, selected core, all hashes and refreshed source/context. It installs no source dependencies and does not rebuild after approval.
+5. A clean runner with Node 20 installs the published version from the registry into an empty prefix, checks its dist-tag and runs `wl --version` and `wl doctor`. If that fails, the run marks the GitHub Release as failed and links [the recovery procedure](#recover-from-a-bad-release).
 
-1. Approve public repository visibility explicitly, reserve/control the npm name, commit the reviewed version and explicit private false with its matching lock.
-2. Configure the release GitHub environment with required maintainer approval and default-branch deployment restrictions. Verify the protection exists before selecting publish; an unprotected environment does not provide a review gate.
-3. Configure npm trusted publishing for the exact GitHub repository, release.yml workflow and release environment. The GitHub-hosted publisher uses Node 24, npm 11.8.0, OIDC and explicit provenance. No npm token is written or required by this workflow. Initial npm ownership/reservation is a separate maintainer action.
-4. Dispatch with publish true, inspect the prepared artifact/summary and approve that concrete bundle at the environment gate. Activation checks the immutable artifact ID/digest, selected core, all hashes and refreshed source/context. It installs no source dependencies and does not rebuild after approval.
+A manual dispatch of the Release workflow remains for a release whose version is already committed: version is that exact package version, from is the previous release ref (empty only for the initial release) and publish defaults to false, so a dispatch without it only prepares.
+
+Before the first release, the maintainer completes these setup steps:
+
+1. Approve public repository visibility explicitly, reserve/control the npm name, and commit explicit private false.
+2. Configure the release GitHub environment with required maintainer approval and default-branch deployment restrictions. Verify the protection exists before merging a release pull request; an unprotected environment does not provide a review gate.
+3. Configure npm trusted publishing for the exact GitHub repository, release.yml workflow and release environment. The GitHub-hosted publisher uses Node 24, npm 11.8.0, OIDC and explicit provenance. No npm token is written or required by any workflow. Initial npm ownership/reservation is a separate maintainer action.
+4. Allow GitHub Actions to create pull requests in the repository settings, which the release pull request workflow needs.
 
 Activation creates a non-overwriting tag for the reviewed SHA, creates a draft GitHub release with the exact notes/assets, publishes the reviewed npm archive and then finalizes the GitHub release. Stable versions use latest; prereleases use next and a prerelease GitHub entry. An existing tag stops the run even if its SHA matches. Publication across npm and GitHub is not atomic: failure may leave a tag, draft release or published npm version. Inspect those actual outcomes and reconcile manually before any retry; do not delete evidence or blindly rerun the workflow.
+
+## Recover from a bad release
+
+A published npm version is never unpublished or overwritten: unpublishing breaks every install that resolved it, and npm never allows the number again. A bad release is deprecated and superseded instead.
+
+1. If the post-publication check failed, the GitHub Release already carries a caution, a "failed post-publication check" title and no Latest badge. Otherwise mark it the same way by hand.
+2. Deprecate the version with the maintainer's npm credentials, naming the replacement: `npm deprecate wholeloop@<bad> "Broken release; use <next> or later"`. No workflow holds a credential that can deprecate; trusted publishing grants publication only.
+3. If the bad version holds a dist-tag that users install by default, point the tag back at the last good version: `npm dist-tag add wholeloop@<good> latest` (or `next` for a pre-release).
+4. Fix the cause on the default branch and release the next patch version, or the next pre-release, through the release pull request. Publication moves the dist-tag to it.
+5. Record what happened in the journal and, when the cause is in the release process, amend the decision that owns it.
 
 The native tar is a hosted release asset after successful activation. Download and extract that trusted release into a new local directory before registering its relative Claude marketplace or loading another native tree. The source repository root itself is not the generated marketplace. Remote Git marketplace registration and optional compiled binaries are not supplied by this workflow. Actual Actions, Linux, environment protection, npm OIDC/provenance and native installation remain manual verification; no publication was run during implementation.
 

@@ -13,8 +13,9 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
+import { delimiter, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { compareVersions } from './changelog.mjs'
 
 const repository = fileURLToPath(new URL('../', import.meta.url))
 let stage = 'input validation'
@@ -27,9 +28,12 @@ const payloads = [
   'wholeloop-npm.tgz',
   'wl.mjs',
 ]
-function command(executable, args, environment = process.env, input) {
+const REGISTRY = 'https://registry.npmjs.org/'
+const releaseVersion = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$/
+const repositorySlug = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/
+function command(executable, args, environment = process.env, input, cwd = repository) {
   const result = spawnSync(executable, args, {
-    cwd: repository,
+    cwd,
     env: environment,
     input,
     encoding: 'utf8',
@@ -52,7 +56,7 @@ function bounded(file, limit = 65536) {
   return bytes
 }
 
-function npmRunner(temporary, offline) {
+function npmRunner(temporary, offline, cwd = repository) {
   const npmCli = realpathSync(process.env.npm_execpath ?? join(dirname(process.execPath), 'npm'))
   const userConfig = join(temporary, 'user.npmrc')
   const globalConfig = join(temporary, 'global.npmrc')
@@ -84,15 +88,317 @@ function npmRunner(temporary, offline) {
         ...args,
       ],
       environment,
+      undefined,
+      cwd,
     )
+}
+
+function releaseTags() {
+  return command('git', ['tag', '--list', 'v*'])
+    .split('\n')
+    .map((tag) => tag.slice(1))
+    .filter((version) => releaseVersion.test(version))
+}
+// The previous release is the highest tagged version below this one, so a
+// final version after its candidates starts its range at the last candidate.
+function previousRelease(version, tags = releaseTags()) {
+  return tags
+    .filter((tag) => compareVersions(tag, version) < 0)
+    .sort(compareVersions)
+    .at(-1)
+}
+function packageVersion(revision) {
+  const text = revision
+    ? command('git', ['show', `${revision}:package.json`])
+    : bounded(join(repository, 'package.json')).toString('utf8')
+  return JSON.parse(text).version
+}
+function outputs(values) {
+  if (process.env.GITHUB_OUTPUT)
+    appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      Object.entries(values)
+        .map(([key, value]) => `${key}=${value}\n`)
+        .join(''),
+    )
+  console.log(JSON.stringify(values))
+}
+function actionsRepository() {
+  assert.equal(process.env.GITHUB_ACTIONS, 'true', 'This action runs only in GitHub Actions')
+  const slug = process.env.GITHUB_REPOSITORY ?? ''
+  assert(repositorySlug.test(slug))
+  return slug
+}
+// Serial waits for registry propagation without a busy loop or a timer callback.
+const pause = (milliseconds) =>
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds)
+const wrap = (text) =>
+  text
+    .split(' ')
+    .reduce((lines, word) => {
+      const last = lines.at(-1)
+      if (last !== undefined && `${last} ${word}`.length <= 72)
+        lines[lines.length - 1] = `${last} ${word}`
+      else lines.push(word)
+      return lines
+    }, [])
+    .join('\n')
+
+// Decides whether a run releases. A dispatch names its version; a push to the
+// default branch releases only when it changed the package version to one that
+// has no tag yet, which is what merging a release pull request does. Any other
+// push, including the one that creates the branch, prepares nothing.
+function plan() {
+  stage = 'release plan'
+  const event = process.env.GITHUB_EVENT_NAME
+  const tags = releaseTags()
+  if (event === 'workflow_dispatch') {
+    const version = process.env.RELEASE_VERSION ?? ''
+    assert(releaseVersion.test(version), 'Dispatch an exact release version')
+    return outputs({
+      release: true,
+      version,
+      from: process.env.RELEASE_FROM ?? '',
+      publish: process.env.RELEASE_PUBLISH === 'true',
+    })
+  }
+  assert.equal(event, 'push', 'Releases start from a dispatch or a default-branch push')
+  const before = process.env.RELEASE_BEFORE ?? ''
+  assert(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(before))
+  const version = packageVersion()
+  const changed = !/^0+$/.test(before) && packageVersion(before) !== version
+  const release = changed && releaseVersion.test(version) && !tags.includes(version)
+  const from = release ? previousRelease(version, tags) : undefined
+  return outputs({ release, version, from: from ? `v${from}` : '', publish: release })
+}
+
+// The first half of a release pull request: set the version, regenerate the
+// changelog with the untagged section and refuse a version change smaller than
+// the range needs (P7-07). The workflow runs the full gate before opening it.
+function bump(version) {
+  stage = 'release version change'
+  assert(releaseVersion.test(version ?? ''), 'Use bump <x.y.z[-pre]>')
+  const tags = releaseTags()
+  assert(!tags.includes(version), 'The version is already tagged')
+  assert.notEqual(packageVersion(), version, 'The package already has this version')
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-release-bump-')))
+  evidence.push(temporary)
+  npmRunner(temporary, true)(['version', version, '--no-git-tag-version'])
+  stage = 'changelog regeneration'
+  command(process.execPath, [join(repository, 'scripts/changelog.mjs'), '--next'])
+  stage = 'release-note version check'
+  const previous = previousRelease(version, tags)
+  const notes = JSON.parse(
+    command(process.execPath, [
+      join(repository, 'dist/wl.mjs'),
+      'release',
+      'notes',
+      ...(previous ? ['--from', `v${previous}`] : ['--initial']),
+      '--to',
+      'HEAD',
+      '--version',
+      version,
+      '--json',
+    ]),
+  )
+  assert.equal(notes.status, 'draft')
+  outputs({ version, from: previous ? `v${previous}` : '' })
+}
+
+// The second half: commit exactly the three changed files through the Git
+// Data API, create the branch without overwriting one, open the pull request
+// and dispatch CI on it. Pull requests opened with the workflow token start no
+// pull_request workflows, so the checks are dispatched explicitly. No Git
+// credential is written to the checkout.
+function openPullRequest(version) {
+  stage = 'release pull request'
+  const slug = actionsRepository()
+  assert(releaseVersion.test(version ?? ''))
+  const ref = process.env.GITHUB_REF ?? ''
+  assert(/^refs\/heads\/[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$/.test(ref))
+  const base = ref.slice('refs/heads/'.length)
+  const files = ['CHANGELOG.md', 'package-lock.json', 'package.json']
+  const changed = command('git', ['status', '--porcelain', '--untracked-files=all'])
+    .split('\n')
+    .filter(Boolean)
+    // command() trims its output, which can drop the first line's leading
+    // status column; strip the status token instead of fixed columns.
+    .map((line) => line.replace(/^\s*\S+\s+/, ''))
+    .sort()
+  assert.deepEqual(changed, files, 'Only the version and changelog may change')
+  assert.equal(packageVersion(), version)
+  const head = command('git', ['rev-parse', 'HEAD'])
+  // GitHub computes standard Git object names, so the tree it creates must be
+  // the tree of these exact local bytes.
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-release-pr-')))
+  evidence.push(temporary)
+  const index = { ...process.env, GIT_INDEX_FILE: join(temporary, 'index') }
+  command('git', ['read-tree', 'HEAD'], index)
+  command('git', ['add', '--', ...files], index)
+  const expected = command('git', ['write-tree'], index)
+  const api = (path, body) =>
+    JSON.parse(
+      command(
+        'gh',
+        ['api', `repos/${slug}/${path}`, '--method', 'POST', '--input', '-'],
+        process.env,
+        JSON.stringify(body),
+      ),
+    )
+  const tree = api('git/trees', {
+    base_tree: command('git', ['rev-parse', 'HEAD^{tree}']),
+    tree: files.map((path) => ({
+      path,
+      mode: '100644',
+      type: 'blob',
+      content: bounded(join(repository, path), 8 * 1024 * 1024).toString('utf8'),
+    })),
+  })
+  assert.equal(tree.sha, expected, 'The hosted tree differs from the prepared files')
+  const previous = previousRelease(version)
+  const subject = `chore(release): v${version}`
+  const body = wrap(
+    `Set the package version to ${version} and regenerate the changelog from ${previous ? `the commits since v${previous}` : 'the whole history'}. Merging this change starts the Release workflow, which publishes the prepared bytes only after the release environment approval.`,
+  )
+  const commit = api('git/commits', {
+    message: `${subject}\n\n${body}\n`,
+    tree: tree.sha,
+    parents: [head],
+  })
+  assert.equal(commit.tree?.sha, expected)
+  const branch = `release/v${version}`
+  stage = 'non-overwriting release branch creation'
+  api('git/refs', { ref: `refs/heads/${branch}`, sha: commit.sha })
+  stage = 'release pull request creation'
+  command(
+    'gh',
+    [
+      'pr',
+      'create',
+      '--repo',
+      slug,
+      '--base',
+      base,
+      '--head',
+      branch,
+      '--title',
+      subject,
+      '--body-file',
+      '-',
+    ],
+    process.env,
+    `${body}\n\nReview the version and the changelog. The required checks run through a dispatched CI run on this branch.\n`,
+  )
+  stage = 'release pull request checks'
+  command('gh', ['workflow', 'run', 'ci.yml', '--repo', slug, '--ref', branch])
+  outputs({ branch, commit: commit.sha })
+}
+
+// Installs the published version from the registry into an empty prefix, as a
+// user would, and runs it. Registry propagation can lag publication briefly,
+// so installation waits up to four times; publication itself is never retried.
+function verifyPublished(version) {
+  stage = 'post-publication install'
+  assert(releaseVersion.test(version ?? ''), 'Use verify-published <version>')
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-release-verify-')))
+  evidence.push(temporary)
+  const npm = npmRunner(temporary, false, temporary)
+  const prefix = join(temporary, 'prefix')
+  for (let attempt = 1; ; attempt++) {
+    try {
+      npm([
+        'install',
+        '--global',
+        '--prefix',
+        prefix,
+        '--registry',
+        REGISTRY,
+        `wholeloop@${version}`,
+      ])
+      break
+    } catch (error) {
+      if (attempt === 5) throw error
+      pause(30_000)
+    }
+  }
+  stage = 'post-publication dist-tag'
+  const npmTag = version.includes('-') ? 'next' : 'latest'
+  const tags = JSON.parse(npm(['view', 'wholeloop', 'dist-tags', '--json', '--registry', REGISTRY]))
+  assert.equal(tags[npmTag], version)
+  stage = 'post-publication run'
+  const home = join(temporary, 'home')
+  mkdirSync(home)
+  const environment = {
+    ...process.env,
+    HOME: home,
+    PATH: [join(prefix, 'bin'), process.env.PATH].join(delimiter),
+  }
+  const wl = join(prefix, 'bin', 'wl')
+  assert.equal(command(wl, ['--version'], environment, undefined, temporary), version)
+  const doctor = JSON.parse(command(wl, ['doctor', '--json'], environment, undefined, temporary))
+  assert.equal(doctor.status, 'observed')
+  console.log(
+    JSON.stringify({
+      schema: 'wholeloop/release-verification@1',
+      status: 'verified',
+      version,
+      npmTag,
+    }),
+  )
+}
+
+// Marks a published release whose post-publication check failed: a caution at
+// the top of its notes linking the run and the recovery procedure, a title
+// that says so, and no Latest badge. The npm version stays published, since
+// deprecation needs the maintainer's npm credentials (see the releasing guide).
+function markFailed(version) {
+  stage = 'failed release marking'
+  const slug = actionsRepository()
+  assert(releaseVersion.test(version ?? ''), 'Use mark-failed <version>')
+  const server = process.env.GITHUB_SERVER_URL ?? ''
+  const runId = process.env.GITHUB_RUN_ID ?? ''
+  assert(/^https:\/\/[A-Za-z0-9.-]+$/.test(server) && /^\d+$/.test(runId))
+  const tag = `v${version}`
+  const notes = command('gh', [
+    'release',
+    'view',
+    tag,
+    '--repo',
+    slug,
+    '--json',
+    'body',
+    '--jq',
+    '.body',
+  ])
+  const marker = '> [!CAUTION]\n> **This release failed its post-publication check.**'
+  const notice = `${marker} The npm package was published but did not install and run on a clean runner ([workflow run](${server}/${slug}/actions/runs/${runId})). Do not install it; follow [recover from a bad release](${server}/${slug}/blob/${tag}/docs/contributing/releasing.md#recover-from-a-bad-release).\n\n`
+  command(
+    'gh',
+    [
+      'release',
+      'edit',
+      tag,
+      '--repo',
+      slug,
+      '--title',
+      `${tag} (failed post-publication check)`,
+      '--prerelease',
+      '--latest=false',
+      '--notes-file',
+      '-',
+    ],
+    process.env,
+    notes.startsWith(marker) ? notes : `${notice}${notes}`,
+  )
+  console.log(JSON.stringify({ schema: 'wholeloop/release-failure@1', status: 'marked', tag }))
 }
 
 function actualContext(output) {
   stage = 'actual CI context observation'
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'Actual context requires GitHub Actions')
-  assert.equal(process.env.GITHUB_EVENT_NAME, 'workflow_dispatch')
+  assert(['workflow_dispatch', 'push'].includes(process.env.GITHUB_EVENT_NAME ?? ''))
   const slug = process.env.GITHUB_REPOSITORY
-  assert(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(slug ?? ''))
+  assert(repositorySlug.test(slug ?? ''))
   const workflowPrefix = `${slug}/.github/workflows/`
   const workflowRef = process.env.GITHUB_WORKFLOW_REF ?? ''
   assert(workflowRef.startsWith(workflowPrefix))
@@ -149,7 +455,7 @@ function prepare(version, context, output, from) {
     'bundledDependencies',
   ])
     assert(!pkg[key] || Object.keys(pkg[key]).length === 0)
-  const expected = ['LICENSE', 'README.md', 'dist/wl.mjs', 'package.json']
+  const expected = ['LICENSE', 'README.md', 'dist/wl-runner.mjs', 'dist/wl.mjs', 'package.json']
   const planned = JSON.parse(npm(['pack', '--dry-run', '--json']))
   assert.equal(planned.length, 1)
   assert.deepEqual(planned[0].files.map((file) => file.path).sort(), expected)
@@ -289,7 +595,7 @@ function publish(directory, sha256, context) {
     'publish',
     join(root, 'wholeloop-npm.tgz'),
     '--registry',
-    'https://registry.npmjs.org/',
+    REGISTRY,
     '--access',
     'public',
     '--provenance',
@@ -323,9 +629,14 @@ try {
   if (action === 'context' && args.length === 1) actualContext(args[0])
   else if (action === 'prepare' && [3, 4].includes(args.length)) prepare(...args)
   else if (action === 'publish' && args.length === 3) publish(...args)
+  else if (action === 'plan' && args.length === 0) plan()
+  else if (action === 'bump' && args.length === 1) bump(args[0])
+  else if (action === 'open-pr' && args.length === 1) openPullRequest(args[0])
+  else if (action === 'verify-published' && args.length === 1) verifyPublished(args[0])
+  else if (action === 'mark-failed' && args.length === 1) markFailed(args[0])
   else
     throw new Error(
-      'Use context <file>, prepare <version> <context> <new directory> [from], or publish <bundle> <digest> <context>',
+      'Use context, prepare, publish, plan, bump, open-pr, verify-published or mark-failed; see docs/contributing/releasing.md',
     )
 } catch {
   console.error(

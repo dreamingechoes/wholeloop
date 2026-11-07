@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-07 · P7-08 ✅ · Release automation
+
+- A dispatched [release pull request workflow](../.github/workflows/release-pr.yml) sets the version, regenerates the changelog, refuses a version change smaller than the range needs and runs the full gate, then commits exactly those three files through the Git Data API (the hosted tree must equal the local one), creates the branch without overwriting, opens the pull request and dispatches CI on it, since pull requests opened with the workflow token start no checks of their own.
+- The [Release workflow](../.github/workflows/release.yml) now plans from the merge: a default-branch push that changes the package version to an untagged one releases, any other push prepares nothing, and a dispatch still works. Preparation, the single `release` environment approval and byte-exact publication are unchanged; the preflight accepts that push ([ADR-0068](../docs/decisions/0068-read-only-release-consistency-preflight.md), [ADR-0069](../docs/decisions/0069-reviewed-release-bundles-and-explicit-activation.md)).
+- After publication a clean Node 20 runner installs the version from the registry, checks its dist-tag and runs `wl --version` and `wl doctor`; a failure marks the GitHub Release with a caution, the run and the recovery link. The releasing guide gained the deprecate-and-supersede procedure, which stays manual because deprecation needs npm credentials no workflow holds.
+- Found while extending the tests: release preparation still expected four packed files, but the package has shipped `dist/wl-runner.mjs` too since the runner was split out; the fixture had hidden it by copying only `dist/wl.mjs`. Rejected: a stored token or GitHub App so the pull request starts its own checks, Git credentials in the checkout, publishing every push, and automatic unpublishing.
+- No runtime hot path changed: the new actions run only in release workflows. macOS full gate with two file workers: CHECK PASS in 663s, 4606/4606 tests across 327 files. The workflows have not run on GitHub; Linux is untested locally.
+- Next: P7-09, the pull-request contribution workflow; applying the branch rules and replacing the bootstrap line need the maintainer.
+
+---
+
 ## 2026-11-07 · P7-07 ✅ · Versioning policy and changelog
 
 - Versions are full `x.y.z`, with pre-releases on `next` before a final `latest`; the releasing guide and [ADR-0068](../docs/decisions/0068-read-only-release-consistency-preflight.md) state what counts as breaking and the version change each impact needs. `release notes --from v<previous>` now checks the requested version against the range's impact and keeps an insufficient change in review, which release preparation refuses.

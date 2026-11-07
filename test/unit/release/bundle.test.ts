@@ -154,7 +154,14 @@ describe('release host preparation and activation transport', () => {
           packages: { '': { name: 'wholeloop', version: pkg.version } },
         }),
       )
-      for (const file of ['README.md', 'LICENSE', 'dist/wl.mjs', 'scripts/release.mjs'])
+      for (const file of [
+        'README.md',
+        'LICENSE',
+        'dist/wl.mjs',
+        'dist/wl-runner.mjs',
+        'scripts/release.mjs',
+        'scripts/changelog.mjs',
+      ])
         copyFileSync(resolve(file), join(repository, file))
       writeFileSync(join(repository, '.gitignore'), 'dist/\n')
       git('init', '-b', 'main')
@@ -361,14 +368,24 @@ if(process.argv.includes('POST')) {
     }
   })
 
-  it('keeps workflow preparation reviewable and activation explicitly separate', () => {
+  it('keeps workflow preparation reviewable and activation behind the environment', () => {
     const workflow = parse(readFileSync('.github/workflows/release.yml', 'utf8'))
-    expect(Object.keys(workflow.on)).toEqual(['workflow_dispatch'])
+    expect(Object.keys(workflow.on)).toEqual(['push', 'workflow_dispatch'])
+    expect(workflow.on.push).toEqual({ branches: ['main'], paths: ['package.json'] })
     expect(workflow.on.workflow_dispatch.inputs.publish.default).toBe(false)
     expect(workflow.permissions).toEqual({ contents: 'read' })
+    expect(workflow.jobs.prepare.needs).toBe('plan')
+    expect(workflow.jobs.prepare.if).toBe("needs.plan.outputs.release == 'true'")
+    expect(workflow.jobs.publish.needs).toEqual(['plan', 'prepare'])
     expect(workflow.jobs.publish.environment).toBe('release')
-    expect(workflow.jobs.publish.if).toBe('inputs.publish')
+    expect(workflow.jobs.publish.if).toBe("needs.plan.outputs.publish == 'true'")
     expect(workflow.jobs.publish.permissions).toEqual({ contents: 'write', 'id-token': 'write' })
+    // Only publication and failure marking write; every other job reads.
+    for (const [name, job] of Object.entries(workflow.jobs) as [
+      string,
+      { permissions?: unknown },
+    ][])
+      if (!['publish', 'mark-failed'].includes(name)) expect(job.permissions).toBeUndefined()
     for (const job of Object.values(workflow.jobs) as {
       steps: { uses?: string; run?: string; with?: Record<string, unknown> }[]
     }[]) {
@@ -388,10 +405,11 @@ if(process.argv.includes('POST')) {
       ['$', '{{ needs.prepare.outputs.artifact }}'].join(''),
     )
     expect(download.with['digest-mismatch']).toBe('error')
-    expect(
-      workflow.jobs.publish.steps.some((step: { run?: string }) =>
-        /npm ci|npm run build|npm run check/.test(step.run ?? ''),
-      ),
-    ).toBe(false)
+    for (const name of ['publish', 'verify', 'mark-failed'])
+      expect(
+        workflow.jobs[name].steps.some((step: { run?: string }) =>
+          /npm ci|npm run build|npm run check|npm pack/.test(step.run ?? ''),
+        ),
+      ).toBe(false)
   })
 })

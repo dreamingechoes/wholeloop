@@ -24,6 +24,14 @@ Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 eac
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Release automation (P7-08, 2026-11-07)
+
+The release pull request, release-on-merge, post-publication verification and failure marking are implemented and tested with a fixture repository and logging stand-ins for GitHub and npm; no hosted run has executed.
+
+- [ ] Allow GitHub Actions to create pull requests, then dispatch the Release pull request workflow for `1.0.0-rc.1` and confirm the hosted tree check passes, the branch and pull request are created and the dispatched CI run reports the required checks on the pull request.
+- [ ] Merge it and confirm the Release workflow plans a release from the push, prepares the bundle and stops at the `release` environment until approval; confirm an ordinary push to `main` that changes `package.json` without a new version prepares nothing.
+- [ ] After the first publication, confirm the verify job installs the version from the registry on Node 20 and passes, and that `gh release edit` accepts `--prerelease --latest=false` together by marking a disposable release as failed.
+
 ## Pre-publication history audit (P7-06, 2026-11-07)
 
 - [ ] Immediately before switching the repository to public (P7-14), run `npm run scan:history` on the final `main`, review any new finding, and confirm no other ref is pushed.

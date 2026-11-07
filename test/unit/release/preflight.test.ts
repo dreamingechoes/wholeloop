@@ -79,7 +79,7 @@ describe('local release consistency preflight', () => {
     'repository-mismatch',
     'repository-url',
     'not-default-branch',
-    'not-explicit-dispatch',
+    'not-release-event',
     'commit-mismatch',
     'source-dirty',
     'source-index-flags',
@@ -96,7 +96,7 @@ describe('local release consistency preflight', () => {
     if (reason === 'repository-url')
       input.package.repository.url = 'https://example.com/fixture/wholeloop.git'
     if (reason === 'not-default-branch') input.context.ref = 'refs/heads/other'
-    if (reason === 'not-explicit-dispatch') input.context.event = 'push'
+    if (reason === 'not-release-event') input.context.event = 'pull_request'
     if (reason === 'commit-mismatch') input.context.commit = 'b'.repeat(40)
     if (reason === 'source-dirty') input.source.clean = false
     if (reason === 'source-index-flags') input.source.indexClean = false
@@ -111,6 +111,11 @@ describe('local release consistency preflight', () => {
             ? 'repository-mismatch'
             : reason,
     )
+  })
+  it('accepts the default-branch push that merges a release pull request', () => {
+    const input = inputs()
+    input.context.event = 'push'
+    expect(releasePreflight(input)).toMatchObject({ status: 'ready', reasons: [] })
   })
   it.each(['1.0', '01.0.0', '1.0.0-01', '1.0.0+build.1', '1.0.0\nextra'])(
     'refuses invalid publication version %s',

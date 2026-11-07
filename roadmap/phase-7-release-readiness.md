@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-07 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -182,7 +182,7 @@ flowchart LR
 
 ## P7-08 · Release automation
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P7-05, P7-07
+**Status:** ✅ · **Size:** M · **Depends on:** P7-05, P7-07
 
 **Goal** — Automate the whole release except the maintainer's approval.
 
@@ -190,9 +190,11 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] The only manual step is the approval of the protected release environment.
-- [ ] Publication never rebuilds: it publishes the exact reviewed artifacts.
-- [ ] A failed post-publication check marks the release as failed and names the recovery procedure.
+- [x] The only manual step is the approval of the protected release environment.
+- [x] Publication never rebuilds: it publishes the exact reviewed artifacts.
+- [x] A failed post-publication check marks the release as failed and names the recovery procedure.
+
+**Evidence** — `release-pr.yml` sets the version, regenerates the changelog, refuses an insufficient version change, runs the full gate and commits the three files through the Git Data API after checking the hosted tree against the local one; it then creates the branch without overwriting, opens the pull request and dispatches CI on it. `release.yml` plans a release only from a default-branch push that changes the package version to an untagged one (or a dispatch), keeps preparation, the single `release` environment approval and byte-exact publication, then installs the version from the registry on Node 20 and runs `wl --version` and `wl doctor`; a failure marks the GitHub Release with a caution linking the run and the recovery procedure. The packed-file allowlist gained `dist/wl-runner.mjs`, which the fixture had hidden by copying only `dist/wl.mjs`. A fixture repository with logging stand-ins for GitHub and npm covers planning, the version refusal, API order and refusals, verification failures and idempotent marking; workflow tests check job order, the single approval, least privilege and that no post-approval job builds. Hosted runs are in manual verification.
 
 **Tests** — Workflow ordering and failure tests with synthetic publication, extending the existing release tests.
 
