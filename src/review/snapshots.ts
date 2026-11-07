@@ -4,7 +4,7 @@ import { lstatSync, mkdirSync, readFileSync, readlinkSync, rmSync } from 'node:f
 import { dirname, join } from 'node:path'
 import { changedPaths } from '../gates/snapshot.js'
 import { canonicalPath, inside } from '../state/paths.js'
-import { effectEpoch } from '../state/read-observation.js'
+import { DecisionMemo } from '../state/read-observation.js'
 import type { StateStore } from '../state/store.js'
 import { git, repository } from '../worktrees/git.js'
 
@@ -20,7 +20,7 @@ interface Entry {
 }
 
 /** Changed-code objects and scratch indexes live outside Git; alternates are read-only. */
-let decisionDiff: { key: string; epoch: number; patch: string } | undefined
+const decisionDiff = new DecisionMemo<string>(8)
 
 export class ReviewSnapshots {
   readonly objects: string
@@ -168,32 +168,26 @@ export class ReviewSnapshots {
     // wl writes. Within one synchronous decision and before any announced
     // effect, the same pair has the same patch (ADR-0243); callers still compare
     // its digest with the journal on every call.
-    const key = JSON.stringify([this.store.files.path(this.objects), before, after]),
-      epoch = effectEpoch()
-    if (decisionDiff?.key === key && decisionDiff.epoch === epoch) return decisionDiff.patch
-    const patch = this.command([
-      'diff',
-      '--binary',
-      '--full-index',
-      '--no-color',
-      '--no-relative',
-      '--src-prefix=a/',
-      '--dst-prefix=b/',
-      '--diff-algorithm=myers',
-      '--no-indent-heuristic',
-      '--unified=3',
-      '--no-ext-diff',
-      '--no-textconv',
-      '--no-renames',
-      before,
-      after,
-      '--',
-    ])
-    const entry = { key, epoch, patch }
-    decisionDiff = entry
-    queueMicrotask(() => {
-      if (decisionDiff === entry) decisionDiff = undefined
-    })
-    return patch
+    const key = JSON.stringify([this.store.files.path(this.objects), before, after])
+    return decisionDiff.get(key, () =>
+      this.command([
+        'diff',
+        '--binary',
+        '--full-index',
+        '--no-color',
+        '--no-relative',
+        '--src-prefix=a/',
+        '--dst-prefix=b/',
+        '--diff-algorithm=myers',
+        '--no-indent-heuristic',
+        '--unified=3',
+        '--no-ext-diff',
+        '--no-textconv',
+        '--no-renames',
+        before,
+        after,
+        '--',
+      ]),
+    )
   }
 }

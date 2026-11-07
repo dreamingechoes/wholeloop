@@ -79,6 +79,37 @@ export function effectEpoch(): number {
   return effects
 }
 
+/**
+ * Successful answers about external facts, reused only within one synchronous
+ * job while this process announces no effect (ADR-0243). A refusal is never
+ * stored, a read that itself announces an effect is never reused, and every
+ * entry expires when the job ends. Values must be immutable.
+ */
+export class DecisionMemo<T> {
+  private readonly entries = new Map<string, T>()
+  private epoch = -1
+  private expiring = false
+  constructor(private readonly limit = 64) {}
+  get(key: string, read: () => T): T {
+    if (this.epoch !== effects) {
+      this.entries.clear()
+      this.epoch = effects
+    }
+    if (this.entries.has(key)) return this.entries.get(key) as T
+    const value = read()
+    if (this.epoch !== effects || this.entries.size >= this.limit) return value
+    this.entries.set(key, value)
+    if (!this.expiring) {
+      this.expiring = true
+      queueMicrotask(() => {
+        this.entries.clear()
+        this.expiring = false
+      })
+    }
+    return value
+  }
+}
+
 /** Store mutations and command launches must refuse before creating even a lock directory. */
 export function assertObservationWritable(): void {
   effects++
