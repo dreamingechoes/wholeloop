@@ -43,6 +43,39 @@ export class StoreFiles {
   }
 
   /**
+   * Committed facts written together (ADR-0242): each file is flushed as it is
+   * written and each directory once, before return — also when `operation`
+   * throws, without masking its error. A caller must not act on any of them
+   * (for example delete what they back up) before this returns.
+   */
+  atomicBatch<T>(
+    operation: (write: (relative: string, content: string | Uint8Array) => void) => T,
+  ): T {
+    assertObservationWritable()
+    const directories = new Set<string>(),
+      write = (relative: string, content: string | Uint8Array) => {
+        assertObservationWritable()
+        const path = this.path(relative)
+        this.replace(relative, path, content, true, false)
+        directories.add(dirname(path))
+      }
+    let value: T
+    try {
+      value = operation(write)
+    } catch (error) {
+      for (const directory of directories)
+        try {
+          flushDirectory(directory)
+        } catch {
+          // The batch's own refusal or failure is the error the caller must see.
+        }
+      throw error
+    }
+    for (const directory of directories) flushDirectory(directory)
+    return value
+  }
+
+  /**
    * Journal-derived views only (ADR-0242). Readers replay the flushed journal and
    * rebuild regenerates these files, so a crash may leave a view stale but never
    * changes a fact. Replacement stays atomic for concurrent readers; identical
@@ -59,7 +92,13 @@ export class StoreFiles {
     this.replace(relative, path, content, false)
   }
 
-  private replace(relative: string, path: string, content: string | Uint8Array, durable: boolean) {
+  private replace(
+    relative: string,
+    path: string,
+    content: string | Uint8Array,
+    durable: boolean,
+    flushParent = durable,
+  ) {
     const created = mkdirSync(dirname(path), { recursive: true, mode: 0o700 })
     const temporary = this.path(`${relative}.${randomUUID()}.tmp`)
     const fd = openSync(temporary, 'wx', 0o600)
@@ -73,7 +112,7 @@ export class StoreFiles {
       renameSync(temporary, path)
       // A view's own bytes stay unflushed, but a directory it creates may later
       // hold committed facts, so every directory the store creates is durable.
-      if (durable) flushDirectory(dirname(path))
+      if (flushParent) flushDirectory(dirname(path))
       flushCreatedEntries(created, dirname(path))
     } finally {
       if (existsSync(temporary)) rmSync(temporary)

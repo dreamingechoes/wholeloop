@@ -88,4 +88,29 @@ describe('durable entries for directories the store creates (ADR-0242)', () => {
       files.locked(() => {})
       expect(fsyncSync).not.toHaveBeenCalled()
     }))
+
+  it('flushes each fact of a batch and each directory once, also when the batch fails', () =>
+    fixture((files) => {
+      files.locked(() => {})
+      vi.clearAllMocks()
+      files.atomicBatch((write) => {
+        for (const name of ['a', 'b', 'c']) write(`backups/one/${name}`, name)
+      })
+      const batch = flushed(files)
+      expect(batch.filter((path) => path.endsWith('.tmp'))).toHaveLength(3)
+      expect(batch.filter((path) => !path.endsWith('.tmp'))).toEqual([
+        'state/backups',
+        'state',
+        'state/backups/one',
+      ])
+      expect(files.read('backups/one/b')).toBe('b')
+      vi.clearAllMocks()
+      expect(() =>
+        files.atomicBatch((write) => {
+          write('backups/one/d', 'd')
+          throw new Error('Fixture refusal')
+        }),
+      ).toThrow('Fixture refusal')
+      expect(flushed(files).filter((path) => !path.endsWith('.tmp'))).toEqual(['state/backups/one'])
+    }))
 })

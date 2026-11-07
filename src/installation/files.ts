@@ -143,14 +143,18 @@ export function archive(
   prefix: string,
   paths: ReadonlyMap<string, OwnedFile[]>,
 ) {
-  for (const [path, versions] of paths)
-    if (exists(path)) {
-      const file = versions.find(matches)
-      if (!file) throw new Error('An owned file changed before backup')
-      const key = `${prefix}/${artifactDigest(path)}-${file.sha256}`
-      const existing = store.read(key)
-      if (existing === undefined) store.atomic(key, bytes(file).content)
-      else if (artifactDigest(existing) !== file.sha256)
-        throw new Error('An installation backup changed; preserve it before continuing')
-    }
+  // Every backup lands in one directory and is durable before any removal, so
+  // that directory is flushed once for the whole set rather than per file.
+  store.atomicBatch((write) => {
+    for (const [path, versions] of paths)
+      if (exists(path)) {
+        const file = versions.find(matches)
+        if (!file) throw new Error('An owned file changed before backup')
+        const key = `${prefix}/${artifactDigest(path)}-${file.sha256}`
+        const existing = store.read(key)
+        if (existing === undefined) write(key, bytes(file).content)
+        else if (artifactDigest(existing) !== file.sha256)
+          throw new Error('An installation backup changed; preserve it before continuing')
+      }
+  })
 }
