@@ -12,3 +12,5 @@ description: Run the repository's gates and report the final CHECK PASS or CHECK
 4. Never report the tree green from a partial run, a single test file or an earlier result.
 
 The steps and their order live in `scripts/check.mjs`; this skill does not restate them.
+
+This skill never commits, pushes or changes repository settings.

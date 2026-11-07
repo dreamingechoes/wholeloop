@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-07 · P7-02 ✅ · Maintainer workflow skills
+
+- Seven maintainer skills join `maint-check`: start and close a roadmap task, amend a decision record, extend wholeloop (provider, client adapter, shipped skill), prepare a release, triage an issue and investigate performance. They point at the repository's own checks and guides rather than restating them, and none commits, pushes, publishes or changes settings.
+- `scripts/roadmap-status.mjs` counts tasks from the phase files; `npm run roadmap:check`, a new gate step, fails when the totals in `roadmap/README.md` disagree. A skills test checks that every cited script and path exists and that effects are only ever named to forbid them; it caught three skills missing the no-commit statement and one naming no check.
+- macOS full gate with two file workers: CHECK PASS in 684s, 4545/4545 tests across 322 files, including the new roadmap step. Not run on Linux.
+
+---
+
 ## 2026-11-07 · P7-04 ✅ · Performance investigation tooling
 
 - The P6-39 measurement-only preload and equivalence comparison move from temporary files into `scripts/perf/`, with caller attribution per phase (high-frequency calls sampled one in eight), memory peaks and a calibration control. `npm run perf:route -- --callers` runs the model-free EVAL-09 rehearsal with the preload and prints per-phase tables; `compare.mjs` refuses runs whose functional outcomes differ.

@@ -40,28 +40,196 @@
   },
   "files": [
     {
+      "path": ".agents/skills/maint-amend-adr/SKILL.md",
+      "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
+    },
+    {
       "path": ".agents/skills/maint-check/SKILL.md",
-      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+      "sha256": "afa49551f09d83cadce87f789ebf6eb26615a5e1593a086eb8560eab299b78b0"
+    },
+    {
+      "path": ".agents/skills/maint-close-task/SKILL.md",
+      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+    },
+    {
+      "path": ".agents/skills/maint-extend/SKILL.md",
+      "sha256": "a53d1d8d7d500be33bda5df5808985d94b02938a14b64d6bc6b300a0193767fd"
+    },
+    {
+      "path": ".agents/skills/maint-investigate-performance/SKILL.md",
+      "sha256": "5e7960102e700095ff9401d638e1ff8a41e64f020c878841b7c41208a901b201"
+    },
+    {
+      "path": ".agents/skills/maint-prepare-release/SKILL.md",
+      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+    },
+    {
+      "path": ".agents/skills/maint-start-task/SKILL.md",
+      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+    },
+    {
+      "path": ".agents/skills/maint-triage-issue/SKILL.md",
+      "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
+    },
+    {
+      "path": ".claude/skills/maint-amend-adr/SKILL.md",
+      "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
     },
     {
       "path": ".claude/skills/maint-check/SKILL.md",
-      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+      "sha256": "afa49551f09d83cadce87f789ebf6eb26615a5e1593a086eb8560eab299b78b0"
+    },
+    {
+      "path": ".claude/skills/maint-close-task/SKILL.md",
+      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+    },
+    {
+      "path": ".claude/skills/maint-extend/SKILL.md",
+      "sha256": "a53d1d8d7d500be33bda5df5808985d94b02938a14b64d6bc6b300a0193767fd"
+    },
+    {
+      "path": ".claude/skills/maint-investigate-performance/SKILL.md",
+      "sha256": "5e7960102e700095ff9401d638e1ff8a41e64f020c878841b7c41208a901b201"
+    },
+    {
+      "path": ".claude/skills/maint-prepare-release/SKILL.md",
+      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+    },
+    {
+      "path": ".claude/skills/maint-start-task/SKILL.md",
+      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+    },
+    {
+      "path": ".claude/skills/maint-triage-issue/SKILL.md",
+      "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
+    },
+    {
+      "path": ".cursor/skills/maint-amend-adr/SKILL.md",
+      "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
     },
     {
       "path": ".cursor/skills/maint-check/SKILL.md",
-      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+      "sha256": "afa49551f09d83cadce87f789ebf6eb26615a5e1593a086eb8560eab299b78b0"
+    },
+    {
+      "path": ".cursor/skills/maint-close-task/SKILL.md",
+      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+    },
+    {
+      "path": ".cursor/skills/maint-extend/SKILL.md",
+      "sha256": "a53d1d8d7d500be33bda5df5808985d94b02938a14b64d6bc6b300a0193767fd"
+    },
+    {
+      "path": ".cursor/skills/maint-investigate-performance/SKILL.md",
+      "sha256": "5e7960102e700095ff9401d638e1ff8a41e64f020c878841b7c41208a901b201"
+    },
+    {
+      "path": ".cursor/skills/maint-prepare-release/SKILL.md",
+      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+    },
+    {
+      "path": ".cursor/skills/maint-start-task/SKILL.md",
+      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+    },
+    {
+      "path": ".cursor/skills/maint-triage-issue/SKILL.md",
+      "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
+    },
+    {
+      "path": ".gemini/skills/maint-amend-adr/SKILL.md",
+      "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
     },
     {
       "path": ".gemini/skills/maint-check/SKILL.md",
-      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+      "sha256": "afa49551f09d83cadce87f789ebf6eb26615a5e1593a086eb8560eab299b78b0"
+    },
+    {
+      "path": ".gemini/skills/maint-close-task/SKILL.md",
+      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+    },
+    {
+      "path": ".gemini/skills/maint-extend/SKILL.md",
+      "sha256": "a53d1d8d7d500be33bda5df5808985d94b02938a14b64d6bc6b300a0193767fd"
+    },
+    {
+      "path": ".gemini/skills/maint-investigate-performance/SKILL.md",
+      "sha256": "5e7960102e700095ff9401d638e1ff8a41e64f020c878841b7c41208a901b201"
+    },
+    {
+      "path": ".gemini/skills/maint-prepare-release/SKILL.md",
+      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+    },
+    {
+      "path": ".gemini/skills/maint-start-task/SKILL.md",
+      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+    },
+    {
+      "path": ".gemini/skills/maint-triage-issue/SKILL.md",
+      "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
+    },
+    {
+      "path": ".github/skills/maint-amend-adr/SKILL.md",
+      "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
     },
     {
       "path": ".github/skills/maint-check/SKILL.md",
-      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+      "sha256": "afa49551f09d83cadce87f789ebf6eb26615a5e1593a086eb8560eab299b78b0"
+    },
+    {
+      "path": ".github/skills/maint-close-task/SKILL.md",
+      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+    },
+    {
+      "path": ".github/skills/maint-extend/SKILL.md",
+      "sha256": "a53d1d8d7d500be33bda5df5808985d94b02938a14b64d6bc6b300a0193767fd"
+    },
+    {
+      "path": ".github/skills/maint-investigate-performance/SKILL.md",
+      "sha256": "5e7960102e700095ff9401d638e1ff8a41e64f020c878841b7c41208a901b201"
+    },
+    {
+      "path": ".github/skills/maint-prepare-release/SKILL.md",
+      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+    },
+    {
+      "path": ".github/skills/maint-start-task/SKILL.md",
+      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+    },
+    {
+      "path": ".github/skills/maint-triage-issue/SKILL.md",
+      "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
+    },
+    {
+      "path": ".opencode/skills/maint-amend-adr/SKILL.md",
+      "sha256": "ea6a3ae782e04cb413fb52e008bdd57146141ee483f02894e33c88867dd6c2b7"
     },
     {
       "path": ".opencode/skills/maint-check/SKILL.md",
-      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+      "sha256": "afa49551f09d83cadce87f789ebf6eb26615a5e1593a086eb8560eab299b78b0"
+    },
+    {
+      "path": ".opencode/skills/maint-close-task/SKILL.md",
+      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+    },
+    {
+      "path": ".opencode/skills/maint-extend/SKILL.md",
+      "sha256": "a53d1d8d7d500be33bda5df5808985d94b02938a14b64d6bc6b300a0193767fd"
+    },
+    {
+      "path": ".opencode/skills/maint-investigate-performance/SKILL.md",
+      "sha256": "5e7960102e700095ff9401d638e1ff8a41e64f020c878841b7c41208a901b201"
+    },
+    {
+      "path": ".opencode/skills/maint-prepare-release/SKILL.md",
+      "sha256": "ca99c56028447109fa9408c8568ac95b2f791e2e702584985b4b51b684527eb0"
+    },
+    {
+      "path": ".opencode/skills/maint-start-task/SKILL.md",
+      "sha256": "ff53b2bc709d7352456a20d5f06ccedd5def91905de12c31868cc62f0d5fd565"
+    },
+    {
+      "path": ".opencode/skills/maint-triage-issue/SKILL.md",
+      "sha256": "05ce2dbed8171b950ffaff43b07dc320cb667c18f85e9b3922fd87ca695f6275"
     }
   ]
 }

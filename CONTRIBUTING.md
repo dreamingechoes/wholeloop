@@ -47,6 +47,19 @@ Install the local commit-message hook with `npm run hooks:install` (idempotent; 
 
 The repository ships its own skills and agents for the work described here, rendered for every supported client and committed under `.claude/`, `.agents/`, `.codex/`, `.opencode/`, `.github/`, `.gemini/` and `.cursor/`. Your client finds them when you open the repository; you do not need `wl`. Their names start with `maint-`.
 
+| Skill | Use it to |
+| --- | --- |
+| `maint-start-task` | Pick and prepare the next roadmap task as AGENTS.md prescribes |
+| `maint-close-task` | Record evidence, journal, banners, counts and the final gate |
+| `maint-amend-adr` | Amend the existing decision record instead of adding one per fix |
+| `maint-extend` | Add a provider, a client adapter or a shipped skill |
+| `maint-prepare-release` | Prepare a release locally and stop before publication |
+| `maint-triage-issue` | Reproduce, classify and route an issue |
+| `maint-investigate-performance` | Measure with `scripts/perf/` before changing a hot path |
+| `maint-check` | Run the gates and read the final line |
+
+None of them commits, pushes, publishes or changes repository settings; `test/unit/maintainer/skills.test.ts` checks that, and that every script and path a skill names exists. The roadmap totals in `roadmap/README.md` are checked against the phase files by `npm run roadmap:check`.
+
 Edit them only in `maintainer/` and run `npm run maintainer:render`; `npm run check` fails on a hand-edited rendered file or a stale render. Read-only agents are enforced where the client can do it from the agent file; `maintainer/rendered.json` records how each client enforces it, and Codex inherits its parent session's sandbox instead. See [ADR-0246](./docs/decisions/0246-dogfooded-maintainer-skills-and-agents.md).
 
 ## Extensions
