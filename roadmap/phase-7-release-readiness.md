@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: ⬜ planned · added on 2026-11-07 for 1.0.0.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs.
+> **Status: ⬜ planned · added on 2026-11-07 for 1.0.0.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retires the built-in service clients before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -17,6 +17,7 @@ Versions are always full semantic versions: the first public release is `1.0.0`,
 | Contribution workflow | Pull requests replace direct commits to `main` before the repository becomes public. |
 | History scan | gitleaks, run through Docker so it adds no project dependency, before the repository becomes public. |
 | Visibility before publication | npm cannot generate provenance from a private source repository, even for a public package ([npm trusted publishers](https://docs.npmjs.com/trusted-publishers)). The repository therefore becomes public before the first release candidate is published. |
+| Service access | wholeloop never talks to a third-party service itself: only through MCP servers of the user's client or command-line clients the user installed (P7-16). |
 | Root README | Half story, half user guide: what wholeloop is, why the loop exists and how to install and use it, written to convince a new user. Source builds and development setup move to the contributor documentation. |
 
 ## Order
@@ -25,6 +26,8 @@ Versions are always full semantic versions: the first public release is `1.0.0`,
 flowchart LR
   A["P7-01–P7-04<br/>maintenance skills,<br/>agents and tooling"]:::build --> D
   B["P7-05–P7-06<br/>security and<br/>history audit"]:::core --> P
+  R["P7-16<br/>retire built-in<br/>service clients"]:::core --> C
+  R --> D
   C["P7-07–P7-09<br/>versioning, release<br/>automation, PR workflow"]:::core --> P
   D["P7-10–P7-12<br/>README and<br/>documentation"]:::define --> E
   N["Phase 6 native and<br/>hosted acceptance"]:::rollout --> E["P7-13<br/>release closure"]:::define
@@ -148,7 +151,7 @@ flowchart LR
 
 ## P7-07 · Versioning policy and changelog
 
-**Status:** ⬜ · **Size:** S · **Depends on:** —
+**Status:** ⬜ · **Size:** S · **Depends on:** P7-16
 
 **Goal** — Make every version and its changes predictable for users and extension authors.
 
@@ -200,7 +203,7 @@ flowchart LR
 
 ## P7-10 · Root README for users
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P7-07
+**Status:** ⬜ · **Size:** M · **Depends on:** P7-07, P7-16
 
 **Goal** — Make the README the place where a new user understands wholeloop and decides to use it.
 
@@ -218,7 +221,7 @@ flowchart LR
 
 ## P7-11 · User documentation pass
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P7-10
+**Status:** ⬜ · **Size:** L · **Depends on:** P7-10, P7-16
 
 **Goal** — Bring every user-facing page to release quality.
 
@@ -316,6 +319,27 @@ Moved from P5-07 on 2026-11-07; its checked criterion and local implementation a
 **Local implementation:** source/compiled command registration checks every declared output. The v1 candidate records fifty-three source schemas, 147 output variants, thirteen step definitions, 157 command signatures and five exit codes. Individual compatibility cases retain declaration identities, command options/signatures and exit meanings; public adapter/distribution manifests validate before emission. The compatibility/deprecation policy preserves existing 1.x contracts and requires new identities/migrations for changed formats. Conservative fingerprints do not prove runtime semantics or native support. Actual release/tag/announcement, released README status and remaining delivery/native acceptance remain open; package version/privacy are unchanged. Further collector, headless and distribution code does not wait for manual checks and adds new identities to this candidate.
 
 **Docs** — compatibility policy, ADR-0065, ADR-0066; released README status remains pending.
+
+## P7-16 · Retire built-in service clients
+
+**Status:** ⬜ · **Size:** M · **Depends on:** —
+
+**Goal** — wholeloop never talks to a third-party service itself: it reaches services only through MCP servers of the user's client or through command-line clients the user installed.
+
+**Context** — Rollout and learning work added HTTP flag readers (PostHog, GrowthBook, Unleash; ADR-0076–ADR-0079), HTTP dashboard writers (Grafana, PostHog, Metabase, Mixpanel; ADR-0080–ADR-0083) and a PostgreSQL host through `psql` that nothing outside its tests uses. ADR-0085 already made MCP the default and froze new HTTP clients, but kept these as experimental options until a reviewed retirement. The maintainer intended services to be used through MCP or existing clients, not through code in this repository. The package was never published, so no user depends on these paths.
+
+**Deliverables** — Remove the flag readers, the dashboard writers, their shared HTTP code and bridges, the PostgreSQL host and their tests; remove the `http` provider transport, leaving `mcp` and `native` (local draft or handoff). `wl provider read-flags` and `wl launch dispatch` stay and lose only their `--bridge`/`--live` HTTP path: they use an MCP operation when the client exposes one and otherwise leave the local handoff. A test-backed enforcer refuses any network client in `src/` (`fetch`, `http`/`https` requests, sockets) outside an explicit allowlist — the behavioural probe of the user's own application in Docker and the local Docker Engine socket — and is registered in `enforcement.yml`. ADR-0085 is amended with the final rule and ADR-0076–ADR-0083 are marked superseded. Provider manifests keep their declarative MCP mappings and guidance, with any HTTP-only claim removed.
+
+**Acceptance criteria:**
+
+- [ ] No module in `src/` opens a connection to a third-party service; the enforcer fails on a new one.
+- [ ] Code hosts stay on the installed `gh` and `glab` clients; local providers are unchanged.
+- [ ] `read-flags` and `launch dispatch` work through a synthetic client MCP inventory and degrade to the local handoff without one, with no HTTP option left.
+- [ ] The v1 compatibility inventory, generated command and configuration references and every affected document reflect the removal; the manual-verification backlog no longer lists per-service HTTP certification.
+
+**Tests** — The network-client enforcer with a planted violation; transport selection limited to `mcp` and `native`; MCP and handoff paths of both commands; package allowlist and compatibility inventory.
+
+**Docs** — Providers configuration, launch and ramp steps, provider catalogue, ADR-0084, ADR-0085, ADR-0076–ADR-0083, manual verification, `enforcement.yml`.
 
 ---
 

@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-07 · P7-16 · Plan the retirement of built-in service clients
+
+- Service access was meant to go through MCP servers of the user's client or clients the user installed, not through code in this repository. The built-in HTTP flag readers (PostHog, GrowthBook, Unleash), HTTP dashboard writers (Grafana, PostHog, Metabase, Mixpanel) and an unused `psql` host remained as experimental options under ADR-0085.
+- The maintainer adds [P7-16](./phase-7-release-readiness.md#p7-16--retire-built-in-service-clients) to Phase 7, before versioning, README and documentation: remove those clients and the `http` transport, keep `read-flags` and `launch dispatch` on MCP with the local handoff as fallback, delete the PostgreSQL host, and enforce that no module in `src/` opens a connection to a third-party service. The roadmap now has 107 tasks: 73 complete and 34 open.
+
+---
+
 ## 2026-11-07 · P6-40 · Plan repository guidance in autonomous runs
 
 - Supervised steps already resolve the target repository's skills, agents, rules and commands through `wl discover` and slot resolution. Autonomous workers deliberately run with native skill and project-instruction loading disabled and receive repository knowledge only through `plan.guidance` pins, which nothing fills from discovery; multi-file skills cannot be pinned and every pin reaches every worker.
