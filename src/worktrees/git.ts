@@ -130,11 +130,14 @@ export function repository(root: string) {
  */
 export function currentHead(root: string): { head: string; branch: string } {
   let joined: string[] | undefined
-  try {
-    joined = lines(git(root, ['rev-parse', 'HEAD', '--symbolic-full-name', 'HEAD']), 2)
-  } catch {
-    joined = undefined
-  }
+  // A sealed observation shares each original query with its other readers by
+  // key; a joined query there would add a process instead of saving one.
+  if (!inReadObservation())
+    try {
+      joined = lines(git(root, ['rev-parse', 'HEAD', '--symbolic-full-name', 'HEAD']), 2)
+    } catch {
+      joined = undefined
+    }
   const name = joined?.[1]
   if (joined && name !== undefined && (name === 'HEAD' || name.startsWith('refs/heads/')))
     return {
@@ -147,10 +150,13 @@ export function currentHead(root: string): { head: string; branch: string } {
 /**
  * Repository identity, absolute Git directory and current branch from one
  * process (ADR-0243), or undefined when the caller must run its original
- * separate queries: a failure, an ambiguous multi-line answer, or a HEAD that
- * is neither detached nor a branch. Those queries then fail exactly as before.
+ * separate queries: inside a sealed observation, after a failure, for an
+ * ambiguous multi-line answer, or for a HEAD neither detached nor a branch.
+ * Those queries then fail exactly as before.
  */
 export function repositoryControl(root: string) {
+  // Sealed observations keep the original queries, which other readers share.
+  if (inReadObservation()) return undefined
   let joined: string[] | undefined
   try {
     joined = lines(

@@ -36,8 +36,14 @@ describe('workspace bytes within fixed read observations', () => {
         git = vi.mocked(spawnSync).mock.calls.filter(([command]) => command === 'git').length
       console.info('Workspace observation work:', JSON.stringify({ count, files, git }))
       expect(files).toBe(2)
-      // Capture and revalidation each ask HEAD and branch in one query (ADR-0243).
-      expect(git).toBe(6)
+      // Inside the observation HEAD and branch stay separate queries, shared by
+      // key with other readers; a direct snapshot joins them (ADR-0243).
+      expect(git).toBe(8)
+      vi.mocked(spawnSync).mockClear()
+      workspaceSnapshot(root)
+      expect(vi.mocked(spawnSync).mock.calls.filter(([command]) => command === 'git')).toHaveLength(
+        3,
+      )
     }),
   )
   it('refuses tracked bytes changed by another caller before the verdict', () =>

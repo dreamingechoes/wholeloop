@@ -430,3 +430,25 @@ describe('joined repository control query (ADR-0243)', () => {
     expect(joined(root)).toEqual(expected)
   })
 })
+
+describe('joined queries inside sealed observations (ADR-0243)', () => {
+  it('keeps the original queries there so other readers share them by key', async () => {
+    const { root } = repo()
+    vi.mocked(spawnSync).mockClear()
+    await withReadObservation(new AbortController().signal, async () => {
+      expect(repositoryControl(root)).toBeUndefined()
+      const head = currentHead(root)
+      // The same original queries from another reader start no process.
+      expect(git(root, ['rev-parse', 'HEAD']).trim()).toBe(head.head)
+      expect(git(root, ['branch', '--show-current']).trim()).toBe(head.branch)
+    })
+    const queries = vi.mocked(spawnSync).mock.calls.map(([, args]) => (args as string[]).join(' '))
+    // One capture and one revalidation of each original query; no joined query.
+    expect(queries).toEqual([
+      'rev-parse HEAD',
+      'branch --show-current',
+      'rev-parse HEAD',
+      'branch --show-current',
+    ])
+  })
+})
