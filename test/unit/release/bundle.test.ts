@@ -179,7 +179,21 @@ describe('release host preparation and activation transport', () => {
         workflow: 'release.yml',
       }
       writeFileSync(contextFile, JSON.stringify(context))
-      const prepared = run(['prepare', pkg.version, contextFile, bundle])
+      const sbom = join(root, 'sbom.cdx.json')
+      writeFileSync(
+        sbom,
+        JSON.stringify({
+          bomFormat: 'CycloneDX',
+          specVersion: '1.5',
+          metadata: { component: { name: 'wholeloop', version: pkg.version } },
+          components: [],
+        }),
+      )
+      expect(run(['prepare', pkg.version, contextFile, join(root, 'no-sbom')]).status).toBe(1)
+      const prepared = run(['prepare', pkg.version, contextFile, bundle], {
+        ...environment,
+        RELEASE_SBOM: sbom,
+      })
       expect(prepared.status, prepared.stdout + prepared.stderr).toBe(0)
       const receipt = JSON.parse(prepared.stdout)
       expect(receipt).toMatchObject({ status: 'verified', commit, publication: 'not-performed' })

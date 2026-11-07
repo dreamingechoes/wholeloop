@@ -80,8 +80,11 @@ Ready/exit zero means local metadata is consistent. Blocked/exit 3 names missing
 The maintainer host script is local preparation, using a complete clean source checkout whose package/build/lock and supplied context pass preflight:
 
 ```text
-node scripts/release.mjs prepare 1.0.0 /tmp/release-context.json /tmp/new-wholeloop-release <previous-ref>
+node scripts/check-dependencies.mjs --sbom /tmp/sbom.cdx.json
+RELEASE_SBOM=/tmp/sbom.cdx.json node scripts/release.mjs prepare 1.0.0 /tmp/release-context.json /tmp/new-wholeloop-release <previous-ref>
 ```
+
+The SBOM is a CycloneDX description of the packages bundled into the CLI, read from esbuild's metafile. The package declares no runtime dependencies, so `npm sbom` would describe nothing that ships. Preparation refuses an SBOM for another version and hashes it with the other payloads; it is attached to the GitHub Release.
 
 Omit the final ref only for an explicit initial release. The destination must be new and outside source. Offline preparation writes the actual npm archive, a tar of all seven native trees including hidden files/modes, subject-only notes, the selected core and bundle.json with exact hashes/sizes/source/range. Preserve the reported temporary evidence on failure. Preparation changes no source/version/ref.
 

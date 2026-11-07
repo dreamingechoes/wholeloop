@@ -21,3 +21,17 @@ Include what you found, how to reproduce it, and the impact you expect. You will
 ## Supported versions
 
 Until 1.0, only the latest release receives security fixes.
+
+## Automated checks and their triage
+
+| Check | Runs | When it reports | What to do |
+| --- | --- | --- | --- |
+| Bundled-dependency licences (`scripts/check-dependencies.mjs`) | Every `npm run check` and CI run | A bundled package outside MIT, ISC, BSD, Apache-2.0 and similar permissive licences, or a development tool outside the reviewed list | Replace the dependency, or record a reviewed exception with its reason in the script. Never widen the bundled list without a decision record. |
+| Bundled-dependency advisories (`--audit`) | CI | A high or critical advisory in a package that ends up inside the CLI | Update or replace the package before the next release; if no fix exists, assess reachability and record it in the release notes. |
+| `npm audit signatures` | CI | An installed package without a valid registry signature or attestation | Treat it as a supply-chain incident: do not release, find which dependency changed and why. |
+| Dependency review | Every pull request | A new dependency with a high-severity advisory or a copyleft licence | Choose another dependency or justify it in the pull request for the maintainer. |
+| Dependabot | Weekly | An available update for npm packages or pinned actions | Review the changelog and let the full gate decide; update the version comment next to a pinned SHA. |
+| CodeQL | Pushes, pull requests and weekly | A code-scanning alert | Confirm it, then fix it like any defect with a regression test, or dismiss it with a written reason. |
+| OpenSSF Scorecard | Pushes to `main` and weekly | A lower score on a repository practice | Fix the practice when it is a real gap; record deliberate exceptions in the journal. |
+
+A finding that could expose users is handled privately as described above, never in a public issue.

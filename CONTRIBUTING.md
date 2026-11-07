@@ -71,6 +71,10 @@ None of them commits, pushes, publishes or changes repository settings; `test/un
 
 Edit them only in `maintainer/` and run `npm run maintainer:render`; `npm run check` fails on a hand-edited rendered file or a stale render. Read-only agents are enforced where the client can do it from the agent file; `maintainer/rendered.json` records how each client enforces it, and Codex inherits its parent session's sandbox instead. See [ADR-0246](./docs/decisions/0246-dogfooded-maintainer-skills-and-agents.md).
 
+## Dependencies
+
+The published CLI declares no runtime dependencies: it bundles what it needs from devDependencies. `npm run check` runs `scripts/check-dependencies.mjs`, which reads esbuild's metafile to find the packages that end up in the bundle and requires a permissive licence for them; development tools may also use reviewed weak-copyleft licences they never redistribute. CI additionally fails on high or critical advisories in bundled packages and on missing registry signatures. Prefer what the project already uses before adding a dependency, and say what a new one buys and costs. Triage for every automated check is in [SECURITY.md](./SECURITY.md#automated-checks-and-their-triage).
+
 ## Extensions
 
 New providers, lenses, templates and profiles are welcome as manifests — see [docs/extending](./docs/extending/README.md).

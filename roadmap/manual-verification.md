@@ -24,6 +24,14 @@ Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 eac
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Supply-chain automation (P7-05, 2026-11-07)
+
+The workflows, Dependabot configuration, licence and advisory checks and the release SBOM are implemented and linted locally; none of the hosted runs has executed.
+
+- [ ] Enable Dependabot alerts and updates, code scanning and private vulnerability reporting in the repository settings.
+- [ ] After the next push, confirm CodeQL, Scorecard and CI (including `check-dependencies.mjs --audit` and `npm audit signatures`) run green, and that dependency review runs on the first pull request.
+- [ ] Review the first Dependabot pull requests for npm and the pinned actions.
+
 ## Repository guidance in autonomous runs (P6-40, 2026-11-07)
 
 Guidance proposal, base-commit pins, manifest verification and per-role delivery are implemented and tested with real Git fixtures and the composition.

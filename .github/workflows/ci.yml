@@ -32,8 +32,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-      - name: Audit runtime dependencies
-        run: npm audit --omit=dev --audit-level=high
+      # Nothing is a runtime dependency: the CLI bundles its packages from
+      # devDependencies, so the audit targets what the bundle contains (P7-05).
+      - name: Audit bundled dependencies and licences
+        run: node scripts/check-dependencies.mjs --audit
+      - name: Verify registry signatures and provenance of installed packages
+        run: npm audit signatures
 
   runtime:
     name: runtime · ubuntu-latest · node 20

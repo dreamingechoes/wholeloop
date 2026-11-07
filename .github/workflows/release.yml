@@ -50,12 +50,15 @@ jobs:
         run: node scripts/release.mjs context "$RUNNER_TEMP/release-context.json"
         env:
           GH_TOKEN: ${{ github.token }}
+      - name: Describe the bundled packages
+        run: node scripts/check-dependencies.mjs --sbom "$RUNNER_TEMP/sbom.cdx.json"
       - name: Prepare and verify exact release payloads
         id: bundle
         run: node scripts/release.mjs prepare "$RELEASE_VERSION" "$RUNNER_TEMP/release-context.json" "$RUNNER_TEMP/release-bundle" "$RELEASE_FROM"
         env:
           RELEASE_VERSION: ${{ inputs.version }}
           RELEASE_FROM: ${{ inputs.from }}
+          RELEASE_SBOM: ${{ runner.temp }}/sbom.cdx.json
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         id: upload
         with:

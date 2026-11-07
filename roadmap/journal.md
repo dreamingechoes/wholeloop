@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-07 · P7-05 ✅ · Supply-chain and security automation
+
+- Found while planning: the package declares no runtime dependencies because the CLI bundles its packages from devDependencies, so CI's `npm audit --omit=dev` audited nothing that ships. `scripts/check-dependencies.mjs` now takes the bundled set from esbuild's metafile (11 packages): permissive licences for bundled code and a reviewed list for development tools (a gate step), high or critical advisories in bundled packages (CI), and a CycloneDX SBOM of the bundle.
+- Release preparation requires that SBOM for the exact version, hashes it with the other payloads and attaches it to the GitHub Release; `wholeloop/release-bundle@1` gains the payload and the unreleased v1 candidate records the new fingerprint.
+- Dependabot (npm and pinned actions), dependency review, CodeQL and Scorecard workflows, all read-only at the top level with SHA-pinned actions; a test lints every workflow. `npm audit signatures` joins CI. SECURITY.md gives every check a triage path. Hosted runs and repository settings are in manual verification.
+- macOS full gate with two file workers: CHECK PASS in 673s, 4573/4573 tests across 324 files, including the new dependencies step. Not run on Linux.
+
+---
+
 ## 2026-11-07 · P7-03 ✅ · Maintainer specialist agents
 
 - Four read-only maintainer agents: convention reviewer, documentation auditor, security and dependency auditor, and release manager. Each reads its rules from their source files and reports every finding with the rule it comes from, where, what and the smallest fix; none edits, commits, pushes or publishes.

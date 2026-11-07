@@ -20,7 +20,13 @@ const repository = fileURLToPath(new URL('../', import.meta.url))
 let stage = 'input validation'
 const evidence = []
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex')
-const payloads = ['release-notes.md', 'wholeloop-native.tar.gz', 'wholeloop-npm.tgz', 'wl.mjs']
+const payloads = [
+  'release-notes.md',
+  'sbom.cdx.json',
+  'wholeloop-native.tar.gz',
+  'wholeloop-npm.tgz',
+  'wl.mjs',
+]
 function command(executable, args, environment = process.env, input) {
   const result = spawnSync(executable, args, {
     cwd: repository,
@@ -160,6 +166,14 @@ function prepare(version, context, output, from) {
   assert.equal(`sha512-${createHash('sha512').update(bytes).digest('base64')}`, pack.integrity)
   renameSync(archive, join(destination, 'wholeloop-npm.tgz'))
   copyFileSync(core, join(destination, 'wl.mjs'))
+  // The workflow writes the SBOM of the bundled packages before preparation
+  // (scripts/check-dependencies.mjs --sbom); it must describe this version.
+  stage = 'bundled-package SBOM'
+  assert(process.env.RELEASE_SBOM, 'Set RELEASE_SBOM to the prepared CycloneDX SBOM')
+  const sbom = JSON.parse(bounded(process.env.RELEASE_SBOM, 8 * 1024 * 1024).toString('utf8'))
+  assert.equal(sbom.bomFormat, 'CycloneDX')
+  assert.equal(sbom.metadata?.component?.version, version)
+  writeJson(join(destination, 'sbom.cdx.json'), sbom)
   stage = 'complete-history release notes'
   const notes = cli([
     'release',

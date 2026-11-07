@@ -3,8 +3,10 @@ import { validate } from '../config/schema.js'
 import type { releasePreflight } from './preflight.js'
 import bundleSchema from './schemas/bundle-v1.json' with { type: 'json' }
 
+/** The prepared payloads, sorted. The SBOM lists the packages bundled into the CLI (P7-05). */
 export const RELEASE_FILES = [
   'release-notes.md',
+  'sbom.cdx.json',
   'wholeloop-native.tar.gz',
   'wholeloop-npm.tgz',
   'wl.mjs',
@@ -41,7 +43,7 @@ export function verifyReleaseBundle(
     JSON.stringify([...files.keys()].sort()) !== JSON.stringify(RELEASE_FILES) ||
     JSON.stringify(bundle.files.map((entry) => entry.path).sort()) !== JSON.stringify(RELEASE_FILES)
   )
-    throw new Error('Release bundle must contain exactly the four prepared payload files')
+    throw new Error('Release bundle must contain exactly the prepared payload files')
   for (const entry of bundle.files) {
     const bytes = files.get(entry.path)
     if (!bytes || bytes.byteLength !== entry.bytes || releaseDigest(bytes) !== entry.sha256)
