@@ -10,7 +10,7 @@ import {
   assemblyGitArguments,
 } from '../integration/git-process.js'
 import { canonicalPath, inside } from '../state/paths.js'
-import { git, registeredWorktrees, repository } from '../worktrees/git.js'
+import { git, registeredWorktrees, repository, repositoryControl } from '../worktrees/git.js'
 import { candidateFiles, candidateIndex } from './candidate-files.js'
 import {
   CANDIDATE_COMMIT_SCHEMAS,
@@ -145,12 +145,18 @@ export class DeliveryCommits {
       canonicalPath(repo.path) !== repo.path ||
       !inside(this.files.root, repo.path) ||
       tree?.branch !== `refs/heads/${repo.branch}` ||
-      tree.locked ||
-      repository(repo.path).commonDir !== repo.commonDir ||
-      git(repo.path, ['branch', '--show-current']).trim() !== repo.branch
+      tree.locked
     )
       throw new CandidateCommitError('workspace-ownership')
-    const control = git(repo.path, ['rev-parse', '--absolute-git-dir']).trim()
+    // One query answers all three facts; without a usable answer the original
+    // queries run in their original order and keep their errors (ADR-0243).
+    const joined = repositoryControl(repo.path)
+    if (
+      (joined?.commonDir ?? repository(repo.path).commonDir) !== repo.commonDir ||
+      (joined?.branch ?? git(repo.path, ['branch', '--show-current']).trim()) !== repo.branch
+    )
+      throw new CandidateCommitError('workspace-ownership')
+    const control = joined?.gitDir ?? git(repo.path, ['rev-parse', '--absolute-git-dir']).trim()
     if (
       [
         'MERGE_HEAD',

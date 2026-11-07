@@ -122,6 +122,60 @@ export function repository(root: string) {
   const toplevel = git(root, ['rev-parse', '--show-toplevel'])
   return repositoryFacts(root, toplevel, git(root, ['rev-parse', '--git-common-dir']))
 }
+/**
+ * HEAD's commit and current branch from one process (ADR-0243). The symbolic
+ * name is `HEAD` when detached and the full branch ref otherwise; any other
+ * answer, a failure or an unexpected shape reruns the original two queries so
+ * their outputs and errors, including a HEAD outside refs/heads, stay exact.
+ */
+export function currentHead(root: string): { head: string; branch: string } {
+  let joined: string[] | undefined
+  try {
+    joined = lines(git(root, ['rev-parse', 'HEAD', '--symbolic-full-name', 'HEAD']), 2)
+  } catch {
+    joined = undefined
+  }
+  const name = joined?.[1]
+  if (joined && name !== undefined && (name === 'HEAD' || name.startsWith('refs/heads/')))
+    return {
+      head: joined[0] ?? '',
+      branch: name === 'HEAD' ? '' : name.slice('refs/heads/'.length),
+    }
+  const head = git(root, ['rev-parse', 'HEAD']).trim()
+  return { head, branch: git(root, ['branch', '--show-current']).trim() }
+}
+/**
+ * Repository identity, absolute Git directory and current branch from one
+ * process (ADR-0243), or undefined when the caller must run its original
+ * separate queries: a failure, an ambiguous multi-line answer, or a HEAD that
+ * is neither detached nor a branch. Those queries then fail exactly as before.
+ */
+export function repositoryControl(root: string) {
+  let joined: string[] | undefined
+  try {
+    joined = lines(
+      git(root, [
+        'rev-parse',
+        '--show-toplevel',
+        '--git-common-dir',
+        '--absolute-git-dir',
+        '--symbolic-full-name',
+        'HEAD',
+      ]),
+      4,
+    )
+  } catch {
+    return undefined
+  }
+  const name = joined?.[3]
+  if (!joined || name === undefined || (name !== 'HEAD' && !name.startsWith('refs/heads/')))
+    return undefined
+  return {
+    ...repositoryFacts(root, joined[0] ?? '', joined[1] ?? ''),
+    gitDir: (joined[2] ?? '').trim(),
+    branch: name === 'HEAD' ? '' : name.slice('refs/heads/'.length),
+  }
+}
 function namedBaseInput(input: string): void {
   if (!input.trim() || input.startsWith('-') || /[\n\r\0]/.test(input))
     throw new Error('Provide a named base branch')

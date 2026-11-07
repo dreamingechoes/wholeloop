@@ -7,7 +7,14 @@ import { observePlanBases } from '../../../src/delivery/plan.js'
 import { StoreFiles } from '../../../src/state/files.js'
 import { canonicalPath } from '../../../src/state/paths.js'
 import { withReadObservation } from '../../../src/state/read-observation.js'
-import { git, namedBase, repository, repositoryBase } from '../../../src/worktrees/git.js'
+import {
+  currentHead,
+  git,
+  namedBase,
+  repository,
+  repositoryBase,
+  repositoryControl,
+} from '../../../src/worktrees/git.js'
 
 vi.mock('node:child_process', async (original) => {
   const process = await original<typeof import('node:child_process')>()
@@ -260,5 +267,166 @@ describe('joined repository and base queries (ADR-0243)', () => {
       observePlanBases(advanced)
     })
     expect(processes()).toBeGreaterThan(before)
+  })
+})
+
+describe('joined HEAD and branch query (ADR-0243)', () => {
+  /** The former two queries through the same reader, including its exact error text. */
+  function separate(root: string) {
+    try {
+      const head = git(root, ['rev-parse', 'HEAD']).trim()
+      return { value: { head, branch: git(root, ['branch', '--show-current']).trim() } }
+    } catch (error) {
+      return { error: (error as Error).message }
+    }
+  }
+  function joined(root: string) {
+    try {
+      return { value: currentHead(root) }
+    } catch (error) {
+      return { error: (error as Error).message }
+    }
+  }
+  const cases: [string, (root: string) => void, number][] = [
+    ['named branch', () => undefined, 1],
+    ['nested unicode branch', (root) => run(root, 'checkout', '-q', '-b', 'feat/ünï'), 1],
+    ['detached HEAD', (root) => run(root, 'checkout', '-q', '--detach'), 1],
+    [
+      'symbolic branch chain',
+      (root) => {
+        run(root, 'symbolic-ref', 'refs/heads/alias', 'refs/heads/main')
+        run(root, 'symbolic-ref', 'HEAD', 'refs/heads/alias')
+      },
+      1,
+    ],
+    [
+      'branch pointing to an annotated tag',
+      (root) => {
+        run(root, 'tag', '-a', 'v1', '-m', 'tag')
+        writeFileSync(join(root, '.git/refs/heads/tagged'), run(root, 'rev-parse', 'v1'))
+        run(root, 'symbolic-ref', 'HEAD', 'refs/heads/tagged')
+      },
+      1,
+    ],
+    [
+      'HEAD outside refs/heads',
+      (root) => {
+        run(root, 'update-ref', 'refs/remotes/origin/main', 'HEAD')
+        run(root, 'symbolic-ref', 'HEAD', 'refs/remotes/origin/main')
+      },
+      3,
+    ],
+    ['unborn branch', (root) => run(root, 'checkout', '-q', '--orphan', 'newborn'), 2],
+  ]
+
+  it.each(cases)('matches the separate queries and their errors: %s', (_name, arrange, count) => {
+    const { root } = repo()
+    arrange(root)
+    const expected = separate(root)
+    vi.mocked(spawnSync).mockClear()
+    expect(joined(root)).toEqual(expected)
+    // One process when the joined answer is usable; otherwise the original pair reruns.
+    expect(spawnSync).toHaveBeenCalledTimes(count)
+  })
+})
+
+describe('joined repository control query (ADR-0243)', () => {
+  /** The three former queries in their original order, through the same reader. */
+  function separate(root: string) {
+    try {
+      const { path, commonDir } = repository(root),
+        branch = git(root, ['branch', '--show-current']).trim()
+      return {
+        value: {
+          path,
+          commonDir,
+          branch,
+          gitDir: git(root, ['rev-parse', '--absolute-git-dir']).trim(),
+        },
+      }
+    } catch (error) {
+      return { error: (error as Error).message }
+    }
+  }
+  /** The ownership caller's composition: joined facts, else the same three queries. */
+  function joined(root: string) {
+    try {
+      const control = repositoryControl(root),
+        { path, commonDir } = control ?? repository(root),
+        branch = control?.branch ?? git(root, ['branch', '--show-current']).trim()
+      return {
+        value: {
+          path,
+          commonDir,
+          branch,
+          gitDir: control?.gitDir ?? git(root, ['rev-parse', '--absolute-git-dir']).trim(),
+        },
+      }
+    } catch (error) {
+      return { error: (error as Error).message }
+    }
+  }
+  const cases: [string, () => string, boolean][] = [
+    ['primary checkout', () => repo().root, true],
+    ['path with spaces', () => repo(' spaced repo ').root, true],
+    ['path with a newline', () => repo('line\nbreak').root, false],
+    [
+      'linked worktree',
+      () => {
+        const { parent, root } = repo()
+        run(root, 'branch', 'feature')
+        run(root, 'worktree', 'add', '-q', join(parent, 'tree'), 'feature')
+        return join(parent, 'tree')
+      },
+      true,
+    ],
+    [
+      'detached linked worktree',
+      () => {
+        const { parent, root } = repo()
+        run(root, 'worktree', 'add', '-q', '--detach', join(parent, 'tree'), 'main')
+        return join(parent, 'tree')
+      },
+      true,
+    ],
+    [
+      'HEAD outside refs/heads',
+      () => {
+        const { root } = repo()
+        run(root, 'update-ref', 'refs/remotes/origin/main', 'HEAD')
+        run(root, 'symbolic-ref', 'HEAD', 'refs/remotes/origin/main')
+        return root
+      },
+      false,
+    ],
+    [
+      'unborn branch',
+      () => {
+        const { root } = repo()
+        run(root, 'checkout', '-q', '--orphan', 'newborn')
+        return root
+      },
+      false,
+    ],
+    [
+      'bare repository',
+      () => {
+        const { parent } = repo()
+        const bare = join(parent, 'bare.git')
+        mkdirSync(bare)
+        run(bare, 'init', '-q', '--bare')
+        return bare
+      },
+      false,
+    ],
+  ]
+
+  it.each(cases)('matches the separate queries and their errors: %s', (_name, build, usable) => {
+    const root = build(),
+      expected = separate(root)
+    vi.mocked(spawnSync).mockClear()
+    expect(repositoryControl(root) !== undefined).toBe(usable)
+    expect(spawnSync).toHaveBeenCalledTimes(1)
+    expect(joined(root)).toEqual(expected)
   })
 })

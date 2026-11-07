@@ -7,7 +7,7 @@ import {
   inReadObservation,
   observedRead,
 } from '../state/read-observation.js'
-import { git, gitEnvironmentIdentity } from '../worktrees/git.js'
+import { currentHead, git, gitEnvironmentIdentity } from '../worktrees/git.js'
 
 export interface WorkspaceSnapshot {
   digest: string
@@ -63,8 +63,7 @@ export function workspaceSnapshot(root: string, bounds?: SnapshotBounds): Worksp
 
 /** Every tracked/untracked path, mode, link target and byte still feeds the same digest. */
 function readWorkspaceSnapshot(root: string, bounds?: SnapshotBounds): WorkspaceSnapshot {
-  const head = git(root, ['rev-parse', 'HEAD']).trim()
-  const branch = git(root, ['branch', '--show-current']).trim()
+  const { head, branch } = currentHead(root)
   const hash = createHash('sha256')
   const add = (value: string | Uint8Array) => {
     hash.update(String(value.length)).update(':').update(value).update('\0')

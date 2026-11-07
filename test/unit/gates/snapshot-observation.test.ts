@@ -36,7 +36,8 @@ describe('workspace bytes within fixed read observations', () => {
         git = vi.mocked(spawnSync).mock.calls.filter(([command]) => command === 'git').length
       console.info('Workspace observation work:', JSON.stringify({ count, files, git }))
       expect(files).toBe(2)
-      expect(git).toBe(8)
+      // Capture and revalidation each ask HEAD and branch in one query (ADR-0243).
+      expect(git).toBe(6)
     }),
   )
   it('refuses tracked bytes changed by another caller before the verdict', () =>
