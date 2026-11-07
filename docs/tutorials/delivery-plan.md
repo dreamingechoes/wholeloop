@@ -5,9 +5,11 @@
 > [!NOTE]
 > **Status: ✅ implemented.** Closed plan/envelope validation, immutable external revisions, local Git basis observations and deterministic routing are implemented. [Operator grant metadata](./delivery-authorization.md) is available; the [decision](./delivery-decisions.md) and [runner](./delivery-runner.md) guides describe their implemented execution boundaries. Native/model acceptance remains separate.
 
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
+
 ## Before you start
 
-Build the checkout following the [development guide](../contributing/development.md#use-the-source-build), keeping WHOLELOOP_CLI set to the absolute dist/wl.mjs path. You need Git and the built CLI; no model or remote account is needed. Run these Bash commands from any directory. All Git changes below belong to a new disposable example repository. Proposal files, receipts and runtime state stay outside that repository.
+Install the CLI as in [getting started](../getting-started.md#install-the-cli). You need Git and the CLI; no model or remote account is needed. Run these Bash commands from any directory. All Git changes below belong to a new disposable example repository. Proposal files, receipts and runtime state stay outside that repository.
 
 ## Capture the source and prepare proposals
 
@@ -36,7 +38,7 @@ cat > "$workspace_dir/source-input.json" <<'EOF'
   ]
 }
 EOF
-node "$WHOLELOOP_CLI" delivery source \
+wl delivery source \
   --file "$workspace_dir/source-input.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json > "$workspace_dir/source.json"
 node --input-type=module - "$workspace_dir" <<'EOF'
@@ -99,7 +101,7 @@ for (const [name, value] of [['envelope', envelope], ['plan', plan]]) {
   writeFileSync(join(directory, `${name}.json`), JSON.stringify(value, null, 2))
 }
 EOF
-node "$WHOLELOOP_CLI" delivery envelope \
+wl delivery envelope \
   --file "$workspace_dir/envelope.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json > "$workspace_dir/envelope-receipt.json"
 node --input-type=module - "$workspace_dir" <<'EOF'
@@ -113,10 +115,10 @@ plan.envelope = JSON.parse(
 ).digest
 writeFileSync(file, JSON.stringify(plan, null, 2))
 EOF
-node "$WHOLELOOP_CLI" delivery plan \
+wl delivery plan \
   --file "$workspace_dir/plan.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json
-node "$WHOLELOOP_CLI" delivery inspect-plan \
+wl delivery inspect-plan \
   --run delivery-0123456789abcdef --revision 1 \
   --store "$workspace_dir/state" --json
 printf 'Retained tutorial files: %s\n' "$workspace_dir"
@@ -127,10 +129,10 @@ Both final commands return the exact same prepared plan/digest, route.next: buil
 ## Read the contracts and change a proposal
 
 ```bash
-node "$WHOLELOOP_CLI" delivery plan-schema --json
+wl delivery plan-schema --json
 ```
 
-A plan has at most 100 work units, 16 repositories and 1000 criteria. Every required outcome needs criterion coverage, each criterion has exactly one work owner and all work/criteria belong to milestones. Contract consumers explicitly depend on their producer, directly or transitively. Milestones also declare the dependencies needed by their work. Guidance/rubric digests and supplied capability descriptors are pinned planning inputs; execution-time hosts must verify their actual content and effective capabilities. Fill `guidance` with `node "$WHOLELOOP_CLI" delivery guidance --file <proposal.json> --json`: it proposes the pins a supervised step would resolve, read at each repository's pinned base, and returns questions for ambiguous slots ([repository guidance in autonomous runs](../configuration/repo-skills.md#in-autonomous-runs)).
+A plan has at most 100 work units, 16 repositories and 1000 criteria. Every required outcome needs criterion coverage, each criterion has exactly one work owner and all work/criteria belong to milestones. Contract consumers explicitly depend on their producer, directly or transitively. Milestones also declare the dependencies needed by their work. Guidance/rubric digests and supplied capability descriptors are pinned planning inputs; execution-time hosts must verify their actual content and effective capabilities. Fill `guidance` with `wl delivery guidance --file <proposal.json> --json`: it proposes the pins a supervised step would resolve, read at each repository's pinned base, and returns questions for ambiguous slots ([repository guidance in autonomous runs](../configuration/repo-skills.md#in-autonomous-runs)).
 
 Existing item IDs are optional work.subject references. The planner confirms they exist, are open and match a recorded repository where present. It does not create slices or human approval records. Local target refs and configured remote identities are observed without fetching. Research plans may omit repositories and use research-only work; research authority does not imply code writes.
 
@@ -140,7 +142,7 @@ For incomplete intent, definition.ready is false and definition.missing lists ac
 
 ## Stopping point
 
-You have a reviewable immutable envelope and plan, with an explicit route and dependency waves. The private records live under the external state/delivery directory; retain the temporary directory to inspect or replay them in another terminal. This increment cannot authorize or run workers. Follow [Phase 6](../../roadmap/phase-6-autonomous-delivery.md) for grants, actual execution and expanded acceptance, or use the existing [small-change route](./small-change.md).
+You have a reviewable immutable envelope and plan, with an explicit route and dependency waves. The private records live under the external state/delivery directory; retain the temporary directory to inspect or replay them in another terminal. This increment cannot authorize or run workers. Continue with [authorization](./delivery-authorization.md) for grants and the [runner](./delivery-runner.md) for execution, or use the existing [small-change route](./small-change.md).
 
 ## Preview and adopt a revision
 

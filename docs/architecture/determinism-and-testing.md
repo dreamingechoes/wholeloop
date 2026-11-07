@@ -3,7 +3,7 @@
 > **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Unit, snapshot, contract, stubbed-workflow and isolated offline npm delivery checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. A disposable seven-target framing runner separates explicit simulation from owner-run pinned live processes and names missing journal events. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md). Implementation began in [P0-02](../../roadmap/phase-0-foundations.md#p0-02--typescript-toolchain).
+> **Status: 🚧 partial.** Unit, snapshot, contract, stubbed-workflow and isolated offline npm delivery checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. A disposable seven-target framing runner separates explicit simulation from owner-run pinned live processes and names missing journal events. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md).
 
 ---
 
@@ -140,7 +140,7 @@ Private HTTP assertions use the same complete-response/objective comparison core
 
 ## Performance investigations
 
-Performance is not a release gate, but a problem found later is investigated with the same method as the P6-39 audit. [`scripts/perf/`](../../scripts/perf/README.md) holds the measurement-only preload, its calibration control, a one-command profiled EVAL-09 rehearsal with a per-phase table and caller attribution, and an equivalence comparison that refuses to compare runs with different functional outcomes. None of it is bundled into the CLI, and a test checks that a profile contains no argument, path, environment value or body.
+Performance is not a release gate, but a problem found later is investigated with the same measurement-first method as the performance audit. [`scripts/perf/`](../../scripts/perf/README.md) holds the measurement-only preload, its calibration control, a one-command profiled EVAL-09 rehearsal with a per-phase table and caller attribution, and an equivalence comparison that refuses to compare runs with different functional outcomes. None of it is bundled into the CLI, and a test checks that a profile contains no argument, path, environment value or body.
 
 ## Enforcement — every hard rule executes somewhere
 

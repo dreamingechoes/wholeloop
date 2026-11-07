@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08, P7-10 and P7-16 complete; P7-09 prepared and awaiting the maintainer's switch.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08, P7-10, P7-11 and P7-16 complete; P7-09 prepared and awaiting the maintainer's switch.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -241,7 +241,7 @@ flowchart LR
 
 ## P7-11 · User documentation pass
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P7-10, P7-16
+**Status:** ✅ · **Size:** L · **Depends on:** P7-10, P7-16
 
 **Goal** — Bring every user-facing page to release quality.
 
@@ -249,8 +249,10 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] No user page describes released behaviour as planned, or planned behaviour as released.
-- [ ] Every tutorial has been executed against the release candidate or states what it needs.
+- [x] No user page describes released behaviour as planned, or planned behaviour as released.
+- [x] Every tutorial has been executed against the release candidate or states what it needs.
+
+**Evidence** — Every user page now calls the installed `wl` instead of a source-build variable, except the pages that depend on repository files (evaluation fixtures, conformance collection and acceptance), which say so; the twelve tutorials with model-free `npm run eval` controls state that those run from a source checkout. All 74 roadmap task references left the user pages: status banners lost their roadmap links, and every claim that work "remains" for a task was checked against the task's status, which found stale statements about completed work (the public runner, CI repair continuation, environment retirement, worker launch, URL adoption, flag providers and lifecycle journaling) that are now described as available. The journal page listed a fraction of the real event types and an example event that does not exist; the command table was headed "planned" although every command in it exists. Banners no longer call the core source-installable. Docs check, link check and Markdown lint pass; running the tutorials against the release candidate is part of P7-14.
 
 **Tests** — Docs check, link check, Markdown and diagram lint.
 

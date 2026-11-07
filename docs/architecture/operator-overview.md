@@ -3,7 +3,7 @@
 > **TL;DR** — `wl overview` orders the harness's attention and exposes exact next commands. The core owns this meaning; an interface renders it. The local feed delivers complete views and bounded activity without a listener.
 
 > [!NOTE]
-> **Status: ✅ implemented.** P6-36 attribution, P6-37’s read-only overview, schemas and consumer fixtures, and P6-38’s local feed are implemented and verified. Native client/model acceptance remains separate. See [ADR-0210](../decisions/0210-operator-overview-and-change-feed.md).
+> **Status: ✅ implemented.** Operator attribution, the read-only overview with its schemas and consumer fixtures, and the local feed are implemented and verified. Native client/model acceptance remains separate. See [ADR-0210](../decisions/0210-operator-overview-and-change-feed.md).
 
 ## Reading the harness
 

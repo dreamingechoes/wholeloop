@@ -3,7 +3,7 @@
 > **TL;DR** — Start with an executable tutorial, then use the configuration and step references when you need them. Try local state without a model, frame one idea in a coding client, or work through a small change. Architecture and maintainer release work have separate reading paths.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The source-installable core, all thirteen steps and seven client renderers are implemented. Native acceptance, scheduled activation and publication remain open. Generated artifacts and simulations are not live certification. Remote integrations are experimental, fixture-tested and service-unverified. [What remains for 1.0](./v1-acceptance.md).
+> **Status: 🚧 partial.** The core, all thirteen steps and seven client renderers are implemented, and the first npm release is in preparation. Native acceptance and scheduled activation remain open. Generated artifacts and simulations are not live certification. Remote integrations are experimental, fixture-tested and service-unverified. [What remains for 1.0](./v1-acceptance.md).
 
 ## Contents
 
@@ -17,7 +17,7 @@
 
 ## Start with your goal
 
-For the expanded 1.0 scope, review the [autonomous-delivery design](./architecture/autonomous-delivery.md), [detailed specifications](../roadmap/specifications/autonomous-delivery/README.md) and [38 Phase 6 tasks](../roadmap/phase-6-autonomous-delivery.md). Revision-bound source intake, plan/envelope preparation and operator authorization/revocation metadata are available; public none-policy research-report/to-PR composition is implemented, while its signed-in native/hosted acceptance remains pending.
+To hand an approved scope to an autonomous run, start with the [autonomous-delivery design](./architecture/autonomous-delivery.md) and the delivery tutorials below. Source intake, planning, authorization and the research-report and to-PR routes are implemented; unattended runs are still being certified with signed-in native clients and hosted services.
 
 | Goal | First page | Successful stopping point |
 | --- | --- | --- |

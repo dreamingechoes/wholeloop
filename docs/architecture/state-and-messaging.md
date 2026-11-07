@@ -3,7 +3,7 @@
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later Build/Rollout/Learn workflows and canonical URL adoption/shared outboxes are implemented locally. Optional journal attribution includes packaged client declarations and private person-decision metadata. Live adapter execution remains an manual conformance check. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md). Implementation: [P1-03, P1-04](../../roadmap/phase-1-walking-skeleton.md#p1-03--state-store--journal-ids-projections).
+> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later Build/Rollout/Learn workflows and canonical URL adoption/shared outboxes are implemented locally. Optional journal attribution includes packaged client declarations and private person-decision metadata. Live adapter execution remains an manual conformance check. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md).
 
 ---
 
@@ -104,22 +104,22 @@ wl state rebuild --json
 
 ## The journal
 
-Implemented event types are `item.created`, `item.updated`, `item.closed`, `note.added`, `link.added`, `msg.sent`, `msg.read`, `step.started`, `step.completed`, `step.skipped`, `answer.remembered` `decision.recorded`, `research.planned`, `research.submitted`, `research.examined`, `frame.sourced` and `frame.decided`; later families in the table below remain planned. Their versioned schema lives in `src/state/schemas/event-v1.json`. Every change is an event. Projections are a pure function of the journal, which makes them reproducible and testable (`wl state rebuild` must produce byte-identical files).
+Every family in the table below is implemented, and each step adds its own: framing and research, builds and verification, worktrees, pull requests, sharing and sync, launch, ramp, impact and learning. Their versioned schema lives in `src/state/schemas/event-v1.json`. Every change is an event. Projections are a pure function of the journal, which makes them reproducible and testable (`wl state rebuild` must produce byte-identical files).
 
 ```json
 {"v":1,"id":"ev-01JA…","ts":"2026-10-14T16:02:11Z","actor":{"kind":"agent","name":"builder"},
- "type":"gate.verdict","subject":"slice-0d4e","data":{"gate":"verify","round":1,"result":"fail","findings":2}}
+ "type":"gate.decided","subject":"slice-0d4e","data":{"gate":"verify","round":1,"result":"fail","findings":2}}
 ```
 
 | Event family | Examples |
 | --- | --- |
 | `item.*` | `item.created` · `item.updated` · `item.closed` |
 | `step.*` | `step.started` · `step.completed` · `step.skipped` (with reason) |
-| `question.*` / `answer.*` | asked, answered, remembered scope |
-| `gate.*` | `gate.planned` · `gate.submitted` · `gate.verdict` |
-| `decision.*` | a person decided at a decision point — who, what, why |
+| `answer.*` | `answer.remembered`, with the scope it is remembered at |
+| `gate.*` | `gate.planned` · `gate.submitted` · `gate.examined` · `gate.extended` · `gate.decided` |
+| `decision.*` | `decision.recorded`: a person decided at a decision point — who, what, why |
 | `msg.*` | `msg.sent` · `msg.read` |
-| `link.*` · `env.*` | external refs · writes outside a repo with their undo command |
+| `link.*` · `env.*` | `link.added` for external refs · `env.declared` for writes outside a repo with their undo command |
 
 ## The mailbox
 
@@ -188,7 +188,7 @@ The local store is personal. Sharing happens through **providers**: in synced mo
 
 Delivery source snapshots live under delivery/sources in the external store. Planning adds content-addressed delivery/envelopes and numbered delivery/plans/RUN/REVISION.json records with canonical value digests. Repeated preparation reuses the exact record; a conflicting replacement or damaged digest is refused. New plan revisions pin their predecessor. Inspection reads stored structure and source identities without demanding that today's local target or remote still match the original observation.
 
-These are immutable artifacts, not new legacy item events or an alternative item hierarchy. Existing projection rebuilds leave them intact and do not reconstruct missing immutable artifacts. Delivery lifecycle journaling/recovery is P6-04 work. No plan proposal is a grant or actual human decision. See [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) and the [planning tutorial](../tutorials/delivery-plan.md).
+These are immutable artifacts, not new legacy item events or an alternative item hierarchy. Existing projection rebuilds leave them intact and do not reconstruct missing immutable artifacts. Delivery runs journal and recover their own lifecycle ([delivery recovery](../tutorials/delivery-recovery.md)). No plan proposal is a grant or actual human decision. See [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) and the [planning tutorial](../tutorials/delivery-plan.md).
 
 Operator grants/revocations add private immutable delivery/authority records, while delivery/broker retains scoped worker requests as claims with effects not-performed. Stable action IDs prevent implicit renewal, reads verify record digests and revoked/expired authority refuses later admission/requests. These artifacts do not append legacy human approval/testing events. A grant ID is not a bearer credential; only controller-owned session context and the separately observed runtime boundary can make a broker session available. Full lifecycle journaling and actual native/backend ownership follow in later increments. See [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md).
 

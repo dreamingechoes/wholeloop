@@ -3,16 +3,18 @@
 > **TL;DR** — Dedicated delivery hosts keep builders separate from the existing read-only gate engine. A pinned recipe and an installed client still need actual runtime proof; metadata alone starts no worker.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Reference recipes, capability negotiation, bounded controller execution and retained receipts are implemented and synthetic-process-tested. Actual native/backend conformance and complete unattended routing remain separate Phase 6 tasks. The command below inspects contracts only.
+> **Status: 🚧 partial.** Reference recipes, capability negotiation, bounded controller execution and retained receipts are implemented and synthetic-process-tested. Actual native/backend conformance and complete unattended routing still need signed-in native clients. The command below inspects contracts only.
+
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 ## Inspect the available contracts
 
-Keep WHOLELOOP_CLI from the [worker guide](./delivery-workers.md), or set it to the absolute built CLI path. This command starts no client/model and reads no authentication store.
+This command starts no client/model and reads no authentication store.
 
 ```bash
 set -euo pipefail
-: "${WHOLELOOP_CLI:?Set WHOLELOOP_CLI to the absolute built CLI path}"
-node "$WHOLELOOP_CLI" delivery native-schema --json | node --input-type=module -e '
+wl --version
+wl delivery native-schema --json | node --input-type=module -e '
 import assert from "node:assert/strict"
 let input = ""
 for await (const chunk of process.stdin) input += chunk
@@ -55,7 +57,7 @@ Run npm run eval:native-boundary with Codex 0.166.0 installed ([ADR-0202](../dec
 
 The internal CodexBoundaryHost can separately observe local client authentication through its explicit existing credential-store reference. Only status/hashes/ownership enter its private proof, and fixture authentication remains fixture-only. Async observation is finite under the original attempt; unknown or cancelled probes preserve their consumed reservations. Missing bindings cannot authorize replay. See [ADR-0120](../decisions/0120-observed-native-boundaries-and-asynchronous-admission.md).
 
-The actual macOS controls cover the reference version's three selected roles and both output modes. Linux fixture/minimum-runtime checks do not establish actual Linux client containment. Accounts, model availability and complete native application execution remain separate acceptance work. Fixed native/semantic host composition and public complete-route commands remain P6-10 technical implementation work; these controls do not close that task.
+The actual macOS controls cover the reference version's three selected roles and both output modes. Linux fixture/minimum-runtime checks do not establish actual Linux client containment. Accounts, model availability and complete native application execution remain separate acceptance work. Native stages join the public run only with trusted runtime proof.
 
 ## Repeat actual model-free Claude Code controls
 
@@ -93,7 +95,7 @@ The private root intent precedes claim; the original native assignment and rando
 
 A fresh controller reads only the journal-selected immutable receipt and validates original runtime/provenance, selected and copied inputs, captured artifacts, current candidate and actual process closure. It can recover while paused without resuming. Stop uses original private nonce channels, including after revocation. A successful worker stage establishes production of a candidate or research claim; behavioral QA, review and acceptance still follow separately.
 
-The fixed stage dispatcher sends a unit's research stage to this same adapter. Report-level research and research claims inside milestones wait for the research host; fixed-dispatch preflight refuses those routes before dispatch ([ADR-0179](../decisions/0179-research-dispatch-boundary.md)). This composition is covered with actual synthetic native processes and fixture semantics. It does not certify authenticated client/model behavior or close P6-10: fixed complete-route configuration, semantic hosts, endpoint and public run/reconcile wiring remain in progress. See [ADR-0121](../decisions/0121-owned-worker-stage-bindings-and-recovery.md).
+The fixed stage dispatcher sends a unit's research stage to this same adapter. Report-level research and research claims inside milestones wait for the research host; fixed-dispatch preflight refuses those routes before dispatch ([ADR-0179](../decisions/0179-research-dispatch-boundary.md)). This composition is covered with actual synthetic native processes and fixture semantics. It does not certify authenticated client/model behavior. See [ADR-0121](../decisions/0121-owned-worker-stage-bindings-and-recovery.md).
 
 ## Delegated stage decisions
 

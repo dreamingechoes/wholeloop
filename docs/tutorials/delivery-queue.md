@@ -7,7 +7,7 @@
 
 ## Before you start
 
-Complete the [planning](./delivery-plan.md), [authorization](./delivery-authorization.md) and optional [recovery](./delivery-recovery.md) tutorials in the same Bash terminal. Keep WHOLELOOP_CLI and workspace_dir set. Authorization ends with its fictional grant revoked. This example explicitly records a new operator action; repeating a revoked action would not renew it. The example uses only the disposable repository and external store.
+Complete the [planning](./delivery-plan.md), [authorization](./delivery-authorization.md) and optional [recovery](./delivery-recovery.md) tutorials in the same Bash terminal. Keep workspace_dir set. Authorization ends with its fictional grant revoked. This example explicitly records a new operator action; repeating a revoked action would not renew it. The example uses only the disposable repository and external store.
 
 ## Record the new explicit action and queue its work
 
@@ -22,23 +22,23 @@ const request = JSON.parse(readFileSync(join(directory, 'authorization.json'), '
 request.id = 'authorization-aaaaaaaaaaaaaaaa'
 writeFileSync(join(directory, 'queue-authorization.json'), JSON.stringify(request, null, 2))
 JS
-node "$WHOLELOOP_CLI" delivery authorize \
+wl delivery authorize \
   --file "$workspace_dir/queue-authorization.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json > "$workspace_dir/queue-grant.json"
-node "$WHOLELOOP_CLI" delivery track \
+wl delivery track \
   --run delivery-0123456789abcdef --revision 1 \
   --grant authorization-aaaaaaaaaaaaaaaa \
   --store "$workspace_dir/state" --json > "$workspace_dir/queue-tracked.json"
-node "$WHOLELOOP_CLI" delivery enqueue \
+wl delivery enqueue \
   --run delivery-0123456789abcdef --unit search --priority 10 \
   --store "$workspace_dir/state" --json > "$workspace_dir/builder-queued.json"
-node "$WHOLELOOP_CLI" delivery enqueue \
+wl delivery enqueue \
   --run delivery-0123456789abcdef --unit search --role verifier --cell title-search \
   --store "$workspace_dir/state" --json > "$workspace_dir/verifier-queued.json"
-node "$WHOLELOOP_CLI" delivery enqueue \
+wl delivery enqueue \
   --run delivery-0123456789abcdef --unit search --role verifier --cell title-search \
   --store "$workspace_dir/state" --json > "$workspace_dir/verifier-repeated.json"
-node "$WHOLELOOP_CLI" delivery queue \
+wl delivery queue \
   --run delivery-0123456789abcdef \
   --store "$workspace_dir/state" --json > "$workspace_dir/queue-status.json"
 node --input-type=module - "$workspace_dir" <<'JS'
@@ -71,7 +71,7 @@ A trusted controller must retain exact observed runtime identity and terminal ev
 
 ## Stopping point
 
-You have queued local metadata without launching a native model, backend, test application or remote operation. [Checkpoint and conservative ownership/effect recovery](./delivery-checkpoints.md) are now available. Persisted aggregate budgets, actual environments and full runner execution remain on [Phase 6](../../roadmap/phase-6-autonomous-delivery.md). [ADR-0097](../decisions/0097-durable-queue-reservations-and-current-attempt-fences.md) records the local coordination boundary. Retain the external tutorial directory for inspection; no manual or account acceptance is marked passed.
+You have queued local metadata without launching a native model, backend, test application or remote operation. [Checkpoint and conservative ownership/effect recovery](./delivery-checkpoints.md) are now available. [Budgets](./delivery-budgets.md), [environments](./delivery-environments.md) and the [runner](./delivery-runner.md) continue from here. [ADR-0097](../decisions/0097-durable-queue-reservations-and-current-attempt-fences.md) records the local coordination boundary. Retain the external tutorial directory for inspection; no manual or account acceptance is marked passed.
 
 <!-- docnav -->
 [◀ Delivery recovery](delivery-recovery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery checkpoints ▶](delivery-checkpoints.md)

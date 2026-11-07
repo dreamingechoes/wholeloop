@@ -7,7 +7,7 @@
 
 ## Before you start
 
-Complete the [queue tutorial](./delivery-queue.md) in the same Bash terminal. Keep WHOLELOOP_CLI and workspace_dir set. The example has a queued fictional run, a fresh active grant and no started attempt. All changes below affect only its external disposable store; no application source or personal configuration changes.
+Complete the [queue tutorial](./delivery-queue.md) in the same Bash terminal. Keep workspace_dir set. The example has a queued fictional run, a fresh active grant and no started attempt. All changes below affect only its external disposable store; no application source or personal configuration changes.
 
 ## Capture a checkpoint
 
@@ -29,10 +29,10 @@ const request = {
 }
 writeFileSync(join(directory, 'checkpoint.json'), JSON.stringify(request, null, 2))
 JS
-node "$WHOLELOOP_CLI" delivery checkpoint \
+wl delivery checkpoint \
   --run delivery-0123456789abcdef --file "$workspace_dir/checkpoint.json" \
   --root "$workspace_dir" --store "$workspace_dir/state" --json > "$workspace_dir/checkpoint-receipt.json"
-node "$WHOLELOOP_CLI" delivery checkpoints \
+wl delivery checkpoints \
   --run delivery-0123456789abcdef \
   --store "$workspace_dir/state" --json > "$workspace_dir/checkpoints-current.json"
 ```
@@ -43,10 +43,10 @@ Expect one current checkpoint with exact path/hash/size bindings and no executio
 
 ```bash
 printf 'Changed checkpoint input.\n' > "$workspace_dir/state/delivery/artifacts/probe.txt"
-node "$WHOLELOOP_CLI" delivery checkpoints \
+wl delivery checkpoints \
   --run delivery-0123456789abcdef \
   --store "$workspace_dir/state" --json > "$workspace_dir/checkpoints-stale.json"
-if node "$WHOLELOOP_CLI" delivery recover \
+if wl delivery recover \
   --run delivery-0123456789abcdef --resume \
   --store "$workspace_dir/state" --json > "$workspace_dir/recovery-refused.json"; then
   echo 'Expected stale inputs to refuse resume' >&2
@@ -56,13 +56,13 @@ else
   test "$result_code" -eq 3
 fi
 printf 'Original checkpoint input.\n' > "$workspace_dir/state/delivery/artifacts/probe.txt"
-node "$WHOLELOOP_CLI" delivery recover \
+wl delivery recover \
   --run delivery-0123456789abcdef --resume \
   --store "$workspace_dir/state" --json > "$workspace_dir/recovery-ready.json"
-node "$WHOLELOOP_CLI" delivery effects \
+wl delivery effects \
   --run delivery-0123456789abcdef \
   --store "$workspace_dir/state" --json > "$workspace_dir/retained-effects.json"
-node "$WHOLELOOP_CLI" delivery lock-status \
+wl delivery lock-status \
   --store "$workspace_dir/state" --json > "$workspace_dir/writer-lock.json"
 node --input-type=module - "$workspace_dir" <<'JS'
 import { readFileSync } from 'node:fs'

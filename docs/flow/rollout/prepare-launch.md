@@ -3,7 +3,7 @@
 > **TL;DR** — Turns a merged scope into a launch kit: a rollout plan, announcement drafts for every audience, dashboards built from the spec's measurement plan, and enablement material for the people who will answer questions about it. Everything is prepared; nothing is sent. A person reads, adjusts and sends.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local/core implementation includes pinned measurement inputs, loaded voice/templates, a read-only drafting host, complete local kits, exact-metric dashboard specs, handoffs and an intent-journaled draft/create publication boundary. Real per-CLI adapter no-send tests remain pending with P1 adapters/conformance; synthetic hosts do not satisfy that criterion. Authenticated provider execution and merge/flag observations remain owner verification. Tracked in [P4-01](../../../roadmap/phase-4-rollout-learn.md#p4-01--prepare-launch-and-the-launcher).
+> **Status: 🚧 partial.** The local/core implementation includes pinned measurement inputs, loaded voice/templates, a read-only drafting host, complete local kits, exact-metric dashboard specs, handoffs and an intent-journaled draft/create publication boundary. Real per-CLI adapter no-send tests remain pending with P1 adapters/conformance; synthetic hosts do not satisfy that criterion. Authenticated provider execution and merge/flag observations remain owner verification.
 
 ---
 

@@ -3,16 +3,18 @@
 > **TL;DR** — Pin a grounded UI journey, provision its application and reviewed browser image, then execute the case through the existing acceptance command. Wholeloop observes real MCP actions, UI checks, owned backend responses and bounded captures; screenshots alone cannot prove persistence.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The fixed host exercises actual isolated Chromium through private stdio MCP. The model-free evaluator observes a cosmetic UI failure, repaired persistence after restart and fresh context, private-control denial and stable-key reuse. Complete check evidence is recorded separately for P6-16. Native coding-client/model checks and independent Linux-controller acceptance remain separate.
+> **Status: ✅ implemented.** The fixed host exercises actual isolated Chromium through private stdio MCP. The model-free evaluator observes a cosmetic UI failure, repaired persistence after restart and fresh context, private-control denial and stable-key reuse. Native coding-client/model checks and independent Linux-controller acceptance remain separate.
+
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 ## Inspect the contract
 
-Use Node 22 or later for checkout development. The published CLI retains its Node 20 minimum. This command is inert and needs no Docker access or account:
+With the `wl` CLI ([getting started](../getting-started.md#install-the-cli)), this command is inert and needs no Docker access or account:
 
 ```bash
 set -euo pipefail
 npm run build
-node dist/wl.mjs delivery browser-schema --json
+wl delivery browser-schema --json
 ```
 
 The output includes the closed input schema, reviewed engine/tool bindings, architecture-specific immutable images and new exec/release schemas. It does not install, pull or start a browser. The reference is Playwright MCP 0.0.83 with its observed Playwright engine version; an arbitrary newer server is not silently accepted.

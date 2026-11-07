@@ -3,7 +3,9 @@
 > **TL;DR** — An original private grant can delegate a named decision under a pinned purpose-specific rubric. A trusted host records the exact evidence, a machine judgment and independent challenge. None-policy limitations block without a human prompt; fixture judgments grant no actual execution authority.
 
 > [!NOTE]
-> **Status: ✅ implemented.** P6-34 policy, private rubric pins, decision records, current-plan readers and no-prompt fallbacks pass complete macOS/Linux checks. The research host runs the research route on the synthetic transport; real native delivery and research trials remain open in P6-27 and P6-33. Policy preflight and synthetic host controls are not native-model certification. See [ADR-0112](../decisions/0112-private-delegation-and-independent-machine-decisions.md).
+> **Status: ✅ implemented.** The decision policy, private rubric pins, decision records, current-plan readers and no-prompt fallbacks pass complete macOS/Linux checks. The research host runs the research route on the synthetic transport; real native delivery and research trials remain open. Policy preflight and synthetic host controls are not native-model certification. See [ADR-0112](../decisions/0112-private-delegation-and-independent-machine-decisions.md).
+
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 ## Optional private attribution
 
@@ -27,16 +29,16 @@ Learning and ramp outcomes are assessments. They do not change flags, deploy, se
 
 The internal NativeDelegatedDecisionHost can now execute independent planner/challenger processes through the shared contained native transport. It passes only pinned decision inputs, retains exact basis/judgment bindings and derives identity from actual completed private purpose attempts. A bounded report contains decision claims; a separate trusted observer supplies evidence status and human-only prerequisites. Unknown outer findings/uncertainties cannot be silently omitted from a successful report.
 
-Purpose attempts consume the original evaluator budget and deadline, including under an original envelope without an invented implementation unit. They are consumed once before launch; ambiguous process closure or pre-launch controller loss holds capacity instead of replaying the call. Fixture provenance stays fixture-only. Run npm run eval:runner for a disposable synthetic process control; it uses no model/account and proves no native-model containment or actual acceptance. Fixed full-route wiring remains P6-10. See [ADR-0116](../decisions/0116-owned-native-decision-purpose-attempts.md).
+Purpose attempts consume the original evaluator budget and deadline, including under an original envelope without an invented implementation unit. They are consumed once before launch; ambiguous process closure or pre-launch controller loss holds capacity instead of replaying the call. Fixture provenance stays fixture-only. Run npm run eval:runner for a disposable synthetic process control; it uses no model/account and proves no native-model containment or actual acceptance. See [ADR-0116](../decisions/0116-owned-native-decision-purpose-attempts.md).
 
 ## Inspect the actual contracts
 
-From this source checkout, with development Node ≥ 22:
+With the `wl` CLI ([getting started](../getting-started.md#install-the-cli)):
 
 ```bash
 set -euo pipefail
 npm run build
-node dist/wl.mjs delivery decision-schema --json
+wl delivery decision-schema --json
 ```
 
 This opens no store and starts no model. The closed rubric defines its decision, purpose, named rules, permitted outcomes, owned unknown IDs, explicit defaults and finite timeout. The existing plan/envelope delegation binds its ref/sha256, required evidence IDs and fallback policy. The operator's original grant must explicitly include that decision ID too.
@@ -57,7 +59,7 @@ The runner attaches judgments to their actual stages. Initial unattended researc
 
 ## Run the complete model-free control
 
-From the source checkout, with Git installed and no service account:
+This control runs from a source checkout ([development guide](../contributing/development.md#build-from-source)), with Git installed and no service account:
 
 ```bash
 set -euo pipefail

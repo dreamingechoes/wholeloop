@@ -3,7 +3,7 @@
 > **TL;DR** — Builds each slice in its **own git worktree** on its own branch, so several builders work at once — even in the same repository — while your checkout stays exactly as you left it. Builders follow the skills and conventions your repository already has, and every slice runs [`verify-works`](./verify-works.md) then [`review-code`](./review-code.md) until both are green. Give it a scope, a slice, an issue URL or a one-line fix. It finishes at green: no push, no PR.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The worktree lifecycle, named bases, stacked branches, port reservations and explicit checkout opt-out are implemented with real Git fixtures. Repository-first preflights, explicit ad-hoc agreement, builder plans, revision-bound assumption decisions and bounded verify/review repair orchestration are implemented through a typed host with real temporary Git/stub-worker fixtures. The separate verify workflow executes real suites; shared gate inspection supplies private incremental review inputs. Actual live client workers/model behavior remain owner verification. Tracked in [P3-04](../../../roadmap/phase-3-build.md#p3-04--build-slice-and-the-builder).
+> **Status: 🚧 partial.** The worktree lifecycle, named bases, stacked branches, port reservations and explicit checkout opt-out are implemented with real Git fixtures. Repository-first preflights, explicit ad-hoc agreement, builder plans, revision-bound assumption decisions and bounded verify/review repair orchestration are implemented through a typed host with real temporary Git/stub-worker fixtures. The separate verify workflow executes real suites; shared gate inspection supplies private incremental review inputs. Actual live client workers/model behavior remain owner verification.
 
 ---
 

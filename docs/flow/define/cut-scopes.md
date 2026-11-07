@@ -3,7 +3,7 @@
 > **TL;DR** — Splits an approved spec into **scopes**: pieces you can release and measure independently. Often there is just one. Each scope gets a goal, the metrics it is responsible for, a delivery mode, a flag name and a simple/complex call, and can show up in your tracker too. Ends at the second **approve** decision point.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local plans validate metric/story ownership, create stable child scopes and tracker references atomically, and stop for revision-bound approval. Remote tracker execution and live challenger sessions remain manual conformance. Tracked in [P2-04](../../../roadmap/phase-2-define.md#p2-04--cut-scopes).
+> **Status: 🚧 partial.** Local plans validate metric/story ownership, create stable child scopes and tracker references atomically, and stop for revision-bound approval. Remote tracker execution and live challenger sessions remain manual conformance.
 
 Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
 
@@ -66,7 +66,7 @@ Every scope carries:
 ## Standalone use
 
 Begin with `wl step begin cut-scopes --input "Find past orders" --owner "Alex"
---json`. It creates an initiative for the child scopes without fabricating earlier steps. Supply `metricIds` or a reasoned `measurementException` in the plan. URL adoption is tracked separately in P2-08. Revisions target the initiative and reuse each scope's stable `key`; omitted scopes remain until explicitly closed.
+--json`. It creates an initiative for the child scopes without fabricating earlier steps. Supply `metricIds` or a reasoned `measurementException` in the plan. A shared document is adopted first with `wl adopt <URL>`. Revisions target the initiative and reuse each scope's stable `key`; omitted scopes remain until explicitly closed.
 
 `wl scopes plan --for <initiative> --json` returns the pinned spec reference, metric/story catalog, one suggested scope and batched delivery questions. Fill `wholeloop/scope-plan@1` YAML front matter using `wl scopes schema --json`, followed by Scope overview, Metric ownership, Delivery plan, Complexity and Open questions. A scope without metrics needs `measurementReason`; every scope needs a flag or `withoutFlagReason`, plus argued complexity. Read the returned `flags.naming` binding before drafting names.
 

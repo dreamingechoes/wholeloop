@@ -3,18 +3,18 @@
 > **TL;DR** — Pin the agreed cases before execution, preserve human/machine ownership and inspect coverage against the exact candidate. Artifact capture and sealed reports remain private, bounded and separate from publication permission.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Closed definitions, current-input evidence validation, typed reports, explicit human notes and immutable budgeted artifacts are implemented. The [fixed CLI/API host](./delivery-behaviors.md) adds actual execution in P6-15; [browser execution](./delivery-browsers.md) is available through P6-16; [private HTTP evaluation](./delivery-private-acceptance.md) adds observed regression sensitivity in P6-17. Normalized fixtures alone do not certify these capabilities.
+> **Status: ✅ implemented.** Closed definitions, current-input evidence validation, typed reports, explicit human notes and immutable budgeted artifacts are implemented. The [fixed CLI/API host](./delivery-behaviors.md) adds actual execution; [browser execution](./delivery-browsers.md) is available; [private HTTP evaluation](./delivery-private-acceptance.md) adds observed regression sensitivity. Normalized fixtures alone do not certify these capabilities.
 
 ## Before you start
 
-Build the checkout and set WHOLELOOP_CLI to the absolute dist/wl.mjs path. Complete the [delivery-planning tutorial](./delivery-plan.md) in the same Bash shell, retaining workspace_dir. This tour adds acceptance definitions to that disposable example. It needs Git and Node, with no Docker, model, grant or vendor account. The task application and proposed API below are fictional definition data, not discovered application behavior or an executed test.
+Install the CLI as in [getting started](../getting-started.md#install-the-cli). Complete the [delivery-planning tutorial](./delivery-plan.md) in the same Bash shell, retaining workspace_dir. This tour adds acceptance definitions to that disposable example. It needs Git and Node, with no Docker, model, grant or vendor account. The task application and proposed API below are fictional definition data, not discovered application behavior or an executed test.
 
 ## Inspect the contracts and pin a case
 
 ```bash
 set -euo pipefail
-node "$WHOLELOOP_CLI" delivery acceptance-schema --json
-node "$WHOLELOOP_CLI" delivery inspect-plan \
+wl delivery acceptance-schema --json
+wl delivery inspect-plan \
   --run delivery-0123456789abcdef --revision 1 \
   --store "$workspace_dir/state" --json > "$workspace_dir/delivery-receipt.json"
 node --input-type=module - "$workspace_dir" <<'JS'
@@ -58,7 +58,7 @@ const plan = {
 }
 writeFileSync(join(directory, 'acceptance.json'), JSON.stringify(plan, null, 2) + '\n')
 JS
-node "$WHOLELOOP_CLI" delivery acceptance-plan \
+wl delivery acceptance-plan \
   --file acceptance.json --root "$workspace_dir" \
   --store "$workspace_dir/state" --json > "$workspace_dir/acceptance-receipt.json"
 acceptance_digest="$(node --input-type=module - "$workspace_dir/acceptance-receipt.json" <<'JS'
@@ -66,7 +66,7 @@ import { readFileSync } from 'node:fs'
 console.log(JSON.parse(readFileSync(process.argv[2], 'utf8')).digest)
 JS
 )"
-node "$WHOLELOOP_CLI" delivery acceptance-inspect \
+wl delivery acceptance-inspect \
   --digest "$acceptance_digest" --store "$workspace_dir/state" --json
 printf 'Retained acceptance definitions: %s\n' "$workspace_dir"
 ```

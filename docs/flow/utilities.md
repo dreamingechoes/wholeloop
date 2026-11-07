@@ -3,7 +3,7 @@
 > **TL;DR** — The `next` skill orchestrates available steps until a decision; the terminal `wl next` returns the next core contract. `status` inspects stored work, `setup` selects scoped profile/destination preferences, and `sync` reconciles exact delivery evidence. None of these names implies automatic model calls or client authentication.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status`, `wl setup` and evidence-backed `wl sync` are implemented in [P1-12](../../roadmap/phase-1-walking-skeleton.md#p1-12--first-skills--next-status-setup-frame-problem). Generated client installation remains pending conformance. URL adoption and explicit shared publication are implemented locally in [P2-08](../../roadmap/phase-2-define.md#p2-08--adopt-from-a-url-publish-as-you-go), `sync` implementation/owner checks are tracked in [P4-06](../../roadmap/phase-4-rollout-learn.md#p4-06--sync).
+> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status`, `wl setup` and evidence-backed `wl sync` are implemented, as are URL adoption and explicit shared publication. Generated client installation and `sync` against hosted services still need native conformance.
 
 ---
 
@@ -20,7 +20,7 @@
 
 ## Available local commands
 
-Examples below use the core's `wl` shorthand. For a source build, invoke `node "$WHOLELOOP_CLI"` instead. In the native conversation select/request the installed `wl-...` skill; Antigravity uses `wl-agy-...`, and a separate Claude plugin uses `/wholeloop:...`. [Client setup](../platforms/local-onboarding.md) explains namespaces; the [core tour](../tutorials/local-core.md) demonstrates the terminal behavior.
+Examples below use the `wl` command from the npm package; from a source build, run `node /absolute/path/to/dist/wl.mjs` in its place. In the native conversation select/request the installed `wl-...` skill; Antigravity uses `wl-agy-...`, and a separate Claude plugin uses `/wholeloop:...`. [Client setup](../platforms/local-onboarding.md) explains namespaces; the [core tour](../tutorials/local-core.md) demonstrates the terminal behavior.
 
 ```text
 wl next "Find old orders faster" --owner Alex --json

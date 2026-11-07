@@ -3,7 +3,7 @@
 > **TL;DR** — A provider is a folder with a `provider.yml` and, optionally, a few short guidance files. The manifest says which capabilities it serves, how to detect it, how to connect it in each CLI, which tool fulfils each verb, and what to hand over when it is not available. Most providers are under fifty lines.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Schema, inheritance, package loading, inspection/scaffolding and tier-A MCP rendering are implemented. Client-owned MCP transport planning and reviewed bindings are implemented. Authenticated probes remain manual. Registry: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1); it is versioned (`schema: 1`) from day one.
+> **Status: 🚧 partial.** Schema, inheritance, package loading, inspection/scaffolding and tier-A MCP rendering are implemented. Client-owned MCP transport planning and reviewed bindings are implemented. Authenticated probes remain manual. The manifest format is versioned (`schema: 1`) from day one.
 
 ---
 
@@ -107,9 +107,9 @@ cat > "$MCP_INVENTORY_FILE" <<'JSON'
   }]
 }
 JSON
-node ./dist/wl.mjs provider plan posthog source.product-analytics.query \
+wl provider plan posthog source.product-analytics.query \
   --mcp "$MCP_INVENTORY_FILE" --json
-node ./dist/wl.mjs provider plan amplitude dashboards.create --json
+wl provider plan amplitude dashboards.create --json
 ```
 
 The first plan selects MCP with `effects: not-performed`. The second selects the native pending dashboard handoff. Only `mcp` and `native` transports exist: wholeloop has no service client of its own. The inventory must be a regular file under 64 KiB, with at most 256 unique tools. It contains no token, headers or credential fields; never write runtime metadata inside a repository. Wholeloop checks bounded metadata and operation identity; the client validates the actual arguments against the observed tool schema.

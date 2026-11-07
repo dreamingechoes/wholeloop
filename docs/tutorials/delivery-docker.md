@@ -5,6 +5,8 @@
 > [!NOTE]
 > **Status: 🚧 partial.** Owned provisioning, setup/readiness, isolated application networking, loopback publication and reinspection are implemented. The reference Docker trial passes on a macOS arm64 controller with a Linux arm64 daemon and on an independent Linux x86_64 host. Owned stop/reconciliation/retirement are also implemented. The complete unattended runner and native acceptance remain subsequent tasks.
 
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
+
 ## Requirements and costs
 
 Use a source checkout with development dependencies installed to run the evaluation. The bundled CLI supports the runtime commands separately. Docker must be available through a local Unix socket with permission to create disposable containers, local volumes and bridge networks. The reference daemon is Docker 29.9.2; required platform-manifest inspection and isolation controls must be observed on your engine. A version string alone is insufficient.
@@ -36,12 +38,12 @@ Omit --retire-success to retain successful fixture environments deliberately. Th
 
 ## Inspect contracts without Docker
 
-Set WHOLELOOP_CLI to the absolute built dist/wl.mjs path, as in the [planning guide](./delivery-environments.md).
+Use the `wl` CLI, as in the [planning guide](./delivery-environments.md).
 
 ```bash
 set -euo pipefail
-: "${WHOLELOOP_CLI:?Set WHOLELOOP_CLI to the absolute built CLI path}"
-node "$WHOLELOOP_CLI" delivery environment-runtime-schema --json | node --input-type=module -e '
+wl --version
+wl delivery environment-runtime-schema --json | node --input-type=module -e '
 import assert from "node:assert/strict"
 let text = ""
 for await (const chunk of process.stdin) text += chunk
@@ -110,7 +112,7 @@ Run npm run eval:runner-assembly-readiness -- --provision-owner --retire-success
 
 The internal environment producer records the original applied ready revision as a budgeted artifact only after reopening its successful native mutation outcomes, finished reads and preflight. Its consumed result and private artifact locator allow a fresh controller to recover the same input without another provision call. Missing locators, consumption, artifact bytes or native outcomes return unknown; exact restoration recovers the original proof without changing the journal.
 
-Run npm run eval:runner-assembly-readiness -- --producer-result --retire-success to exercise these controls inside the existing fixed-dispatch composition. It retains every original QA, acceptance, handoff and recovery assertion. A recorded-ready result remains historical-only after subsequent QA and exact retirement; current environment readiness, execution authority and semantic acceptance need their own observations. Automatic complete-route selection and public execution remain P6-10 work. See [ADR-0172](../decisions/0172-recorded-original-environment-inputs.md).
+Run npm run eval:runner-assembly-readiness -- --producer-result --retire-success to exercise these controls inside the existing fixed-dispatch composition. It retains every original QA, acceptance, handoff and recovery assertion. A recorded-ready result remains historical-only after subsequent QA and exact retirement; current environment readiness, execution authority and semantic acceptance need their own observations. See [ADR-0172](../decisions/0172-recorded-original-environment-inputs.md).
 
 ## Select product preparation inside dispatch
 
@@ -122,7 +124,7 @@ Run npm run eval:runner-assembly-readiness -- --product-environment --retire-suc
 
 A milestone can instead configure a helper image, a prepared template recipe, its static acceptance, data and gate-policy inputs, and repair owners. Dispatch then reads current unit QA, consumes an original production binding, assembles the exact vector through owned Git effects under the stage's original deadline and registration, re-roots the template at the assembled worktree and prepares the candidate before the selection above. Malformed coverage or inputs refuse before the first Git effect, a retained binding never assembles again, and stop can cancel in-flight assembly from the original locator after revocation.
 
-Run npm run eval:runner-assembly-readiness -- --product-production --retire-success for the composed control. It adds the dispatcher's own assembly, single registration and re-rooted recipe to every product-environment assertion. Runtime preflight and the public complete-route command remain P6-10 work. See [ADR-0175](../decisions/0175-original-milestone-product-production.md).
+Run npm run eval:runner-assembly-readiness -- --product-production --retire-success for the composed control. It adds the dispatcher's own assembly, single registration and re-rooted recipe to every product-environment assertion. See [ADR-0175](../decisions/0175-original-milestone-product-production.md).
 
 <!-- docnav -->
 [◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment stop and retirement ▶](delivery-lifecycle.md)

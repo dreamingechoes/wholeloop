@@ -7,12 +7,12 @@
 
 ## Inspect the contracts
 
-Use the built CLI from [source installation](../getting-started.md), or retain WHOLELOOP_CLI from the [budget tutorial](./delivery-budgets.md). This command reads bundled schemas; it needs no store, account, model or execution permission.
+Use the `wl` CLI ([getting started](../getting-started.md#install-the-cli)). This command reads bundled schemas; it needs no store, account, model or execution permission.
 
 ```bash
 set -euo pipefail
-: "${WHOLELOOP_CLI:?Set WHOLELOOP_CLI to the absolute built CLI path}"
-node "$WHOLELOOP_CLI" delivery worker-schema --json | node --input-type=module -e '
+wl --version
+wl delivery worker-schema --json | node --input-type=module -e '
 import assert from "node:assert/strict"
 let input = ""
 for await (const chunk of process.stdin) input += chunk

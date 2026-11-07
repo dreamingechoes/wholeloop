@@ -19,19 +19,13 @@
 | A terminal command stops instead of drafting/building | [Core versus skill](#next-returned-json-but-did-not-run-the-whole-flow) |
 | A script reports a nonzero exit | [Exit codes](#understand-exit-codes) |
 
-Examples use an absolute `WHOLELOOP_CLI` path. If it is not set, run the following from the wholeloop source checkout:
-
-```bash
-npm run build
-export WHOLELOOP_CLI="$PWD/dist/wl.mjs"
-node "$WHOLELOOP_CLI" --version
-```
+Examples use the `wl` command that `npm install --global wholeloop` provides. From a source build, use `node /absolute/path/to/dist/wl.mjs` in its place ([development guide](./contributing/development.md#use-the-source-build)).
 
 ## The shell cannot find wholeloop
 
-Managed installation writes native client components; it does not add a global `wl` command. Use `node "$WHOLELOOP_CLI" ...` from a source build. A shell variable also does not survive opening a new terminal: export the path again, or invoke the absolute bundle path directly.
+`wl` comes from the npm package, not from installing into a client: `wl install` writes native client components and adds no command. Install the package with `npm install --global wholeloop` and make sure npm's global `bin` directory (`npm prefix --global` followed by `/bin`) is on your `PATH`. With a version manager, the global packages belong to the active Node version, so switching versions can hide `wl`.
 
-If `dist/wl.mjs` is absent, build from the source checkout after `npm ci`. Development needs Node 22 or newer; the bundle supports Node 20 or newer. Do not confuse a native client's own runtime requirements with the bundle's minimum.
+From a source build, run `node /absolute/path/to/dist/wl.mjs`; a shell variable holding that path does not survive a new terminal. The CLI needs Node 20 or newer. Do not confuse a native client's own runtime requirements with the CLI's minimum.
 
 ## Files installed but the skill is missing
 
@@ -46,7 +40,7 @@ Do not install another copy repeatedly to resolve an unexplained discovery confl
 ## Doctor reports a failure or unknown
 
 ```bash
-node "$WHOLELOOP_CLI" doctor --target claude --json
+wl doctor --target claude --json
 ```
 
 Replace the target with your chosen client. Read the failed check's reason and suggested diagnostic/remedy. A missing executable, a failed version command, a store-write problem and stale artifacts are different issues. Doctor does not automatically repair them.
@@ -62,7 +56,7 @@ The recorded trials distinguish missing authentication, ineligible access, permi
 If you have an actual conformance run ID, set the variable to it and inspect only the retained diagnostic categories:
 
 ```bash
-node "$WHOLELOOP_CLI" conformance diagnose "$CONFORMANCE_RUN_ID" --json
+wl conformance diagnose "$CONFORMANCE_RUN_ID" --json
 ```
 
 Use the same external store as that run; explicitly store-bound conformance commands also accept `--store`. Diagnosis does not reveal raw prompts/tool arguments or fix the account. Inspect interrupted effects before making a fresh attempt. Upstream connection errors are not evidence that changing permission policy will help.
@@ -80,10 +74,10 @@ Check the actual initiative/slice ID, the store environment and the repository c
 After setting `INITIATIVE_ID` to the actual receipt ID:
 
 ```bash
-node "$WHOLELOOP_CLI" status --json
-node "$WHOLELOOP_CLI" status "$INITIATIVE_ID" --json
-node "$WHOLELOOP_CLI" state get "$INITIATIVE_ID" --json
-node "$WHOLELOOP_CLI" resume "$INITIATIVE_ID" --json
+wl status --json
+wl status "$INITIATIVE_ID" --json
+wl state get "$INITIATIVE_ID" --json
+wl resume "$INITIATIVE_ID" --json
 ```
 
 Status and resume do not consume messages or advance work. The [local core tour](./tutorials/local-core.md) intentionally uses an isolated store; its recovery command must retain that demo's state override. [State locations](./architecture/state-and-messaging.md).
@@ -124,7 +118,7 @@ Use [checkpoint and recovery inspection](./tutorials/delivery-checkpoints.md) to
 
 ## A public run stopped before dispatch
 
-`wl delivery run` reports its host preflight. `public-host-native-unbound` means the bindings document lists no client for a role the route needs; add an exact pinned binding and prepare a new request for that document. `public-host-native-runtime-unavailable` means every role is bound but no trusted runtime proof exists yet (P6-27). `runner-host-binding` means the request was prepared for a different bindings document. Use `wl delivery reconcile` to observe the run; nothing was dispatched.
+`wl delivery run` reports its host preflight. `public-host-native-unbound` means the bindings document lists no client for a role the route needs; add an exact pinned binding and prepare a new request for that document. `public-host-native-runtime-unavailable` means every role is bound but no trusted runtime proof exists yet. `runner-host-binding` means the request was prepared for a different bindings document. Use `wl delivery reconcile` to observe the run; nothing was dispatched.
 
 ## Docker environment unavailable or stale
 

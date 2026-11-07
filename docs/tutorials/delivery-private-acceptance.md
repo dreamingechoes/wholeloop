@@ -3,16 +3,18 @@
 > **TL;DR** — Pin private HTTP cases before the builder runs. Wholeloop mounts them only into the owned evaluator, executes the same definition on the actual base and candidate, and withholds regression acceptance until the relevant red/green result is observed.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The private host, immutable definitions, observed red/green comparison and aggregate guard pass unit and actual Docker verification, including native synthetic counters, missing mutation capability, port 80 and candidate invalidation. Complete platform check evidence is recorded separately for P6-17. Independent native-client/model and Linux-host acceptance remain separate.
+> **Status: ✅ implemented.** The private host, immutable definitions, observed red/green comparison and aggregate guard pass unit and actual Docker verification, including native synthetic counters, missing mutation capability, port 80 and candidate invalidation. Independent native-client/model and Linux-host acceptance remain separate.
+
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 ## Inspect the contract
 
-Use Node 22 or later for checkout development; the published CLI retains its Node 20 minimum. These commands inspect metadata without running Docker, a model or a mutator:
+With the `wl` CLI ([getting started](../getting-started.md#install-the-cli)), these commands inspect metadata without running Docker, a model or a mutator:
 
 ```bash
 set -euo pipefail
 npm run build
-node dist/wl.mjs delivery private-schema --json
+wl delivery private-schema --json
 ```
 
 The output contains six closed contracts and the embedded evaluator program digest. The evaluator is built into the CLI; users do not install esbuild or a universal mutation framework. Follow [delivery planning](./delivery-plan.md), [authorization](./delivery-authorization.md), [Docker setup](./delivery-docker.md) and [acceptance definitions](./delivery-acceptance.md) first.
@@ -47,8 +49,8 @@ From your shell, set task-specific paths to the actual operator directory and ex
 
 ```bash
 set -euo pipefail
-node dist/wl.mjs delivery private-plan --file "$private_case_file" --root "$operator_input_dir" --store "$delivery_store" --json
-node dist/wl.mjs delivery private-inspect --digest "$private_definition_digest" --store "$delivery_store" --json
+wl delivery private-plan --file "$private_case_file" --root "$operator_input_dir" --store "$delivery_store" --json
+wl delivery private-inspect --digest "$private_definition_digest" --store "$delivery_store" --json
 ```
 
 The preparation/inspection receipts expose identity and counts, never request bodies or expected values. Record the returned digest. Repeating the same preparation is idempotent; changing a pinned definition or preparing after builder admission is refused. A new accepted delivery revision is required to change it.
@@ -83,7 +85,7 @@ Write a bounded request containing the actual acceptance plan digest and observe
 
 ```bash
 set -euo pipefail
-node dist/wl.mjs delivery private-sensitivity --file "$sensitivity_request_file" --root "$operator_input_dir" --store "$delivery_store" --json
+wl delivery private-sensitivity --file "$sensitivity_request_file" --root "$operator_input_dir" --store "$delivery_store" --json
 ```
 
 This reads verified controller observations and dispatches nothing. Proven means only that the pinned relevant objective case failed on the observed clean Git base and passed on the latest current candidate with the same evaluator and comparable execution configuration. It does not mean that all semantic properties of the product are proven. Only implementation-script bytes and allocated controller paths may differ: fixture/guidance/package/tool bytes, images, commands, networks and limits stay fixed. Dirty/untracked baseline code, changed configuration, setup failures and stale candidates cannot supply red/green proof. Assertions outside the pinned relevant set are baseline controls: they must pass, so an unrelated existing failure cannot be used as the relevant mismatch. Add controls appropriate to the actual application rather than guessing health endpoints.

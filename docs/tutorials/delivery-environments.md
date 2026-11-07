@@ -3,11 +3,11 @@
 > **TL;DR** — Discover setup candidates, explicitly select their exact bytes into an isolated environment recipe and detect later changes. Preparation starts no container, script, model or network request.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Inert discovery, recipe validation and immutable external selection are implemented. [Owned Docker provisioning/readiness](./delivery-docker.md) is implemented separately; public retirement remains P6-13. This guide proves planning only.
+> **Status: 🚧 partial.** Inert discovery, recipe validation and immutable external selection are implemented. [Owned Docker provisioning/readiness](./delivery-docker.md) and its [retirement](./delivery-lifecycle.md) are implemented separately. This guide proves planning only.
 
 ## Prerequisites and stopping point
 
-Build wholeloop and set WHOLELOOP_CLI to the absolute dist/wl.mjs path. Node 20 or later and Bash suffice; Docker and service accounts are unnecessary. All demo files and runtime state stay in the printed temporary directory for inspection.
+Install the CLI as in [getting started](../getting-started.md#install-the-cli); Node 20 or later and Bash suffice; Docker and service accounts are unnecessary. All demo files and runtime state stay in the printed temporary directory for inspection.
 
 The example image digest is deliberately illustrative and is never resolved or pulled here. Before actual execution, select a real immutable image available to the chosen backend and prepare a new recipe. The architecture is a requested Linux arm64 environment, not an observation of your host.
 
@@ -15,7 +15,7 @@ The example image digest is deliberately illustrative and is never resolved or p
 
 ```bash
 set -euo pipefail
-: "${WHOLELOOP_CLI:?Set WHOLELOOP_CLI to the absolute built CLI path}"
+wl --version
 ENVIRONMENT_DEMO="$(mktemp -d "${TMPDIR:-/tmp}/wholeloop-environment.XXXXXX")"
 export ENVIRONMENT_DEMO
 node --input-type=module <<'JS'
@@ -58,12 +58,12 @@ const recipe = {
 }
 writeFileSync(join(root, 'recipe.json'), JSON.stringify(recipe))
 JS
-node "$WHOLELOOP_CLI" delivery environment-schema --json > "$ENVIRONMENT_DEMO/schema.json"
-node "$WHOLELOOP_CLI" delivery environment-discover --root "$ENVIRONMENT_DEMO/app" --json > "$ENVIRONMENT_DEMO/discovery.json"
-node "$WHOLELOOP_CLI" delivery environment-plan --root "$ENVIRONMENT_DEMO/app" --file recipe.json --store "$ENVIRONMENT_DEMO/store" --json > "$ENVIRONMENT_DEMO/prepared.json"
-node "$WHOLELOOP_CLI" delivery environment-plan --root "$ENVIRONMENT_DEMO/app" --file recipe.json --store "$ENVIRONMENT_DEMO/store" --json > "$ENVIRONMENT_DEMO/repeated.json"
+wl delivery environment-schema --json > "$ENVIRONMENT_DEMO/schema.json"
+wl delivery environment-discover --root "$ENVIRONMENT_DEMO/app" --json > "$ENVIRONMENT_DEMO/discovery.json"
+wl delivery environment-plan --root "$ENVIRONMENT_DEMO/app" --file recipe.json --store "$ENVIRONMENT_DEMO/store" --json > "$ENVIRONMENT_DEMO/prepared.json"
+wl delivery environment-plan --root "$ENVIRONMENT_DEMO/app" --file recipe.json --store "$ENVIRONMENT_DEMO/store" --json > "$ENVIRONMENT_DEMO/repeated.json"
 RECIPE_DIGEST="$(node --input-type=module -e 'import{readFileSync}from"node:fs";console.log(JSON.parse(readFileSync(process.argv[1],"utf8")).digest)' "$ENVIRONMENT_DEMO/prepared.json")"
-node "$WHOLELOOP_CLI" delivery environment-inspect --digest "$RECIPE_DIGEST" --store "$ENVIRONMENT_DEMO/store" --json > "$ENVIRONMENT_DEMO/current.json"
+wl delivery environment-inspect --digest "$RECIPE_DIGEST" --store "$ENVIRONMENT_DEMO/store" --json > "$ENVIRONMENT_DEMO/current.json"
 node --input-type=module <<'JS'
 import assert from 'node:assert/strict'
 import {readFileSync, appendFileSync} from 'node:fs'
@@ -77,7 +77,7 @@ assert.equal(read('current.json').inputs, 'current')
 assert.equal(read('current.json').readiness, 'not-observed')
 appendFileSync(join(process.env.ENVIRONMENT_DEMO, 'app/app.cjs'), '// Changed after selection.\n')
 JS
-node "$WHOLELOOP_CLI" delivery environment-inspect --digest "$RECIPE_DIGEST" --store "$ENVIRONMENT_DEMO/store" --json > "$ENVIRONMENT_DEMO/changed.json"
+wl delivery environment-inspect --digest "$RECIPE_DIGEST" --store "$ENVIRONMENT_DEMO/store" --json > "$ENVIRONMENT_DEMO/changed.json"
 node --input-type=module <<'JS'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'

@@ -5,19 +5,21 @@
 > [!NOTE]
 > **Status: ✅ implemented.** Closed requests, private cancellation, observed stop, partial recovery and explicit Docker retirement are implemented. Actual reference observations cover this macOS arm64 controller/Linux aarch64 daemon. Independent Linux-host and native-client acceptance remain open.
 
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
+
 ## Prerequisites
 
-Use an environment created through the [Docker guide](./delivery-docker.md), its external store, and the same trusted local Docker daemon. Set WHOLELOOP_CLI to the absolute built dist/wl.mjs path. The operator controls these commands; they are absent from worker broker permissions. A stopped run needs no renewed execution grant to shut down its exact owned resources.
+Use an environment created through the [Docker guide](./delivery-docker.md), its external store, and the same trusted local Docker daemon. The operator controls these commands; they are absent from worker broker permissions. A stopped run needs no renewed execution grant to shut down its exact owned resources.
 
 The lifecycle needs POSIX ps with numeric pid/pgid output. A missing or denied process-table observation produces unknown and retains resources rather than guessing that a caller has stopped. No additional npm dependency is needed.
 
 ## Inspect the closed contracts without Docker
 
-From the repository root, with WHOLELOOP_CLI already set:
+From the repository root:
 
 ```bash
 set -euo pipefail
-node "$WHOLELOOP_CLI" delivery environment-lifecycle-schema --json
+wl delivery environment-lifecycle-schema --json
 ```
 
 The result is wholeloop/environment-lifecycle-schema@1, four closed contracts and executed: false. This command performs no backend operation. The schema-only instruction is suitable for an offline shell; the following procedure requires an actual owned environment.
@@ -30,7 +32,7 @@ Set STORE to its absolute external store path and ENVIRONMENT_ID to the recorded
 set -euo pipefail
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/wholeloop-lifecycle.XXXXXX")"
 export WORK ENVIRONMENT_ID
-node "$WHOLELOOP_CLI" delivery environment-status \
+wl delivery environment-status \
   --environment "$ENVIRONMENT_ID" --store "$STORE" --json > "$WORK/status.json"
 node --input-type=module <<'JS'
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -48,7 +50,7 @@ const request = {
 }
 writeFileSync(join(work, 'stop.json'), JSON.stringify(request, null, 2) + '\n')
 JS
-node "$WHOLELOOP_CLI" delivery environment-stop --root "$WORK" \
+wl delivery environment-stop --root "$WORK" \
   --file stop.json --store "$STORE" --json > "$WORK/stop-receipt.json"
 ```
 

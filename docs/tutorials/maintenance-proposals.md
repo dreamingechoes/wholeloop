@@ -7,7 +7,7 @@
 
 ## Before you start
 
-Build the checkout following the [development guide](../contributing/development.md#use-the-source-build), keeping WHOLELOOP_CLI set to the absolute dist/wl.mjs path. The Bash commands below create a disposable Git repository and a separate external store. They do not change your project or personal store.
+Install the CLI as in [getting started](../getting-started.md#install-the-cli). The Bash commands below create a disposable Git repository and a separate external store. They do not change your project or personal store.
 
 ## Inspect and propose
 
@@ -49,12 +49,12 @@ cat > proposal.json <<'EOF'
   "risks": ["Readers of the old note need the archived behavior."]
 }
 EOF
-node "$WHOLELOOP_CLI" maintenance inspect --file inspection.json --json
-node "$WHOLELOOP_CLI" maintenance propose \
+wl maintenance inspect --file inspection.json --json
+wl maintenance propose \
   --inspection inspection.json --file proposal.json --store state --json
-node "$WHOLELOOP_CLI" maintenance propose \
+wl maintenance propose \
   --inspection inspection.json --file proposal.json --store state --json
-node "$WHOLELOOP_CLI" maintenance proposals --store state --json
+wl maintenance proposals --store state --json
 printf 'Retained tutorial files: %s\n' "$workspace_dir"
 ```
 
@@ -78,9 +78,9 @@ cat > envelope.json <<'EOF'
   "endpoint": "local-handoff"
 }
 EOF
-node "$WHOLELOOP_CLI" maintenance admit \
+wl maintenance admit \
   --envelope envelope.json --inspections inspections.json --store state --json
-node "$WHOLELOOP_CLI" maintenance admit \
+wl maintenance admit \
   --envelope envelope.json --inspections inspections.json --store state --json
 ```
 

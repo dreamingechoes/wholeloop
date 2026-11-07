@@ -1,6 +1,6 @@
 # Autonomous delivery — expanded V1 design
 
-> **TL;DR** — The planned runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
+> **TL;DR** — The runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
 > **Status: 🚧 partial.** The expanded scope was accepted, and sequential implementation authorized, on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery and persistent finite budgets and role-bound worker/context contracts are implemented. Dedicated native-host contracts and owned Docker API/CLI/browser execution are also implemented. Actual native-model certification and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
@@ -25,7 +25,7 @@ The optional GitHub code-host feedback reader returns a complete bounded, bodyle
 
 ## Read the proposal
 
-The [specification index](../../roadmap/specifications/autonomous-delivery/README.md) links ten detailed chapters. The [Phase 6 roadmap](../../roadmap/phase-6-autonomous-delivery.md) tracks 38 tasks with dependencies, deliverables, acceptance criteria, test cases and documentation obligations.
+The [specification index](../../roadmap/specifications/autonomous-delivery/README.md) links ten detailed chapters.
 
 ## Available now: request intake
 
@@ -62,7 +62,7 @@ Repository guidance reaches workers only through plan pins: `wl delivery guidanc
 
 Endpoint and intervention are independent. A research-only grant does not permit code changes, and an unattended PR run does not permit merge. The owner can delegate the supported decisions once under an exact plan or bounded request envelope; each machine decision retains its policy and evidence basis.
 
-The [runner controls](../tutorials/delivery-runner.md) now expose immutable preparation, current route/ownership inspection and explicit pause/resume/stop. The internal engine retains stage intents, private native cancellation and checkpoint recovery; fixed complete-route domain-host wiring remains P6-10 work. These controls alone execute no model and certify no endpoint.
+The [runner controls](../tutorials/delivery-runner.md) now expose immutable preparation, current route/ownership inspection and explicit pause/resume/stop. The internal engine retains stage intents, private native cancellation and checkpoint recovery, and the public run and reconcile commands wire them to a fixed host; native stages join it only with trusted runtime proof. These controls alone execute no model and certify no endpoint.
 
 Zero intervention means no later ask-user tool, human decision wait or interactive approval prompt. The runner resolves an authorized ambiguity or returns a terminal limitation when a prerequisite cannot be met. It does not bypass native permissions or repository protections.
 
@@ -74,7 +74,7 @@ The accepted [planning decision](../decisions/0092-expanded-v1-autonomous-delive
 
 ## Accepted implementation scope
 
-This scope is accepted, with authorization for pragmatic implementation decisions, passing tests, docs and incremental commits without waiting for manual checks or further signals. Implemented intake evidence is recorded in Phase 6; later capability acceptance remains pending. No cloud platform, marketplace, vendor API expansion or actual production operation is included.
+This scope is accepted, with authorization for pragmatic implementation decisions, passing tests, docs and incremental commits without waiting for manual checks or further signals. Native capability acceptance remains pending. No cloud platform, marketplace, vendor API expansion or actual production operation is included.
 
 <!-- docnav -->
 [◀ Architecture](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Expanded delivery acceptance ▶](../reference/delivery-acceptance.md)

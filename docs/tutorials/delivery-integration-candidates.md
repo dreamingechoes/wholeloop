@@ -5,14 +5,16 @@
 > [!NOTE]
 > **Status: ✅ implemented.** Closed candidate preparation, immutable external records, current inspection and conservative comparison are implemented. These operations grant no execution/publication authority and establish no passing acceptance. See [ADR-0109](../decisions/0109-exact-read-only-integrated-milestone-candidates.md).
 
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
+
 ## Prerequisites and stopping point
 
-Run from the source repository with Node ≥ 22 and Git supporting canonical --path-format=absolute metadata; the bundled CLI retains its Node 20 runtime minimum. Prepare an accepted [delivery plan](./delivery-plan.md), pinned [acceptance definitions](./delivery-acceptance.md), [environment recipes](./delivery-environments.md), and separate clean registered topic and assembly worktrees. Select a code milestone whose required work has committed revisions. Research-only work does not have a code assembly candidate.
+Use the `wl` CLI and Git supporting canonical --path-format=absolute metadata. Prepare an accepted [delivery plan](./delivery-plan.md), pinned [acceptance definitions](./delivery-acceptance.md), [environment recipes](./delivery-environments.md), and separate clean registered topic and assembly worktrees. Select a code milestone whose required work has committed revisions. Research-only work does not have a code assembly candidate.
 
 ```bash
 set -euo pipefail
 npm run build
-node dist/wl.mjs delivery integration-schema --json
+wl delivery integration-schema --json
 ```
 
 This inert command returns the complete request, candidate and stored-record schemas. It neither opens a store nor changes Git. Preparation stops at a read-only observed proposal; the candidate explicitly records execution and publication as not-performed, acceptance as not-established and authority as not-granted.
@@ -41,9 +43,9 @@ Set the shell variables to your actual operator input directory, JSON file and e
 
 ```bash
 set -euo pipefail
-node dist/wl.mjs delivery integration-candidate --file "$integration_request_file" --root "$operator_input_dir" --store "$delivery_store" --json
-node dist/wl.mjs delivery integration-inspect --digest "$integration_candidate_digest" --store "$delivery_store" --json
-node dist/wl.mjs delivery integration-compare --before "$previous_integration_digest" --after "$integration_candidate_digest" --store "$delivery_store" --json
+wl delivery integration-candidate --file "$integration_request_file" --root "$operator_input_dir" --store "$delivery_store" --json
+wl delivery integration-inspect --digest "$integration_candidate_digest" --store "$delivery_store" --json
+wl delivery integration-compare --before "$previous_integration_digest" --after "$integration_candidate_digest" --store "$delivery_store" --json
 ```
 
 Retain the digest returned by preparation before running inspection. Identical complete requests normalize to the same immutable record. Records live under delivery/integration-candidates in the external store and remain readable across fresh processes. Inspection rechecks current Git, target bases and protected input bytes. A stale inspection or blocked preparation exits 3; preserve its typed reason. In particular, target-base-advanced requires a newly authorized plan basis rather than an implicit rebase.

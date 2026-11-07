@@ -3,7 +3,7 @@
 > **TL;DR** — At each checkpoint — launch, day 7, day 30 by default — it runs the measurement plan the spec pinned, against the sources that plan names, and lays every result beside its target with a verdict. It adds what people are saying, and it never fills a gap with a guess: a number it couldn't read is reported as missing. The outcome is the evidence `decide-next` needs.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local checkpoint planning, exact normalized reads, grounded arithmetic, qualitative quotes, repository-guided layouts and explicit draft/document-note dispatch are fixture-tested. Real clients, source semantics and publication remain owner verification. Tracked in [P4-03](../../../roadmap/phase-4-rollout-learn.md#p4-03--measure-impact-and-the-analyst).
+> **Status: 🚧 partial.** Local checkpoint planning, exact normalized reads, grounded arithmetic, qualitative quotes, repository-guided layouts and explicit draft/document-note dispatch are fixture-tested. Real clients, source semantics and publication remain owner verification.
 
 ---
 

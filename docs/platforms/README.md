@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain manual verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are verified in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike). Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/private acquisition are implemented; disabled nightly automation is implemented, while maintainer activation and actual native/service checks remain pending.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain manual verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are not yet verified against the client. Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/private acquisition are implemented; disabled nightly automation is implemented, while maintainer activation and actual native/service checks remain pending.
 
 ---
 
@@ -17,7 +17,7 @@
 
 ## Expanded delivery protocol boundary
 
-[Delivery workers](../tutorials/delivery-workers.md) now have exact fresh assignments, bounded role contexts and separate controller execution observations. This is a tested local protocol boundary, not a new native capability certification. P6-09 adds dedicated pinned Claude/Codex reference transports, actual synthetic-process execution and seven-target capability/denial handling. It requires separate observed runtime proof; other expanded targets remain unverified. Actual native/tool/filesystem conformance remains P6-12/P6-27. Existing native successes, failures and service-unverified integrations below retain their original scope.
+[Delivery workers](../tutorials/delivery-workers.md) now have exact fresh assignments, bounded role contexts and separate controller execution observations. This is a tested local protocol boundary, not a new native capability certification. Dedicated pinned Claude/Codex reference transports add actual synthetic-process execution and seven-target capability/denial handling. It requires separate observed runtime proof; other expanded targets remain unverified. Actual native/tool/filesystem conformance still needs signed-in native clients. Existing native successes, failures and service-unverified integrations below retain their original scope.
 
 ## Tiers
 
@@ -75,7 +75,7 @@ Rows distinguish requested pins, actually observed versions, simulation/live pro
 
 Regression candidates need a fresh native PASS on the pinned version and a fresh native FAIL on a different latest version. Both processes must have succeeded at their exact observed versions, with identical core/source/scenario hashes and named missing/assertion codes. Launch/authentication failures and incomparable runs stay visible without becoming version-regression claims. Candidate keys are deterministic for later issue deduplication; this command sends no issue.
 
-Exit 4 identifies candidates (or invalid file/usage); inspect the versioned output. Exit 0 means rendering succeeded without candidates, including an entirely unrun matrix. It is not a conformance gate pass. Input is a regular non-symlink JSON file of at most 1 MiB, with at most one observation per target/channel and one entry per actual run. Scheduled collection, version resolution and issue automation remain P5-04 work. See [ADR-0059](../decisions/0059-conformance-observations-and-regression-candidates.md).
+Exit 4 identifies candidates (or invalid file/usage); inspect the versioned output. Exit 0 means rendering succeeded without candidates, including an entirely unrun matrix. It is not a conformance gate pass. Input is a regular non-symlink JSON file of at most 1 MiB, with at most one observation per target/channel and one entry per actual run. Scheduled collection, version resolution and issue automation need the maintainer to activate them. See [ADR-0059](../decisions/0059-conformance-observations-and-regression-candidates.md).
 
 ### Collect fresh observations
 
@@ -113,7 +113,7 @@ All selected binaries are checked before any fixture is created. Missing channel
 
 The result contains actual observation times, run IDs and structural reports, including the opaque initiative ID required for successful observations. It omits journal paths, draft contents and native stdout. Completed means the batch finished, not that it passed. Exit 4 identifies failed reports, 3 cancellation/preconditions, and zero completed collection without failures, including simulation. File/usage errors exit 4. Fixture mode refuses a native binary root; live requires one.
 
-The collector neither resolves moving versions nor installs/updates clients. Host scheduled activation and actual native/service checks remain separate P5-04 work. Native updaters and external effects still require manual inspection; a version probe does not attest every later internal executable. See [ADR-0070](../decisions/0070-explicit-fresh-conformance-collection.md).
+The collector neither resolves moving versions nor installs/updates clients. Scheduled activation on a host and actual native/service checks are separate maintainer steps. Native updaters and external effects still require manual inspection; a version probe does not attest every later internal executable. See [ADR-0070](../decisions/0070-explicit-fresh-conformance-collection.md).
 
 ### Draft and deliver structural regression issues
 
@@ -249,15 +249,15 @@ Codex agent files are installation overlays: loading a portable skill package al
 
 ## Installing
 
-For a focused source-built walkthrough, choose your client in [local client setup](./local-onboarding.md). Native activation and first-step checks stay separate from file installation.
+For a focused walkthrough, choose your client in [local client setup](./local-onboarding.md). Native activation and first-step checks stay separate from file installation.
 
-Use the built core for an explicit native overlay installation:
+Use the core for an explicit native overlay installation:
 
 ```text
-node dist/wl.mjs install --target all --scope user --dry-run --json
-node dist/wl.mjs install --target all --scope user --json
-node dist/wl.mjs doctor --json
-node dist/wl.mjs uninstall --target all --scope user --json
+wl install --target all --scope user --dry-run --json
+wl install --target all --scope user --json
+wl doctor --json
+wl uninstall --target all --scope user --json
 ```
 
 | Target | Personal root | Project root | Native guard binding |

@@ -7,21 +7,21 @@
 
 ## Before you start
 
-Complete the [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md) tutorials in the same Bash terminal. Keep WHOLELOOP_CLI and workspace_dir set. Authorization's last step revokes the fictional grant; this example deliberately retains that truthful observation. All example inputs and runtime files stay in the disposable external directory.
+Complete the [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md) tutorials in the same Bash terminal. Keep workspace_dir set. Authorization's last step revokes the fictional grant; this example deliberately retains that truthful observation. All example inputs and runtime files stay in the disposable external directory.
 
 ## Track and inspect the retained basis
 
 ```bash
 set -euo pipefail
 : "${workspace_dir:?Run the planning and authorization tutorials first}"
-node "$WHOLELOOP_CLI" delivery track \
+wl delivery track \
   --run delivery-0123456789abcdef --revision 1 \
   --grant authorization-0123456789abcdef \
   --store "$workspace_dir/state" --json > "$workspace_dir/tracked.json"
-node "$WHOLELOOP_CLI" delivery status \
+wl delivery status \
   --run delivery-0123456789abcdef \
   --store "$workspace_dir/state" --json > "$workspace_dir/status.json"
-node "$WHOLELOOP_CLI" delivery events \
+wl delivery events \
   --run delivery-0123456789abcdef --limit 1 \
   --store "$workspace_dir/state" --json > "$workspace_dir/events.json"
 ```
@@ -46,12 +46,12 @@ if (tracked.state.digest !== status.state.digest || status.state.grant.status !=
 const cache = join(directory, 'state/delivery/state/delivery-0123456789abcdef.json')
 renameSync(cache, cache + '.retained')
 JS
-node "$WHOLELOOP_CLI" delivery status \
+wl delivery status \
   --run delivery-0123456789abcdef \
   --store "$workspace_dir/state" --json > "$workspace_dir/missing-cache.json"
-node "$WHOLELOOP_CLI" delivery rebuild \
+wl delivery rebuild \
   --store "$workspace_dir/state" --json > "$workspace_dir/rebuilt.json"
-node "$WHOLELOOP_CLI" delivery rebuild \
+wl delivery rebuild \
   --store "$workspace_dir/state" --json > "$workspace_dir/repeated-rebuild.json"
 node --input-type=module - "$workspace_dir" <<'JS'
 import { readFileSync } from 'node:fs'

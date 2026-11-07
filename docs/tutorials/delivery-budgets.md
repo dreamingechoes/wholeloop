@@ -7,7 +7,7 @@
 
 ## Before you start
 
-Complete the [checkpoint tutorial](./delivery-checkpoints.md) in the same Bash terminal. Keep WHOLELOOP_CLI and workspace_dir set. That fictional run has an active grant and no admitted worker or issued effect. The commands below affect only its disposable external store.
+Complete the [checkpoint tutorial](./delivery-checkpoints.md) in the same Bash terminal. Keep workspace_dir set. That fictional run has an active grant and no admitted worker or issued effect. The commands below affect only its disposable external store.
 
 ## Configure advisory usage
 
@@ -16,7 +16,7 @@ Constraints are optional, immutable and bound to the exact observed grant/plan b
 ```bash
 set -euo pipefail
 : "${workspace_dir:?Run the checkpoint tutorial first}"
-node "$WHOLELOOP_CLI" delivery status \
+wl delivery status \
   --run delivery-0123456789abcdef --store "$workspace_dir/state" \
   --json > "$workspace_dir/budget-state.json"
 node --input-type=module - "$workspace_dir" <<'JS'
@@ -30,7 +30,7 @@ writeFileSync(join(directory, 'constraints.json'), JSON.stringify({
   requirements: { tokens: { limit: 10000, mode: 'advisory' } }
 }, null, 2))
 JS
-node "$WHOLELOOP_CLI" delivery budget-configure \
+wl delivery budget-configure \
   --file "$workspace_dir/constraints.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json > "$workspace_dir/budget-configured.json"
 ```
@@ -43,15 +43,15 @@ The first actual admission or artifact capture starts the run budget. Artifact c
 
 ```bash
 printf 'Observed local fixture evidence.\n' > "$workspace_dir/evidence.bin"
-node "$WHOLELOOP_CLI" delivery artifact \
+wl delivery artifact \
   --run delivery-0123456789abcdef --file "$workspace_dir/evidence.bin" \
   --root "$workspace_dir" --store "$workspace_dir/state" \
   --json > "$workspace_dir/artifact-first.json"
-node "$WHOLELOOP_CLI" delivery artifact \
+wl delivery artifact \
   --run delivery-0123456789abcdef --file "$workspace_dir/evidence.bin" \
   --root "$workspace_dir" --store "$workspace_dir/state" \
   --json > "$workspace_dir/artifact-again.json"
-node "$WHOLELOOP_CLI" delivery budget \
+wl delivery budget \
   --run delivery-0123456789abcdef --store "$workspace_dir/state" \
   --json > "$workspace_dir/budget-report.json"
 node --input-type=module - "$workspace_dir" <<'JS'

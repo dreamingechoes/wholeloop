@@ -9,16 +9,13 @@
 
 For the shortest complete route, start with [getting started](../getting-started.md), then [your first framing](../tutorials/first-framing.md). This page is the target-specific reference. Use [troubleshooting](../troubleshooting.md) for a missing executable/skill, ownership conflict or native permission failure.
 
-From the wholeloop checkout, with development Node 22 or newer:
+Install the CLI first ([getting started](../getting-started.md#install-the-cli)) and check it:
 
 ```bash
-npm ci
-npm run build
-export WHOLELOOP_CLI="$PWD/dist/wl.mjs"
-node "$WHOLELOOP_CLI" --version
+wl --version
 ```
 
-Keep this absolute executable path when changing into the project you want to work on. The examples below use user scope; project scope writes native components inside the current project, so run that variant from the intended disposable project. All runtime state/ownership/backups stay in the external store.
+The examples below use user scope; project scope writes native components inside the current project, so run that variant from the intended disposable project. All runtime state/ownership/backups stay in the external store.
 
 Run npm run check for the complete local suite, including offline package installation. The bundled CLI supports runtime Node 20 or newer; individual native clients have their own requirements. Installation does not install the native CLI, change general settings/MCP credentials or start a model.
 
@@ -37,9 +34,9 @@ Choose the section for your client. Select the same explicit target in doctor; i
 ## Claude Code
 
 ```bash
-node "$WHOLELOOP_CLI" install --target claude --scope user --dry-run --json
-node "$WHOLELOOP_CLI" install --target claude --scope user --json
-node "$WHOLELOOP_CLI" doctor --target claude --json
+wl install --target claude --scope user --dry-run --json
+wl install --target claude --scope user --json
+wl doctor --target claude --json
 ```
 
 Managed loose components use wl-prefixed names under .claude, or the absolute CLAUDE_CONFIG_DIR override. Restart Claude and request the wl-frame-problem skill in the intended project. Inspect role discovery and the scoped guard transport; read-only/native permission behavior remains an actual-client check.
@@ -53,9 +50,9 @@ Standalone generated plugins use the wholeloop namespace instead. For that deliv
 The [automatic native trial](../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22) passed standalone framing on Codex 0.163.0. That structural result does not replace the permission/hook spike, other steps or a different client's acceptance.
 
 ```bash
-node "$WHOLELOOP_CLI" install --target codex --scope user --dry-run --json
-node "$WHOLELOOP_CLI" install --target codex --scope user --json
-node "$WHOLELOOP_CLI" doctor --target codex --json
+wl install --target codex --scope user --dry-run --json
+wl install --target codex --scope user --json
+wl doctor --target codex --json
 ```
 
 Skills use .agents/skills; native roles use CODEX_HOME/agents or .codex/agents. Restart Codex and select $wl-frame-problem in the intended project. A portable plugin is skills-only and does not establish native TOML agent loading. Native roles inherit parent permissions; do not infer read-only isolation from a role name. The checked headless recipe is a separate execution boundary.
@@ -65,9 +62,9 @@ Inspect the returned per-repository Git fallback command before activating it. G
 ## OpenCode
 
 ```bash
-node "$WHOLELOOP_CLI" install --target opencode --scope user --dry-run --json
-node "$WHOLELOOP_CLI" install --target opencode --scope user --json
-node "$WHOLELOOP_CLI" doctor --target opencode --json
+wl install --target opencode --scope user --dry-run --json
+wl install --target opencode --scope user --json
+wl doctor --target opencode --json
 ```
 
 User components use the XDG opencode root or absolute OPENCODE_CONFIG_DIR. Project scope uses .opencode, including its dedicated wholeloop.js guard plugin. Restart OpenCode, request wl-frame-problem and verify skills/roles plus plugin activation. Existing unrelated native configuration is retained; actual permission and compatible-skill precedence remain manual checks.
@@ -79,9 +76,9 @@ The headless observer has its own deny-default permissions and fresh agent; it d
 ## Copilot
 
 ```bash
-node "$WHOLELOOP_CLI" install --target copilot --scope user --dry-run --json
-node "$WHOLELOOP_CLI" install --target copilot --scope user --json
-node "$WHOLELOOP_CLI" doctor --target copilot --json
+wl install --target copilot --scope user --dry-run --json
+wl install --target copilot --scope user --json
+wl doctor --target copilot --json
 ```
 
 User components use COPILOT_HOME or .copilot; project scope uses .github with native .agent.md roles and a dedicated hooks/wholeloop.json binding. Restart Copilot and request wl-frame-problem. Check native role/tool selection and actual hook activation instead of treating copied files as a native conformance pass.
@@ -91,9 +88,9 @@ MCP detection observes declarations only. Review rendered recipes and configure 
 ## Gemini
 
 ```bash
-node "$WHOLELOOP_CLI" install --target gemini --scope user --dry-run --json
-node "$WHOLELOOP_CLI" install --target gemini --scope user --json
-node "$WHOLELOOP_CLI" doctor --target gemini --json
+wl install --target gemini --scope user --dry-run --json
+wl install --target gemini --scope user --json
+wl doctor --target gemini --json
 ```
 
 GEMINI_CLI_HOME overrides the home containing .gemini, rather than the .gemini folder itself. Managed overlays provide .gemini/skills and agents. Native preview agent enablement, trust and authentication are explicit client setup. Restart, request wl-frame-problem and verify discovery/inheritance. Questions fall back to exact plain-text options when structured questions are unavailable.
@@ -101,7 +98,7 @@ GEMINI_CLI_HOME overrides the home containing .gemini, rather than the .gemini f
 For the separate extension delivery route:
 
 ```bash
-node "$WHOLELOOP_CLI" build --target gemini --out /tmp/wholeloop-gemini --json
+wl build --target gemini --out /tmp/wholeloop-gemini --json
 ```
 
 Explicit native linking/installation activates that extension; merely writing it does not. Generated extensions bind their BeforeTool root through native environment data. Loose overlays use the returned Git fallback command. Actual model, permission and MCP checks remain open. The headless observer uses a private positive core-tool registry and refuses existing managed system settings; it preserves native trust/authentication. See [Gemini boundaries](./README.md#gemini-extension-and-native-overlays).
@@ -109,9 +106,9 @@ Explicit native linking/installation activates that extension; merely writing it
 ## Antigravity
 
 ```bash
-node "$WHOLELOOP_CLI" install --target antigravity --scope user --dry-run --json
-node "$WHOLELOOP_CLI" install --target antigravity --scope user --json
-node "$WHOLELOOP_CLI" doctor --target antigravity --json
+wl install --target antigravity --scope user --dry-run --json
+wl install --target antigravity --scope user --json
+wl doctor --target antigravity --json
 ```
 
 User scope uses .gemini/antigravity-cli/plugins/wholeloop. Native skills/agents use wl-agy- to coexist with Codex. Restart agy, request wl-agy-frame-problem and verify the native plugin, inherited roles and named hooks. Listing/version probes do not establish discovery, tool isolation or authentication.
@@ -121,9 +118,9 @@ Project scope uses .agents and requires hooks.json to be absent or already owned
 ## Cursor
 
 ```bash
-node "$WHOLELOOP_CLI" install --target cursor --scope user --dry-run --json
-node "$WHOLELOOP_CLI" install --target cursor --scope user --json
-node "$WHOLELOOP_CLI" doctor --target cursor --json
+wl install --target cursor --scope user --dry-run --json
+wl install --target cursor --scope user --json
+wl doctor --target cursor --json
 ```
 
 Managed installation provides .cursor skills/agents, an opt-in rule and preToolUse hooks. Existing shared hooks.json is refused; unrelated rules remain untouched. Restart agent, request wl-frame-problem and verify inherited roles/readonly plus native hook activation. Pure hook validators and version probes are narrower evidence than a real model/permission check.
@@ -131,7 +128,7 @@ Managed installation provides .cursor skills/agents, an opt-in rule and preToolU
 Optional standalone native plugin launch requires explicit root environment data:
 
 ```bash
-node "$WHOLELOOP_CLI" build --target cursor --out /tmp/wholeloop-cursor --json
+wl build --target cursor --out /tmp/wholeloop-cursor --json
 CURSOR_PLUGIN_ROOT=/tmp/wholeloop-cursor agent --plugin-dir /tmp/wholeloop-cursor
 ```
 
@@ -146,8 +143,8 @@ The disposable framing runner supports every target. Prepare with the exact obse
 For removal, use the same named target, scope and external store used to install:
 
 ```bash
-node "$WHOLELOOP_CLI" uninstall --target codex --scope user --dry-run --json
-node "$WHOLELOOP_CLI" uninstall --target codex --scope user --json
+wl uninstall --target codex --scope user --dry-run --json
+wl uninstall --target codex --scope user --json
 ```
 
 Replace codex with your selected target. Existing edits are preserved; unchanged owned native files are removed while external history/backups remain. Separately activated Git hooks have their own returned uninstall command. Restart the native client to verify removal. Actual native discovery/permissions/models on Linux and other client versions remain separate verification; executed core tests are recorded in [the platform checks](../../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).

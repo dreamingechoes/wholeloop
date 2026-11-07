@@ -314,7 +314,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 
 Regenerate with `npm run docs:commands`; CI checks for drift.
 
-## Planned command surface
+## Command surface by group
 
 | Group | Commands | Used by |
 | --- | --- | --- |

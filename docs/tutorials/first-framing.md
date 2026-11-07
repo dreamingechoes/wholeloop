@@ -9,7 +9,7 @@
 
 Complete [getting started](../getting-started.md) for your chosen client. Use a real application repository with a small idea, or create a disposable project for the explicitly fictional scenario below. Do not run the fictional task-app example from the wholeloop source checkout and expect it to find a product task list there.
 
-For a fresh exercise project, run in a terminal with `WHOLELOOP_CLI` already exported:
+For a fresh exercise project, run in a terminal:
 
 ```bash
 demo_project="$(mktemp -d "${TMPDIR:-/tmp}/wholeloop-framing.XXXXXX")"
@@ -106,9 +106,9 @@ For an independent terminal check, export the core path again from the wholeloop
 
 ```bash
 export INITIATIVE_ID="paste-the-returned-init-ID"
-node "$WHOLELOOP_CLI" status "$INITIATIVE_ID" --json
-node "$WHOLELOOP_CLI" state get "$INITIATIVE_ID" --json
-node "$WHOLELOOP_CLI" resume "$INITIATIVE_ID" --json
+wl status "$INITIATIVE_ID" --json
+wl state get "$INITIATIVE_ID" --json
+wl resume "$INITIATIVE_ID" --json
 ```
 
 Use the same store environment as the original session. The recovered owner, completed framing and decision should agree. Reading status does not mark messages as read. A closed/on-hold result is not an implementation failure, and a fresh session must not reopen it automatically.

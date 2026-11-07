@@ -1,22 +1,24 @@
 # Prepare and control an owned delivery route
 
-> **TL;DR** — Prepare one durable controller request, inspect the full ordered route, run and reconcile it from the terminal and exercise pause/resume/stop without launching a model. Native stages need explicitly bound clients and trusted runtime proof (P6-27).
+> **TL;DR** — Prepare one durable controller request, inspect the full ordered route, run and reconcile it from the terminal and exercise pause/resume/stop without launching a model. Native stages need explicitly bound clients and trusted runtime proof.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Schema, prepare, status, operator controls and the public run/reconcile commands are available, with automated synthetic/reference-transport coverage. Native adapters join the public host only with trusted runtime proof (P6-27); no live native or hosted acceptance is claimed.
+> **Status: 🚧 partial.** Schema, prepare, status, operator controls and the public run/reconcile commands are available, with automated synthetic/reference-transport coverage. Native adapters join the public host only with trusted runtime proof; no live native or hosted acceptance is claimed.
+
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 The [source-installable boundary table](../reference/delivery-acceptance.md#source-installable-execution-boundaries) distinguishes endpoint support from intervention policy. The public composition currently supplies none-policy `research-report` and `to-pr` hosts. Supervised/on-exception implementation requires registered recorded-human SDK hosts; CI/merge require separately installed SDK composition. A valid plan or runtime document cannot add a missing host or grant an effect.
 
 ## Before you start
 
-Complete the [planning](./delivery-plan.md), [authorization](./delivery-authorization.md) and [queue](./delivery-queue.md) tutorials in the same Bash terminal. Keep WHOLELOOP_CLI and workspace_dir set. The queue tutorial creates a new active fictional grant after the authorization tutorial revokes its first one. All application Git changes and runtime state belong to that disposable example; no account, model or remote effect is needed.
+Complete the [planning](./delivery-plan.md), [authorization](./delivery-authorization.md) and [queue](./delivery-queue.md) tutorials in the same Bash terminal. Keep workspace_dir set. The queue tutorial creates a new active fictional grant after the authorization tutorial revokes its first one. All application Git changes and runtime state belong to that disposable example; no account, model or remote effect is needed.
 
 ## Prepare and inspect without execution
 
 ```bash
 set -euo pipefail
 : "${workspace_dir:?Run the planning, authorization and queue tutorials first}"
-node "$WHOLELOOP_CLI" delivery runner-schema --json > "$workspace_dir/runner-schema.json"
+wl delivery runner-schema --json > "$workspace_dir/runner-schema.json"
 node --input-type=module - "$workspace_dir" <<'JS'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -38,14 +40,14 @@ writeFileSync(join(directory, 'runner-request.json'), JSON.stringify(request, nu
 if (json('runner-schema.json').completeRouteAvailable !== false)
   throw new Error('This increment must disclose its complete-route limitation')
 JS
-node "$WHOLELOOP_CLI" delivery runner-prepare \
+wl delivery runner-prepare \
   --file "$workspace_dir/runner-request.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json > "$workspace_dir/runner-prepared.json"
 runner_digest="$(node -e 'console.log(require(process.argv[1]).digest)' "$workspace_dir/runner-prepared.json")"
-node "$WHOLELOOP_CLI" delivery runner-prepare \
+wl delivery runner-prepare \
   --file "$workspace_dir/runner-request.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json > "$workspace_dir/runner-repeated.json"
-node "$WHOLELOOP_CLI" delivery runner-status \
+wl delivery runner-status \
   --digest "$runner_digest" --store "$workspace_dir/state" --json
 node --input-type=module - "$workspace_dir" <<'JS'
 import { readFileSync } from 'node:fs'
@@ -68,11 +70,11 @@ The host descriptor binds later controller selection; it neither loads a plugin 
 ## Exercise explicit controls
 
 ```bash
-node "$WHOLELOOP_CLI" delivery pause --digest "$runner_digest" \
+wl delivery pause --digest "$runner_digest" \
   --operator 'Fixture Operator' --store "$workspace_dir/state" --json
-node "$WHOLELOOP_CLI" delivery resume --digest "$runner_digest" \
+wl delivery resume --digest "$runner_digest" \
   --operator 'Fixture Operator' --store "$workspace_dir/state" --json
-node "$WHOLELOOP_CLI" delivery stop --digest "$runner_digest" \
+wl delivery stop --digest "$runner_digest" \
   --operator 'Fixture Operator' --store "$workspace_dir/state" --json \
   > "$workspace_dir/runner-stop.json"
 node --input-type=module - "$workspace_dir/runner-stop.json" <<'JS'
@@ -137,7 +139,7 @@ An initial none-policy research definition uses its research-plan delegation, wi
 
 The native wrapper retains private nonce-bound registration and outcome metadata after parent loss, drains broken pipes and permits only its own live wrapper to signal its group. A fresh observer checks registration, the exact outcome and actual group absence. Known closure with missing semantic output is not success. Unknown invocations stay reserved. A passed immutable result can recover a missing checkpoint or authorized derived-plan locator without repeating its host call; an unpublished result cannot be invented.
 
-Fixture routes and synthetic native processes test those mechanics. They establish neither real model containment nor actual application QA, PR creation or merge eligibility. The public run and reconcile commands now wire the owned foreground entrypoint to a fixed public host ([P6-10](../../roadmap/phase-6-autonomous-delivery.md#p6-10--local-delivery-runner-and-controls)); native stages join it with trusted runtime proof in P6-27. [ADR-0113](../decisions/0113-owned-foreground-routes-and-native-recovery.md) records the boundary.
+Fixture routes and synthetic native processes test those mechanics. They establish neither real model containment nor actual application QA, PR creation or merge eligibility. The public run and reconcile commands now wire the owned foreground entrypoint to a fixed public host; native stages join it only with trusted runtime proof. [ADR-0113](../decisions/0113-owned-foreground-routes-and-native-recovery.md) records the boundary.
 
 ## Repeat the model-free foreground control
 
@@ -169,7 +171,7 @@ The internal RunnerGitStages handler now binds an exact root request/plan/unit/s
 
 A fresh handler observes the same resource without another Git invocation, including a known closed workspace while paused. Missing/corrupt bindings stay unknown. Fresh stop requests address only the original private operation marker, even after revocation. Actual applied/closed Git effects establish no application QA, delegated acceptance or endpoint authority. [ADR-0119](../decisions/0119-runner-owned-git-stage-bindings.md) records the distinction.
 
-The model-free runner evaluation additionally drives two actual Git topics and their committed predecessor through the engine. All other semantic stages remain explicitly simulated; the resulting route stays paused without a certified endpoint. Fixed native model admission and full semantic host composition need trusted runtime proof (P6-27); the public run/reconcile commands stop such routes before dispatch.
+The model-free runner evaluation additionally drives two actual Git topics and their committed predecessor through the engine. All other semantic stages remain explicitly simulated; the resulting route stays paused without a certified endpoint. Fixed native model admission and full semantic host composition need trusted runtime proof; the public run/reconcile commands stop such routes before dispatch.
 
 ## Approve a definition before reserving its revision
 
@@ -293,7 +295,7 @@ Historical correction production keeps its exact original closed native-call pre
 
 Complete checks for the criterion-verification candidate pass 3196 tests in 158 files on isolated Debian Linux arm64/Node 24.22.0 with the original two-worker configuration. macOS arm64/Node 24.22.0 passes 3195 tests before the final admission-only test split using VITEST_MAX_WORKERS=1; its corrected native/verification/store regression passes all 26 cases. The split preserves actual worker coverage and tests invalid-input admission in a separate current context, without changing runtime code or deadlines. Fifteen model-free runner controls and exact inert schema parity pass with Linux Node 20.0.0/Git 2.39.5. The build reproduces the same copied CLI throughout these checks.
 
-The separate actual Docker/synthetic-native evaluation observes exact paused verdict recovery, exit-seven refusal before native host construction and fixture-only verifier refusal, retiring all three trial environments. These checks establish the implemented control, ownership and component boundaries. They do not establish authenticated native model containment, independent Linux application-host acceptance or the complete implementation route; complete native acceptance remains P6-27 work.
+The separate actual Docker/synthetic-native evaluation observes exact paused verdict recovery, exit-seven refusal before native host construction and fixture-only verifier refusal, retiring all three trial environments. These checks establish the implemented control, ownership and component boundaries. They do not establish authenticated native model containment, independent Linux application-host acceptance or the complete implementation route; complete native acceptance remains open.
 
 ## Review the first original correction
 

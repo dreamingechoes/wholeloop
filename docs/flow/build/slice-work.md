@@ -3,7 +3,7 @@
 > **TL;DR** — Splits a scope into **vertical slices** in a set order: each slice is something a user can actually do, working from screen to database — not "the API part" or "the UI part". Objective, acceptance criteria and test cases are written for every slice *before* any code. When a slice touches several repositories it gets one part per repository, and the shared contract is settled first. A challenger pokes holes in the split before any building starts.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Versioned plans, structural lint, pinned inherited criteria, atomic stable slices/parts, local tracker references and dependency-aware next routing are implemented. Live semantic critique and remote mirroring remain manual; building/worktrees are later tasks. Tracked in [P3-01](../../../roadmap/phase-3-build.md#p3-01--slice-work).
+> **Status: 🚧 partial.** Versioned plans, structural lint, pinned inherited criteria, atomic stable slices/parts, local tracker references and dependency-aware next routing are implemented. Live semantic critique and remote mirroring remain manual.
 
 ---
 
@@ -61,7 +61,7 @@ flowchart TD
 
 ## Standalone use
 
-Use `wl step begin slice-work --input "Find past orders" --owner "Alex" --json` to create the minimal initiative/scope hierarchy. Earlier Define steps are not fabricated. An existing scope uses `--for <scope>`; an initiative ID must first select a child scope. URL adoption remains separate P2-08 work.
+Use `wl step begin slice-work --input "Find past orders" --owner "Alex" --json` to create the minimal initiative/scope hierarchy. Earlier Define steps are not fabricated. An existing scope uses `--for <scope>`; an initiative ID must first select a child scope. To start from a shared document, adopt it first with `wl adopt <URL>` ([utilities](../utilities.md)).
 
 `wl slices plan --for <scope> --json` returns inherited criteria, exact source pins and the current checkout as a candidate repository. Confirm actual roots before drafting; declaring a path does not prove it is a usable Git repository. Read the selected slice.conventions guidance and `wl slices schema --json`.
 

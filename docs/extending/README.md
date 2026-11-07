@@ -3,7 +3,7 @@
 > **TL;DR** — Almost everything a team would want to customise is a **declarative manifest**, discovered from four places, validated by a schema and testable with one command: providers, review and verify lenses, artifact templates, profile presets and extra decision points. Code is the exception, reserved for new CLI adapters.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Providers, templates, profiles and lenses load and validate from all four layers. Custom profiles are consumed by configuration; spec template selection is consumed by the core, while gate execution and other workflow templates remain planned. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md). Registry and loader: [P1-08](../../roadmap/phase-1-walking-skeleton.md#p1-08--provider-registry-v1).
+> **Status: 🚧 partial.** Providers, templates, profiles and lenses load and validate from all four layers. Custom profiles are consumed by configuration; spec template selection is consumed by the core and lens manifests by gate planning, while templates for other workflows remain planned. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md).
 
 ---
 

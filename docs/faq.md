@@ -3,7 +3,7 @@
 > **TL;DR** — The questions people ask in the first ten minutes, answered in a few lines each, with a link to the page that goes deeper.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The source-installable core, all thirteen steps, seven client renderers, managed installation and conformance tooling are implemented. Actual native/workflow acceptance and public release remain open; remote integrations are experimental, fixture-tested and service-unverified. [Acceptance](./v1-acceptance.md) separates these scopes.
+> **Status: 🚧 partial.** The core, all thirteen steps, seven client renderers, managed installation and conformance tooling are implemented, and the first npm release is in preparation. Actual native/workflow acceptance remains open; remote integrations are experimental, fixture-tested and service-unverified. [Acceptance](./v1-acceptance.md) separates these scopes.
 
 ---
 
@@ -11,7 +11,7 @@
 
 **Can I install it from public npm today?** Not yet. The first release, `1.0.0-rc.1` and then `1.0.0`, is in preparation and will install with `npm install --global wholeloop`; until it is published, build from source with the [development guide](./contributing/development.md). Publication remains the maintainer's decision.
 
-**Why is `wl` not found after installation?** Managed installation writes native components, not a global shell command. Invoke the source bundle with `node "$WHOLELOOP_CLI" ...` and export that absolute path again in each new terminal. → [Executable paths](./troubleshooting.md#the-shell-cannot-find-wholeloop)
+**Why is `wl` not found after installation?** Managed installation writes native components, not a global shell command. Invoke the source bundle with `wl ...` and export that absolute path again in each new terminal. → [Executable paths](./troubleshooting.md#the-shell-cannot-find-wholeloop)
 
 **Can I try anything without a model account?** Yes. The [local core tour](./tutorials/local-core.md) runs configuration, missing-input questions, initiative creation and state/context recovery. It does not pretend that a model drafted or reviewed anything.
 
@@ -59,7 +59,7 @@
 
 ## The project
 
-**Is it usable today?** You can build from source, exercise the local core and use generated skills in a configured client. All planned client renderers are implemented, but actual native/workflow/CI/release criteria remain open. Experimental service certification is deferred. This is not a verified or published 1.0. → [Getting started](./getting-started.md) · [Acceptance](./v1-acceptance.md)
+**Is it usable today?** You can exercise the local core and use the generated skills in a configured client; until the first release is on npm, install from source. All seven client renderers are implemented, but native, workflow and hosted acceptance remain open, and certification of the experimental service integrations is deferred. → [Getting started](./getting-started.md) · [Acceptance](./v1-acceptance.md)
 
 **Can I contribute?** Yes. Read [CONTRIBUTING.md](../CONTRIBUTING.md) and pick a task from the roadmap.
 

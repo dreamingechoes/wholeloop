@@ -7,14 +7,14 @@
 
 ## Before you start
 
-Complete the [planning tutorial](./delivery-plan.md) first. Continue in the same Bash terminal with WHOLELOOP_CLI and workspace_dir still set. The example uses its disposable repository and external store, a fictional operator and no remote account. In a new terminal, restore workspace_dir from that tutorial's retained path or rerun it. Keep request files and receipts outside application repositories.
+Complete the [planning tutorial](./delivery-plan.md) first. Continue in the same Bash terminal with workspace_dir still set. The example uses its disposable repository and external store, a fictional operator and no remote account. In a new terminal, restore workspace_dir from that tutorial's retained path or rerun it. Keep request files and receipts outside application repositories.
 
 ## Record and inspect a bounded grant
 
 ```bash
 set -euo pipefail
 : "${workspace_dir:?Run the planning tutorial in this terminal first}"
-node "$WHOLELOOP_CLI" delivery inspect-plan \
+wl delivery inspect-plan \
   --run delivery-0123456789abcdef --revision 1 \
   --store "$workspace_dir/state" --json > "$workspace_dir/plan-receipt.json"
 node --input-type=module - "$workspace_dir" <<'EOF'
@@ -42,10 +42,10 @@ const request = {
 }
 writeFileSync(join(directory, 'authorization.json'), JSON.stringify(request, null, 2))
 EOF
-node "$WHOLELOOP_CLI" delivery authorize \
+wl delivery authorize \
   --file "$workspace_dir/authorization.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json
-node "$WHOLELOOP_CLI" delivery grant \
+wl delivery grant \
   --id authorization-0123456789abcdef \
   --store "$workspace_dir/state" --json
 ```
@@ -65,10 +65,10 @@ cat > "$workspace_dir/revoke.json" <<'EOF'
   "reason": "End this disposable authorization trial."
 }
 EOF
-node "$WHOLELOOP_CLI" delivery revoke \
+wl delivery revoke \
   --file "$workspace_dir/revoke.json" --root "$workspace_dir" \
   --store "$workspace_dir/state" --json
-node "$WHOLELOOP_CLI" delivery grant \
+wl delivery grant \
   --id authorization-0123456789abcdef \
   --store "$workspace_dir/state" --json
 ```
@@ -83,11 +83,11 @@ Endpoint and effect scope are separate: research-report excludes code/publicatio
 
 Broker sessions close over controller-selected run/plan/attempt/generation, role and cell scope. Admission returns unavailable unless a trusted runtime reports actual restricted tools and separate controller/credential views; none also excludes interactive tools. Workers cannot choose their own role, create/revoke grants, change budgets or submit human acceptance. Scoped proposals and evidence are recorded as worker-claim with effects not-performed. Fixture runtime observations stay fixture and cannot establish native containment or actual test execution.
 
-The current core exposes no worker-side operator endpoint or automatic process launch. Actual backend/client observation and dispatch follow in P6-08–P6-13. An unrestricted native host retains the existing [supervised small-change route](./small-change.md); widening an authorization cannot make it isolated. [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md) records the trust boundary and remaining acceptance.
+Workers get no operator endpoint; the runner launches them only through bound native hosts ([runner controls](./delivery-runner.md)). An unrestricted native host retains the existing [supervised small-change route](./small-change.md); widening an authorization cannot make it isolated. [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md) records the trust boundary and remaining acceptance.
 
 ## Stopping point
 
-You have exercised explicit authorization, independent-process inspection and durable revocation in a disposable external store. Retain the tutorial directory for inspection. Follow [Phase 6](../../roadmap/phase-6-autonomous-delivery.md) for journaled delivery states, queue/fencing, real environments, actual QA and PR/merge evidence. No native/service acceptance is marked passed by these metadata operations.
+You have exercised explicit authorization, independent-process inspection and durable revocation in a disposable external store. Retain the tutorial directory for inspection. Continue with the [queue](./delivery-queue.md) and [runner](./delivery-runner.md) tutorials for queued work, environments and execution. No native/service acceptance is marked passed by these metadata operations.
 
 <!-- docnav -->
 [◀ Delivery planning](delivery-plan.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delegated machine decisions ▶](delivery-decisions.md)

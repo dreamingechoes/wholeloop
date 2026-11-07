@@ -3,18 +3,20 @@
 > **TL;DR** — Build a separate owned integration worktree from every required committed part, then test the actual combined application and contracts. Keep failed assemblies and reports; a repair creates a new vector under the original finite budget.
 
 > [!NOTE]
-> **Status: ✅ implemented.** P6-19 owned assembly, conflict/repair ownership, current-input verification and bounded private reports pass local automated verification and actual Docker/Git observations. Complete-runner and publication orchestration remain subsequent tasks. See [ADR-0110](../decisions/0110-owned-assembly-and-complete-milestone-verification.md).
+> **Status: ✅ implemented.** Owned assembly, conflict/repair ownership, current-input verification and bounded private reports pass local automated verification and actual Docker/Git observations. Complete-runner and publication orchestration remain subsequent tasks. See [ADR-0110](../decisions/0110-owned-assembly-and-complete-milestone-verification.md).
+
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 ## Prerequisites and outcome
 
 Start from an accepted [delivery plan](./delivery-plan.md), an active [original authorization](./delivery-authorization.md), committed clean required part worktrees and [pinned acceptance](./delivery-acceptance.md). The grant needs workspace.create and git.commit for assembly, and test.run for actual verification, with the selected repositories and topic prefixes. The run must be queued/running and have no unresolved foreign effects. This guide does not issue a grant or publish anything.
 
-Run the source commands from the repository with Node ≥ 22, Git supporting canonical --path-format=absolute metadata and the [reference Docker prerequisites](./delivery-docker.md). The bundled CLI retains its Node 20 runtime minimum. Inspect the closed request, stored record, status, verification request and report contracts first:
+Run the commands with the `wl` CLI, Git supporting canonical --path-format=absolute metadata and the [reference Docker prerequisites](./delivery-docker.md). Inspect the closed request, stored record, status, verification request and report contracts first:
 
 ```bash
 set -euo pipefail
 npm run build
-node dist/wl.mjs delivery integration-assembly-schema --json
+wl delivery integration-assembly-schema --json
 ```
 
 The schema command executes nothing and opens no store. The complete route below stops at local milestone behavioral/contract evidence. Independent review, publication checks and conditional merge keep their separate requirements.
@@ -33,8 +35,8 @@ Set the variables to your actual operator directory, request file and external s
 
 ```bash
 set -euo pipefail
-node dist/wl.mjs delivery integration-assemble --file "$assembly_request_file" --root "$operator_input_dir" --store "$delivery_store" --json
-node dist/wl.mjs delivery integration-assembly-status --digest "$assembly_digest" --store "$delivery_store" --json
+wl delivery integration-assemble --file "$assembly_request_file" --root "$operator_input_dir" --store "$delivery_store" --json
+wl delivery integration-assembly-status --digest "$assembly_digest" --store "$delivery_store" --json
 ```
 
 Retain digest from the returned status before inspection. The controller creates separate worktrees under the external store and topic branches under the original grant prefix. It creates worktrees first and merges in global dependency order, including cross-repository predecessors. The personal checkout, real target refs and worker files are preserved. Hooks, signing and prompts are disabled; configured controller-side Git helpers are refused. Application/test commands execute through the existing Docker hosts.
@@ -47,7 +49,7 @@ A lost issued command is observed rather than reissued. Reconcile an already-iss
 
 ```bash
 set -euo pipefail
-node dist/wl.mjs delivery integration-assembly-reconcile --digest "$assembly_digest" --store "$delivery_store" --json
+wl delivery integration-assembly-reconcile --digest "$assembly_digest" --store "$delivery_store" --json
 ```
 
 This dispatches no Git write and restores no authority. Missing completion proof stays unknown; no stored PID is signalled. Inspection and history remain available. Resuming actual work still requires current original scope and a queued/running run.
@@ -62,8 +64,8 @@ Create a wholeloop/integration-verification-request@1 file with four fields: sch
 
 ```bash
 set -euo pipefail
-node dist/wl.mjs delivery integration-verify --file "$integration_verification_file" --root "$operator_input_dir" --store "$delivery_store" --json
-node dist/wl.mjs delivery integration-report --file "$integration_verification_file" --root "$operator_input_dir" --store "$delivery_store" --json
+wl delivery integration-verify --file "$integration_verification_file" --root "$operator_input_dir" --store "$delivery_store" --json
+wl delivery integration-report --file "$integration_verification_file" --root "$operator_input_dir" --store "$delivery_store" --json
 ```
 
 The first command executes required machine cases through the existing fixed hosts and retains a complete bounded report artifact. Repeating completed keys does not repeat effects. The second reobserves current evidence without executing cases. A changed part, recipe, base, assembly or environment invalidates the corresponding current result. Failed criteria return their pinned work/integration repair owner and case IDs. Relevant failed cases and their artifacts remain historical; a new assembly cannot borrow their green results.
@@ -189,7 +191,7 @@ CI observations are revision-bound: a required check counts only from its truste
 
 ## Read a CI repair request
 
-A failed observation becomes a retained repair request: `repair` only for a trusted code or test failure within the push budget (the initial push plus one repair by default, counted from the journal), and `blocked` for cancelled, skipped, stale, spoofed or unreadable results, for an exhausted budget or for current review comments. Comments are kept with their identity and revision but never executed or adopted. Running a repair is not yet composed; until P6-29 adds the continuation, a failed required check ends the run with its request. See [ADR-0187](../decisions/0187-bounded-ci-repair-requests.md).
+A failed observation becomes a retained repair request: `repair` only for a trusted code or test failure within the push budget (the initial push plus one repair by default, counted from the journal), and `blocked` for cancelled, skipped, stale, spoofed or unreadable results, for an exhausted budget or for current review comments. Comments are kept with their identity and revision but never executed or adopted. The runner continues a `repair` request through verification, review and publication again within that budget; a `blocked` request ends the run with its request. See [ADR-0187](../decisions/0187-bounded-ci-repair-requests.md).
 
 ## Explain merge eligibility
 

@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-07 · P7-11 ✅ · User documentation pass
+
+- User pages call the installed `wl`; pages that depend on repository files (evaluation fixtures, conformance collection, acceptance) keep the source build and say so, and the twelve tutorials with model-free `npm run eval` controls state that those run from a source checkout.
+- All 74 roadmap task references left the user pages. Checking each "remains P6-xx work" claim against the task's status found stale statements about completed work, now described as available: the public runner, CI repair continuation, environment retirement, worker launch, URL adoption, flag providers and lifecycle journaling. Open work is described by what it needs (signed-in native clients, the maintainer's activation) rather than by task number.
+- Two pages described implemented behaviour as planned: the journal page listed a fraction of the real event types with an example event that does not exist, and the core reference headed its command table "planned" although every command in it exists. Banners no longer call the core source-installable.
+- Documentation only. macOS full gate with two file workers: CHECK PASS in 642s, 4610/4610 tests across 328 files; docs check and Markdown lint report no problems.
+- Next: P7-12, the code and contributor documentation pass.
+
+---
+
 ## 2026-11-07 · P7-10 ✅ · Root README for users
 
 - The README is written for a first-time user: why ad hoc prompting fails and what wholeloop changes, the loop, what each step produces, installation from npm, client installation, a first skill, examples, the client/core split, principles, supported clients and a documentation map. Roadmap counts, acceptance details and the source build left it; a status note points to the source build only until the first release is on npm.

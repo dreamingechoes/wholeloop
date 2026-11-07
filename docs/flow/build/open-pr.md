@@ -3,7 +3,7 @@
 > **TL;DR** — The last step of Build, and the first time anything leaves your machine. You try the change in its slice's worktree; only then is the slice branch pushed and a draft PR opened per repository, written the way your repo writes PRs and linked to the work it delivers. It ends by handing back its PR and retained workspace; declared external writes and undo argv appear in its receipt. Merging stays with you.
 
 > [!NOTE]
-> **Status: ✅ implemented locally.** Local plans, exact-plan human testing, draft-only publication/reconciliation, gh/glab API hosts, template checks and canonical receipts are tested. Authenticated execution, actual client adapters, later sibling back-links and remote tracker mirroring remain owner/host verification. The declarative environment ledger is integrated into receipts. Tracked in [P3-07](../../../roadmap/phase-3-build.md#p3-07--open-pr-and-code-host-providers).
+> **Status: ✅ implemented locally.** Local plans, exact-plan human testing, draft-only publication/reconciliation, gh/glab API hosts, template checks and canonical receipts are tested. Authenticated execution, actual client adapters, later sibling back-links and remote tracker mirroring remain owner/host verification. The declarative environment ledger is integrated into receipts.
 
 ---
 

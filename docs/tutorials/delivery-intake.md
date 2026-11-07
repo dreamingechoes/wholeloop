@@ -7,7 +7,7 @@
 
 ## Before you start
 
-Build the checkout following the [development guide](../contributing/development.md#use-the-source-build), keeping WHOLELOOP_CLI set to the absolute dist/wl.mjs path. Run the following Bash commands from any directory. They create a disposable working directory and a separate external store; they do not change your project or personal store.
+Install the CLI as in [getting started](../getting-started.md#install-the-cli). Run the following Bash commands from any directory. They create a disposable working directory and a separate external store; they do not change your project or personal store.
 
 ## Capture a local request
 
@@ -29,7 +29,7 @@ cat > "$workspace_dir/work/input.json" <<'EOF'
   ]
 }
 EOF
-node "$WHOLELOOP_CLI" delivery source \
+wl delivery source \
   --file "$workspace_dir/work/input.json" \
   --root "$workspace_dir/work" \
   --store "$workspace_dir/state" --json
@@ -43,7 +43,7 @@ Ranges are inclusive, one-based lines of the exact text. Duplicate IDs, overlaps
 For inline text, select kind: inline, a stable simple ref such as title-search, and a body field in the JSON file. For existing state, select kind: item and ref: init-XXXXXXXX, using the item's existing store. Item text includes its title and body; a recorded repository must match the selected root. Inspect the closed shape with:
 
 ```bash
-node "$WHOLELOOP_CLI" delivery source-schema --json
+wl delivery source-schema --json
 ```
 
 ## Remote sources and provenance
@@ -80,7 +80,7 @@ Missing observations, partial reads, missing revisions, provider/scope/reference
 
 Content is limited to 1 MiB of UTF-8 bytes. The request JSON wrapper is limited to 8 MiB so escaping does not reduce the text bound. Files must be regular and resolve inside the explicitly selected root; final symlinks and escaped directory links are refused. Keep credentials out of source text: recognizable credential patterns are rejected, and the detector cannot establish that arbitrary prose contains no secret.
 
-You have reached the stopping point when the same ID survives another invocation and changed text produces a new ID. Retain the temporary directory if you want to inspect the snapshots. The [expanded roadmap](../../roadmap/phase-6-autonomous-delivery.md) tracks planning, authorization and execution separately; the original [small-change route](./small-change.md) remains available.
+You have reached the stopping point when the same ID survives another invocation and changed text produces a new ID. Retain the temporary directory if you want to inspect the snapshots. [Planning](./delivery-plan.md), [authorization](./delivery-authorization.md) and the [runner](./delivery-runner.md) are separate steps; the original [small-change route](./small-change.md) remains available.
 
 <!-- docnav -->
 [◀ Small change](small-change.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery planning ▶](delivery-plan.md)

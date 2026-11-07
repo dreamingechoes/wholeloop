@@ -3,7 +3,7 @@
 > **TL;DR** — Moves a scope from nobody to everyone in stages — internal, a small percentage, half, all — and at each stage gathers the evidence that says whether it is safe to go further: errors, health signals, the key metrics. It proposes the next move; a person flips the flag. Run it whenever the next stage is due, even weeks apart.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local core implements pinned plans, normalized evidence, per-stage human decisions, proposal-only dispatch and separate confirmations. Real client/provider execution remains owner verification. Tracked in [P4-02](../../../roadmap/phase-4-rollout-learn.md#p4-02--ramp-exposure).
+> **Status: 🚧 partial.** The local core implements pinned plans, normalized evidence, per-stage human decisions, proposal-only dispatch and separate confirmations. Real client/provider execution remains owner verification.
 
 ---
 
@@ -98,9 +98,9 @@ The local proposal applies nothing. An explicit conductor SDK invocation of `dis
 
 **"Can I let it ramp automatically overnight?"** No. Each widening is a person's decision; that is the point of this step.
 
-**"We use LaunchDarkly / Unleash / GrowthBook."** Provider manifests and real-service fixtures are tracked in P4-05; configure an explicit `flags` provider when available. If yours isn't listed, a read-only provider manifest is enough ([extending](../../extending/providers.md)).
+**"We use LaunchDarkly / Unleash / GrowthBook."** The built-in `launchdarkly`, `unleash` and `growthbook` providers read flag state through your client's MCP connection; configure one as your `flags` provider. If yours isn't listed, a read-only provider manifest is enough ([extending](../../extending/providers.md)).
 
-**"Our flag is a config file, not a service."** Use an explicitly configured read/propose provider, or a manual control with evidence. The built-in config-file provider is tracked in P4-05. You change the value by PR.
+**"Our flag is a config file, not a service."** Use an explicitly configured read/propose provider, or a manual control with evidence. The built-in `config-flags` provider reads it and stores unapplied proposals. You change the value by PR.
 
 ---
 

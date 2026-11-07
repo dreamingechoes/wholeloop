@@ -7,14 +7,7 @@
 
 ## Before you start
 
-From your wholeloop source checkout, build and keep its absolute executable path:
-
-```bash
-npm run build
-export WHOLELOOP_CLI="$PWD/dist/wl.mjs"
-```
-
-You need the development dependencies already installed with `npm ci`, a supported Node runtime and Git. The [development guide](../contributing/development.md#build-from-source) covers a fresh checkout.
+You need the `wl` CLI ([getting started](../getting-started.md#install-the-cli)) and Git. No coding client, model or account is needed.
 
 ## Run the tour
 
@@ -31,20 +24,20 @@ Paste the following into a Bash or zsh terminal. The subshell keeps its configur
   unset WL_WORKSPACE WL_SUBJECT
   cd "$demo_dir/project"
 
-  node "$WHOLELOOP_CLI" setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
+  wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
 
   input_exit=0
-  node "$WHOLELOOP_CLI" next "Find tasks by title in a fictional task app" --json > "$demo_dir/questions.json" || input_exit=$?
+  wl next "Find tasks by title in a fictional task app" --json > "$demo_dir/questions.json" || input_exit=$?
   test "$input_exit" -eq 2
   cat "$demo_dir/questions.json"
 
-  node "$WHOLELOOP_CLI" next "Find tasks by title in a fictional task app" --owner "Demo Owner" --json > "$demo_dir/start.json"
+  wl next "Find tasks by title in a fictional task app" --owner "Demo Owner" --json > "$demo_dir/start.json"
   cat "$demo_dir/start.json"
   initiative_id="$(node -p "JSON.parse(require('node:fs').readFileSync(process.argv[1], 'utf8')).contract.subject.id" "$demo_dir/start.json")"
 
-  node "$WHOLELOOP_CLI" status "$initiative_id" --json
-  node "$WHOLELOOP_CLI" resume "$initiative_id" --json
-  node "$WHOLELOOP_CLI" next "$initiative_id" --json
+  wl status "$initiative_id" --json
+  wl resume "$initiative_id" --json
+  wl next "$initiative_id" --json
   printf 'Demo retained at %s\nInitiative: %s\n' "$demo_dir" "$initiative_id"
 )
 ```
@@ -66,12 +59,12 @@ The framing contract has nine headings: eight questions plus Owner. A returned `
 
 ## Inspect it from another terminal
 
-Export `WHOLELOOP_CLI` again from the wholeloop checkout. Set the following variables to the directory and initiative printed by your tour:
+Set the following variables to the directory and initiative printed by your tour:
 
 ```bash
 export DEMO_DIR="paste-the-printed-demo-directory"
 export INITIATIVE_ID="paste-the-printed-initiative-ID"
-XDG_CONFIG_HOME="$DEMO_DIR/config" XDG_STATE_HOME="$DEMO_DIR/state" node "$WHOLELOOP_CLI" status "$INITIATIVE_ID" --json
+XDG_CONFIG_HOME="$DEMO_DIR/config" XDG_STATE_HOME="$DEMO_DIR/state" wl status "$INITIATIVE_ID" --json
 ```
 
 The store is `$DEMO_DIR/state/wholeloop`, not the demo Git repository. Without the same state override, a new terminal reads your usual store instead. The core has no terminal session memory to recover implicitly.

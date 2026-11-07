@@ -5,14 +5,16 @@
 > [!NOTE]
 > **Status: ✅ implemented.** The fixed host, exact effect/candidate binding, complete output checks, restart/persistence and once-per-round suite reuse pass local automated verification and actual Docker observations. [Browser execution](./delivery-browsers.md) is also available; [private HTTP regression evaluation](./delivery-private-acceptance.md) is available. Semantic/native certification remains separate. No native model or vendor account is required for this evaluator.
 
+Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
+
 ## Inspect the contract without executing anything
 
-Build the checkout with Node 22 or later and npm. The published bundle retains its Node 20 minimum. This command is inert and needs no Docker daemon, account or execution grant.
+With the `wl` CLI ([getting started](../getting-started.md#install-the-cli)), this command is inert and needs no Docker daemon, account or execution grant.
 
 ```bash
 set -euo pipefail
 npm run build
-node dist/wl.mjs delivery behavior-schema --json
+wl delivery behavior-schema --json
 ```
 
 ## Verify committed file scope in the public implementation route
