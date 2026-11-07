@@ -15,6 +15,9 @@ export interface RenderedFile {
   content: string
   mode: 0o644 | 0o755
 }
+export interface RenderOptions {
+  runtime?: boolean
+}
 export interface Adapter {
   id: string
   manifestPath: string
@@ -22,7 +25,12 @@ export interface Adapter {
   artifacts?(version: string): ReadonlyMap<string, RenderedFile>
   capabilities(): AdapterCapabilities
   renderSkill(name: string, content: string): RenderedFile
-  renderAgent(name: string, content: string): RenderedFile
+  /**
+   * `runtime: false` renders a standalone role for a repository's own tools:
+   * no wholeloop runtime preamble and no wl- namespace (ADR-0246). The shipped
+   * harness always renders with the runtime.
+   */
+  renderAgent(name: string, content: string, options?: RenderOptions): RenderedFile
   name(kind: 'skill' | 'agent', name: string): string
   paths(kind: 'skill' | 'agent', name: string): string
   manifest(

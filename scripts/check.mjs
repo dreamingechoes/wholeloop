@@ -61,6 +61,7 @@ const steps = [
   ['config', ...node('scripts/generate-config.mjs', '--check')],
   ['providers', ...node('scripts/generate-providers.mjs', '--check')],
   ['harness', ...npm('harness:check')],
+  ['maintainer', ...npm('maintainer:check')],
   ['markdown', ...npm('lint:md')],
   ['mermaid', ...npm('lint:mermaid')],
 ]

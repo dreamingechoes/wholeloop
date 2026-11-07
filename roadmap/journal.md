@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-07 · P7-01 ✅ · Repository maintenance design
+
+- Maintainer skills and agents are authored in `maintainer/` in the canonical format and rendered by `npm run maintainer:render` into every supported client's project directories, where they are committed; [ADR-0246](../docs/decisions/0246-dogfooded-maintainer-skills-and-agents.md). Skills are copied as written; agents go through each adapter with a new `runtime: false` option that keeps the native tool and read-only mapping and drops the packaged-core preamble and `wl-` namespace.
+- `maintainer/rendered.json` records every rendered file and how each client enforces read-only roles. `npm run maintainer:check`, now a step of `npm run check`, fails on hand edits, unrendered source changes, missing and stale files. The renderer lives in `src/maintainer/` but no entry point imports it, so it is never bundled.
+- `maint-check` is the stub that proves the path; Claude Code discovered it on disk as soon as it was rendered.
+- macOS full gate with two file workers: CHECK PASS in 670s, 4523/4523 tests across 320 files, including the new maintainer step. Not run on Linux.
+
+---
+
 ## 2026-11-07 · P6-40 ✅ · Repository guidance in autonomous runs
 
 - `wl delivery guidance --file <proposal.json> [--answers <file>]` runs discovery and slot resolution on each repository's pinned base and proposes the plan's guidance pins with supervised precedence: one pin per resolved slot plus `repo.instructions` for AGENTS.md and its peers. Tied candidates are questions answered before authorization. [ADR-0207](../docs/decisions/0207-public-implementation-route-composition.md#repository-guidance-in-workers-p6-40) is amended; ADR-0009 and ADR-0054 note the change.

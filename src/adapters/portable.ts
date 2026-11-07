@@ -61,14 +61,14 @@ export const codexAdapter: Adapter = {
       : {}),
   }),
   renderSkill: (_name, content) => renderPortableSkill(content),
-  renderAgent: (name, content) => {
+  renderAgent: (name, content, options = {}) => {
     const { metadata, capabilities, tier } = definition(content)
     const observer = !capabilities.includes('write')
-    const instructions = `${context}Canonical model tier: ${tier}; inherit the current model unless the caller explicitly chooses an available model.\n${observer ? 'This role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\n' : ''}\n${strip(content)}`
+    const instructions = `${options.runtime === false ? '' : context}Canonical model tier: ${tier}; inherit the current model unless the caller explicitly chooses an available model.\n${observer ? 'This role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\n' : ''}\n${strip(content)}`
     return {
       mode: 0o644,
       content: toml({
-        name: `wl-${name}`,
+        name: options.runtime === false ? name : `wl-${name}`,
         description: String(metadata.description),
         developer_instructions: instructions,
         ...(observer
@@ -96,7 +96,7 @@ export const opencodeAdapter: Adapter = {
     kind === 'skill' ? `.opencode/skills/wl-${name}/SKILL.md` : `.opencode/agents/wl-${name}.md`,
   manifest: () => ({ $schema: 'https://opencode.ai/config.json' }),
   renderSkill: (_name, content) => renderPortableSkill(content),
-  renderAgent: (name, content) => {
+  renderAgent: (name, content, options = {}) => {
     const { metadata, capabilities, tier } = definition(content)
     const writable = capabilities.includes('write')
     const permission: Record<string, string> = {
@@ -111,7 +111,7 @@ export const opencodeAdapter: Adapter = {
     }
     return {
       mode: 0o644,
-      content: `---\n${yaml({ description: metadata.description, mode: name === 'conductor' ? 'primary' : 'subagent', permission })}---\n${context}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or edit permission; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
+      content: `---\n${yaml({ description: metadata.description, mode: name === 'conductor' ? 'primary' : 'subagent', permission })}---\n${options.runtime === false ? '' : context}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or edit permission; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
     }
   },
 }
@@ -127,7 +127,7 @@ export const copilotAdapter: Adapter = {
       : `com.github.copilot/agents/wl-${name}.agent.md`,
   manifest: (version) => portableManifest(version),
   renderSkill: (_name, content) => renderPortableSkill(content),
-  renderAgent: (name, content) => {
+  renderAgent: (name, content, options = {}) => {
     const { metadata, capabilities, tier } = definition(content)
     const writable = capabilities.includes('write')
     const tools = [
@@ -138,7 +138,7 @@ export const copilotAdapter: Adapter = {
     ]
     return {
       mode: 0o644,
-      content: `---\n${yaml({ name: `wl-${name}`, description: metadata.description, tools, 'include-custom-instructions': true, infer: false })}---\n${context}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or write tool; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
+      content: `---\n${yaml({ name: options.runtime === false ? name : `wl-${name}`, description: metadata.description, tools, 'include-custom-instructions': true, infer: false })}---\n${options.runtime === false ? '' : context}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or write tool; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
     }
   },
 }

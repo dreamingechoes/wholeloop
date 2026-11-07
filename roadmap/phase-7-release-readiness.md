@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -44,7 +44,7 @@ flowchart LR
 
 ## P7-01 · Repository maintenance design
 
-**Status:** ⬜ · **Size:** S · **Depends on:** —
+**Status:** ✅ · **Size:** S · **Depends on:** —
 
 **Goal** — Decide where the repository's own skills and agents live and how they reach every client, without confusing them with the harness wholeloop ships.
 
@@ -52,9 +52,11 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] Maintainer tools are clearly separate from the shipped harness: nothing in them is packaged or installed for users.
-- [ ] A contributor who clones the repository gets the rendered skills in each supported client without running `wl`.
-- [ ] Editing a rendered file by hand, or a source without regenerating, fails `npm run check`.
+- [x] Maintainer tools are clearly separate from the shipped harness: nothing in them is packaged or installed for users.
+- [x] A contributor who clones the repository gets the rendered skills in each supported client without running `wl`.
+- [x] Editing a rendered file by hand, or a source without regenerating, fails `npm run check`.
+
+**Evidence** — [ADR-0246](../docs/decisions/0246-dogfooded-maintainer-skills-and-agents.md). `maint-check` renders into all seven clients' project directories and Claude Code picked it up on disk. `test/unit/maintainer/render.test.ts` covers per-client rendering, drift on hand edits, unrendered source edits and stale files, source budgets and front matter, and the absence of maintainer code from the bundle; the package check still publishes exactly five files. `npm run check` runs `maintainer:check`.
 
 **Tests** — Generation golden files per client; a drift test for the sync check; package allowlist test showing no maintainer file is published.
 

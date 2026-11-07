@@ -36,11 +36,18 @@ npm ci
 npm run check      # lint · types · tests · offline package · docs · harness
 npm run build      # dist/wl.mjs
 npm run smoke      # the built CLI prints the package version
+npm run maintainer:render  # re-render maintainer skills and agents after editing maintainer/
 ```
 
 All checks must pass locally and in CI before review.
 
 Install the local commit-message hook with `npm run hooks:install` (idempotent; an existing hooks path is preserved). Rebuild with `npm run build` after changing the validator. The hook requires a lowercase Conventional Commit subject, a body explaining why and what was verified, and no tool attribution or shell substitutions. Check a history range with `npm run commits:check -- base..head`; PR CI uses the pull request's base and head automatically, without rewriting existing history. Imperative wording is reviewed by people; syntax is checked by code.
+
+## Maintainer skills and agents
+
+The repository ships its own skills and agents for the work described here, rendered for every supported client and committed under `.claude/`, `.agents/`, `.codex/`, `.opencode/`, `.github/`, `.gemini/` and `.cursor/`. Your client finds them when you open the repository; you do not need `wl`. Their names start with `maint-`.
+
+Edit them only in `maintainer/` and run `npm run maintainer:render`; `npm run check` fails on a hand-edited rendered file or a stale render. Read-only agents are enforced where the client can do it from the agent file; `maintainer/rendered.json` records how each client enforces it, and Codex inherits its parent session's sandbox instead. See [ADR-0246](./docs/decisions/0246-dogfooded-maintainer-skills-and-agents.md).
 
 ## Extensions
 

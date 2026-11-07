@@ -1,0 +1,67 @@
+{
+  "schema": "wholeloop/maintainer-rendered@1",
+  "notice": "Generated from maintainer/ by npm run maintainer:render; edit the source instead.",
+  "targets": {
+    "claude": {
+      "readOnly": "tool-allowlist-and-plan-mode",
+      "skills": ".claude/skills",
+      "agents": ".claude/agents"
+    },
+    "codex": {
+      "readOnly": "inherited-parent-and-checked-headless",
+      "skills": ".agents/skills",
+      "agents": ".codex/agents"
+    },
+    "opencode": {
+      "readOnly": "deny-shell-and-edit",
+      "skills": ".opencode/skills",
+      "agents": ".opencode/agents"
+    },
+    "copilot": {
+      "readOnly": "read-tool-allowlist",
+      "skills": ".github/skills",
+      "agents": ".github/agents"
+    },
+    "gemini": {
+      "readOnly": "read-tool-allowlist",
+      "skills": ".gemini/skills",
+      "agents": ".gemini/agents"
+    },
+    "antigravity": {
+      "readOnly": "read-tool-allowlist",
+      "skills": ".agents/skills",
+      "agents": ".agents/agents"
+    },
+    "cursor": {
+      "readOnly": "native-readonly",
+      "skills": ".cursor/skills",
+      "agents": ".cursor/agents"
+    }
+  },
+  "files": [
+    {
+      "path": ".agents/skills/maint-check/SKILL.md",
+      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+    },
+    {
+      "path": ".claude/skills/maint-check/SKILL.md",
+      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+    },
+    {
+      "path": ".cursor/skills/maint-check/SKILL.md",
+      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+    },
+    {
+      "path": ".gemini/skills/maint-check/SKILL.md",
+      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+    },
+    {
+      "path": ".github/skills/maint-check/SKILL.md",
+      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+    },
+    {
+      "path": ".opencode/skills/maint-check/SKILL.md",
+      "sha256": "800d526311ff6c689952a7b287d78887f5d29b68bf390af9966d9ac9d40caa68"
+    }
+  ]
+}

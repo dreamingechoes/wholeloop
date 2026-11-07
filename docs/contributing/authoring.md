@@ -113,6 +113,10 @@ Local adapters are src/adapters/claude.ts and src/adapters/portable.ts, with pur
 
 Each adapter ships golden files and a conformance scenario. A new CLI is a new module plus those two; nothing else in the codebase should need to know it exists.
 
+## Maintainer tools
+
+The repository's own skills and agents use this same format, budgets and front-matter rules, but live in `maintainer/` and are never shipped. `npm run maintainer:render` renders them into each client's project directories through the adapters with `runtime: false`, which keeps the native tool and read-only mapping and drops the packaged-core preamble and the `wl-` namespace. The rendered files are committed and checked by `npm run maintainer:check` ([ADR-0246](../decisions/0246-dogfooded-maintainer-skills-and-agents.md)).
+
 ## Commits
 
 Conventional commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`), imperative subject ≤ 72 characters, one concern per commit, and no tool attribution of any kind ([ADR-0017](../decisions/0017-no-tool-attribution-in-history.md)).

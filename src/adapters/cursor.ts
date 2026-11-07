@@ -57,18 +57,21 @@ export const cursorAdapter: Adapter = {
       content: `${rendered.content}\nIf structured questions are unavailable, return the exact plain-text options and wait for explicit answers.\n`,
     }
   },
-  renderAgent: (name, content) => {
+  renderAgent: (name, content, options = {}) => {
     const metadata = frontmatter(content) ?? {}
     const canonical = (metadata.metadata ?? {}) as Record<string, string>
     const writable = (canonical['wholeloop.capabilities'] ?? '').split(/\s+/).includes('write')
     const header = new Document({
-      name: `wl-${name}`,
+      name: options.runtime === false ? name : `wl-${name}`,
       description: metadata.description,
       model: 'inherit',
       readonly: !writable,
       is_background: false,
     })
-    const context = `The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
+    const context =
+      options.runtime === false
+        ? ''
+        : `The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
     const boundary = `${writable ? '' : 'This observer runs with native readonly permissions. Request observed command/provider evidence from the main session; do not change files, state or services. '}Return additional role work for sequential main-session handoff. If structured questions are unavailable, return plain-text options and wait.\n\n`
     return {
       mode: 0o644,

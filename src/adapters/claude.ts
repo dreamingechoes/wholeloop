@@ -45,7 +45,7 @@ export const claudeAdapter: Adapter = {
     const context = `Use shared protocols under \${CLAUDE_PLUGIN_ROOT}/resources/protocols/. When delegating, pass wholeloopRoot=\${CLAUDE_PLUGIN_ROOT} explicitly to each agent. The bundled core owns state; never replace it with another executable found on PATH.\n\n`
     return { mode: 0o644, content: `---\n${stringify(metadata)}---\n${context}${rewritten}` }
   },
-  renderAgent: (_name, content) => {
+  renderAgent: (_name, content, options = {}) => {
     const metadata = frontmatter(content) ?? {}
     const canonical = (metadata.metadata ?? {}) as Record<string, string>
     const capabilities = (canonical['wholeloop.capabilities'] ?? '').split(/\s+/)
@@ -61,7 +61,9 @@ export const claudeAdapter: Adapter = {
         : {}),
     }
     const context =
-      "The conductor must supply wholeloopRoot as this plugin's absolute root. Read named shared protocols under wholeloopRoot/resources/protocols/ and invoke its bundled bin/wl.mjs with Node for every wl command. If that root is missing, return a question instead of guessing PATH.\n\n"
+      options.runtime === false
+        ? ''
+        : "The conductor must supply wholeloopRoot as this plugin's absolute root. Read named shared protocols under wholeloopRoot/resources/protocols/ and invoke its bundled bin/wl.mjs with Node for every wl command. If that root is missing, return a question instead of guessing PATH.\n\n"
     return { mode: 0o644, content: `---\n${stringify(native)}---\n${context}${body(content)}` }
   },
 }

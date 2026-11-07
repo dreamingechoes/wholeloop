@@ -5,6 +5,9 @@
 # Repository-only Markdown layout: scripts/markdown-paragraphs.mjs (WL001),
 # registered in .markdownlint-cli2.jsonc and tested in test/unit/docs/markdown-paragraphs.test.ts.
 # This source convention is not exported as a rule for users' runtime artifacts.
+# Maintainer skills and agents (maintainer/, ADR-0246) are not harness sources: their
+# budgets, front matter and render sync are enforced by scripts/maintainer.mjs
+# (npm run maintainer:check, a step of npm run check) and test/unit/maintainer/render.test.ts.
 version: 1
 rules:
   - id: delivery-read-observation

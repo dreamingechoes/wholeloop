@@ -36,7 +36,7 @@ export const antigravityAdapter: Adapter = {
       content: `---\n${stringify({ ...metadata, name: nativeName })}---\n${rendered.content.replace(/^---\n[\s\S]*?\n---\n/, '')}\nNative wholeloop skills use the wl-agy- prefix. If structured questions are unavailable, return exact plain-text options and wait for explicit answers.\n`,
     }
   },
-  renderAgent: (name, content) => {
+  renderAgent: (name, content, options = {}) => {
     const metadata = frontmatter(content) ?? {}
     const canonical = (metadata.metadata ?? {}) as Record<string, string>
     const capabilities = (canonical['wholeloop.capabilities'] ?? '').split(/\s+/)
@@ -48,7 +48,7 @@ export const antigravityAdapter: Adapter = {
       ...(capabilities.includes('web') ? ['search_web', 'read_url_content'] : []),
     ]
     const header = new Document({
-      name: `wl-agy-${name}`,
+      name: options.runtime === false ? name : `wl-agy-${name}`,
       description: metadata.description,
       tools,
       mainAgent: false,
@@ -58,7 +58,10 @@ export const antigravityAdapter: Adapter = {
     })
     const allowed = header.get('tools', true)
     if (isSeq(allowed)) allowed.flow = true
-    const context = `The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
+    const context =
+      options.runtime === false
+        ? ''
+        : `The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
     const boundary = `${writable ? '' : 'This observer has no shell, write, memory, MCP or delegation tool. Request observed command/provider evidence from the main session. '}Return additional role work for sequential main-session handoff. If structured questions are unavailable, return plain-text options and wait.\n\n`
     return {
       mode: 0o644,
