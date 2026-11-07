@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-07 (P7-09).** Pull requests to `main` are squash-merged, so the title becomes the subject of the commit on `main`. The CI commit check validates the title with the same rules, beside every commit of the pull request, whose messages become the body. Branch and tag rules are versioned files, `.github/rulesets/main.json` and `.github/rulesets/release-tags.json`, which the maintainer applies to the hosted repository; a test keeps their required checks equal to the CI job names. The bootstrap line in `AGENTS.md` changes only when the maintainer announces the switch. Rejected: merge commits, which keep unreviewed intermediate subjects on `main`, and rules configured only in the hosting settings, which no review or test can see.
+
 `wholeloop` is developed with the help of the very kind of agentic tools it supports. Many of those tools append attribution by default: co-author trailers in commits, "generated with …" footers in pull request descriptions, notes in changelogs. In a public project's history those lines are noise. They also tie the record of the project to a particular vendor, which goes against a harness meant to be CLI-neutral.
 
 ## Decision

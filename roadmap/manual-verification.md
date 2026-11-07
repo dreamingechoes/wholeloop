@@ -24,6 +24,14 @@ Actual Codex headless rounds gate-77f0a395c890806f and gate-78beec965bc15544 eac
 
 Remote service integrations are **experimental · fixture-tested · service-unverified** under [ADR-0084](../docs/decisions/0084-experimental-integrations-and-scoped-live-verification.md). Their authenticated account/API/rendering checks below are deferred certification, not prerequisites for 1.0, and remain unchecked until actually executed. You do not need accounts with every listed vendor. This does not waive missing implementation, native-client/permission/hook tests, release CI or publication decisions. The Amplitude dashboard write remains a pending handoff until its MCP contract is known; ADR-0085 removes the requirement for another HTTP implementation.
 
+## Pull-request contribution workflow (P7-09, 2026-11-07)
+
+The rulesets, CODEOWNERS, pull request template and title check are in the repository; nothing has been applied to the hosted repository.
+
+- [ ] Set the merge options: squash merging only, with the pull request title as the commit title and the commit messages as its body, and delete branches on merge (`gh api -X PATCH repos/dreamingechoes/wholeloop -F allow_merge_commit=false -F allow_rebase_merge=false -F allow_squash_merge=true -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=COMMIT_MESSAGES -F delete_branch_on_merge=true`).
+- [ ] Apply both rulesets (`gh api repos/dreamingechoes/wholeloop/rulesets --method POST --input .github/rulesets/main.json`, then the same for `release-tags.json`), and confirm a direct push to `main` is refused and a pull request cannot merge before its required checks pass.
+- [ ] Announce the switch: replace the bootstrap line in `AGENTS.md` and the bootstrap note in `CONTRIBUTING.md` with the pull-request workflow, record it in the journal and mark P7-09 complete. Proposed `AGENTS.md` line: "**Pull requests to `main`.** Every change reaches `main` through a branch and a pull request with passing required checks, squash-merged under a Conventional Commit title."
+
 ## Release automation (P7-08, 2026-11-07)
 
 The release pull request, release-on-merge, post-publication verification and failure marking are implemented and tested with a fixture repository and logging stand-ins for GitHub and npm; no hosted run has executed.

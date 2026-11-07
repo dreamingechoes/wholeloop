@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08 and P7-16 complete.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08 and P7-16 complete; P7-09 prepared and awaiting the maintainer's switch.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -202,7 +202,7 @@ flowchart LR
 
 ## P7-09 · Pull-request contribution workflow
 
-**Status:** ⬜ · **Size:** S · **Depends on:** P7-05
+**Status:** ⏸️ · **Size:** S · **Depends on:** P7-05
 
 **Goal** — Switch from the bootstrap workflow to reviewed pull requests before the repository is public.
 
@@ -212,6 +212,8 @@ flowchart LR
 
 - [ ] `main` accepts changes only through pull requests with passing required checks.
 - [ ] Contributor and agent instructions describe the same workflow.
+
+**Evidence (prepared, awaiting the maintainer)** — `.github/rulesets/main.json` allows changes to `main` only through squash-merged pull requests with up-to-date required checks and no bypass, and `.github/rulesets/release-tags.json` makes release tags immutable once created; a test keeps the required checks equal to the expanded CI job names. `.github/CODEOWNERS` assigns every path to the repository owner, the pull request template asks for a conventional title and a passing gate, and the CI commit check now validates the pull request title, which a squash merge turns into the subject on `main`. The contributing guide describes the workflow from the switch. Applying the rulesets and merge settings needs the maintainer's account, and the `AGENTS.md` bootstrap line changes only when the maintainer announces the switch; both are in manual verification, so the criteria stay open.
 
 **Tests** — Commit-message and PR checks in CI.
 

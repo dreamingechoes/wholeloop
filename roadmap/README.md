@@ -1,6 +1,6 @@
 # Roadmap — built in vertical phases, worked in small tasks
 
-> **TL;DR** — Eight phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0.0 adds recoverable autonomous delivery and complete unattended research; Phase 7 prepares the repository and the public release. In Phase 6, P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance, P6-40 is complete, and P6-27 and P6-35 remain in progress or await implementation. In Phase 7, P7-01–P7-08 and P7-16 are complete and seven tasks are planned.
+> **TL;DR** — Eight phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0.0 adds recoverable autonomous delivery and complete unattended research; Phase 7 prepares the repository and the public release. In Phase 6, P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance, P6-40 is complete, and P6-27 and P6-35 remain in progress or await implementation. In Phase 7, P7-01–P7-08 and P7-16 are complete, P7-09 is prepared and awaits the maintainer's switch to pull requests, and six tasks are planned.
 
 ---
 

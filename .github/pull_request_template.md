@@ -9,8 +9,10 @@
 
 ## Checklist
 
-- [ ] Conventional commit subjects, one concern each
-- [ ] No tool attribution in commits or in this description
+- [ ] The title is a Conventional Commit subject: it becomes the commit on `main` when the pull request is squash-merged
+- [ ] Commit messages explain why and what was verified, one concern each
+- [ ] `npm run check` ends in `CHECK PASS`
+- [ ] No tool attribution in commits, the title or this description
 - [ ] Docs and status banners updated in this change
 - [ ] Harness files within their size budgets
-- [ ] A new ADR if a design decision changed
+- [ ] An amended or new ADR if a design decision changed

@@ -23,6 +23,13 @@ To use wholeloop rather than change it, start with the [README](./README.md) and
 > [!NOTE]
 > **Bootstrap phase:** while the foundations are being built, changes are committed directly to `main`. Branches and pull requests become the workflow once the switch is announced in the [journal](./roadmap/journal.md).
 
+From the switch, every change reaches `main` through a pull request, and the same applies to coding agents through `AGENTS.md`:
+
+- Branch from `main` and open a pull request; describe what changed, why, the roadmap task and how it was verified.
+- The required checks are the CI jobs on Ubuntu and macOS and the Node 20 runtime job; the branch must be up to date with `main` before merging.
+- Pull requests are squash-merged. The title becomes the commit subject on `main`, so CI validates it with the same rules as a commit; the commit messages, also validated, become its body.
+- `.github/CODEOWNERS` requests the maintainer's review on every path. [`.github/rulesets/main.json`](./.github/rulesets/main.json) and [`.github/rulesets/release-tags.json`](./.github/rulesets/release-tags.json) define the branch and tag rules the maintainer applies to the hosted repository; release tags can be created once and never moved or deleted.
+
 - [Conventional commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:` — imperative subject, ≤ 72 characters, one concern per commit.
 - **No tool attribution.** No `Co-Authored-By` trailers for AI assistants, no "generated with" footers — in commits, PR descriptions or anywhere else ([ADR-0017](./docs/decisions/0017-no-tool-attribution-in-history.md)). Use whatever tools you like; the history records people.
 - PR description: what changed, why, the roadmap task, and how you verified it.

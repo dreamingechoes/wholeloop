@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-07 · P7-09 ⏸️ · Pull-request contribution workflow prepared
+
+- The branch and tag rules are versioned files the maintainer applies: `.github/rulesets/main.json` admits changes to `main` only through squash-merged pull requests with up-to-date required checks and no bypass; `.github/rulesets/release-tags.json` lets the Release workflow create each tag once and forbids moving or deleting it. A test keeps the required checks equal to the expanded CI job names, which GitHub would otherwise only report after the rules were live.
+- `.github/CODEOWNERS` assigns every path to the repository owner; the pull request template asks for a conventional title and a passing gate; the CI commit check also validates the pull request title, since a squash merge makes it the subject on `main` ([ADR-0017](../docs/decisions/0017-no-tool-attribution-in-history.md)). The contributing guide describes the workflow from the switch.
+- Waiting for the maintainer: applying the rules and merge settings needs their account, and the bootstrap line in `AGENTS.md` changes only when they announce the switch, so commits still go straight to `main`. Manual verification lists the exact commands and the proposed line. Code-owner review stays off while a single maintainer cannot approve their own pull requests.
+- No runtime path changed; the commit check adds one validator run per pull request. macOS full gate with two file workers: CHECK PASS in 645s, 4610/4610 tests across 328 files. Nothing was applied to the hosted repository.
+- Next: P7-10, the root README for users.
+
+---
+
 ## 2026-11-07 · P7-08 ✅ · Release automation
 
 - A dispatched [release pull request workflow](../.github/workflows/release-pr.yml) sets the version, regenerates the changelog, refuses a version change smaller than the range needs and runs the full gate, then commits exactly those three files through the Git Data API (the hosted tree must equal the local one), creates the branch without overwriting, opens the pull request and dispatches CI on it, since pull requests opened with the workflow token start no checks of their own.

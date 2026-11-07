@@ -48,6 +48,23 @@ describe('real commit-msg hook', () => {
       })
       expect(result.status).toBe(4)
       expect(result.stderr).toContain(`commits: rejected ${invalid}`)
+      // A squash merge turns the title into the subject on main, so it is checked too.
+      const titled = (title: string) => {
+        writeFileSync(
+          eventFile,
+          JSON.stringify({ pull_request: { title, base: { sha: first }, head: { sha: valid } } }),
+        )
+        return spawnSync(process.execPath, [script], {
+          cwd: dir,
+          env: { ...process.env, GITHUB_EVENT_NAME: 'pull_request', GITHUB_EVENT_PATH: eventFile },
+          encoding: 'utf8',
+        })
+      }
+      const accepted = titled('fix: validate new messages')
+      expect(accepted.status, accepted.stdout + accepted.stderr).toBe(0)
+      expect(accepted.stdout).toContain('commits: checked the pull request title')
+      for (const title of ['Update stuff', 'fix: run `npm test`', 'fix: generated with a tool.'])
+        expect(titled(title).stderr).toContain('commits: rejected the pull request title')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
