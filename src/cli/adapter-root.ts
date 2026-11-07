@@ -1,3 +1,5 @@
+// Finds the packaged adapter and client root from the core actually imported, even through a
+// symlinked launcher.
 import { lstatSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'

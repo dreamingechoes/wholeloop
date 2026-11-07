@@ -1,3 +1,4 @@
+// The wrapper program for one interactive Docker operation.
 // The first private line selects one registered native operation. Remaining bytes
 // are protocol traffic, never shell arguments; only this live wrapper signals its group.
 export const DOCKER_INTERACTIVE_WRAPPER = `

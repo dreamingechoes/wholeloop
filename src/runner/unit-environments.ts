@@ -1,3 +1,4 @@
+// The committed candidate a unit's verification round runs against.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { NativeRuntimeRepository } from '../delivery/native-runtime.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'

@@ -1,3 +1,4 @@
+// The controller program that probes a native worker's containment boundary.
 /** Only controller-selected public witnesses enter this program; it never reads credential contents or changes project bytes. */
 export const NATIVE_BOUNDARY_PROGRAM = `
 import { readFileSync, openSync, closeSync } from 'node:fs'

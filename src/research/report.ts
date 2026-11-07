@@ -1,3 +1,4 @@
+// Renders a synthesized research report and brief; the CLI workflow and the runner share it.
 import type { StateEvent } from '../state/events.js'
 import type { AngleResult, Claim, Refutation, ResearchPlan } from './contracts.js'
 

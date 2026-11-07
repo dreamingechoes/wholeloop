@@ -1,3 +1,4 @@
+// Reads the inputs for an overview within fixed bounds before allocating full journals.
 import { existsSync, lstatSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { loadConfig } from '../config/load.js'

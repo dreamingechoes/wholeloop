@@ -1,3 +1,4 @@
+// How budgets apply: effective limits, admission of new work and current reservations.
 import { hostname, platform } from 'node:os'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryGrant } from './authority.js'

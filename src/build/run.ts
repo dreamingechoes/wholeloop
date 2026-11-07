@@ -1,3 +1,5 @@
+// Runs one build or a group of builds through a host that owns the tools, while the core keeps
+// plans, budgets and the stop before a PR.
 import { isObject } from '../config/schema.js'
 import { type GateHost, inspectGateRound } from '../gates/execution.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'

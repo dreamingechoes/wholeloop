@@ -1,3 +1,4 @@
+// Assembles committed parts into an integration worktree, with each Git effect owned separately.
 import { existsSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { acceptanceShape } from '../acceptance/contracts.js'

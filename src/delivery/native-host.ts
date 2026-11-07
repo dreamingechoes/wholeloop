@@ -1,3 +1,4 @@
+// The native delivery host that admits, assigns and settles queued work.
 import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'

@@ -1,3 +1,4 @@
+// The shared admission context for a continuation, which never records a grant or dispatch.
 import { findBudget } from '../delivery/budget-events.js'
 import { deliveryEffects } from '../delivery/effect-events.js'
 import type { DeliveryLifecycle } from '../delivery/lifecycle.js'

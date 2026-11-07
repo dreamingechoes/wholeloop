@@ -1,3 +1,4 @@
+// The prepare-launch workflow.
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import type { FlowEngine } from '../flow/engine.js'

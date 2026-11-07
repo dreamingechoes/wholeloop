@@ -1,3 +1,4 @@
+// Builds the client compatibility matrix from supplied observations.
 import { createHash } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import { CONFORMANCE_TARGETS } from './contracts.js'

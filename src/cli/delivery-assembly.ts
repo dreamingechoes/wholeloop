@@ -1,3 +1,4 @@
+// `wl delivery integration-assembl*`: owned assembly of committed parts and its status.
 import { resolve } from 'node:path'
 import { readSourceFile } from '../delivery/input.js'
 import {

@@ -1,3 +1,5 @@
+// Entry point of the installed controller bundle, which runs only as the owned controller
+// (ADR-0205).
 import { fileURLToPath } from 'node:url'
 import { deliveryForegroundChild, deliveryReconcileChild } from '../cli/delivery-runner.js'
 import { EXIT } from '../cli/io.js'

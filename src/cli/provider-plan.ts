@@ -1,3 +1,4 @@
+// `wl provider plan`: plans an operation's transport from the client's MCP inventory.
 import { loadExtensionOptions } from '../config/load.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
 import { type ProviderTransport, planProviderTransport } from '../providers/transport.js'

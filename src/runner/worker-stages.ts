@@ -1,3 +1,4 @@
+// Runner stages that dispatch producing workers, distinct from review and acceptance.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'

@@ -1,3 +1,4 @@
+// Ramp plans, stages, observations and evidence windows for ramp-exposure.
 import { createHash } from 'node:crypto'
 import { validate } from '../config/schema.js'
 import { OPERATIONS } from '../providers/taxonomy.js'

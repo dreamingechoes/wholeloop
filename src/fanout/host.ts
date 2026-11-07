@@ -1,3 +1,4 @@
+// The headless host that launches review and verification workers and records their results.
 import { randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import type { FlowEngine } from '../flow/engine.js'

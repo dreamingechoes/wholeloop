@@ -1,3 +1,4 @@
+// Gemini's native hook binding, which binds a literal environment value rather than shell text.
 import { pinnedGuardCommand } from './pinned-guard.js'
 
 /** Extension hydration binds a literal environment value rather than executable shell text. */

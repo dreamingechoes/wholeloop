@@ -1,3 +1,5 @@
+// Seeds disposable evaluation applications in an explicit store, kept apart from delivery grants
+// and never running their code.
 import { spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'

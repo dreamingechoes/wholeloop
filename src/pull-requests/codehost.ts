@@ -1,3 +1,5 @@
+// Runs gh or glab for pull requests without a shell or credential arguments; their own credential
+// stores stay authoritative.
 import { spawn } from 'node:child_process'
 import { isObject } from '../config/schema.js'
 import type { OperationCall, OperationResult, ProviderHost } from '../providers/operations.js'

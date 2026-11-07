@@ -1,3 +1,4 @@
+// Reads the canonical harness tree for checks.
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 import type { HarnessTree } from './files.js'

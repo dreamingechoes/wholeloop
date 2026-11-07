@@ -1,3 +1,4 @@
+// Admits a CI correction, rechecking the live host before publication.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'

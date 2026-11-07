@@ -1,3 +1,4 @@
+// Runner stages that publish topics as pull requests.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { EffectIntent, EffectRecord } from '../delivery/effect-events.js'

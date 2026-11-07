@@ -1,3 +1,4 @@
+// Fingerprints the Git environment so a changed variable is never mistaken for an unchanged one.
 import { createHash } from 'node:crypto'
 
 type EnvironmentEntry = [string, string | undefined]

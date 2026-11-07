@@ -1,3 +1,4 @@
+// Delivery source requests and observations for intake, without attaching input bytes to errors.
 import { createHash } from 'node:crypto'
 import {
   closeSync,

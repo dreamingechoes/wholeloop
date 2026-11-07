@@ -1,3 +1,5 @@
+// The delivery runner engine: walks a route's stages through fixed controller hosts and records
+// each observation.
 import { randomBytes } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { CheckpointStage } from '../delivery/checkpoint-events.js'

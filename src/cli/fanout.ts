@@ -1,3 +1,4 @@
+// `wl fanout run`: runs a gate round through headless workers.
 import { openCodeVersionProbe } from '../diagnostics/doctor.js'
 import { headlessAdapter } from '../fanout/adapters.js'
 import { runHeadless } from '../fanout/run.js'

@@ -1,3 +1,4 @@
+// Provisions delivery environments, binding grants and effect budgets to backend observations.
 import { createHash, randomUUID } from 'node:crypto'
 import { posix } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'

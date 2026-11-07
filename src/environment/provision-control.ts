@@ -1,3 +1,4 @@
+// Parent bounds that can narrow, never renew, an environment's provisioning limits.
 import {
   type DockerCallOptions,
   DockerEnvironmentError,

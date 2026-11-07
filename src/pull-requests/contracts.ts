@@ -1,3 +1,4 @@
+// Pull-request plans and events, read in journal order.
 import { validate } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'
 import schema from './schemas/events-v1.json' with { type: 'json' }

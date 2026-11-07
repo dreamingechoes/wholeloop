@@ -1,3 +1,4 @@
+// Runs Docker CLI commands and answers inert queries in this process when possible (ADR-0244).
 import { createHash } from 'node:crypto'
 import { homedir } from 'node:os'
 import { workerProcess } from '../fanout/process.js'

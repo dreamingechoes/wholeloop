@@ -1,3 +1,4 @@
+// A read-only observation scope that lets fixed observers share one consistent read.
 import { AsyncLocalStorage } from 'node:async_hooks'
 
 interface ReadEvidence<T> {

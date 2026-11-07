@@ -1,3 +1,4 @@
+// Classifies CI failures and comments into repair requests within the push budget (ADR-0187).
 import { contractDigest } from '../contracts/compatibility.js'
 import { findBudget } from '../delivery/budget-events.js'
 import { deliveryEffects } from '../delivery/effect-events.js'

@@ -1,3 +1,4 @@
+// Observes the Claude Code reference client inside its macOS sandbox before admission (ADR-0203).
 import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, lstatSync, mkdirSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'

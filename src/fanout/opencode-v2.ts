@@ -1,3 +1,5 @@
+// OpenCode headless worker for its version 2 output, decoding one native wrapper rather than
+// searching prose.
 import { createHash } from 'node:crypto'
 import { isAbsolute, join } from 'node:path'
 import { isObject } from '../config/schema.js'

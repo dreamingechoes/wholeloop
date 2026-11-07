@@ -1,3 +1,4 @@
+// Launch plans, drafts and events for prepare-launch.
 import { validate } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'
 import { type MeasurementSource, measurementDigest, validateMeasurement } from './measurement.js'

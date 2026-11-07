@@ -1,3 +1,4 @@
+// Reads committed repository differences for acceptance with byte-exact Git output.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { ProcessResult } from '../fanout/process.js'
 import { assemblyGitArguments, assertAssemblyGitConfiguration } from '../integration/git-process.js'

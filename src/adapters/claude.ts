@@ -1,3 +1,4 @@
+// Renders the harness for Claude Code as loose skills, agents and a plugin.
 import { stringify } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter } from './contracts.js'

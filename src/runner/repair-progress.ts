@@ -1,3 +1,4 @@
+// Counts repeated repair failures and stops a repair loop that is not improving.
 import { findBudget } from '../delivery/budget-events.js'
 import type { DeliveryEvent } from '../delivery/events.js'
 import type { RunnerStore } from './store.js'

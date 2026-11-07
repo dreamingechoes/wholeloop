@@ -1,3 +1,4 @@
+// Validates browser observations, including every chunk of a captured PNG.
 import { AcceptanceError } from './contracts.js'
 
 export function browserPage(text: string, origin: string) {

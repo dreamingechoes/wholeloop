@@ -1,3 +1,4 @@
+// `wl doctor`: runs the installation diagnostics and prints their report.
 import { readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { resolve } from 'node:path'

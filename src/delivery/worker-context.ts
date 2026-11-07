@@ -1,3 +1,4 @@
+// Builds a worker's context for its claim from the live grant and assignment.
 import { contractDigest } from '../contracts/compatibility.js'
 import { acceptedDecisionPlan } from '../decisions/accepted.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'

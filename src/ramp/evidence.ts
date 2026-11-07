@@ -1,3 +1,4 @@
+// Collects flag and check observations into a ramp evidence window.
 import { isObject } from '../config/schema.js'
 import type { Registry } from '../providers/load.js'
 import { numericEvidence, safeEvidenceReference } from '../providers/numeric.js'

@@ -1,3 +1,4 @@
+// Frames the private seed input so it fits the fixed pipe budget.
 import { AcceptanceError } from './contracts.js'
 
 /** ASCII framing preserves split UTF-8 and keeps worst-case JSON escaping below the fixed two-MiB pipe budget. */

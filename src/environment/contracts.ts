@@ -1,3 +1,4 @@
+// Environment write declarations and their undo recipes, without credential values.
 import { validate } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'
 import schema from './schemas/declaration-v1.json' with { type: 'json' }

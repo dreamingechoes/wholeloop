@@ -1,3 +1,4 @@
+// Inspects a gate round through its host.
 import type { FlowEngine } from '../flow/engine.js'
 import type { ReviewContext } from '../review/contracts.js'
 import { prepareReviewInput } from '../review/input.js'

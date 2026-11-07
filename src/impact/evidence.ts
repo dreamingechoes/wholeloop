@@ -1,3 +1,4 @@
+// Collects impact observations from the fixed source queries.
 import { createHash } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import type { Registry } from '../providers/load.js'

@@ -1,3 +1,4 @@
+// Guard decisions for state writes, commits, pushes and tool calls coming from client hooks.
 import { existsSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 import { assertBuildGreen } from '../build/contracts.js'

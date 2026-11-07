@@ -1,3 +1,4 @@
+// Gate plans, findings, votes, results and their events.
 import { validate } from '../config/schema.js'
 import type { GateInputs, GateUnit } from './lenses.js'
 import planSchema from './schemas/plan-v1.json' with { type: 'json' }

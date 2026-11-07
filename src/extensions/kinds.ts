@@ -1,3 +1,4 @@
+// The template, profile and lens manifest kinds and their catalog adapters.
 import { isObject, type Schema, validate } from '../config/schema.js'
 import { checkShape } from '../flow/registry.js'
 import { FRAME_SECTIONS } from '../framing/contract.js'

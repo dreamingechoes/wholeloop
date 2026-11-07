@@ -1,3 +1,4 @@
+// Cursor headless worker and the hook that keeps its policy from overriding another hook's denial.
 import { isAbsolute } from 'node:path'
 import { isObject } from '../config/schema.js'
 import type { HeadlessAdapter } from './adapters.js'

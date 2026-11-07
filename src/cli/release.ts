@@ -1,3 +1,4 @@
+// `wl release`: preflight, notes and native delivery artifacts.
 import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'

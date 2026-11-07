@@ -1,3 +1,4 @@
+// Delivery plans and envelopes: repositories, units, decisions, policies and budgets.
 import { isAbsolute, resolve } from 'node:path'
 import { isObject, type Schema, validate } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'

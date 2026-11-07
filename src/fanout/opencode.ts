@@ -1,3 +1,4 @@
+// OpenCode headless worker and its permission rules.
 import { createHash } from 'node:crypto'
 import { isAbsolute } from 'node:path'
 import { isObject } from '../config/schema.js'

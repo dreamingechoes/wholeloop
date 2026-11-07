@@ -1,3 +1,4 @@
+// The segmented layout of the delivery journal and its verification.
 import { DeliveryJournalError } from './journal-error.js'
 
 export const JOURNAL_FILE_BYTES = 8 * 1024 * 1024

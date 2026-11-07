@@ -1,3 +1,4 @@
+// Runner stages for verification rounds, including re-entry without new work.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'

@@ -1,3 +1,4 @@
+// Stops and retires exact owned environment resources under operator-only authority.
 import { randomUUID } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'

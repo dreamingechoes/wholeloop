@@ -1,3 +1,4 @@
+// Native client recipes for delivery workers at their reference versions.
 import { isAbsolute, join } from 'node:path'
 import type { Schema } from '../config/schema.js'
 import { isObject } from '../config/schema.js'

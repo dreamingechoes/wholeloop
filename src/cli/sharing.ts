@@ -1,3 +1,4 @@
+// `wl adopt` and `wl share`: adopts and publishes shared documents.
 import { readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import type { SharedTarget } from '../sharing/contracts.js'

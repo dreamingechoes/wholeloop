@@ -1,3 +1,4 @@
+// Prepares a review round's pinned input and rubric.
 import { createHash } from 'node:crypto'
 import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'

@@ -1,3 +1,5 @@
+// Normalizes each client's hook payload into one tool shape without echoing arguments or file
+// bodies.
 import { isAbsolute, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { ITEM_ID } from '../state/events.js'

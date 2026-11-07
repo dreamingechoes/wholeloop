@@ -1,3 +1,4 @@
+// Splits argv into positional arguments and options for every command.
 import { CliError } from './errors.js'
 
 export function parseArguments(

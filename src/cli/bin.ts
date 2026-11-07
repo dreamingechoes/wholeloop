@@ -1,3 +1,5 @@
+// The `wl` executable: routes to the CLI, or to the owned controller child, which never parses
+// ordinary commands.
 import { once } from 'node:events'
 import { fileURLToPath } from 'node:url'
 import { FOREGROUND_ARGUMENT } from '../runner/foreground-owner.js'

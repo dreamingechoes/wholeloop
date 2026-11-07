@@ -1,3 +1,4 @@
+// Reads the OpenCode major version that selects which renderer to use.
 /** Rendering is pure: the caller supplies an observed version or explicitly chooses the legacy default. */
 export function openCodeMajor(version?: string): 1 | 2 {
   if (version === undefined) return 1

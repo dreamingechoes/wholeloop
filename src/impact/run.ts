@@ -1,3 +1,4 @@
+// Runs one read-only analyst per source with the queries the core supplies.
 import type { ProviderHost } from '../providers/operations.js'
 import type { ImpactLayout } from './contracts.js'
 import type { impactReport } from './report.js'

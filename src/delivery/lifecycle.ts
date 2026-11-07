@@ -1,3 +1,4 @@
+// Delivery run lifecycle transitions, including correction revisions.
 import { contractDigest } from '../contracts/compatibility.js'
 import { originalCiFailure } from '../runner/ci-failure.js'
 import { ciRepairAdmission } from '../runner/ci-repair.js'

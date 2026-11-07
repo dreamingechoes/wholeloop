@@ -1,3 +1,4 @@
+// `wl delivery integration-*`: milestone candidates, inspection, comparison and verification.
 import { resolve } from 'node:path'
 import { readSourceFile } from '../delivery/input.js'
 import { INTEGRATION_REQUEST_SCHEMA, IntegrationError } from '../integration/contracts.js'

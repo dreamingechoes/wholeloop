@@ -1,3 +1,4 @@
+// Reopens recorded repository-diff observations from their original read receipts.
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'
 import { EnvironmentResources } from '../environment/runtime.js'

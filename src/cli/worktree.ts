@@ -1,3 +1,4 @@
+// `wl worktree`: creates, opens, stops, lists and prunes slice worktrees.
 import { FlowEngine } from '../flow/engine.js'
 import { StateStore } from '../state/store.js'
 import { WorktreeManager } from '../worktrees/manager.js'

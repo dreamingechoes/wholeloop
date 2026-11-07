@@ -1,3 +1,4 @@
+// `wl sync`: reconciles merged pull requests with delivery and trackers.
 import { readFileSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import { FlowEngine } from '../flow/engine.js'

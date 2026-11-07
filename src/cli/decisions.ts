@@ -1,3 +1,4 @@
+// `wl delivery decision-*`: delegated machine decision schemas, pins, preflight and inspection.
 import { resolve } from 'node:path'
 import { DECISION_RUBRIC_SCHEMA, DelegatedDecisionError } from '../decisions/policy.js'
 import { DECISION_SCHEMAS, DelegatedDecisions } from '../decisions/store.js'

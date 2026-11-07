@@ -1,3 +1,4 @@
+// The known repository slots and the file patterns that fill them.
 export const SLOT_RULES = [
   ['research.method', /research|discovery/],
   ['frame.template', /framing|frame-problem/],

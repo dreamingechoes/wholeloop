@@ -1,3 +1,4 @@
+// Stages non-secret worker policy files; assignments and credentials never touch the disk.
 import { lstatSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 

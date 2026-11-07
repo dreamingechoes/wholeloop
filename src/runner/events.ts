@@ -1,3 +1,4 @@
+// Runner records, stage observations and continuations in the delivery journal.
 import type { DeliveryEvent, DeliveryProjection } from '../delivery/events.js'
 import { DeliveryJournalError } from '../delivery/journal-error.js'
 import eventSchema from './schemas/event-v1.json' with { type: 'json' }

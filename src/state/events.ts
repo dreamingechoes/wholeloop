@@ -1,3 +1,4 @@
+// The journal's event types, items and messages, and the replay that validates them.
 import { randomBytes, randomUUID } from 'node:crypto'
 import { isAbsolute } from 'node:path'
 import { type BuildEventData, validBuildData } from '../build/contracts.js'

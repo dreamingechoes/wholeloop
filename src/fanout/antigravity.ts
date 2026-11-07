@@ -1,3 +1,5 @@
+// Antigravity headless worker: initialization, hook and worker launch with read-only tools checked
+// first.
 import { createHash } from 'node:crypto'
 import { isAbsolute } from 'node:path'
 import { antigravityInput } from '../adapters/antigravity-input.js'

@@ -1,3 +1,4 @@
+// The canonical harness bundled into the CLI, with its digest and validation.
 import { createHash } from 'node:crypto'
 import { checkBudgets } from '../harness/budgets.js'
 import { checkFrontmatter } from '../harness/frontmatter.js'

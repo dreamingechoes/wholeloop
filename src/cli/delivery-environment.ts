@@ -1,3 +1,4 @@
+// `wl delivery` environment planning commands: recipe discovery and selection.
 import { resolve } from 'node:path'
 import { readSourceFile } from '../delivery/input.js'
 import { DOCKER_REFERENCE_HELPER } from '../environment/docker-policy.js'

@@ -1,3 +1,4 @@
+// `wl ramp`: plans, observes and records ramp-exposure decisions.
 import { readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import type { RampOutcome, RampPlan } from '../ramp/contracts.js'

@@ -1,3 +1,4 @@
+// The mandatory built-in gate lenses.
 // Keep the mandatory set independent of manifests so overrides cannot narrow coverage.
 export const BUILTIN_LENSES = [
   ['correctness', 'Find behavioral defects the tests missed.', true],

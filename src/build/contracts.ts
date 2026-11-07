@@ -1,3 +1,5 @@
+// Builder plans and agreements, and the rule that a build completes only with both gates green on
+// the same bytes.
 import { isObject, validate } from '../config/schema.js'
 import { type Criterion, parseCriteria } from '../definition/criteria.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'

@@ -1,3 +1,4 @@
+// `wl launch`: plans, drafts and records prepare-launch.
 import { readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import type { LaunchDraft } from '../launch/contracts.js'

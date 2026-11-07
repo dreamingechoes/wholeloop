@@ -1,3 +1,5 @@
+// The adapter registry and the pure render tree shared by generation, installation and golden
+// tests.
 import { createHash } from 'node:crypto'
 import { posix } from 'node:path'
 import { validate } from '../config/schema.js'

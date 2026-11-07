@@ -1,3 +1,4 @@
+// Owned-file reads and writes for installation, shared by dry runs and real runs.
 import { randomUUID } from 'node:crypto'
 import {
   chmodSync,

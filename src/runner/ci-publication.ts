@@ -1,3 +1,4 @@
+// The publication targets a CI correction updates, keeping every original topic and pull request.
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { ancestor } from '../worktrees/git.js'
 import { ciCorrectionOrigin } from './ci-correction-origin.js'

@@ -1,3 +1,4 @@
+// Budget limits, reservations and usage, replayed from the delivery journal.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryEvent, DeliveryProjection } from './events.js'
 import { DeliveryJournalError } from './journal-error.js'

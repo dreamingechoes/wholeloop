@@ -1,3 +1,4 @@
+// Marks harness entrypoints so discovery can route them; a routing hint, not provenance.
 import { parse as toml } from 'smol-toml'
 import { stripCode } from '../docs/markdown.js'
 

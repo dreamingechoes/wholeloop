@@ -1,3 +1,4 @@
+// Runner stages that execute pinned acceptance cases against the assembled product.
 import { existsSync } from 'node:fs'
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'

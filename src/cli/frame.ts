@@ -1,3 +1,4 @@
+// `wl frame`: framing drafts and their schema.
 import { lstatSync, readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import {

@@ -1,3 +1,4 @@
+// Computes which stages a delivery revision can reuse from their declared inputs.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { deliveryEffects } from '../delivery/effect-events.js'

@@ -1,3 +1,4 @@
+// Builds and caches the repository capability map that discovery returns.
 import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'

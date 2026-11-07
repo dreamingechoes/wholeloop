@@ -1,3 +1,4 @@
+// Reads client-supplied impact observations for a run.
 import { normalizedReadHost, planReadRequests } from '../providers/reads.js'
 import { collectImpact } from './evidence.js'
 import type { ImpactWorkflow } from './workflow.js'

@@ -1,3 +1,4 @@
+// Read-only native research workers, one source report per key.
 import { createHash } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'

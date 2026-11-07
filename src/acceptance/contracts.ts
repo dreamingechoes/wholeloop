@@ -1,3 +1,4 @@
+// Acceptance plans, cases, assertions, bindings and results.
 import { type Schema, validate } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { safeSourceText } from '../delivery/input.js'

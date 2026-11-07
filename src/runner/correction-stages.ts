@@ -1,3 +1,4 @@
+// Runner stages that dispatch a correction builder with only the retained failure.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { DeliveryCommits } from '../delivery/commits.js'

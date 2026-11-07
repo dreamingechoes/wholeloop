@@ -1,3 +1,4 @@
+// Loads providers from every layer into a registry and resolves an operation to one of them.
 import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs'
 import { join } from 'node:path'
 import { parse } from 'yaml'

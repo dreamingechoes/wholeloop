@@ -47,32 +47,40 @@ flowchart TB
 | **Core (`wl`)** | Everything with one right answer: order, preconditions, questions, bindings, shape checks, gate arithmetic, persistence | Call a model; make a product judgement |
 | **Adapters** | Translate formats, paths, tool names and hook payloads per CLI | Add behaviour that other CLIs would not get |
 
-## Repository layout (target)
+## Repository layout
 
 ```text
 wholeloop/
-├─ src/                      core — the `wl` CLI
-│  ├─ cli/                   command definitions (generate the command reference)
-│  ├─ flow/                  step registry, step contract, decision points
-│  ├─ state/                 journal, projections, mailbox, ids, locking
-│  ├─ config/                schema, layered loading, profile rendering
-│  ├─ discover/              repo scan, slot resolution
-│  ├─ providers/             registry, manifest schema, detection, MCP recipes
-│  ├─ gates/                 lenses, rounds, refutation threshold, aggregation
-│  ├─ fanout/                native · headless · sequential engines
-│  ├─ adapters/              one module per CLI
-│  ├─ guards/                normalised hook entry point (`wl guard`)
-│  └─ docs/                  docnav, link and diagram checks
+├─ src/                      the `wl` core; every module opens with a header saying why it exists
+│  ├─ cli/                   command table, argument parsing and one module per command group
+│  ├─ flow/ · utilities/     step registry and engine; next, status, setup
+│  ├─ state/                 external journal, projections, mailbox, attribution, store paths
+│  ├─ config/ · profile/     layered configuration and interaction profiles
+│  ├─ extensions/            template, lens and profile manifest catalogs
+│  ├─ discovery/             repository scan and slot resolution
+│  ├─ providers/             provider manifests, registry, MCP transport planning
+│  ├─ framing/ · research/ · spec/ · scopes/ · slices/ · definition/   Define-step contracts
+│  ├─ build/ · verification/ · review/ · gates/ · fanout/ · worktrees/ · pull-requests/   Build-step contracts and hosts
+│  ├─ launch/ · ramp/ · impact/ · learning/ · sync/ · sharing/   Rollout, Learn and synchronization
+│  ├─ delivery/              autonomous delivery: intake, plans, grants, queue, journal, native hosts
+│  ├─ runner/                the delivery runner engine and its stages
+│  ├─ integration/ · acceptance/ · environment/   assembly, acceptance hosts, Docker environments
+│  ├─ decisions/ · evaluation/ · grounding/   delegated decisions and evaluation corpora
+│  ├─ adapters/ · installation/ · guards/   per-client rendering, native installation, hooks
+│  ├─ conformance/ · diagnostics/   native conformance runs and `wl doctor`
+│  ├─ overview/              read-only operator overview and watch feed
+│  ├─ harness/ · docs/       harness and documentation checks
+│  ├─ release/ · contracts/ · git/   release preparation, the frozen v1 contract baseline, commit rules
+│  └─ maintainer/            renders the repository's own maintainer tools (not shipped)
 ├─ harness/                  canonical, CLI-neutral content
-│  ├─ skills/<step>/SKILL.md
-│  ├─ agents/<role>.md
-│  ├─ protocols/*.md
-│  ├─ workflows/*.ts
-│  ├─ providers/<id>/provider.yml
-│  ├─ lenses/*.yml · templates/*.md · profiles/*.yml
-├─ test/                     unit · snapshot · workflow · conformance · evals
+│  ├─ skills/ · agents/ · protocols/ · workflows/
+│  ├─ providers/<id>/        provider manifests and guidance
+│  └─ conformance/           bundled conformance scenarios
+├─ maintainer/               skills and agents for working on this repository (ADR-0246)
+├─ scripts/                  build, gate, release, conformance and evaluation scripts
+├─ test/                     unit · conformance · evals · fixtures · support
 ├─ docs/                     this documentation
-└─ roadmap/                  phases and small tasks
+└─ roadmap/                  phases, tasks and the journal
 ```
 
 ## How a step actually runs

@@ -1,3 +1,4 @@
+// Event attribution: who acted, through which client, and why; descriptive, never an approval.
 import { isObject } from '../config/schema.js'
 
 export interface ClientIdentity {

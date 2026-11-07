@@ -3,7 +3,7 @@
 > **Outcome** — The repository maintains itself with its own skills and agents, releases are automated up to one human approval, supply-chain and history risks are checked, users meet a README written for them and contributors a guide written for them, and wholeloop 1.0.0 is public, published and announced.
 
 > [!NOTE]
-> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08, P7-10, P7-11 and P7-16 complete; P7-09 prepared and awaiting the maintainer's switch.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
+> **Status: 🔄 in progress · added on 2026-11-07 for 1.0.0; P7-01–P7-08, P7-10–P7-12 and P7-16 complete; P7-09 prepared and awaiting the maintainer's switch.** The maintainer adds this phase as the final step before the first public release. It absorbs the release tasks that were spread over earlier phases: P5-05 becomes P7-14, P5-07 becomes P7-15 and P6-32 becomes P7-13; their former headings remain as redirects so existing links keep working. P7-01–P7-12 and P7-16 do not depend on native or hosted acceptance and can proceed while the Phase 6 campaign runs. P7-16, added the same day, retired the built-in service clients on 2026-11-07, before the versioning, README and documentation work.
 
 Versions are always full semantic versions: the first public release is `1.0.0`, preceded by release candidates such as `1.0.0-rc.1` on the npm `next` dist-tag.
 
@@ -260,7 +260,7 @@ flowchart LR
 
 ## P7-12 · Code and contributor documentation pass
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P7-02, P7-03
+**Status:** ✅ · **Size:** M · **Depends on:** P7-02, P7-03
 
 **Goal** — Make the code and the contributor guides easy to understand for someone new.
 
@@ -268,8 +268,10 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] Every source module states its purpose in one short header.
-- [ ] Comments explain constraints and rejected alternatives, not what the code already says.
+- [x] Every source module states its purpose in one short header.
+- [x] Comments explain constraints and rejected alternatives, not what the code already says.
+
+**Evidence** — All 491 modules in `src/` now open with a header saying why the module exists; 478 had none and 13 opened with a constraint note instead of a purpose. Headers were written from each module's exports and existing documentation comments, and the command modules were checked against the command table, which corrected guesses such as the paths `build` and `delivery` subcommands actually handle. `test/unit/docs/module-headers.test.ts` fails on a module without a header or with one longer than six lines, and AGENTS.md states the convention. The existing documentation comments read while writing headers (one per module) were constraint statements, not restatements; no separate line-by-line comment audit was made. The architecture overview's repository layout was a pre-implementation target (with a `discover/` directory that never existed and harness directories that are not there); it now matches the tree, and AGENTS.md lists `maintainer/` and `scripts/`.
 
 **Tests** — Lint and docs check.
 

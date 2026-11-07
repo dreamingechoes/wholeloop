@@ -1,3 +1,4 @@
+// Native hook artifacts for each client; they carry transport only and leave policy to the core.
 import { antigravityHook } from './antigravity-hook.js'
 import type { RenderedFile } from './contracts.js'
 import { cursorHook } from './cursor-hook.js'

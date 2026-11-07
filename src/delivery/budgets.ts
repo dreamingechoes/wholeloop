@@ -1,3 +1,4 @@
+// The delivery budget store and checks, read fresh within one controller decision.
 import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'

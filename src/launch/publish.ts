@@ -1,3 +1,4 @@
+// Dispatches launch artifacts through the three operations the conductor may invoke.
 import { loadExtensionOptions } from '../config/load.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
 import type { ProviderHost } from '../providers/operations.js'

@@ -1,3 +1,4 @@
+// Behaviour-case input for API and CLI acceptance, with credential headers left unobserved.
 import { type AcceptanceCase, AcceptanceError, acceptanceShape } from './contracts.js'
 import schema from './schemas/behavior-input-v1.json' with { type: 'json' }
 

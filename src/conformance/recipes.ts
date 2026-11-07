@@ -1,3 +1,4 @@
+// Per-client conformance invocations, prompts and environments.
 import { basename, dirname } from 'node:path'
 import { antigravityInput } from '../adapters/antigravity-input.js'
 import type { PreparedConformance, Scenario } from './contracts.js'

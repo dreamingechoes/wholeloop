@@ -1,3 +1,4 @@
+// Where the operator's trusted native clients live on this machine (ADR-0205).
 import { isAbsolute, normalize } from 'node:path'
 import { DOCKER_IMAGE } from '../environment/docker-policy.js'
 import { REFERENCE_NATIVE_VERSIONS } from './native-adapters.js'

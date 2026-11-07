@@ -1,3 +1,4 @@
+// `wl delivery enqueue`: admits planned delivery work to the queue.
 import { resolve } from 'node:path'
 import type { BrokerRole } from '../delivery/broker.js'
 import { DeliveryJournalError } from '../delivery/events.js'

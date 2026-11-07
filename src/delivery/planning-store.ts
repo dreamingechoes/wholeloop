@@ -1,3 +1,4 @@
+// Stores delivery plans and their revisions.
 import { existsSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'

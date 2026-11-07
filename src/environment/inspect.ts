@@ -1,3 +1,4 @@
+// Observes an owned environment's current state; a past readiness is not current readiness.
 import { contractDigest } from '../contracts/compatibility.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { ENVIRONMENT_SNAPSHOT_LIMITS } from './candidates.js'

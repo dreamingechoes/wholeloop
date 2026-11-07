@@ -1,3 +1,4 @@
+// Reads a delivery source through a provider host, taking its scope from the response.
 import type { LoadedProvider } from '../providers/load.js'
 import {
   type OperationCall,

@@ -1,3 +1,4 @@
+// The response schema given to native structured output, which the core still validates in full.
 import type { Schema } from '../config/schema.js'
 import { GATE_SCHEMAS } from '../gates/contracts.js'
 

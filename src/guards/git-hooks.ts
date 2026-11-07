@@ -1,3 +1,4 @@
+// Opt-in Git hooks that chain to existing ones instead of replacing them.
 import { spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { chmodSync, existsSync, lstatSync, readdirSync, readFileSync, renameSync } from 'node:fs'

@@ -1,3 +1,4 @@
+// `wl scopes`: validates and publishes scope plans.
 import { FlowEngine } from '../flow/engine.js'
 import { SCOPE_SCHEMA, scopeContext } from '../scopes/contract.js'
 import { StateStore } from '../state/store.js'

@@ -1,3 +1,4 @@
+// The pinned guard command that native hooks run, shared by every adapter.
 /** Shared transport only: adapters supply trusted context binding; policy stays in the core. */
 export function pinnedGuardCommand(
   target: string,

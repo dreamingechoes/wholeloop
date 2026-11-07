@@ -1,3 +1,4 @@
+// Collects a Docker acceptance observation in a fixed host that workers can feed data but not code.
 import { createHash } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import { currentBudgetReservation } from '../delivery/budget-policy.js'

@@ -1,3 +1,5 @@
+// Dispatches an impact digest as an unsent draft or a document comment, on the conductor's explicit
+// request.
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import type { FlowEngine } from '../flow/engine.js'

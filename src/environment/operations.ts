@@ -1,3 +1,4 @@
+// Tracks Docker operation processes and their fencing, keeping unknown presence unknown.
 import { spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { existsSync, readdirSync } from 'node:fs'

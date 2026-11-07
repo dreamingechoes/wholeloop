@@ -1,3 +1,4 @@
+// Admits and runs behaviour jobs in Docker with proof of how each process closed.
 import { contractDigest } from '../contracts/compatibility.js'
 import {
   DockerEnvironmentError,

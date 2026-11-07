@@ -1,3 +1,5 @@
+// Structural checks of a framing document and its outcome; factual truth still needs evidence
+// review.
 import { stripCode } from '../docs/markdown.js'
 import type { Item, StateEvent } from '../state/events.js'
 

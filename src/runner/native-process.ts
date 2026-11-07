@@ -1,3 +1,4 @@
+// Manages native worker processes with recoverable private cancellation.
 import { randomUUID } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'

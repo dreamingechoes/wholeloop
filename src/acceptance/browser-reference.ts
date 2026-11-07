@@ -1,3 +1,4 @@
+// The pinned reference browser image and the tool contract it must expose.
 import { contractDigest } from '../contracts/compatibility.js'
 import reference from './browser-reference.json' with { type: 'json' }
 import { AcceptanceError } from './contracts.js'

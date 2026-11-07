@@ -1,3 +1,4 @@
+// `wl eval grounding`: runs the grounding evaluation.
 import { readFileSync } from 'node:fs'
 import { groundingEval, groundingInputs } from '../grounding/eval.js'
 import type { parseArguments } from './arguments.js'

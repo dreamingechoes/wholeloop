@@ -1,3 +1,4 @@
+// Replays review inputs, which stay immutable once recorded.
 import type { StateEvent } from '../state/events.js'
 import type { ReviewInput } from './contracts.js'
 

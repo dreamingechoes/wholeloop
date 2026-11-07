@@ -1,3 +1,4 @@
+// Read-only native attempts, such as research with the client's own web tools.
 import { createHash, randomBytes } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'

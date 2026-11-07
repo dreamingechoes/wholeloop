@@ -1,3 +1,4 @@
+// Operator grants and revocations for autonomous delivery, and the effects a grant may allow.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { OPERATIONS } from '../providers/taxonomy.js'

@@ -1,3 +1,4 @@
+// `wl config`: shows the resolved configuration and where each value came from.
 import { loadConfig } from '../config/load.js'
 import { CONFIG_SCHEMA } from '../config/schema.js'
 import type { parseArguments } from './arguments.js'

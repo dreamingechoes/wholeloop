@@ -1,3 +1,5 @@
+// The command table: every path, its usage, options and output schema, from which help and the
+// reference are generated.
 import { ATTRIBUTED_COMMANDS, ATTRIBUTION_OPTIONS } from './attribution.js'
 
 export interface Command {

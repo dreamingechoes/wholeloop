@@ -1,3 +1,4 @@
+// Judges a conformance run against its scenario's expected outcome.
 import { existsSync, lstatSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'

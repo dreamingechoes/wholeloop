@@ -1,3 +1,4 @@
+// Reads the client's reported MCP tool inventory from one bounded regular file.
 import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { type ClientMcpInventory, clientMcpInventory } from '../providers/transport.js'

@@ -1,3 +1,4 @@
+// Computes the flow plan and decision trail that status, execution and the overview all read.
 import { resolveConfig } from '../config/resolve.js'
 import { isObject } from '../config/schema.js'
 import type { Profile } from '../profile/presets.js'

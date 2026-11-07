@@ -1,3 +1,4 @@
+// Aggregates a gate round into a report; missing responses never count as refutations.
 import type { GatePlan, GateReport, GateResult, GateVote } from './contracts.js'
 
 /** Missing responses never become refutations, and budget exhaustion never grants approval. */

@@ -1,3 +1,4 @@
+// Checkpoint events and their reducer for the delivery journal.
 import type { DeliveryEvent, DeliveryProjection } from './events.js'
 import { DeliveryJournalError } from './journal-error.js'
 import checkpointEventSchema from './schemas/checkpoint-event-v1.json' with { type: 'json' }

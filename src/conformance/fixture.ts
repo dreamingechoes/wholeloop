@@ -1,3 +1,4 @@
+// A fixture conformance worker that runs the installed core instead of a native client.
 /** Simulation executes the installed core, not a fabricated journal. It never invokes a native client/model. */
 export const fixtureWorker = `
 import { readFileSync, writeFileSync } from 'node:fs'

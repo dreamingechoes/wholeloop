@@ -1,3 +1,4 @@
+// Replays verification runs and rejects duplicate or inconsistent records.
 import type { GatePlan } from '../gates/contracts.js'
 import { gateRuns } from '../gates/state.js'
 import type { StateEvent } from '../state/events.js'

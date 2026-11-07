@@ -1,3 +1,4 @@
+// `wl research`: plans and records research rounds.
 import { readFileSync, statSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import { ResearchWorkflow } from '../research/workflow.js'

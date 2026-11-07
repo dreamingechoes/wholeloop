@@ -1,3 +1,4 @@
+// Journal-position cursors that identify exactly what an overview read covered.
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryEvent } from '../delivery/events.js'

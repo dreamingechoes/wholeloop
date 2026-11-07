@@ -1,3 +1,4 @@
+// Recovers recorded integration verification observations without querying Docker or worktrees.
 import { existsSync } from 'node:fs'
 import { sameAcceptanceInputs } from '../acceptance/boundary.js'
 import { observedDockerAcceptanceCase } from '../acceptance/case-observation.js'

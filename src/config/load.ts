@@ -1,3 +1,4 @@
+// Reads configuration files and extension options for every layer.
 import { readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, isAbsolute, join } from 'node:path'

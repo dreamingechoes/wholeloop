@@ -1,3 +1,4 @@
+// `wl provider`: lists, shows, resolves, tests and scaffolds providers.
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { stringify } from 'yaml'

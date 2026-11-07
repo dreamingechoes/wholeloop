@@ -1,3 +1,4 @@
+// `wl build route`, `agree`, `plan` and related subcommands: builder plans, agreements and receipts for build-slice.
 import { readFileSync } from 'node:fs'
 import { BUILDER_PLAN_SCHEMA, type BuilderPlan } from '../build/contracts.js'
 import { BuildWorkflow } from '../build/workflow.js'

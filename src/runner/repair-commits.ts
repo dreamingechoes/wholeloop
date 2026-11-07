@@ -1,3 +1,4 @@
+// Commits a correction, which never replaces independent QA.
 import { existsSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'

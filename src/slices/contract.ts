@@ -1,3 +1,4 @@
+// Slice documents and plans, including dependency validation with cycle detection.
 import { isAbsolute } from 'node:path'
 import { isDeepStrictEqual } from 'node:util'
 import { validate } from '../config/schema.js'

@@ -1,3 +1,4 @@
+// Runs one conformance scenario and reports it; an interrupted run is never resumed or relabelled.
 import { join } from 'node:path'
 import { versionProbe } from '../diagnostics/doctor.js'
 import { workerProcess } from '../fanout/process.js'

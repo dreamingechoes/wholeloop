@@ -1,3 +1,4 @@
+// `wl guard`: answers client hook events with a decision, never echoing their input.
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { isObject } from '../config/schema.js'

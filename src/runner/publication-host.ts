@@ -1,3 +1,5 @@
+// GitHub code, CI and merge hosts through the installed git and gh clients and their credential
+// store.
 import { isObject } from '../config/schema.js'
 import {
   type CommandExecutor,

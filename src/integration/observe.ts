@@ -1,3 +1,5 @@
+// Observes committed worktrees and protected inputs for an integration candidate without changing
+// anything.
 import { createHash } from 'node:crypto'
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'

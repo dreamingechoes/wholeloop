@@ -1,3 +1,4 @@
+// The bundled fictional conformance scenario.
 import { artifactDigest } from '../adapters/generate.js'
 import { isObject, validate } from '../config/schema.js'
 import { checkShape } from '../flow/registry.js'

@@ -1,3 +1,5 @@
+// Routes a command line to its handler, synchronously for the programmatic API and asynchronously
+// for the binary.
 import { fileURLToPath } from 'node:url'
 import { VERSION } from '../version.js'
 import { adapterRoot } from './adapter-root.js'

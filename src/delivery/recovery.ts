@@ -1,3 +1,4 @@
+// Recovers delivery state from a separate process without reconstructing authority.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { BudgetClock } from './budget-events.js'
 import { DeliveryBudgets } from './budgets.js'

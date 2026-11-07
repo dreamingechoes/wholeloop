@@ -1,3 +1,4 @@
+// Delegated-decision rubrics, outcomes and unknowns, and how a default may resolve a missing fact.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryPolicy } from '../delivery/plan.js'
 import { type DELIVERY_DECISIONS, validateDeliveryShape } from '../delivery/plan.js'

@@ -1,3 +1,4 @@
+// `wl guard commit-msg`: checks a commit message file against the commit rules.
 import { readFileSync } from 'node:fs'
 import { checkCommit } from '../git/commit.js'
 import { CliError } from './errors.js'

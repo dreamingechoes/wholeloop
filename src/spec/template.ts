@@ -1,3 +1,4 @@
+// Selects the specification template from the extension catalog.
 import { CliError } from '../cli/errors.js'
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'

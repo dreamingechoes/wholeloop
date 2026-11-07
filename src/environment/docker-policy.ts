@@ -1,3 +1,5 @@
+// Docker isolation policy: pinned helper images, resource limits and the preflight that checks
+// them.
 import { arch, platform } from 'node:os'
 import { posix } from 'node:path'
 import { isObject } from '../config/schema.js'

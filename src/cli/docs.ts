@@ -1,3 +1,4 @@
+// `wl docs`: generated navigation, documentation checks and reference sections.
 import { checkLinks, checkNav, type Problem } from '../docs/check.js'
 import { checkDeliveryCases, hasDeliveryCases } from '../docs/delivery-cases.js'
 import { parseNav, renderFooter, withFooter } from '../docs/nav.js'

@@ -1,3 +1,4 @@
+// Describes the acceptance inputs available to the public host, granting no execution.
 import { BEHAVIOR_INPUT_SCHEMA, BEHAVIOR_RESPONSE_HEADERS } from '../acceptance/behavior-input.js'
 import {
   REPOSITORY_DIFF_INPUT_SCHEMA,

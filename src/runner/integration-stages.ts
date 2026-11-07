@@ -1,3 +1,4 @@
+// Runner stages for whole-milestone integration and its correction cases.
 import { existsSync } from 'node:fs'
 import { browserInput } from '../acceptance/browser-input.js'
 import { browserReferenceCommand } from '../acceptance/browser-reference.js'

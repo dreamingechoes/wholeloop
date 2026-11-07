@@ -1,3 +1,4 @@
+// Parses enforcement.yml and checks that every hard rule names an enforcer.
 import { parse } from 'yaml'
 import type { Finding, HarnessTree } from './files.js'
 

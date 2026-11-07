@@ -1,3 +1,4 @@
+// Queries an evidence source through its host and keeps missing observations explicit.
 import { createHash } from 'node:crypto'
 import type { LoadedProvider } from './load.js'
 import { type ProviderHost, performOperation } from './operations.js'

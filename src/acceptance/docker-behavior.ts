@@ -1,3 +1,4 @@
+// The fixed Docker host for API and CLI behaviour cases.
 import { type BehaviorObservation, observeAssertion } from './assertions.js'
 import { behaviorInput } from './behavior-input.js'
 import type { AcceptanceCase } from './contracts.js'

@@ -1,3 +1,4 @@
+// Publishes queued shared documents after a step completes, outside the store lock.
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import type { FlowEngine } from '../flow/engine.js'

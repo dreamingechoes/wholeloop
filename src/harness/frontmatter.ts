@@ -1,3 +1,4 @@
+// Front-matter rules for skills and agents.
 import { parse } from 'yaml'
 import type { Finding, HarnessTree } from './files.js'
 

@@ -1,3 +1,4 @@
+// Checks that private acceptance detects a known regression before its result can count.
 import { contractDigest } from '../contracts/compatibility.js'
 import { DeliveryEffects } from '../delivery/effects.js'
 import { EnvironmentOperations } from '../environment/operations.js'

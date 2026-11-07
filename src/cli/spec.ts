@@ -1,3 +1,4 @@
+// `wl spec`: checks a specification document.
 import { readFileSync } from 'node:fs'
 import { checkShape } from '../flow/registry.js'
 import { checkSpec, SPEC_SCHEMA, SPEC_SECTIONS } from '../spec/contract.js'

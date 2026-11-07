@@ -1,3 +1,4 @@
+// Decides whether a unit's QA is current for its owned head.
 import { contractDigest } from '../contracts/compatibility.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { shareReadObservation } from '../state/read-observation.js'

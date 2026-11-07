@@ -1,3 +1,4 @@
+// Product environments for milestone acceptance, derived from the owned assembly.
 import { existsSync } from 'node:fs'
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'

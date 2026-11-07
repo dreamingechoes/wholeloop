@@ -1,3 +1,4 @@
+// Inspects learning results for maintenance proposals on unprotected paths.
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, readdirSync } from 'node:fs'

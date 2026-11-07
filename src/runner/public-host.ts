@@ -1,3 +1,4 @@
+// The fixed public runner host, its identity and its retained bindings.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'

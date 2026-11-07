@@ -1,3 +1,4 @@
+// The error type delivery journal reducers raise.
 /** Keep family reducers independent of the envelope's registry to avoid a runtime import cycle. */
 export class DeliveryJournalError extends Error {
   constructor(readonly problem: string) {

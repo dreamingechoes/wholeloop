@@ -1,3 +1,4 @@
+// Resolves the external store and refuses any path inside a repository (ADR-0004).
 import { existsSync, realpathSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'

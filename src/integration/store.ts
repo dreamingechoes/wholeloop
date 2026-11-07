@@ -1,3 +1,4 @@
+// Stores immutable integration candidates and records.
 import { existsSync } from 'node:fs'
 import { acceptanceShape } from '../acceptance/contracts.js'
 import { contractDigest } from '../contracts/compatibility.js'

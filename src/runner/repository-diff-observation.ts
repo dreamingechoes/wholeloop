@@ -1,3 +1,4 @@
+// Checks ownership of recorded repository-diff observations from private receipts.
 import type { AcceptanceCase, AcceptanceCaseResult } from '../acceptance/contracts.js'
 import {
   REPOSITORY_DIFF_OPERATIONS,

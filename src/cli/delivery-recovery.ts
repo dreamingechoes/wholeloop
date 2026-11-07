@@ -1,3 +1,4 @@
+// `wl delivery` recovery commands: checkpoints, effects and writer-lock status and repair.
 import { resolve } from 'node:path'
 import {
   CHECKPOINT_MANIFEST_SCHEMA,

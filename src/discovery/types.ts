@@ -1,3 +1,4 @@
+// Types of the repository capability map.
 export interface Asset {
   path: string
   kind: 'skill' | 'agent' | 'instruction' | 'convention' | 'quality' | 'design'

@@ -1,3 +1,4 @@
+// Composes the public runner host from installed native parts and repository guidance.
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync } from 'node:fs'
 import { userInfo } from 'node:os'

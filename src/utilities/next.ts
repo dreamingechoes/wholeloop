@@ -1,3 +1,4 @@
+// `wl next`: routes an ID or a new idea to the next available step contract.
 import { CliError } from '../cli/errors.js'
 import { EXIT } from '../cli/io.js'
 import type { FlowEngine } from '../flow/engine.js'

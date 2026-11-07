@@ -1,3 +1,4 @@
+// `wl verify`: suite plans and execution for verify-works.
 import { readFileSync } from 'node:fs'
 import { BuildWorkflow } from '../build/workflow.js'
 import { parseCriteria } from '../definition/criteria.js'

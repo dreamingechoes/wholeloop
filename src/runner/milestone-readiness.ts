@@ -1,3 +1,4 @@
+// Decides whether unit QA supplies a complete input vector for a milestone assembly.
 import { contractDigest } from '../contracts/compatibility.js'
 import { type IntegrationPart, integrationScope } from '../integration/contracts.js'
 import { shareReadObservation } from '../state/read-observation.js'

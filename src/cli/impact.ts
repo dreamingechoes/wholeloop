@@ -1,3 +1,4 @@
+// `wl measure`: plans, records and reports impact measurements.
 import { readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import type { ImpactLayout, QualitativeQuery } from '../impact/contracts.js'

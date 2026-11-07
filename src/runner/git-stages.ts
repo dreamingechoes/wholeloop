@@ -1,3 +1,4 @@
+// Runner stages for owned Git work, which keep native evidence but grant no QA.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { candidateFiles, candidateIndex } from '../delivery/candidate-files.js'

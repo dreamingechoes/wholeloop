@@ -1,3 +1,5 @@
+// Fingerprints the frozen version-one contracts so a release cannot change a schema, command or
+// exit code silently.
 import { createHash } from 'node:crypto'
 import type { Command } from '../cli/commands.js'
 import { isObject } from '../config/schema.js'

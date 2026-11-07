@@ -1,3 +1,4 @@
+// Shared types for harness file checks.
 export interface Finding {
   file: string
   line?: number

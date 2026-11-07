@@ -1,3 +1,5 @@
+// Reads a labelled shared-document import, an observation rather than proof of an authenticated
+// call.
 import { readFileSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import type { OperationResult } from '../providers/operations.js'

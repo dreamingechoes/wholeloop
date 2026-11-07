@@ -1,3 +1,5 @@
+// Commit-message rules shared by the commit hook, CI and release notes, so all three judge a
+// subject the same way.
 const SUBJECT =
   /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9][a-z0-9./-]*\))?!?: ([a-z0-9].*)$/
 const TOOL =

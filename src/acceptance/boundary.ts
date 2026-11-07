@@ -1,3 +1,4 @@
+// The acceptance boundary: the exact inputs that must match before a result counts as current.
 import { contractDigest } from '../contracts/compatibility.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'
 import { inspectEnvironment } from '../environment/inspect.js'

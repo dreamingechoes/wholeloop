@@ -1,3 +1,4 @@
+// Binds the owner's framing decision and review to the exact final bytes they approved.
 import { createHash } from 'node:crypto'
 import { validate } from '../config/schema.js'
 import { stripCode } from '../docs/markdown.js'

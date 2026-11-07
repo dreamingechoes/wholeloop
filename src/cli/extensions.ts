@@ -1,3 +1,4 @@
+// `wl template`, `wl lens` and profile manifests: list, test and scaffold extension kits.
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { stringify } from 'yaml'

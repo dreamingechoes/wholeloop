@@ -1,3 +1,5 @@
+// `wl doctor`: observes runtimes, client versions, store access and managed files without repairing
+// or certifying anything.
 import { spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { existsSync, lstatSync, mkdtempSync, readFileSync, rmdirSync, rmSync } from 'node:fs'

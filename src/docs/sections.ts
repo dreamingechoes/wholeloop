@@ -1,3 +1,4 @@
+// Replaces one generated section of a documentation page.
 /** Refuse ambiguous ownership before changing any generated part of a page. */
 export function replaceSection(content: string, kind: string, body: string): string {
   const start = `<!-- ${kind}:start -->`

@@ -1,3 +1,4 @@
+// Research plans, angles, claims, evidence and refutations, with their validation.
 import { type Schema, validate } from '../config/schema.js'
 import { OPERATIONS } from '../providers/taxonomy.js'
 import planSchema from './schemas/plan-v1.json' with { type: 'json' }

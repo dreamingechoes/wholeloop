@@ -1,3 +1,4 @@
+// Reopens a recorded Docker suite case without running the suite again.
 import { createHash } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { SuiteResult } from '../verification/contracts.js'

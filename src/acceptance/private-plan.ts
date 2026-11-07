@@ -1,3 +1,5 @@
+// Stores private acceptance definitions as controller data, never repository assets or worker
+// context.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'

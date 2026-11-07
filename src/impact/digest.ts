@@ -1,3 +1,4 @@
+// The cross-scope impact digest and its delivery request.
 import { measurementDigest } from '../launch/measurement.js'
 import type { StateEvent } from '../state/events.js'
 import { impactRuns } from './contracts.js'

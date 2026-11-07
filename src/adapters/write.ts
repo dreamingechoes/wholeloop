@@ -1,3 +1,4 @@
+// Writes a rendered adapter tree with the same ownership rules as release exports.
 import type { generateAdapter } from './generate.js'
 import { writeOwnedArtifacts } from './owned-output.js'
 

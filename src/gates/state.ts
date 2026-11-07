@@ -1,3 +1,4 @@
+// Replays gate rounds and rejects impossible transitions.
 import { isObject, validate } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'
 import type { GateKind, GatePlan, GateReport, GateResult, GateVote } from './contracts.js'

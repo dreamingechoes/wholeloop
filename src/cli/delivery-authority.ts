@@ -1,3 +1,4 @@
+// `wl delivery grant` and `revoke`: operator grants for autonomous delivery.
 import { resolve } from 'node:path'
 import {
   AUTHORIZATION_REQUEST_SCHEMA,

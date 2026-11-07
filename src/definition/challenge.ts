@@ -1,3 +1,4 @@
+// Challenger modes for definition documents and the plan that assigns them.
 import { createHash } from 'node:crypto'
 import { checkShape } from '../flow/registry.js'
 import { checkFrame, FRAME_SECTIONS } from '../framing/contract.js'

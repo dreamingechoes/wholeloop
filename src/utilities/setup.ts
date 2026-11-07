@@ -1,3 +1,4 @@
+// `wl setup`: records the chosen profile and document or tracker providers at an explicit scope.
 import { dirname, join } from 'node:path'
 import { CliError } from '../cli/errors.js'
 import { EXIT } from '../cli/io.js'

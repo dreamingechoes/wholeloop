@@ -1,3 +1,4 @@
+// The gate evaluation corpus and the scoring of reviewer predictions.
 import { createHash } from 'node:crypto'
 import { readFileSync, realpathSync, statSync } from 'node:fs'
 import { dirname, isAbsolute, resolve } from 'node:path'

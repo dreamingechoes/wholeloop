@@ -1,3 +1,5 @@
+// Creates and starts Docker resources with a retained intent each, since a name or exit code never
+// proves ownership.
 import { randomUUID } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import { DockerEnvironmentError, type DockerTransport, dockerJson } from './docker-command.js'

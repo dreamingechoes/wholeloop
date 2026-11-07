@@ -1,3 +1,4 @@
+// Audits completed correction production as history before a new dispatch.
 import { contractDigest } from '../contracts/compatibility.js'
 import { readCandidateCommit, retainedWorkspaceCommit } from '../delivery/commit-state.js'
 import { readSourceFile } from '../delivery/input.js'

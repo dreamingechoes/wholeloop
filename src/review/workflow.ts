@@ -1,3 +1,4 @@
+// The review-code workflow and its receipt.
 import { BuildWorkflow } from '../build/workflow.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'

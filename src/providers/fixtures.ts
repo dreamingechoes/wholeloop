@@ -1,3 +1,5 @@
+// Offline provider fixtures for binding and normalized-result conformance, separate from live
+// probes.
 import { isDeepStrictEqual } from 'node:util'
 import { isObject } from '../config/schema.js'
 import type { LoadedProvider } from './load.js'

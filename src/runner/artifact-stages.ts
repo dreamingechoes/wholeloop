@@ -1,3 +1,4 @@
+// Runner stages that produce research and report artifacts, with controller-owned cases appended.
 import { existsSync } from 'node:fs'
 import {
   ACCEPTANCE_SCHEMAS,

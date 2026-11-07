@@ -1,3 +1,4 @@
+// The measure-impact workflow, which validates input before creating any item.
 import { BuildWorkflow } from '../build/workflow.js'
 import { loadExtensionOptions } from '../config/load.js'
 import type { FlowEngine } from '../flow/engine.js'

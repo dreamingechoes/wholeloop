@@ -1,3 +1,4 @@
+// Scopes Docker operations to a runner stage and joins their existing owners.
 import { existsSync, readdirSync } from 'node:fs'
 import {
   type RepositoryDiffReader,

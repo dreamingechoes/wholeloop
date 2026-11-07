@@ -1,3 +1,4 @@
+// Line budgets for harness files (ADR-0011).
 import { type Finding, type HarnessTree, lineCount } from './files.js'
 
 export const BUDGETS: readonly { kind: string; pattern: RegExp; maxLines: number }[] = [

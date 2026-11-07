@@ -1,3 +1,4 @@
+// The build-slice workflow: agreement, builder plan, suite assignment and receipt.
 import { createHash } from 'node:crypto'
 import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'

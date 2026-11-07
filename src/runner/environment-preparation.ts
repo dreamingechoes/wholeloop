@@ -1,3 +1,4 @@
+// Captures environment candidate content before the backend can read it.
 import { contractDigest } from '../contracts/compatibility.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { captureEnvironmentCandidates } from '../environment/candidates.js'

@@ -1,3 +1,4 @@
+// Carries an original judgment's rationale verbatim into later records.
 import { validRationale } from '../state/attribution.js'
 
 /** Copy one original judgment verbatim; a changed basis or oversized reason stays unknown. */

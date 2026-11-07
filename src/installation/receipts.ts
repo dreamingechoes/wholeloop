@@ -1,3 +1,4 @@
+// Reads and writes installation receipts in the external store.
 import { lstatSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { artifactDigest } from '../adapters/generate.js'

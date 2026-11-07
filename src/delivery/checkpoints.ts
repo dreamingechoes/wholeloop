@@ -1,3 +1,4 @@
+// Retained delivery checkpoints and their immutable manifests.
 import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'

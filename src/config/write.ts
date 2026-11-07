@@ -1,3 +1,4 @@
+// Writes an explicitly requested setting; runtime state is never written here.
 import { randomUUID } from 'node:crypto'
 import {
   closeSync,

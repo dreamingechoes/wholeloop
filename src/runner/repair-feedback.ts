@@ -1,3 +1,4 @@
+// Turns read-only failure facts into repair feedback.
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'

@@ -1,3 +1,4 @@
+// The verify and review gate workflow: plan, submit, examine and decide.
 import { randomBytes } from 'node:crypto'
 import { resolve } from 'node:path'
 import { buildCriteria } from '../build/contracts.js'

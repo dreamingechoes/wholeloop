@@ -1,3 +1,4 @@
+// Runner stages that execute test suites from actual command and case observations.
 import { existsSync } from 'node:fs'
 import { AcceptanceError } from '../acceptance/contracts.js'
 import { dockerSuiteExecutor } from '../acceptance/docker-suite.js'

@@ -1,3 +1,4 @@
+// The host that observes committed repository changes through the original controller.
 import { contractDigest } from '../contracts/compatibility.js'
 import { type BehaviorObservation, observeAssertion } from './assertions.js'
 import { type AcceptanceCase, AcceptanceError } from './contracts.js'

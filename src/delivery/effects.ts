@@ -1,3 +1,4 @@
+// Issues external effects at most once; a lost response is observed, never invoked again.
 import { randomBytes } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryGrant } from './authority.js'

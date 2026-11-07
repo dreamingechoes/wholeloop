@@ -1,3 +1,4 @@
+// Candidate commit requests, records and receipts for delivery workspaces.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { CandidateFiles } from './candidate-files.js'

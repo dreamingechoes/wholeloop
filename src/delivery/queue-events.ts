@@ -1,3 +1,4 @@
+// Queue admissions and assignments and their reducer for the delivery journal.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { BrokerRole, BrokerScope } from './broker.js'
 import type { DeliveryEvent, DeliveryProjection } from './events.js'

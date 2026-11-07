@@ -1,3 +1,4 @@
+// The measurement plan a launch pins, using the specification's metric vocabulary.
 import { createHash } from 'node:crypto'
 import { validate } from '../config/schema.js'
 import { OPERATIONS } from '../providers/taxonomy.js'

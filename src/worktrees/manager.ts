@@ -1,3 +1,4 @@
+// Creates, stops and prunes slice worktrees, coordinated outside the journal lock.
 import { existsSync, mkdirSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'

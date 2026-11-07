@@ -1,3 +1,4 @@
+// `wl eval delivery-*`: inspects and seeds the original evaluation applications.
 import { resolve } from 'node:path'
 import {
   EVALUATION_CATALOG_SCHEMA,

@@ -1,3 +1,5 @@
+// Leases for artifact-producing attempts, which consume report authority but never delegated
+// approval.
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { guidanceContextProblem } from '../delivery/guidance.js'

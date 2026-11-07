@@ -1,3 +1,4 @@
+// Runner stages that obtain delegated or human decisions as evidence for a stage.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import {

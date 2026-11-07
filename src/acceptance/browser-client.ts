@@ -1,3 +1,4 @@
+// The browser MCP session that receives real tool responses; results cannot be imported from JSON.
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import {

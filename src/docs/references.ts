@@ -1,3 +1,4 @@
+// Generates the command, configuration, provider and platform reference sections.
 import type { Adapter } from '../adapters/contracts.js'
 import { ADAPTERS } from '../adapters/generate.js'
 import type { Command } from '../cli/commands.js'

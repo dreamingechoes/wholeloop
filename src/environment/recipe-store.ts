@@ -1,3 +1,4 @@
+// Discovers and stores environment recipes; a filename is a candidate, never permission to run.
 import { existsSync, realpathSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { isObject } from '../config/schema.js'

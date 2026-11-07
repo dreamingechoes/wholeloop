@@ -1,3 +1,4 @@
+// Definition-defect evaluation corpus and scoring, bound to exact artifact bytes.
 import { createHash } from 'node:crypto'
 import { readFileSync, realpathSync } from 'node:fs'
 import { dirname, isAbsolute, resolve } from 'node:path'

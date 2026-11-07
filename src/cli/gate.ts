@@ -1,3 +1,4 @@
+// `wl gate`: plans, submits and decides verify and review rounds.
 import { readFileSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import { parseCriteria } from '../definition/criteria.js'

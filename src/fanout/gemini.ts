@@ -1,3 +1,4 @@
+// Gemini headless worker: a restricted tool registry, environment and invocation.
 import { isAbsolute, join } from 'node:path'
 import { isObject } from '../config/schema.js'
 import type { HeadlessAdapter } from './adapters.js'

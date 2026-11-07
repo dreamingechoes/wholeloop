@@ -1,3 +1,4 @@
+// Gemini system policy paths per platform, never replacing an administrator's existing policy.
 import { lstatSync } from 'node:fs'
 
 /** Keep native platform paths separate; an existing administrator policy must never be replaced. */

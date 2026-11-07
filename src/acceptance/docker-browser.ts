@@ -1,3 +1,4 @@
+// The fixed Docker host for browser cases, talking only to the controller-owned MCP service.
 import { createHash } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, sourceHash } from '../delivery/input.js'

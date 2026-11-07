@@ -1,3 +1,4 @@
+// Scope documents and plans: sections, stable keys and validation for cut-scopes.
 import { validate } from '../config/schema.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import { parseSpec } from '../spec/contract.js'

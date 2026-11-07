@@ -1,3 +1,4 @@
+// Installation receipts, owned files and the seven targets they cover.
 import { artifactDigest } from '../adapters/generate.js'
 import type { InstallContext, InstalledFile, InstallPlan } from './plan.js'
 

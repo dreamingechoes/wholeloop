@@ -1,3 +1,4 @@
+// Runs a test suite at most once per intent, including after an ambiguous crash.
 import { spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'

@@ -1,3 +1,4 @@
+// Locates the controller bundle and its private reconcile mode.
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'

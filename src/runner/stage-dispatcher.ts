@@ -1,3 +1,4 @@
+// Dispatches each stage to the domain adapter the installed controller registered.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import type { DockerTransport } from '../environment/docker-command.js'

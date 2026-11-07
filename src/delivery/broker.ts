@@ -1,3 +1,4 @@
+// The delivery broker that leases scoped capabilities to workers within a grant.
 import { existsSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'

@@ -1,3 +1,4 @@
+// Documentation checks for navigation, links, anchors and ADR mentions.
 import { posix } from 'node:path'
 import { extractLinks, headingAnchors, isExternal, stripCode } from './markdown.js'
 import { type Nav, renderFooter, withFooter } from './nav.js'

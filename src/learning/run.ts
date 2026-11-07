@@ -1,3 +1,4 @@
+// Collects counterarguments before the human decision without choosing an outcome.
 import type { LearningChallenge } from './contracts.js'
 import type { LearningWorkflow } from './workflow.js'
 

@@ -1,3 +1,4 @@
+// Loads extension manifests from the four layers into one validated catalog.
 import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
 import { parse } from 'yaml'

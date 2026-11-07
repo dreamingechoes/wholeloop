@@ -1,3 +1,4 @@
+// The fixed CI facts a repair task receives, never raw pull-request text or private paths.
 import type { DeliveryCorrection } from '../delivery/plan.js'
 import { originalCiFailure } from './ci-failure.js'
 import type { RunnerCorrectionFeedback } from './correction-stages.js'

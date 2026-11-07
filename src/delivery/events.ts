@@ -1,3 +1,4 @@
+// Delivery event, state and payload schemas.
 import { randomUUID } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'

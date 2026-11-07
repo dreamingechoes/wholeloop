@@ -1,3 +1,4 @@
+// Joins current unit QA to the owned assembly before product QA starts.
 import { contractDigest } from '../contracts/compatibility.js'
 import { IntegrationAssembly } from '../integration/assembly.js'
 import { shareReadObservation } from '../state/read-observation.js'

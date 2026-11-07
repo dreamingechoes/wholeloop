@@ -1,3 +1,4 @@
+// Selects the next queue attempts from a fresh read.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { BudgetLimits } from './budget-events.js'
 import type { AttemptRecord, DeliveryProjection } from './events.js'

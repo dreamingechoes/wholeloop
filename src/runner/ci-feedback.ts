@@ -1,3 +1,4 @@
+// Validates CI feedback and its evidence identity.
 import { contractDigest } from '../contracts/compatibility.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { DeliveryRunnerError } from './route.js'

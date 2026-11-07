@@ -1,3 +1,4 @@
+// The native process scope of one stage, including its read-only gate workers.
 import { lstatSync } from 'node:fs'
 import { basename } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'

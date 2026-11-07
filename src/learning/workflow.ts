@@ -1,3 +1,4 @@
+// The decide-next workflow: plan, challenge and the recorded decision.
 import { randomBytes } from 'node:crypto'
 import { BuildWorkflow } from '../build/workflow.js'
 import type { FlowEngine } from '../flow/engine.js'

@@ -1,3 +1,4 @@
+// Builds the bounded context pack that a new conversation resumes from.
 import { latestBuilderPlan } from '../build/contracts.js'
 import { environmentEntries } from '../environment/ledger.js'
 import { decisionTrail, flowPlan } from '../flow/plan.js'

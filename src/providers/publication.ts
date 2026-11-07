@@ -1,3 +1,5 @@
+// Plans where a document is published, keeping local destinations as the item and artifact
+// themselves.
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'

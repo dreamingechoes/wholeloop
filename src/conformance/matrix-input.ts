@@ -1,3 +1,4 @@
+// Parses conformance observations for the compatibility matrix.
 import { isObject } from '../config/schema.js'
 import { CONFORMANCE_ID, CONFORMANCE_TARGETS } from './contracts.js'
 

@@ -1,3 +1,4 @@
+// Projects the operator overview from journal facts with bounded limits.
 import { contractDigest } from '../contracts/compatibility.js'
 import { findBudget } from '../delivery/budget-events.js'
 import { budgetUsage, unmeteredDeliveryWork } from '../delivery/budget-policy.js'

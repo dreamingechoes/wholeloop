@@ -1,3 +1,5 @@
+// Observes the exact release source and commit range without printing paths or running configured
+// monitors.
 import { spawnSync } from 'node:child_process'
 import { realpathSync } from 'node:fs'
 import type { ReleaseCommit } from './notes.js'

@@ -1,3 +1,4 @@
+// Scans a repository for skills, agents, rules and commands without executing anything.
 import { posix } from 'node:path'
 import { parse } from 'yaml'
 import { isObject } from '../config/schema.js'

@@ -1,3 +1,4 @@
+// The task text a correction builder receives.
 import type { RunnerCorrectionFeedback } from './correction-stages.js'
 
 export const CORRECTION_MESSAGE =

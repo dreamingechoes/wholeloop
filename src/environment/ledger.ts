@@ -1,3 +1,4 @@
+// The environment ledger: declared writes outside the repository and their receipts.
 import { isDeepStrictEqual } from 'node:util'
 import { type Item, replay, type StateEvent } from '../state/events.js'
 import { canonicalPath } from '../state/paths.js'

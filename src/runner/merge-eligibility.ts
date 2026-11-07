@@ -1,3 +1,4 @@
+// Decides whether a pull request may be merged under the opted-in policy.
 import { contractDigest } from '../contracts/compatibility.js'
 import { type CiObservation, type CiPolicy, ciVerdict } from './ci-observations.js'
 

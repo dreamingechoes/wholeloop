@@ -1,3 +1,5 @@
+// Performs a provider operation through a host that owns tool calls, authentication and
+// normalization.
 import { createHash } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import type { LoadedProvider } from './load.js'

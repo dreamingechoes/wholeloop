@@ -1,3 +1,4 @@
+// The private research plan the public host reviews before research and consumes after.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'

@@ -1,3 +1,4 @@
+// Checks that every command declares an output schema variant consumers can find.
 import { isObject } from '../config/schema.js'
 import type { Command } from './commands.js'
 

@@ -1,3 +1,4 @@
+// The ramp-exposure workflow: stages, evidence, decisions and receipts.
 import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 import { BuildWorkflow } from '../build/workflow.js'

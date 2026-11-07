@@ -1,3 +1,4 @@
+// Observes the Codex reference client's containment before admission.
 import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, lstatSync, mkdirSync } from 'node:fs'
 import { createServer } from 'node:net'

@@ -1,3 +1,5 @@
+// Installs, updates and uninstalls native overlays while keeping backups and refusing unowned
+// files.
 import { randomUUID } from 'node:crypto'
 import { rmdirSync, unlinkSync } from 'node:fs'
 import { join } from 'node:path'

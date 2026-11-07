@@ -1,3 +1,4 @@
+// Reads GitHub check and review feedback, projecting it in memory before anything is kept.
 import { isObject } from '../config/schema.js'
 import { type CiFeedbackRead, ciFeedbackEvidence, validateCiFeedback } from './ci-feedback.js'
 import { ciFeedback } from './ci-repair.js'

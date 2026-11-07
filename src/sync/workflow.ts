@@ -1,3 +1,5 @@
+// `wl sync`: reconciles published merges with slice delivery and closes items only after proving
+// each closure.
 import { BuildWorkflow } from '../build/workflow.js'
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'

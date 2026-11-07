@@ -1,3 +1,4 @@
+// Whole-milestone verification requests, selections and reports.
 import { existsSync } from 'node:fs'
 import { DockerAcceptanceBoundary, sameAcceptanceInputs } from '../acceptance/boundary.js'
 import type {

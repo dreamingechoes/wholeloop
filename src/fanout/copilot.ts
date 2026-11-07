@@ -1,3 +1,5 @@
+// Copilot headless worker, keeping its credential store but never inheriting an ambient permission
+// bypass.
 import type { HeadlessAdapter } from './adapters.js'
 
 export const copilotWorker: HeadlessAdapter = {

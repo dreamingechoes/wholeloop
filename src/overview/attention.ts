@@ -1,3 +1,4 @@
+// Operator attention reasons, their order and the next commands they suggest.
 /** Stable core precedence; renderers never rank, infer or approve an action. */
 export const ATTENTION_REASONS = [
   'store-problem',

@@ -1,3 +1,4 @@
+// Stores changed-code snapshots for review outside the repository's Git.
 import { spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { lstatSync, mkdirSync, readFileSync, readlinkSync, rmSync } from 'node:fs'

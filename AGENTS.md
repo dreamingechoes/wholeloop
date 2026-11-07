@@ -14,6 +14,8 @@ Instructions for any coding agent (and any human) working **on this repository**
 | `roadmap/` | Phases, session-sized tasks, and the journal |
 | `src/` | The `wl` core (from P0-02) |
 | `harness/` | Canonical skills, agents, protocols, workflows, manifests (from P1) |
+| `maintainer/` | Skills and agents for working on this repository, rendered into each client's directories ([ADR-0246](docs/decisions/0246-dogfooded-maintainer-skills-and-agents.md)) |
+| `scripts/` | Build, gate, release, conformance and evaluation scripts |
 | `test/` | Unit, snapshot, workflow, conformance, evals |
 
 ## How to work a session
@@ -58,5 +60,6 @@ npm run harness:check  # budgets, front matter and enforcement.yml (also part of
 ## Style for code
 
 - TypeScript strict; small pure modules; no hidden I/O in core logic.
+- Every module opens with a one- or two-line header saying why it exists. Comments explain constraints and rejected alternatives, never what the code already says.
 - Every command supports `--json` with a versioned schema.
 - Prefer table-driven tests and fixtures over mocks.

@@ -1,3 +1,4 @@
+// The delivery work queue, with journaled reservations rather than time-based leases.
 import { randomBytes } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import { repository } from '../worktrees/git.js'

@@ -1,3 +1,4 @@
+// Requests and records the human decisions a waiting stage needs.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText } from '../delivery/input.js'

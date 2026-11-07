@@ -1,3 +1,4 @@
+// `wl build --target` and `wl adapter build-native`: generate a client's artifacts from the canonical harness.
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'

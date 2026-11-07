@@ -1,3 +1,5 @@
+// `wl msg`, `wl handoff` and `wl resume`: durable messages between roles and the resume context
+// pack.
 import { readFileSync } from 'node:fs'
 import { MESSAGE_KINDS, type MessageKind } from '../state/events.js'
 import { read, send } from '../state/mailbox.js'

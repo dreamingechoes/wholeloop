@@ -1,3 +1,4 @@
+// `wl challenge`: plans challenger modes for a definition document.
 import { readFileSync } from 'node:fs'
 import { CHALLENGE_MODES, type ChallengeMode, challengePlan } from '../definition/challenge.js'
 import { CRITERIA_SCHEMA } from '../definition/criteria.js'

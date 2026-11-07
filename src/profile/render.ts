@@ -1,3 +1,4 @@
+// Renders the active profile as the short block every skill reads.
 import type { Profile } from './presets.js'
 
 export function renderProfile(profile: Profile): string {

@@ -1,3 +1,4 @@
+// The research step workflow: plan, angle results, refutations and the report.
 import { CliError } from '../cli/errors.js'
 import { EXIT } from '../cli/io.js'
 import { loadExtensionOptions } from '../config/load.js'

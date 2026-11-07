@@ -1,3 +1,4 @@
+// Journals a repair's failure admission before a separate correction dispatch.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { BudgetFailure } from '../delivery/budget-events.js'
 import type { RunnerStageContext } from './engine.js'

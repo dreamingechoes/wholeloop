@@ -1,3 +1,4 @@
+// The portable skill format and the Codex, OpenCode and Copilot renderers that use it.
 import { stringify as toml } from 'smol-toml'
 import { stringify as yaml } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'

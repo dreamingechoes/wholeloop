@@ -1,3 +1,4 @@
+// Renders launch artifacts and the launch receipt from a validated record.
 import type { StateEvent } from '../state/events.js'
 import { launchRuns } from './contracts.js'
 import { scopeMeasurement } from './measurement.js'

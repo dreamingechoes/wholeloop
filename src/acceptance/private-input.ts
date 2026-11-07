@@ -1,3 +1,4 @@
+// Private acceptance plans and case references.
 import { safeSourceText } from '../delivery/input.js'
 import { type BehaviorInput, behaviorInput } from './behavior-input.js'
 import {

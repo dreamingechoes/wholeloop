@@ -1,3 +1,5 @@
+// Catalog and oracle contracts for the original delivery evaluation applications, pinned before
+// anything is materialized.
 import { realpathSync } from 'node:fs'
 import { dirname, isAbsolute } from 'node:path'
 import { acceptanceShape } from '../acceptance/contracts.js'

@@ -1,3 +1,4 @@
+// `wl next` and `wl setup`, with the questions they return for missing input.
 import { FlowEngine } from '../flow/engine.js'
 import { configuredCheckpoints, impactSchedule } from '../impact/schedule.js'
 import { SharingWorkflow } from '../sharing/workflow.js'

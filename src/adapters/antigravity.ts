@@ -1,3 +1,5 @@
+// Renders the harness for Google Antigravity under its own namespace, since it shares
+// .agents/skills with Codex.
 import { Document, isSeq, stringify } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter } from './contracts.js'

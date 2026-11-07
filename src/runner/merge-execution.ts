@@ -1,3 +1,4 @@
+// Executes an eligible merge through the installed merge host.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { EffectIntent, EffectRecord } from '../delivery/effect-events.js'
 import { DeliveryEffects, type EffectHost } from '../delivery/effects.js'

@@ -1,3 +1,4 @@
+// Suite plans, results and verification events.
 import { isObject, validate } from '../config/schema.js'
 import { type Criterion, parseCriteria } from '../definition/criteria.js'
 import type { CommandAsset } from '../discovery/types.js'

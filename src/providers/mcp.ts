@@ -1,3 +1,4 @@
+// Prints a mergeable MCP configuration snippet per client without reading or writing credentials.
 import { stringify as toml } from 'smol-toml'
 import type { Provider } from './manifest.js'
 

@@ -1,3 +1,4 @@
+// Runs the launcher, which returns drafts and has no way to send anything.
 import type { LaunchDraft } from './contracts.js'
 import type { LaunchWorkflow } from './workflow.js'
 

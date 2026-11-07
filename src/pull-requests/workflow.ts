@@ -1,3 +1,4 @@
+// The open-pr workflow: plan, human testing of the exact snapshot and draft-only publication.
 import { createHash } from 'node:crypto'
 import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'

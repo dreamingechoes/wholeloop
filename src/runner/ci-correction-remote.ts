@@ -1,3 +1,4 @@
+// Reads the remote head a CI correction targets and requires it to be stable.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { type CiFeedbackRead, validateCiFeedback } from './ci-feedback.js'

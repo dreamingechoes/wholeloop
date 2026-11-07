@@ -1,3 +1,5 @@
+// Renders the harness for Cursor: a native manifest with roles, rules and hooks, and a portable
+// skills manifest.
 import { Document } from 'yaml'
 import { markEntrypoint } from '../harness/entrypoints.js'
 import { frontmatter } from '../harness/frontmatter.js'

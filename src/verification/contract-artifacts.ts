@@ -1,3 +1,4 @@
+// Observes contract artifacts by checksum, which proves identity, not behaviour.
 import { createHash } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceBytes } from '../delivery/input.js'

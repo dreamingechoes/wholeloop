@@ -1,3 +1,4 @@
+// The worker protocol: roles, identities, tools, assignments and results.
 import { createHash } from 'node:crypto'
 import type { Schema } from '../config/schema.js'
 import { contractDigest } from '../contracts/compatibility.js'

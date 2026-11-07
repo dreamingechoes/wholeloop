@@ -1,3 +1,4 @@
+// `wl harness check`: budgets, front matter and the enforcement map.
 import { checkBudgets } from '../harness/budgets.js'
 import { checkEnforcement, parseEnforcement } from '../harness/enforcement.js'
 import type { Finding } from '../harness/files.js'

@@ -1,3 +1,4 @@
+// `wl learn`: plans, challenges and records decide-next.
 import { readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import type { IterationIdea, LearningChallenge, LearningOutcome } from '../learning/contracts.js'

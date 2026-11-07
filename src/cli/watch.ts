@@ -1,3 +1,4 @@
+// `wl watch`: follows local activity until cancelled, without holding a writer lease.
 import { watchOverview } from '../overview/watch.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'

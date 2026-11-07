@@ -1,3 +1,4 @@
+// Pins a candidate's actual files independently of HEAD and the index.
 import { createHash } from 'node:crypto'
 import { lstatSync } from 'node:fs'
 import { join } from 'node:path'

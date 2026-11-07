@@ -1,3 +1,4 @@
+// `wl delivery` environment runtime commands: provisioning, readiness and lifecycle.
 import { resolve } from 'node:path'
 import { readSourceFile } from '../delivery/input.js'
 import { DockerCli } from '../environment/docker-command.js'

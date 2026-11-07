@@ -1,3 +1,4 @@
+// Decodes and bounds a worker's proposal.
 import { createHash } from 'node:crypto'
 import { isObject, type Schema, validate } from '../config/schema.js'
 import { safeSourceText } from './input.js'

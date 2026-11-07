@@ -1,3 +1,5 @@
+// The step engine: begins, completes and skips steps against the journal with their checks and
+// decisions.
 import { randomBytes } from 'node:crypto'
 import { homedir } from 'node:os'
 import { join } from 'node:path'

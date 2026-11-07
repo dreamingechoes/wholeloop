@@ -1,3 +1,5 @@
+// Classifies native conformance failures into closed categories without keeping native text or
+// paths.
 import { StringDecoder } from 'node:string_decoder'
 import { isObject, validate } from '../config/schema.js'
 import type { ConformanceContext, PreparedConformance } from './contracts.js'

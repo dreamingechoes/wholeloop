@@ -1,3 +1,4 @@
+// Binds a stage to its original environment operations and observations.
 import type { EnvironmentOperation, EnvironmentOperations } from '../environment/operations.js'
 import { DeliveryRunnerError } from './route.js'
 

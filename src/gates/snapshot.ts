@@ -1,3 +1,4 @@
+// Snapshots a workspace by hashing bytes and index entries, never copying files into state.
 import { createHash } from 'node:crypto'
 import { lstatSync, readFileSync, readlinkSync } from 'node:fs'
 import { join, resolve } from 'node:path'

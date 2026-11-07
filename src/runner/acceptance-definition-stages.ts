@@ -1,3 +1,5 @@
+// Runner stage that pins acceptance tests before builders start, without executing or accepting
+// them.
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { type RunnerArtifactOptions, RunnerArtifactStages } from './artifact-stages.js'

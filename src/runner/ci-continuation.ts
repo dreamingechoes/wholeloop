@@ -1,3 +1,4 @@
+// Previews or records a continuation from one original CI failure.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { safeSourceText } from '../delivery/input.js'

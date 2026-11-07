@@ -1,3 +1,4 @@
+// Recovers a stale delivery writer lock only when its writer is provably gone.
 import { randomUUID } from 'node:crypto'
 import { existsSync, lstatSync } from 'node:fs'
 import { resolve } from 'node:path'

@@ -1,3 +1,5 @@
+// `wl delivery guidance`: proposes a plan's guidance pins from each repository's pinned base
+// (P6-40).
 import { resolve } from 'node:path'
 import { loadConfig, userConfigPath } from '../config/load.js'
 import { isObject } from '../config/schema.js'

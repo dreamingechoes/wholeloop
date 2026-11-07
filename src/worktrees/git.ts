@@ -1,3 +1,4 @@
+// Byte-exact Git plumbing for worktrees, refs, objects and repository identity.
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { resolve } from 'node:path'

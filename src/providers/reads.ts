@@ -1,3 +1,4 @@
+// Read requests for provider data and the host that replays explicit client transcripts.
 import { isObject } from '../config/schema.js'
 import { measurementDigest } from '../launch/measurement.js'
 import type { OperationCall, OperationResult, ProviderHost } from './operations.js'

@@ -1,3 +1,4 @@
+// A fixed controller proxy that forwards bytes to one observed owned service.
 import { createConnection } from 'node:net'
 import { contractDigest } from '../contracts/compatibility.js'
 import { DockerEnvironmentError } from './docker-command.js'

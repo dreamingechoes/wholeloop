@@ -1,3 +1,4 @@
+// Classifies rejected native output without keeping its text.
 import { workerProposalFailure } from './worker-proposal.js'
 import { WorkerProtocolError } from './worker-protocol.js'
 

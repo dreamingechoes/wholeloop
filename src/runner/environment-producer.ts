@@ -1,3 +1,4 @@
+// Produces an environment as budgeted evidence, never a new provisioning grant.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'

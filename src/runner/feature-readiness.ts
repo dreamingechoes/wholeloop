@@ -1,3 +1,4 @@
+// Decides whether one tested assembly covers all work in a feature.
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'

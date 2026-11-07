@@ -1,3 +1,5 @@
+// Reads the optional channel and rationale of attributed commands without putting them in argv or
+// errors.
 import { closeSync, constants, fstatSync, openSync, readSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { RATIONALE_BYTES, validActor, validRationale } from '../state/attribution.js'

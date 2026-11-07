@@ -1,3 +1,4 @@
+// Keeps the last published CI origin across local corrections as historical ownership.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { originalCiFailure } from './ci-failure.js'

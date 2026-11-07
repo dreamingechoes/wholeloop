@@ -1,3 +1,4 @@
+// Built-in interaction presets: how much a run explains, challenges and asks, never what it covers.
 export const PRESETS = {
   mentor: {
     verbosity: 'detailed',

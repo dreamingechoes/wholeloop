@@ -1,3 +1,4 @@
+// Parses docs/nav.yml and renders the generated docnav footers.
 import { posix } from 'node:path'
 import { parse } from 'yaml'
 

@@ -1,3 +1,4 @@
+// Recovery events and their reducer for the delivery journal.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { AttemptPayload, DeliveryEvent, DeliveryProjection } from './events.js'
 import { DeliveryJournalError } from './journal-error.js'

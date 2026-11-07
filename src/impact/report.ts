@@ -1,3 +1,4 @@
+// Computes the impact report and receipt, keeping overflowing derived values unknown.
 import { createHash } from 'node:crypto'
 import type { StateEvent } from '../state/events.js'
 import { impactRuns, metricVerdict } from './contracts.js'

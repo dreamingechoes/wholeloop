@@ -1,3 +1,4 @@
+// Immutable source snapshots for intake; taking one creates no item, grant or worker.
 import { existsSync, realpathSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'

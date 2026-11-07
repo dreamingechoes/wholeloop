@@ -1,3 +1,4 @@
+// Headless worker recipes per client, probed from their help output rather than certified.
 import { join } from 'node:path'
 import { openCodeMajor } from '../adapters/opencode-version.js'
 import type { Schema } from '../config/schema.js'

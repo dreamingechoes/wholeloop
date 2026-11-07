@@ -1,3 +1,5 @@
+// Prepares a disposable repository for a conformance run without inheriting hooks, signing or
+// identity.
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'

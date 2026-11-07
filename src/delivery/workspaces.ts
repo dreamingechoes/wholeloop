@@ -1,3 +1,4 @@
+// Owned delivery workspaces and the revision each topic starts from (ADR-0208).
 import { existsSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'

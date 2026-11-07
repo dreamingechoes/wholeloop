@@ -1,3 +1,5 @@
+// Entry point for the maintainer render and check, bundled by scripts/maintainer.mjs and never
+// shipped in the published CLI.
 import { maintainerDrift, writeMaintainer } from './render.js'
 
 /** Entry point bundled by scripts/maintainer.mjs; never part of the published CLI. */

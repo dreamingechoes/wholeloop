@@ -1,3 +1,4 @@
+// Runs one native stage under its root registration and deadline.
 import { basename } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { NativeProcessRunner } from '../delivery/native-host.js'

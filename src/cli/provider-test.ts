@@ -1,3 +1,4 @@
+// `wl provider test --fixtures`: runs a provider's offline fixtures.
 import { readFileSync } from 'node:fs'
 import { loadExtensionOptions } from '../config/load.js'
 import { providerFixtures } from '../providers/fixtures.js'

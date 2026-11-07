@@ -1,3 +1,4 @@
+// Resolves a repository slot to the guidance that fills it, with precedence explained.
 import { knownSlot, SLOT_RULES } from './rules.js'
 import type { CapabilityMap } from './types.js'
 

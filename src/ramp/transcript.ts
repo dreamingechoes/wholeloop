@@ -1,3 +1,4 @@
+// Reads client-supplied flag observations for a ramp without querying a remote.
 import type { ProviderHost } from '../providers/operations.js'
 import { normalizedReadHost, planReadRequests, readCallDigest } from '../providers/reads.js'
 import { collectRampEvidence, flagEvidence, observationTime } from './evidence.js'

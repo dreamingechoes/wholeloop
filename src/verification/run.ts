@@ -1,3 +1,4 @@
+// Runs one verification round through its host; failures go back to a builder or a handoff.
 import { BuildWorkflow } from '../build/workflow.js'
 import type { FlowEngine } from '../flow/engine.js'
 import type { GateHost } from '../gates/execution.js'

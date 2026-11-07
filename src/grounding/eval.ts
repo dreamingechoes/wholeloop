@@ -1,3 +1,5 @@
+// Grounding evaluation: runs the real evidence collectors against a scripted backend and scores
+// predictions.
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { isDeepStrictEqual } from 'node:util'

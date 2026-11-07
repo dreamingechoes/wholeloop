@@ -1,3 +1,5 @@
+// Keeps only normalized numeric evidence and a content hash from provider results, never service
+// logs.
 import { createHash } from 'node:crypto'
 import { isObject } from '../config/schema.js'
 import type { LoadedProvider } from './load.js'

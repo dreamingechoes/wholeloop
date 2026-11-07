@@ -1,3 +1,4 @@
+// `wl watch`: follows activity and overviews as closed categories, never private payloads.
 import { existsSync, type FSWatcher, watch } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'

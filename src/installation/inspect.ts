@@ -1,3 +1,4 @@
+// Reads installation receipts and owned files without taking the writer lock.
 import { type InstallInput, metadata } from './contracts.js'
 import { checkOwned } from './files.js'
 import { installationPlan } from './plan.js'

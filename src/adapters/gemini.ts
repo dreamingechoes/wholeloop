@@ -1,3 +1,4 @@
+// Renders the harness for Gemini CLI as an extension, with tool names from its real registry.
 import { Document, isSeq } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter } from './contracts.js'

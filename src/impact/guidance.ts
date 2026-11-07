@@ -1,3 +1,4 @@
+// Repository guidance for impact reports.
 import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 import { isObject } from '../config/schema.js'

@@ -1,3 +1,4 @@
+// Writes an owned artifact tree, replacing only an unchanged previous version and keeping a backup.
 import { randomUUID } from 'node:crypto'
 import {
   chmodSync,

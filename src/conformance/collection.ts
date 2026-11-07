@@ -1,3 +1,4 @@
+// Collects conformance runs for exact observed client versions.
 import { realpathSync, statSync } from 'node:fs'
 import { delimiter, dirname, join, resolve } from 'node:path'
 import { openCodeMajor } from '../adapters/opencode-version.js'

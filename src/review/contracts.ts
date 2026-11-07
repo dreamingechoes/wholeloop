@@ -1,3 +1,4 @@
+// Review inputs, context and events.
 import { validate } from '../config/schema.js'
 import type { GateResult } from '../gates/contracts.js'
 import schema from './schemas/input-v1.json' with { type: 'json' }

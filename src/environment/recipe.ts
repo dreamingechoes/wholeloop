@@ -1,3 +1,4 @@
+// The environment recipe format: files, commands, mounts, services and limits.
 import { realpathSync, statSync } from 'node:fs'
 import { posix, resolve } from 'node:path'
 import { parseDocument } from 'yaml'

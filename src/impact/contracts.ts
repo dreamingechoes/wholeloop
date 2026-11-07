@@ -1,3 +1,4 @@
+// Impact plans, observations, layouts and events for measure-impact.
 import { validate } from '../config/schema.js'
 import {
   type MeasurementSource,

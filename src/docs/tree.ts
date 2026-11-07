@@ -1,3 +1,4 @@
+// Reads the documentation tree for checks and generation.
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 import type { Tree } from './check.js'

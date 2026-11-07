@@ -1,3 +1,4 @@
+// Runner requests and leases, with claims owned by the authoritative journal.
 import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'

@@ -1,3 +1,4 @@
+// Binds observed native client versions to closed vendor package paths before any installation.
 import { isObject, validate } from '../config/schema.js'
 import { conformanceBinary } from './recipes.js'
 import schema from './schemas/downloads-v1.json' with { type: 'json' }

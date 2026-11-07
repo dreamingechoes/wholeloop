@@ -1,3 +1,4 @@
+// `wl delivery` planning commands: plan schema, envelopes and plan inspection.
 import { resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { readSourceFile } from '../delivery/input.js'

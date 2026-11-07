@@ -1,3 +1,4 @@
+// Spawns headless worker processes with bounded output and optional durable ownership.
 import { spawn } from 'node:child_process'
 import { currentWorkerOwnership } from './ownership.js'
 import { terminateWorker, workerPlatform } from './posix.js'

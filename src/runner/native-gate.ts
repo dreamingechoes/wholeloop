@@ -1,3 +1,4 @@
+// Runs verify and review gates with read-only native models while the controller executes suites.
 import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'

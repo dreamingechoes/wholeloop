@@ -1,3 +1,4 @@
+// Repository guidance pinned into an autonomous plan and the slots each role receives (ADR-0207).
 import { createHash } from 'node:crypto'
 import { knownSlot } from '../discovery/rules.js'
 import type { WorkerRole } from './worker-protocol.js'

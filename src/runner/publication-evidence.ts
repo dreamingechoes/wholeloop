@@ -1,3 +1,4 @@
+// Marks a pull request as this run's own so another one is never edited.
 import { contractDigest } from '../contracts/compatibility.js'
 import { deliveryEffects, type EffectRecord } from '../delivery/effect-events.js'
 import type { RunnerPublication } from './publication-stages.js'

@@ -1,3 +1,5 @@
+// The reviewed release bundle: payload names, digests and the verifier that binds approval to exact
+// bytes.
 import { createHash } from 'node:crypto'
 import { validate } from '../config/schema.js'
 import type { releasePreflight } from './preflight.js'

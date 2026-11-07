@@ -1,3 +1,4 @@
+// CI check observations, the wait policy and the verdict derived from them.
 import { contractDigest } from '../contracts/compatibility.js'
 import { safeSourceText } from '../delivery/input.js'
 import { validateDeliveryShape } from '../delivery/plan.js'

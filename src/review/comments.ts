@@ -1,3 +1,4 @@
+// Drafts review comments locally and publishes one only through an explicit host call.
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import type { FlowEngine } from '../flow/engine.js'

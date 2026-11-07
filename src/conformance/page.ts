@@ -1,3 +1,4 @@
+// Renders the conformance documentation page without the raw reports or runtime store.
 import { lstatSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { replaceSection } from '../docs/sections.js'

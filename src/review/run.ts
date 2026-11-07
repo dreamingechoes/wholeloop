@@ -1,3 +1,4 @@
+// Runs one review round through its host without repairing anything.
 import { BuildWorkflow } from '../build/workflow.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { type GateHost, inspectGateRound } from '../gates/execution.js'

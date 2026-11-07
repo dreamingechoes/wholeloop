@@ -1,3 +1,4 @@
+// The single boundary for every store mutation, including locks and temporary files.
 import { randomUUID } from 'node:crypto'
 import {
   closeSync,

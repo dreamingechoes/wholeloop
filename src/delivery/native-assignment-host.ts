@@ -1,3 +1,4 @@
+// Runs worker assignments in native client processes owned by the controller.
 import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync } from 'node:fs'
 import { isAbsolute, join, resolve } from 'node:path'

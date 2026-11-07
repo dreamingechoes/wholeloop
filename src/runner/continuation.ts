@@ -1,3 +1,4 @@
+// Continues a delivery after a retained failure through a correction revision (ADR-0197).
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { safeSourceText } from '../delivery/input.js'

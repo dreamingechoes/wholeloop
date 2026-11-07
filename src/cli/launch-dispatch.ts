@@ -1,3 +1,5 @@
+// `wl launch dispatch`: plans one metric-pinned dashboard creation without performing it
+// (ADR-0085).
 import { loadExtensionOptions } from '../config/load.js'
 import { FlowEngine } from '../flow/engine.js'
 import { LaunchWorkflow } from '../launch/workflow.js'

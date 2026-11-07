@@ -1,3 +1,4 @@
+// Runs the owned foreground controller from the caller's installed core.
 import { lstatSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { validateDeliveryShape } from '../delivery/plan.js'

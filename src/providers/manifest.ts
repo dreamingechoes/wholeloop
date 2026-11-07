@@ -1,3 +1,4 @@
+// The provider manifest format and its validation.
 import { isObject } from '../config/schema.js'
 import { type Capability, OPERATIONS, TAXONOMY } from './taxonomy.js'
 

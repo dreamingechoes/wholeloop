@@ -1,3 +1,5 @@
+// `wl delivery run` and its controls: prepare, status, pause, resume, stop, reconcile and the owned
+// controller child.
 import { spawn } from 'node:child_process'
 import { resolve } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'

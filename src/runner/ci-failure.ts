@@ -1,3 +1,4 @@
+// Reads one failed CI result and its original publication as history.
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'
 import { type CiObservation, ciVerdict, validateCiObservation } from './ci-observations.js'

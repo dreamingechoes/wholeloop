@@ -1,3 +1,4 @@
+// `wl release verify`: checks a prepared release bundle's bytes against its retained digest.
 import { lstatSync, readdirSync, readFileSync, realpathSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'

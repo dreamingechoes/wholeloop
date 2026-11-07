@@ -1,3 +1,4 @@
+// Runner stages for research: angles, claim examinations and synthesis.
 import { existsSync, readdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { NativeDelegatedDecisionHost } from '../decisions/native-host.js'

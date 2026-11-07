@@ -1,3 +1,4 @@
+// The acceptance store, where only a trusted host binds a case to a journaled test effect.
 import { randomUUID } from 'node:crypto'
 import { existsSync, readdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'

@@ -1,3 +1,4 @@
+// Runner routes, their stages and the judgments each route requires.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DecisionId, DecisionOutcome } from '../decisions/policy.js'
 import type { DeliveryPlan } from '../delivery/plan.js'

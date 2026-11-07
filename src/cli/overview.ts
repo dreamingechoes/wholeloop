@@ -1,3 +1,4 @@
+// `wl overview`: reads operator attention and progress without writing anything.
 import { OverviewError } from '../overview/cursor.js'
 import { overviewProblem, projectOverview } from '../overview/project.js'
 import { readOverview } from '../overview/read.js'

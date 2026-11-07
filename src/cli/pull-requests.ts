@@ -1,3 +1,4 @@
+// `wl pr`: plans, tests and publishes draft pull requests.
 import { readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import { CliCodehostHost } from '../pull-requests/codehost.js'

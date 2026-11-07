@@ -1,3 +1,4 @@
+// Learning plans, challenges, iteration ideas, decisions and their events for decide-next.
 import { validate } from '../config/schema.js'
 import { checkShape } from '../flow/registry.js'
 import { checkFrame, FRAME_SECTIONS } from '../framing/contract.js'

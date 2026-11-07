@@ -1,3 +1,4 @@
+// Conformance targets, scenarios and report contracts.
 import type { ProcessResult } from '../fanout/process.js'
 import type { FrameDecision } from '../framing/finalize.js'
 

@@ -1,3 +1,4 @@
+// `wl delivery budget-*` and artifact capture: configures and inspects delivery budgets.
 import { resolve } from 'node:path'
 import { BUDGET_CONSTRAINTS_SCHEMA, DeliveryBudgets } from '../delivery/budgets.js'
 import { DeliveryJournalError } from '../delivery/events.js'

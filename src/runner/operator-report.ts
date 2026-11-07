@@ -1,3 +1,4 @@
+// The operator report: outcomes, next actions, diagnostics and recovery bundles.
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'

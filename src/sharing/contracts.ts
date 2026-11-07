@@ -1,3 +1,4 @@
+// Shared-document events and state: adoption, queued publication and their exact chunk identities.
 import { validate } from '../config/schema.js'
 import { measurementDigest } from '../launch/measurement.js'
 import type { EventData, StateEvent } from '../state/events.js'

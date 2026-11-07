@@ -1,3 +1,4 @@
+// Runs Git for assembly with repository helpers disabled, refusing rather than executing them.
 import { randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync } from 'node:fs'
 import { acceptanceShape } from '../acceptance/contracts.js'

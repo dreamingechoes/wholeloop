@@ -1,3 +1,4 @@
+// The validated runtime history of one environment directory (ADR-0244).
 import { existsSync, readdirSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'

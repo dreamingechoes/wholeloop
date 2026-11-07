@@ -1,3 +1,4 @@
+// Reads repository guidance from a pinned base commit, never a working tree that can move (P6-40).
 import { posix } from 'node:path'
 import { resolveSlot } from '../discovery/resolve.js'
 import { SLOT_RULES } from '../discovery/rules.js'

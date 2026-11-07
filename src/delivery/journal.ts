@@ -1,3 +1,4 @@
+// The delivery journal: append, replay and shared read-only views (ADR-0239).
 import {
   closeSync,
   constants,

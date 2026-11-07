@@ -1,3 +1,4 @@
+// Collects the complete approved set of parts an assembly needs.
 import { acceptanceShape } from '../acceptance/contracts.js'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryPlan } from '../delivery/plan.js'

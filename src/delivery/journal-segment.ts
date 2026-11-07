@@ -1,3 +1,4 @@
+// Reads one delivery journal segment from a pinned external directory.
 import {
   type BigIntStats,
   closeSync,

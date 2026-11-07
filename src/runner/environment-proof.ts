@@ -1,3 +1,4 @@
+// Reopens an environment's original preparation and ready snapshot without probing it live.
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'
 import { EnvironmentOperations } from '../environment/operations.js'

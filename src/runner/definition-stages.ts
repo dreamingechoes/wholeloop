@@ -1,3 +1,4 @@
+// Runner stages that produce definition documents and reserve their immutable revision.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { NativeDelegatedDecisionHost } from '../decisions/native-host.js'

@@ -1,3 +1,4 @@
+// Decides which slices are ready to build from dependency receipts.
 import { type Item, replay, type StateEvent } from '../state/events.js'
 
 /** Green build receipts unblock delivery without closing items still awaiting PRs. */

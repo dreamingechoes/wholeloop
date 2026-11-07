@@ -1,3 +1,5 @@
+// Runs delegated decisions through a native model while the controller supplies identity and
+// observes evidence.
 import { createHash } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceBytes, safeSourceText } from '../delivery/input.js'

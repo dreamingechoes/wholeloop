@@ -1,3 +1,4 @@
+// Read-only Docker Engine queries over the local socket, answered in this process (ADR-0244).
 import { createHash } from 'node:crypto'
 import { request } from 'node:http'
 import type { DockerCallOptions, DockerResult } from './docker-command.js'

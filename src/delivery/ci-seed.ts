@@ -1,3 +1,4 @@
+// Where a CI repair starts: the published whole-product head.
 import { ciCorrectionOrigin } from '../runner/ci-correction-origin.js'
 import { RunnerStore } from '../runner/store.js'
 import { ancestor } from '../worktrees/git.js'

@@ -1,3 +1,4 @@
+// Helpers shared by every manifest kind: ids, inheritance merging and installed package roots.
 import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'

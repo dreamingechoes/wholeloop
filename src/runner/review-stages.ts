@@ -1,3 +1,4 @@
+// Runner stages for review rounds, whose existing budgets stay authoritative.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile } from '../delivery/input.js'

@@ -1,3 +1,4 @@
+// The private launch record that admits one owned foreground controller.
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { basename, dirname } from 'node:path'

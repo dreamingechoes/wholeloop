@@ -1,3 +1,4 @@
+// Makes one bounded HTTP observation; a status line or partial body is not one.
 import type { BehaviorRequestObservation } from './assertions.js'
 import { BEHAVIOR_RESPONSE_HEADERS, type BehaviorStep, ownedRequestUrl } from './behavior-input.js'
 import { AcceptanceError } from './contracts.js'

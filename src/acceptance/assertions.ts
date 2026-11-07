@@ -1,3 +1,4 @@
+// Evaluates behaviour assertions, keeping a missing value distinct from null, zero or empty text.
 import { contractDigest } from '../contracts/compatibility.js'
 import { observableHeader } from './behavior-input.js'
 import type { AcceptanceAssertion } from './contracts.js'

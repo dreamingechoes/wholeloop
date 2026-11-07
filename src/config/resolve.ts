@@ -1,3 +1,4 @@
+// Merges configuration layers and records where each value came from.
 import { PRESETS } from '../profile/presets.js'
 import { configKeys, isObject, type Key, validate } from './schema.js'
 

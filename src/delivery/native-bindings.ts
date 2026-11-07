@@ -1,3 +1,4 @@
+// The operator's binding of each role to one trusted native client, which cannot relax containment.
 import { contractDigest } from '../contracts/compatibility.js'
 import { NATIVE_DELIVERY_TARGETS, REFERENCE_NATIVE_VERSIONS } from './native-adapters.js'
 import type { WorkerRole } from './worker-protocol.js'

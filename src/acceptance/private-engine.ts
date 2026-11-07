@@ -1,3 +1,4 @@
+// Evaluates private acceptance inside the evaluator so hidden values never leave it.
 import { contractDigest } from '../contracts/compatibility.js'
 import { type BehaviorRequestObservation, observeAssertion } from './assertions.js'
 import { AcceptanceError } from './contracts.js'

@@ -1,3 +1,4 @@
+// The wrapper program that owns a native worker's process group.
 // The fixed wrapper owns its group even if its controller dies. Recovery cancels
 // through a private file; only the live wrapper signals its own process group.
 export function operationWrapper(

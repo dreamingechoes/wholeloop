@@ -1,3 +1,5 @@
+// Repository-diff case input, naming an authorized repository but never a root, revision or
+// program.
 import { contractDigest } from '../contracts/compatibility.js'
 import { type AcceptanceCase, AcceptanceError, acceptanceShape } from './contracts.js'
 import schema from './schemas/repository-diff-input-v1.json' with { type: 'json' }

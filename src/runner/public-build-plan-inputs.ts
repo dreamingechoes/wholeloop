@@ -1,3 +1,4 @@
+// The source and pinned definitions the public host plans builds from.
 import { existsSync } from 'node:fs'
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'

@@ -1,3 +1,4 @@
+// A private stdio transport to the browser MCP service that the application cannot reach.
 import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { homedir } from 'node:os'

@@ -1,3 +1,4 @@
+// Replays a delivery run's attempts and effects from its journal.
 import { contractDigest } from '../contracts/compatibility.js'
 import { deliveryRunner, reduceRunner } from '../runner/events.js'
 import { findBudget, reduceDeliveryBudget } from './budget-events.js'

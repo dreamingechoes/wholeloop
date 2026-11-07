@@ -1,3 +1,4 @@
+// The Docker host for private acceptance, whose volume is never an application workspace.
 import { createHash } from 'node:crypto'
 import { contractDigest } from '../contracts/compatibility.js'
 import {

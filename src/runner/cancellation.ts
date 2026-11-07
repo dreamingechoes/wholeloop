@@ -1,3 +1,4 @@
+// Private, nonce-bound cancellation requests read by the native process wrapper.
 import { lstatSync } from 'node:fs'
 import { readSourceFile } from '../delivery/input.js'
 import type { StoreFiles } from '../state/files.js'

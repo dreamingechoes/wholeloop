@@ -1,3 +1,4 @@
+// Read-only release consistency check of version, package, lock, repository and CI context.
 import { isObject, validate } from '../config/schema.js'
 import { isReleaseVersion } from './notes.js'
 import contextSchema from './schemas/context-v1.json' with { type: 'json' }

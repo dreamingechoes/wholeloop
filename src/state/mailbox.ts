@@ -1,3 +1,4 @@
+// Durable role-to-role messages replayed from the journal.
 import type { MessageKind, StateEvent } from './events.js'
 import type { StateStore } from './store.js'
 

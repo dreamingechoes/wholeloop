@@ -1,3 +1,4 @@
+// Finds tests with constant assertions without evaluating the source.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { GateFinding, GatePlan, GateResult } from '../gates/contracts.js'

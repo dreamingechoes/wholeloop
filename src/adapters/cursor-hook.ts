@@ -1,3 +1,4 @@
+// Cursor's native hook binding, taking the harness root from explicit environment data.
 import { pinnedGuardCommand } from './pinned-guard.js'
 
 type Binding = { kind: 'plugin' } | { kind: 'project' } | { kind: 'user'; root: string }

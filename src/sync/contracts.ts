@@ -1,3 +1,5 @@
+// Sync events and state: merged pull requests, delivery readiness and tracker transitions with
+// their proofs.
 import { validate } from '../config/schema.js'
 import { measurementDigest } from '../launch/measurement.js'
 import { parsePullRequest } from '../pull-requests/codehost.js'

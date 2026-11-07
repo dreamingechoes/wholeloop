@@ -1,3 +1,4 @@
+// Turns a ramp decision into a flag change proposal; a person makes every actual change.
 import { isObject } from '../config/schema.js'
 import { measurementDigest } from '../launch/measurement.js'
 import { safeEvidenceReference } from '../providers/numeric.js'

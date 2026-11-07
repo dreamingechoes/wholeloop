@@ -1,3 +1,5 @@
+// Antigravity's native hook binding: transport and root only, with all tool policy left to the
+// guard.
 import { pinnedGuardCommand } from './pinned-guard.js'
 
 /** Only native transport/root binding lives here; all tool policy remains in guard before-tool. */

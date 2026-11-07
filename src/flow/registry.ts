@@ -1,3 +1,4 @@
+// The thirteen steps, their order and the deterministic shape rules of each.
 import { stripCode } from '../docs/markdown.js'
 import { FRAME_SECTIONS } from '../framing/contract.js'
 import { SCOPE_SECTIONS } from '../scopes/contract.js'

@@ -1,3 +1,4 @@
+// Schedules and settles due checkpoint observations.
 import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { type ImpactObservation, impactRuns } from '../impact/contracts.js'

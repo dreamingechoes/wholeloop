@@ -1,3 +1,4 @@
+// Chooses the client MCP or native transport for each operation from reviewed bindings (ADR-0085).
 import { validate } from '../config/schema.js'
 import type { LoadedProvider } from './load.js'
 import { validateProvider } from './manifest.js'

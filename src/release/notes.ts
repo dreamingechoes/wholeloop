@@ -1,3 +1,4 @@
+// Release-note drafts from Conventional Commits and the version change each range requires.
 import { hasToolAttribution, parseConventionalSubject } from '../git/commit.js'
 
 export interface ReleaseCommit {

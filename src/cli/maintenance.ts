@@ -1,3 +1,4 @@
+// `wl maintenance`: inspects learning results for maintenance proposals from a fresh pinned run.
 import { resolve } from 'node:path'
 import { readSourceFile } from '../delivery/input.js'
 import {

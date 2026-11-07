@@ -1,3 +1,5 @@
+// The configuration schema and a small validator for the subset of JSON Schema it uses, without a
+// runtime dependency.
 import schema from './schema.json' with { type: 'json' }
 
 export interface Schema {

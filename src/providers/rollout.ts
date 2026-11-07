@@ -1,3 +1,5 @@
+// The rollout host: drafts and flag proposals as store artifacts, never sent messages or flag
+// writes.
 import { readFileSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { isObject } from '../config/schema.js'

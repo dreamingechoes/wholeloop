@@ -1,3 +1,4 @@
+// `wl state`, `note`, `link` and `open`: typed items in the external store.
 import { readFileSync } from 'node:fs'
 import { type ItemInput, type ItemKind, type ItemPatch, KINDS } from '../state/events.js'
 import { projections } from '../state/projections.js'

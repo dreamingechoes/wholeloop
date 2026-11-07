@@ -1,3 +1,4 @@
+// Browser-case input for acceptance and the URLs it may open.
 import { BEHAVIOR_RESPONSE_HEADERS, ownedRequestUrl } from './behavior-input.js'
 import { type AcceptanceCase, AcceptanceError, acceptanceShape } from './contracts.js'
 import schema from './schemas/browser-input-v1.json' with { type: 'json' }

@@ -1,3 +1,5 @@
+// `wl delivery` journal commands: events, reports, revisions, continuations and recovery export and
+// import.
 import { resolve } from 'node:path'
 import {
   DELIVERY_EVENT_SCHEMA,

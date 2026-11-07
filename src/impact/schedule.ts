@@ -1,3 +1,4 @@
+// The checkpoint schedule for impact measurement.
 import { isObject } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'
 import { impactRuns } from './contracts.js'

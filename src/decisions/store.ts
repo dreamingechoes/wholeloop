@@ -1,3 +1,5 @@
+// Private store and contracts for delegated machine decisions, written only by a trusted controller
+// host.
 import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'

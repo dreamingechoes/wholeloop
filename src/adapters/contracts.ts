@@ -1,3 +1,4 @@
+// The adapter contract every client renderer implements.
 export interface AdapterCapabilities {
   conformance: 'unverified'
   skills: 'rendered'

@@ -1,3 +1,4 @@
+// Specification documents: stories, criteria and metrics, parsed and checked for write-spec.
 import { validate } from '../config/schema.js'
 import { type Criterion, lintCriteria } from '../definition/criteria.js'
 import { frontmatter } from '../harness/frontmatter.js'

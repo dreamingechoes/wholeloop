@@ -1,3 +1,4 @@
+// Worktree allocation events and records, including port reservations.
 import { isAbsolute } from 'node:path'
 import { validate } from '../config/schema.js'
 import type { StateEvent } from '../state/events.js'

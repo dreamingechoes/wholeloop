@@ -1,3 +1,4 @@
+// Reopens recorded Docker acceptance observations without executing or approving current inputs.
 import { contractDigest } from '../contracts/compatibility.js'
 import { DeliveryEffects } from '../delivery/effects.js'
 import { EnvironmentResources } from '../environment/runtime.js'

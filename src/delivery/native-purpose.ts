@@ -1,3 +1,4 @@
+// Leases for native delegated-decision attempts.
 import type { DecisionId } from '../decisions/policy.js'
 import { DeliveryJournalError } from './events.js'
 import { NativeReadOnlyAttempts } from './native-readonly-attempts.js'

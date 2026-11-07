@@ -1,3 +1,4 @@
+// Seals and witnesses a native worker's Git control files before Git runs again.
 import { createHash } from 'node:crypto'
 import { lstatSync, realpathSync } from 'node:fs'
 import { join } from 'node:path'

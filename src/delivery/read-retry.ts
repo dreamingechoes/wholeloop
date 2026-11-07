@@ -1,3 +1,4 @@
+// Bounded reads for recovery, where a timeout stays unresolved and never authorizes a retry.
 import { performance } from 'node:perf_hooks'
 
 export type RecoveryReadFailure =

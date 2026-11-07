@@ -1,3 +1,4 @@
+// `wl delivery` acceptance commands: definitions, cases, reports and their execution.
 import { resolve } from 'node:path'
 import { ACCEPTANCE_SCHEMAS, type AcceptanceArtifact } from '../acceptance/contracts.js'
 import { DockerBehaviorHost } from '../acceptance/docker-behavior.js'

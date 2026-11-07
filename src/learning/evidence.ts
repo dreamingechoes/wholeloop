@@ -1,3 +1,4 @@
+// Gathers the measured evidence a learning decision is made on.
 import { impactRuns } from '../impact/contracts.js'
 import { impactReport } from '../impact/report.js'
 import { measurementDigest } from '../launch/measurement.js'

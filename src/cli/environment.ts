@@ -1,3 +1,4 @@
+// `wl env`: declares writes outside the repository and reports them.
 import { readFileSync } from 'node:fs'
 import { isAbsolute, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'

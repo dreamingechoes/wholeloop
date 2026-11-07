@@ -1,3 +1,4 @@
+// Plans native overlay files per client and scope without touching shared client settings.
 import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { stringify } from 'yaml'
 import { antigravityHook } from '../adapters/antigravity-hook.js'

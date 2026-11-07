@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-07 · P7-12 ✅ · Code and contributor documentation pass
+
+- All 491 modules in `src/` open with a header saying why they exist; 478 had none and 13 opened with a constraint note. Headers come from each module's exports and documentation comments; the command modules were checked against the command table, which corrected first guesses about the paths `build` and several `delivery` modules handle. A test fails on a missing or overlong header, and AGENTS.md states the convention.
+- The architecture overview's repository layout was the pre-implementation target, naming a `discover/` directory and harness folders that do not exist; it now matches the tree. AGENTS.md lists `maintainer/` and `scripts/`. The documentation comments read along the way were constraint statements; no separate line-by-line comment audit was made.
+- Comments, documentation and one new test only; no behaviour changed. macOS full gate with two file workers: CHECK PASS in 640s, 4612/4612 tests across 329 files.
+- Next: nothing implementation-only remains in the roadmap. P7-09 waits for the maintainer's switch to pull requests; P7-13–P7-15, P6-27, P6-35 and the parked P0–P6 tasks need accounts, hosted services or signed-in native clients.
+
+---
+
 ## 2026-11-07 · P7-11 ✅ · User documentation pass
 
 - User pages call the installed `wl`; pages that depend on repository files (evaluation fixtures, conformance collection, acceptance) keep the source build and say so, and the twelve tutorials with model-free `npm run eval` controls state that those run from a source checkout.

@@ -1,3 +1,4 @@
+// Runs correction attempts that keep their original failure and never pass QA themselves.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { findBudget } from '../delivery/budget-events.js'

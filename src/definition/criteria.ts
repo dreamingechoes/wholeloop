@@ -1,3 +1,4 @@
+// Parses acceptance criteria and finds contradictions between comparable assertions.
 import { validate } from '../config/schema.js'
 import schema from './schemas/criteria-v1.json' with { type: 'json' }
 

@@ -1,3 +1,4 @@
+// Routes the `wl delivery` subcommands to their handlers.
 import { resolve } from 'node:path'
 import { BEHAVIOR_INPUT_SCHEMA } from '../acceptance/behavior-input.js'
 import { BROWSER_INPUT_SCHEMA } from '../acceptance/browser-input.js'

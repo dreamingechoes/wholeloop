@@ -1,3 +1,4 @@
+// Publishes an approved scope plan as child items of its initiative.
 import { stringify } from 'yaml'
 import { publicationPlan } from '../providers/publication.js'
 import { type EventData, itemId, replay, type StateEvent } from '../state/events.js'

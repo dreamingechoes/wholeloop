@@ -1,3 +1,4 @@
+// `wl discover` and `wl resolve`: repository guidance discovery and slot resolution.
 import { homedir } from 'node:os'
 import { loadConfig } from '../config/load.js'
 import { isObject } from '../config/schema.js'

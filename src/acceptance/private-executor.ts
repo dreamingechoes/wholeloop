@@ -1,3 +1,5 @@
+// The private evaluator's entry program, which never echoes an exception that may contain private
+// data.
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { evaluatePrivate } from './private-engine.js'

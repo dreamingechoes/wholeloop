@@ -1,3 +1,4 @@
+// Projects conformance regressions into issue drafts from named structural evidence.
 import { conformanceMatrix } from './matrix.js'
 
 /** Project only named structural evidence; delivery and report authentication belong to the host. */

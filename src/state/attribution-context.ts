@@ -1,3 +1,4 @@
+// Carries the executing client and person through a call so events can be attributed.
 import { AsyncLocalStorage } from 'node:async_hooks'
 import {
   type ClientIdentity,

@@ -1,3 +1,5 @@
+// `wl eval` for definitions and gates: scores predictions against a corpus without enforcing a
+// threshold.
 import { readFileSync } from 'node:fs'
 import { definitionReport, loadDefinitionCorpus, parsePredictions } from '../definition/eval.js'
 import {

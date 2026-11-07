@@ -1,3 +1,4 @@
+// Renders the readable projections of the journal, reproducibly.
 import { stringify } from 'yaml'
 import {
   environmentProjectionEntries,

@@ -1,3 +1,4 @@
+// Selects the findings a gate audit examines.
 import type { GateFinding, GateResult, GateVote } from './contracts.js'
 
 interface FindingSource {

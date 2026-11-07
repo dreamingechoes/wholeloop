@@ -1,3 +1,4 @@
+// Minimal Markdown helpers for links, anchors and code spans.
 import GithubSlugger from 'github-slugger'
 
 export interface Link {

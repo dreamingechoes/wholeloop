@@ -1,3 +1,4 @@
+// Runs verification suites in Docker through the existing round journal and cache.
 import { posix, resolve } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import { DockerCli, type DockerTransport } from '../environment/docker-command.js'

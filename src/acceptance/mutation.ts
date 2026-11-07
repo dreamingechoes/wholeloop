@@ -1,3 +1,4 @@
+// Reads mutation counters reported by a repository's own tool.
 import { contractDigest } from '../contracts/compatibility.js'
 import { acceptanceShape } from './contracts.js'
 import type { DockerBehaviorRuntime } from './docker-runtime.js'

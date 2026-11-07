@@ -1,3 +1,4 @@
+// `wl profile`: shows, sets and selects interaction profiles.
 import { join } from 'node:path'
 import { loadConfig, userConfigPath } from '../config/load.js'
 import { type Configuration, resolveConfig } from '../config/resolve.js'

@@ -1,3 +1,4 @@
+// Lets a controller own native worker invocations without widening any adapter's tool policy.
 import { AsyncLocalStorage } from 'node:async_hooks'
 import type { workerProcess } from './process.js'
 

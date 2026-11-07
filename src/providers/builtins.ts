@@ -1,3 +1,4 @@
+// The built-in provider manifests and guidance bundled into the CLI.
 import catalog from './catalog.json' with { type: 'json' }
 import { validateProvider } from './manifest.js'
 

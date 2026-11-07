@@ -1,3 +1,4 @@
+// POSIX process-group membership and termination for headless workers.
 import { type ChildProcess, spawnSync } from 'node:child_process'
 
 /** The consuming controller must actually belong to the registered live wrapper group. */

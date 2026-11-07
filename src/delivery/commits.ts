@@ -1,3 +1,4 @@
+// Stages and commits delivery work as separate owned effects; neither one satisfies QA.
 import { existsSync, mkdirSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'

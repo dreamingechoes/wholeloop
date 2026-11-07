@@ -1,3 +1,4 @@
+// Negotiates what a native client can do from trusted runtime observations, not its help output.
 import type { BudgetMetering } from './budget-events.js'
 import type { NativeDeliveryRecipe } from './native-adapters.js'
 import { validateDeliveryShape } from './plan.js'

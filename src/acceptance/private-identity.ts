@@ -1,3 +1,4 @@
+// Proves that red and green private runs differ only in the implementation under test.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import type { EnvironmentRecipe } from '../environment/recipe.js'

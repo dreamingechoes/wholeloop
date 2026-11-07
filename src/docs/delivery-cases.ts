@@ -1,3 +1,4 @@
+// Checks that every delivery acceptance case maps to a control; it grants no acceptance.
 import { posix } from 'node:path'
 import type { EnforcementMap } from '../harness/enforcement.js'
 import type { Problem, Tree } from './check.js'

@@ -1,3 +1,4 @@
+// Exports reviewable delivery trees for every client without publishing or installing them.
 import { validate } from '../config/schema.js'
 import { canonicalDigest } from './canonical.js'
 import type { RenderedFile } from './contracts.js'

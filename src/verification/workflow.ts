@@ -1,3 +1,4 @@
+// The verify-works workflow: agreed criteria, suite execution and receipt.
 import { buildCriteria } from '../build/contracts.js'
 import { BuildWorkflow } from '../build/workflow.js'
 import { type Criterion, lintCriteria } from '../definition/criteria.js'

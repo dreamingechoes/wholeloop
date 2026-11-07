@@ -1,3 +1,4 @@
+// Closes a learning scope once its decisions are complete, never on merge alone.
 import type { EventData, StateEvent } from '../state/events.js'
 import { learningRuns } from './contracts.js'
 

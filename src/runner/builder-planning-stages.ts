@@ -1,3 +1,4 @@
+// Runner stages in which builders plan their work before writing code.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { NativeDelegatedDecisionHost } from '../decisions/native-host.js'

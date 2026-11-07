@@ -1,3 +1,4 @@
+// Selects gate lenses for changed units with a small path-matching vocabulary.
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { isObject } from '../config/schema.js'

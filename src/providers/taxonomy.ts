@@ -1,3 +1,4 @@
+// The capability and operation vocabulary that providers declare.
 export const TAXONOMY = {
   'source.web': ['query'],
   'source.code': ['query'],

@@ -1,3 +1,4 @@
+// Builds contract gate units from the stored plan and the artifacts actually present.
 import { contractDigest } from '../contracts/compatibility.js'
 import { DeliveryPlanning } from '../delivery/planning-store.js'
 import type { GatePlan } from '../gates/contracts.js'

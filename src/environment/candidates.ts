@@ -1,3 +1,5 @@
+// Captures bounded copies of environment candidate files, never Git control, symlinks or credential
+// files.
 import { createHash } from 'node:crypto'
 import { lstatSync } from 'node:fs'
 import { join, posix } from 'node:path'

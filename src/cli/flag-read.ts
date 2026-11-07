@@ -1,3 +1,4 @@
+// `wl provider read-flags`: plans one flag-state read without reading anything (ADR-0085).
 import { loadExtensionOptions } from '../config/load.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
 import { type OperationCall, performOperation } from '../providers/operations.js'

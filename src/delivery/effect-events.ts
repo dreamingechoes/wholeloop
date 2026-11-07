@@ -1,3 +1,4 @@
+// Effect intents and observations and their reducer for the delivery journal.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryEffect } from './authority.js'
 import { findBudget } from './budget-events.js'

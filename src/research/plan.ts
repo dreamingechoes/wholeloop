@@ -1,3 +1,4 @@
+// Builds the research plan from a question and the configured sources.
 import { isObject } from '../config/schema.js'
 import type { McpDeclaration } from '../providers/detect.js'
 import { detectProvider } from '../providers/detect.js'

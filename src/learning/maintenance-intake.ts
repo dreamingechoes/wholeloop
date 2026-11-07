@@ -1,3 +1,4 @@
+// Admits maintenance proposals into delivery once per proposal key.
 import { existsSync, readdirSync } from 'node:fs'
 import { readSourceFile } from '../delivery/input.js'
 import { DeliverySources } from '../delivery/source.js'

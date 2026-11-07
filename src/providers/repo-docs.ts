@@ -1,3 +1,5 @@
+// Publishes documents into the repository on explicit request, with locking kept in the external
+// store.
 import { createHash, randomUUID } from 'node:crypto'
 import {
   existsSync,

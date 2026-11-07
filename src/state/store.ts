@@ -1,3 +1,4 @@
+// The state store: journal appends and projection writes under the writer lock.
 import { existsSync, readdirSync } from 'node:fs'
 import type { EventMetadata } from './attribution.js'
 import {

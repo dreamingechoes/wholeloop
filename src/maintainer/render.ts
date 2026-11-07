@@ -1,3 +1,4 @@
+// Renders the repository's own maintainer skills and agents into every client's format (ADR-0246).
 import { createHash } from 'node:crypto'
 import {
   existsSync,

@@ -1,3 +1,4 @@
+// Runs one planned gate round through headless workers; planning, suites and repair stay explicit.
 import { mkdirSync, rmSync } from 'node:fs'
 import type { FlowEngine } from '../flow/engine.js'
 import type { GateKind } from '../gates/contracts.js'

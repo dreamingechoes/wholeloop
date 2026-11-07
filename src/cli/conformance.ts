@@ -1,3 +1,4 @@
+// `wl conformance`: prepares, runs, collects and reports native client conformance.
 import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'

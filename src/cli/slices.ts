@@ -1,3 +1,4 @@
+// `wl slices`: validates and publishes slice plans.
 import { readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import { checkShape } from '../flow/registry.js'

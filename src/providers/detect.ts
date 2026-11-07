@@ -1,3 +1,4 @@
+// Detects MCP servers and providers from client configuration without logging any value.
 import { accessSync, constants, readFileSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { delimiter, isAbsolute, join } from 'node:path'

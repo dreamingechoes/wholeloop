@@ -1,3 +1,4 @@
+// Stores acceptance artifacts within the frozen eight-MiB budget.
 import { createHash } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'

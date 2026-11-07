@@ -1,3 +1,4 @@
+// Output streams and the exit codes every command returns.
 export interface Io {
   out: (text: string) => void
   err: (text: string) => void

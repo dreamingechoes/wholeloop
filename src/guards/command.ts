@@ -1,3 +1,5 @@
+// Recognizes simple Git argv in a hook payload; anything more complex falls back to the real Git
+// hooks.
 import { resolve } from 'node:path'
 
 /** Recognize simple argv only; arbitrary shell programs still need the actual Git hook fallback. */

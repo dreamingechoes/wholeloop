@@ -1,3 +1,4 @@
+// The macOS sandbox profile and trusted paths that contain a Claude Code worker.
 import { isAbsolute, join, normalize } from 'node:path'
 import { safeSourceText } from './input.js'
 

@@ -1,3 +1,4 @@
+// `wl delivery private-*`: private acceptance definitions, plans and sensitivity.
 import { createHash } from 'node:crypto'
 import { resolve } from 'node:path'
 import { privateEvaluatorSource } from '../acceptance/docker-private.js'

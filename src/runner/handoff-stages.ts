@@ -1,3 +1,4 @@
+// Runner stages that hand an accepted product to a person or the next route step.
 import { existsSync } from 'node:fs'
 import { contractDigest } from '../contracts/compatibility.js'
 import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'
