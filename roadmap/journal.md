@@ -1,6 +1,6 @@
 # Journal
 
-> One entry per working session, newest first. What changed, what was decided, what is next. Short — the commits and ADRs hold the detail.
+> One entry per completed piece of work, newest first. What changed, what was decided, what is next. Short — the commits and ADRs hold the detail.
 
 ---
 
@@ -1123,7 +1123,7 @@
 ## 2026-11-02 · P6-29 · Correction revisions and stage reuse — in progress
 
 - Implement the continuation of ADR-0193 as a correction revision (ADR-0197). `wl delivery continue` previews, and records only when accepted, the next plan revision with a `corrections` entry: owning unit, origin, predecessor request, failed stage and exact failure digest. The reducer reopens a `failed` or `blocked` run only for that retained integration or acceptance failure, within the journal-derived `integrationRepairs` budget, after every stage, attempt and effect is resolved. The route adds `correction-N:<unit>` before the unit's verification. The controller reuses a predecessor stage only when the revision impact keeps it, it needs no delegated decision, its predecessors were reused and the host re-inspects the original with the same evidence; everything else runs again. The report lists the continue action and the chain.
-- Authority choice, decided in this session: every continuation needs a new exact-plan grant, and the journal refuses the failed run's grant and any envelope grant. The wider option for unattended `none` runs is a Proposed draft, `docs/decisions/0198-envelope-grant-continuation.md`, with a row under maintainer actions in manual verification.
+- Authority choice: every continuation needs a new exact-plan grant, and the journal refuses the failed run's grant and any envelope grant. The wider option for unattended `none` runs is a Proposed draft, `docs/decisions/0198-envelope-grant-continuation.md`, with a row under maintainer actions in manual verification.
 - Contract changes are additive on the unreleased v1 candidate (ADR-0066): optional `corrections` in the plan, `continues` in registration, the `reused` runner action and `origin`, runner-facet `continuations`, the `correction` stage kind, report `continuations` and one new output, `wholeloop/delivery-continue@1`. Their fingerprints are updated with that reason.
 - P6-29's third criterion is ticked on engine evidence with a synthetic controller host, plus a decision case for staleness after adoption. Mutation checks confirm that the new-grant rule and evidence re-inspection are load-bearing. The fixed dispatcher has no correction producer yet and reports such routes unsupported at static preflight, so P6-29 stays 🔄 and P6-22's second criterion stays open.
 - Markdown lint passes on 428 files. The complete check passes 3849 tests in 203 files, lint 1059, types, build, smoke, offline packaging on archive b5ab7ccda91e4ec8ca731e9f54e95f524accbfa847b155e28ebbbdf78cd2be2f, docs 429, generators, harness 151 and Mermaid 36 in 885 seconds. Next: the fixed correction producer for P6-29.
@@ -1135,21 +1135,21 @@
 - Add `wl maintenance inspect`, `propose`, `proposals`, `dismiss` and `admit` with five versioned outputs and closed, bounded input shapes (ADR-0196). `propose` runs the pinned inspection itself, so a finding never comes from a supplied file. `admit` re-runs the operator's pinned inspections, admits only current proposals within the envelope, and captures each admitted proposal once as its own inline delivery source with mapped criteria. It writes a `wholeloop/maintenance-admission@1` record and creates no plan, journal entry, queue entry or grant.
 - Implementation refinement, recorded in ADR-0196: "an admitted proposal starts its own run" is read as starting the run's intake. Planning and the exact-plan grant remain operator actions, which is the conservative reading that keeps every authority guarantee.
 - Eight compiled-CLI and component cases cover the remaining work and EVAL-12 for maintenance, including a competing admission injected during inspection that makes the command write nothing. A new tutorial was executed end to end against the built CLI. P6-31 is ✅; the roadmap is 67/88.
-- Local environment: before this session, `test/unit/conformance/nightly.test.ts` failed on this Mac because `/usr/bin/git` exited 69 until the Xcode license was accepted. It passes now.
+- Local environment: before this work, `test/unit/conformance/nightly.test.ts` failed on this Mac because `/usr/bin/git` exited 69 until the Xcode license was accepted. It passes now.
 - Markdown lint passes on 426 files. The complete check passes 3841 tests in 202 files, lint 1057, types, build, smoke, offline packaging on archive 2c662f7accec69cc8945caa63baf937db3f66e6351949eba726459774e21ef6c, docs 427, generators, harness 151 and Mermaid 36 in 763 seconds. Next: P6-29.
 
 ---
 
 ## 2026-11-02 · Session close — Phase 6 through the dependency order
 
-- Completed on main in this session: P6-10 (2fe7038), P6-33 awaiting native trials (55d86f9), P6-20 (c99a656), P6-21 (e1d87c8), P6-22 in progress (978d464), P6-23 (ab96be8), P6-24 in progress (a4a4e76), P6-25 (7596e8b), P6-28 (d3de970), P6-29 in progress (91c1832), P6-30 in progress (419b192) and P6-31 in progress (7b7097a). The roadmap is 66/88 overall: 26 expanded tasks complete, P6-33 awaiting native acceptance, five in progress and two not started.
+- Completed on main: P6-10 (2fe7038), P6-33 awaiting native trials (55d86f9), P6-20 (c99a656), P6-21 (e1d87c8), P6-22 in progress (978d464), P6-23 (ab96be8), P6-24 in progress (a4a4e76), P6-25 (7596e8b), P6-28 (d3de970), P6-29 in progress (91c1832), P6-30 in progress (419b192) and P6-31 in progress (7b7097a). The roadmap is 66/88 overall: 26 expanded tasks complete, P6-33 awaiting native acceptance, five in progress and two not started.
 - Every commit ran Markdown lint and the complete check first; results are in each entry. The last complete check passed 3828 tests in 201 files. The Docker daemon started for the publication evaluation is stopped, no wl- container, network or volume remains, and the 34 temporary test and evaluation directories under /tmp were removed. The container's injected GIT_CONFIG_COUNT URL rewrites were unset before every check run.
 
 What remains, and why:
 
 - **Native clients (maintainer action: installed, signed-in clients and model accounts).** P6-27, not started by instruction. P6-33's real reference-client research trials (RSR-01 native, EVAL-10, EVAL-11). The bound-client row under Public runner checks. The public host composes no adapter until P6-27's trusted runtime observers exist.
 - **Hosted trials (maintainer authorization for a disposable hosted repository).** The P6-20 publication trial, the P6-21 CI read trial, the P6-24 protected-merge and exact-SHA trial (REL-10, EVAL-05, EVAL-08), and the hosted-endpoint row under Public runner checks. Every code-host path here ran only against stub hosts and stub executors.
-- **Technical work still doable without maintainer action, not finished in this session.**
+- **Technical work still doable without maintainer action, not finished yet.**
   - P6-29: implementing the cross-invocation correction protocol (ADR-0193), whose tests also close P6-29's third criterion and P6-22's second.
   - P6-24: composing `to-merge` routes, with complete reads of changed files, mergeability, discussion resolution, allowed methods and base currency, plus the CI wait and merge stage.
   - P6-30: composing scheduled observations with the runner and the delegated `learning-outcome` decision, and replaying an actual local scheduler.
@@ -1326,7 +1326,7 @@ What remains, and why:
 
 - Completed on main: ccbcf37 makes the composed P6-10 product-environment acceptance pass on its unchanged 120-second window by reusing journal replays only for identical segment bytes (ADR-0174); 802a71b accepts P6-12 on an independent Linux host, closing it (60/88 overall, 20/34 expanded); 8483fb2 produces milestone assemblies, re-rooted recipes and candidates inside product dispatch (ADR-0175); 8b24d19 makes the fixed dispatcher a foreground runner host with a static preflight (ADR-0176). P6-10 stays 🔄 with no acceptance criterion ticked: each still needs the public command and its RUN/DEC evidence.
 - Closing complete check on the Linux x64 VM: 3513 tests in 187 files (446.56 seconds), lint 1017/types/build/docs 406/harness 151/Markdown 405/Mermaid 36, generators, smoke and offline packaging on archive 84aa80b19ba425dac0f409afe798d6398eb9655283f730b87feff29ce46aeca4 in 462 seconds. No wl- container, network or volume remains. The container's injected GIT_CONFIG_COUNT url rewrites must be unset for the Git guard tests; that is environment setup, not a repository change.
-- Still implementable here, in order: review-triggered repair must re-enter verification on the corrected head before unit readiness (an engine stage re-entry design); supervised acceptance composition needs a bound human acceptance record; research route composition shares P6-33. These remain P6-10 technical work and were not started in this session.
+- Still implementable here, in order: review-triggered repair must re-enter verification on the corrected head before unit readiness (an engine stage re-entry design); supervised acceptance composition needs a bound human acceptance record; research route composition shares P6-33. These remain P6-10 technical work and were not started yet.
 - Needs a maintainer decision: the public foreground run/reconcile command needs a fixed public host identity and complete-route configuration, which must name the native clients, models and containment that an unattended run may launch; actual runtime proof also needs installed, authenticated native clients (P0-03, P6-27). Recorded in manual verification. Blocked behind P6-10: P6-20–P6-25 and P6-28–P6-31, plus P6-33 and P6-32; P6-20–P6-24 also need real GitHub PR, CI and merge operations, and P6-27 needs native clients and models.
 - Original parked tasks keep their reasons: P0-01 and P5-05 need npm authentication and the maintainer's publication approval; P0-03, P1-10, P1-11, P1-13, P1-14, P3-08, P4-01, P5-01 and P5-02 need native client conformance; P0-07 follows P0-03; P5-04 needs the maintainer to activate nightly collection; P5-07 closes last. Maintainer actions, in order: decide the trusted native bindings for unattended runs; run the P0-03 conformance checklist on the four tier-A clients; then the npm and publication approvals.
 
@@ -2761,7 +2761,7 @@ What remains, and why:
 - Version/help probes passed for Claude 2.1.299, Codex 0.163.0, OpenCode 1.17.9 and Copilot 1.0.83 on macOS arm64.
 - These probes do not establish skill discovery, permissions, hooks, questions, MCP or plugin conformance. Per-CLI notes and an isolated manual checklist preserve that distinction; P0-03 remains parked.
 - P0-01 remains parked awaiting npm reservation. No publication or push was attempted.
-- The existing local check suite passed before recording this evidence; Linux and live client sessions remain unverified in this session.
+- The existing local check suite passed before recording this evidence; Linux and live client sessions remain unverified.
 
 ---
 

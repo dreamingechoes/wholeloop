@@ -65,7 +65,7 @@ Apply the official guidance at the correct layer:
 - [Node's event-loop guidance](https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop) explains synchronous I/O and large JSON work blocking the controller. Making repeated reads asynchronous does not remove their work. First remove repeated traversals, unnecessary copies/serialization and no-op writes; then measure remaining blocking and bound concurrency without moving authority across effects.
 - [Node's profiling guide](https://nodejs.org/learn/getting-started/profiling) and [performance hooks](https://nodejs.org/docs/latest-v24.x/api/perf_hooks.html) locate CPU/caller cost. Timing alone cannot establish necessity or replace operation counters, byte/ownership checks or cold/warm growth controls.
 
-No installed TypeScript/runtime-performance skill was found in this session. Use the official documentation and existing toolchain rather than adding an unrelated skill or dependency.
+No installed TypeScript/runtime-performance skill was available. Use the official documentation and existing toolchain rather than adding an unrelated skill or dependency.
 
 ## Executed isolated corrections after c227058
 
@@ -359,6 +359,6 @@ Remaining controller time, from a fresh CPU profile of the final source: about 1
 | Effect-vector traversal | Actual complete three-effect assembly and two-effect workspace each call effects.inspect three times for one report. ADR-0232 indexes one fresh vector per synchronous selection and refreshes across effects/cancellation writes, retaining first historical key matches. Both reports now read the vector once; 47 focused macOS controls and exact Linux fast/full gates pass in 0a5be53. Remaining replay and repository scans stay open. |
 | Other loops and readers | Static inventory: 503 source modules, 2156 candidate I/O/proof sites and 689 loops, including six literal while-true loops. Counts are candidates, not defect totals. Executed caller coverage remains incomplete. |
 
-Retain raw local reports, calibrated counters, source identities and original fixtures with the working-session evidence. These summaries cannot authorize execution or replace those originals. Complete all [P6-39 criteria](./phase-6-autonomous-delivery.md#p6-39--complete-harness-performance-audit-and-bounded-runtime-overhead) before closing the blocker.
+Retain raw local reports, calibrated counters, source identities and original fixtures with the local audit evidence. These summaries cannot authorize execution or replace those originals. Complete all [P6-39 criteria](./phase-6-autonomous-delivery.md#p6-39--complete-harness-performance-audit-and-bounded-runtime-overhead) before closing the blocker.
 
 [◀ Roadmap](./README.md) · [Journal](./journal.md)

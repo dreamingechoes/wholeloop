@@ -31,7 +31,7 @@ Git mutations and the external journal cannot share one filesystem transaction. 
 
 ## Consequences
 
-Failed intents and branches remain visible for recovery. Physical interruption may need stale-lock inspection; observed recovery paths are tested by removing a ready receipt after real provisioning. Process control, actual port binding and live project setup remain later builder/manual work. Git 2.49.0 was exercised on macOS; the other supported platform has not been executed in this session.
+Failed intents and branches remain visible for recovery. Physical interruption may need stale-lock inspection; observed recovery paths are tested by removing a ready receipt after real provisioning. Process control, actual port binding and live project setup remain later builder/manual work. Git 2.49.0 was exercised on macOS; the other supported platform has not been executed yet.
 
 ## Links
 
