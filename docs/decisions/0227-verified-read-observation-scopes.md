@@ -9,6 +9,8 @@ An unmodified model-free implementation rehearsal on 9b7b9a2 takes 435 seconds a
 
 The maintainer makes performance a 1.0 release blocker. Measure total controller overhead separately from models and the project's actual test execution. Five seconds is an initial ceiling, not a target to consume; unnecessary operations and poor growth remain defects below that ceiling.
 
+**Amended 2026-11-07.** The maintainer withdrew the five-second ceiling and the release-blocker status after the audit: the ceiling had been set before its consequences were known, and the complete model-free route now takes 68–72 seconds instead of about 175, with about 40 seconds of wholeloop overhead that is mostly guard Git processes, committed-fact flushes and closure proofs. Reaching five seconds would have required removing guard points or durability. Performance problems found later are fixed as ordinary defects; the decision below on sharing reads is unchanged.
+
 ## Decision
 
 Fixed read-only product observers share one process-local observation. Capture complete current bytes once for each distinct input, reuse them only within that observation and independently reread every captured input before its result escapes. Changed, absent-to-present, oversized, cancelled or unavailable inputs refuse the result. Keep public copies independent. There is no retained cache between actions. A physical store selection coalesces canonical resolution, containment, external-store checks and existence into one entry. Separate overlapping path entries exhausted the unchanged 1024-input cap on the first full rehearsal; raising that cap would retain unnecessary work.

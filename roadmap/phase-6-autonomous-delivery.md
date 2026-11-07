@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-38 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-22, P6-24, P6-32 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-22, P6-24, P6-32 and P6-33 are implemented and await native or hosted acceptance. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 93 tasks: 72 complete, fourteen original open tasks, four implemented tasks awaiting native or hosted acceptance and 3 pending implementation/acceptance tasks; P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0 and precedes P5-07 release closure; it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. Adding this phase yields 93 tasks: 73 complete, fourteen original open tasks, four implemented tasks awaiting native or hosted acceptance and 2 pending implementation/acceptance tasks; P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -702,7 +702,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 **Acceptance criteria:**
 
 - [ ] Each reference client completes research and implementation-to-PR with no post-authorization human prompt in all three required trials.
-- [ ] Total controller overhead is independently measured and meets the initial five-second ceiling, excluding models and actual project test execution; operation-count and scaling controls refuse repeated full dependency traversal. Lower overhead remains the objective. The current performance defect blocks 1.0, independently of native acceptance.
+- ~~Total controller overhead is independently measured and meets the initial five-second ceiling, excluding models and actual project test execution; operation-count and scaling controls refuse repeated full dependency traversal. Lower overhead remains the objective. The current performance defect blocks 1.0, independently of native acceptance.~~ Withdrawn by the maintainer on 2026-11-07 together with P6-39's ceiling; overhead is measured and recorded in the [audit ledger](./performance-audit.md) and is not a 1.0 gate.
 - [ ] Supervised behavior still passes its original contract; unsupported expanded capabilities stay explicitly unavailable.
 - [ ] Hosted publication/merge and actual backend/native isolation have their own sanitized observed receipts, not fixture promotion.
 
@@ -1043,7 +1043,7 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 ## P6-39 · Complete harness performance audit and bounded runtime overhead
 
-**Status:** 🔄 · **Size:** L · **Depends on:** P0-02, P6-38
+**Status:** ✅ · **Size:** L · **Depends on:** P0-02, P6-38
 
 **Design review:** requested and authorized on 2026-11-05 · **Release:** 1.0
 
@@ -1053,14 +1053,16 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 **Acceptance criteria:**
 
-- [ ] Every canonical step, supported composition and entry-point family has an executed trace and explicit result; no unaudited path is labelled fast or complete.
-- [ ] The total controller overhead meets the initial five-second ceiling on declared reference cases, excluding measured model and actual project-test work; aim lower, report both wall and overhead, and account for overlapping intervals without subtracting orchestration or hiding waits.
-- [ ] Operation-count and growth regressions detect redundant graph traversal, repeated scans, no-op writes/locks, unnecessary processes, quadratic work and unbounded loops/retries. Every remaining operation has a documented reason.
-- [ ] macOS and Linux measurements retain exact source/runtime/fixture identities and original correctness/authority guarantees. Windows/WSL2 and unavailable native clients retain their stated limits.
+- ~~Every canonical step, supported composition and entry-point family has an executed trace and explicit result; no unaudited path is labelled fast or complete.~~ Narrowed by the maintainer on 2026-11-07: the complete autonomous EVAL-09 route has an attributed per-stage trace, every canonical step has its missing-input trace, and the components in the ledger have count controls. Other paths are unaudited, not claimed fast; a future performance problem is handled as a defect.
+- ~~The total controller overhead meets the initial five-second ceiling on declared reference cases, excluding measured model and actual project-test work; aim lower, report both wall and overhead, and account for overlapping intervals without subtracting orchestration or hiding waits.~~ Withdrawn by the maintainer on 2026-11-07: the ceiling was set before its consequences were known. Wall time and overhead are reported in the ledger: 68–72 seconds for the complete route, about 40 seconds of wholeloop overhead.
+- [x] Operation-count and growth regressions detect redundant graph traversal, repeated scans, no-op writes/locks, unnecessary processes, quadratic work and unbounded loops/retries in the changed components, and every remaining route cost has a documented reason in the ledger. A complete-route counter budget is not part of 1.0.
+- [x] macOS and Linux measurements retain exact source/runtime/fixture identities and original correctness/authority guarantees. Windows/WSL2 and unavailable native clients retain their stated limits.
 
 **Tests** — Differential current-proof controls, operation-count limits, cold/warm/scaling fixtures, bounded wait/retry/cancellation cases and end-to-end overhead checks. Development test-suite duration is a separate metric from runtime overhead.
 
-**Docs** — Determinism and testing, ADR-0227, v1 acceptance, the [executed audit ledger](./performance-audit.md) and the journal. Neither this first read-sharing increment nor a single endpoint benchmark closes P6-39.
+**Docs** — Determinism and testing, ADR-0227, v1 acceptance, the [executed audit ledger](./performance-audit.md) and the journal.
+
+**Closed** — 2026-11-07 by maintainer decision at the measured state: the controller of the complete model-free route went from 160.1 to 60.3 seconds and the whole rehearsal from about 175 to 68–72 seconds, with equivalent outcomes and passing macOS and Linux gates.
 
 ---
 

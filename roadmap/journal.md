@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-07 · P6-39 ✅ · Close the performance audit at the measured state
+
+- The maintainer withdraws the initial five-second controller ceiling, set before its consequences were known, and closes P6-39 at the measured state; performance is no longer a 1.0 release blocker. [ADR-0227](../docs/decisions/0227-verified-read-observation-scopes.md) is amended; the matching criterion of P6-27 is withdrawn.
+- Measured state: the complete model-free EVAL-09 route takes 68–72 seconds (about 175 at the start of the audit); the controller takes 60.3 seconds, about 20 of them waiting for supervised work, so wholeloop overhead is about 40 seconds, mostly guard Git processes, committed-fact flushes and closure proofs. Reaching five seconds would have meant removing guard points or durability.
+- Narrowed rather than met: per-path traces of every canonical step and entry point beyond the complete route, the missing-input step traces and the component controls. Untraced paths are unaudited, not claimed fast; a future performance problem is an ordinary defect. No complete-route counter budget is added.
+- Remaining 1.0 work: P6-27 native evaluations and P6-35 worker credentials, four implemented tasks awaiting native or hosted acceptance, and the fourteen original native, platform and release tasks.
+
+---
+
 ## 2026-11-07 · P6-39 · Borrowed views, joined queries and directory durability
 
 - Internal readers borrow frozen journal projections, resolved store files are read with one canonicalization, the review audit and patch are shared within one decision and clean credential scans are remembered by content: the calibrated controller goes from 67.945 to 63.882 seconds.

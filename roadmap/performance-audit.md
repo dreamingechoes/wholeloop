@@ -3,7 +3,7 @@
 > **TL;DR** — P6-39 audits every unnecessary read, execution, write, lock, loop and retry. Runtime duration follows from that work; a fast path containing redundant operations is not complete.
 
 > [!NOTE]
-> **Status: 🚧 partial · 1.0 release blocker.** Preserve authority, current-input validation and original failures. The initial five-second total-controller ceiling does not replace operation-count and growth requirements. No complete coverage, platform parity or prompt comparison is claimed.
+> **Status: ✅ closed for 1.0 by maintainer decision (2026-11-07).** The initial five-second total-controller ceiling is withdrawn; it was set before its consequences were known. The measured state below stands: the complete model-free route takes 68–72 seconds, about 40 of them wholeloop overhead. Paths not traced here are unaudited, not claimed fast, and a future performance problem is handled as an ordinary defect. No complete coverage, platform parity or prompt comparison is claimed.
 
 ## Evidence boundaries
 
