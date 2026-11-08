@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-11-08 · P6-35 ⏸️ · Worker credentials built; live acceptance pending
+
+- Built in four parts:
+  - **Credential references:** a runtime client can name a secret-store item (Keychain or Secret Service) instead of a signed-in home. `wl delivery credential-store|credential-check` move the value only through stdin and never print it.
+  - **Injection per launch:** each launch receives its credential with a disposable client home, and Claude's sandbox profile then grants no Keychain access.
+  - **Credential preflight:** it ends a run before dispatch with a named reason.
+  - **Usage-window wait:** before each stage, the controller reads the usage window of the signed-in clients the stage would launch. An exhausted Codex window makes the run wait in `waiting-external`; after the reset the same run continues.
+- Found: Claude reports any injected token as signed in, and `codex login status` ignores `CODEX_API_KEY`, so a credential's validity shows only at its first launch. Claude Code reports no usage window. ADR-0209 amended.
+- Decided with the maintainer: the window signal is Codex's no-model `account/rateLimits/read`, read before dispatch. Rejected: pausing the run while the controller waits, which ends the controller's lease, and reading the signal from failed launches, which no client reports reliably.
+- Live without a model: a Keychain check, the real Claude 2.1.319 under the injected profile, and the maintainer's Codex window (available at 96 percent). The three acceptance criteria need the maintainer's accounts and stay in manual verification.
+- Gate: CHECK PASS in 675s, 4694 tests, macOS arm64 only; Linux not run.
+
 ## 2026-11-08 · P0-07 ✅ · Foundational decisions match the verified matrix
 
 - Re-read ADR-0002 to ADR-0018 against the matrix P0-03 verified. None contradicts it; none was superseded.

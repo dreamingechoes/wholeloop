@@ -897,7 +897,7 @@ The third 2026-11-05 Codex implementation pilot retains correct response identit
 
 ## P6-35 · Controller-owned worker credentials
 
-**Status:** 🔄 · **Size:** L · **Depends on:** P6-10, P6-34
+**Status:** ⏸️ · **Size:** L · **Depends on:** P6-10, P6-34
 
 **Design review:** added on 2026-11-04; design accepted on 2026-11-08 ([ADR-0209](../docs/decisions/0209-controller-owned-native-credentials.md)) · **Release:** 1.1.0 ([Phase 8](./phase-8-software-factory.md))
 
@@ -920,6 +920,16 @@ The documentation also records Antigravity as an unavailable worker, while its i
 - [ ] The maintainer accepts or rejects the design after one real call per reference client and account kind, a measured `claude setup-token` lifetime, and a usage-window signal or its absence.
 - [ ] A Claude Code run spanning a token expiry, and a Codex run, complete unattended with no credential in any worker-writable path. A missing or invalid credential ends the run at preflight with a named reason.
 - [ ] An exhausted usage window pauses the run and it resumes after the reset, keeping its work. Without a client signal, the attempt is reported as an infrastructure failure.
+
+**Local implementation (2026-11-08):** everything the design names is built and fixture-tested:
+
+- runtime clients name a signed-in home or a secret-store credential reference, never both;
+- `wl delivery credential-store|credential-check` store and check a credential without exposing its value;
+- each launch injects the credential into that process alone, with a disposable client home, and Claude's profile then grants no Keychain access;
+- the run preflight names `public-host-credential-missing` and `public-host-credential-store-unavailable`;
+- the controller waits on an exhausted Codex usage window in `waiting-external` and continues the same run after the reset.
+
+Claude Code reports no window, and no client validates an injected credential or its expiry without a model call. All three acceptance criteria need the maintainer's accounts; see [manual verification](./manual-verification.md#worker-credentials-p6-35).
 
 **Tests** — Credential reference and resolution contracts; synthetic clients that honour or reject an injected credential; boundary probes showing every credential store denied; preflight refusals; window pause and resume on a fake clock; live acceptance on the maintainer's accounts.
 

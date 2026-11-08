@@ -278,6 +278,19 @@ Antigravity native names use wl-agy- to coexist with Codex; other installed name
 
 Current matching installs are idempotent; observed edits/unowned data are refused. Uninstall retains backups/history and removes matching owned files plus created empty parents. Source/plugin generation remains available independently. Native restart, project trust, compatibility precedence, permissions and Linux still need actual conformance. Git-hook activation/removal remains a separate per-repository handoff. See [getting started](../getting-started.md) and [ADR-0050](../decisions/0050-owned-native-overlays-and-explicit-activation.md).
 
+## Worker credentials for autonomous delivery
+
+Skills and agents run on the sign-in of your own session. The headless workers that `wl delivery run` launches instead take a credential the controller keeps in the operating system's secret store and injects into each launch ([ADR-0209](../decisions/0209-controller-owned-native-credentials.md)); the [runner tutorial](../tutorials/delivery-runner.md#run-and-reconcile-from-the-terminal) shows how to store and check one.
+
+| Platform | Secret store | Notes |
+| --- | --- | --- |
+| macOS | Keychain, through `/usr/bin/security` | The value goes through stdin, never arguments |
+| Linux desktop | Secret Service, through `secret-tool` in `/usr/bin` or `/usr/local/bin` | Needs the session bus |
+| Linux without a desktop | none | Reported as `credential-store-unavailable`; there is no file fallback |
+| Windows | through WSL2 | Native containment and the Credential Manager are not verified |
+
+Claude Code takes an API key or a `claude setup-token` token, and Codex an API key. A Codex ChatGPT sign-in stays in its own home, and Codex reports that account's usage window, which the controller waits on. Antigravity has no injectable headless credential and cannot be a worker. The other clients follow when they become delivery reference clients. Only macOS has been exercised; the Linux store path is fixture-tested.
+
 ## Antigravity plugin and native overlays
 
 Build with `wl build --target antigravity --out /tmp/wholeloop-agy --json`. The closed plugin.json, seventeen wl-agy- skills, nine strict agents, named hooks.json map and bundled core/resources form independent native output. User installation uses the documented CLI plugin root; project installation uses .agents. Existing unowned project hooks.json is refused before any target writes; use standalone native plugin delivery or preserve/resolve the shared file manually. Install/uninstall all includes six targets. Doctor requires explicit --target antigravity and probes agy, while its default remains tier A.

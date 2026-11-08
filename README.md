@@ -216,6 +216,8 @@ The reasoning behind each one: [philosophy](./docs/philosophy.md).
 
 Claude Code loose skills answer to `/wl-frame-problem`, and the generated Claude plugin to `/wholeloop:frame-problem`; Codex's skill picker uses `$wl-frame-problem`. Other clients can be asked for the exact installed name. [Client setup](./docs/platforms/local-onboarding.md) explains each delivery route, and [platforms](./docs/platforms/README.md) records what has been checked on each client.
 
+Every client runs the harness inside your own session. Autonomous delivery also launches its own headless workers, which need a credential the controller can inject; Antigravity has no such path yet, so it cannot be a delivery worker, while its in-session use is unaffected ([ADR-0209](./docs/decisions/0209-controller-owned-native-credentials.md)).
+
 ## Local first, integrations when needed
 
 No Jira, Notion, analytics or feature-flag account is needed to start: local document and tracker providers store everything on your machine.
