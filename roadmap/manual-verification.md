@@ -6,6 +6,12 @@
 
 Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan, commands, passing results and who does each part. This page retains detailed regressions and limitations rather than assigning every item to the maintainer.
 
+## Per-client native checks (2026-11-08)
+
+`npm run native:check -- <client>` runs the low-quota checks for one installed client: the version (no model), the read-only probe (one short turn) and the standalone framing scenario (one scenario), each only with `--live`. See [V1 acceptance](../docs/v1-acceptance.md#4-let-the-automatic-runner-cover-the-other-clients) for the commands and verdicts. Fake-client tests cover every verdict; a plan-only run against the installed Codex 0.166.0 observed its version and called no model.
+
+- [ ] Run it with `--live` for each installed client and return each `handoff.md`. A read-only PASS feeds P0-03, P1-11, P5-01 or P5-02 for that client; a framing PASS feeds P1-14, P5-01 or P5-02. Hook payloads (P3-08) and MCP inheritance in launchers (P4-01) are not automated yet.
+
 ## Expanded 1.0 acceptance boundary
 
 [Phase 6](./phase-6-autonomous-delivery.md) adds 38 reviewed/accepted implementation tasks, authorized for sequential execution, before final 1.0 release. Their [validation plan](./specifications/autonomous-delivery/09-validation-and-acceptance.md) defines new automated, native/backend and hosted checks. The original fourteen open tasks and observations below retain their exact scope; the [roadmap index](./README.md) holds the current task counts, including the [Phase 7](./phase-7-release-readiness.md) release-readiness tasks added on 2026-11-07.

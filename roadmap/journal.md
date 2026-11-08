@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-08 · Per-client native checks
+
+- `npm run native:check -- <client>` runs the low-quota native checks for one installed client and writes a receipt and a handoff outside the repository. Without `--live` it only observes the version; with it, a read-only probe spends one short turn and the framing scenario spends one scenario.
+- The read-only probe reuses the gates' own headless recipe for that client, so it tests the boundary wholeloop actually launches. It judges the workspace, not the model: a changed workspace fails, a client that declines to try is inconclusive, and a pass needs every write refused or without a tool. Native denial signals are recorded as stronger evidence than the client's report. The framing probe drives `wl conformance` unchanged and keeps its report and redacted diagnostics.
+- Tests cover the arguments, the plan per client, every read-only verdict through a fake client, the framing mapping and a handoff without fixture paths. A plan-only run against the installed Codex 0.166.0 observed its version and called no model. No task closes: each receipt is evidence for P0-03, P1-11, P1-14, P5-01 or P5-02. Hook payloads (P3-08) and MCP inheritance (P4-01) come next.
+
+---
+
 ## 2026-11-08 · Philosophy: decisions in advance, individuals and teams
 
 - [Principle 5](../docs/philosophy.md#5-people-own-every-decision-at-the-moment-or-in-advance) now reads "people own every decision, at the moment or in advance" and keeps its earlier wording visible: the supervised flow still stops at its six points by default, and autonomous delivery lets a person decide in advance through an explicit grant with pinned rubrics and limits. Some decisions are never delegated: widening the machine's authority, changing what counts as accepted and supplying a fact only a person knows. [ADR-0010](../docs/decisions/0010-interaction-profile-never-changes-coverage.md) is amended so delegation stays a grant of authority, never a profile.

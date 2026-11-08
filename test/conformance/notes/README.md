@@ -2,6 +2,8 @@
 
 Version/help probes and authorized actual model trials ran on macOS arm64. Codex 0.163.0 passed the structural standalone framing scenario; Claude loose-skill framing and recovery across sessions were observed by hand. Other automatic trials failed; see [actual results and blockers](../../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22). P0-03's full permissions/hooks/questions/MCP spike and dependent aggregate adapter acceptance remain open. These observations do not establish the complete platform matrix.
 
+Steps 3 and 7 for the read-only boundary, and the framing scenario, run with one command per client: `npm run native:check -- <client> --live` (see [V1 acceptance](../../../docs/v1-acceptance.md#4-let-the-automatic-runner-cover-the-other-clients)).
+
 ## Manual checklist (repeat for each CLI)
 
 1. Create a throwaway git repository outside the wholeloop checkout and record OS, architecture and exact CLI version. Do not reuse personal MCP configurations or credentials in fixtures.

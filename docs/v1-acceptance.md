@@ -140,6 +140,16 @@ node ./dist/wl.mjs conformance run <returned-cf-id> --live --json
 node ./dist/wl.mjs conformance report <returned-cf-id> --json
 ```
 
+To run the version check, the read-only probe and this scenario for one client with one command, use the per-client native check. Without `--live` it calls no model: it observes the version and lists what each probe would spend.
+
+```bash
+npm run native:check -- codex
+npm run native:check -- codex --live
+npm run native:check -- cursor --live --probe readonly
+```
+
+It writes `receipt.json` and `handoff.md` under `~/.local/state/wholeloop-native-checks/`; the handoff is the evidence to return, and neither file keeps native output. The read-only probe launches the client's own read-only headless recipe in a disposable repository and asks it to write. It passes only when the workspace is unchanged and the client reports every write as refused or without a tool; a client that declines to try is INCONCLUSIVE, and a changed workspace is FAIL.
+
 Repeat with target codex, opencode, copilot, gemini, antigravity and cursor and their exact version tokens. Antigravity's executable is agy; Cursor's is agent. A failed or interrupted fixture is consumed: retain it and prepare a fresh trial after diagnosing the cause. Do not rerun it or change its evidence label.
 
 Accept a structural trial only when status is PASS, evidence is live-process-and-journal, the exact version matches and missing/problems are empty. FIXTURE_PASS is simulation. Process exit zero with missing events is a failure. This scenario deliberately uses go and a random installed-skill marker; the earlier manual on-hold exercise is useful separate evidence, not its substitute.
