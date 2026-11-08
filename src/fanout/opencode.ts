@@ -1,6 +1,7 @@
 // OpenCode headless worker and its permission rules.
 import { createHash } from 'node:crypto'
 import { isAbsolute } from 'node:path'
+import { OPENCODE_READ } from '../adapters/portable.js'
 import { isObject } from '../config/schema.js'
 import type { HeadlessAdapter } from './adapters.js'
 
@@ -13,7 +14,7 @@ export const openCodeWorker: HeadlessAdapter = {
     const agent = `wholeloop-inspector-${createHash('sha256').update(directory).digest('hex').slice(0, 16)}`
     const permission = {
       '*': 'deny',
-      read: { '*': 'allow', '*.env': 'deny', '*.env.*': 'deny', '*.env.example': 'allow' },
+      read: OPENCODE_READ,
       glob: 'allow',
       grep: 'allow',
       external_directory: { '*': 'deny', [repository]: 'allow', [`${repository}/**`]: 'allow' },

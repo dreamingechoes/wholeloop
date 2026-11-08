@@ -351,7 +351,11 @@ mode: subagent
 permission:
   "*": deny
   external_directory: allow
-  read: allow
+  read:
+    "*": allow
+    "*.env": deny
+    "*.env.*": deny
+    "*.env.example": allow
   glob: allow
   grep: allow
   skill: allow
@@ -467,7 +471,7 @@ Retain evidence.
     {
       "path": ".opencode/agents/wl-reviewer.md",
       "mode": 420,
-      "sha256": "f117abe682b242904070d11e8a1f711e1d69addee13dba231d72d8ceb8d742c8"
+      "sha256": "f0eeb5b7c7bfec1d9ead652ebc2b686c418614189dc411608373d9a533be7fc9"
     },
     {
       "path": "resources/protocols/core-invariants.md",

@@ -7,7 +7,11 @@ mode: subagent
 permission:
   "*": deny
   external_directory: allow
-  read: allow
+  read:
+    "*": allow
+    "*.env": deny
+    "*.env.*": deny
+    "*.env.example": allow
   glob: allow
   grep: allow
   skill: allow

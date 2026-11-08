@@ -8,6 +8,16 @@ import type { Adapter, AdapterCapabilities } from './contracts.js'
 const strip = (content: string) => content.replace(/^---\n[\s\S]*?\n---\n/, '').trimStart()
 const context =
   'The conductor supplies wholeloopRoot from the packaged adapter root command. For every canonical wl command invoke Node with wholeloopRoot/bin/wl.mjs. Read shared protocols under wholeloopRoot/resources/protocols/. If the root or required evidence is absent, return a question; do not guess PATH or manufacture coverage.\n\n'
+/**
+ * OpenCode's own read default asks before .env files; a bare read allow placed after it
+ * overrides that ask (observed on 2.2.5). Deny them outright, as the headless inspector does.
+ */
+export const OPENCODE_READ = {
+  '*': 'allow',
+  '*.env': 'deny',
+  '*.env.*': 'deny',
+  '*.env.example': 'allow',
+} as const
 function definition(content: string) {
   const metadata = frontmatter(content) ?? {}
   const canonical = (metadata.metadata ?? {}) as Record<string, string>
@@ -104,11 +114,11 @@ export const opencodeAdapter: Adapter = {
   renderAgent: (name, content, options = {}) => {
     const { metadata, capabilities, tier } = definition(content)
     const writable = capabilities.includes('write')
-    const permission: Record<string, string> = {
+    const permission: Record<string, string | typeof OPENCODE_READ> = {
       '*': 'deny',
       external_directory: writable ? 'ask' : 'allow',
       ...(capabilities.includes('read')
-        ? { read: 'allow', glob: 'allow', grep: 'allow', skill: 'allow' }
+        ? { read: OPENCODE_READ, glob: 'allow', grep: 'allow', skill: 'allow' }
         : {}),
       ...(writable ? { edit: 'allow' } : {}),
       ...(writable && capabilities.includes('shell') ? { bash: 'allow' } : {}),

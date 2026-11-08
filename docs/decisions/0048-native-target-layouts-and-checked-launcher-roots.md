@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-19
 
+**Amended 2026-11-08.** Native runs of the generated read-only roles held their restrictions: OpenCode 2.2.5 with auto-approval and Copilot 1.0.83 with `--allow-all` gave the reviewer no write or shell tool, and its sentinel stayed unchanged. They also found one widening. OpenCode's own read default asks before `.env` files, and the role's bare `read: allow` came later and overrode that ask, so the reviewer read `.env`. OpenCode roles now render `read` as patterns that deny `.env` and `.env.*` but allow `.env.example`, the rule the headless inspector already used, and the same run then refused the read. Copilot always adds its `skill` and session `sql` tools to an agent's tool list, and an agent file cannot remove them. Codex's current subagent documentation (checked on 2026-11-08) still says `sandbox_mode`, `approval_policy` and `mcp_servers` in a custom agent file do not override the parent, so the read-only parent or the headless recipe is still the strongest restriction available there.
+
 ## Context
 
 Native clients do not share agent schemas or permission semantics. A portable manifest also does not make every client discover its agent overlays. Skills need their packaged core after installation or relocation without hardcoded home paths, undocumented plugin variables or whichever executable happens to be on PATH.

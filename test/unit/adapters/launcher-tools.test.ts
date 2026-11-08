@@ -47,13 +47,14 @@ describe('launcher tools per client', () => {
   })
 
   it('OpenCode: every permission denied except reading', () => {
-    const permission = meta(launcher('opencode')[1]).permission as Record<string, string>
+    const permission = meta(launcher('opencode')[1]).permission as Record<string, unknown>
     expect(permission['*']).toBe('deny')
     const allowed = Object.entries(permission)
       .filter(([, value]) => value === 'allow')
       .map(([key]) => key)
       .sort()
-    expect(allowed).toEqual(['external_directory', 'glob', 'grep', 'read', 'skill'])
+    expect(allowed).toEqual(['external_directory', 'glob', 'grep', 'skill'])
+    expect(permission.read).toMatchObject({ '*': 'allow', '*.env': 'deny', '*.env.*': 'deny' })
   })
 
   it.each([

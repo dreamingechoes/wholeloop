@@ -122,7 +122,11 @@ describe('additional tier-A render targets', () => {
         ).content,
       )
       if (id === 'opencode') {
-        expect(observer?.permission).toMatchObject({ '*': 'deny', read: 'allow' })
+        // The client's own .env ask must not be widened by the role's read allow.
+        expect(observer?.permission).toMatchObject({
+          '*': 'deny',
+          read: { '*': 'allow', '*.env': 'deny', '*.env.*': 'deny' },
+        })
         expect(observer?.permission).not.toHaveProperty('bash')
         expect(observer?.permission).not.toHaveProperty('edit')
         expect(writer?.permission).toMatchObject({ bash: 'allow', edit: 'allow' })

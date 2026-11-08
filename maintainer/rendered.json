@@ -297,19 +297,19 @@
     },
     {
       "path": ".opencode/agents/maint-convention-reviewer.md",
-      "sha256": "e77e22b4c3a8fd690d8f887cb44a336920c570ebeae51943d389bf15f49643c6"
+      "sha256": "5bb57ba242df820bbec88974a6b4303ce90293377aed90f277b5e5c66a4caeb3"
     },
     {
       "path": ".opencode/agents/maint-docs-auditor.md",
-      "sha256": "723caffb1ff316787b4cb5ad678d7358223f63b5204e8d84720d34318c1d4546"
+      "sha256": "2c84be961f64d5a85bb03a3f5823781aa046a75b5f45277071ef3cf6ca29751b"
     },
     {
       "path": ".opencode/agents/maint-release-manager.md",
-      "sha256": "05e49fd7c3c91c6bb2a5d0824bf609a5945b64393881afdcd909fa2820f6dba0"
+      "sha256": "5f086d8f094940bc9dd339fdac871945b55431cf9e5fe4a5c5a9fa9ad26eff0f"
     },
     {
       "path": ".opencode/agents/maint-security-auditor.md",
-      "sha256": "9b526b0218ff05219ffd9b21cd15f6cf563887d1477e44f15ff54aa50073621c"
+      "sha256": "bcfdbf703811b4aefc7838f6f41a5adf82fca129d28555166567534eb3cf2b23"
     },
     {
       "path": ".opencode/skills/maint-amend-adr/SKILL.md",
