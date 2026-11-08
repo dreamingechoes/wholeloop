@@ -42,7 +42,7 @@
 
 ## P0-03 · CLI conformance spike
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** —
+**Status:** ✅ · **Size:** L · **Depends on:** —
 
 **Goal** — Replace every ❓ in the platform matrix with a verified answer.
 
@@ -50,11 +50,23 @@
 
 **Acceptance criteria:**
 
-- [ ] Verified per CLI: skill discovery dirs, subagent format and parallelism, read-only enforcement, hook events and payload shape, structured question tool, MCP config dialect, headless flags and JSON output.
-- [ ] Specifically answered: Claude Code reading `.agents/skills` and Agent Plugins manifests; Codex `request_user_input` behaviour; Copilot reading Claude hooks.
-- [ ] Any finding that changes a design decision opens or amends an ADR.
+- [x] Verified per CLI: skill discovery dirs, subagent format and parallelism, read-only enforcement, hook events and payload shape, structured question tool, MCP config dialect, headless flags and JSON output.
+- [x] Specifically answered: Claude Code reading `.agents/skills` and Agent Plugins manifests; Codex `request_user_input` behaviour; Copilot reading Claude hooks.
+- [x] Any finding that changes a design decision opens or amends an ADR.
 
-**Pending manual verification** — Claude loose-skill framing and session recovery were observed by hand; an automatic Codex 0.163.0 standalone framing trial passed on macOS. Other automatic client trials failed. These narrow observations do not close the discovery, permissions, hooks, questions and MCP spike. See `test/conformance/notes/README.md` and the [actual trial table](./manual-verification.md#automatic-native-client-trials-2026-10-22). Help text alone is not conformance evidence.
+**Evidence** — On 2026-11-08, macOS arm64, Node 24.22.0, a disposable fixture ran on Claude Code 2.1.319, Codex 0.166.0, OpenCode 2.2.5 and Copilot CLI 1.0.83. It held one marker skill per discovery directory, a read-only reader subagent in each client's format, logging hooks and a local MCP server returning a fixed marker. Per client, one headless run listed the skills, called the MCP tool, launched two readers in parallel and tried the question tool; an interactive tmux session then asked a real question. Results:
+
+- **Skill discovery:** Claude reads `.claude/skills` only; Codex reads `.agents` and `.codex`; OpenCode reads `.opencode`, `.claude` and `.agents`; Copilot reads `.github`, `.agents` and `.claude`.
+- **Subagents and read-only enforcement:** all four ran two subagents in parallel. Read-only enforcement comes from today's probes and P1-11.
+- **Hooks:** payloads are the P3-08 fixtures; Claude and Copilot also logged their full event sets.
+- **MCP:** works in each client's dialect, but Copilot does not read the repository's `.mcp.json`.
+- **Questions:** asked natively in interactive Claude, OpenCode and Copilot sessions; no client answers one headless.
+- **Specific questions:** Claude ignores `.agents/skills` and the Agent Plugins manifest, though it loads a package's `skills/`. Codex `exec` exposes `request_user_input_async`, which accepts a question and never answers. Copilot runs Claude's hooks, only in a trusted folder.
+- **Also found:** Codex and Copilot install the Agent Plugins package from a Claude marketplace file, and Codex subagents fail under `exec --ephemeral`.
+
+ADR-0005 and ADR-0015 are amended; each client's note under `test/conformance/notes/` holds the invocations. Narrowed: Codex's interactive question was not exercised, because its TUI would save folder trust to the user's configuration. Linux was not run. The Gemini, Antigravity and Cursor ❓ marks stay with their adapter tasks.
+
+**Earlier observations** — Claude loose-skill framing and session recovery were observed by hand, and Codex 0.163.0 passed the standalone framing scenario. The automatic trials from that time are kept in the [trial table](./manual-verification.md#automatic-native-client-trials-2026-10-22).
 
 **Docs** — platforms (matrix), ADR-0005, ADR-0006.
 
@@ -109,7 +121,7 @@
 
 ## P0-07 · Review and accept the foundational ADRs
 
-**Status:** ⏸️ · **Size:** S · **Depends on:** P0-03
+**Status:** ✅ · **Size:** S · **Depends on:** P0-03
 
 **Goal** — Re-read ADR-0002 to ADR-0018 against what the spike learned, before code depends on them.
 
@@ -117,10 +129,12 @@
 
 **Acceptance criteria:**
 
-- [ ] No ADR contradicts the verified platform matrix.
+- [x] No ADR contradicts the verified platform matrix.
 - [x] Every ADR referenced from docs exists and is `Accepted` or explicitly `Superseded`.
 
-**Local implementation:** docs check now validates referenced metadata, successor resolution and cycle refusal. Native/platform truth review still depends on the actual P0-03 spike; lifecycle validation does not close that criterion. Historical accepted ADRs remain intact until verified findings justify a superseding record.
+**Evidence** — On 2026-11-08, ADR-0002 to ADR-0018 were re-read against the matrix the P0-03 spike verified. None contradicts it. ADR-0002's directory split holds: Claude reads `.claude/skills`, and the others read `.agents/skills`. ADR-0006's premises hold: subagents run in parallel on all four tier-A clients, and Codex cannot enforce a read-only agent. Two ADRs needed precision, not reversal. ADR-0005 now records that Copilot runs Claude's hooks only in trusted folders and that no client answers a structured question headless. ADR-0015's Agent Plugins claim was confirmed for Codex and Copilot and narrowed for Claude. ADR-0003, ADR-0004 and ADR-0007 to ADR-0018 make no platform claim. No ADR was superseded. The docs check validates status and references (`npm run check`).
+
+**Local implementation:** the docs check validates referenced metadata, successor resolution and cycle refusal.
 
 **Docs** — decisions index.
 

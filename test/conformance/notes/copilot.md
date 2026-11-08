@@ -1,17 +1,17 @@
 # copilot — conformance spike
 
-Observed on macOS arm64, 2026-10-18.
+The spike results below are from 2026-11-08, macOS arm64, Copilot CLI `1.0.83`, in disposable repositories outside the checkout.
 
-- Installed version: `1.0.83` (`copilot --version`, exit 0).
-- `copilot --help` exits 0. This checks availability only.
-- Skill discovery and plugin manifests: **unverified**.
-- Subagent format, parallelism and read-only enforcement: **unverified**.
-- Hook events and payloads (including compatibility): **unverified**.
-- Structured questions in interactive and headless modes: **unverified**.
-- MCP configuration and tool invocation: **unverified**.
-- Headless structured output: **unverified**; help is not a successful run.
+- **Skill discovery:** reads `.github/skills`, `.agents/skills` and `.claude/skills`; not `.opencode/skills` or `.codex/skills`.
+- **Plugins:** `copilot plugin marketplace add` reads a Claude `.claude-plugin/marketplace.json`, and `copilot plugin install` installs the generated Agent Plugins package with its seventeen skills (isolated `COPILOT_HOME`, no model call). Plugin agents are named `wholeloop:wl-<name>` (P1-11).
+- **Subagents:** `.github/agents/*.agent.md` with a `tools` list. Two `probe-reader` subagents started within 1 ms of each other and both completed, each returning its file.
+- **Read-only enforcement:** the generated reviewer under `--allow-all` exposed only `view`, `glob`, `rg`, `skill` and the session `sql` tool (P1-11).
+- **Hooks:** in a trusted folder, Copilot fires both its own `.github/hooks/*.json` (`sessionStart`, `userPromptSubmitted`, `preToolUse`, `postToolUse`, `agentStop`) and Claude's `.claude/settings.json` hooks, using Claude's event and tool names (`PreToolUse` for `AskUserQuestion`). In an untrusted folder, a headless run fired neither. Plugin hooks fire headless (P3-08), which is how wholeloop installs its guard.
+- **Structured questions:** interactively, `ask_user` offered options A and B and returned the choice. Headless, it is unavailable.
+- **MCP:** Copilot does not read the repository's `.mcp.json`, even in a trusted folder. `--additional-mcp-config` or `~/.copilot/mcp-config.json` with `mcpServers.<name>` (`type: local`, `command`, `args`, `tools`) works: the tool `marker-get_marker` returned the marker.
+- **Headless:** `copilot -p --output-format json`, exit 0, JSONL events including `tool.execution_start`, `subagent.started` and `session.mcp_servers_loaded`.
 
-Run the checklist in [README](./README.md) before promoting any capability.
+Not run: Linux.
 
 ## 2026-10-19 · Generated portable package probe
 

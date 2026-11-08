@@ -1,8 +1,8 @@
-# Conformance spike — evidence still required
+# Conformance spike — results
 
-Version/help probes and authorized actual model trials ran on macOS arm64. Codex 0.163.0 passed the structural standalone framing scenario; Claude loose-skill framing and recovery across sessions were observed by hand. Other automatic trials failed; see [actual results and blockers](../../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22). P0-03's full permissions/hooks/questions/MCP spike and dependent aggregate adapter acceptance remain open. These observations do not establish the complete platform matrix.
+The four tier-A clients were exercised on 2026-11-08, macOS arm64: Claude Code 2.1.319, Codex 0.166.0, OpenCode 2.2.5 and Copilot CLI 1.0.83. Each ran in a disposable repository with one marker skill per discovery directory, a read-only reader subagent in its own format, logging hooks, and a local MCP server that returns a fixed marker. Each client's note records the invocation and the observed result; the [platform matrix](../../../docs/platforms/README.md#capability-matrix) summarises them. Codex's interactive question and every Linux run were not exercised.
 
-Steps 3 and 7 for the read-only boundary, and the framing scenario, run with one command per client: `npm run native:check -- <client> --live` (see [V1 acceptance](../../../docs/v1-acceptance.md#4-let-the-automatic-runner-cover-the-other-clients)).
+The read-only boundary and the framing scenario also run with one command per client: `npm run native:check -- <client> --live` (see [V1 acceptance](../../../docs/v1-acceptance.md#4-let-the-automatic-runner-cover-the-other-clients)).
 
 ## Manual checklist (repeat for each CLI)
 

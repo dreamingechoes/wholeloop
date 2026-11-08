@@ -194,8 +194,8 @@ The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Pha
 | Task | What closes it | Maintainer involvement |
 | --- | --- | --- |
 | P0-01 | npm name/scope ownership | Account and identity choice |
-| P0-03 | Actual four-client spike: discovery, questions, MCP, roles, hooks and headless behavior | Login/trust only where blocked; review findings |
-| P0-07 | Decisions reconciled with the observed platform matrix | Review any changed design |
+| P0-03 ✅ | Actual four-client spike: discovery, questions, MCP, roles, hooks and headless behavior (done 2026-11-08) | — |
+| P0-07 ✅ | Decisions reconciled with the observed platform matrix (done 2026-11-08) | — |
 | P1-10 ✅ | Claude generated plugin installs and all skills are discovered (done 2026-11-08) | — |
 | P1-11 ✅ | Codex/OpenCode/Copilot strongest available read-only mappings verified (done 2026-11-08) | — |
 | P1-13 | Actual doctor failures have working corrective instructions | Platform/account-specific choices |

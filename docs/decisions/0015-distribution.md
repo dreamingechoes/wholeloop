@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-14
 
+**Amended 2026-11-08.** Point 3 was checked without a model call in isolated client homes. Codex 0.166.0 and Copilot CLI 1.0.83 both added a local Claude `.claude-plugin/marketplace.json` and installed the generated Agent Plugins package with its seventeen skills. Claude Code 2.1.319 loads that package's `skills/` layout from a plugin directory but ignores the root `plugin.json` and names the plugin after the directory, so it keeps its own `.claude-plugin` manifest. Cursor's reading of the format was not part of that check.
+
 ## Context
 
 People should get `wholeloop` the way they already install things for their CLI: a plugin command in Claude Code, a plugin or skills folder in Codex, Copilot or Cursor, a package manager for everything else. The core needs Node.js ([ADR-0003](./0003-deterministic-core-cli.md)), which some machines will not have — Claude Code, for one, no longer requires it.

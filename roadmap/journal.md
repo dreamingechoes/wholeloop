@@ -4,6 +4,22 @@
 
 ---
 
+## 2026-11-08 · P0-07 ✅ · Foundational decisions match the verified matrix
+
+- Re-read ADR-0002 to ADR-0018 against the matrix P0-03 verified. None contradicts it; none was superseded.
+- Amended: ADR-0005 (Copilot runs Claude hooks only in trusted folders; no tier-A client answers a structured question headless, so headless steps stop and ask in plain text) and ADR-0015 (Codex and Copilot read the Claude marketplace and Agent Plugins package; Claude reads only the package's skills layout).
+- Gate: see the P0-03 entry.
+
+## 2026-11-08 · P0-03 ✅ · The four tier-A clients, observed
+
+- One disposable fixture per client: a marker skill in each discovery directory, a reader subagent, logging hooks and a local MCP server returning a fixed marker. Each client got one headless run, plus an interactive tmux session for the question tool.
+- Skill directories: Claude `.claude` only; Codex `.agents` and `.codex`; OpenCode `.opencode`, `.claude` and `.agents`; Copilot `.github`, `.agents` and `.claude`. All four ran two subagents in parallel.
+- Hooks and MCP: Copilot runs both its own and Claude's hooks, only in a trusted folder. It ignores the repository's `.mcp.json`; its MCP needs user config or `--additional-mcp-config`.
+- Questions: interactive Claude, OpenCode and Copilot sessions asked natively and returned the choice. Headless, none answers: Claude and Copilot do not offer the tool, OpenCode cancels it, and Codex's `request_user_input_async` accepts without answering.
+- Codex subagents fail under `exec --ephemeral`, which wholeloop's gate workers use, though they spawn no subagents.
+- Narrowed: Codex's interactive question (its TUI saves folder trust to the user's configuration) and Linux. One Codex headless run used little quota.
+- Gate: CHECK PASS in 690s, 4650 tests, macOS arm64 only; Linux not run.
+
 ## 2026-11-08 · P1-11 ✅ · Read-only roles hold on Codex, OpenCode and Copilot
 
 - Asked the generated reviewer to overwrite a sentinel, create a file and run `touch` with each client's broadest approval switched on. OpenCode 2.2.5 (`--auto`) and Copilot 1.0.83 (`--allow-all`) gave it no write or shell tool; both workspaces stayed unchanged. Copilot names plugin agents `wholeloop:wl-<name>` and always adds `skill` and its session `sql` tool; a connected user MCP server was not reachable.

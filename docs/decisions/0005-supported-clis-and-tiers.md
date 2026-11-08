@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-14
 
+**Amended 2026-11-08.** The P0-03 spike checked the tier-A requirements against Claude Code 2.1.319, Codex 0.166.0, OpenCode 2.2.5 and Copilot CLI 1.0.83 on macOS arm64; all four meet them. Copilot reads Claude-format skills, and reads Claude-format hooks only in a folder the user trusts; in an untrusted folder a headless run fired no repository hook. wholeloop's Copilot guard ships as a plugin hook, which fires headless, so the tier is unchanged. No tier-A client answers a structured question in headless mode: Claude and Copilot do not offer the tool, OpenCode cancels it, and Codex accepts it but never returns an answer. Interactive sessions ask natively on Claude, OpenCode and Copilot; Codex's interactive question was not exercised. Headless steps therefore rely on the plain-text fallback, stopping to ask rather than guessing.
+
 ## Context
 
 The value of a portable harness depends on how many people can use it where they already work. Supporting every CLI at once, though, would spread the first release thin. The research done in October 2026 ([platforms](../platforms/README.md)) shows clear differences in how ready each CLI is for skills, subagents, hooks and structured questions.

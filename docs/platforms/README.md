@@ -3,7 +3,7 @@
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. Actual discovery/permissions remain manual verification. Local CLI availability was checked on macOS; [conformance notes](../../test/conformance/notes/README.md) list the remaining manual checks. Matrix researched in October 2026 from official documentation; items marked ❓ are not yet verified against the client. Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/private acquisition are implemented; disabled nightly automation is implemented, while maintainer activation and actual native/service checks remain pending.
+> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. The four tier-A columns of the matrix were verified against the native clients on 2026-11-08, macOS arm64 ([conformance notes](../../test/conformance/notes/README.md)); Linux was not run. The tier-B columns were researched in October 2026 and checked by their adapter tasks; items marked ❓ are not yet verified against the client. Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/private acquisition are implemented; disabled nightly automation is implemented, while maintainer activation and actual native/service checks remain pending.
 
 ---
 
@@ -32,17 +32,19 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 
 | | Claude Code | Codex | OpenCode | Copilot | Gemini | Antigravity | Cursor |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Agent Skills (`SKILL.md`) | ✅ `.claude/skills` | ✅ `.agents/skills` | ✅ both | ✅ both + `.github/skills` | ✅ `.agents/skills` | ✅ `.agents/skills` | ✅ most dirs |
+| Agent Skills (`SKILL.md`) | ✅ `.claude/skills` only | ✅ `.agents` · `.codex` | ✅ `.opencode` · `.claude` · `.agents` | ✅ `.github` · `.agents` · `.claude` | ✅ `.agents/skills` | ✅ `.agents/skills` | ✅ most dirs |
 | Reads `AGENTS.md` | only without `CLAUDE.md` | ✅ | ✅ | ✅ | via setting | ✅ | ✅ |
-| Subagents | ✅ parallel | ✅ TOML | ✅ | ✅ `/fleet` | ✅ (parallel ❓) | ✅ | ✅ |
+| Subagents | ✅ parallel | ✅ TOML, parallel | ✅ parallel | ✅ parallel | ✅ (parallel ❓) | ✅ | ✅ |
 | Read-only agents enforced | ✅ | ⚠️ not enforced | ✅ permissions | ✅ tools | ✅ tools | ✅ tools | ✅ readonly |
-| Hooks | ✅ | ✅ | ⚠️ JS plugin | ✅ (reads Claude's) | ✅ | ✅ own schema | ✅ (CLI ❓) |
-| Structured questions | ✅ | ⚠️ limited ❓ | ✅ | ✅ | ✅ | ❓ | ⚠️ ❓ |
-| MCP | ✅ | ✅ TOML | ✅ | ✅ | ✅ | ✅ `serverUrl` | ✅ |
+| Hooks | ✅ | ⚠️ after user trust | ⚠️ JS plugin | ✅ plugin; repo and Claude's in trusted folders | ✅ | ✅ own schema | ✅ CLI |
+| Structured questions | ✅ interactive only | ⚠️ headless accepts, never answers | ✅ interactive only | ✅ interactive only | ✅ | ❓ | ⚠️ ❓ |
+| MCP | ✅ `.mcp.json` | ✅ TOML | ✅ `opencode.json` | ✅ user config or flag, not `.mcp.json` | ✅ | ✅ `serverUrl` | ✅ |
 | Headless mode | `claude -p` | `codex exec` | `opencode run` | `copilot -p` | `gemini -p` | `agy -p` | `agent -p` |
-| Plugin packaging | Claude plugins | Agent Plugins | npm/JS | Agent Plugins | extensions | plugins | Agent Plugins |
+| Plugin packaging | Claude plugins | Agent Plugins, Claude marketplace | npm/JS | Agent Plugins, Claude marketplace | extensions | plugins | Agent Plugins |
 
-Observed on 2026-11-08, macOS arm64: the generated Claude plugin installs in an isolated config and lists all seventeen skills. With the client's broadest approval switched on, the generated reviewer role had no write or shell tool on OpenCode 2.2.5 or Copilot 1.0.83. OpenCode roles deny `.env` reads. Copilot loads plugin agents as `wholeloop:wl-<name>` and always adds its `skill` and session `sql` tools. Codex custom agents cannot lower the parent's sandbox, so read-only work there runs in the read-only parent or the headless recipe ([ADR-0048](../decisions/0048-native-target-layouts-and-checked-launcher-roots.md)).
+The four tier-A columns were verified on 2026-11-08, macOS arm64, by the [conformance spike](../../test/conformance/notes/README.md): Claude Code 2.1.319, Codex 0.166.0, OpenCode 2.2.5 and Copilot CLI 1.0.83. No client answers a structured question in headless mode, so a headless step that needs a person stops and asks in plain text. Codex's interactive question was not exercised. The Gemini, Antigravity and Cursor columns come from their own adapter tasks; their remaining ❓ marks belong to those tasks, not to this spike.
+
+Also observed on 2026-11-08, macOS arm64: the generated Claude plugin installs in an isolated config and lists all seventeen skills. With the client's broadest approval switched on, the generated reviewer role had no write or shell tool on OpenCode 2.2.5 or Copilot 1.0.83. OpenCode roles deny `.env` reads. Copilot loads plugin agents as `wholeloop:wl-<name>` and always adds its `skill` and session `sql` tools. Codex custom agents cannot lower the parent's sandbox, so read-only work there runs in the read-only parent or the headless recipe ([ADR-0048](../decisions/0048-native-target-layouts-and-checked-launcher-roots.md)).
 
 ## Local adapter declarations
 
