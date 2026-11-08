@@ -10,7 +10,24 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 `npm run native:check -- <client>` runs the low-quota checks for one installed client: the version (no model), the read-only probe (one short turn) and the standalone framing scenario (one scenario), each only with `--live`. See [V1 acceptance](../docs/v1-acceptance.md#4-let-the-automatic-runner-cover-the-other-clients) for the commands and verdicts. Fake-client tests cover every verdict; a plan-only run against the installed Codex 0.166.0 observed its version and called no model.
 
-- [ ] Run it with `--live` for each installed client and return each `handoff.md`. A read-only PASS feeds P0-03, P1-11, P5-01 or P5-02 for that client; a framing PASS feeds P1-14, P5-01 or P5-02. Hook payloads (P3-08) and MCP inheritance in launchers (P4-01) are not automated yet.
+Live results on 2026-11-08, macOS arm64, Node 24.22.0. A read-only PASS feeds P0-03, P1-11, P5-01 or P5-02 for that client; a framing PASS feeds P1-14, P5-01 or P5-02.
+
+| Client | Version | Read-only probe | Framing scenario |
+| --- | --- | --- | --- |
+| Claude Code | 2.1.319 | PASS: the recipe exposes no write or shell tool | PASS, run cf-1422b6df04fd5ec12a08f329 on core 1c0638ed |
+| Codex | 0.166.0 | PASS: the read-only sandbox refused all three writes through its shell tool | Not repeated; the revised scenario passed earlier on 0.163.0 |
+| OpenCode | 2.2.5 | PASS: no write or shell tool | PASS, run cf-97f187d81879d2af1d9d7b65 on core f140b242, after two failures kept below |
+| Copilot | 1.0.83 | PASS: no write or shell tool | FAIL, run cf-bbd8525a71572120d23a5b3b: the shell was denied, so the skill never reached `wl` |
+| Gemini | 0.67.0 | BLOCKED: the workspace is untrusted, and the worker settings file is ignored | Not run; paused by the maintainer |
+| Antigravity | 1.4.12 | BLOCKED before any assignment: the init event lists 60 tools for the read-only agent | Not run |
+| Cursor | 2026.07.16-899851b | BLOCKED: workspace trust is required, and the default model is not on the free plan | Not run |
+
+- [x] The first OpenCode run recorded the wholeloop checkout as the initiative's repository: OpenCode 2.x takes its project from `PWD`, which a spawned worker inherited from its parent. Every worker now gets `PWD` equal to its working directory. The next run lacked only the skill-marker note, which the model skipped; the run after it passed.
+- [ ] Copilot: decide whether its headless recipes may allow the shell for the exact `wl` core path only (`--allow-tool`). Headless Copilot cannot ask, so without a grant the skill cannot record anything.
+- [ ] Cursor: decide whether the worker recipe may pass `--trust` for its own disposable worker directory, which holds only wholeloop's deny policy and hook; without it, headless Cursor refuses to start. On the free plan only `auto` answered; the recipe inherits the client's default model, so the default must be `auto`.
+- [ ] Gemini 0.67: system settings files are honoured only when owned by root, so the worker's read-only settings are skipped; move the policy to the policy engine (`--policy`) and decide on workspace trust. Paused by the maintainer.
+- [ ] Antigravity 1.4.12: its init event lists the full catalog for a custom agent that declares two tools, and `agy plugin validate` accepts the agent. Whether the restriction applies at call time is unknown without a model call; the worker hook still denies everything but the two read tools, but the init check refuses before that. Decide whether the hook alone may stand in for the init check.
+- [ ] Hook payloads (P3-08) and MCP inheritance in launchers (P4-01) are not automated yet.
 
 ## Expanded 1.0 acceptance boundary
 

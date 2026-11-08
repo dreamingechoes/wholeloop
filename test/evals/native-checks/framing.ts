@@ -41,11 +41,18 @@ const json = (text: string) => {
   }
 }
 
-/** Map the conformance verdict without reinterpreting it: only PASS with live evidence passes. */
+// The conformance runner accepts at most ten minutes per live run.
+export const MAX_TIMEOUT_MS = 600_000
+
+/**
+ * Map the conformance verdict without reinterpreting it: only PASS with live evidence passes. Any
+ * other output, such as a refused command, means the client never ran, so it blocks, not fails.
+ */
 export function framingStatus(
   report: Record<string, unknown> | undefined,
 ): FramingResult['status'] {
-  if (!report || report.status === 'UNRUN') return 'BLOCKED'
+  if (report?.schema !== 'wholeloop/conformance-report@1' || report.status === 'UNRUN')
+    return 'BLOCKED'
   return report.status === 'PASS' && report.evidence === 'live-process-and-journal'
     ? 'PASS'
     : 'FAIL'
@@ -71,12 +78,13 @@ export async function framingProbe(options: {
   const run = typeof prepared?.id === 'string' ? prepared.id : undefined
   if (!run)
     return { status: 'BLOCKED', reasons: ['wl conformance prepare did not return a run ID.'] }
+  const timeoutMs = Math.min(options.timeoutMs, MAX_TIMEOUT_MS)
   const report = json(
     (
       await wl(
         options.core,
-        ['conformance', 'run', run, '--live', '--timeout', String(options.timeoutMs), '--json'],
-        options.timeoutMs + 60000,
+        ['conformance', 'run', run, '--live', '--timeout', String(timeoutMs), '--json'],
+        timeoutMs + 60000,
         options.signal,
       )
     ).stdout,
@@ -103,7 +111,11 @@ export async function framingProbe(options: {
       status === 'PASS'
         ? ['The live scenario passed with process and journal evidence.']
         : status === 'BLOCKED'
-          ? ['The scenario did not run; see the diagnostics categories.']
+          ? [
+              typeof report?.message === 'string'
+                ? `The scenario did not run: ${report.message}`
+                : 'The scenario did not run; see the diagnostics categories.',
+            ]
           : [
               `The scenario failed${missing.length ? `; missing events: ${missing.join(', ')}` : ''}.`,
             ],

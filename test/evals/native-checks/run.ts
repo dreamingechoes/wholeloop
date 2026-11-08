@@ -5,7 +5,7 @@ import { existsSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { openCodeVersionProbe, versionProbe } from '../../../src/diagnostics/doctor.js'
-import { framingProbe } from './framing.js'
+import { framingProbe, MAX_TIMEOUT_MS } from './framing.js'
 import { CLIENTS, parseArguments, probePlan } from './plan.js'
 import { readonlyProbe } from './readonly.js'
 import { type ProbeOutcome, type Receipt, writeReceipt } from './receipt.js'
@@ -79,7 +79,7 @@ for (const probe of probePlan(args.client, args.probes)) {
       core,
       client: args.client,
       version,
-      timeoutMs: Math.max(args.timeoutSeconds, 600) * 1000,
+      timeoutMs: MAX_TIMEOUT_MS,
       signal: controller.signal,
     })
     outcome.status = result.status

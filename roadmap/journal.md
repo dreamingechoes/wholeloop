@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-08 · Native checks on every installed client
+
+- The read-only probe passes on Claude Code 2.1.319, Codex 0.166.0, OpenCode 2.2.5 and Copilot 1.0.83. Codex is the only one whose recipe keeps a shell; its read-only sandbox refused all three writes. The others have no write or shell tool.
+- The framing scenario passes on Claude Code and OpenCode. With Codex's earlier pass, three of the four tier-A clients have a live pass; Copilot fails because headless Copilot cannot run `wl` without a shell grant, which stays a maintainer decision.
+- Fixed: OpenCode 2.x takes its project from `PWD`, which every spawned worker inherited from its parent, so the first OpenCode run recorded the wholeloop checkout as its repository. Workers now get `PWD` equal to their working directory, with a test.
+- Fixed in the native checks: the framing probe passed a timeout above the runner's ten-minute limit, and reported the refused command as a failed scenario; it now keeps the limit and reports any non-report output as blocked. The client never started, so those runs spent nothing.
+- Blocked, each with its cause recorded in manual verification: Cursor needs workspace trust and a free-plan model, Gemini 0.67 ignores non-root system settings and needs trust (paused), and Antigravity 1.4.12 lists 60 tools for a two-tool agent, so wholeloop refuses before sending anything. Each fix widens or replaces a boundary, so each waits for the maintainer.
+
+---
+
 ## 2026-11-08 · Per-client native checks
 
 - `npm run native:check -- <client>` runs the low-quota native checks for one installed client and writes a receipt and a handoff outside the repository. Without `--live` it only observes the version; with it, a read-only probe spends one short turn and the framing scenario spends one scenario.

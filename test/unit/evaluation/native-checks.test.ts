@@ -161,10 +161,17 @@ process.stdin.on('end', () => {
 
 describe('framing and handoff', () => {
   it('passes only a live PASS and blocks an unrun scenario', () => {
-    expect(framingStatus({ status: 'PASS', evidence: 'live-process-and-journal' })).toBe('PASS')
-    expect(framingStatus({ status: 'FIXTURE_PASS', evidence: 'simulation' })).toBe('FAIL')
-    expect(framingStatus({ status: 'FAIL' })).toBe('FAIL')
-    expect(framingStatus({ status: 'UNRUN' })).toBe('BLOCKED')
+    const report = { schema: 'wholeloop/conformance-report@1' }
+    expect(framingStatus({ ...report, status: 'PASS', evidence: 'live-process-and-journal' })).toBe(
+      'PASS',
+    )
+    expect(framingStatus({ ...report, status: 'FIXTURE_PASS', evidence: 'simulation' })).toBe(
+      'FAIL',
+    )
+    expect(framingStatus({ ...report, status: 'FAIL' })).toBe('FAIL')
+    expect(framingStatus({ ...report, status: 'UNRUN' })).toBe('BLOCKED')
+    // A refused command is not a failed scenario: the client never ran.
+    expect(framingStatus({ schema: 'wholeloop/error@1', message: 'refused' })).toBe('BLOCKED')
     expect(framingStatus(undefined)).toBe('BLOCKED')
   })
 
