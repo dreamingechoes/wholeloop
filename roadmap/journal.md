@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-08 · Software factory planned after 1.0.0
+
+- A new [Phase 8](./phase-8-software-factory.md) plans unattended operation around the clock in minor releases ordered by dependency: 1.1.0 lets a run survive its own repairable failures (P6-35, P6-41 and CI continuation), 1.2.0 adds a supervisor, budgets per period and continuous intake, 1.3.0 adds evidence-based failure diagnosis, questions that park one run instead of stopping the rest, and review feedback from authorized accounts, and 1.4.0 graduates autonomous delivery to stable once it is certified. None needs a major version, because autonomous delivery stays experimental until then.
+- Eight decision records are drafted as proposals 0247–0254 and left unaccepted, so they shape no 1.0.0 behaviour; documentation cannot link a proposal, so the roadmap cites them by number. Each task waits for its record. In every phase the factory never widens its own authority, never changes acceptance criteria to pass, never invents a missing fact, never declares a test flaky without repeated evidence and never retries an effect whose outcome is unknown.
+- P6-35 and P6-41 move to 1.1.0. Documentation and roadmap only; docs check, Markdown lint and roadmap counts pass.
+
+---
+
 ## 2026-11-08 · Maintainer decisions and P0-01 ✅
 
 - [ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md) accepted: a run with no intervention may continue after a repairable failure under its still-active envelope grant, inside its repair budget. The reducer still refuses that today, so the change is the new task P6-41.

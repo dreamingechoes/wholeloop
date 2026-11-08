@@ -1,6 +1,6 @@
 # Roadmap — built in vertical phases, worked in small tasks
 
-> **TL;DR** — Eight phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0.0 adds recoverable autonomous delivery and complete unattended research, shipped experimental with native certification afterwards (decided on 2026-11-08); Phase 7 prepares the repository and the public release. In Phase 6, P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance, P6-40 is complete, P6-27 continues as post-1.0.0 certification, and P6-35 and P6-41 await implementation. In Phase 7, P7-01–P7-08, P7-10–P7-13 and P7-16 are complete, P7-09 is prepared and waits for the maintainer to switch to pull requests just before the repository goes public, and P7-14 and P7-15 are the release itself.
+> **TL;DR** — Nine phases, each split into tasks with goals, deliverables, acceptance criteria, tests and docs. The expanded 1.0.0 adds recoverable autonomous delivery and complete unattended research, shipped experimental with native certification afterwards (decided on 2026-11-08); Phase 7 prepares the repository and the public release. In Phase 6, P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance, P6-40 is complete, P6-27 continues as post-1.0.0 certification, and P6-35 and P6-41 await implementation. In Phase 7, P7-01–P7-08, P7-10–P7-13 and P7-16 are complete, P7-09 is prepared and waits for the maintainer to switch to pull requests just before the repository goes public, and P7-14 and P7-15 are the release itself. Phase 8 plans the software factory after 1.0.0 in minor releases 1.1.0–1.4.0; its tasks wait for their proposed decisions.
 
 ---
 
@@ -12,7 +12,7 @@ Current manual checks and maintainer-only actions: [manual verification](./manua
 
 Start with the [autonomous-delivery specification](./specifications/autonomous-delivery/README.md), then the [39 Phase 6 tasks](./phase-6-autonomous-delivery.md). The original Phase 6 scope was accepted on 2026-10-24; P6-35–P6-38 were added on 2026-11-04 and P6-39 on 2026-11-05, retaining authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without further signals. The design includes zero-intervention research and implementation after one initial authorization, actual behavioral QA, integrated milestones, PR delivery and a separately authorized conditional merge.
 
-The roadmap now contains 108 tasks: 89 completed tasks (forty-two original plus P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-31, P6-34, P6-36–P6-40, P7-01–P7-08, P7-10–P7-13 and P7-16), ten original open tasks in P0–P5, three Phase 6 tasks implemented and awaiting native or hosted acceptance, three pending Phase 6 implementation/acceptance tasks (P6-27, P6-35 and P6-41) and three open Phase 7 tasks (P6-35–P6-38 added on 2026-11-04, P6-39 on 2026-11-05, P6-40 and Phase 7 on 2026-11-07, P6-41 on 2026-11-08, absorbing P5-05, P5-07 and P6-32 as P7-14, P7-15 and P7-13). The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
+The roadmap now contains 116 tasks: 89 completed tasks (forty-two original plus P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-31, P6-34, P6-36–P6-40, P7-01–P7-08, P7-10–P7-13 and P7-16), ten original open tasks in P0–P5, three Phase 6 tasks implemented and awaiting native or hosted acceptance, three pending Phase 6 implementation/acceptance tasks (P6-27, P6-35 and P6-41) and three open Phase 7 tasks, plus eight Phase 8 tasks planned after 1.0.0 (P8-01–P8-08 added on 2026-11-08; P6-35–P6-38 added on 2026-11-04, P6-39 on 2026-11-05, P6-40 and Phase 7 on 2026-11-07, P6-41 on 2026-11-08, absorbing P5-05, P5-07 and P6-32 as P7-14, P7-15 and P7-13). The previous “implementation complete, acceptance remaining” assessment applied to the original 54-task scope. Original successes/failures remain unchanged; the expanded scope introduces real implementation work.
 
 No cloud platform, marketplace, vendor API expansion or production automation is added. Local P6 implementation is authorized to proceed without waiting for unrelated native/account acceptance. Those original checks and the new capability-specific acceptance still need their stated evidence before release.
 
@@ -28,6 +28,7 @@ flowchart LR
   P5 --> P6["P6 · Autonomous delivery<br/>unattended research · integrated QA"]:::build
   P6 --> P7["P7 · Release readiness<br/>maintenance · security · docs · launch"]:::core
   P7 --> V1["P7-15 · 1.0.0"]:::learn
+  V1 --> P8["P8 · Software factory<br/>1.1.0 → 1.4.0 · after 1.0.0"]:::build
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
   classDef define fill:#d9f2e3,stroke:#1f7a45,color:#0b2e1a;
   classDef build fill:#dce9fb,stroke:#2f6fc4,color:#0b1f3a;
@@ -43,8 +44,9 @@ flowchart LR
 | [P3 · Build](./phase-3-build.md) | A slice is built in a worktree, verified, reviewed and opened as a draft PR | 10 |
 | [P4 · Rollout & Learn](./phase-4-rollout-learn.md) | The loop closes: launch kit, ramp evidence, measured impact, recorded decision | 7 |
 | [P5 · Reach & release](./phase-5-reach-release.md) | Tier B CLIs, headless engine, nightly conformance; distribution and the release moved to P7 | 5 |
-| [P6 · Autonomous delivery](./phase-6-autonomous-delivery.md) | Recoverable no-intervention research/implementation, actual integrated QA, authorized PR/merge and evaluation | 39 |
+| [P6 · Autonomous delivery](./phase-6-autonomous-delivery.md) | Recoverable no-intervention research/implementation, actual integrated QA, authorized PR/merge and evaluation | 40 |
 | [P7 · Release readiness](./phase-7-release-readiness.md) | Maintainer skills and agents, service access only through MCP or installed clients, supply-chain checks, automated release with one approval, user README and docs, public repository, 1.0.0 | 16 |
+| [P8 · Software factory](./phase-8-software-factory.md) | After 1.0.0: runs survive their own failures, a supervisor works around the clock, failures are explained and questions park one run, and autonomous delivery graduates to stable | 8 |
 
 Phase IDs preserve the existing history: P6 is inside expanded 1.0.0, and P7 closes it with P7-15. Moved tasks keep a redirect at their former heading. Tasks follow their explicit dependencies and any phase review hold; the diagram is an overview, not a requirement to wait for unrelated manual checks.
 

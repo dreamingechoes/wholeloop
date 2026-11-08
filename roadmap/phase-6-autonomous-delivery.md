@@ -899,7 +899,7 @@ The third 2026-11-05 Codex implementation pilot retains correct response identit
 
 **Status:** ⬜ · **Size:** L · **Depends on:** P6-10, P6-34
 
-**Design review:** added on 2026-11-04; design accepted on 2026-11-08 ([ADR-0209](../docs/decisions/0209-controller-owned-native-credentials.md)) · **Release:** 1.x, experimental autonomous delivery
+**Design review:** added on 2026-11-04; design accepted on 2026-11-08 ([ADR-0209](../docs/decisions/0209-controller-owned-native-credentials.md)) · **Release:** 1.1.0 ([Phase 8](./phase-8-software-factory.md))
 
 The implementation no longer waits for P6-27: the secret-store, injection, disposable-home and preflight work can be built and tested with fixtures. The real call per client and account kind that ADR-0209 requires stays in manual verification.
 
@@ -1081,7 +1081,7 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 **Status:** ⬜ · **Size:** M · **Depends on:** P6-29, P6-34
 
-**Design review:** accepted on 2026-11-08 ([ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md)) · **Release:** 1.x, experimental autonomous delivery
+**Design review:** accepted on 2026-11-08 ([ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md)) · **Release:** 1.1.0 ([Phase 8](./phase-8-software-factory.md))
 
 **Goal** — Let a run with no intervention repair an integration or acceptance failure and continue without a person, inside its original envelope grant and repair budget.
 

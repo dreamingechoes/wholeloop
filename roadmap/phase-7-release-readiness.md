@@ -371,4 +371,4 @@ Moved from P5-07 on 2026-11-07; its checked criterion and local implementation a
 
 ---
 
-[◀ P6](./phase-6-autonomous-delivery.md) · [Roadmap](./README.md) · [Journal](./journal.md)
+[◀ P6](./phase-6-autonomous-delivery.md) · [Roadmap](./README.md) · [P8 ▶](./phase-8-software-factory.md) · [Journal](./journal.md)
