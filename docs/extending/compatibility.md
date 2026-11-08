@@ -17,6 +17,10 @@
 
 Native client formats belong to their vendors. Their versioned conformance evidence is separate from wholeloop's schema identity; a frozen declaration cannot establish native loading, permission or model behavior.
 
+## Experimental surfaces
+
+Autonomous delivery is experimental in 1.x: the `wl delivery` and `wl eval delivery-*` commands and the schemas only they read or write, such as delivery plans, grants, journal events and runner documents. They keep versioned identities and baseline fingerprints, so a change is still reviewed, but it may ship in a minor release with a release-note entry rather than a new major. Everything else above stays frozen for 1.x ([ADR-0066](../decisions/0066-v1-compatibility-baseline-and-deprecation.md)).
+
 ## Changes during v1
 
 - Preserve accepted legitimate inputs and existing output meanings throughout 1.x. Additive commands, opt-in providers and optional flags can ship in a minor release while existing declarations remain intact.

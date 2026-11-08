@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-11-08 · Maintainer decisions and P0-01 ✅
+
+- [ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md) accepted: a run with no intervention may continue after a repairable failure under its still-active envelope grant, inside its repair budget. The reducer still refuses that today, so the change is the new task P6-41.
+- [ADR-0209](../docs/decisions/0209-controller-owned-native-credentials.md) accepted as the design for controller-owned worker credentials. Its implementation, P6-35, no longer waits for P6-27; the real call per client and account kind stays in manual verification.
+- Autonomous delivery ships experimental in 1.0.0 ([ADR-0066](../docs/decisions/0066-v1-compatibility-baseline-and-deprecation.md)): its commands and schemas keep versioned identities and fingerprints, but may change in a minor release with a release-note entry. The native campaign (P6-27) certifies it after the release. P7-13 closes on that basis, and P7-15's Phase 6 criterion is amended. The README, compatibility policy, architecture and acceptance pages say so.
+- The switch to pull requests (P7-09) is announced just before the repository becomes public.
+- P0-01: the maintainer published a placeholder from outside the repository; `npm view wholeloop` lists `dreamingechoes` as the only maintainer. The registry shows its staged-publishing placeholder `0.0.0-stage` while the reviewed `0.0.1` waits for approval.
+- Decisions and documentation only; no code changed. Docs check, Markdown lint, roadmap counts and the fast gate pass.
+- Next: P6-41, then P6-35.
+
+---
+
 ## 2026-11-08 · P1-13 ✅ · Doctor repairs that fix the failure
 
 - Model-free preparation for the Codex trials: Codex 0.166.0 signed in on its dedicated home, quota read without a model call (95 % of the weekly window used, reset on 2026-11-12), the trial repository's protection unchanged, the six Codex boundary controls passing and the model-free EVAL-09 rehearsal on a201f79 reaching `ready-pr` with 13 stages, 14 synthetic launches, zero human waits and both environments retired in 81 s. No model call was made.

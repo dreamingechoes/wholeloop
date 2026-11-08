@@ -17,7 +17,7 @@
 
 ## Start with your goal
 
-To hand an approved scope to an autonomous run, start with the [autonomous-delivery design](./architecture/autonomous-delivery.md) and the delivery tutorials below. Source intake, planning, authorization and the research-report and to-PR routes are implemented; unattended runs are still being certified with signed-in native clients and hosted services.
+To hand an approved scope to an autonomous run, start with the [autonomous-delivery design](./architecture/autonomous-delivery.md) and the delivery tutorials below. Autonomous delivery is experimental in 1.0.0: its commands and schemas may change in a minor release. Source intake, planning, authorization and the research-report and to-PR routes are implemented; unattended runs are still being certified with signed-in native clients and hosted services.
 
 | Goal | First page | Successful stopping point |
 | --- | --- | --- |

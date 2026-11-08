@@ -1,7 +1,9 @@
 # 0198 — Envelope-grant continuation under none intervention
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-02
+
+**Accepted on 2026-11-08** by the maintainer. Implementation is tracked in [P6-41](../../roadmap/phase-6-autonomous-delivery.md#p6-41--envelope-grant-continuation); until it lands, [0197](./0197-correction-revisions-and-stage-reuse.md)'s new-grant rule still applies, and a native trial must still show the bounded repair loop staying within its budget.
 
 ## Context
 

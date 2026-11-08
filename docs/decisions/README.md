@@ -208,6 +208,7 @@
 | [0195](./0195-maintenance-proposals-and-recurring-admission.md) | Maintenance proposals and recurring admission | Accepted | 2026-11-02 |
 | [0196](./0196-maintenance-commands-and-recurring-delivery-intake.md) | Maintenance commands and recurring delivery intake | Accepted | 2026-11-02 |
 | [0197](./0197-correction-revisions-and-stage-reuse.md) | Correction revisions and stage reuse | Accepted | 2026-11-02 |
+| [0198](./0198-envelope-grant-continuation.md) | Envelope-grant continuation under none intervention | Accepted | 2026-11-02 |
 | [0199](./0199-composed-conditional-merge-routes.md) | Composed conditional merge routes | Accepted | 2026-11-02 |
 | [0200](./0200-learning-observation-runs.md) | Learning observation runs | Accepted | 2026-11-02 |
 | [0201](./0201-learning-observation-host.md) | Learning observation host | Accepted | 2026-11-02 |
@@ -218,6 +219,7 @@
 | [0206](./0206-live-research-pilot-findings.md) | Live research pilot findings | Accepted | 2026-11-03 |
 | [0207](./0207-public-implementation-route-composition.md) | Public implementation route composition | Accepted | 2026-11-03 |
 | [0208](./0208-seeded-correction-producer.md) | Seeded correction producer | Accepted | 2026-11-03 |
+| [0209](./0209-controller-owned-native-credentials.md) | Controller-owned native credentials | Accepted | 2026-11-04 |
 | [0210](./0210-operator-overview-and-change-feed.md) | Operator overview and change feed | Accepted | 2026-11-04 |
 | [0211](./0211-seeded-correction-roots-for-qa-repairs.md) | Seeded correction roots for QA repairs | Accepted | 2026-11-05 |
 | [0212](./0212-retained-ci-correction-evidence.md) | Retained CI correction evidence | Accepted | 2026-11-05 |

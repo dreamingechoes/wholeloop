@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-08.** By the maintainer's decision, autonomous delivery ships in 1.0.0 as **experimental**: the `wl delivery` and `wl eval delivery-*` commands and the schemas only they read or write (delivery plans, envelopes, grants, journal events, runner, bindings and runtime documents, acceptance and environment records). Those surfaces keep versioned identities and baseline fingerprints, so every change is still reviewed, but a change to them may ship in a minor release with a release-note entry instead of a new major. Everything else in the baseline stays frozen for 1.x. Native certification of unattended runs (P6-27) continues after 1.0.0 and does not block it. Rejected: holding 1.0.0 until both reference clients pass three live campaigns, which needs about a full week of each subscription's quota, and dropping the live trials altogether, which would freeze contracts that no real client has completed.
+
 Registration gives every public schema an identity, but cannot detect changing an existing declaration under the same identity. The first stable release also needs an explicit deprecation boundary. Native acceptance and public delivery remain unfinished, so a local candidate must not be described as an actual 1.0 release.
 
 ## Decision

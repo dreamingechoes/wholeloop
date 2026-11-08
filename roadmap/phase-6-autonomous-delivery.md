@@ -3,13 +3,13 @@
 > **Outcome** — From one explicitly authorized issue/document/request, wholeloop can execute a complete research or implementation flow without later human intervention when selected, recover across interruptions, validate actual integrated behavior and deliver a PR or separately authorized conditional merge.
 
 > [!NOTE]
-> **Status: 🚧 partial · reviewed and accepted for 1.0.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-32 moved to P7-13 on 2026-11-07. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
+> **Status: 🚧 partial · reviewed and accepted for 1.0; ships experimental in 1.0.0 by the maintainer's decision of 2026-11-08, with native certification afterwards.** All 34 original tasks were accepted on 2026-10-24, with authorization for sequential implementation, pragmatic decisions, tests/docs and incremental commits without another signal. P6-35–P6-38 were added on 2026-11-04; P6-39 was added on 2026-11-05. P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are implemented and tested, including P6-12's reference Docker trial and independent Linux-host acceptance; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-32 moved to P7-13 on 2026-11-07. Later implementation criteria remain pending. Existing supervised behavior and original acceptance obligations remain unchanged.
 
 ## Scope and reading order
 
 Start with the [specification index](./specifications/autonomous-delivery/README.md). Its ten detailed chapters define contracts, failure behavior, defaults, tests and evidence boundaries. This file follows the existing session-task format and decomposes that design into implementation increments.
 
-Phase numbering preserves P0–P5 links. P6 is part of 1.0.0 and precedes the release closure in [Phase 7](./phase-7-release-readiness.md); it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. P6-35–P6-38 were added on 2026-11-04, P6-39 on 2026-11-05 and P6-40 on 2026-11-07; P6-32 moved to Phase 7 as P7-13 on 2026-11-07. The [roadmap index](./README.md) holds the current task counts.
+Phase numbering preserves P0–P5 links. P6 is part of 1.0.0 and precedes the release closure in [Phase 7](./phase-7-release-readiness.md); it is not a post-1.0 phase. The original 54 tasks remain historical/current at their stated scope. P6-35–P6-38 were added on 2026-11-04, P6-39 on 2026-11-05, P6-40 on 2026-11-07 and P6-41 on 2026-11-08; P6-32 moved to Phase 7 as P7-13 on 2026-11-07. The [roadmap index](./README.md) holds the current task counts.
 
 Dependencies are implementation dependencies. Reuse already implemented guard/adapter/provider code without declaring its still-open native acceptance complete. Original manual/account/hosted checks need not block independent local P6 implementation after authorization. They still require their own evidence before release.
 
@@ -38,6 +38,7 @@ Keep actual execution levels distinct: pure rules, synthetic native processes, r
 | Operator overview and live feed | P6-36–P6-38 | Controls and observability |
 | Performance audit | P6-39 | Controls and validation |
 | Repository guidance in autonomous runs | P6-40 | Runner and unattended decisions |
+| Envelope-grant continuation | P6-41 | Runner and unattended decisions |
 
 ---
 
@@ -695,7 +696,7 @@ On 2026-10-31 the unchanged evaluation npm run eval:environments -- --retire-suc
 
 **Status:** 🔄 · **Size:** L · **Depends on:** P6-13, P6-16, P6-17, P6-22, P6-24, P6-25, P6-26, P6-33
 
-**Design review:** accepted on 2026-10-24 · **Release:** 1.0
+**Design review:** accepted on 2026-10-24 · **Release:** certification after 1.0.0. By the maintainer's decision of 2026-11-08, autonomous delivery ships experimental in 1.0.0 ([ADR-0066](../docs/decisions/0066-v1-compatibility-baseline-and-deprecation.md)); these trials certify it later and no longer block the release.
 
 **Goal** — Observe the whole flow on actual reference clients with no concealed human assistance.
 
@@ -896,9 +897,11 @@ The third 2026-11-05 Codex implementation pilot retains correct response identit
 
 ## P6-35 · Controller-owned worker credentials
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-27, P6-10, P6-34
+**Status:** ⬜ · **Size:** L · **Depends on:** P6-10, P6-34
 
-**Design review:** added on 2026-11-04 · **Release:** 1.0
+**Design review:** added on 2026-11-04; design accepted on 2026-11-08 ([ADR-0209](../docs/decisions/0209-controller-owned-native-credentials.md)) · **Release:** 1.x, experimental autonomous delivery
+
+The implementation no longer waits for P6-27: the secret-store, injection, disposable-home and preflight work can be built and tested with fixtures. The real call per client and account kind that ADR-0209 requires stays in manual verification.
 
 **Goal** — Let an authorized delivery run reach its endpoint unattended across token expiry and usage windows, without a worker ever holding or refreshing a stored credential.
 
@@ -1073,6 +1076,26 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 **Tests** — Equivalence between supervised resolution and the plan proposal on fixture repositories with skills for several clients; directory-pin manifests; stale-pin refusals; per-role delivery; an EVAL-09 variant whose builder must follow a repository skill to pass.
 
 **Docs** — Repo skills and slots, delivery planning tutorial, autonomous delivery architecture, ADR-0009, ADR-0054, ADR-0207 and v1 acceptance.
+
+## P6-41 · Envelope-grant continuation
+
+**Status:** ⬜ · **Size:** M · **Depends on:** P6-29, P6-34
+
+**Design review:** accepted on 2026-11-08 ([ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md)) · **Release:** 1.x, experimental autonomous delivery
+
+**Goal** — Let a run with no intervention repair an integration or acceptance failure and continue without a person, inside its original envelope grant and repair budget.
+
+**Deliverables** — The reducer accepts the run's still-active envelope grant as the first grant on a correction revision only when the run's intervention is `none`, the envelope grant lists `code.write`, `git.commit` and `test.run`, the revision stays inside the envelope and the journal-derived repair budget remains. The controller records that continuation itself and runs it in the same foreground invocation that observed the failure. Every other case keeps ADR-0197's new-grant rule.
+
+**Acceptance criteria:**
+
+- [ ] A `none` run with a repairable integration or acceptance failure continues to its endpoint with no human step, within its repair budget.
+- [ ] Any missing condition keeps the `continuation-requires-new-grant` refusal, and an exhausted budget ends the run.
+- [ ] A revoked or expired envelope grant never authorizes a continuation.
+
+**Tests** — Reducer and runner tests for each condition, and a model-free rehearsal with a seeded repairable failure.
+
+**Docs** — ADR-0198, an amendment to ADR-0197, the runner tutorial and the journal.
 
 ---
 

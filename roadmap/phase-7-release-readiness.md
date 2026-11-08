@@ -213,6 +213,8 @@ flowchart LR
 - [ ] `main` accepts changes only through pull requests with passing required checks.
 - [ ] Contributor and agent instructions describe the same workflow.
 
+**Timing (2026-11-08)** — The maintainer announces the switch just before the repository becomes public (P7-14), so commits keep going straight to `main` until then.
+
 **Evidence (prepared, awaiting the maintainer)** — `.github/rulesets/main.json` allows changes to `main` only through squash-merged pull requests with up-to-date required checks and no bypass, and `.github/rulesets/release-tags.json` makes release tags immutable once created; a test keeps the required checks equal to the expanded CI job names. `.github/CODEOWNERS` assigns every path to the repository owner, the pull request template asks for a conventional title and a passing gate, and the CI commit check now validates the pull request title, which a squash merge turns into the subject on `main`. The contributing guide describes the workflow from the switch. Applying the rulesets and merge settings needs the maintainer's account, and the `AGENTS.md` bootstrap line changes only when the maintainer announces the switch; both are in manual verification, so the criteria stay open.
 
 **Tests** — Commit-message and PR checks in CI.
@@ -281,7 +283,7 @@ flowchart LR
 
 Moved from P6-32 on 2026-11-07; its history and checked criteria are unchanged.
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P6-27, P6-28, P6-29, P6-30, P6-31, P6-33, P6-34, P6-35, P6-36, P6-37, P6-38, P6-40, P5-06, P7-11, P7-12
+**Status:** ✅ · **Size:** M · **Depends on:** P6-28, P6-29, P6-30, P6-31, P6-34, P6-36, P6-37, P6-38, P6-40, P5-06, P7-11, P7-12
 
 **Design review:** accepted on 2026-10-24 · **Release:** 1.0.0
 
@@ -301,7 +303,7 @@ Moved from P6-32 on 2026-11-07; its history and checked criteria are unchanged.
 
 **Completed technical work** — By the maintainer's instruction, implement local documentation/release controls before remaining native/account prerequisites. The acceptance map now retains all 86 accepted cases, exact definitions, concrete tests and registered enforcers, with required native/hosted/backend/platform classes and explicit local-only results. The docs gate checks that map without changing its public JSON identity; unrelated documentation trees remain independent. Source-installable docs distinguish policy from installed endpoint support, including public none-policy report/to-PR, required recorded-human SDK hosts and separately installed CI/merge composition. Final integrated focused controls pass 51 tests in four files, the per-commit gate passes 119 tests in five files, and the complete macOS arm64/Node 24.22.0 gate passes 4287 tests in 252 files, offline packaging and every remaining check (CHECK PASS in 737s). Separate compiled Linux arm64 Node 20.0.0/24.22.0 component controls pass. Explicit precommit validation accepts all ten commits in d3c2616..3c8d66f; the new commit retains the message guard and final range validation. External evidence is not waived.
 
-**Awaiting** — The documentation/release controls are implemented, but the task's required native/hosted evidence levels and release dependencies remain open under P6-27, P6-35 and the original acceptance matrix. No fixture becomes a native/service pass. This task and P7-15 remain open; credential implementation still follows real account measurements and the maintainer's design decision.
+**Closed (2026-11-08)** — By the maintainer's decision, autonomous delivery ships experimental in 1.0.0 ([ADR-0066](../docs/decisions/0066-v1-compatibility-baseline-and-deprecation.md)): its contracts keep versioned identities but may change in a minor release, and its native certification (P6-27, with P6-33 and P6-35) continues after the release. The README, compatibility policy, architecture and acceptance pages state that status, so the documentation ships only the capabilities and evidence actually implemented. No fixture became a native or service pass.
 
 ## P7-14 · Public repository and 1.0.0 release candidate
 
@@ -338,7 +340,7 @@ Moved from P5-07 on 2026-11-07; its checked criterion and local implementation a
 
 - [x] Every schema has a version and a compatibility test.
 - [ ] The 1.0.0 release is tagged, published on `latest` and announced.
-- [ ] Phase 6's expanded contracts, zero-intervention research/implementation, actual QA/integration, authorized PR/merge and required capability-level acceptance are closed through P7-13.
+- [x] Phase 6's expanded contracts, zero-intervention research/implementation, actual QA/integration, authorized PR/merge and required capability-level acceptance are closed through P7-13. Amended 2026-11-08: they ship experimental, and their native certification continues after 1.0.0.
 
 **Local implementation:** source/compiled command registration checks every declared output. The v1 candidate records fifty-three source schemas, 147 output variants, thirteen step definitions, 157 command signatures and five exit codes. Individual compatibility cases retain declaration identities, command options/signatures and exit meanings; public adapter/distribution manifests validate before emission. The compatibility/deprecation policy preserves existing 1.x contracts and requires new identities/migrations for changed formats. Conservative fingerprints do not prove runtime semantics or native support. Actual release/tag/announcement, released README status and remaining delivery/native acceptance remain open; package version/privacy are unchanged. Further collector, headless and distribution code does not wait for manual checks and adds new identities to this candidate.
 

@@ -7,6 +7,8 @@
 
 ## Start with these distinctions
 
+Autonomous delivery no longer blocks 1.0.0. On 2026-11-08 the maintainer decided it ships experimental: its contracts keep versioned identities but may change in a minor release, and the native campaign below (P6-27) certifies it after the release ([ADR-0066](./decisions/0066-v1-compatibility-baseline-and-deprecation.md)). The supervised flow, the core and installation remain the 1.0.0 contract.
+
 Runtime performance no longer blocks release. On 2026-11-07 the maintainer withdrew the initial five-second controller ceiling and closed P6-39 at the measured state: the complete model-free route takes 68–72 seconds, about 40 of them wholeloop overhead, down from about 175 ([ADR-0227](./decisions/0227-verified-read-observation-scopes.md), [audit ledger](../roadmap/performance-audit.md)). A future performance problem is an ordinary defect.
 
 | Surface | Examples | What counts |

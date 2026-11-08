@@ -1,7 +1,9 @@
 # 0209 — Controller-owned native credentials
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-04
+
+**Accepted on 2026-11-08** by the maintainer as the design. Implementation is [P6-35](../../roadmap/phase-6-autonomous-delivery.md#p6-35--controller-owned-worker-credentials); the verification listed below still has to pass, with real accounts, before the feature is relied on.
 
 ## Context
 
@@ -43,7 +45,7 @@ Public documentation adds three points:
 - Anthropic spend limits apply per organization and per workspace, not per API key. A key in a workspace with a monthly limit gives the same effect.
 - OpenAI recommends API keys for automated Codex runs and sets budgets per project.
 
-## Decision (proposed)
+## Decision
 
 - **The controller owns every worker credential.** `wl` stores each binding's credential in the operating system's secret store: the Keychain on macOS, Secret Service on a Linux desktop, and the Credential Manager on Windows. It never keeps a credential in a file.
 - **Credentials are injected per launch.** At each launch the controller passes the credential to that one process in memory, through the variable the client consumes. Through stdin would be preferred where a client supports it.
@@ -65,7 +67,7 @@ Public documentation adds three points:
 - **Antigravity is a documented exception.** It stays unavailable as a worker, reported at preflight, until it has a headless mode with an injectable credential. Its harness use inside an Antigravity session is unaffected. The README, the platform guide and the user guides say so.
 - **Platforms: macOS and Linux first.** A Linux host without a desktop has no standard secret store. There the operator chooses a supported store explicitly (for example `systemd-creds` or an external secret manager), and the controller never falls back to a file. Windows is supported through WSL2 until native containment and the Credential Manager are verified.
 
-## Verification still required before acceptance
+## Verification still required
 
 - **One real call per client and account kind**, with a valid credential, inside its boundary. It spends quota or money and needs the maintainer's accounts and approval.
 - **The lifetime of a `claude setup-token` token**, and its behaviour across a full campaign.

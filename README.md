@@ -76,7 +76,7 @@ flowchart LR
 
 The orange hexagons are the main human decision points. Framing also needs the owner's explicit outcome and approval of its final revision, so the specification is not the first time your judgement matters. Merging is always a person's decision: the harness never merges, never sends a message to a user and never changes a feature flag.
 
-**Use all of it, or just one step.** Every step is a complete entry point: `research` a topic, `build-slice` a small fix or `review-code` a pull request without running anything before it. The full loop is what you get when you chain them with `next`, and an approved scope can also be handed to an autonomous run that builds, verifies and reviews it in isolated worktrees and containers up to a pull request ([autonomous delivery](./docs/architecture/autonomous-delivery.md)); unattended runs are still being certified with native clients.
+**Use all of it, or just one step.** Every step is a complete entry point: `research` a topic, `build-slice` a small fix or `review-code` a pull request without running anything before it. The full loop is what you get when you chain them with `next`, and an approved scope can also be handed to an autonomous run that builds, verifies and reviews it in isolated worktrees and containers up to a pull request ([autonomous delivery](./docs/architecture/autonomous-delivery.md)). That part is **experimental** in 1.0.0: its commands may still change in a minor release, and unattended runs are still being certified with native clients.
 
 | Block | Steps | Main handoff |
 | --- | --- | --- |
