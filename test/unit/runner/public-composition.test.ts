@@ -208,6 +208,63 @@ describe('public host composition (ADR-0205)', () => {
       ).toMatchObject({ available: false, reason: 'public-host-unsupported-stage' })
     })
   })
+  it('ends the preflight before dispatch when an injected credential does not resolve (ADR-0209)', async () => {
+    await runnerResearchFixture(async ({ store, request, plan }) => {
+      const injected: NativeRuntime = {
+          schema: 'wholeloop/native-runtime@1',
+          clients: runtime.clients.map((client) => ({
+            target: client.target,
+            client: client.client,
+            credential: {
+              store: 'macos-keychain',
+              item: `${client.target}-worker`,
+              kind: 'api-key',
+            },
+          })),
+        },
+        publicRequest = { ...request, host: retainPublicBindings(store, bindings, injected) },
+        stages = runnerRoute(plan),
+        signal = new AbortController().signal,
+        asked: string[] = []
+      for (const [answer, expected] of [
+        [{ resolved: false, reason: 'credential-missing' }, 'public-host-credential-missing'],
+        [
+          { resolved: false, reason: 'credential-store-unavailable' },
+          'public-host-credential-store-unavailable',
+        ],
+      ] as const) {
+        const host = new RunnerPublicHost(
+          store,
+          bindings,
+          injected,
+          composePublicHost,
+          async (reference) => {
+            asked.push(reference.item)
+            return answer
+          },
+        )
+        expect(await host.preflight(publicRequest, plan, stages, signal)).toMatchObject({
+          available: false,
+          reason: expected,
+        })
+      }
+      const ready = new RunnerPublicHost(
+        store,
+        bindings,
+        injected,
+        composePublicHost,
+        async () => ({
+          resolved: true,
+          variable: 'CODEX_API_KEY',
+          value: 'sk-fake-preflight-0123',
+        }),
+      )
+      const result = await ready.preflight(publicRequest, plan, stages, signal)
+      expect(result).toMatchObject({ available: true })
+      expect(JSON.stringify(result)).not.toContain('sk-fake-preflight-0123')
+      expect(asked.every((item) => item.endsWith('-worker'))).toBe(true)
+    })
+  })
   it('runs the composed research route through the real boundary observers with no prompt', async () => {
     const runtimeFor = (dir: string): NativeRuntime => ({
       schema: 'wholeloop/native-runtime@1',

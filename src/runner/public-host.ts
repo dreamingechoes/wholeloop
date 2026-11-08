@@ -8,7 +8,17 @@ import {
   nativeBinding,
   validNativeBindings,
 } from '../delivery/native-bindings.js'
-import { type NativeRuntime, validNativeRuntime } from '../delivery/native-runtime.js'
+import {
+  type NativeCredentialReference,
+  type NativeCredentialResolution,
+  resolveNativeCredential,
+  spawnSecretStore,
+} from '../delivery/native-credentials.js'
+import {
+  type NativeRuntime,
+  nativeRuntimeClient,
+  validNativeRuntime,
+} from '../delivery/native-runtime.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import type { WorkerRole } from '../delivery/worker-protocol.js'
 import { VERSION } from '../version.js'
@@ -142,6 +152,12 @@ export class RunnerPublicHost implements DeliveryRunnerHost {
     bindings: Readonly<NativeBindings> = NATIVE_BINDINGS_DEFAULT,
     runtime?: Readonly<NativeRuntime>,
     private readonly composer?: PublicHostComposer,
+    /** Reads a worker credential for the preflight; tests pass a fake store. */
+    private readonly credential: (
+      reference: Readonly<NativeCredentialReference>,
+      target: string,
+    ) => Promise<NativeCredentialResolution> = (reference, target) =>
+      resolveNativeCredential(reference, target, spawnSecretStore),
   ) {
     this.identity = Object.freeze(publicRunnerIdentity(bindings, runtime))
     this.bindings = Object.freeze(structuredClone(bindings))
@@ -218,6 +234,27 @@ export class RunnerPublicHost implements DeliveryRunnerHost {
       return unavailable(
         roles.length ? 'public-host-native-runtime-unavailable' : 'public-host-unsupported-stage',
       )
+    // Every injected credential a needed role could launch with must resolve
+    // now, so a run never fails mid-way on something checkable before dispatch
+    // (ADR-0209). Presence is all that can be checked: no reference client
+    // validates an injected credential, or reports its expiry, without a model call.
+    const targets = new Set(
+      this.bindings.bindings
+        .filter((binding) => binding.roles.some((role) => roles.includes(role)))
+        .map((binding) => binding.target),
+    )
+    for (const target of [...targets].sort()) {
+      const reference = nativeRuntimeClient(this.runtime, target)?.credential
+      if (!reference) continue
+      let resolved: NativeCredentialResolution
+      try {
+        resolved = await this.credential(reference, target)
+      } catch {
+        resolved = { resolved: false, reason: 'credential-store-unavailable' }
+      }
+      if (signal.aborted) throw new DeliveryRunnerError('public-host-preflight-cancelled')
+      if (!resolved.resolved) return unavailable(`public-host-${resolved.reason}`)
+    }
     let host: DeliveryRunnerHost
     try {
       host = this.host(request)
