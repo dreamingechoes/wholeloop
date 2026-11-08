@@ -56,6 +56,8 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl overview` | `wholeloop/overview@1` | Read bounded operator attention, progress and exact next commands without writes |
 | `wl watch` | `wholeloop/watch-frame@1` | Follow bounded local activity and overviews without writes or listeners |
 | `wl delivery runner-schema` | `wholeloop/delivery-runner-schema@1` | Show owned runner contracts and current execution limitations |
+| `wl delivery credential-store` | `wholeloop/delivery-credential@1` | Store a worker credential read from stdin in the secret store, never in a file |
+| `wl delivery credential-check` | `wholeloop/delivery-credential@1` | Check that a worker credential resolves, without printing it |
 | `wl delivery runner-host` | `wholeloop/delivery-runner-host@1` | Print the public host identity a runner request must name for these documents |
 | `wl delivery runner-prepare` | `wholeloop/delivery-runner-status@1` | Prepare a private authorized route without starting execution |
 | `wl delivery runner-status` | `wholeloop/delivery-runner-status@1` | Inspect retained controller ownership and exact stage observations |

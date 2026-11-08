@@ -15,6 +15,7 @@ import { delegatedDecisionsCommand } from './decisions.js'
 import { deliveryCommand } from './delivery.js'
 import { deliveryAcceptanceAsyncCommand } from './delivery-acceptance.js'
 import { deliveryAssemblyCommand } from './delivery-assembly.js'
+import { deliveryCredentialCommand } from './delivery-credentials.js'
 import { deliveryEnvironmentRuntimeCommand } from './delivery-environment-runtime.js'
 import { deliveryPrivateAsyncCommand } from './delivery-private.js'
 import { deliveryRecoverCommand } from './delivery-recovery.js'
@@ -254,6 +255,8 @@ export async function runAsync(
         (command.path.startsWith('guard ') && command.path !== 'guard commit-msg') ||
         command.path === 'fanout run' ||
         command.path === 'delivery recover' ||
+        command.path === 'delivery credential-store' ||
+        command.path === 'delivery credential-check' ||
         command.path === 'delivery run' ||
         command.path === 'delivery reconcile' ||
         [
@@ -344,6 +347,11 @@ export async function runAsync(
         return await deliveryPrivateAsyncCommand(parsed, root, json, io)
       if (command.path === 'delivery recover')
         return await deliveryRecoverCommand(parsed, root, json, io)
+      if (
+        command.path === 'delivery credential-store' ||
+        command.path === 'delivery credential-check'
+      )
+        return await deliveryCredentialCommand(command.path, parsed, json, io)
       if (command.path === 'delivery run' || command.path === 'delivery reconcile')
         return await deliveryRunnerAsyncCommand(
           command.path,

@@ -12508,6 +12508,34 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": ["schema", "reference"],
+      "properties": {
+        "schema": {
+          "const": "wholeloop/delivery-credential@1"
+        },
+        "reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["store", "item", "kind"],
+          "properties": {
+            "store": { "enum": ["macos-keychain", "secret-service"] },
+            "item": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$" },
+            "kind": { "enum": ["api-key", "oauth-token"] }
+          }
+        },
+        "stored": { "const": true },
+        "resolved": { "type": "boolean" },
+        "variable": {
+          "enum": ["ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "CODEX_API_KEY"]
+        },
+        "reason": {
+          "enum": ["credential-missing", "credential-store-unavailable", "credential-unsupported"]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["schema", "status", "recoveryProblems"],
       "properties": {
         "schema": {

@@ -40,6 +40,30 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Show owned runner contracts and current execution limitations',
   },
   {
+    path: 'delivery credential-store',
+    arguments: '',
+    options: [
+      '--target <claude|codex>',
+      '--kind <api-key|oauth-token>',
+      '--item <name>',
+      '--store <macos-keychain|secret-service>',
+    ],
+    schema: 'wholeloop/delivery-credential@1',
+    summary: 'Store a worker credential read from stdin in the secret store, never in a file',
+  },
+  {
+    path: 'delivery credential-check',
+    arguments: '',
+    options: [
+      '--target <claude|codex>',
+      '--kind <api-key|oauth-token>',
+      '--item <name>',
+      '--store <macos-keychain|secret-service>',
+    ],
+    schema: 'wholeloop/delivery-credential@1',
+    summary: 'Check that a worker credential resolves, without printing it',
+  },
+  {
     path: 'delivery runner-host',
     arguments: '',
     options: ['--bindings <path>', '--runtime <path>', '--root <path>'],

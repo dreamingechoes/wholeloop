@@ -2,6 +2,10 @@
 import { isAbsolute, normalize } from 'node:path'
 import { DOCKER_IMAGE } from '../environment/docker-policy.js'
 import { REFERENCE_NATIVE_VERSIONS } from './native-adapters.js'
+import {
+  type NativeCredentialReference,
+  validNativeCredentialReference,
+} from './native-credentials.js'
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: Native paths and command references deliberately refuse C0 controls and DEL.
 const FORBIDDEN_RUNTIME_CONTROL = /[\x00-\x1f\x7f]/
@@ -9,13 +13,16 @@ const FORBIDDEN_RUNTIME_CONTROL = /[\x00-\x1f\x7f]/
 /**
  * Where the operator's trusted clients live on this machine (ADR-0205).
  * Paths only: the client binary to launch and the dedicated client home the
- * owner signed in to. No field carries a credential, a model or a role; those
- * stay in the bindings document, and containment stays fixed in code.
+ * owner signed in to. No field carries a credential value, a model or a role;
+ * those stay in the bindings document, and containment stays fixed in code.
+ * With a credential reference (ADR-0209) the controller injects the named
+ * secret-store item per launch and the client home is disposable per run.
  */
 export interface NativeRuntimeClient {
   target: keyof typeof REFERENCE_NATIVE_VERSIONS
   client: string
   store: string
+  credential?: NativeCredentialReference
 }
 /**
  * The machine's inputs for one plan repository's unit QA (ADR-0207): a recipe
@@ -111,8 +118,13 @@ export function validNativeRuntime(value: unknown): value is NativeRuntime {
   for (const entry of document.clients) {
     if (typeof entry !== 'object' || entry === null) return false
     const client = entry as Record<string, unknown>
+    const fields = Object.hasOwn(client, 'credential')
+      ? 'client,credential,store,target'
+      : 'client,store,target'
     if (
-      Object.keys(client).sort().join(',') !== 'client,store,target' ||
+      Object.keys(client).sort().join(',') !== fields ||
+      (Object.hasOwn(client, 'credential') &&
+        !validNativeCredentialReference(client.credential, String(client.target))) ||
       typeof client.target !== 'string' ||
       !Object.hasOwn(REFERENCE_NATIVE_VERSIONS, client.target) ||
       seen.has(client.target) ||

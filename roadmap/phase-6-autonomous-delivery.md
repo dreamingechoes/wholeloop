@@ -897,7 +897,7 @@ The third 2026-11-05 Codex implementation pilot retains correct response identit
 
 ## P6-35 · Controller-owned worker credentials
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P6-10, P6-34
+**Status:** 🔄 · **Size:** L · **Depends on:** P6-10, P6-34
 
 **Design review:** added on 2026-11-04; design accepted on 2026-11-08 ([ADR-0209](../docs/decisions/0209-controller-owned-native-credentials.md)) · **Release:** 1.1.0 ([Phase 8](./phase-8-software-factory.md))
 

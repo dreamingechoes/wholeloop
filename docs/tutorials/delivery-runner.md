@@ -108,6 +108,16 @@ wl delivery runner-host --bindings bindings.json --runtime runtime.json --json
 
 An implementation route also needs two optional fields ([ADR-0207](../decisions/0207-public-implementation-route-composition.md)). `codeHost` names the absolute path of the `gh` binary that publication runs; it is never resolved through `PATH`. `repositories` has one entry per plan repository: the digest of an environment recipe already prepared in the store, a digest-pinned helper image, and the suite, meaning the declared command refs, the recipe command each one runs, and a timeout. They grant nothing; the plan's exact grant still decides what may be touched. With both fields, the controller bundle composes the whole `to-pr` route; without them it stops before dispatch. No hosted trial has run yet.
 
+A client entry may also name a worker credential: `"credential": { "store": "macos-keychain", "item": "claude-worker", "kind": "oauth-token" }` ([ADR-0209](../decisions/0209-controller-owned-native-credentials.md)). It names an item in the operating system's secret store, never a value: the Keychain on macOS, Secret Service on a Linux desktop. Claude Code takes `api-key` or `oauth-token` (from `claude setup-token`), and Codex takes `api-key`; a Codex ChatGPT sign-in has no reference because the client keeps it itself. Store the value from stdin and check that it resolves:
+
+```bash
+claude setup-token   # prints a token; copy it
+pbpaste | wl delivery credential-store --target claude --kind oauth-token --item claude-worker --json
+wl delivery credential-check --target claude --kind oauth-token --item claude-worker --json
+```
+
+The value never appears in arguments or output, and there is no file fallback: a Linux host without a desktop secret store reports `credential-store-unavailable`. The reference is part of the host identity. Injecting it into each launch, the disposable client homes and the credential preflight are still being built ([P6-35](../../roadmap/phase-6-autonomous-delivery.md#p6-35--controller-owned-worker-credentials)); until then launches still use the signed-in client home.
+
 Prepare the request with `host` set to that identity, then run and reconcile it with the same documents:
 
 ```bash
