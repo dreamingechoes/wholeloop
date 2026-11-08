@@ -179,6 +179,40 @@ describe('observed local diagnostics without activation or authentication', () =
           ?.status,
       ).toBe('fail')
     }))
+  it('suggests a repair that changes something, never the failing store again', () =>
+    fixture((context) => {
+      const fallback = join(context.home, '.local/state/wholeloop')
+      const inGit = join(context.root, 'runtime')
+      mkdirSync(join(context.root, '.git'))
+      const repair = (store: string) =>
+        doctor({ ...input(context), store }).checks.find((check) => check.id === 'store')?.repair
+      expect(repair(inGit)?.command).toEqual(['wl', 'doctor', '--store', fallback, '--json'])
+      // The default store itself failing must not be suggested again.
+      mkdirSync(join(context.home, '.local/state'), { recursive: true })
+      writeFileSync(fallback, 'not a directory')
+      expect(repair(fallback)?.command).toEqual([
+        'wl',
+        'doctor',
+        '--store',
+        join(context.home, '.local/state/wholeloop-store'),
+        '--json',
+      ])
+      if (process.getuid?.() !== 0) {
+        const locked = join(context.dir, 'locked')
+        mkdirSync(locked, { mode: 0o500 })
+        try {
+          expect(repair(join(locked, 'store'))?.command).toEqual(['chmod', 'u+rwx', locked])
+          chmodSync(locked, 0o700)
+          expect(
+            doctor({ ...input(context), store: join(locked, 'store') }).checks.find(
+              (check) => check.id === 'store',
+            )?.status,
+          ).toBe('pass')
+        } finally {
+          chmodSync(locked, 0o700)
+        }
+      }
+    }))
   it.each(['claude', 'codex', 'opencode', 'copilot'])(
     'checks every expected %s file, executable mode and current source/core identity',
     (target) =>

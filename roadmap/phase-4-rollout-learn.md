@@ -17,6 +17,8 @@
 - [ ] The `launcher` has no tool able to send a message (adapter test per CLI).
 - [x] Each dashboard links back to the measurement-plan entry it implements.
 
+**Progress (2026-11-08)** — `test/unit/adapters/launcher-tools.test.ts` checks the rendered launcher of all seven clients: read tools only for Claude Code (writes and every MCP tool disallowed), OpenCode, Copilot, Gemini and Antigravity, disabled shell, apps and plugins for Codex, and read-only mode for Cursor. Whether Codex and Cursor custom agents still inherit MCP servers from the user's configuration, which could send a message, can only be observed on the native clients, so the criterion stays open.
+
 **Local implementation:** complete and fixture-tested. The core pins measurement revisions, loads repository voice/templates, stores complete kits and dispatches only explicit draft/create requests through a separate conductor host boundary. Per-CLI adapter denial tests remain pending with P1 adapters/conformance; canonical read-only metadata and synthetic hosts are not substitutes. This manual/client criterion does not block dependent local rollout implementation.
 
 **Docs** — flow/rollout/prepare-launch.

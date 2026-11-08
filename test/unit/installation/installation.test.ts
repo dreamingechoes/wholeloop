@@ -283,10 +283,16 @@ describe('owned native installation and retained external history', () => {
         const receipt = JSON.parse(readFileSync(result.receipt, 'utf8'))
         const file = receipt.components[0].files[0]
         writeFileSync(file.path, 'Edited generated file\n')
-        expect(inspectInstallation(selected).status).toBe('changed')
-        expect(report().checks.find((check) => check.id === 'installation.user')?.status).toBe(
-          'fail',
-        )
+        expect(inspectInstallation(selected)).toMatchObject({
+          status: 'changed',
+          changed: [{ path: file.path, state: 'edited' }],
+        })
+        const changed = report().checks.find((check) => check.id === 'installation.user')
+        expect(changed?.status).toBe('fail')
+        // The repair names the edited file and confirms with an install dry run.
+        expect(changed?.repair?.instruction).toContain(`${file.path} (edited)`)
+        expect(changed?.repair?.command.slice(0, 2)).toEqual(['wl', 'install'])
+        expect(changed?.repair?.command).toContain('--dry-run')
         expect(report().authenticated).toBe(false)
       }),
     15000,

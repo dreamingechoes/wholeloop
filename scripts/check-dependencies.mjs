@@ -55,7 +55,11 @@ export function licenseAllowed(expression, allowed) {
 
 /** Lockfile path of the package that owns a bundled input file. */
 export function owningPackage(input) {
-  const match = /^(.*node_modules\/(?:@[^/]+\/)?[^/]+)\//.exec(input)
+  // esbuild reports inputs relative to the working directory; a node_modules symlinked from
+  // elsewhere (a container or shared cache) adds a prefix the lockfile never has.
+  const start = input.indexOf('node_modules/')
+  if (start < 0) return undefined
+  const match = /^(.*node_modules\/(?:@[^/]+\/)?[^/]+)\//.exec(input.slice(start))
   return match?.[1]
 }
 

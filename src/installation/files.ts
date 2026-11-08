@@ -95,6 +95,19 @@ export function checkOwned(components: readonly Component[], allowMissing = fals
   }
   return paths
 }
+// Lists owned files that are missing or edited, for diagnostics; checkOwned stays the guard that
+// refuses to write over them. Paths only, never contents.
+export function ownedChanges(components: readonly Component[]) {
+  const changes: { path: string; state: 'missing' | 'edited' }[] = []
+  const paths = new Map<string, OwnedFile[]>()
+  for (const component of components)
+    for (const file of component.files)
+      paths.set(file.path, [...(paths.get(file.path) ?? []), file])
+  for (const [path, versions] of paths)
+    if (!exists(path)) changes.push({ path, state: 'missing' })
+    else if (!versions.some(matches)) changes.push({ path, state: 'edited' })
+  return changes.sort((a, b) => a.path.localeCompare(b.path))
+}
 export function missingDirectories(files: readonly InstalledFile[], identity: string) {
   const directories = new Set<string>()
   for (const file of files) {

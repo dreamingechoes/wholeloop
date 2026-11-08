@@ -198,7 +198,7 @@
 
 ## P1-13 · `wl install`, `wl uninstall`, `wl doctor`
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-11
+**Status:** ✅ · **Size:** M · **Depends on:** P1-11
 
 **Goal** — From zero to working on a new machine in minutes.
 
@@ -207,7 +207,9 @@
 **Acceptance criteria:**
 
 - [x] Install then uninstall leaves no file behind (test in a temp HOME).
-- [ ] Doctor explains every failure with the command that fixes it.
+- [x] Doctor explains every failure with the command that fixes it.
+
+**Evidence (2026-11-08)** — Every failing doctor check carries an instruction and a repair command. Exercising each failure against the real installed clients on macOS found two that did not fix anything: an unwritable default store suggested rerunning doctor on that same store, and an edited or deleted owned file got the instruction meant for an interrupted writer, without naming the file, while install and uninstall both refuse until it is restored. Doctor now restores write access with chmod on a directory the user owns or points at another external store, never the failing one, and names each changed file with whether it is edited or missing. Each repair was applied in a disposable home until doctor reported no failure. Physical crash recovery and Linux remain in manual verification.
 
 **Local implementation:** four-target user/project native overlays, relative checked launchers, scoped/dedicated hooks, external ownership/backups, preflighted dry runs, semantic idempotency, upgrades, clean uninstall and recorded pending recovery are implemented. Full-package fixtures restore temporary HOME/project trees exactly; smaller catalogs exercise ownership edges. Doctor now checks owned scopes as well as versions, actual store writes and explicit standalone artifacts. Installed files remain distinct from native activation/authentication; Git hooks retain explicit per-repository activation/removal. Actual clients, physical recovery, Linux/other Node releases and corrective commands needing the maintainer's platform/configuration choices remain verification, so the second full-item criterion stays open. These checks do not block the local P1-14 conformance runner.
 

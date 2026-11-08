@@ -726,7 +726,7 @@ P4-05 implementation is complete under ADR-0085: remote operations run only thro
 
 ## prepare-launch and real no-send isolation (P4-01)
 
-- [ ] Complete the adapter test for every target CLI once P1 adapters/conformance are available: inspect the launcher's actual tool set and prove sending tools are unavailable. Canonical read-only metadata and synthetic typed hosts do not satisfy this acceptance criterion.
+- [ ] Render-level launcher tests now cover all seven clients (2026-11-08). On Codex and Cursor, confirm with the native client whether a custom agent inherits MCP servers from the user's configuration; if it does, find a per-agent way to remove them. Then complete the adapter test for every target CLI: inspect the launcher's actual tool set and prove sending tools are unavailable. Canonical read-only metadata and synthetic typed hosts do not satisfy this acceptance criterion.
 - [ ] Validate actual repository voice/template use and scope-pinned measurement ownership with a real launcher. Inspect semantic correctness of drafts, stage/audience coverage and original metric queries/targets/windows.
 - [ ] Authenticate draft/create providers in disposable projects and confirm actual remote unsent drafts, metric-linked dashboards and enablement docs. Known-route checks cannot prove opaque tool/server semantics; inspect real permissions and responses.
 - [ ] Interrupt after remote creation, inspect the retained intent and actual remote artifact, and reconcile manually before any further write. There is no blind retry of an ambiguous/pending launch publication.

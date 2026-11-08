@@ -112,6 +112,11 @@ describe('dependency licence and advisory policy', () => {
   it('maps bundled inputs to their owning package, scoped and nested', () => {
     expect(owningPackage('node_modules/yaml/dist/index.js')).toBe('node_modules/yaml')
     expect(owningPackage('node_modules/@scope/pkg/lib/a.js')).toBe('node_modules/@scope/pkg')
+    // A node_modules symlinked from outside the checkout keeps the lockfile path.
+    expect(owningPackage('../../dependencies/node_modules/yaml/dist/index.js')).toBe(
+      'node_modules/yaml',
+    )
+    expect(owningPackage('src/cli/main.ts')).toBeUndefined()
     expect(owningPackage('node_modules/a/node_modules/b/x.js')).toBe(
       'node_modules/a/node_modules/b',
     )

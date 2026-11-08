@@ -1,6 +1,6 @@
 // Reads installation receipts and owned files without taking the writer lock.
 import { type InstallInput, metadata } from './contracts.js'
-import { checkOwned } from './files.js'
+import { checkOwned, ownedChanges } from './files.js'
 import { installationPlan } from './plan.js'
 import { installationScope, readReceipt, sameComponent } from './receipts.js'
 
@@ -31,7 +31,11 @@ export function inspectInstallation(input: InstallInput) {
     try {
       checkOwned(selected)
     } catch {
-      return { ...base, status: 'changed', targets, receipt: control.path(receiptPath) }
+      let changed: ReturnType<typeof ownedChanges> = []
+      try {
+        changed = ownedChanges(selected)
+      } catch {}
+      return { ...base, status: 'changed', targets, receipt: control.path(receiptPath), changed }
     }
     const current = selected.every((component) =>
       (component.target === 'opencode' && input.context.opencodeVersion === undefined

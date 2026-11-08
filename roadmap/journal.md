@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-08 · P1-13 ✅ · Doctor repairs that fix the failure
+
+- Model-free preparation for the Codex trials: Codex 0.166.0 signed in on its dedicated home, quota read without a model call (95 % of the weekly window used, reset on 2026-11-12), the trial repository's protection unchanged, the six Codex boundary controls passing and the model-free EVAL-09 rehearsal on a201f79 reaching `ready-pr` with 13 stages, 14 synthetic launches, zero human waits and both environments retired in 81 s. No model call was made.
+- Every failing doctor check already carried a repair command, but exercising each failure against the installed clients found two that fixed nothing: an unwritable default store suggested rerunning doctor on the same store, and an edited or deleted owned file got the instruction meant for an interrupted writer without naming the file, while install and uninstall both refuse until it is restored. Doctor now restores write access with chmod on a directory the user owns, or points at another external store, and names each changed file as edited or missing. Each repair was applied in a disposable home until doctor reported no failure.
+- The first offline Linux gate of the day failed at the dependency step because the container linked `node_modules` from outside the checkout and the licence check kept that prefix; `owningPackage` now reads the lockfile path from the first `node_modules/`, which leaves ordinary checkouts unchanged.
+- P4-01 progress: a test checks the rendered launcher of all seven clients. Whether Codex and Cursor custom agents inherit the user's MCP servers needs the native clients, so P4-01 stays paused.
+- macOS full gate with two file workers: all 4620 tests across 330 files pass, then the Markdown step failed on a note placed inside a criteria list; after moving it the fast gate passes (CHECK PASS in 67s). The offline Linux gate on this commit is recorded in manual verification.
+
+---
+
 ## 2026-11-07 · P7-12 ✅ · Code and contributor documentation pass
 
 - All 491 modules in `src/` open with a header saying why they exist; 478 had none and 13 opened with a constraint note. Headers come from each module's exports and documentation comments; the command modules were checked against the command table, which corrected first guesses about the paths `build` and several `delivery` modules handle. A test fails on a missing or overlong header, and AGENTS.md states the convention.
