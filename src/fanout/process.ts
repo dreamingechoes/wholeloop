@@ -16,8 +16,11 @@ export function workerProcess(
   args: string[],
   options: Parameters<typeof unmanagedWorkerProcess>[2],
 ): Promise<ProcessResult> {
+  // Spawning with a cwd leaves the parent's PWD in the environment, and some clients (OpenCode
+  // 2.x) take their project from PWD; a worker must see the directory it actually runs in.
+  const bound = { ...options, env: { ...options.env, PWD: options.cwd } }
   const owner = currentWorkerOwnership()
-  return owner ? owner(command, args, options) : unmanagedWorkerProcess(command, args, options)
+  return owner ? owner(command, args, bound) : unmanagedWorkerProcess(command, args, bound)
 }
 /** Shell-free stdin input and bounded discarded diagnostics avoid leaking prompts through argv/logs. */
 export async function unmanagedWorkerProcess(

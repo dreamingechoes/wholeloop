@@ -13,6 +13,25 @@ async function fixture(operation: (root: string) => Promise<void>) {
   }
 }
 
+describe('worker working directory', () => {
+  it('replaces an inherited PWD with the directory the worker runs in', async () => {
+    await fixture(async (root) => {
+      const result = await workerProcess(
+        process.execPath,
+        ['-e', 'process.stdout.write(process.env.PWD ?? "")'],
+        {
+          cwd: root,
+          input: '',
+          timeoutMs: 3000,
+          signal: new AbortController().signal,
+          env: { ...process.env, PWD: '/somewhere/else' },
+        },
+      )
+      expect(result.stdout).toBe(root)
+    })
+  })
+})
+
 describe('bounded native initialization before assignment input', () => {
   it('withholds input until a split UTF-8 header is accepted and sends it only once', async () => {
     await fixture(async (root) => {
