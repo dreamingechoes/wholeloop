@@ -37,6 +37,7 @@ describe('Cursor read-only headless policy', () => {
       expect(invocation.command).toBe('agent')
       expect(invocation.args).toEqual([
         '--print',
+        '--trust',
         '--output-format',
         'json',
         '--mode',

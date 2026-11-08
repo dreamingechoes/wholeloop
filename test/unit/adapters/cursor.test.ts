@@ -212,6 +212,26 @@ describe('Cursor native contracts and managed overlays', () => {
           execute(hook.command, root, home, { ...payload(root, 'Read'), workspace_roots: [] })
             .permission,
         ).toBe('deny')
+        // Cursor 2026.11 sends an empty cwd for Shell: one root supplies it, two roots deny.
+        expect(
+          execute(hook.command, root, home, {
+            ...payload(root, 'Shell', { command: 'git status' }),
+            cwd: '',
+          }),
+        ).toEqual({})
+        expect(
+          execute(hook.command, root, home, {
+            ...payload(root, 'Shell', { command: 'git push origin main' }),
+            cwd: '',
+          }).permission,
+        ).toBe('deny')
+        expect(
+          execute(hook.command, root, home, {
+            ...payload(root, 'Shell', { command: 'git status' }),
+            cwd: '',
+            workspace_roots: [root, home],
+          }).permission,
+        ).toBe('deny')
         expect(manageInstallation('uninstall', input).status).toBe('uninstalled')
         expect(readFileSync(personal, 'utf8')).toBe('# Personal fixture rule\n')
         expect(readdirSync(locations.rules)).toEqual(['team.mdc'])
@@ -319,6 +339,7 @@ describe('Cursor native contracts and managed overlays', () => {
         cwd: dir,
         args: [
           '--print',
+          '--trust',
           '--output-format',
           'json',
           '--sandbox',

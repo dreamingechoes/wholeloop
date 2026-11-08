@@ -58,6 +58,9 @@ export const cursorWorker: HeadlessAdapter = {
       command: 'agent',
       args: [
         '--print',
+        // Headless Cursor refuses an untrusted workspace. The trusted workspace is this disposable
+        // worker directory, which holds only the deny policy and hook staged below.
+        '--trust',
         '--output-format',
         'json',
         '--mode',

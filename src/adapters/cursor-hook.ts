@@ -14,6 +14,13 @@ export function cursorHook(core: string, binding: Binding = { kind: 'plugin' }) 
     'cursor',
     core,
     `
+  // Cursor 2026.11 sends an empty cwd for Shell calls. Use the call's own absolute working
+  // directory, or the only workspace root; with several roots and no cwd the hook still denies.
+  if(payload && payload.cwd==='' && payload.tool_input && typeof payload.tool_input==='object' && Array.isArray(payload.workspace_roots)){
+   const own=payload.tool_input.working_directory
+   const fallback=typeof own==='string' && isAbsolute(own) ? own : payload.workspace_roots.length===1 ? payload.workspace_roots[0] : undefined
+   if(typeof fallback==='string')payload.cwd=fallback
+  }
   if(!payload || typeof payload.cwd!=='string' || !isAbsolute(payload.cwd) || typeof payload.tool_name!=='string' || !payload.tool_input || typeof payload.tool_input!=='object' || Array.isArray(payload.tool_input) || !Array.isArray(payload.workspace_roots) || !payload.workspace_roots.length || payload.workspace_roots.length>32)throw new Error('context')
   const cwd=realpathSync(payload.cwd)
   const roots=payload.workspace_roots.map(root=>{if(typeof root!=='string' || !isAbsolute(root))throw new Error('workspace');return realpathSync(root)})

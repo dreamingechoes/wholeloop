@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-20
 
+**Amended 2026-11-08.** Headless Cursor 2026.07 and later refuses an untrusted workspace, so the read-only worker recipe passes `--trust` for its own disposable worker directory, which holds only the deny policy and hook wholeloop stages, and the framing conformance recipe passes it for its disposable fixture. Neither trusts a user repository, and no force or MCP auto-approval flag is added. Cursor 2026.11 also sends an empty `cwd` for `Shell` calls; the hook now takes the call's own absolute `working_directory`, or the workspace root when there is exactly one, and still denies when several roots leave the directory ambiguous. Rejected: dropping the read-only worker for Cursor, which would leave its gates without an independent observer.
+
 ## Context
 
 Cursor accepts its own plugin format and the portable Agent Plugins format, with different component coverage. Its native role flag and hook responses also differ from the existing adapters. Sharing a command string containing a substituted plugin-root path would repeat the unsafe shell binding rejected for Gemini.
