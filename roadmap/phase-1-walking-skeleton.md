@@ -217,7 +217,7 @@
 
 ## P1-14 · Conformance harness v1
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-12, P1-13
+**Status:** ✅ · **Size:** M · **Depends on:** P1-12, P1-13
 
 **Goal** — Prove the same scenario passes on all tier-A CLIs.
 
@@ -225,8 +225,10 @@
 
 **Acceptance criteria:**
 
-- [ ] The scenario passes on Claude Code, Codex, OpenCode and Copilot CLI.
+- [x] The scenario passes on Claude Code, Codex, OpenCode and Copilot CLI.
 - [x] A failure report names the CLI, the step and the missing journal event.
+
+**Evidence** — The standalone framing scenario (`standalone-frame-v1`, scenario digest 770cbd5c) passes live with process and journal evidence on macOS arm64, Node 24.22.0: Claude Code 2.1.319 (run cf-1422b6df04fd5ec12a08f329), OpenCode 2.2.5 (cf-97f187d81879d2af1d9d7b65), Copilot 1.0.83 (cf-6d2e1e761ad5cc3fd17862d5) on 2026-11-08 through `npm run native:check`, and Codex 0.163.0 (cf-ade63be4ab7e78074a428393) on 2026-10-22, after the last change to the scenario's content. Narrowed: Codex was not repeated on the installed 0.166.0 because its weekly quota is nearly spent until 2026-11-12; its read-only probe passes on 0.166.0. Getting there needed fixes recorded in [manual verification](./manual-verification.md#per-client-native-checks-2026-11-08): workers now receive their own `PWD` (OpenCode), and headless Copilot gets only the exact launcher and framing files. Linux and other Node versions were not run.
 
 **Local implementation:** a bundled synthetic scenario, disposable seeded repositories, real project installer/launchers, four native headless recipes, exact version preflight, bounded execution/cancellation and a replay/projection/marker judge are implemented. Preparation, simulation and explicit live process evidence are distinct. Fixtures cannot close the real-client criterion. An authorized actual Codex 0.163.0 standalone run passed after correcting the exact-input prompt. Claude has separate owner-observed on-hold/session-recovery evidence; actual automatic trials of the other five clients failed. See the [native trial table](./manual-verification.md#automatic-native-client-trials-2026-10-22). Full four-client scenario acceptance, native permissions/hooks and Linux/other Node checks remain open. These checks do not block other implementation.
 

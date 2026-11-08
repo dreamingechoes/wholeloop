@@ -199,7 +199,7 @@ The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Pha
 | P1-10 | Claude generated plugin installs and all skills are discovered | Isolated native trust/login if required |
 | P1-11 | Codex/OpenCode/Copilot strongest available read-only mappings verified | Review native permission boundaries |
 | P1-13 | Actual doctor failures have working corrective instructions | Platform/account-specific choices |
-| P1-14 | Real standalone scenario passes all four tier-A clients | Native access when blocked |
+| P1-14 ✅ | Real standalone scenario passes all four tier-A clients (done 2026-11-08) | — |
 | P3-08 | Actual tier-A hook payloads and guard behavior verified | Trust/permission decisions |
 | P4-01 | Launcher lacks a sending tool in each adapter | Review actual capability inventory |
 | P5-01 | Real scenario passes Gemini and Antigravity | Native access when blocked |

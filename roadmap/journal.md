@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-08 · P1-14 ✅ · Conformance harness v1
+
+- The standalone framing scenario passes live on all four tier-A clients with the same scenario: Claude Code 2.1.319, OpenCode 2.2.5 and Copilot 1.0.83 on 2026-11-08, and Codex 0.163.0 on 2026-10-22. Run IDs are in the phase file.
+- Narrowed: Codex was not repeated on 0.166.0 because its weekly quota is nearly spent until 2026-11-12; its read-only probe passes on 0.166.0. Linux and other Node versions were not run.
+- Decided: a pass counts only with live process and journal evidence on the current scenario digest; a diagnostic run outside the official runner, like Antigravity's, does not count.
+- Verification: CHECK PASS in 670s, 4643 tests, on macOS arm64 with Node 24.22.0; Linux was not run.
+
+---
+
 ## 2026-11-08 · Copilot, Cursor and Antigravity unblocked
 
 - Framing now passes live on Copilot and Cursor, so with Claude Code, Codex and OpenCode every tier-A client and Cursor have a passing scenario. Cursor's and Antigravity's read-only probes pass too; Antigravity's framing still fails, and Gemini stays paused.
