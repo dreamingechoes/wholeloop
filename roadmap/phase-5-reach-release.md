@@ -18,13 +18,15 @@ Expanded 1.0.0 also includes [Phase 6](./phase-6-autonomous-delivery.md) and [Ph
 
 - [ ] The P1 conformance scenario passes on both CLIs (sequential or headless engine where needed).
 
+**Progress (2026-11-08)** — The scenario passes live on Antigravity 1.5.3 (run cf-9ea0ac99ec4ae55e10cea088) and its read-only probe passes. Gemini 0.67.0 is paused by the maintainer: it needs workspace trust and ignores non-root system settings, so its read-only policy must move to the policy engine first. The criterion stays open until Gemini passes.
+
 **Local implementation:** Gemini extension generation, strict local-agent tools/model inheritance, plain-text questions, owned user/project overlays, explicit doctor, unapplied MCP recipes/declaration detection and the shared fresh framing runner are implemented. Actual Gemini 0.27.0 static loaders accepted eight generated agents and seventeen skills; installed-launcher simulation remains simulation. Use the explicit Git fallback for loose overlays. Generated extensions now bind the root through native hook.env, with exact core integrity checks; actual 0.27.0 loader/runner read/deny probes passed without model calls. Native enablement/permissions/model/MCP checks remain manual verification. Antigravity now has a closed plugin manifest, wl-agy- native namespace, strict inherited roles, owned user/project overlays, hash-pinned named hook transport, serverUrl MCP recipes/detection, explicit agy doctor and JSONL framing recipe. Installed-launcher simulation and authored native hook payloads exercise the real core; actual native loading/permissions/model/MCP checks remain manual verification. Local agy 1.4.2 listing could not bind a port under the execution sandbox. Both local adapters and hook transports are implemented; native model/permission/MCP conformance remains manual verification and does not block Cursor work. See ADR-0055 and ADR-0056.
 
 **Docs** — platforms, getting-started, configuration/providers, ADR-0053.
 
 ## P5-02 · Adapter — Cursor CLI
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-11
+**Status:** ✅ · **Size:** M · **Depends on:** P1-11
 
 **Goal** — Cover Cursor's terminal agent.
 
@@ -32,7 +34,9 @@ Expanded 1.0.0 also includes [Phase 6](./phase-6-autonomous-delivery.md) and [Ph
 
 **Acceptance criteria:**
 
-- [ ] The P1 conformance scenario passes; read-only roles use `readonly`.
+- [x] The P1 conformance scenario passes; read-only roles use `readonly`.
+
+**Evidence** — On 2026-11-08, macOS arm64, Node 24.22.0, the standalone framing scenario passes live on Cursor 2026.11.05-86047df with the free plan's `auto` model (run cf-45e0ec29f8536bf06a715170, process and journal evidence). Read-only roles render `readonly: true` (`test/unit/adapters/cursor.test.ts`, `test/unit/adapters/launcher-tools.test.ts`), and the live read-only probe of Cursor's headless observer saw it attempt `Write` and `Shell` and its policy refuse all three writes, leaving the workspace unchanged. Getting there needed workspace trust for directories wholeloop creates and a hook fix for Cursor 2026.11's empty Shell `cwd` ([ADR-0057](../docs/decisions/0057-cursor-native-formats-and-non-granting-hooks.md)). Narrowed: the generated readonly subagents were not exercised inside an interactive Cursor session, MCP and OAuth stay manual, and Linux was not run.
 
 **Local implementation:** native/portable manifests, seventeen skills/eight inherited roles with native readonly observers, opt-in rule, owned user/project overlays, non-granting fail-closed hooks, MCP recipes/detection, explicit agent doctor and fresh stdin framing are implemented. Shared hook slots refuse unowned policy; standalone roots require explicit CURSOR_PLUGIN_ROOT environment data. Native version/help and pure hook validators were checked, while installed-core simulations remain FIXTURE_PASS. Actual client discovery/permissions/model/MCP and the live scenario remain manual checks. See ADR-0057; these checks do not block P5-03.
 

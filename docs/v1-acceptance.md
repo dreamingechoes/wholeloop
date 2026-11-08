@@ -203,7 +203,7 @@ The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Pha
 | P3-08 | Actual tier-A hook payloads and guard behavior verified | Trust/permission decisions |
 | P4-01 | Launcher lacks a sending tool in each adapter | Review actual capability inventory |
 | P5-01 | Real scenario passes Gemini and Antigravity | Native access when blocked |
-| P5-02 | Cursor real scenario and readonly behavior pass | Native access when blocked |
+| P5-02 ✅ | Cursor real scenario and readonly behavior pass (done 2026-11-08) | — |
 | P5-04 | Actual latest regression creates the expected issue | CI credentials/protection/activation |
 | P7-14 (formerly P5-05) | History audit, approved visibility, published release candidate, fresh-machine timing and clean notes | Publication/ownership decision |
 | P7-15 (formerly P5-07) | Actual 1.0.0 tag, publication and announcement after remaining acceptance | Final release approval |

@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-08 · P5-02 ✅ · Cursor adapter, and Antigravity framing passes
+
+- P5-02 closes: the framing scenario passes live on Cursor 2026.11.05 with the free plan's `auto` model, read-only roles render `readonly: true`, and the live read-only probe saw Cursor's policy refuse `Write` and `Shell`. Narrowed: generated readonly subagents were not exercised inside an interactive session; MCP, OAuth and Linux stay manual.
+- Antigravity 1.5.3 now passes the framing scenario. Its official runs had stopped because the session handed the final review to a background subagent and ended its single turn, after which the runner stopped the process group with that subagent; a copy of the official event stream showed it. The prompt now asks it to perform the review in its turn; the judge's requirements are unchanged.
+- P5-01 stays open until Gemini, paused by the maintainer, passes as well.
+- Verification: CHECK PASS in 727s, 4643 tests, on macOS arm64 with Node 24.22.0; Linux was not run.
+
+---
+
 ## 2026-11-08 · P1-14 ✅ · Conformance harness v1
 
 - The standalone framing scenario passes live on all four tier-A clients with the same scenario: Claude Code 2.1.319, OpenCode 2.2.5 and Copilot 1.0.83 on 2026-11-08, and Codex 0.163.0 on 2026-10-22. Run IDs are in the phase file.
