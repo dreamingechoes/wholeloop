@@ -805,7 +805,7 @@ The adapter criterion stays unchecked; it does not block dependent local rollout
 
 | Task | Action | Current evidence |
 | --- | --- | --- |
-| P0-01 | Approve the staged `0.0.1`, configure the trusted publisher (release.yml, environment `release`) and require 2FA with tokens disallowed | Name owned by `dreamingechoes` since 2026-11-08 |
+| P0-01 | Right before the first release, recreate the npm trusted publisher (`dreamingechoes/wholeloop`, `release.yml`, environment `release`, `npm publish` allowed, `npm dist-tag` not): npm validates it only through a publication within about two days | Name owned by `dreamingechoes`; `0.0.1` approved as `latest`; a trusted publisher created on 2026-11-08 expires unvalidated on 2026-11-10 |
 | P0-03 | Follow the isolated-session [conformance checklist](../test/conformance/notes/README.md) for all four tier-A CLIs | Owner-observed Claude loose-skill framing/status and session recovery; broad discovery, permissions, hooks, MCP, plugin loading and other clients remain unverified |
 | P0-06 | Optionally enable the local hook with `npm run hooks:install`; preserve any existing hook chain | A real hook was exercised in a temporary git repository; this checkout's Git configuration was not changed |
 | CI | Run the updated workflow on Linux/macOS, including Node 20 runtime and a PR containing a rejected message | Local checks also passed on macOS arm64 / Node 24.22.0; no remote CI run or push was performed |
