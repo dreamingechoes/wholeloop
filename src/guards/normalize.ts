@@ -43,6 +43,12 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
     value.arguments ??
     value.params ??
     {}
+  // Copilot 1.0 sends apply_patch's arguments as the raw patch text rather than JSON.
+  if (
+    typeof args === 'string' &&
+    /^(apply_patch|patch)$/i.test(name.split(/\.|\/|__/).at(-1) ?? '')
+  )
+    args = args.trimStart().startsWith('{') ? args : JSON.stringify({ patch: args })
   if (typeof args === 'string')
     try {
       args = JSON.parse(args)

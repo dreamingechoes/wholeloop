@@ -28,7 +28,9 @@ Live results on 2026-11-08, macOS arm64, Node 24.22.0. A read-only PASS feeds P0
 - [x] Antigravity: the init check binds to the worker's own observer instead of the tool list, the guard and observer hook read 1.5's `read_file`/`write_file` and their `Path` argument, and the conformance recipe grants the exact launcher and framing files for writing and reading ([ADR-0072](../docs/decisions/0072-antigravity-startup-gated-observer-workers.md)).
 - [x] Antigravity framing failed in the official runner because the session handed the final review to a background subagent and ended its single turn; the runner then stopped the process group with that subagent. A copy of the official event stream showed it. The prompt now asks Antigravity to perform the review in its turn, and the next official run passed.
 - [ ] Gemini 0.67: system settings files are honoured only when owned by root, so the worker's read-only settings are skipped; move the policy to the policy engine (`--policy`) and decide on workspace trust. Paused by the maintainer.
-- [ ] Hook payloads (P3-08) and MCP inheritance in launchers (P4-01) are not automated yet.
+- [x] Hook payloads (P3-08): real Claude Code, Copilot and OpenCode payloads are fixtures that normalize to the same events; Copilot's raw `apply_patch` text no longer makes the guard deny every edit, and the generated Copilot plugin's guard denies `git push` live.
+- [ ] Codex 0.166 hook payloads: Codex now runs project hooks only after trusting them; capture with the maintainer's chosen trust step (trusting the disposable repository's hooks once, or allowing `--dangerously-bypass-hook-trust` for that capture).
+- [ ] MCP inheritance in launchers (P4-01) is not automated yet.
 
 ## Expanded 1.0 acceptance boundary
 

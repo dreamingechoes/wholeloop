@@ -1,0 +1,105 @@
+{
+  "claude": {
+    "version": "2.1.319",
+    "read": {
+      "session_id": "redacted",
+      "transcript_path": "/redacted/transcript.jsonl",
+      "cwd": "/workspace/project",
+      "prompt_id": "redacted",
+      "permission_mode": "auto",
+      "effort": {
+        "level": "high"
+      },
+      "hook_event_name": "PreToolUse",
+      "tool_name": "Read",
+      "tool_input": {
+        "file_path": "/workspace/project/README.md"
+      },
+      "tool_use_id": "redacted"
+    },
+    "write": {
+      "session_id": "redacted",
+      "transcript_path": "/redacted/transcript.jsonl",
+      "cwd": "/workspace/project",
+      "prompt_id": "redacted",
+      "permission_mode": "auto",
+      "effort": {
+        "level": "high"
+      },
+      "hook_event_name": "PreToolUse",
+      "tool_name": "Write",
+      "tool_input": {
+        "file_path": "/workspace/project/notes.txt",
+        "content": "x\n"
+      },
+      "tool_use_id": "redacted"
+    },
+    "shell": {
+      "session_id": "redacted",
+      "transcript_path": "/redacted/transcript.jsonl",
+      "cwd": "/workspace/project",
+      "prompt_id": "redacted",
+      "permission_mode": "auto",
+      "effort": {
+        "level": "high"
+      },
+      "hook_event_name": "PreToolUse",
+      "tool_name": "Bash",
+      "tool_input": {
+        "command": "git status"
+      },
+      "tool_use_id": "redacted"
+    }
+  },
+  "copilot": {
+    "version": "1.0.83",
+    "read": {
+      "sessionId": "redacted",
+      "timestamp": 0,
+      "cwd": "/workspace/project",
+      "toolName": "view",
+      "toolArgs": {
+        "path": "/workspace/project/README.md"
+      }
+    },
+    "write": {
+      "sessionId": "redacted",
+      "timestamp": 0,
+      "cwd": "/workspace/project",
+      "toolName": "apply_patch",
+      "toolArgs": "*** Begin Patch\n*** Add File: notes.txt\n+x\n*** End Patch\n"
+    },
+    "shell": {
+      "sessionId": "redacted",
+      "timestamp": 0,
+      "cwd": "/workspace/project",
+      "toolName": "bash",
+      "toolArgs": {
+        "command": "git status",
+        "description": "Run git status"
+      }
+    }
+  },
+  "opencode": {
+    "version": "2.2.5",
+    "read": {
+      "tool": "read",
+      "input": {
+        "path": "/workspace/project/README.md"
+      }
+    },
+    "write": {
+      "tool": "write",
+      "input": {
+        "path": "/workspace/project/notes.txt",
+        "content": "x"
+      }
+    },
+    "shell": {
+      "tool": "shell",
+      "input": {
+        "command": "git status"
+      }
+    }
+  }
+}

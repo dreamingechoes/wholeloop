@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-08 · Real hook payloads from three tier-A clients
+
+- Captured live before-tool payloads (read, write, shell) from Claude Code 2.1.319, Copilot 1.0.83 and OpenCode 2.2.5 with recording hooks in disposable repositories, redacted paths and identifiers, and kept them as fixtures; a test shows all three normalize to the same events.
+- Found: Copilot sends `apply_patch` arguments as raw patch text, which the guard rejected, so every Copilot edit through it was denied. The normalizer now reads the text as the patch.
+- Live, the generated Copilot plugin's guard denies `git push` with `open-pr-publication-only` and lets an ordinary edit through. A detour moved its hook file to the plugin root on a wrong reading; bisecting showed the portable manifest's `$schema` is what makes Copilot read the vendor folder for agents and hooks, so the original layout stays.
+- Codex 0.166 has stable hooks now; capturing them needs a hook-trust step, left to the maintainer, so P3-08 stays open.
+
+---
+
 ## 2026-11-08 · P5-02 ✅ · Cursor adapter, and Antigravity framing passes
 
 - P5-02 closes: the framing scenario passes live on Cursor 2026.11.05 with the free plan's `auto` model, read-only roles render `readonly: true`, and the live read-only probe saw Cursor's policy refuse `Write` and `Shell`. Narrowed: generated readonly subagents were not exercised inside an interactive session; MCP, OAuth and Linux stay manual.
