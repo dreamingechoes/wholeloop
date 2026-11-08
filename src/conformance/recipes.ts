@@ -198,6 +198,13 @@ export function conformancePrompt(run: PreparedConformance, scenario: Scenario):
           `Save the frame decision JSON only at ${JSON.stringify(grantedFiles(run).decision)} and the final review JSON only at ${JSON.stringify(grantedFiles(run).review)}; writes anywhere else are denied.`,
         ]
       : []),
+    // Headless Antigravity ends after one turn and its process group is stopped with it, so a
+    // review handed to a background subagent never reaches the journal.
+    ...(run.target === 'antigravity'
+      ? [
+          'This headless session has exactly one turn: a background subagent cannot report back before it ends. Perform the final challenger review yourself in this turn, following the challenger agent instructions, instead of delegating it.',
+        ]
+      : []),
     'Do not edit the repository, change configuration, commit, push, call remote services or start another step. Do not invent evidence, metrics, validation or approvals.',
     'Complete frame-problem through the installed core, show its receipt and stop. If native trust or permissions block it, report the blocker without bypassing them.',
   ].join('\n')

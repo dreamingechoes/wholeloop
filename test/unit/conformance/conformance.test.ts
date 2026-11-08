@@ -465,6 +465,13 @@ describe('standalone conformance runner', () => {
       const prompt = conformancePrompt(run, conformanceScenario(ctx.canonical).scenario)
       expect(prompt).toContain('without node')
       expect(prompt).toContain(JSON.stringify(files.review))
+      expect(prompt).not.toContain('exactly one turn')
+      expect(
+        conformancePrompt(
+          { ...run, target: 'antigravity' },
+          conformanceScenario(ctx.canonical).scenario,
+        ),
+      ).toContain('exactly one turn')
       expect(prompt).not.toContain(`node ${JSON.stringify(run.launcher)}`)
       expect(() => conformanceRecipe({ ...run, launcher: '/tmp/a (b)/wl.mjs' })).toThrow(
         /pattern characters/,
