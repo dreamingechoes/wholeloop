@@ -155,6 +155,14 @@ npm run eval:live-implementation -- --rehearse
 npm run eval:live-implementation -- --seed
 ```
 
+A hosted rehearsal keeps the synthetic client and model but runs everything else for real against `dreamingechoes/wholeloop-trials`: the clone, a non-force push, the owned pull request and its CI. It spends no model quota, writes a `wholeloop/rehearsal-trial@1` report that never counts as a campaign attempt, and needs its own confirmation:
+
+```bash
+WHOLELOOP_LIVE_CONFIRM=publish-without-model npm run eval:live-implementation -- --hosted-rehearsal
+```
+
+It leaves its branch and pull request on the trial repository, like a live attempt; close them by hand once inspected.
+
 Each command prints its external retained directory. An attempt saves `results/report.json`, its immutable request/plan/grant and the store's original evidence. Reports include controller waits, every native receipt's status/provenance and client-reported usage, case statuses/reasons, exact base/core digests and sanitized effect observations. Failed attempts are retained without retry; their environments stay available for inspection. Successful runs retire only their own environments and retain the retirement observations. Rehearsal reports use `wholeloop/rehearsal-trial@1`, which `eval:campaign` rejects; real attempts use `wholeloop/live-trial@1`.
 
 For an already authorized live batch, first sign the dedicated client home in again. Resolve the pinned native executable and `gh` to absolute paths, then supply the same non-secret client/model/home variables used by the research trials. Claude's pinned binary is `$HOME/.local/share/claude/versions/2.1.316`, its model is `claude-opus-5-5`; Codex uses `gpt-6.1-sol`. A default home resolves beneath `$HOME/.local/state/wholeloop-native/<target>`.

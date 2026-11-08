@@ -40,29 +40,44 @@ import {
 import { trialPlan } from './plan.js'
 import { trialObservations } from './report.js'
 
-/** One attempt, never a retry. Rehearsals use the same public CLI and plan. */
+/**
+ * One attempt, never a retry. Rehearsals use the same public CLI and plan.
+ * --hosted-rehearsal keeps the synthetic client and model but clones, pushes
+ * and opens its pull request on the real trial repository, so hosted
+ * publication is observed without spending model quota. It is a rehearsal:
+ * its report never counts as a campaign attempt.
+ */
 const args = process.argv.slice(2)
 assert.ok(
-  args.length <= 1 && args.every((arg) => ['--rehearse', '--seed'].includes(arg)),
-  'Supported options: --rehearse or --seed',
+  args.length <= 1 &&
+    args.every((arg) => ['--rehearse', '--hosted-rehearsal', '--seed'].includes(arg)),
+  'Supported options: --rehearse, --hosted-rehearsal or --seed',
 )
-const rehearsal = args.includes('--rehearse'),
+const hosted = args.includes('--hosted-rehearsal'),
+  rehearsal = args.includes('--rehearse'),
+  synthetic = rehearsal || hosted,
   seed = args.includes('--seed')
-if (!rehearsal && !seed)
+if (hosted)
+  assert.equal(
+    process.env.WHOLELOOP_LIVE_CONFIRM,
+    'publish-without-model',
+    'Set WHOLELOOP_LIVE_CONFIRM=publish-without-model for a hosted rehearsal',
+  )
+else if (!rehearsal && !seed)
   assert.equal(
     process.env.WHOLELOOP_LIVE_CONFIRM,
     'spend-quota-and-publish',
     'Set WHOLELOOP_LIVE_CONFIRM=spend-quota-and-publish for a live hosted attempt',
   )
-const target = rehearsal ? 'codex' : process.env.WHOLELOOP_LIVE_TARGET,
-  model = rehearsal ? 'reference-model' : process.env.WHOLELOOP_LIVE_MODEL
+const target = synthetic ? 'codex' : process.env.WHOLELOOP_LIVE_TARGET,
+  model = synthetic ? 'reference-model' : process.env.WHOLELOOP_LIVE_MODEL
 if (!seed) {
   assert.ok(
     target === 'claude' || target === 'codex',
     'Select the claude or codex reference target',
   )
   assert.ok(
-    (model && process.env.WHOLELOOP_LIVE_CLIENT) || rehearsal,
+    (model && process.env.WHOLELOOP_LIVE_CLIENT) || synthetic,
     'Set WHOLELOOP_LIVE_MODEL and _CLIENT',
   )
 }
@@ -75,7 +90,7 @@ console.log(
   JSON.stringify({
     retained: dir,
     run,
-    execution: seed ? 'seed-only' : rehearsal ? 'rehearsal' : 'live',
+    execution: seed ? 'seed-only' : hosted ? 'hosted-rehearsal' : rehearsal ? 'rehearsal' : 'live',
     started: new Date().toISOString(),
   }),
 )
@@ -122,9 +137,9 @@ if (seed) {
 assert.ok(target === 'claude' || target === 'codex')
 assert.ok(model)
 const report: Record<string, unknown> = {
-  schema: rehearsal ? 'wholeloop/rehearsal-trial@1' : 'wholeloop/live-trial@1',
+  schema: synthetic ? 'wholeloop/rehearsal-trial@1' : 'wholeloop/live-trial@1',
   scenario: 'EVAL-09',
-  execution: rehearsal ? 'rehearsal' : 'live',
+  execution: hosted ? 'hosted-rehearsal' : rehearsal ? 'rehearsal' : 'live',
   target,
   version: REFERENCE_NATIVE_VERSIONS[target],
   model,
@@ -168,11 +183,20 @@ try {
     home = join(dir, 'client-home')
     mkdirSync(home, { mode: 0o700 })
   } else {
-    client = realpathSync(process.env.WHOLELOOP_LIVE_CLIENT ?? '')
-    home = realpathSync(
-      process.env.WHOLELOOP_LIVE_HOME ??
-        join(homedir(), '.local', 'state', 'wholeloop-native', target),
-    )
+    if (hosted) {
+      // Only the model is synthetic: the clone, push, pull request and CI are real.
+      client = join(dir, 'bin', 'codex')
+      writeFileSync(client, SYNTHETIC_CODEX(join(dir, 'calls.jsonl')))
+      chmodSync(client, 0o700)
+      home = join(dir, 'client-home')
+      mkdirSync(home, { mode: 0o700 })
+    } else {
+      client = realpathSync(process.env.WHOLELOOP_LIVE_CLIENT ?? '')
+      home = realpathSync(
+        process.env.WHOLELOOP_LIVE_HOME ??
+          join(homedir(), '.local', 'state', 'wholeloop-native', target),
+      )
+    }
     gh = realpathSync(process.env.WHOLELOOP_LIVE_GH ?? command('which', ['gh']))
     const repository = JSON.parse(command(gh, ['api', `repos/${TRIAL_REPOSITORY}`])) as {
       full_name?: string
@@ -303,6 +327,7 @@ try {
   const status = report.status as { state?: string; outcome?: string } | null
   if (status?.state === 'completed' && ['ready-pr', 'draft-pr'].includes(status.outcome ?? '')) {
     report.publication = rehearsal ? 'local-transport-only' : 'host-observed'
+    if (hosted) report.hosted = TRIAL_REPOSITORY
     const retirements = []
     for (const { record, digest: environmentDigest } of new EnvironmentResources(store.files)
       .list()
