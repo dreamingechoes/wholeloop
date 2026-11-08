@@ -72,7 +72,9 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
     args.AbsolutePath ??
     args.DirectoryPath ??
     args.SearchDirectory ??
-    args.SearchPath
+    args.SearchPath ??
+    // Antigravity 1.5 names the file of read_file and write_file `Path`.
+    (call ? args.Path : undefined)
   if (call && target !== undefined && (typeof target !== 'string' || !isAbsolute(target)))
     throw new Error('Native tool target must be absolute; contents omitted')
   const roots = Array.isArray(workspaces)
@@ -136,6 +138,7 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
     ...(call && /^(write_to_file|replace_file_content|multi_replace_file_content)$/.test(tool)
       ? [args.TargetFile]
       : []),
+    ...(call && tool === 'write_file' ? [args.Path] : []),
     ...(Array.isArray(args.paths) ? args.paths : []),
   ].filter((path) => path !== undefined)
   if (paths.some((path) => typeof path !== 'string' || !path.trim()))

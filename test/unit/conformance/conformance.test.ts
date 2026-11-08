@@ -21,6 +21,7 @@ import {
   conformanceEnvironment,
   conformancePrompt,
   conformanceRecipe,
+  grantedFiles,
 } from '../../../src/conformance/recipes.js'
 import { reportConformance, runConformance } from '../../../src/conformance/run.js'
 import { conformanceScenario } from '../../../src/conformance/scenario.js'
@@ -444,6 +445,30 @@ describe('standalone conformance runner', () => {
         expect(JSON.parse(line?.slice(line.indexOf(': ') + 2) ?? '')).toBe(input)
         expect(JSON.parse(owner?.slice(owner.indexOf(': ') + 2) ?? '')).toBe(scenario.owner)
       }
+    })
+  })
+
+  it('grants headless Copilot only the exact launcher and draft path', async () => {
+    await fixture(async (ctx) => {
+      const run = readConformance(ctx, prepareConformance(ctx, 'copilot', '1.0.83').id)
+      const args = conformanceRecipe(run).args
+      const grants = args.flatMap((arg, index) => (args[index - 1] === '--allow-tool' ? [arg] : []))
+      const files = grantedFiles(run)
+      expect(grants).toEqual([
+        `shell(${run.launcher}:*)`,
+        `write(${files.draft})`,
+        `write(${files.decision})`,
+        `write(${files.review})`,
+      ])
+      expect(dirname(files.decision)).toBe(dirname(run.artifact))
+      expect(args.join(' ')).not.toMatch(/allow-all|shell\(node|write\(\)/)
+      const prompt = conformancePrompt(run, conformanceScenario(ctx.canonical).scenario)
+      expect(prompt).toContain('without node')
+      expect(prompt).toContain(JSON.stringify(files.review))
+      expect(prompt).not.toContain(`node ${JSON.stringify(run.launcher)}`)
+      expect(() => conformanceRecipe({ ...run, launcher: '/tmp/a (b)/wl.mjs' })).toThrow(
+        /pattern characters/,
+      )
     })
   })
 

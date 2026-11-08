@@ -14,7 +14,11 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { parse } from 'yaml'
 import { headlessAdapter } from '../../../src/fanout/adapters.js'
-import { antigravityInit, antigravityWorkerHook } from '../../../src/fanout/antigravity.js'
+import {
+  antigravityInit,
+  antigravityWorkerHook,
+  observerName,
+} from '../../../src/fanout/antigravity.js'
 import { stageWorkerPolicy, type WorkerPolicyFile } from '../../../src/fanout/policy-files.js'
 
 function init(directory = '/worker') {
@@ -105,6 +109,27 @@ describe('Antigravity read-only native initialization contract', () => {
       expect(() => antigravityInit(JSON.stringify(value), '/worker')).toThrow()
     },
   )
+  it('accepts a full tool catalog only from the observer of this worker', () => {
+    const catalog = ['view_file', 'grep_search', 'write_to_file', 'run_command', 'send_message']
+    const withAgent = (agent: string, tools = catalog) => {
+      const value = init()
+      return JSON.stringify({ ...value, init: { ...value.init, agent, tools } })
+    }
+    expect(antigravityInit(withAgent(observerName('/worker')), '/worker')).toBe('fixture-session')
+    expect(() => antigravityInit(withAgent('default'), '/worker')).toThrow()
+    expect(() => antigravityInit(withAgent(observerName('/other')), '/worker')).toThrow()
+    // A strict two-tool list from another agent is refused too.
+    expect(() =>
+      antigravityInit(withAgent('default', ['view_file', 'grep_search']), '/worker'),
+    ).toThrow()
+    // Our observer still has to report both read tools.
+    expect(() =>
+      antigravityInit(
+        withAgent(observerName('/worker'), ['write_to_file', 'view_file']),
+        '/worker',
+      ),
+    ).toThrow()
+  })
   it('accepts only one fresh matching successful native result', () => {
     const adapter = headlessAdapter('antigravity')
     expect(
@@ -140,7 +165,7 @@ describe('Antigravity read-only native initialization contract', () => {
 })
 
 describe('Antigravity positive read-only hook transport', () => {
-  it.each(['view_file', 'grep_search'])(
+  it.each(['view_file', 'grep_search', 'read_file'])(
     'delegates %s to native policy without permission overrides',
     (tool) =>
       fixture((_root, repository, directory) => {
@@ -155,7 +180,12 @@ describe('Antigravity positive read-only hook transport', () => {
           input: JSON.stringify({
             toolCall: {
               name: tool,
-              args: tool === 'view_file' ? { AbsolutePath: path } : { SearchPath: repository },
+              args:
+                tool === 'view_file'
+                  ? { AbsolutePath: path }
+                  : tool === 'read_file'
+                    ? { Path: path }
+                    : { SearchPath: repository },
             },
             workspacePaths: [directory],
           }),
@@ -167,6 +197,7 @@ describe('Antigravity positive read-only hook transport', () => {
   it.each([
     'run_command',
     'write_to_file',
+    'write_file',
     'replace_file_content',
     'search_web',
     'read_url_content',

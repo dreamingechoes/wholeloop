@@ -56,6 +56,9 @@ export async function runConformance(
         const result = await workerProcess(recipe.command, recipe.args, {
           cwd: recipe.cwd,
           observe: diagnostics.observe,
+          // A whole framing session streams far more than one gate answer, and its stdout is
+          // discarded after classification, so it gets a larger bound than gate workers.
+          maxBytes: 16 * 1024 * 1024,
           input: conformanceInput(run, scenario),
           env,
           timeoutMs,

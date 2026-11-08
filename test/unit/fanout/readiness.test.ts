@@ -13,6 +13,28 @@ async function fixture(operation: (root: string) => Promise<void>) {
   }
 }
 
+describe('worker output bound', () => {
+  it('stops at the default 1 MiB and accepts a larger explicit bound', async () => {
+    await fixture(async (root) => {
+      const run = (maxBytes?: number) =>
+        workerProcess(
+          process.execPath,
+          ['-e', 'process.stdout.write("x".repeat(2 * 1024 * 1024))'],
+          {
+            cwd: root,
+            input: '',
+            timeoutMs: 5000,
+            signal: new AbortController().signal,
+            env: process.env,
+            ...(maxBytes ? { maxBytes } : {}),
+          },
+        )
+      expect((await run()).status).toBe('overflow')
+      expect((await run(4 * 1024 * 1024)).status).toBe('succeeded')
+    })
+  })
+})
+
 describe('worker working directory', () => {
   it('replaces an inherited PWD with the directory the worker runs in', async () => {
     await fixture(async (root) => {

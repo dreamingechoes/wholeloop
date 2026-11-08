@@ -1,7 +1,24 @@
 // Per-client conformance invocations, prompts and environments.
-import { basename, dirname } from 'node:path'
+import { basename, dirname, isAbsolute, join } from 'node:path'
 import { antigravityInput } from '../adapters/antigravity-input.js'
 import type { PreparedConformance, Scenario } from './contracts.js'
+
+/**
+ * The files a client with exact-path grants may write: the draft plus the decision and review
+ * JSON the framing skill saves outside the repository, all beside the draft in the fixture state.
+ */
+export function grantedFiles(run: PreparedConformance) {
+  const directory = dirname(run.artifact)
+  return {
+    draft: run.artifact,
+    decision: join(directory, 'frame-decision.json'),
+    review: join(directory, 'frame-review.json'),
+  }
+}
+const grantedPaths = (run: PreparedConformance) => [
+  run.launcher,
+  ...Object.values(grantedFiles(run)),
+]
 
 export function conformanceBinary(target: string) {
   if (target === 'cursor') return 'agent'
@@ -18,6 +35,8 @@ export function conformanceRecipe(run: PreparedConformance, model?: string) {
       command: 'agent',
       args: [
         '--print',
+        // Headless Cursor refuses an untrusted workspace; this one is the disposable fixture.
+        '--trust',
         '--output-format',
         'json',
         '--sandbox',
@@ -28,13 +47,38 @@ export function conformanceRecipe(run: PreparedConformance, model?: string) {
         run.state,
       ],
     }
-  if (run.target === 'antigravity')
+  if (run.target === 'antigravity') {
+    // Headless Antigravity soft-denies commands and writes outside its workspace. Allow, for this
+    // session only, the exact checked launcher run as an executable and the exact draft path.
+    if (grantedPaths(run).some((path) => !isAbsolute(path) || /[\s()*:"\\]/.test(path)))
+      throw new Error(
+        'Antigravity permission rules need absolute paths without spaces or pattern characters',
+      )
     return {
       ...common,
       command: 'agy',
       // Streaming input selects the session; a separate print prompt is not part of this protocol.
-      args: ['--input-format', 'stream-json', '--output-format', 'stream-json'],
+      args: [
+        '--input-format',
+        'stream-json',
+        '--output-format',
+        'stream-json',
+        '--settings',
+        JSON.stringify({
+          permissions: {
+            allow: [
+              `command(${run.launcher})`,
+              // It also asks before reading outside the workspace, and the skill reads these back.
+              ...Object.values(grantedFiles(run)).flatMap((path) => [
+                `write_file(${path})`,
+                `read_file(${path})`,
+              ]),
+            ],
+          },
+        }),
+      ],
     }
+  }
   if (run.target === 'gemini')
     return {
       ...common,
@@ -100,10 +144,20 @@ export function conformanceRecipe(run: PreparedConformance, model?: string) {
       ],
     }
   }
-  if (run.target === 'copilot')
+  if (run.target === 'copilot') {
+    // Headless Copilot cannot ask, so it denies every shell call and write. Grant only the exact
+    // checked launcher, run as an executable so its path is the command stem Copilot matches,
+    // and the exact draft path; any other command or file stays denied.
+    if (grantedPaths(run).some((path) => !isAbsolute(path) || /[\s()*:]/.test(path)))
+      throw new Error(
+        'Copilot permission patterns need absolute paths without spaces or pattern characters',
+      )
     return {
       ...common,
       args: [
+        '--allow-tool',
+        `shell(${run.launcher}:*)`,
+        ...Object.values(grantedFiles(run)).flatMap((path) => ['--allow-tool', `write(${path})`]),
         '--output-format',
         'json',
         '--no-ask-user',
@@ -117,13 +171,17 @@ export function conformanceRecipe(run: PreparedConformance, model?: string) {
         run.state,
       ],
     }
+  }
   throw new Error('Unknown conformance target')
 }
 
 export function conformancePrompt(run: PreparedConformance, scenario: Scenario): string {
   return [
     `Run the project-local ${basename(dirname(run.skill))} skill once, standalone. Load its actual installed SKILL.md and follow its instructions.`,
-    `The project skill is at ${JSON.stringify(run.skill)}. Use its checked launcher: node ${JSON.stringify(run.launcher)}.`,
+    run.target === 'copilot' || run.target === 'antigravity'
+      ? // These grants match the launcher path as the command, so it must not be run through node.
+        `The project skill is at ${JSON.stringify(run.skill)}. Run its checked launcher directly as the command, without node: ${JSON.stringify(run.launcher)}. Any other command is denied.`
+      : `The project skill is at ${JSON.stringify(run.skill)}. Use its checked launcher: node ${JSON.stringify(run.launcher)}.`,
     // Appending prose punctuation changed the recorded input in an actual Codex trial.
     `Exact --input value (JSON string): ${JSON.stringify(scenario.input)}`,
     `Exact --owner value (JSON string): ${JSON.stringify(scenario.owner)}`,
@@ -135,6 +193,11 @@ export function conformancePrompt(run: PreparedConformance, scenario: Scenario):
     'Decode and preserve those exact artifact bytes. Use frame draft with that decision and verify its SHA-256 matches the declaration. If a content change is needed, stop for a new scripted declaration; do not approve your own revision.',
     'Perform the actual final semantic challenger review of those bytes, retaining unknowns as explicit evidence gaps. Only then use frame finalize with the matching review. The declaration does not supply a reviewer or waive review; do not fabricate a review from a structural check.',
     `Write the framing draft only at ${JSON.stringify(run.artifact)}; runtime state is ${JSON.stringify(run.state)}.`,
+    ...(run.target === 'copilot' || run.target === 'antigravity'
+      ? [
+          `Save the frame decision JSON only at ${JSON.stringify(grantedFiles(run).decision)} and the final review JSON only at ${JSON.stringify(grantedFiles(run).review)}; writes anywhere else are denied.`,
+        ]
+      : []),
     'Do not edit the repository, change configuration, commit, push, call remote services or start another step. Do not invent evidence, metrics, validation or approvals.',
     'Complete frame-problem through the installed core, show its receipt and stop. If native trust or permissions block it, report the blocker without bypassing them.',
   ].join('\n')

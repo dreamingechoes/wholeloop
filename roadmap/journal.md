@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-08 · Copilot, Cursor and Antigravity unblocked
+
+- Framing now passes live on Copilot and Cursor, so with Claude Code, Codex and OpenCode every tier-A client and Cursor have a passing scenario. Cursor's and Antigravity's read-only probes pass too; Antigravity's framing still fails, and Gemini stays paused.
+- Copilot: the conformance recipe grants only the exact launcher, run as an executable, and the three framing files; short live probes confirmed that any other command or file stays denied. A whole framing session overflowed the 1 MiB worker bound, so the scenario gets 16 MiB.
+- Cursor: both recipes pass `--trust` for a directory wholeloop created, and the guard hook handles Cursor 2026.11's empty `cwd` on Shell calls, which had made it fail closed on every command.
+- Antigravity 1.4.12 and 1.5.3 list their whole catalog at startup, so the init check now binds to the worker's own observer. Version 1.5 calls its tools `read_file` and `write_file` with a `Path` argument, which the guard could not place and denied; the guard and the observer hook now read it. The recipe grants the exact launcher and framing files, but official runs still stop at a native denial before the step completes.
+- Decisions recorded as amendments to ADR-0057, ADR-0072 and ADR-0087.
+
+---
+
 ## 2026-11-08 · Native checks on every installed client
 
 - The read-only probe passes on Claude Code 2.1.319, Codex 0.166.0, OpenCode 2.2.5 and Copilot 1.0.83. Codex is the only one whose recipe keeps a shell; its read-only sandbox refused all three writes. The others have no write or shell tool.

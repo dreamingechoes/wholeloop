@@ -17,16 +17,17 @@ Live results on 2026-11-08, macOS arm64, Node 24.22.0. A read-only PASS feeds P0
 | Claude Code | 2.1.319 | PASS: the recipe exposes no write or shell tool | PASS, run cf-1422b6df04fd5ec12a08f329 on core 1c0638ed |
 | Codex | 0.166.0 | PASS: the read-only sandbox refused all three writes through its shell tool | Not repeated; the revised scenario passed earlier on 0.163.0 |
 | OpenCode | 2.2.5 | PASS: no write or shell tool | PASS, run cf-97f187d81879d2af1d9d7b65 on core f140b242, after two failures kept below |
-| Copilot | 1.0.83 | PASS: no write or shell tool | FAIL, run cf-bbd8525a71572120d23a5b3b: the shell was denied, so the skill never reached `wl` |
+| Copilot | 1.0.83 | PASS: no write or shell tool | PASS, run cf-6d2e1e761ad5cc3fd17862d5, after granting only the exact launcher and the three framing files |
 | Gemini | 0.67.0 | BLOCKED: the workspace is untrusted, and the worker settings file is ignored | Not run; paused by the maintainer |
-| Antigravity | 1.4.12 | BLOCKED before any assignment: the init event lists 60 tools for the read-only agent | Not run |
-| Cursor | 2026.07.16-899851b | BLOCKED: workspace trust is required, and the default model is not on the free plan | Not run |
+| Antigravity | 1.5.3 | PASS: the observer had no write tool and the workspace is unchanged | FAIL, latest run cf-86efd19877c9bbf321c6ddd4: native permission denials stop the session before the step completes |
+| Cursor | 2026.11.05-86047df | PASS: its policy refused Write and Shell | PASS, run cf-45e0ec29f8536bf06a715170, with workspace trust and the free plan's `auto` model |
 
 - [x] The first OpenCode run recorded the wholeloop checkout as the initiative's repository: OpenCode 2.x takes its project from `PWD`, which a spawned worker inherited from its parent. Every worker now gets `PWD` equal to its working directory. The next run lacked only the skill-marker note, which the model skipped; the run after it passed.
-- [ ] Copilot: decide whether its headless recipes may allow the shell for the exact `wl` core path only (`--allow-tool`). Headless Copilot cannot ask, so without a grant the skill cannot record anything.
-- [ ] Cursor: decide whether the worker recipe may pass `--trust` for its own disposable worker directory, which holds only wholeloop's deny policy and hook; without it, headless Cursor refuses to start. On the free plan only `auto` answered; the recipe inherits the client's default model, so the default must be `auto`.
+- [x] Copilot: its conformance recipe grants only the exact checked launcher, run as an executable, and the draft, decision and review files ([ADR-0087](../docs/decisions/0087-redacted-native-diagnostics-and-explicit-invocations.md)). The first run with those grants hit the 1 MiB output bound; the scenario now allows 16 MiB.
+- [x] Cursor: both recipes pass `--trust` for a directory wholeloop created, and the hook takes Cursor 2026.11's empty Shell `cwd` from the call or the only workspace root ([ADR-0057](../docs/decisions/0057-cursor-native-formats-and-non-granting-hooks.md)). The maintainer set the client's default model to `auto`.
+- [x] Antigravity: the init check binds to the worker's own observer instead of the tool list, the guard and observer hook read 1.5's `read_file`/`write_file` and their `Path` argument, and the conformance recipe grants the exact launcher and framing files for writing and reading ([ADR-0072](../docs/decisions/0072-antigravity-startup-gated-observer-workers.md)).
+- [ ] Antigravity framing still fails in the official runner: each run stops at a native permission denial before `frame finalize`. A diagnostic run of the same recipe outside the runner completed the whole step, so the remaining denial varies with the model's path; capture the denied action of an official run before changing grants again.
 - [ ] Gemini 0.67: system settings files are honoured only when owned by root, so the worker's read-only settings are skipped; move the policy to the policy engine (`--policy`) and decide on workspace trust. Paused by the maintainer.
-- [ ] Antigravity 1.4.12: its init event lists the full catalog for a custom agent that declares two tools, and `agy plugin validate` accepts the agent. Whether the restriction applies at call time is unknown without a model call; the worker hook still denies everything but the two read tools, but the init check refuses before that. Decide whether the hook alone may stand in for the init check.
 - [ ] Hook payloads (P3-08) and MCP inheritance in launchers (P4-01) are not automated yet.
 
 ## Expanded 1.0 acceptance boundary

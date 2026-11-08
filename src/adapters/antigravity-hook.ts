@@ -12,7 +12,7 @@ export function antigravityHook(core: string, boundRoot?: string) {
   if(!payload || !payload.toolCall || !payload.toolCall.args || !Array.isArray(payload.workspacePaths) || payload.workspacePaths.length>32)throw new Error('context')
   const workspaces=[...new Set(payload.workspacePaths.map(path=>{if(typeof path!=='string' || !isAbsolute(path))throw new Error('workspace');return realpathSync(path)}))]
   const args=payload.toolCall.args
-  const target=args.Cwd ?? args.TargetFile ?? args.AbsolutePath ?? args.DirectoryPath ?? args.SearchDirectory ?? args.SearchPath
+  const target=args.Cwd ?? args.TargetFile ?? args.AbsolutePath ?? args.DirectoryPath ?? args.SearchDirectory ?? args.SearchPath ?? args.Path
   if(target!==undefined && (typeof target!=='string' || !isAbsolute(target)))throw new Error('target')
   const candidates=typeof target==='string' && isAbsolute(target)?workspaces.filter(root=>inside(root,target)):workspaces
   const roots=!candidates.length && args.Cwd===undefined && workspaces.length===1?workspaces:candidates

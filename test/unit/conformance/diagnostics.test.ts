@@ -295,11 +295,14 @@ describe('bounded redacted native diagnostics', () => {
     } as Parameters<typeof conformanceRecipe>[0]
     expect(conformanceRecipe(run).args).toEqual(['run', '--standalone', '--format', 'json'])
     expect(conformanceRecipe({ ...run, pin: '1.17.9' }).args).toEqual(['run', '--format', 'json'])
-    expect(conformanceRecipe({ ...run, target: 'antigravity', pin: '1.4.4' }).args).toEqual([
-      '--input-format',
-      'stream-json',
-      '--output-format',
-      'stream-json',
-    ])
+    expect(
+      conformanceRecipe({
+        ...run,
+        target: 'antigravity',
+        pin: '1.4.4',
+        launcher: '/fixture/wl.mjs',
+        artifact: '/external/draft.md',
+      }).args.slice(0, 5),
+    ).toEqual(['--input-format', 'stream-json', '--output-format', 'stream-json', '--settings'])
   })
 })

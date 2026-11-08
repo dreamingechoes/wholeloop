@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-22
 
+**Amended 2026-11-08.** Headless Copilot and Antigravity cannot ask for approval, so the framing scenario never reached the core. Their conformance recipes now grant, for that run only, the exact checked launcher run as an executable (`shell(<launcher>:*)` for Copilot, `command(<launcher>)` for Antigravity) and the exact framing files: the draft and the decision and review JSON the skill saves beside it (`write(<file>)` for Copilot; `write_file(<file>)` and `read_file(<file>)` for Antigravity, which also asks before reading outside its workspace). The prompt tells those two clients to run the launcher directly and where to save the two JSON files. Short live probes confirmed that each rule admits the launcher and denies any other command or file. Paths with spaces or pattern characters are refused rather than escaped. The scenario's output bound rises to 16 MiB because a whole framing session streams more than a gate answer and its output is discarded after classification. These are scoped grants, not the blanket permissions this record rejects.
+
 ## Context
 
 Several native framing trials ended without the required journal events. The process transport discarded diagnostics to avoid persisting private provider messages. Exit status alone could not distinguish an invocation problem from account or permission failures. A preliminary hypothesis about Copilot's missing prompt flag was contradicted by official documentation and actual stdin probes.

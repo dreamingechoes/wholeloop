@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-20
 
+**Amended 2026-11-08.** Antigravity 1.4.12 and 1.5.3 report their whole tool catalog in the init event even for a custom agent that declares two tools, so a tool list can no longer show the restriction. The init check now also requires the reported agent to be this worker's own observer, and accepts a longer list only from that agent; older clients that list only the declared tools still pass. The tool boundary rests on the agent definition, the fail-closed PreToolUse hook and the sandbox. A live read-only probe on 1.5.3 left the workspace unchanged with no write tool available. Rejected: dropping the init check, which would also accept a session running another agent.
+
 ## Context
 
 Antigravity's documented headless policy permits writes inside its active workspace by default. Shell-off or sandbox flags alone cannot establish an observer boundary. It accepts JSONL user input and reports an init record with workspace, tool names and permission mode, followed by step updates and a terminal result. Actual native startup/agent/hook activation still needs manual verification.

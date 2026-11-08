@@ -8,10 +8,23 @@ import type { HeadlessAdapter } from './adapters.js'
 import type { WorkerPolicyFile } from './policy-files.js'
 
 const readTools = ['view_file', 'grep_search']
+// Antigravity 1.5 still lists view_file at startup but calls the tool read_file, with a Path
+// argument, so the worker hook accepts both names for the same scoped read.
+const hookReadTools = [...readTools, 'read_file']
 const conversationId = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/
 const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`
 
-/** No assignment is sent until the client reports only the intended native read tools. */
+/** The private observer's name, unique per worker directory. */
+export function observerName(directory: string) {
+  return `wholeloop-observer-${createHash('sha256').update(directory).digest('hex').slice(0, 16)}` as const
+}
+
+/**
+ * No assignment is sent until the client reports our own read-only observer. Older clients list
+ * only the agent's declared tools; Antigravity 1.4.12 lists its whole catalog for every agent, so
+ * a longer list is accepted only when the reported agent is this worker's observer. The tool
+ * boundary then rests on the agent definition, the fail-closed PreToolUse hook and the sandbox.
+ */
 export function antigravityInit(line: string, directory: string) {
   const value: unknown = JSON.parse(line)
   if (
@@ -25,10 +38,17 @@ export function antigravityInit(line: string, directory: string) {
     !['request-review', 'strict'].includes(String(value.init.permission_mode)) ||
     !Array.isArray(value.init.tools) ||
     !value.init.tools.length ||
-    value.init.tools.length > readTools.length ||
     new Set(value.init.tools).size !== value.init.tools.length ||
-    !value.init.tools.every((tool) => typeof tool === 'string' && readTools.includes(tool))
+    !value.init.tools.every((tool) => typeof tool === 'string') ||
+    (value.init.agent !== undefined && value.init.agent !== observerName(directory))
   )
+    throw new Error('Native Antigravity initialization is not the selected read-only worker')
+  const tools = value.init.tools as string[]
+  const declared =
+    tools.length <= readTools.length && tools.every((tool) => readTools.includes(tool))
+  const catalog =
+    value.init.agent === observerName(directory) && readTools.every((tool) => tools.includes(tool))
+  if (!declared && !catalog)
     throw new Error('Native Antigravity initialization is not the selected read-only worker')
   return value.conversation_id
 }
@@ -47,12 +67,12 @@ const timer=setTimeout(()=>{deny();process.exit(0)},5000)
 ;(async()=>{try{
  for await(const chunk of process.stdin){bytes+=chunk.length;if(bytes>65536)throw new Error('limit');chunks.push(chunk)}
  const value=JSON.parse(Buffer.concat(chunks).toString('utf8'))
- if(!value || typeof value!=='object' || Array.isArray(value) || !value.toolCall || !${JSON.stringify(readTools)}.includes(value.toolCall.name) || !value.toolCall.args || typeof value.toolCall.args!=='object' || Array.isArray(value.toolCall.args))throw new Error('tool')
+ if(!value || typeof value!=='object' || Array.isArray(value) || !value.toolCall || !${JSON.stringify(hookReadTools)}.includes(value.toolCall.name) || !value.toolCall.args || typeof value.toolCall.args!=='object' || Array.isArray(value.toolCall.args))throw new Error('tool')
  const expected=roots.map(root=>realpathSync(root))
  if(!Array.isArray(value.workspacePaths) || !value.workspacePaths.length || value.workspacePaths.length>32 || !value.workspacePaths.every(root=>typeof root==='string' && isAbsolute(root) && expected.some(base=>inside(base,realpathSync(root)))))throw new Error('context')
  const args=value.toolCall.args
- const target=args.AbsolutePath ?? args.SearchPath ?? args.SearchDirectory ?? args.DirectoryPath
- if(value.toolCall.name==='view_file' && target===undefined)throw new Error('file')
+ const target=args.AbsolutePath ?? args.Path ?? args.SearchPath ?? args.SearchDirectory ?? args.DirectoryPath
+ if(['view_file','read_file'].includes(value.toolCall.name) && target===undefined)throw new Error('file')
  if(target!==undefined && (typeof target!=='string' || !isAbsolute(target) || !expected.some(root=>inside(root,realpathSync(target)))))throw new Error('target')
  emit({decision:'allow'})
 }catch{deny()}finally{clearTimeout(timer);process.stdin.pause()}})()
@@ -81,8 +101,7 @@ export const antigravityWorker: HeadlessAdapter = {
   invocation: ({ repository, directory }) => {
     if (![repository, directory].every(isAbsolute))
       throw new Error('Antigravity inspection requires absolute repository and worker paths')
-    const name =
-      `wholeloop-observer-${createHash('sha256').update(directory).digest('hex').slice(0, 16)}` as const
+    const name = observerName(directory)
     const agent = [
       '---',
       `name: ${name}`,

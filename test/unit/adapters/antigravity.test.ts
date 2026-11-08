@@ -176,6 +176,18 @@ describe('Antigravity native adapter and transport', () => {
             payload('write_to_file', { TargetFile: join(dir, 'external-draft.md') }),
           ),
         ).toEqual({ decision: 'allow' })
+        // Antigravity 1.5 calls write_file with Path: same destinations, same decisions.
+        expect(
+          hook(path, root, home, payload('write_file', { Path: join(dir, 'external-draft.md') })),
+        ).toEqual({ decision: 'allow' })
+        expect(
+          hook(
+            path,
+            root,
+            home,
+            payload('write_file', { Path: join(root, '.wholeloop/state/private.json') }),
+          ).decision,
+        ).toBe('deny')
         expect(inspectInstallation({ ...input, targets: ['antigravity'] }).status).toBe('current')
         expect(manageInstallation('install', input).status).toBe('already-correct')
         if (locations.plugin) {
@@ -247,6 +259,9 @@ describe('Antigravity native adapter and transport', () => {
       ['list_dir', 'DirectoryPath', 'read'],
       ['find_by_name', 'SearchDirectory', 'read'],
       ['grep_search', 'SearchPath', 'read'],
+      // Antigravity 1.5 runtime names and their Path argument.
+      ['write_file', 'Path', 'write'],
+      ['read_file', 'Path', 'read'],
     ]) {
       const result = normalizeTool(
         {
@@ -289,8 +304,30 @@ describe('Antigravity native adapter and transport', () => {
       expect(conformanceRecipe(run)).toEqual({
         command: 'agy',
         cwd: dir,
-        args: ['--input-format', 'stream-json', '--output-format', 'stream-json'],
+        args: [
+          '--input-format',
+          'stream-json',
+          '--output-format',
+          'stream-json',
+          '--settings',
+          JSON.stringify({
+            permissions: {
+              allow: [
+                `command(${join(dir, 'wl.mjs')})`,
+                `write_file(${join(dir, 'draft.md')})`,
+                `read_file(${join(dir, 'draft.md')})`,
+                `write_file(${join(dir, 'frame-decision.json')})`,
+                `read_file(${join(dir, 'frame-decision.json')})`,
+                `write_file(${join(dir, 'frame-review.json')})`,
+                `read_file(${join(dir, 'frame-review.json')})`,
+              ],
+            },
+          }),
+        ],
       })
+      expect(() => conformanceRecipe({ ...run, artifact: '/tmp/a (b).md' })).toThrow(
+        /pattern characters/,
+      )
       expect(JSON.parse(conformanceInput(run, scenario))).toMatchObject({
         event: 'user',
         message: { content: expect.stringContaining('wl-agy-frame-problem') },

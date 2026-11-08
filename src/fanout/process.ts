@@ -35,6 +35,8 @@ export async function unmanagedWorkerProcess(
     started?: (pid: number) => void
     readyLine?: (line: string) => boolean
     observe?: (stream: 'stdout' | 'stderr', chunk: Buffer) => void
+    /** Total output bound; gate workers keep the 1 MiB default. */
+    maxBytes?: number
   },
 ): Promise<ProcessResult> {
   if (options.signal.aborted) return { status: 'cancelled', stdout: '', code: null, signal: null }
@@ -94,7 +96,7 @@ export async function unmanagedWorkerProcess(
     }
     const capture = (chunk: Buffer, stdout: boolean) => {
       bytes += chunk.length
-      if (bytes > 1024 * 1024) stop('overflow')
+      if (bytes > (options.maxBytes ?? 1024 * 1024)) stop('overflow')
       else {
         try {
           options.observe?.(stdout ? 'stdout' : 'stderr', chunk)
