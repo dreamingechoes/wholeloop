@@ -322,12 +322,23 @@ function deliveryReducer() {
             throw new DeliveryJournalError('revived-grant')
           if (state.grant && state.grant.id !== payload.id && active(state))
             throw new DeliveryJournalError('active-attempt-grant')
-          // A continuation is always started under a new exact-plan grant, never by
-          // an earlier or envelope grant that outlived the failed run (ADR-0197).
+          // A continuation is started under a new exact-plan grant, never by an
+          // earlier grant that outlived the failed run (ADR-0197). The one exception
+          // (ADR-0198): a none run may continue under its own envelope grant, the
+          // one it already ran under, while that grant is still active. Its effects
+          // are checked by the single writer of grant events (DeliveryLifecycle.track).
+          const ownEnvelope =
+            state.policy.intervention === 'none' &&
+            state.envelope !== undefined &&
+            payload.basis === state.envelope &&
+            prior?.run === state.run &&
+            !prior.terminal &&
+            payload.status === 'active'
           if (
             deliveryRunner(state).continuations?.at(-1)?.revision === state.basis.revision &&
             state.grant?.id !== payload.id &&
-            (prior || payload.basis !== state.basis.digest)
+            (prior || payload.basis !== state.basis.digest) &&
+            !ownEnvelope
           )
             throw new DeliveryJournalError('continuation-requires-new-grant')
           if (state.grant?.id === payload.id && state.grant.digest !== payload.digest)

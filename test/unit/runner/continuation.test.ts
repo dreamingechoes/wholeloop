@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { resolve } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { DeliveryEffects } from '../../../src/delivery/effects.js'
 import type { DeliveryPlan } from '../../../src/delivery/plan.js'
@@ -8,6 +8,7 @@ import { continueDelivery } from '../../../src/runner/continuation.js'
 import {
   DeliveryRunner,
   type DeliveryRunnerHost,
+  envelopeContinuation,
   type RunnerStageObservation,
 } from '../../../src/runner/engine.js'
 import { deliveryRunner } from '../../../src/runner/events.js'
@@ -80,19 +81,33 @@ async function setup(
     request: RunnerRequest
     digest: string
   }) => Promise<void>,
-  options: { envelope?: boolean; repairs?: number } = {},
+  options: {
+    envelope?: boolean
+    repairs?: number
+    /** Start a none run under its own envelope grant with these effects (ADR-0198). */
+    unattended?: readonly string[]
+  } = {},
 ) {
   await fixture(async ({ planning, plan }) => {
     plan.work = plan.work
       .filter((work) => work.id === 'search')
       .map((work) => ({ ...work, after: [], consumes: [] }))
     plan.milestones = plan.milestones.map((milestone) => ({ ...milestone, work: ['search'] }))
-    plan.policy.intervention = 'supervised'
+    plan.policy.intervention = options.unattended ? 'none' : 'supervised'
     if (options.repairs !== undefined) plan.budgets.integrationRepairs = options.repairs
-    if (options.envelope) plan.envelope = planning.prepareEnvelope(envelope(plan)).digest
+    if (options.envelope || options.unattended)
+      plan.envelope = planning.prepareEnvelope(envelope(plan)).digest
     const store = new RunnerStore(planning.sources.files.root),
       prepared = planning.preparePlan(plan),
-      grant = store.lifecycle.authority.authorize(authorization(plan, prepared.digest))
+      grant = store.lifecycle.authority.authorize(
+        options.unattended
+          ? {
+              ...authorization(plan, prepared.digest),
+              basis: { kind: 'envelope', digest: plan.envelope ?? '' },
+              effects: [...options.unattended] as never,
+            }
+          : authorization(plan, prepared.digest),
+      )
     store.lifecycle.track({ run: plan.run, revision: 1, grant: grant.grant.id })
     const request: RunnerRequest = {
       schema: 'wholeloop/delivery-runner-request@1',
@@ -113,6 +128,43 @@ const failedRun = async (store: RunnerStore, request: RunnerRequest) => {
     result = await new DeliveryRunner(store).run(prepared.digest, synthetic.host)
   return { synthetic, prepared, result }
 }
+
+/**
+ * A none route needs delegated decision records at several stages. Those are
+ * covered by their own suites; here the decision store accepts every required
+ * decision so the test isolates the unattended continuation (ADR-0198).
+ */
+const DECISION_IDS = [
+  'delivery-plan',
+  'frame-outcome',
+  'approve-spec',
+  'approve-scopes',
+  'approve-build-plan',
+  'acceptance',
+] as const
+const DECISION_DIGESTS = DECISION_IDS.map((id) => contractDigest({ decision: id }))
+function delegateEverything(store: RunnerStore, host: DeliveryRunnerHost) {
+  vi.spyOn(store.decisions, 'pin').mockImplementation(() => ({}) as never)
+  vi.spyOn(store.decisions, 'preflight').mockImplementation(() => ({ status: 'ready' }) as never)
+  vi.spyOn(store.decisions, 'inspect').mockImplementation((digest: string) => {
+    const id = DECISION_IDS[DECISION_DIGESTS.indexOf(digest)],
+      run = store.lifecycle.journal.events().at(-1)?.run ?? '',
+      state = store.lifecycle.journal.view(run),
+      authority = store.lifecycle.authority.inspect(state.grant?.id ?? '')
+    return {
+      status: 'current',
+      record: {
+        request: { plan: state.basis.digest, decision: id },
+        grantDigest: authority.digest,
+        judgment: { outcome: id === 'frame-outcome' ? 'go' : 'accept' },
+      },
+    } as never
+  })
+  const execute = host.execute
+  host.execute = async (context) => ({ ...(await execute(context)), decisions: DECISION_DIGESTS })
+}
+
+afterEach(() => vi.restoreAllMocks())
 
 describe('cross-invocation correction (ADR-0193, ADR-0197)', () => {
   it('previews a correction for a retained integration failure without writing', () =>
@@ -354,6 +406,120 @@ describe('cross-invocation correction (ADR-0193, ADR-0197)', () => {
       // Recording the revision does not reopen the run.
       expect(store.lifecycle.journal.get(plan.run).state).toBe('failed')
     }))
+  it('continues a none run under its own envelope grant with no human step (ADR-0198)', () =>
+    setup(
+      async ({ store, plan, request }) => {
+        const synthetic = syntheticHost(request.host),
+          prepared = store.prepare(request)
+        delegateEverything(store, synthetic.host)
+        let failures = 1
+        const execute = synthetic.host.execute
+        synthetic.host.execute = async (context) => {
+          // The first integration fails once; the repaired revision passes.
+          synthetic.state.failing = context.stage.kind === 'integration' && failures-- > 0
+          return execute(context)
+        }
+        const result = await new DeliveryRunner(store).runWithRepairs(
+          prepared.digest,
+          synthetic.host,
+        )
+        const run = store.lifecycle.journal.get(plan.run)
+        expect(run.basis.revision).toBe(2)
+        expect(deliveryRunner(run).continuations).toEqual([
+          expect.objectContaining({ revision: 2, request: prepared.digest }),
+        ])
+        // The continuation is started by the controller, under the original grant.
+        expect(store.lifecycle.journal.get(plan.run).grant?.id).toBe(request.grant)
+        const receipt = JSON.parse(
+          store.files.read(`delivery/continuations/${plan.run}/2.json`) ?? '{}',
+        )
+        expect(receipt).toMatchObject({
+          authority: 'envelope-grant-continuation',
+          operator: 'wholeloop controller',
+        })
+        const next = store.planning.getPlan(plan.run, 2)
+        expect(synthetic.executed.slice(-runnerRoute(next.plan).length)).toEqual(
+          runnerRoute(next.plan).map((stage) => stage.id),
+        )
+        expect(result.stages.every((stage) => stage.status === 'passed')).toBe(true)
+      },
+      {
+        unattended: [
+          'source.read',
+          'report.write',
+          'workspace.create',
+          'code.write',
+          'test.run',
+          'git.commit',
+        ],
+        repairs: 2,
+      },
+    ))
+
+  it('keeps the new-grant rule when a condition is missing', () =>
+    setup(
+      async ({ store, plan, request }) => {
+        const synthetic = syntheticHost(request.host),
+          prepared = store.prepare(request)
+        delegateEverything(store, synthetic.host)
+        await new DeliveryRunner(store).run(prepared.digest, synthetic.host)
+        // Without test.run the envelope grant cannot start a continuation.
+        const failure = store
+          .record(prepared.digest)
+          .stages.find((stage) => stage.id.startsWith('integration:'))
+        continueDelivery(
+          store.lifecycle,
+          plan.run,
+          { request: prepared.digest, stage: failure?.id ?? '', unit: 'search' },
+          { operator: 'Fixture Operator', reason: 'Repair the failed integration case.' },
+        )
+        expect(() =>
+          store.lifecycle.track({ run: plan.run, revision: 2, grant: request.grant }),
+        ).toThrow('continuation-requires-new-grant')
+        expect(store.lifecycle.journal.get(plan.run).state).toBe('failed')
+      },
+      {
+        unattended: ['source.read', 'report.write', 'workspace.create', 'code.write', 'git.commit'],
+        repairs: 2,
+      },
+    ))
+
+  it('ends the run when the repair budget is spent, and never continues under a revoked grant', () =>
+    setup(
+      async ({ store, plan, request }) => {
+        const synthetic = syntheticHost(request.host),
+          prepared = store.prepare(request)
+        delegateEverything(store, synthetic.host)
+        // Every integration fails: one repair is allowed, then the run ends failed.
+        const result = await new DeliveryRunner(store).runWithRepairs(
+          prepared.digest,
+          synthetic.host,
+        )
+        expect(result.state).toBe('failed')
+        expect(deliveryRunner(store.lifecycle.journal.get(plan.run)).continuations).toHaveLength(1)
+        // A revoked envelope grant never authorizes another continuation.
+        store.lifecycle.authority.revoke({
+          schema: 'wholeloop/delivery-revocation-request@1',
+          grant: request.grant,
+          operator: 'Fixture Operator',
+          reason: 'Revoke the envelope grant.',
+        })
+        const last = deliveryRunner(store.lifecycle.journal.get(plan.run)).records.at(-1)
+        expect(envelopeContinuation(store, last?.request ?? prepared.digest)).toBeUndefined()
+      },
+      {
+        unattended: [
+          'source.read',
+          'report.write',
+          'workspace.create',
+          'code.write',
+          'test.run',
+          'git.commit',
+        ],
+        repairs: 1,
+      },
+    ))
+
   it('never exceeds the repair budget of the run', () =>
     setup(
       async ({ store, plan, request }) => {

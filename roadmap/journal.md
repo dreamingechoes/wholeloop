@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-08 · P6-41 ✅ · A none run repairs itself under its own envelope grant
+
+- **Reducer:** on a correction revision it now accepts the run's own envelope grant (the one the run already ran under, still active) when the policy is `none`.
+- **Repair effects:** `DeliveryLifecycle.track`, the only writer of grant events, requires `code.write`, `git.commit` and `test.run`. The revision stays inside the envelope, and the repair budget is still enforced at registration.
+- **Controller:** `DeliveryRunner.runWithRepairs`, used by the foreground controller, records the correction itself (authority `envelope-grant-continuation`), attaches the grant and runs the successor in the same invocation, until the route passes or the budget ends the run.
+- Narrowed to plans with exactly one code unit, because the owning unit is never guessed from failure text; other plans keep the operator path. ADR-0198 and ADR-0197 are amended.
+- **Tests:** a seeded integration failure is repaired with no human step; a missing effect, a spent budget and a revoked grant are each refused. Removing the reducer exception fails the unattended cases. Delegated decision records are stubbed in these tests, and the native repair-loop trial stays with P6-27.
+- Gate: CHECK PASS in 721s, 4697 tests, macOS arm64 only; Linux not run.
+
 ## 2026-11-08 · P6-35 ⏸️ · Worker credentials built; live acceptance pending
 
 - Built in four parts:

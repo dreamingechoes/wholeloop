@@ -3,6 +3,13 @@
 - **Status:** Accepted
 - **Date:** 2026-11-02
 
+**Amended 2026-11-08.** Implemented as accepted, with one narrowing and these placements:
+
+- **Reducer:** it allows the run's own envelope grant only when that grant is the one the run already ran under and it is still active, not revoked or expired.
+- **Repair effects:** `DeliveryLifecycle.track`, the single writer of grant events, checks that the grant lists the repair effects. `checkPlanEnvelope` already keeps the revision inside the envelope, and registration already enforces the repair budget.
+- **Controller:** `DeliveryRunner.runWithRepairs` records the continuation itself, with the receipt's authority set to `envelope-grant-continuation` and the controller as its author, and runs the successor request in the same foreground invocation.
+- **Narrowing:** this applies only when the plan has exactly one code unit, because the owning unit is never guessed from failure text. Other plans keep the operator path.
+
 **Accepted on 2026-11-08** by the maintainer. Implementation is tracked in [P6-41](../../roadmap/phase-6-autonomous-delivery.md#p6-41--envelope-grant-continuation); until it lands, [0197](./0197-correction-revisions-and-stage-reuse.md)'s new-grant rule still applies, and a native trial must still show the bounded repair loop staying within its budget.
 
 ## Context

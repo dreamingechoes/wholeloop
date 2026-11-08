@@ -25,7 +25,7 @@ export function continueDelivery(
   lifecycle: DeliveryLifecycle,
   run: string,
   input: ContinuationInput,
-  accept?: { operator: string; reason: string },
+  accept?: { operator: string; reason: string; authority?: 'envelope-grant' },
 ) {
   const origin =
     input.stage === 'acceptance'
@@ -91,7 +91,11 @@ export function continueDelivery(
       operator: accept.operator,
       reason: accept.reason,
       impact: contractDigest(impact),
-      authority: 'new-exact-plan-grant-required' as const,
+      // ADR-0198: the controller itself continues a none run under its own envelope grant.
+      authority:
+        accept.authority === 'envelope-grant'
+          ? ('envelope-grant-continuation' as const)
+          : ('new-exact-plan-grant-required' as const),
     }
   safeSourceText(JSON.stringify(receipt), 65536)
   planning.sources.files.locked(() => {

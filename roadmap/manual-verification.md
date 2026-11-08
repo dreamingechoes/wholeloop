@@ -147,6 +147,12 @@ The secret-store references, per-launch injection, disposable client homes, the 
 - [ ] Linux: store and resolve through Secret Service on a desktop host, and confirm `credential-store-unavailable` on a host without one. Windows through WSL2 is untested.
 - [ ] Compare the exposure of an injected variable to other processes of the same user with stdin, where a client accepts stdin.
 
+## Envelope-grant continuation (P6-41)
+
+`none` runs continue unattended under their own envelope grant, tested on a synthetic controller host ([ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md)).
+
+- [ ] In a native trial (P6-27), seed a repairable integration or acceptance failure in a one-code-unit `none` run under an envelope grant with the repair effects. Confirm that it repairs itself within its repair budget and reaches its endpoint with no human step.
+
 ## Codex-only campaign preflight (2026-11-05)
 
 The dedicated Codex 0.166.0 ChatGPT home, GitHub keyring and private trial protection are available. All six model-free boundary controls pass. The first live research attempt completes two successful host-observed model calls with zero human waits, then blocks on the concrete research-plan evidence defect fixed by [ADR-0215](../docs/decisions/0215-reviewed-public-research-plan.md). Its failed report remains retained; the corrected-core campaign is separate.

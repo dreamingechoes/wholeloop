@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-11-02
 
+**Amended 2026-11-08.** The new-grant rule now has the one exception [ADR-0198](./0198-envelope-grant-continuation.md) accepts: a `none` run's own still-active envelope grant, with the repair effects, may start its correction revision when the plan has one code unit. Every other case still needs a new exact-plan grant.
+
 ## Context
 
 [ADR-0193](./0193-cross-invocation-correction-protocol.md) accepted the protocol for continuing after a failed integration, acceptance or CI check. It left three questions to the implementation:

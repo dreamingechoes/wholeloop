@@ -1089,7 +1089,7 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 ## P6-41 · Envelope-grant continuation
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-29, P6-34
+**Status:** ✅ · **Size:** M · **Depends on:** P6-29, P6-34
 
 **Design review:** accepted on 2026-11-08 ([ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md)) · **Release:** 1.1.0 ([Phase 8](./phase-8-software-factory.md))
 
@@ -1099,9 +1099,26 @@ File events are hints, a poll is the fallback, and `--since <cursor>` resumes. T
 
 **Acceptance criteria:**
 
-- [ ] A `none` run with a repairable integration or acceptance failure continues to its endpoint with no human step, within its repair budget.
-- [ ] Any missing condition keeps the `continuation-requires-new-grant` refusal, and an exhausted budget ends the run.
-- [ ] A revoked or expired envelope grant never authorizes a continuation.
+- [x] A `none` run with a repairable integration or acceptance failure continues to its endpoint with no human step, within its repair budget.
+- [x] Any missing condition keeps the `continuation-requires-new-grant` refusal, and an exhausted budget ends the run.
+- [x] A revoked or expired envelope grant never authorizes a continuation.
+
+**Evidence** — On 2026-11-08, engine tests on a synthetic controller host with a seeded integration failure (`test/unit/runner/continuation.test.ts`) passed:
+
+- **Unattended continuation:** a `none` run that started under its own envelope grant failed integration once. `runWithRepairs` recorded revision 2 under that same grant, with authority `envelope-grant-continuation` and the controller as its author, and every stage of the repaired route passed with no human step.
+- **Missing effect:** without `test.run` the grant is refused with `continuation-requires-new-grant`.
+- **Spent budget:** with a budget of one repair, a second failure ends the run `failed`.
+- **Revoked grant:** a revoked envelope grant yields no continuation.
+- **Mutation:** removing the reducer exception fails the unattended cases.
+
+The supervised cases and the operator path are unchanged.
+
+Narrowed:
+
+- The automatic path requires exactly one code unit, because the owning unit is never guessed from failure text. Other plans keep the operator path.
+- The synthetic host's stages carry fixture provenance, so no certified endpoint is observed, and the delegated decision records are stubbed (their own suites cover them).
+- There is no separate eval script; the seeded-failure engine run is the model-free rehearsal.
+- ADR-0198's native trial of the bounded repair loop belongs to P6-27, as listed in manual verification.
 
 **Tests** — Reducer and runner tests for each condition, and a model-free rehearsal with a seeded repairable failure.
 

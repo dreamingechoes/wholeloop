@@ -5,12 +5,14 @@ import { contractDigest } from '../contracts/compatibility.js'
 import type { CheckpointStage } from '../delivery/checkpoint-events.js'
 import type { DeliveryOutcome } from '../delivery/events.js'
 import { safeSourceText } from '../delivery/input.js'
+import { ENVELOPE_CONTINUATION_EFFECTS } from '../delivery/lifecycle.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { boundedRecoveryCall } from '../delivery/read-retry.js'
 import { executedThroughEffect } from '../delivery/reducer.js'
 import { deliveryDecision } from '../state/attribution.js'
 import { retainedDecisionRationale } from './attribution.js'
+import { continueDelivery } from './continuation.js'
 import { deliveryRunner, type RunnerRuntime, type RunnerStageRecord } from './events.js'
 import { ForegroundOwner } from './foreground-owner.js'
 import { ManagedRunnerProcess } from './native-process.js'
@@ -101,6 +103,57 @@ export interface DeliveryRunnerHost {
   ): Promise<{ resetsAt: string } | undefined>
 }
 const TERMINAL = new Set(['completed', 'failed', 'blocked', 'exhausted', 'stopped'])
+/**
+ * Records the continuation of a failed none run under its own envelope grant
+ * and returns the successor request, or undefined when any condition fails.
+ * The owning unit must be unambiguous: the plan has exactly one code unit,
+ * because a unit is never guessed from failure text (ADR-0197).
+ */
+export function envelopeContinuation(store: RunnerStore, digest: string): string | undefined {
+  try {
+    const request = store.get(digest),
+      { plan } = store.basis(request),
+      state = store.lifecycle.journal.view(request.run),
+      grant = store.lifecycle.authority.inspect(request.grant)
+    if (
+      plan.policy.intervention !== 'none' ||
+      !['failed', 'blocked'].includes(state.state) ||
+      grant.status !== 'active' ||
+      grant.grant.basis.kind !== 'envelope' ||
+      !ENVELOPE_CONTINUATION_EFFECTS.every((effect) => grant.grant.effects.includes(effect))
+    )
+      return undefined
+    const failure = store
+        .record(digest)
+        .stages.filter(
+          (stage) =>
+            ['failed', 'blocked'].includes(stage.status) &&
+            (stage.id === 'acceptance' || stage.id.startsWith('integration:')),
+        )
+        .at(-1),
+      units = plan.work.filter((unit) => unit.repository && unit.role !== 'research')
+    if (!failure || units.length !== 1 || !units[0]) return undefined
+    const input = { request: digest, stage: failure.id, unit: units[0].id }
+    if (continueDelivery(store.lifecycle, request.run, input).admission.status !== 'admissible')
+      return undefined
+    const accepted = continueDelivery(store.lifecycle, request.run, input, {
+      operator: 'wholeloop controller',
+      reason: "Unattended repair under the run's own envelope grant (ADR-0198).",
+      authority: 'envelope-grant',
+    })
+    if (!accepted.accepted) return undefined
+    const { revision, digest: plan2 } = accepted.record
+    store.lifecycle.track({ run: request.run, revision, grant: request.grant })
+    return store.prepare({
+      ...request,
+      key: `${request.key.slice(0, 100)}-repair-${revision}`,
+      revision,
+      plan: plan2,
+    }).digest
+  } catch {
+    return undefined
+  }
+}
 /** Resolves after the delay or as soon as the signal aborts. */
 function abortableSleep(milliseconds: number, signal: AbortSignal) {
   return new Promise<void>((resolve) => {
@@ -432,6 +485,32 @@ export class DeliveryRunner {
     }
     await drive()
     return this.store.inspect(digest)
+  }
+
+  /**
+   * Runs a request and, when a none run fails at integration or acceptance,
+   * continues it unattended under its own still-active envelope grant
+   * (ADR-0198), within the plan's repair budget, in this same invocation.
+   * Every other failure ends as before and waits for an operator.
+   */
+  async runWithRepairs(
+    digest: string,
+    host: DeliveryRunnerHost,
+    options: { controller?: string; signal?: AbortSignal; lease?: RunnerLease } = {},
+  ) {
+    let current = digest,
+      status = await this.run(current, host, options)
+    const controller = options.lease?.controller ?? options.controller
+    for (;;) {
+      if (options.signal?.aborted) return status
+      const next = envelopeContinuation(this.store, current)
+      if (!next) return status
+      current = next
+      status = await this.run(current, host, {
+        ...(controller ? { controller } : {}),
+        ...(options.signal ? { signal: options.signal } : {}),
+      })
+    }
   }
 
   async reconcile(digest: string, host: DeliveryRunnerHost, options: { cancel?: boolean } = {}) {

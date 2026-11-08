@@ -2,6 +2,7 @@
 import { contractDigest } from '../contracts/compatibility.js'
 import { originalCiFailure } from '../runner/ci-failure.js'
 import { ciRepairAdmission } from '../runner/ci-repair.js'
+import { deliveryRunner } from '../runner/events.js'
 import { RunnerStore } from '../runner/store.js'
 import { DeliveryAuthority } from './authority.js'
 import { type BudgetLimits, findBudget } from './budget-events.js'
@@ -17,6 +18,8 @@ import { DeliveryJournal } from './journal.js'
 import { checkPlanEnvelope } from './plan.js'
 
 const CONTROLLER: DeliveryActor = { kind: 'controller', name: 'wholeloop' }
+/** What an envelope grant must already allow to start a none continuation (ADR-0198). */
+export const ENVELOPE_CONTINUATION_EFFECTS = ['code.write', 'git.commit', 'test.run'] as const
 export class DeliveryLifecycle {
   readonly journal: DeliveryJournal
   readonly authority: DeliveryAuthority
@@ -154,6 +157,15 @@ export class DeliveryLifecycle {
             (receipt.grant.basis.kind === 'envelope' ? state.envelope : state.basis.digest)
         )
           throw new DeliveryJournalError('grant-basis')
+        // An envelope grant may start a continuation only if it already carries
+        // the repair effects (ADR-0198); the reducer checks the rest.
+        if (
+          receipt.grant.basis.kind === 'envelope' &&
+          deliveryRunner(state).continuations?.at(-1)?.revision === state.basis.revision &&
+          state.grant?.id !== input.grant &&
+          !ENVELOPE_CONTINUATION_EFFECTS.every((effect) => receipt.grant.effects.includes(effect))
+        )
+          throw new DeliveryJournalError('continuation-requires-new-grant')
         const observation = {
           schema: 'wholeloop/delivery-grant-event@1' as const,
           id: input.grant,

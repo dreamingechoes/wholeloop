@@ -110,7 +110,8 @@ export async function receiveOwnedForeground(
       host = hostFactory(structuredClone(request))
     if (contractDigest(host.identity) !== contractDigest(request.host))
       throw new DeliveryRunnerError('runner-host-binding')
-    return await new DeliveryRunner(store).run(message.lease.request, host, {
+    // A none run may repair itself here under its own envelope grant (ADR-0198).
+    return await new DeliveryRunner(store).runWithRepairs(message.lease.request, host, {
       lease: message.lease,
     })
   } catch (error) {
