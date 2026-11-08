@@ -9,7 +9,7 @@
 
 ## Installation and first use
 
-**Can I install it from public npm today?** Not yet. The first release, `1.0.0-rc.1` and then `1.0.0`, is in preparation and will install with `npm install --global wholeloop`; until it is published, build from source with the [development guide](./contributing/development.md). Publication remains the maintainer's decision.
+**Can I install it from public npm today?** Not yet. The first release, `1.0.0-rc.1` and then `1.0.0`, is in preparation and will install with `npm install --global wholeloop`; until it is published, build from source with the [development guide](./contributing/development.md).
 
 **Why is `wl` not found after installation?** Managed installation writes native components, not a global shell command. Invoke the source bundle with `wl ...` and export that absolute path again in each new terminal. → [Executable paths](./troubleshooting.md#the-shell-cannot-find-wholeloop)
 
