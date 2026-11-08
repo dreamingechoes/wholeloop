@@ -61,7 +61,7 @@ Or simply say it mid-session — "más técnico", "challenge me harder", "slow d
 | --- | --- |
 | **The output contract** — preflight, one-line narration, stop on request, receipt | A run must always be legible, whatever the verbosity |
 | **Coverage** — every lens, every verification, every cap | Slowing a check down is a preference; narrowing it is a conversation, not a setting |
-| **Decision points** | Accountability stays with a person |
+| **Decision points** | Accountability stays with a person; only an explicit autonomous-delivery authorization, never a profile, lets a person decide in advance |
 | **Ask, never guess** | A `brief` or `autopilot` profile asks fewer *optional* questions, never fewer *necessary* ones |
 
 ## How it reaches the model

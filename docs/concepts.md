@@ -14,7 +14,7 @@
 | **Work tree** | initiative → scope → slice → part, plus loose artifacts like a research brief | [below](#the-work-tree) |
 | **Steps & blocks** | 13 steps in 4 blocks (Define · Build · Rollout · Learn) + 4 utilities | [flow](./flow/README.md) |
 | **Standalone vs flow** | Every step is a full entry point; `next` chains them | [below](#standalone-or-flow--both-are-first-class) |
-| **Decision points** | The six fixed moments where a person decides | [below](#decision-points) |
+| **Decision points** | The six moments where a person decides in the supervised flow, or decides in advance through an explicit grant | [below](#decision-points) |
 | **Step contract** | `wl step begin` → the skill works → `wl step complete` | [architecture/core-cli](./architecture/core-cli.md) |
 | **State & mailbox** | Event journal + readable projections + agent messages, outside the repo | [architecture/state-and-messaging](./architecture/state-and-messaging.md) |
 | **Repo-first slots** | Each step binds named slots to your repo's own skills first | [configuration/repo-skills](./configuration/repo-skills.md) |
@@ -95,7 +95,7 @@ One rule survives standalone use: **what a step promises, it keeps**. `build-sli
 
 ## Decision points
 
-This section describes current supervised behavior. The separate [delegated-decision controller](./tutorials/delivery-decisions.md) supports original private grants, pinned rubrics and independent machine provenance, including no-prompt policy limits. Full native unattended orchestration remains under implementation; legacy step commands retain their supervised approvals.
+These are the defaults of the supervised flow. Autonomous delivery, experimental in 1.0.0, lets a person take these decisions in advance instead: an explicit grant authorizes the work, and pinned rubrics let independent machine judges apply them, with every judgement recorded ([delegated decisions](./tutorials/delivery-decisions.md)). Legacy step commands keep their supervised approvals. [Philosophy](./philosophy.md#5-people-own-every-decision-at-the-moment-or-in-advance) explains why both exist.
 
 The machine runs a lot on its own, but it **stops for a person at six fixed points** — in the existing supervised step flow, on every profile and CLI.
 
@@ -103,14 +103,14 @@ These shared decision points are joined by step-specific approvals. In particula
 
 | # | Decision | Where | Why a person |
 | --- | --- | --- | --- |
-| 1 | **Approve the spec** | end of `write-spec` | Commits the team to a problem, a solution shape and a definition of success |
+| 1 | **Approve the spec** | end of `write-spec` | Commits you, or your team, to a problem, a solution shape and a definition of success |
 | 2 | **Approve the scopes** | end of `cut-scopes` | Decides what ships separately and in what order |
 | 3 | **Test it** | before `open-pr` | Nothing is published before a human ran it |
-| 4 | **Merge** | outside the harness | The harness never merges |
+| 4 | **Merge** | outside the harness | The supervised flow never merges; only a separately authorized autonomous run can |
 | 5 | **Ramp** | each `ramp-exposure` stage | The machine never touches a feature flag |
 | 6 | **Decide** | `decide-next` | Keep, iterate, kill or unflag — closes the scope |
 
-A step may be **skipped with a recorded reason** ("no flag: internal tool"), never silently. Decision points cannot be disabled by configuration; a team can add its own.
+A step may be **skipped with a recorded reason** ("no flag: internal tool"), never silently. No configuration or interaction profile disables a decision point, and you can add your own. Only an explicit autonomous-delivery authorization moves a decision to the moment it is granted.
 
 ## The step contract
 
@@ -185,7 +185,7 @@ Always legible, in any profile:
 
 **"Where is my work if I switch from Claude Code to Codex mid-way?"** In the store, not in a session. Run `wl resume <id>` (or the `next` skill) in the new CLI.
 
-**"Can I turn off a decision point?"** No. You can skip a *step* with a recorded reason, and you can add decision points; you cannot remove the six.
+**"Can I turn off a decision point?"** Not through configuration or a profile. You can skip a *step* with a recorded reason and add decision points. Autonomous delivery lets you take those decisions in advance, through an explicit authorization with pinned rubrics and limits.
 
 **"Does the harness replace my repo's skills?"** The opposite: it looks for them first and follows them.
 

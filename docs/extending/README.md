@@ -1,6 +1,6 @@
 # Extending wholeloop — add, don't fork
 
-> **TL;DR** — Almost everything a team would want to customise is a **declarative manifest**, discovered from four places, validated by a schema and testable with one command: providers, review and verify lenses, artifact templates, profile presets and extra decision points. Code is the exception, reserved for new CLI adapters.
+> **TL;DR** — Almost everything you or your team would want to customise is a **declarative manifest**, discovered from four places, validated by a schema and testable with one command: providers, review and verify lenses, artifact templates, profile presets and extra decision points. Code is the exception, reserved for new CLI adapters.
 
 > [!NOTE]
 > **Status: 🚧 partial.** Providers, templates, profiles and lenses load and validate from all four layers. Custom profiles are consumed by configuration; spec template selection is consumed by the core and lens manifests by gate planning, while templates for other workflows remain planned. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md).
@@ -18,7 +18,7 @@
 | **Decision point** | An extra stop for a person (security sign-off, legal review…) | config entry | [decision points](./lenses-templates-profiles.md#decision-points) |
 | **CLI adapter** | Support for another agentic CLI | TypeScript module | [platforms](../platforms/README.md#adding-a-cli) |
 
-What you **cannot** extend away: the six built-in decision points, built-in lenses (without a recorded reason), the output contract, and *ask, never guess* ([ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md)).
+What you **cannot** extend away: the six built-in decision points, built-in lenses (without a recorded reason), the output contract, and *ask, never guess* ([ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md)). Moving a decision to an explicit autonomous-delivery authorization is not an extension; it is a grant a person records.
 
 ## Where extensions are found
 

@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-08 · Philosophy: decisions in advance, individuals and teams
+
+- [Principle 5](../docs/philosophy.md#5-people-own-every-decision-at-the-moment-or-in-advance) now reads "people own every decision, at the moment or in advance" and keeps its earlier wording visible: the supervised flow still stops at its six points by default, and autonomous delivery lets a person decide in advance through an explicit grant with pinned rubrics and limits. Some decisions are never delegated: widening the machine's authority, changing what counts as accepted and supplying a fact only a person knows. [ADR-0010](../docs/decisions/0010-interaction-profile-never-changes-coverage.md) is amended so delegation stays a grant of authority, never a profile.
+- The philosophy, README and configuration pages no longer assume a team: the same questions keep one person consistent with themselves across days. A new section tells how the philosophy evolved, from one team's way of working to a repository, then to a supervised path from zero to one, then to delegated decisions and, as a direction, a configurable software factory.
+- Concepts, extending and profile pages say that no configuration or profile disables a decision point and that only an explicit autonomous-delivery authorization moves one. Documentation only; docs check and Markdown lint pass.
+
+---
+
 ## 2026-11-08 · Software factory planned after 1.0.0
 
 - A new [Phase 8](./phase-8-software-factory.md) plans unattended operation around the clock in minor releases ordered by dependency: 1.1.0 lets a run survive its own repairable failures (P6-35, P6-41 and CI continuation), 1.2.0 adds a supervisor, budgets per period and continuous intake, 1.3.0 adds evidence-based failure diagnosis, questions that park one run instead of stopping the rest, and review feedback from authorized accounts, and 1.4.0 graduates autonomous delivery to stable once it is certified. None needs a major version, because autonomous delivery stays experimental until then.

@@ -25,7 +25,7 @@ wholeloop supplies the process around the model: what context to load, which que
 
 ## Why wholeloop
 
-Follow two engineers through the life of one feature. One looks at the data first, the other opens the editor. One argues with the model's first answer, the other accepts it. Every review asks different questions, every rollout re-decides the same things from scratch, and a month after launch nobody checks whether the numbers moved. **The model is identical in every one of those moments. The process around it is not**, and a faster tool amplifies whatever process you already have, including the absence of one.
+Follow two engineers through the life of one feature. One looks at the data first, the other opens the editor. One argues with the model's first answer, the other accepts it. Every review asks different questions, every rollout re-decides the same things from scratch, and a month after launch nobody checks whether the numbers moved. **The model is identical in every one of those moments. The process around it is not**, and a faster tool amplifies whatever process you already have, including the absence of one. You do not need a team for this: the same person on a calm Monday and a rushed Friday makes the same two choices.
 
 Ad hoc prompting leaves that process in each person's head. The prompt that worked last week is in someone's history, the review checklist depends on who remembers it, and a long conversation forgets its own decisions. wholeloop makes the process explicit, executable and the same for everyone, without turning a team into a template: it fixes the *questions* (what to ask before building, what counts as evidence, where a person decides, what *done* means) and leaves the *answers* to you and your repository.
 
@@ -74,7 +74,7 @@ flowchart LR
   style L fill:#f6dcef,stroke:#b03a8c,color:#3a0b2c
 ```
 
-The orange hexagons are the main human decision points. Framing also needs the owner's explicit outcome and approval of its final revision, so the specification is not the first time your judgement matters. Merging is always a person's decision: the harness never merges, never sends a message to a user and never changes a feature flag.
+The orange hexagons are the main human decision points. Framing also needs the owner's explicit outcome and approval of its final revision, so the specification is not the first time your judgement matters. In this supervised flow, merging is a person's decision: the harness never sends a message to a user, never changes a feature flag and never merges, unless you separately authorize an autonomous run to merge.
 
 **Use all of it, or just one step.** Every step is a complete entry point: `research` a topic, `build-slice` a small fix or `review-code` a pull request without running anything before it. The full loop is what you get when you chain them with `next`, and an approved scope can also be handed to an autonomous run that builds, verifies and reviews it in isolated worktrees and containers up to a pull request ([autonomous delivery](./docs/architecture/autonomous-delivery.md)). That part is **experimental** in 1.0.0: its commands may still change in a minor release, and unattended runs are still being certified with native clients.
 
@@ -195,10 +195,10 @@ wl resume "$INITIATIVE_ID" --json
 3. **Deterministic process, adaptive content.** Steps, order, gates and bookkeeping are code with tests. What each step *writes* adapts to your problem.
 4. **Your repository first.** Before acting, each step looks for the skills, agents, rules and conventions your repository already has, and follows them. The harness is the layer above, not a replacement.
 5. **Bring your own tools.** Where documents live, where work is tracked, which data answers a question: every integration is a provider you choose, and adding one is a manifest, not a fork.
-6. **People decide at fixed points.** The machine does the volume; judgement stays with a person at the same few decision points, every time, in every mode.
+6. **People own every decision, at the moment or in advance.** By default the flow stops for a person at the same few decision points, every time, in every mode. Autonomous delivery lets you decide in advance instead: what is authorized, which rubrics judge and within which limits. That takes an explicit authorization, never a style setting.
 7. **Always legible.** Every run states its plan first, narrates as it goes, stops when told, and ends with a table of what it produced and how to undo it.
 8. **Done means measured, not merged.** The flow continues after the merge, because that is where you find out whether any of it mattered.
-9. **Small, correctable, alive.** Skills are short, every hard rule has something that executes it, and a harness that stops changing has stopped describing its team.
+9. **Small, correctable, alive.** Skills are short, every hard rule has something that executes it, and a harness that stops changing has stopped describing how you work.
 
 The reasoning behind each one: [philosophy](./docs/philosophy.md).
 
@@ -235,7 +235,7 @@ Add remote providers when your workflow needs them. wholeloop never talks to a s
 | Work through a practical change | [Small-change walkthrough](./docs/tutorials/small-change.md) | [All thirteen steps](./docs/flow/README.md) |
 | Solve a setup or workflow problem | [Troubleshooting](./docs/troubleshooting.md) | [FAQ](./docs/faq.md) · [Glossary](./docs/glossary.md) |
 | Understand the design | [Concepts](./docs/concepts.md) | [Philosophy](./docs/philosophy.md) · [Architecture](./docs/architecture/README.md) |
-| Configure my team and tools | [Configuration](./docs/configuration/README.md) | [Profiles](./docs/configuration/profile.md) · [Providers](./docs/configuration/providers.md) · [Repository guidance](./docs/configuration/repo-skills.md) |
+| Configure my project and tools | [Configuration](./docs/configuration/README.md) | [Profiles](./docs/configuration/profile.md) · [Providers](./docs/configuration/providers.md) · [Repository guidance](./docs/configuration/repo-skills.md) |
 | Hand work to an autonomous run | [Autonomous delivery](./docs/architecture/autonomous-delivery.md) | [Delivery intake](./docs/tutorials/delivery-intake.md) · [Delivery planning](./docs/tutorials/delivery-plan.md) |
 | Extend the harness | [Extensions](./docs/extending/README.md) | [Providers](./docs/extending/providers.md) · [Compatibility](./docs/extending/compatibility.md) |
 

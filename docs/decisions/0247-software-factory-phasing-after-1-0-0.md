@@ -7,6 +7,8 @@
 
 Autonomous delivery ships experimental in 1.0.0 ([0066](./0066-v1-compatibility-baseline-and-deprecation.md)). With intervention `none` and a grant covering its effects, a run that meets no failure goes from an authorized source to a ready pull request without a person; failures inside a unit are already repaired within their budget. A person is still needed when integration, acceptance or CI fails, when a worker credential expires or a usage window runs out, when a fact only a person knows is missing, when a budget is spent, and to start every run. Running unattended around the clock needs more than one feature, and the pieces depend on each other: a supervisor that starts runs is pointless while every run stops at its first repairable failure, and an escalation that does not stop the factory needs a supervisor that keeps working.
 
+The goal follows the [philosophy](../philosophy.md#how-this-philosophy-has-evolved): a harness configurable from fully supervised to a factory that works around the clock, where people still own every decision, at the moment or in advance.
+
 ## Decision (proposed)
 
 - **Phase by dependency, one coherent capability per minor release.** Autonomous delivery stays experimental through these releases, so each phase is additive and ships as a minor version under [0066](./0066-v1-compatibility-baseline-and-deprecation.md); fixes ship as patches. None needs a major version, because no frozen surface changes.

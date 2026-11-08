@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-08.** Autonomous delivery lets a person take a decision in advance instead of at its decision point: an explicit, recorded grant authorizes the work, and pinned rubrics let independent machine judges apply the decision ([ADR-0112](./0112-private-delegation-and-independent-machine-decisions.md)). That is a grant of authority, never an interaction setting, so this record still holds: no profile, preset or dial can skip, delegate or weaken a decision point, a lens or a necessary question. The [philosophy](../philosophy.md#5-people-own-every-decision-at-the-moment-or-in-advance) now reads "people own every decision, at the moment or in advance" and keeps its earlier wording, "people decide at fixed points", visible. Rejected: an `autopilot` profile that also delegates decisions, which would turn a style choice into a transfer of accountability.
+
 People want different things from the same harness. Some want detailed explanations, others one line per action. Some want a sparring partner that argues every assumption, others a supportive pair. Some are comfortable with five agents running at once, others want to see each plan before code is written. Forcing one style makes the harness feel wrong to half its users.
 
 The risk is that a style setting becomes a quiet way to lower the bar: "brief" that skips explanations people need to decide, "autopilot" that skips checks, "fast" that asks fewer necessary questions.

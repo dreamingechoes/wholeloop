@@ -1,6 +1,6 @@
 # Philosophy — why the harness is the half that is yours
 
-> **TL;DR** — An agent is a model plus a harness. The model is rented and identical for everyone; the harness is what makes the outcome depend on the *system* rather than on who happens to be driving. `wholeloop` is a harness built around one agreed path, from a loose idea to a measured result, that respects whatever your repository already knows.
+> **TL;DR** — An agent is a model plus a harness. The model is rented and identical for everyone; the harness is what makes the outcome depend on the *system* rather than on who happens to be driving. `wholeloop` is a harness built around one agreed path, from a loose idea to a measured result, that respects whatever your repository already knows. It serves one person as well as a team, and it lets people decide either at each step or in advance, within limits they set. The last section tells how those two ideas grew out of the first version.
 
 > [!NOTE]
 > **Status: 🚧 partial.** These principles guide the implemented deterministic core and canonical harness. Client narration, immediate stopping and provider behavior also depend on actual hosts; native/model conformance and operational checks remain in the [manual checklist](../roadmap/manual-verification.md).
@@ -12,6 +12,8 @@
 Two engineers, one feature. Before starting, one looks at the data, the other opens the editor — they are solving different problems and nobody notices until review. While building, one argues with the model's first answer, the other accepts it; on screen both look equally finished, which is exactly what makes it dangerous. Every review asks different questions, every rollout re-decides the same four things, and after launch the learnings live in someone's notes or nowhere.
 
 The model is identical in every one of those moments. The process around it is not. **A faster tool amplifies whatever process you already have — including the absence of one.**
+
+The same happens to one person on two different days. On Monday, with time, you look at the data first; on Friday, in a hurry, you open the editor. You do not need a team to be inconsistent; you only need a deadline. The harness gives a team a shared path and gives one person a path they can keep with themselves.
 
 ## The half that is yours
 
@@ -40,15 +42,17 @@ The flow runs the same steps in the same order for everyone. A step may resolve 
 
 ### 3. Your repository first
 
-A team's repository already encodes how it builds: skills for its backend, a design system, lint rules, a test command, a PR convention. A generic harness that ignores them produces generic code. Every step therefore **discovers and prefers** what the repository already has, and falls back to its own defaults only when nothing more specific exists ([ADR-0009](./decisions/0009-repo-first-capability-resolution.md)).
+Your repository, whether one person or a team keeps it, already encodes how it is built: skills for its backend, a design system, lint rules, a test command, a PR convention. A generic harness that ignores them produces generic code. Every step therefore **discovers and prefers** what the repository already has, and falls back to its own defaults only when nothing more specific exists ([ADR-0009](./decisions/0009-repo-first-capability-resolution.md)).
 
 ### 4. Bring your own tools
 
 Confluence or Notion, Jira or Linear, Mixpanel or PostHog — the flow does not care. It needs *capabilities* (write a document, track a work item, query product analytics) and lets you choose who provides them. When the provider you need does not exist yet, adding it is a manifest, not a fork ([ADR-0008](./decisions/0008-extensibility-through-manifests.md)).
 
-### 5. People decide at fixed points
+### 5. People own every decision, at the moment or in advance
 
 The harness does not stop because it technically cannot go on. It stops because going on would produce a tidy answer to a question nobody has finished asking. Those stops are **hand-offs**, not controls: the point where processing information ends and product judgement starts — approving a spec, running the change on your own machine, deciding whether to kill something that shipped. That is where accountability lives, and it stays with a person.
+
+This principle first read *"people decide at fixed points"*, and the supervised flow still works that way by default: it stops at the same six points, every time, in every mode ([decision points](./concepts.md#decision-points)). What changed is where the decision can be taken. A person can also decide **in advance**: which work is authorized, which rubric judges each decision, within which limits and budget, and what always comes back to them. A machine then applies that decision; it never makes one nobody delegated. Delegation is an explicit, recorded authorization, never a style setting: no interaction profile can switch a decision point off ([ADR-0010](./decisions/0010-interaction-profile-never-changes-coverage.md), [ADR-0112](./decisions/0112-private-delegation-and-independent-machine-decisions.md)). Some decisions are never delegated: widening the machine's own authority, changing what counts as accepted, and supplying a fact only a person knows.
 
 ### 6. Always legible
 
@@ -60,9 +64,9 @@ More than half of the flow sits after the merge: communications drafted, exposur
 
 ### 8. Small, correctable, alive
 
-A harness is a snapshot of how a team works on the day it was written. It stays useful only while it keeps following the team:
+A harness is a snapshot of how you, or your team, work on the day it was written. It stays useful only while it keeps following you:
 
-- **The conversation leads, the harness follows.** Rules change in a retro or a thread, never in a commit nobody discussed.
+- **The conversation leads, the harness follows.** Rules change in a retro, a thread or your own review of last week's work, never in a commit nobody thought through.
 - **Every repeated failure is a candidate rule** — once it has happened more than once. One case is an anecdote.
 - **Changes to the checks get measured** against a corpus of known defects and harmless look-alikes. A fix that makes a reviewer cry wolf is not a fix.
 - **Removing counts as much as adding.** A rule nobody can justify is a leftover.
@@ -71,11 +75,20 @@ That is also why skills are short and every hard rule has something that *execut
 
 ## Rules fix the questions, not the answers
 
-The obvious objection is that all this turns a team into a template. It does not. The rules fix the **questions** — what to ask before building, what counts as evidence, where a person decides, what done means — and leave the **answers** alone. Two engineers still work differently; they just answer the same questions, in the same order, against the same bar.
+The obvious objection is that all this turns people into a template. It does not. The rules fix the **questions** — what to ask before building, what counts as evidence, where a person decides, what done means — and leave the **answers** alone. Two engineers still work differently, and so does one engineer on two different days; they just answer the same questions, in the same order, against the same bar.
 
 ## What transfers
 
-You do not need a harness this size to benefit from the exercise. Pick one step — researching an idea, preparing a rollout, checking impact a month later — and write it down as if a machine had to run it: what it may decide, what it must never assume, where it stops for a person. Then let the people who do that work attack it. A new colleague fills the gaps with common sense; a machine makes you fill them yourself. **The conversation is the deliverable.** `wholeloop` is what that conversation looks like once it is executable.
+You do not need a harness this size to benefit from the exercise. Pick one step — researching an idea, preparing a rollout, checking impact a month later — and write it down as if a machine had to run it: what it may decide, what it must never assume, where it stops for a person. Then let whoever does that work, you or your team, attack it. A new colleague fills the gaps with common sense; a machine makes you fill them yourself. **The conversation is the deliverable.** `wholeloop` is what that conversation looks like once it is executable.
+
+## How this philosophy has evolved
+
+The earlier wording stays visible above where it changed, because the reasoning behind each step matters as much as where it led.
+
+1. **From a team to a repository.** It began as an attempt to move one team's way of working into a repository, so the process would survive whoever happened to be driving. Writing it down showed that nothing in it needed a team: the same questions keep one person consistent with themselves.
+2. **From an idea to a measured result, with people at fixed points.** The first complete flow covered the path from zero to one with human checks between the steps: approve the spec, test the change, ramp, decide. Those checks remain the default.
+3. **From fixed points to delegated decisions.** Autonomous delivery added a second way to decide: authorize the work once, pin the rubrics that judge each decision and let independent machine judges apply them, inside budgets, with every judgement recorded. It ships experimental in 1.0.0.
+4. **Where it is going.** The long-term goal is a harness configurable from fully supervised to a software factory that works around the clock without anyone at the keyboard. Each step toward it keeps the limits above: a person still decides what is authorized and what counts as done, and the machine still asks rather than guesses. The [roadmap](../roadmap/phase-8-software-factory.md) describes that path; none of it is a promise of current behaviour.
 
 ---
 
