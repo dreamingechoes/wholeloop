@@ -42,6 +42,8 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 | Headless mode | `claude -p` | `codex exec` | `opencode run` | `copilot -p` | `gemini -p` | `agy -p` | `agent -p` |
 | Plugin packaging | Claude plugins | Agent Plugins | npm/JS | Agent Plugins | extensions | plugins | Agent Plugins |
 
+Observed on 2026-11-08, macOS arm64: the generated Claude plugin installs in an isolated config and lists all seventeen skills. With the client's broadest approval switched on, the generated reviewer role had no write or shell tool on OpenCode 2.2.5 or Copilot 1.0.83. OpenCode roles deny `.env` reads. Copilot loads plugin agents as `wholeloop:wl-<name>` and always adds its `skill` and session `sql` tools. Codex custom agents cannot lower the parent's sandbox, so read-only work there runs in the read-only parent or the headless recipe ([ADR-0048](../decisions/0048-native-target-layouts-and-checked-launcher-roots.md)).
+
 ## Local adapter declarations
 
 This table is generated from the same adapter registry used by build/install. It describes local output and declared enforcement boundaries. A rendered format, read-only flag or available engine does not prove native discovery or execution; all native conformance declarations remain unverified. Actual framing observations are a separate bounded report input below, never inferred from these rows.

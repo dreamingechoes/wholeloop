@@ -148,7 +148,7 @@
 
 ## P1-10 · Adapter — Claude Code
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-05, P0-03
+**Status:** ✅ · **Size:** M · **Depends on:** P1-05, P0-03
 
 **Goal** — The first generated target, shaped by the spike's findings.
 
@@ -157,7 +157,9 @@
 **Acceptance criteria:**
 
 - [x] `wl build --target claude` output matches golden files.
-- [ ] The generated plugin installs locally and lists every skill.
+- [x] The generated plugin installs locally and lists every skill.
+
+**Evidence** — On 2026-11-08, macOS arm64, Node 24.22.0, Claude Code 2.1.319: the tree from `wl build --target claude`, written under a path with a space, passed `claude plugin validate`. It installed from a local marketplace into an isolated `CLAUDE_CONFIG_DIR` (no login, no model), and `claude plugin details` listed all seventeen skills, nine agents and the PreToolUse hook. After the source tree moved, the installed copy's core still ran. In a signed-in session loading the moved tree with `--plugin-dir`, the init event listed the seventeen `wholeloop:` skills and nine agents, and the model named all seventeen. `/wholeloop:status` ran the copied core through `${CLAUDE_PLUGIN_ROOT}` and returned a unique marker item from an isolated store. The plugin's guard hook denied `git push` from that spaced path. Narrowed: the conductor's root handoff to agents, read-only roles against a sentinel and Linux were not run; they stay in [manual verification](./manual-verification.md#generated-claude-artifacts-p1-10).
 
 **Local implementation:** the adapter interface, pure Claude skill/agent renderer, embedded canonical resources, bundled core, owned output/backup writer and golden fixtures are implemented. The actual Claude 2.1.299 static plugin validator passed in an isolated directory. Native guard registration is now implemented through the shared core. User-scope loose-skill framing was exercised by hand through an on-hold closure and recovered status in a fresh Claude session; independent core reads confirmed persistence. See the [observation and content defects](./manual-verification.md#manually-observed-claude-framing-and-session-recovery-2026-10-22). Real hook capture, role isolation, plugin installation/all-skill discovery and the live runner remain manual checks. These gaps do not block independent installation implementation.
 
@@ -165,7 +167,7 @@
 
 ## P1-11 · Adapters — Codex, OpenCode, Copilot CLI
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P1-10
+**Status:** ✅ · **Size:** L · **Depends on:** P1-10
 
 **Goal** — Same harness, four tier-A targets.
 
@@ -174,7 +176,9 @@
 **Acceptance criteria:**
 
 - [x] Golden files for each adapter; one canonical change updates all four outputs.
-- [ ] Read-only roles map to each CLI's strongest available restriction.
+- [x] Read-only roles map to each CLI's strongest available restriction.
+
+**Evidence** — On 2026-11-08, macOS arm64, Node 24.22.0, the generated reviewer role was asked to overwrite a sentinel, create a file and run `touch`, with the client's broadest approval switched on. OpenCode 2.2.5 resolved the rendered permissions to deny everything except read, glob, grep and skill (`opencode debug agents`); under `--auto` the role had no write or shell tool. Copilot 1.0.83 loaded the plugin agent as `wholeloop:wl-reviewer` and, under `--allow-all`, exposed only `view`, `glob`, `rg`, `skill` and its session `sql` tool. A connected user MCP server was not reachable. Both workspaces stayed unchanged. Codex has no per-agent sandbox: its subagent documentation says a custom agent file cannot override `sandbox_mode`, approvals or MCP servers. Its strongest restriction is therefore the read-only parent or headless recipe, whose live probe on 0.166.0 refused all three writes. Found and fixed: OpenCode roles' bare `read: allow` overrode the client's own `.env` ask, so the reviewer read `.env`. The rendered `read` now denies `.env` files, and a rerun was refused ([ADR-0048](../docs/decisions/0048-native-target-layouts-and-checked-launcher-roots.md)). Narrowed: Codex subagents were not rerun to spare quota, and command/provider handoffs and Linux stay in [manual verification](./manual-verification.md#additional-tier-a-artifacts-p1-11).
 
 **Local implementation:** all three native renderers, namespaced skills/agents, portable Codex/Copilot manifests, checked launcher/root binding, role restrictions and cross-target goldens are implemented. Codex's inherited permission limitation is explicit; mappings are not a claimed isolated native sandbox. OpenCode/Copilot native hook bindings and the explicit Codex Git fallback now call the common guard. Actual payload capture, permission enforcement and model conformance remain manual verification; these checks do not block independent installation implementation.
 

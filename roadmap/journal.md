@@ -4,6 +4,20 @@
 
 ---
 
+## 2026-11-08 · P1-11 ✅ · Read-only roles hold on Codex, OpenCode and Copilot
+
+- Asked the generated reviewer to overwrite a sentinel, create a file and run `touch` with each client's broadest approval switched on. OpenCode 2.2.5 (`--auto`) and Copilot 1.0.83 (`--allow-all`) gave it no write or shell tool; both workspaces stayed unchanged. Copilot names plugin agents `wholeloop:wl-<name>` and always adds `skill` and its session `sql` tool; a connected user MCP server was not reachable.
+- Found: OpenCode roles' bare `read: allow` came after the client's own `.env` ask and overrode it, so the reviewer read `.env`. Roles now render `read` with `.env` and `.env.*` denied, shared with the headless inspector; the rerun was refused. ADR-0048 amended.
+- Codex: its subagent documentation still says a custom agent file cannot override `sandbox_mode`, approvals or MCP servers, so the read-only parent or headless recipe stays its strongest restriction; that probe passed on 0.166.0 today. No Codex rerun, to spare quota.
+- Gate: see the P1-10 entry.
+
+## 2026-11-08 · P1-10 ✅ · The generated Claude plugin installs and lists every skill
+
+- Built the Claude target under a path with a space, validated it, and installed it from a local marketplace into an isolated `CLAUDE_CONFIG_DIR`: `claude plugin details` lists seventeen skills, nine agents and the hook without a login or a model call. The installed copy's core still ran after the source tree moved.
+- In one signed-in Claude Code 2.1.319 session loading the moved tree, the model named all seventeen skills, `/wholeloop:status` returned a marker item from an isolated store through `${CLAUDE_PLUGIN_ROOT}`, and the plugin's guard denied `git push`.
+- Left open: the conductor's root handoff to agents, Claude read-only roles against a sentinel, and Linux.
+- Gate: CHECK PASS in 664s, macOS arm64 only; Linux not run. No tests were added; existing assertions now expect the `.env` rule.
+
 ## 2026-11-08 · P4-01 ✅ · The launcher cannot reach a sending tool on any client
 
 - Checked the two clients whose custom agents could inherit user MCP servers, with a disposable MCP server whose `send_message` records every call and a positive control from the main session. Cursor's readonly launcher saw the servers but the client refused every call. Codex's launcher received every user MCP server plus `apply_patch` and `exec`; only its instructions kept it from sending.
