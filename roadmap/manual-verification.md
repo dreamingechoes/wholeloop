@@ -54,7 +54,8 @@ The workflows, Dependabot configuration, licence and advisory checks and the rel
 - [x] Enable Dependabot alerts and security updates (2026-11-08).
 - [ ] When the repository becomes public, enable private vulnerability reporting, which GitHub offers only on public repositories. CodeQL, Scorecard and dependency review skip while the repository is private, because code scanning needs Advanced Security there; they start running at the switch.
 - [ ] After the next push, confirm CodeQL, Scorecard and CI (including `check-dependencies.mjs --audit` and `npm audit signatures`) run green, and that dependency review runs on the first pull request.
-- [ ] Review the first Dependabot pull requests for npm and the pinned actions.
+- [x] Review the first Dependabot pull requests for npm and the pinned actions (2026-11-08). The action pins and the development updates that were at least two weeks old are applied on `main` (`@biomejs/biome` 2.6.3 with YAML formatting kept off, `mermaid` 12.2.0, `jsdom`, `smol-toml`, the MCP SDK); `markdownlint-cli2` 0.24.0 was declined because it adds a high-severity `re2js` advisory; the `@types/node` major was closed and is now ignored, and Dependabot waits fourteen days for new versions, as ADR-0019 requires.
+- [ ] Apply the security updates once their fixes are two weeks old: `vitest` 5.1.0 from 2026-11-16 and `undici` 8.12.4 from 2026-11-19 (pull requests #4 and #5). The `markdown-it` advisory under `markdownlint-cli2` 0.23.3 has no compliant fix yet. All three are development-only and none reaches the published bundle.
 
 ## Repository guidance in autonomous runs (P6-40, 2026-11-07)
 
