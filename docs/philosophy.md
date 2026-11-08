@@ -77,9 +77,11 @@ That is also why skills are short and every hard rule has something that *execut
 
 The obvious objection is that all this turns people into a template. It does not. The rules fix the **questions** — what to ask before building, what counts as evidence, where a person decides, what done means — and leave the **answers** alone. Two engineers still work differently, and so does one engineer on two different days; they just answer the same questions, in the same order, against the same bar.
 
-## What transfers
+## The method works without the tool
 
-You do not need a harness this size to benefit from the exercise. Pick one step — researching an idea, preparing a rollout, checking impact a month later — and write it down as if a machine had to run it: what it may decide, what it must never assume, where it stops for a person. Then let whoever does that work, you or your team, attack it. A new colleague fills the gaps with common sense; a machine makes you fill them yourself. **The conversation is the deliverable.** `wholeloop` is what that conversation looks like once it is executable.
+You can apply the idea behind `wholeloop` without adopting it. Take one step of your own work, such as researching an idea, preparing a rollout or checking a result a month later, and write it down as precisely as if a machine had to run it: what it may decide on its own, what it must never assume and where it must stop for a person. Then review that description with whoever does the work, even if that is only you a week later.
+
+A new colleague fills the gaps in such a description with common sense; a machine cannot, so writing for one exposes every assumption nobody had stated. **The agreement that review produces is the real result**: the questions everyone answers, the points where a person decides and a shared idea of done. `wholeloop` is that agreement, written once for the whole path from idea to measured result and made executable.
 
 ## How this philosophy has evolved
 
