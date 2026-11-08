@@ -17,7 +17,9 @@ jobs:
   check:
     name: check · ${{ matrix.os }} · node 22
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    # macOS runners have no Docker, so its tests skip there; on Ubuntu they run and
+    # the full gate exceeded ten minutes (first hosted run, 2026-11-08).
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
