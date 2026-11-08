@@ -134,7 +134,11 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
               )
             ? 'read'
             : 'other'
-  const command = args.CommandLine ?? args.command ?? args.cmd
+  const patchTool = /^(apply_patch|patch)$/.test(tool)
+  // Codex 0.166 sends apply_patch's text as tool_input.command; it is the patch, not a shell
+  // command, so it feeds the destination scan and never reaches the shell policies.
+  const patch = args.patch ?? args.input ?? args.patchText ?? (patchTool ? args.command : undefined)
+  const command = patchTool ? undefined : (args.CommandLine ?? args.command ?? args.cmd)
   if (kind === 'shell' && typeof command !== 'string')
     throw new Error('Shell guard needs its command string')
   const paths = [
@@ -149,11 +153,8 @@ export function normalizeTool(value: unknown, root: string, subject?: string): G
   ].filter((path) => path !== undefined)
   if (paths.some((path) => typeof path !== 'string' || !path.trim()))
     throw new Error('Write guard needs explicit file paths')
-  if (
-    /^(apply_patch|patch)$/.test(tool) &&
-    typeof (args.patch ?? args.input ?? args.patchText) === 'string'
-  )
-    for (const match of String(args.patch ?? args.input ?? args.patchText).matchAll(
+  if (patchTool && typeof patch === 'string')
+    for (const match of patch.matchAll(
       /^\*\*\* (?:Add File|Update File|Delete File|Move to): (.+)$/gm,
     ))
       paths.push(match[1])

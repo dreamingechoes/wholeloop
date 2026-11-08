@@ -113,7 +113,7 @@
 
 ## P3-08 · Guards — `wl guard` and git hooks
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-11
+**Status:** ✅ · **Size:** M · **Depends on:** P1-11
 
 **Goal** — The few things that must never happen are blocked everywhere.
 
@@ -121,12 +121,12 @@
 
 **Acceptance criteria:**
 
-- [ ] Payload fixtures from every tier-A CLI parse to the same normalised event.
+- [x] Payload fixtures from every tier-A CLI parse to the same normalised event.
 - [x] Each policy is tested through both the CLI-hook path and the git-hook path.
 
-**Progress (2026-11-08)** — Real before-tool payloads captured from Claude Code 2.1.319, Copilot 1.0.83 and OpenCode 2.2.5 (read, write and shell, paths and identifiers redacted) live in `test/fixtures/hooks/tier-a-payloads.json`, and `test/unit/guards/native-payloads.test.ts` shows all three normalize to the same events. The capture found that Copilot sends `apply_patch` arguments as raw patch text, which the guard rejected, so every Copilot edit was denied; the normalizer now reads it. Live, wholeloop's generated Copilot plugin denies `git push` with the `open-pr-publication-only` policy and allows an ordinary edit. Codex 0.166 now has stable hooks, but capturing them needs per-invocation hook trust, which the local permission classifier blocked; that capture stays open, so this criterion stays open.
+**Evidence (2026-11-08)** — Real before-tool payloads captured from Claude Code 2.1.319, Codex 0.166.0, Copilot 1.0.83 and OpenCode 2.2.5 (read, write and shell, paths and identifiers redacted) live in `test/fixtures/hooks/tier-a-payloads.json`, and `test/unit/guards/native-payloads.test.ts` shows all four normalize to the same write and shell events; it fails without the normalizer fixes below. Codex reads through its shell (`cat README.md`), so its read is a shell event by design. The captures found two shapes the guard rejected, each making it deny every edit from that client: Copilot sends `apply_patch` arguments as raw patch text, and Codex sends the patch as `tool_input.command`; the normalizer now reads both as the patch and never passes patch text to the shell policies. Live, wholeloop's generated Copilot plugin denies `git push` with the `open-pr-publication-only` policy and allows an ordinary edit. The Codex capture ran without any bypass flag after the maintainer trusted the disposable repository's hooks once in an interactive session. Narrowed: wholeloop still registers no native Codex hook and keeps the Codex Git fallback, because Codex runs project hooks only after the user trusts them ([ADR-0049](../docs/decisions/0049-shared-guards-and-owned-git-fallbacks.md)); per-client permission and timeout behavior stays in manual verification.
 
-**Local implementation:** normalized authored native/SDK fixtures, shared policies, versioned/redacted CLI decisions, Claude/Copilot command bindings, the thin OpenCode plugin and explicit external Git-hook install/status/uninstall are implemented. Real fixture Git commits/pushes exercise assigned topics, exact tested requests, staged runtime rejection and prior-hook mutation. Codex-shaped SDK input is a synthetic parser fixture, not a captured/registered Codex CLI hook. Actual per-client capture/permission/timeout evidence remains manual verification, so the first criterion stays open; general installation integration remains P1-13.
+**Local implementation:** normalized authored native/SDK fixtures, shared policies, versioned/redacted CLI decisions, Claude/Copilot command bindings, the thin OpenCode plugin and explicit external Git-hook install/status/uninstall are implemented. Real fixture Git commits/pushes exercise assigned topics, exact tested requests, staged runtime rejection and prior-hook mutation. The earlier Codex-shaped SDK input is a synthetic parser fixture; the captured Codex CLI payloads now sit beside it. Per-client permission and timeout evidence remains manual verification; general installation integration remains P1-13.
 
 **Docs** — architecture/core-cli (hooks and guards), ADR-0006, ADR-0049.
 

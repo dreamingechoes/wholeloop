@@ -169,7 +169,7 @@ The implementation side prepares these probes in disposable repositories and rec
 | Launcher sees available communication tools | It can draft, but no sending capability is available |
 | Same pinned gate assignments use native/headless/sequential engines | Equivalent verdict, exact round/input and no crashed worker counted as a refutation |
 
-Capture actual hook payload shape and read-only restrictions for each supported client. Codex inherits parent restrictions; its synthetic SDK-shaped payload is not proof of an installed CLI hook. Follow [the isolated spike](../test/conformance/notes/README.md) and [guard cases](../roadmap/manual-verification.md#common-guards-and-git-fallback-p3-08). Repeat supported platform claims on Linux; macOS evidence is not Linux evidence.
+Capture actual hook payload shape and read-only restrictions for each supported client. Real payloads from Claude Code, Codex 0.166, Copilot and OpenCode are fixtures; Codex runs project hooks only after the user trusts them, so wholeloop keeps its Codex Git fallback. Follow [the isolated spike](../test/conformance/notes/README.md) and [guard cases](../roadmap/manual-verification.md#common-guards-and-git-fallback-p3-08). Repeat supported platform claims on Linux; macOS evidence is not Linux evidence.
 
 ### 6. Review CI and publication when native acceptance is ready
 
@@ -200,7 +200,7 @@ The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Pha
 | P1-11 | Codex/OpenCode/Copilot strongest available read-only mappings verified | Review native permission boundaries |
 | P1-13 | Actual doctor failures have working corrective instructions | Platform/account-specific choices |
 | P1-14 ✅ | Real standalone scenario passes all four tier-A clients (done 2026-11-08) | — |
-| P3-08 | Actual tier-A hook payloads and guard behavior verified | Trust/permission decisions |
+| P3-08 ✅ | Actual tier-A hook payloads and guard behavior verified (done 2026-11-08) | — |
 | P4-01 | Launcher lacks a sending tool in each adapter | Review actual capability inventory |
 | P5-01 | Real scenario passes Gemini and Antigravity | Native access when blocked |
 | P5-02 ✅ | Cursor real scenario and readonly behavior pass (done 2026-11-08) | — |

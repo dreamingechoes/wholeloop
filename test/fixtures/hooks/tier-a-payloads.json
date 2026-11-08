@@ -101,5 +101,50 @@
         "command": "git status"
       }
     }
+  },
+  "codex": {
+    "version": "0.166.0",
+    "read": {
+      "session_id": "redacted",
+      "turn_id": "redacted",
+      "transcript_path": "/redacted/transcript.jsonl",
+      "cwd": "/workspace/project",
+      "hook_event_name": "PreToolUse",
+      "model": "gpt-6.1-sol",
+      "permission_mode": "default",
+      "tool_name": "Bash",
+      "tool_input": {
+        "command": "cat README.md"
+      },
+      "tool_use_id": "redacted"
+    },
+    "write": {
+      "session_id": "redacted",
+      "turn_id": "redacted",
+      "transcript_path": "/redacted/transcript.jsonl",
+      "cwd": "/workspace/project",
+      "hook_event_name": "PreToolUse",
+      "model": "gpt-6.1-sol",
+      "permission_mode": "default",
+      "tool_name": "apply_patch",
+      "tool_input": {
+        "command": "*** Begin Patch\n*** Add File: /workspace/project/notes.txt\n+x\n*** End Patch"
+      },
+      "tool_use_id": "redacted"
+    },
+    "shell": {
+      "session_id": "redacted",
+      "turn_id": "redacted",
+      "transcript_path": "/redacted/transcript.jsonl",
+      "cwd": "/workspace/project",
+      "hook_event_name": "PreToolUse",
+      "model": "gpt-6.1-sol",
+      "permission_mode": "default",
+      "tool_name": "Bash",
+      "tool_input": {
+        "command": "git status"
+      },
+      "tool_use_id": "redacted"
+    }
   }
 }

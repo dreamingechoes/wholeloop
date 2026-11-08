@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-11-08 · P3-08 ✅ · Guards read real payloads from every tier-A client
+
+- Captured Codex 0.166.0's before-tool payloads (read, write, shell) after the maintainer trusted a disposable repository's hooks once in an interactive session; no bypass flag was used. Redacted, they join the Claude Code, Copilot and OpenCode fixtures, and all four normalize to the same write and shell events. Codex reads through its shell, so its read is a shell event.
+- Found: Codex sends `apply_patch` text as `tool_input.command`, so the guard saw a write with no destination and denied every Codex patch. The normalizer now reads that text as the patch and keeps it away from the shell policies. The test fails without the fix.
+- Decided: wholeloop still registers no native Codex hook. Codex runs a project hook only after the user trusts it, and that trust is the user's decision, so the Git fallback stays the enforced path; ADR-0049 is amended. Rejected: generating a Codex hook now, which would sit inert until trusted and look like enforcement.
+- Gate: CHECK PASS in 673s, 4647 tests, macOS arm64 only; Linux not run.
+
 ## 2026-11-08 · Real hook payloads from three tier-A clients
 
 - Captured live before-tool payloads (read, write, shell) from Claude Code 2.1.319, Copilot 1.0.83 and OpenCode 2.2.5 with recording hooks in disposable repositories, redacted paths and identifiers, and kept them as fixtures; a test shows all three normalize to the same events.

@@ -29,7 +29,7 @@ Live results on 2026-11-08, macOS arm64, Node 24.22.0. A read-only PASS feeds P0
 - [x] Antigravity framing failed in the official runner because the session handed the final review to a background subagent and ended its single turn; the runner then stopped the process group with that subagent. A copy of the official event stream showed it. The prompt now asks Antigravity to perform the review in its turn, and the next official run passed.
 - [ ] Gemini 0.67: system settings files are honoured only when owned by root, so the worker's read-only settings are skipped; move the policy to the policy engine (`--policy`) and decide on workspace trust. Paused by the maintainer.
 - [x] Hook payloads (P3-08): real Claude Code, Copilot and OpenCode payloads are fixtures that normalize to the same events; Copilot's raw `apply_patch` text no longer makes the guard deny every edit, and the generated Copilot plugin's guard denies `git push` live.
-- [ ] Codex 0.166 hook payloads: Codex now runs project hooks only after trusting them; capture with the maintainer's chosen trust step (trusting the disposable repository's hooks once, or allowing `--dangerously-bypass-hook-trust` for that capture).
+- [x] Codex 0.166 hook payloads: captured without a bypass flag after the maintainer trusted the disposable repository's hooks once interactively. They normalize like the other clients; Codex sends `apply_patch` text as `tool_input.command`, which made the guard deny every Codex patch until the normalizer read it.
 - [ ] MCP inheritance in launchers (P4-01) is not automated yet.
 
 ## Expanded 1.0 acceptance boundary
@@ -653,7 +653,8 @@ Native install/uninstall and managed doctor inspection are implemented. Actual a
 
 ## Common guards and Git fallback (P3-08)
 
-- [ ] Capture actual before-tool events on Claude/Copilot/OpenCode; compare schema, tool names, cwd, write paths and event ordering with the authored fixtures. The Codex-shaped SDK fixture is synthetic; verify its actual CLI Git fallback instead of treating desktop hooks as CLI support.
+- [x] Capture actual before-tool events on Claude/Codex/Copilot/OpenCode and compare schema, tool names, cwd and write paths with the authored fixtures (2026-11-08, `test/fixtures/hooks/tier-a-payloads.json`).
+- [ ] Verify the Codex Git fallback in the actual CLI; wholeloop registers no native Codex hook because Codex needs the user's trust for each hook.
 - [ ] In disposable clients, try wrong-checkout/default-branch Build commits with the returned WL_SUBJECT environment, extra/deleted/stale push refs and reserved runtime writes. Normal native reads/permissions must retain their ordinary behavior; synthetic transport tests do not establish client enforcement.
 - [ ] Exercise inner/outer timeouts, inaccessible stores, managed policies and disabled hooks. Copilot outer hook timeouts can fail open; retain Git fallbacks and inspect real sandbox access to the external store.
 - [ ] Inspect existing hooks before an explicit guard hooks install on a disposable project. Verify original execution/exit codes and changed-file/config refusal; uninstall must restore only prior local configuration and retain the returned backup. Relative/multiple effective and worktree-specific hook paths need manual chaining.

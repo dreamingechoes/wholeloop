@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-19
 
+**Amended 2026-11-08.** Codex 0.166 has stable project hooks (`.codex/hooks.json`, the same `PreToolUse` shape as Claude Code) and runs them only after the user trusts them; the trust is recorded per hook with a hash in the user's Codex configuration. Its real payloads are now fixtures that normalize like the other tier-A clients; it sends `apply_patch` text as `tool_input.command`, which the normalizer reads as the patch. wholeloop still registers no native Codex hook: a generated hook would do nothing until the user trusts it, and granting that trust is the user's decision, so the Git fallback stays the enforced path. Registering a trusted Codex hook is a separate decision.
+
 ## Context
 
 Prompt rules cannot reliably bind a Git mutation to the exact Build workspace or approved publication. Native clients have different payloads, permission responses and timeout behavior. Installing a guard must also preserve the user's existing hooks and must not leave runtime files in a project.
