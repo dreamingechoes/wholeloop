@@ -421,6 +421,8 @@ The copied macOS core is d06b99d57c76ae0aff27f61d059c362d907b6df1acb1017cb8b7cc8
 
 ## Automated platform checks (2026-10-22)
 
+**2026-11-08:** commit ae397c0, which includes the Phase 7 work, passes the complete check offline on Linux arm64 with Node 24.22.0 in a network-disabled container built from the current lockfile: CHECK PASS in 274s, 4619 tests plus the macOS-only Claude sandbox test skipped, 330 files. A container is not an independent Linux host, and Node 20 runtime and native clients on Linux remain separate checks.
+
 The exact a9c2964 archive passes 1907 tests on both environments. The subsequent native-output-schema candidate also passes the complete check on both:
 
 | Environment | Node / npm | Executed result |
