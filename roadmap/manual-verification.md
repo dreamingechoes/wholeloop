@@ -36,20 +36,23 @@ The rulesets, CODEOWNERS, pull request template and title check are in the repos
 
 The release pull request, release-on-merge, post-publication verification and failure marking are implemented and tested with a fixture repository and logging stand-ins for GitHub and npm; no hosted run has executed.
 
-- [ ] Allow GitHub Actions to create pull requests, then dispatch the Release pull request workflow for `1.0.0-rc.1` and confirm the hosted tree check passes, the branch and pull request are created and the dispatched CI run reports the required checks on the pull request.
+- [x] Allow GitHub Actions to create pull requests (2026-11-08; the default workflow token stays read-only).
+- [ ] When the repository becomes public, add the maintainer as required reviewer of the `release` environment. It exists since 2026-11-08 limited to `main`, but required reviewers need a paid plan on a private repository; until then the release preflight refuses to publish from a private repository.
+- [ ] Dispatch the Release pull request workflow for `1.0.0-rc.1` and confirm the hosted tree check passes, the branch and pull request are created and the dispatched CI run reports the required checks on the pull request.
 - [ ] Merge it and confirm the Release workflow plans a release from the push, prepares the bundle and stops at the `release` environment until approval; confirm an ordinary push to `main` that changes `package.json` without a new version prepares nothing.
 - [ ] After the first publication, confirm the verify job installs the version from the registry on Node 20 and passes, and that `gh release edit` accepts `--prerelease --latest=false` together by marking a disposable release as failed.
 
 ## Pre-publication history audit (P7-06, 2026-11-07)
 
 - [ ] Immediately before switching the repository to public (P7-14), run `npm run scan:history` on the final `main`, review any new finding, and confirm no other ref is pushed.
-- [ ] Delete the local backup ref `refs/backup/pre-neutral-rewrite` once the rewritten history is confirmed.
+- [x] Delete the local backup ref `refs/backup/pre-neutral-rewrite` once the rewritten history is confirmed (2026-11-08; it pointed to the pre-rewrite 27e3104).
 
 ## Supply-chain automation (P7-05, 2026-11-07)
 
 The workflows, Dependabot configuration, licence and advisory checks and the release SBOM are implemented and linted locally; none of the hosted runs has executed.
 
-- [ ] Enable Dependabot alerts and updates, code scanning and private vulnerability reporting in the repository settings.
+- [x] Enable Dependabot alerts and security updates (2026-11-08).
+- [ ] When the repository becomes public, enable private vulnerability reporting, which GitHub offers only on public repositories. CodeQL, Scorecard and dependency review skip while the repository is private, because code scanning needs Advanced Security there; they start running at the switch.
 - [ ] After the next push, confirm CodeQL, Scorecard and CI (including `check-dependencies.mjs --audit` and `npm audit signatures`) run green, and that dependency review runs on the first pull request.
 - [ ] Review the first Dependabot pull requests for npm and the pinned actions.
 

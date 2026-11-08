@@ -11,6 +11,9 @@ permissions:
 
 jobs:
   review:
+    # Code scanning and dependency review need GitHub Advanced Security on a private
+    # repository; skip until the repository is public instead of failing every run.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

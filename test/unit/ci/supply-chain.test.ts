@@ -53,6 +53,15 @@ describe('GitHub workflows', () => {
     expect(workflows.map(([name]) => name)).toEqual(
       expect.arrayContaining(['codeql.yml', 'dependency-review.yml', 'scorecard.yml']),
     )
+    // Code scanning needs Advanced Security on a private repository: these jobs skip
+    // until the repository is public rather than fail on every push.
+    for (const name of ['codeql.yml', 'dependency-review.yml', 'scorecard.yml']) {
+      const workflow = parse(workflows.find(([file]) => file === name)?.[1] ?? '') as {
+        jobs: Record<string, { if?: string }>
+      }
+      for (const job of Object.values(workflow.jobs))
+        expect(job.if).toBe(['$', '{{ !github.event.repository.private }}'].join(''))
+    }
     const ci = workflows.find(([name]) => name === 'ci.yml')?.[1] ?? ''
     expect(ci).toContain('npm audit signatures')
     expect(ci).toContain('node scripts/check-dependencies.mjs --audit')
