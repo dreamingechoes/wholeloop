@@ -41,6 +41,7 @@ import { installationCommand } from './install.js'
 import { EXIT, type Io } from './io.js'
 import { launchCommand } from './launch.js'
 import { launchDispatchCommand } from './launch-dispatch.js'
+import { launchDraftCommand } from './launch-draft.js'
 import { learningCommand } from './learning.js'
 import { mailboxCommand } from './mailbox.js'
 import { maintenanceCommand } from './maintenance.js'
@@ -139,7 +140,7 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
         return learningCommand(command.path, parsed, root, json, io)
       if (command.path.startsWith('maintenance '))
         return maintenanceCommand(command.path, parsed, root, json, io)
-      if (command.path === 'launch dispatch')
+      if (command.path === 'launch dispatch' || command.path === 'launch draft')
         throw new CliError('This command requires the asynchronous dispatcher')
       if (command.path.startsWith('launch '))
         return launchCommand(command.path, parsed, root, json, io)
@@ -282,6 +283,7 @@ export async function runAsync(
         command.path === 'provider test' ||
         command.path === 'provider read-flags' ||
         command.path === 'launch dispatch' ||
+        command.path === 'launch draft' ||
         command.path === 'verify suite' ||
         command.path.startsWith('pr ') ||
         command.path.startsWith('ramp ') ||
@@ -355,6 +357,7 @@ export async function runAsync(
         return await flagReadCommand(parsed, root, json, io)
       if (command.path === 'launch dispatch')
         return await launchDispatchCommand(parsed, root, json, io)
+      if (command.path === 'launch draft') return await launchDraftCommand(parsed, root, json, io)
       if (command.path === 'fanout run') return await fanoutCommand(parsed, root, json, io)
       if (command.path.startsWith('conformance '))
         return await conformanceCommand(command.path, parsed, root, json, io)

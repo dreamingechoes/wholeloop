@@ -51,6 +51,10 @@ export const codexAdapter: Adapter = {
   id: 'codex',
   manifestPath: 'plugin.json',
   launchers: true,
+  // Codex 0.166 gives a custom agent every MCP server in the user's configuration, and the
+  // agent file cannot remove servers it cannot name, so a native launcher could reach a sending
+  // tool. prepare-launch drafts on Codex through `wl launch draft --engine headless` instead.
+  omitAgents: ['launcher'],
   capabilities: () => capabilities('inherited-parent-and-checked-headless', true),
   name: (_kind, name) => `wl-${name}`,
   paths: (kind, name) =>

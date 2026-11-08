@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-19
 
+**Amended 2026-11-08.** A native check showed that a Codex 0.166 custom agent receives every MCP server in the user's configuration, together with `apply_patch` and `exec`, whatever its feature flags say; its agent file cannot remove servers it cannot name, and a `mcp_servers={}` override is merged rather than replaced. Only the launcher's instructions kept it from calling a sending tool. Codex therefore renders no native launcher. `wl launch draft --engine headless --adapter <client>` runs the canonical launcher role in one isolated worker through the client's headless recipe (for Codex: read-only sandbox, `--ignore-user-config` and no MCP servers), receives the pinned context as data, and stores the result through the same validated completion. Cursor's readonly subagent mode refused every inherited MCP call in the same check, so Cursor keeps its native launcher. Rejected: keeping the native Codex launcher and relying on Codex's MCP approval, which depends on the user's approval settings.
+
 ## Context
 
 A launch can quietly drift away from its spec when dashboards recreate queries or use the newest spec instead of the scope's approved revision. Message drafts also need repository voice without inheriting the ability to send. Missing providers must leave usable material, and interrupted creation must not duplicate writes.

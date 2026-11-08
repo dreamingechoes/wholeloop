@@ -6,7 +6,7 @@
 
 ## P4-01 · `prepare-launch` and the `launcher`
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P3-07
+**Status:** ✅ · **Size:** L · **Depends on:** P3-07
 
 **Goal** — Everything a launch needs, drafted and ready, nothing sent.
 
@@ -14,12 +14,12 @@
 
 **Acceptance criteria:**
 
-- [ ] The `launcher` has no tool able to send a message (adapter test per CLI).
+- [x] The `launcher` has no tool able to send a message (adapter test per CLI).
 - [x] Each dashboard links back to the measurement-plan entry it implements.
 
-**Progress (2026-11-08)** — `test/unit/adapters/launcher-tools.test.ts` checks the rendered launcher of all seven clients: read tools only for Claude Code (writes and every MCP tool disallowed), OpenCode, Copilot, Gemini and Antigravity, disabled shell, apps and plugins for Codex, and read-only mode for Cursor. Whether Codex and Cursor custom agents still inherit MCP servers from the user's configuration, which could send a message, can only be observed on the native clients, so the criterion stays open. Native check (2026-11-08): Cursor's readonly launcher sees inherited MCP servers but the client refuses every call (PASS); Codex's launcher receives every inherited MCP server, `apply_patch` and `exec`, and only its instructions kept it from sending (FAIL). See manual verification.
+**Evidence (2026-11-08)** — `test/unit/adapters/launcher-tools.test.ts` checks every client's launcher: read tools only for Claude Code (writes and every MCP tool disallowed), OpenCode, Copilot, Gemini and Antigravity, and read-only mode for Cursor. The two clients whose custom agents could inherit user MCP servers were checked natively with a disposable MCP server whose `send_message` records every call, after a positive control from the main session reached it. Cursor 2026.11.05: the readonly launcher saw the inherited servers but the client refused every call, also from a tool declaring `readOnlyHint`; nothing reached the server. Codex 0.166.0: the launcher received every user MCP server plus `apply_patch` and `exec`, and only its instructions kept it from sending, so Codex now renders no native launcher. `wl launch draft --for <id> --engine headless --adapter codex` drafts in one isolated read-only worker instead (`test/unit/launch/headless.test.ts`). Probing that recipe live found account apps (Notion, Calendar connectors) still reachable with user config ignored and no MCP servers; the recipe now also disables apps, plugins, browser use and computer use, and the same probe then listed no MCP tool. A live `wl launch draft` on Codex then produced a validated kit with every message an unsent draft. The recipe change also hardens Codex gate workers, which use it. Narrowed: Claude Code, OpenCode, Copilot, Gemini and Antigravity rest on their explicit tool lists in the render-level test, not on a native MCP probe.
 
-**Local implementation:** complete and fixture-tested. The core pins measurement revisions, loads repository voice/templates, stores complete kits and dispatches only explicit draft/create requests through a separate conductor host boundary. Per-CLI adapter denial tests remain pending with P1 adapters/conformance; canonical read-only metadata and synthetic hosts are not substitutes. This manual/client criterion does not block dependent local rollout implementation.
+**Local implementation:** complete and fixture-tested. The core pins measurement revisions, loads repository voice/templates, stores complete kits and dispatches only explicit draft/create requests through a separate conductor host boundary. Per-CLI adapter denial tests and the native Cursor and Codex checks are recorded in the evidence above.
 
 **Docs** — flow/rollout/prepare-launch.
 

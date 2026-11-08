@@ -64,7 +64,8 @@ export function generateAdapter(
           content: `#!/usr/bin/env node\nawait import(new URL(${JSON.stringify(relative)}, import.meta.url))\n`,
         })
       }
-    } else if (agent) {
+    } else if (agent && adapter.omitAgents?.includes(agent)) continue
+    else if (agent) {
       agents.push(adapter.name('agent', agent))
       const path = adapter.paths('agent', agent)
       const rendered = adapter.renderAgent(agent, content)

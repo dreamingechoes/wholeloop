@@ -23,6 +23,8 @@ export interface Adapter {
   id: string
   manifestPath: string
   launchers?: boolean
+  /** Canonical roles this client cannot isolate natively; they run through a headless route. */
+  omitAgents?: readonly string[]
   artifacts?(version: string): ReadonlyMap<string, RenderedFile>
   capabilities(): AdapterCapabilities
   renderSkill(name: string, content: string): RenderedFile

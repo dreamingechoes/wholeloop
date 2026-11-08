@@ -164,8 +164,9 @@ describe('local distribution delivery previews', () => {
         expect(payload.manifest.targets).toHaveLength(7)
         expect(
           payload.manifest.targets.every(
-            (target: { skills: number; agents: number }) =>
-              target.skills === 17 && target.agents === 9,
+            // Codex drafts launches headlessly, so it ships no native launcher agent.
+            (target: { target: string; skills: number; agents: number }) =>
+              target.skills === 17 && target.agents === (target.target === 'codex' ? 8 : 9),
           ),
         ).toBe(true)
         expect(JSON.parse(cli([]).stdout).status).toBe('already-correct')

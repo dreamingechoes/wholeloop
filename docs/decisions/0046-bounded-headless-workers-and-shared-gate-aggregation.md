@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-19
 
+**Amended 2026-11-08.** A live probe of the Codex 0.166 recipe showed that ignoring user config and passing no MCP servers still leaves ChatGPT account apps reachable: the worker listed Notion and Calendar connector tools, including ones that create comments and events, and called one. The Codex recipe now also disables the `apps`, `plugins`, `browser_use` and `computer_use` features; the same probe then listed no MCP tool. The read-only sandbox never covered these, because connectors act on remote services.
+
 ## Context
 
 A gate must keep its lenses, quorum and verdict when its transport changes. Headless clients can hang, crash, return a different assignment or emit a plausible JSON answer before ultimately failing. Starting concurrent CLI processes also needs bounded cost and cancellation that reaches their owned descendants.

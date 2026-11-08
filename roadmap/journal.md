@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-08 · P4-01 ✅ · The launcher cannot reach a sending tool on any client
+
+- Checked the two clients whose custom agents could inherit user MCP servers, with a disposable MCP server whose `send_message` records every call and a positive control from the main session. Cursor's readonly launcher saw the servers but the client refused every call. Codex's launcher received every user MCP server plus `apply_patch` and `exec`; only its instructions kept it from sending.
+- Decided: Codex renders no native launcher (adapters gain `omitAgents`), and `wl launch draft --for <id> --engine headless --adapter <client>` runs the canonical launcher role in one isolated worker and stores the kit through the same validated completion. Rejected: keeping the native agent and relying on Codex's MCP approval, which depends on user settings. ADR-0038 amended.
+- Found while verifying: the Codex headless recipe, also used by gate workers, still exposed ChatGPT account apps (Notion and Calendar connectors) with user config ignored and no MCP servers. It now disables apps, plugins, browser use and computer use; a live probe then listed no MCP tool. ADR-0046 amended.
+- Live: `wl launch draft` on Codex 0.166 produced a validated kit; every comms entry is an unsent draft and the dashboard links its stored metric.
+- Gate: CHECK PASS in 674s, 4650 tests, macOS arm64 only; Linux not run.
+
 ## 2026-11-08 · P3-08 ✅ · Guards read real payloads from every tier-A client
 
 - Captured Codex 0.166.0's before-tool payloads (read, write, shell) after the maintainer trusted a disposable repository's hooks once in an interactive session; no bypass flag was used. Redacted, they join the Claude Code, Copilot and OpenCode fixtures, and all four normalize to the same write and shell events. Codex reads through its shell, so its read is a shell event.

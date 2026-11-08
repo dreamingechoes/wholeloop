@@ -1158,6 +1158,18 @@ export const COMMANDS: readonly Command[] = [
     summary: 'Pin launch measurements and repository voice before drafting',
   },
   {
+    path: 'launch draft',
+    arguments: '',
+    options: [
+      '--for <id>',
+      '--engine <headless>',
+      '--adapter <claude|codex|opencode|copilot|cursor|gemini|antigravity>',
+      '--timeout <seconds>',
+    ],
+    schema: 'wholeloop/launch-complete@1',
+    summary: 'Draft a planned launch kit in one isolated read-only headless worker',
+  },
+  {
     path: 'launch complete',
     arguments: '',
     options: ['--for <id>', '--file <file>'],

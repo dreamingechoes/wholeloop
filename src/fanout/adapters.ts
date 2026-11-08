@@ -88,6 +88,16 @@ export function headlessAdapter(id: string, nativeVersion?: string): HeadlessAda
           '--ignore-user-config',
           '--config',
           'mcp_servers={}',
+          // ChatGPT apps reach account connectors (Notion, Calendar) without any config.toml
+          // entry; observed on Codex 0.166 even with user config ignored and no MCP servers.
+          '--disable',
+          'apps',
+          '--disable',
+          'plugins',
+          '--disable',
+          'browser_use',
+          '--disable',
+          'computer_use',
           '--cd',
           directory,
           '--skip-git-repo-check',

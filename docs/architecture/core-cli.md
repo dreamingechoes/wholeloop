@@ -198,6 +198,7 @@ The v1 candidate now adds per-declaration compatibility fingerprints, retained c
 | `wl ramp schema` | `wholeloop/ramp-schema@1` | Print the versioned ramp plan input contract |
 | `wl launch dispatch` | `wholeloop/dashboard-dispatch@2` | Plan one metric-pinned dashboard through client MCP or the local handoff |
 | `wl launch begin [<description>]` | `wholeloop/launch-begin@1` | Pin launch measurements and repository voice before drafting |
+| `wl launch draft` | `wholeloop/launch-complete@1` | Draft a planned launch kit in one isolated read-only headless worker |
 | `wl launch complete` | `wholeloop/launch-complete@1` | Store a validated launch kit with metric-linked dashboard specs |
 | `wl launch report` | `wholeloop/launch-report@1` | Show local artifacts and explicit provider draft/create handoffs |
 | `wl launch schema` | `wholeloop/launch-schema@1` | Print measurement and launch draft input contracts |

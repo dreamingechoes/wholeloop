@@ -171,7 +171,7 @@ export function installationPlan(
         `#!/usr/bin/env node\nawait import(new URL(${JSON.stringify(imported)},import.meta.url))\n`,
         0o755,
       )
-    } else if (agent) {
+    } else if (agent && !adapterFor(target).omitAgents?.includes(agent)) {
       const source = generated.files.get(adapterFor(target).paths('agent', agent))
       if (!source) throw new Error('Generated native agent is missing')
       const extension = target === 'codex' ? '.toml' : target === 'copilot' ? '.agent.md' : '.md'

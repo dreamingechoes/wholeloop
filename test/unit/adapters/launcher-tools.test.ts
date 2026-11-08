@@ -1,10 +1,12 @@
 // P4-01: the launcher drafts launch material and must have no tool able to send a message,
 // change exposure or run a command, in every client's rendering of the real harness. These are
-// render-level checks; whether a client also inherits user MCP servers is native verification.
-import { parse as toml } from 'smol-toml'
+// render-level checks. Natively (2026-11-08), Cursor's readonly mode refused inherited MCP calls,
+// while a Codex custom agent received every user MCP server, so Codex renders no native launcher
+// and drafts through the isolated headless recipe.
 import { describe, expect, it } from 'vitest'
 import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import { generateAdapter } from '../../../src/adapters/generate.js'
+import { headlessAdapter } from '../../../src/fanout/adapters.js'
 import { frontmatter } from '../../../src/harness/frontmatter.js'
 
 const core = '#!/usr/bin/env node\nconsole.log("fixture core")\n'
@@ -27,14 +29,21 @@ describe('launcher tools per client', () => {
     expect(String(data.disallowedTools)).toContain('mcp__*')
   })
 
-  it('Codex: shell, apps, plugins and permission requests disabled', () => {
-    const data = toml(launcher('codex')[1]) as { features: Record<string, boolean> }
-    expect(data.features).toMatchObject({
-      shell_tool: false,
-      apps: false,
-      plugins: false,
-      request_permissions_tool: false,
+  it('Codex: no native launcher; the headless recipe ignores user config and MCP servers', () => {
+    expect(() => launcher('codex')).toThrow('No launcher rendered for codex')
+    const { args } = headlessAdapter('codex').invocation({
+      repository: '/workspace/project',
+      directory: '/workspace/worker',
     })
+    expect(args).toEqual(expect.arrayContaining(['--ignore-user-config', 'mcp_servers={}']))
+    // Account apps (connectors) survive both settings, so the recipe also disables them.
+    for (const feature of ['apps', 'plugins', 'browser_use', 'computer_use'])
+      expect(args.join(' ')).toContain(`--disable ${feature}`)
+    expect(args.slice(args.indexOf('--sandbox'), args.indexOf('--sandbox') + 2)).toEqual([
+      '--sandbox',
+      'read-only',
+    ])
+    expect(args.slice(0, 2)).toEqual(['--ask-for-approval', 'never'])
   })
 
   it('OpenCode: every permission denied except reading', () => {
