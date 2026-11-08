@@ -88,11 +88,42 @@ export interface DeliveryRunnerHost {
     plan: Readonly<DeliveryPlan>,
     signal: AbortSignal,
   ): Promise<RunnerEndpointObservation>
+  /**
+   * The latest reset among exhausted subscription windows of the clients this
+   * stage would launch, read without a model call (ADR-0209); undefined when no
+   * client reports one, so dispatch proceeds as before.
+   */
+  window?(
+    request: Readonly<RunnerRequest>,
+    plan: Readonly<DeliveryPlan>,
+    stage: Readonly<RunnerStage>,
+    signal: AbortSignal,
+  ): Promise<{ resetsAt: string } | undefined>
 }
 const TERMINAL = new Set(['completed', 'failed', 'blocked', 'exhausted', 'stopped'])
+/** Resolves after the delay or as soon as the signal aborts. */
+function abortableSleep(milliseconds: number, signal: AbortSignal) {
+  return new Promise<void>((resolve) => {
+    if (signal.aborted) return resolve()
+    const done = () => {
+      clearTimeout(timer)
+      signal.removeEventListener('abort', done)
+      resolve()
+    }
+    const timer = setTimeout(done, Math.min(milliseconds, 2147483647))
+    signal.addEventListener('abort', done, { once: true })
+  })
+}
 /** A foreground controller issues one durable stage intent at a time; all actual effects remain in their domain hosts. */
 export class DeliveryRunner {
-  constructor(readonly store: RunnerStore) {}
+  constructor(
+    readonly store: RunnerStore,
+    /** Waits for a usage-window reset; tests pass a fake clock. */
+    private readonly sleep: (
+      milliseconds: number,
+      signal: AbortSignal,
+    ) => Promise<void> = abortableSleep,
+  ) {}
   async run(
     digest: string,
     host: DeliveryRunnerHost,
@@ -218,6 +249,48 @@ export class DeliveryRunner {
           const timeoutMs = Math.min(context.plan.budgets.attemptMs, this.remaining(request))
           if (timeoutMs <= 0)
             return this.limit(lease, 'exhausted', 'The original run deadline has elapsed.')
+          // An exhausted subscription window delays dispatch instead of failing
+          // the attempt (ADR-0209). The run waits as an external condition, so the
+          // lease stays live, and continues after the reset with its completed
+          // stages intact. A reset after the run deadline leaves it paused.
+          const window = host.window
+            ? await boundedRecoveryCall(
+                (signal) =>
+                  (host.window as NonNullable<DeliveryRunnerHost['window']>)(
+                    structuredClone(request),
+                    structuredClone(context.plan),
+                    structuredClone(stage),
+                    signal,
+                  ),
+                Math.min(20000, this.remaining(request)),
+              )
+            : undefined
+          if (window?.available && window.value) {
+            const reset = Date.parse(window.value.resetsAt),
+              wait = reset - Date.parse(this.store.now()),
+              reason = `The bound client's usage window is exhausted until ${window.value.resetsAt}; dispatch waits and completed stages are kept.`
+            if (!Number.isFinite(reset) || wait >= this.remaining(request))
+              return this.limit(
+                lease,
+                'paused',
+                `${reason} The reset falls after the run deadline; resume the run once it has passed.`,
+              )
+            if (wait > 0) {
+              this.store.lifecycle.transition(request.run, { to: 'waiting-external', reason })
+              await this.sleep(wait, abort.signal)
+              if (
+                abort.signal.aborted ||
+                this.store.lifecycle.journal.view(request.run).state !== 'waiting-external'
+              )
+                return this.store.inspect(digest)
+              this.store.lifecycle.transition(request.run, {
+                to: 'queued',
+                reason:
+                  'The usage window reset; the same run continues without renewing its budget.',
+              })
+              continue
+            }
+          }
           const basis = context.digest
           const invocation = contractDigest({
               request: digest,

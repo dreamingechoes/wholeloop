@@ -258,6 +258,84 @@ describe('foreground runner refusals preserve truthful execution state', () => {
   })
 })
 
+describe('an exhausted usage window delays dispatch instead of failing (ADR-0209)', () => {
+  const passing = (store: RunnerStore, host: DeliveryRunnerHost, dispatched: string[]) => {
+    host.preflight = async () => ({
+      available: true,
+      interactive: 'disabled',
+      humanRequired: false,
+      reason: 'The explicit synthetic controller protocol is available.',
+    })
+    host.execute = async (context) => {
+      dispatched.push(context.stage.id)
+      context.started({
+        backend: 'fixture',
+        instance: context.invocation,
+        worker: context.stage.id,
+      })
+      return {
+        schema: 'wholeloop/delivery-runner-stage-observation@1',
+        plan: contractDigest(context.plan),
+        request: contractDigest(context.request),
+        stage: context.stage.id,
+        invocation: context.invocation,
+        status: 'passed',
+        invocationState: 'stopped',
+        evidence: 'c'.repeat(64),
+        provenance: 'fixture',
+        reason: 'The selected normalized fixture host observed its exact stage.',
+      }
+    }
+    return store
+  }
+
+  it('waits for the reset, then continues the same run with its completed stages', async () => {
+    await setup(async (store, request, host) => {
+      const dispatched: string[] = [],
+        waits: number[] = []
+      passing(store, host, dispatched)
+      let exhausted = 1
+      host.window = async (_request, _plan, stage) => {
+        // Exhausted once, before the second stage, as if the window ran out mid-run.
+        if (dispatched.length === 1 && exhausted-- > 0)
+          return { resetsAt: new Date(Date.parse(store.now()) + 60000).toISOString() }
+        expect(stage.id).toBeTruthy()
+        return undefined
+      }
+      const prepared = store.prepare(request),
+        result = await new DeliveryRunner(store, async (milliseconds) => {
+          waits.push(milliseconds)
+        }).run(prepared.digest, host)
+      expect(waits).toHaveLength(1)
+      expect(waits[0]).toBeGreaterThan(0)
+      expect(waits[0]).toBeLessThanOrEqual(60000)
+      // Every stage ran exactly once: nothing was lost or repeated across the wait.
+      expect(dispatched).toEqual(result.route.map((stage) => stage.id))
+      expect(result.stages.every((stage) => stage.status === 'passed')).toBe(true)
+      const transitions = store.lifecycle.journal
+        .events()
+        .filter((event) => event.run === request.run)
+        .map((event) => (event.payload as { to?: string }).to)
+        .filter(Boolean)
+      expect(transitions).toEqual(expect.arrayContaining(['waiting-external', 'queued']))
+    })
+  })
+
+  it('pauses, never fails, when the reset falls after the run deadline', async () => {
+    await setup(async (store, request, host) => {
+      const dispatched: string[] = []
+      passing(store, host, dispatched)
+      host.window = async () => ({ resetsAt: '2999-01-01T00:00:00.000Z' })
+      const prepared = store.prepare(request),
+        result = await new DeliveryRunner(store, async () => {
+          throw new Error('A reset after the deadline must not be waited for.')
+        }).run(prepared.digest, host)
+      expect(dispatched).toEqual([])
+      expect(result).toMatchObject({ state: 'paused', outcome: null })
+    })
+  })
+})
+
 describe('recorded human decisions wait for input only where intervention is permitted', () => {
   const ready = (humanRequired: boolean) => async () => ({
     available: true,

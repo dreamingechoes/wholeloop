@@ -19,6 +19,10 @@ import {
   nativeRuntimeClient,
   validNativeRuntime,
 } from '../delivery/native-runtime.js'
+import {
+  NATIVE_USAGE_WINDOW_READERS,
+  type NativeUsageWindowReader,
+} from '../delivery/native-usage-window.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import type { WorkerRole } from '../delivery/worker-protocol.js'
 import { VERSION } from '../version.js'
@@ -158,6 +162,10 @@ export class RunnerPublicHost implements DeliveryRunnerHost {
       target: string,
     ) => Promise<NativeCredentialResolution> = (reference, target) =>
       resolveNativeCredential(reference, target, spawnSecretStore),
+    /** Usage-window readers per target; tests pass fakes. */
+    private readonly windows: Readonly<
+      Record<string, NativeUsageWindowReader>
+    > = NATIVE_USAGE_WINDOW_READERS,
   ) {
     this.identity = Object.freeze(publicRunnerIdentity(bindings, runtime))
     this.bindings = Object.freeze(structuredClone(bindings))
@@ -262,6 +270,43 @@ export class RunnerPublicHost implements DeliveryRunnerHost {
       return unavailable('public-host-unsupported-stage')
     }
     return host.preflight(request, plan, stages, signal)
+  }
+  /**
+   * Reads the window of every signed-in client a stage's roles are bound to.
+   * An API-key client has no subscription window, and a client without a
+   * verified reader stays unknown, so neither delays dispatch.
+   */
+  async window(
+    request: Readonly<RunnerRequest>,
+    plan: Readonly<DeliveryPlan>,
+    stage: Readonly<RunnerStage>,
+    signal: AbortSignal,
+  ) {
+    if (!this.runtime) return undefined
+    let roles: WorkerRole[]
+    try {
+      roles = publicNativeRoles(
+        plan,
+        [stage as RunnerStage],
+        this.store.lifecycle.authority.inspect(request.grant).grant.basis.kind,
+      )
+    } catch {
+      return undefined
+    }
+    let latest: string | undefined
+    for (const target of new Set(
+      this.bindings.bindings
+        .filter((binding) => binding.roles.some((role) => roles.includes(role)))
+        .map((binding) => binding.target),
+    )) {
+      const client = nativeRuntimeClient(this.runtime, target),
+        read = this.windows[target]
+      if (!client?.store || !read) continue
+      const window = await read({ target, client: client.client, store: client.store }, signal)
+      if (window.state === 'exhausted' && (!latest || window.resetsAt > latest))
+        latest = window.resetsAt
+    }
+    return latest ? { resetsAt: latest } : undefined
   }
   async execute(context: Parameters<DeliveryRunnerHost['execute']>[0]) {
     return this.host(context.request).execute(context)

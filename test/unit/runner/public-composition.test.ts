@@ -265,6 +265,37 @@ describe('public host composition (ADR-0205)', () => {
       expect(asked.every((item) => item.endsWith('-worker'))).toBe(true)
     })
   })
+  it('reads the usage window only of signed-in clients a stage would launch (ADR-0209)', async () => {
+    await runnerResearchFixture(async ({ store, request, plan }) => {
+      const read: string[] = [],
+        stage = runnerRoute(plan)[0]
+      if (!stage) throw new Error('A route stage is required')
+      const host = (document: NativeRuntime) =>
+        new RunnerPublicHost(store, bindings, document, composePublicHost, undefined, {
+          codex: async (client) => {
+            read.push(client.store)
+            return { state: 'exhausted', resetsAt: '2026-11-12T21:12:54.000Z' }
+          },
+        })
+      const signal = new AbortController().signal
+      expect(await host(runtime).window(request, plan, stage, signal)).toEqual({
+        resetsAt: '2026-11-12T21:12:54.000Z',
+      })
+      expect(read).toEqual(runtime.clients.filter((c) => c.target === 'codex').map((c) => c.store))
+      // An API-key client has no subscription window, so nothing is read.
+      read.length = 0
+      const keyed: NativeRuntime = {
+        schema: 'wholeloop/native-runtime@1',
+        clients: runtime.clients.map((client) => ({
+          target: client.target,
+          client: client.client,
+          credential: { store: 'macos-keychain', item: 'worker', kind: 'api-key' },
+        })),
+      }
+      expect(await host(keyed).window(request, plan, stage, signal)).toBeUndefined()
+      expect(read).toEqual([])
+    })
+  })
   it('runs the composed research route through the real boundary observers with no prompt', async () => {
     const runtimeFor = (dir: string): NativeRuntime => ({
       schema: 'wholeloop/native-runtime@1',
