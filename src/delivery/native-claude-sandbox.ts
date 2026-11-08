@@ -3,23 +3,35 @@ import { isAbsolute, join, normalize } from 'node:path'
 import { safeSourceText } from './input.js'
 
 /**
- * Trusted controller paths that contain a Claude Code process on macOS. The
- * client authenticates through the login Keychain, which it reaches only with
- * the operator's real home, so containment cannot come from hiding the home: the
- * operating system profile denies every file the run has no reason to touch.
+ * Trusted controller paths that contain a Claude Code process on macOS. A
+ * signed-in client authenticates through the login Keychain, which it reaches
+ * only with the operator's real home, so containment cannot come from hiding
+ * the home: the operating system profile denies every file the run has no
+ * reason to touch. With an injected credential (ADR-0209) the client needs
+ * neither: its home is disposable inside the launch directory and the profile
+ * grants no Keychain access at all.
  */
-export interface NativeClaudeContainment {
+export type NativeClaudeContainment = {
   kind: 'macos-sandbox'
   /** Absolute sandbox-exec; never resolved through the worker PATH. */
   sandbox: string
   /** Canonical client binary, so a PATH entry cannot substitute another program. */
   client: string
-  /** The operator's home; the Keychain lookup needs it. */
-  home: string
   user: string
-  /** Dedicated client home (CLAUDE_CONFIG_DIR), signed in once by the operator. */
-  store: string
-}
+} & (
+  | {
+      credential: 'keychain'
+      /** The operator's home; the Keychain lookup needs it. */
+      home: string
+      /** Dedicated client home (CLAUDE_CONFIG_DIR), signed in once by the operator. */
+      store: string
+    }
+  | { credential: 'injected'; home?: undefined; store?: undefined }
+)
+
+/** The disposable client home of one injected-credential launch. */
+export const claudeInjectedHome = (directory: string) => join(directory, 'home')
+export const claudeInjectedConfig = (directory: string) => join(directory, 'home', '.claude')
 
 function quoted(path: string) {
   safeSourceText(path, 4096)
@@ -69,15 +81,18 @@ export function claudeSandboxProfile(input: {
       ...['/private', '/etc', '/var', '/tmp'].map(literal),
       ...['/usr', '/bin', '/System', '/Library', '/private/etc', '/private/var/db'].map(sub),
       sub(containment.client),
-      // The client's own security(1) lookup reads the encrypted login keychain.
-      sub(join(containment.home, 'Library', 'Keychains')),
+      // A signed-in client's own security(1) lookup reads the encrypted login
+      // keychain; an injected credential needs no Keychain at all.
+      ...(containment.credential === 'keychain'
+        ? [sub(join(containment.home, 'Library', 'Keychains'))]
+        : []),
       sub(input.directory),
       ...(input.workspace ? [sub(input.workspace)] : []),
       ...(input.probe ? [sub(input.probe)] : []),
     ],
     write = [
       sub('/dev'),
-      sub(containment.store),
+      ...(containment.credential === 'keychain' ? [sub(containment.store)] : []),
       sub(join(input.directory, 'home')),
       sub(join(input.directory, 'tmp')),
       ...(input.output === 'files' ? [sub(join(input.directory, 'outputs'))] : []),
@@ -90,7 +105,16 @@ export function claudeSandboxProfile(input: {
     ...rule('file-read*', read),
     ...rule('file-read* file-write*', write),
     // Last, so it overrides the client-home write allowance above.
-    `(deny file-write* ${CLAUDE_CREDENTIAL_FILES.map((name) => literal(join(containment.store, name))).join(' ')})`,
+    `(deny file-write* ${CLAUDE_CREDENTIAL_FILES.map((name) =>
+      literal(
+        join(
+          containment.credential === 'keychain'
+            ? containment.store
+            : claudeInjectedConfig(input.directory),
+          name,
+        ),
+      ),
+    ).join(' ')})`,
     // The profile hides /var/select/developer_dir, so the /usr/bin/git shim the
     // client calls concludes no developer tools exist and asks the user's GUI
     // session to install them, once per launch (2026-11-03). Denying that

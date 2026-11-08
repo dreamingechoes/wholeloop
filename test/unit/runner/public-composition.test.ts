@@ -7,7 +7,7 @@ import type { NativeBindings } from '../../../src/delivery/native-bindings.js'
 import { type NativeRuntime, validNativeRuntime } from '../../../src/delivery/native-runtime.js'
 import { DeliveryRunner } from '../../../src/runner/engine.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
-import { composePublicHost } from '../../../src/runner/public-composition.js'
+import { composePublicHost, publicNativeParts } from '../../../src/runner/public-composition.js'
 import {
   publicRunnerIdentity,
   RunnerPublicHost,
@@ -146,6 +146,37 @@ describe('public host composition (ADR-0205)', () => {
     expect(publicRunnerIdentity(bindings, runtime).configuration).not.toBe(
       publicRunnerIdentity(bindings).configuration,
     )
+  })
+  it('composes an injected credential instead of a signed-in home (ADR-0209)', () => {
+    const credential = {
+      store: 'macos-keychain' as const,
+      item: 'worker',
+      kind: 'api-key' as const,
+    }
+    const parts = (target: 'claude' | 'codex') =>
+      publicNativeParts(
+        {} as never,
+        { target, version: REFERENCE_NATIVE_VERSIONS[target], model: 'm', roles: ['planner'] },
+        {
+          schema: 'wholeloop/native-runtime@1',
+          clients: [{ target, client: `/opt/${target}`, credential }],
+        },
+      )?.base
+    const claude = parts('claude'),
+      codex = parts('codex')
+    expect(claude?.nativeStore).toBeUndefined()
+    expect(claude?.credential?.reference).toEqual(credential)
+    expect(claude?.containment).toMatchObject({ credential: 'injected' })
+    expect(claude?.containment).not.toHaveProperty('home')
+    expect(codex?.nativeStore).toBeUndefined()
+    expect(codex?.credential?.reference).toEqual(credential)
+    // A runtime document still binds the reference, never a value, into the host identity.
+    expect(
+      publicRunnerIdentity(bindings, {
+        schema: 'wholeloop/native-runtime@1',
+        clients: [{ target: 'codex', client: '/opt/codex', credential }],
+      }).configuration,
+    ).not.toBe(publicRunnerIdentity(bindings).configuration)
   })
   it('composes the research route from the retained documents and nothing else', async () => {
     await runnerResearchFixture(async ({ store, request, plan }) => {

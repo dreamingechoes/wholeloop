@@ -22,6 +22,7 @@ const store = realpathSync(
 assert.ok(client, 'Set WHOLELOOP_CLAUDE_CLIENT to the canonical installed client binary')
 const containment: NativeClaudeContainment = {
   kind: 'macos-sandbox',
+  credential: 'keychain',
   sandbox: '/usr/bin/sandbox-exec',
   client: realpathSync(client),
   home: realpathSync(homedir()),

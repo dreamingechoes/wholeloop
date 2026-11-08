@@ -3,6 +3,13 @@
 - **Status:** Accepted
 - **Date:** 2026-11-04
 
+**Amended 2026-11-08.** Implementation notes from P6-35, observed on Claude Code 2.1.319 and Codex 0.166.0 without a model call:
+
+- A runtime client names either a signed-in `store` or a `credential` reference, never both.
+- An injected launch gets a client home inside its launch directory, and Claude's sandbox profile then grants no Keychain access; the real client started and read a fabricated token under that profile.
+- No reference client validates an injected credential without a model call. `claude auth status` reports any injected token as signed in, and `codex login status` ignores `CODEX_API_KEY`. The boundary observation therefore proves only that the client reads the injected variable (Claude) or that the item resolves (Codex). A wrong value shows at the first launch, and the preflight can check presence, not validity.
+- A launch whose item does not resolve ends with the existing `authentication-required` reason, so the v1 receipt contract is unchanged.
+
 **Accepted on 2026-11-08** by the maintainer as the design. Implementation is [P6-35](../../roadmap/phase-6-autonomous-delivery.md#p6-35--controller-owned-worker-credentials); the verification listed below still has to pass, with real accounts, before the feature is relied on.
 
 ## Context

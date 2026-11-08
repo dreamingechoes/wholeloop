@@ -450,7 +450,7 @@ async function nativeFixture(
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');let input='';
 process.stdin.on('data',chunk=>input+=chunk);process.stdin.on('end',()=>{
 const payload=JSON.parse(input),assignment=payload.assignment,mode=${JSON.stringify(mode)};
-if(!mode.startsWith('inline'))fs.writeFileSync(path.join(process.cwd(),'outputs','environment.json'),JSON.stringify({keys:Object.keys(process.env).sort(),home:process.env.HOME,args:process.argv.slice(2)}));
+if(!mode.startsWith('inline'))fs.writeFileSync(path.join(process.cwd(),'outputs','environment.json'),JSON.stringify({keys:Object.keys(process.env).sort(),home:process.env.HOME,config:process.env.CLAUDE_CONFIG_DIR||process.env.CODEX_HOME||null,injected:process.env.CLAUDE_CODE_OAUTH_TOKEN||process.env.CODEX_API_KEY||null,args:process.argv.slice(2)}));
 if(mode==='timeout'||mode==='hang'){setInterval(()=>{},1000);return}
 if(mode==='permission'){console.error('Permission denied by native policy');process.exit(1)}
 if(mode==='model'){console.error('Model unavailable');process.exit(1)}
@@ -938,6 +938,7 @@ describe('actual synthetic native processes', () => {
       const store = join(dir, 'claude-store'),
         containment = {
           kind: 'macos-sandbox' as const,
+          credential: 'keychain' as const,
           sandbox: '/usr/bin/sandbox-exec',
           client: join(bin, 'claude'),
           home: join(dir, 'owner-home'),
@@ -987,6 +988,102 @@ describe('actual synthetic native processes', () => {
       )
       expect(environment.args).toContain('--restricted')
     }, 'contained'))
+
+  const injected = (resolved: boolean) => ({
+    reference: {
+      store: 'macos-keychain' as const,
+      item: 'claude-worker',
+      kind: 'oauth-token' as const,
+    },
+    resolve: async () =>
+      resolved
+        ? {
+            resolved: true as const,
+            variable: 'CLAUDE_CODE_OAUTH_TOKEN',
+            value: 'sk-fake-injected-0123',
+          }
+        : { resolved: false as const, reason: 'credential-missing' as const },
+  })
+  const injectedRun = (
+    queue: DeliveryQueue,
+    lease: Parameters<NativeDeliveryHost['run']>[0],
+    context: Parameters<NativeDeliveryHost['run']>[1],
+    options: Parameters<NativeDeliveryHost['run']>[2],
+    bin: string,
+    resolved: boolean,
+    extra: object = {},
+  ) =>
+    new NativeDeliveryHost(queue).run(lease, context, {
+      ...options,
+      containment: {
+        kind: 'macos-sandbox',
+        credential: 'injected',
+        sandbox: '/usr/bin/sandbox-exec',
+        client: join(bin, 'claude'),
+        user: 'owner',
+      },
+      credential: injected(resolved),
+      host: { observe: (input) => ({ ...host.observe(input), provenance: 'host-observed' }) },
+      // Run the synthetic client the sandbox would have run; the profile is policy here.
+      process: (_command, args, process) =>
+        workerProcess(args[2] ?? '', args.slice(3), process).then((result) => ({
+          ...result,
+          ownership: { invocationState: 'stopped' as const },
+        })),
+      ...extra,
+    })
+
+  it('injects a resolved credential into one contained launch with a disposable client home', () =>
+    nativeFixture(async ({ queue, lease, context, options, bin }) => {
+      // A signed-in home beside an injected credential is a configuration error.
+      await expect(
+        injectedRun(queue, lease, context, options, bin, true, { nativeStore: '/elsewhere' }),
+      ).rejects.toThrow('explicit client store')
+      const receipt = await injectedRun(queue, lease, context, options, bin, true)
+      expect(receipt.status).toBe('succeeded')
+      const directory = queue.lifecycle.journal.files.path(receipt.directory),
+        environment = JSON.parse(readFileSync(join(directory, 'outputs/environment.json'), 'utf8'))
+      // The value reaches the process, but its home is the launch's own, not the operator's.
+      expect(environment.injected).toBe('sk-fake-injected-0123')
+      expect(environment.home).toBe(join(directory, 'home'))
+      expect(environment.config).toBe(join(directory, 'home', '.claude'))
+      expect(environment.keys).not.toContain('ANTHROPIC_API_KEY')
+      expect(JSON.stringify(receipt)).not.toContain('sk-fake-injected-0123')
+    }, 'contained'))
+
+  it('ends a launch whose injected credential does not resolve before starting the client', () =>
+    nativeFixture(async ({ queue, lease, context, options, bin }) => {
+      const receipt = await injectedRun(queue, lease, context, options, bin, false)
+      expect(receipt).toMatchObject({ status: 'unavailable', reason: 'authentication-required' })
+      expect(receipt.execution).toBeUndefined()
+    }, 'contained'))
+
+  it('injects a Codex API key without a signed-in home', () =>
+    nativeFixture(
+      async ({ queue, lease, context, options }) => {
+        const receipt = await new NativeDeliveryHost(queue).run(lease, context, {
+          ...options,
+          credential: {
+            reference: { store: 'secret-service', item: 'codex-worker', kind: 'api-key' },
+            resolve: async () => ({
+              resolved: true,
+              variable: 'CODEX_API_KEY',
+              value: 'sk-fake-codex-0123',
+            }),
+          },
+          host: { observe: (input) => ({ ...host.observe(input), provenance: 'host-observed' }) },
+        })
+        expect(receipt.status).toBe('succeeded')
+        const directory = queue.lifecycle.journal.files.path(receipt.directory),
+          environment = JSON.parse(
+            readFileSync(join(directory, 'outputs/environment.json'), 'utf8'),
+          )
+        expect(environment.injected).toBe('sk-fake-codex-0123')
+        expect(environment.config).toBe(join(directory, 'home', '.codex'))
+      },
+      'contained',
+      'codex',
+    ))
 
   it('refuses unobserved runtime capability before starting a process', () =>
     nativeFixture(async ({ queue, lease, context, options }) => {

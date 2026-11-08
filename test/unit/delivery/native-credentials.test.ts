@@ -64,7 +64,14 @@ describe('worker credential references', () => {
       clients: [{ ...client, ...extra }],
     })
     expect(validNativeRuntime(runtime({}))).toBe(true)
-    expect(validNativeRuntime(runtime({ credential: keychain }))).toBe(true)
+    // An injected credential replaces the signed-in home; naming both is refused.
+    expect(validNativeRuntime(runtime({ credential: keychain }))).toBe(false)
+    expect(
+      validNativeRuntime({
+        schema: 'wholeloop/native-runtime@1',
+        clients: [{ target: 'claude', client: '/opt/claude', credential: keychain }],
+      }),
+    ).toBe(true)
     expect(validNativeRuntime(runtime({ credential: { ...keychain, kind: 'session' } }))).toBe(
       false,
     )

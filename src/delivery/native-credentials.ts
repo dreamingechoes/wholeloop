@@ -85,6 +85,25 @@ function storeCommand(
   return platform === 'linux' ? SECRET_TOOL.find((path) => exists(path)) : undefined
 }
 
+/**
+ * What a launch receives: the reference, for evidence, and a resolver that
+ * reads the value at the moment of the launch. Nothing caches the value.
+ */
+export interface NativeInjectedCredential {
+  reference: NativeCredentialReference
+  resolve(): Promise<NativeCredentialResolution>
+}
+export function nativeInjectedCredential(
+  reference: Readonly<NativeCredentialReference>,
+  target: string,
+  run: SecretStoreRunner = spawnSecretStore,
+): NativeInjectedCredential {
+  return {
+    reference: { ...reference },
+    resolve: () => resolveNativeCredential(reference, target, run),
+  }
+}
+
 export type NativeCredentialResolution =
   | { resolved: true; variable: string; value: string }
   | { resolved: false; reason: NativeCredentialFailure }

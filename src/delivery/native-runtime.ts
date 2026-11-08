@@ -18,12 +18,13 @@ const FORBIDDEN_RUNTIME_CONTROL = /[\x00-\x1f\x7f]/
  * With a credential reference (ADR-0209) the controller injects the named
  * secret-store item per launch and the client home is disposable per run.
  */
-export interface NativeRuntimeClient {
+export type NativeRuntimeClient = {
   target: keyof typeof REFERENCE_NATIVE_VERSIONS
   client: string
-  store: string
-  credential?: NativeCredentialReference
-}
+} & (
+  | { store: string; credential?: undefined }
+  | { credential: NativeCredentialReference; store?: undefined }
+)
 /**
  * The machine's inputs for one plan repository's unit QA (ADR-0207): a recipe
  * already prepared in the store, a digest-pinned helper image, and which
@@ -118,8 +119,10 @@ export function validNativeRuntime(value: unknown): value is NativeRuntime {
   for (const entry of document.clients) {
     if (typeof entry !== 'object' || entry === null) return false
     const client = entry as Record<string, unknown>
+    // With a credential the client home is disposable per launch, so a
+    // signed-in home cannot be named beside it.
     const fields = Object.hasOwn(client, 'credential')
-      ? 'client,credential,store,target'
+      ? 'client,credential,target'
       : 'client,store,target'
     if (
       Object.keys(client).sort().join(',') !== fields ||
@@ -129,8 +132,8 @@ export function validNativeRuntime(value: unknown): value is NativeRuntime {
       !Object.hasOwn(REFERENCE_NATIVE_VERSIONS, client.target) ||
       seen.has(client.target) ||
       !path(client.client) ||
-      !path(client.store) ||
-      client.client === client.store
+      (!Object.hasOwn(client, 'credential') &&
+        (!path(client.store) || client.client === client.store))
     )
       return false
     seen.add(client.target)

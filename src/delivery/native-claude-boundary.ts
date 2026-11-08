@@ -12,10 +12,13 @@ import { NATIVE_BOUNDARY_PROGRAM } from './native-boundary-program.js'
 import type { NativeDeliveryObservation } from './native-capabilities.js'
 import {
   CLAUDE_CREDENTIAL_FILES,
+  claudeInjectedConfig,
+  claudeInjectedHome,
   claudeSandboxProfile,
   type NativeClaudeContainment,
 } from './native-claude-sandbox.js'
 import { nativeBoundaryKey } from './native-codex-boundary.js'
+import type { NativeInjectedCredential } from './native-credentials.js'
 import { nativeWorkspaceWitness, sealNativeGitControl } from './native-workspace.js'
 
 type Input = Parameters<NativeBoundaryHost['observe']>[0]
@@ -38,6 +41,8 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
       provenance: 'fixture' | 'host-observed'
       process: NativeProcessRunner
       current(): boolean
+      /** Required exactly when the containment injects its credential (ADR-0209). */
+      credential?: NativeInjectedCredential
       /** Defaults to the running controller; tests pass a fixed value. */
       platform?: NodeJS.Platform
       node?: string
@@ -52,6 +57,7 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
     directory: string,
     observe?: Parameters<NativeProcessRunner>[2]['observe'],
     signal = input.signal ?? new AbortController().signal,
+    secret?: { variable: string; value: string },
   ) {
     const timeoutMs = Math.min(5000, Date.parse(input.assignment.deadline) - Date.now())
     if (!Number.isFinite(timeoutMs) || timeoutMs < 1 || signal.aborted || !this.options.current())
@@ -64,9 +70,16 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
         run: input.assignment.identity.run,
         attempt: input.assignment.identity.attempt,
       })
-    env.HOME = containment.home
     env.USER = containment.user
-    env.CLAUDE_CONFIG_DIR = containment.store
+    if (containment.credential === 'keychain') {
+      env.HOME = containment.home
+      env.CLAUDE_CONFIG_DIR = containment.store
+    } else {
+      env.HOME = claudeInjectedHome(directory)
+      env.CLAUDE_CONFIG_DIR = claudeInjectedConfig(directory)
+      // Only the call that needs it carries the value: the authentication check.
+      if (secret) env[secret.variable] = secret.value
+    }
     // The launch's own temporary directory, never the shared /tmp/claude-<uid>.
     env.CLAUDE_CODE_TMPDIR = join(directory, 'tmp')
     env.DISABLE_AUTOUPDATER = '1'
@@ -113,24 +126,32 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
     const directory = canonicalPath(input.recipe.cwd),
       prefix = this.files.path(
         `delivery/native/${input.assignment.identity.run}/${input.assignment.identity.attempt}`,
-      ),
-      store = canonicalPath(containment.store)
-    assertExternal(store)
+      )
     if (
-      store !== containment.store ||
       canonicalPath(containment.client) !== containment.client ||
       !inside(prefix, directory) ||
       directory === prefix ||
-      inside(this.files.root, store) ||
-      inside(store, this.files.root) ||
-      inside(directory, store) ||
-      (this.options.workspace && inside(this.options.workspace, store)) ||
-      !lstatSync(store).isDirectory() ||
       !lstatSync(containment.client).isFile() ||
-      // The client must keep its credential in the Keychain, never beside its settings.
-      readdirSync(store).some((name) => CLAUDE_CREDENTIAL_FILES.includes(name))
+      // A credential comes from exactly one source: the signed-in Keychain or the injection.
+      (containment.credential === 'injected') !== (this.options.credential !== undefined)
     )
       return undefined
+    const store =
+      containment.credential === 'keychain' ? canonicalPath(containment.store) : undefined
+    if (containment.credential === 'keychain' && store) {
+      assertExternal(store)
+      if (
+        store !== containment.store ||
+        inside(this.files.root, store) ||
+        inside(store, this.files.root) ||
+        inside(directory, store) ||
+        (this.options.workspace && inside(this.options.workspace, store)) ||
+        !lstatSync(store).isDirectory() ||
+        // The client must keep its credential in the Keychain, never beside its settings.
+        readdirSync(store).some((name) => CLAUDE_CREDENTIAL_FILES.includes(name))
+      )
+        return undefined
+    } else mkdirSync(claudeInjectedConfig(directory), { recursive: true, mode: 0o700 })
     const seal = this.options.workspace ? sealNativeGitControl(this.options.workspace) : () => true,
       workspace = this.options.workspace
         ? nativeWorkspaceWitness(this.options.workspace)
@@ -150,7 +171,7 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
         throw new Error('Native boundary control already issued; inspect its original owner')
       this.files.atomic(index, `${input.assignment.assignment}/${control}\n`)
     })
-    for (const name of ['inputs', 'outputs', 'tmp'])
+    for (const name of ['inputs', 'outputs', 'tmp', 'home'])
       mkdirSync(join(directory, name), { recursive: true, mode: 0o700 })
     this.files.atomic(`${root}/private-witness.txt`, nonce)
     this.files.atomic(`${root}/credential-witness.txt`, nonce)
@@ -255,17 +276,32 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
     }
     if (!ready || cancelled.status !== 'cancelled' || !seal()) return undefined
     // Only the client opens its own credential; retain a hash of its status, not its output.
+    // An injected credential is resolved for this one call. The client reports it
+    // as consumed without validating it (2.1.319), so this proves the client reads
+    // the injected variable, not that the account accepts it.
+    const secret = this.options.credential ? await this.options.credential.resolve() : undefined
+    if (secret && !secret.resolved) return undefined
     const status = await this.call(
       input,
       containment.sandbox,
       ['-p', launch, containment.client, 'auth', 'status'],
       '',
       directory,
+      undefined,
+      undefined,
+      secret?.resolved ? { variable: secret.variable, value: secret.value } : undefined,
     )
     let authenticated = false
     try {
-      const parsed = JSON.parse(status.stdout) as { loggedIn?: unknown }
-      authenticated = status.status === 'succeeded' && status.code === 0 && parsed.loggedIn === true
+      const parsed = JSON.parse(status.stdout) as { loggedIn?: unknown; authMethod?: unknown }
+      authenticated =
+        status.status === 'succeeded' &&
+        status.code === 0 &&
+        parsed.loggedIn === true &&
+        // An injected credential must be the one the client uses, not an ambient one.
+        (!this.options.credential ||
+          parsed.authMethod ===
+            (this.options.credential.reference.kind === 'api-key' ? 'api_key' : 'oauth_token'))
     } catch {
       authenticated = false
     }
@@ -278,7 +314,10 @@ export class ClaudeBoundaryHost implements NativeBoundaryHost {
       observation: value,
       cancelled: { status: cancelled.status, ownership: cancelled.ownership },
       program: hash(NATIVE_BOUNDARY_PROGRAM),
-      store: hash(store),
+      store: store ? hash(store) : null,
+      credential: this.options.credential
+        ? contractDigest(this.options.credential.reference)
+        : null,
       authentication: {
         status: status.status,
         code: status.code,

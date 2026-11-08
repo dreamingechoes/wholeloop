@@ -14,7 +14,12 @@ import { readSourceFile, sourceHash } from '../delivery/input.js'
 import type { NativeBoundaryHost } from '../delivery/native-assignment-host.js'
 import type { NativeBinding, NativeBindings } from '../delivery/native-bindings.js'
 import { ClaudeBoundaryHost } from '../delivery/native-claude-boundary.js'
+import type { NativeClaudeContainment } from '../delivery/native-claude-sandbox.js'
 import { CodexBoundaryHost } from '../delivery/native-codex-boundary.js'
+import {
+  type NativeInjectedCredential,
+  nativeInjectedCredential,
+} from '../delivery/native-credentials.js'
 import type { NativeProcessRunner, NativeRunOptions } from '../delivery/native-host.js'
 import { NativePurposeAttempts } from '../delivery/native-purpose.js'
 import {
@@ -94,15 +99,19 @@ export function publicNativeParts(
   | undefined {
   const entry = nativeRuntimeClient(runtime, binding.target)
   if (!entry) return undefined
-  const model = { target: binding.target, version: binding.version, model: binding.model }
+  const model = { target: binding.target, version: binding.version, model: binding.model },
+    // Exactly one credential source: a signed-in client home or an injected secret-store item.
+    source = entry.credential
+      ? { credential: nativeInjectedCredential(entry.credential, binding.target) }
+      : { nativeStore: entry.store as string }
   if (binding.target === 'codex') {
     const path = `${dirname(entry.client)}:${dirname(process.execPath)}:/usr/bin:/bin`
     return {
-      base: { ...model, path, nativeStore: entry.store, ...(output ? { output } : {}) },
+      base: { ...model, path, ...source, ...(output ? { output } : {}) },
       observer: (runner, workspace) =>
         new CodexBoundaryHost(store.files, {
           path,
-          nativeStore: entry.store,
+          ...source,
           ...(workspace ? { workspace } : {}),
           ...(output ? { output } : {}),
           provenance: 'host-observed',
@@ -112,19 +121,29 @@ export function publicNativeParts(
     }
   }
   const account = userInfo(),
-    containment = {
+    common = {
       kind: 'macos-sandbox' as const,
       sandbox: '/usr/bin/sandbox-exec',
       client: canonicalPath(entry.client),
-      home: canonicalPath(account.homedir),
       user: account.username,
-      store: canonicalPath(entry.store),
-    }
+    },
+    containment: NativeClaudeContainment = entry.credential
+      ? { ...common, credential: 'injected' }
+      : {
+          ...common,
+          credential: 'keychain',
+          home: canonicalPath(account.homedir),
+          store: canonicalPath(entry.store as string),
+        },
+    claudeSource =
+      containment.credential === 'keychain'
+        ? { nativeStore: containment.store }
+        : { credential: (source as { credential: NativeInjectedCredential }).credential }
   return {
     base: {
       ...model,
       path: '/usr/bin:/bin',
-      nativeStore: containment.store,
+      ...claudeSource,
       containment,
       ...(output ? { output } : {}),
     },
@@ -132,6 +151,7 @@ export function publicNativeParts(
       new ClaudeBoundaryHost(store.files, {
         path: '/usr/bin:/bin',
         containment,
+        ...(containment.credential === 'injected' ? claudeSource : {}),
         ...(workspace ? { workspace } : {}),
         ...(output ? { output } : {}),
         provenance: 'host-observed',

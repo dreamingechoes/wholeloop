@@ -12,6 +12,7 @@ import { nativeDeliveryRecipe, REFERENCE_NATIVE_VERSIONS } from './native-adapte
 import type { NativeBoundaryHost, NativeProcessRunner } from './native-assignment-host.js'
 import { NATIVE_BOUNDARY_PROGRAM } from './native-boundary-program.js'
 import type { NativeDeliveryObservation } from './native-capabilities.js'
+import type { NativeInjectedCredential } from './native-credentials.js'
 import { nativeWorkspaceWitness, sealNativeGitControl } from './native-workspace.js'
 
 type Input = Parameters<NativeBoundaryHost['observe']>[0]
@@ -40,7 +41,9 @@ export class CodexBoundaryHost implements NativeBoundaryHost {
     readonly files: StoreFiles,
     readonly options: {
       path: string
-      nativeStore: string
+      /** The signed-in client home; absent exactly when a credential is injected (ADR-0209). */
+      nativeStore?: string
+      credential?: NativeInjectedCredential
       workspace?: string
       output?: 'files' | 'inline-proposal'
       provenance: 'fixture' | 'host-observed'
@@ -74,7 +77,8 @@ export class CodexBoundaryHost implements NativeBoundaryHost {
           run: input.assignment.identity.run,
           attempt: input.assignment.identity.attempt,
         }),
-        CODEX_HOME: credentials ? this.options.nativeStore : home,
+        // An injected credential leaves no signed-in home: every call uses its own disposable one.
+        CODEX_HOME: credentials && this.options.nativeStore ? this.options.nativeStore : home,
         OPENSSL_CONF: '/dev/null',
       },
       ...(observe ? { observe } : {}),
@@ -111,13 +115,21 @@ export class CodexBoundaryHost implements NativeBoundaryHost {
       prefix = this.files.path(
         `delivery/native/${input.assignment.identity.run}/${input.assignment.identity.attempt}`,
       ),
-      credentials = canonicalPath(this.options.nativeStore)
-    assertExternal(credentials)
-    safeSourceText(credentials, 4096)
+      // Without a signed-in home the boundary program still proves that a
+      // path outside the run is denied; the controller's own witness serves.
+      credentials = this.options.nativeStore
+        ? canonicalPath(this.options.nativeStore)
+        : this.files.path('delivery/native-boundary-credential-witness')
+    if ((this.options.nativeStore === undefined) === (this.options.credential === undefined))
+      return undefined
+    if (this.options.nativeStore) {
+      assertExternal(credentials)
+      safeSourceText(credentials, 4096)
+    } else mkdirSync(credentials, { recursive: true, mode: 0o700 })
     if (
       !inside(prefix, directory) ||
       directory === prefix ||
-      inside(this.files.root, credentials) ||
+      (this.options.nativeStore !== undefined && inside(this.files.root, credentials)) ||
       inside(directory, credentials) ||
       (this.options.workspace && inside(this.options.workspace, credentials)) ||
       !lstatSync(credentials).isDirectory()
@@ -308,13 +320,23 @@ export class CodexBoundaryHost implements NativeBoundaryHost {
     const config = input.recipe.args.flatMap((arg, index, all) =>
         arg === '--config' ? ['--config', all[index + 1] ?? ''] : [],
       ),
-      status = await this.call(
-        input,
-        ['--ask-for-approval', 'never', ...config, 'login', 'status'],
-        '',
-        home,
-        true,
-      ),
+      // `login status` ignores CODEX_API_KEY (0.166.0), which only `exec` reads, so
+      // an injected key is checked by resolving it; its validity shows at launch.
+      injected = this.options.credential ? await this.options.credential.resolve() : undefined,
+      status = injected
+        ? {
+            status: injected.resolved ? ('succeeded' as const) : ('crashed' as const),
+            code: injected.resolved ? 0 : 1,
+            stdout: '',
+            ownership: { invocationState: 'not-started' as const },
+          }
+        : await this.call(
+            input,
+            ['--ask-for-approval', 'never', ...config, 'login', 'status'],
+            '',
+            home,
+            true,
+          ),
       control = readSourceFile(
         this.files.root,
         `delivery/native-boundary-index/${nativeBoundaryKey(input)}.txt`,
@@ -326,7 +348,10 @@ export class CodexBoundaryHost implements NativeBoundaryHost {
       policy: observed.evidence,
       assignment: observed.assignment,
       model: observed.model,
-      store: hash(canonicalPath(this.options.nativeStore)),
+      store: this.options.nativeStore ? hash(canonicalPath(this.options.nativeStore)) : null,
+      credential: this.options.credential
+        ? contractDigest(this.options.credential.reference)
+        : null,
       authentication: {
         status: status.status,
         code: status.code,

@@ -184,6 +184,38 @@ describe('actual-boundary reference observer preserves independent proof and own
       expect(proof).not.toContain(host.options.nativeStore)
     })
   })
+  it('checks an injected Codex key by resolving it, since login status cannot see it (ADR-0209)', async () => {
+    for (const resolved of [true, false])
+      await setup(async ({ host, input, calls }) => {
+        const { nativeStore: _store, ...options } = host.options,
+          injected = new CodexBoundaryHost(host.files, {
+            ...options,
+            credential: {
+              reference: { store: 'macos-keychain', item: 'codex-worker', kind: 'api-key' },
+              resolve: async () =>
+                resolved
+                  ? { resolved: true, variable: 'CODEX_API_KEY', value: 'sk-fake-codex-0123' }
+                  : { resolved: false, reason: 'credential-missing' },
+            },
+          })
+        const value = await injected.observe(input)
+        expect(value).toMatchObject({ authenticated: resolved })
+        expect(calls.some((args) => args.includes('login'))).toBe(false)
+        expect(JSON.stringify(value)).not.toContain('sk-fake-codex-0123')
+      })
+  })
+  it('refuses a boundary host with both or neither credential source', async () => {
+    await setup(async ({ host, input }) => {
+      const both = new CodexBoundaryHost(host.files, {
+        ...host.options,
+        credential: {
+          reference: { store: 'macos-keychain', item: 'codex-worker', kind: 'api-key' },
+          resolve: async () => ({ resolved: false, reason: 'credential-missing' }),
+        },
+      })
+      expect(await both.probePolicy(input)).toBeUndefined()
+    })
+  })
   it('refuses changed policy bytes and unsupported versions before any control process', async () => {
     await setup(async ({ host, input, calls }) => {
       expect(

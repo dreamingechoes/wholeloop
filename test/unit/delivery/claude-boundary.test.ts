@@ -17,17 +17,22 @@ import {
   claudeSandboxProfile,
   type NativeClaudeContainment,
 } from '../../../src/delivery/native-claude-sandbox.js'
+
+/** The signed-in Keychain variant these boundary tests exercise. */
+type KeychainContainment = Extract<NativeClaudeContainment, { credential: 'keychain' }>
+
 import { workspaceSnapshot } from '../../../src/gates/snapshot.js'
 import { fixture } from '../../support/delivery.js'
 import { nativeBoundaryInput } from '../../support/native-boundary.js'
 
-const contained = (dir: string): NativeClaudeContainment => {
+const contained = (dir: string): KeychainContainment => {
   const client = join(dir, 'claude-client'),
     store = join(dir, 'claude-store')
   writeFileSync(client, '')
   mkdirSync(store, { recursive: true, mode: 0o700 })
   return {
     kind: 'macos-sandbox',
+    credential: 'keychain',
     sandbox: '/usr/bin/sandbox-exec',
     client,
     home: dir,
@@ -41,7 +46,7 @@ async function setup(
     host: ClaudeBoundaryHost
     input: ReturnType<typeof nativeBoundaryInput>['input']
     calls: { command: string; args: string[]; env: NodeJS.ProcessEnv }[]
-    containment: NativeClaudeContainment
+    containment: KeychainContainment
     root: string
   }) => Promise<void>,
   options: {
@@ -119,8 +124,9 @@ async function setup(
 
 describe('contained Claude Code reference boundary (ADR-0203)', () => {
   it('denies everything first, then allows only the assignment, client and Keychain paths', () => {
-    const containment: NativeClaudeContainment = {
+    const containment: KeychainContainment = {
         kind: 'macos-sandbox',
+        credential: 'keychain',
         sandbox: '/usr/bin/sandbox-exec',
         client: '/opt/claude/2.1.316',
         home: '/home/owner',
@@ -167,6 +173,40 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
           workspaceWrite: false,
         }),
       ).toThrow()
+  })
+  it('grants an injected-credential launch no Keychain and no signed-in home (ADR-0209)', () => {
+    const keychain = claudeSandboxProfile({
+        containment: {
+          kind: 'macos-sandbox',
+          credential: 'keychain',
+          sandbox: '/usr/bin/sandbox-exec',
+          client: '/owner/claude-client',
+          home: '/owner',
+          user: 'owner',
+          store: '/owner/claude-store',
+        },
+        directory: '/run/launch',
+        output: 'files',
+        workspaceWrite: false,
+      }),
+      injected = claudeSandboxProfile({
+        containment: {
+          kind: 'macos-sandbox',
+          credential: 'injected',
+          sandbox: '/usr/bin/sandbox-exec',
+          client: '/owner/claude-client',
+          user: 'owner',
+        },
+        directory: '/run/launch',
+        output: 'files',
+        workspaceWrite: false,
+      })
+    expect(keychain).toContain('(subpath "/owner/Library/Keychains")')
+    expect(injected).not.toContain('Keychains')
+    expect(injected).not.toContain('claude-store')
+    // The disposable client home may be written, but never a credential file inside it.
+    expect(injected).toContain('(subpath "/run/launch/home")')
+    expect(injected).toContain('(literal "/run/launch/home/.claude/.credentials.json")')
   })
   it('binds the profile into the recipe policy and refuses containment for Codex', async () => {
     await setup(async ({ input, containment }) => {
@@ -280,6 +320,7 @@ describe('contained Claude Code reference boundary (ADR-0203)', () => {
         profile = claudeSandboxProfile({
           containment: {
             kind: 'macos-sandbox',
+            credential: 'keychain',
             sandbox: '/usr/bin/sandbox-exec',
             client: '/usr/bin/touch',
             home: realpathSync(homedir()),
