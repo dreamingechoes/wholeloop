@@ -18,7 +18,11 @@ Expanded 1.0.0 also includes [Phase 6](./phase-6-autonomous-delivery.md) and [Ph
 
 - [ ] The P1 conformance scenario passes on both CLIs (sequential or headless engine where needed).
 
-**Progress (2026-11-08)** — The scenario passes live on Antigravity 1.5.3 (run cf-9ea0ac99ec4ae55e10cea088) and its read-only probe passes. Gemini 0.67.0 is paused by the maintainer: it needs workspace trust and ignores non-root system settings, so its read-only policy must move to the policy engine first. The criterion stays open until Gemini passes.
+**Progress (2026-11-11)** — The scenario passes live on Antigravity 1.5.3 (run cf-9ea0ac99ec4ae55e10cea088) and its read-only probe passes.
+
+Gemini 0.67.0 is unpaused. Its read-only boundary now uses a disposable home, an admin-tier policy and session-only trust ([ADR-0071](../docs/decisions/0071-gemini-observer-registry-and-private-policy.md)). The read-only probe passes live.
+
+The framing scenario reached `frame finalize` with the exact launcher and file grants honoured, then the API key's free-tier daily quota ended the run (exit 173). The criterion stays open until a Gemini run with quota passes.
 
 **Local implementation:** Gemini extension generation, strict local-agent tools/model inheritance, plain-text questions, owned user/project overlays, explicit doctor, unapplied MCP recipes/declaration detection and the shared fresh framing runner are implemented. Actual Gemini 0.27.0 static loaders accepted eight generated agents and seventeen skills; installed-launcher simulation remains simulation. Use the explicit Git fallback for loose overlays. Generated extensions now bind the root through native hook.env, with exact core integrity checks; actual 0.27.0 loader/runner read/deny probes passed without model calls. Native enablement/permissions/model/MCP checks remain manual verification. Antigravity now has a closed plugin manifest, wl-agy- native namespace, strict inherited roles, owned user/project overlays, hash-pinned named hook transport, serverUrl MCP recipes/detection, explicit agy doctor and JSONL framing recipe. Installed-launcher simulation and authored native hook payloads exercise the real core; actual native loading/permissions/model/MCP checks remain manual verification. Local agy 1.4.2 listing could not bind a port under the execution sandbox. Both local adapters and hook transports are implemented; native model/permission/MCP conformance remains manual verification and does not block Cursor work. See ADR-0055 and ADR-0056.
 

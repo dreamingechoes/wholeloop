@@ -20,6 +20,10 @@ const grantedPaths = (run: PreparedConformance) => [
   ...Object.values(grantedFiles(run)),
 ]
 
+/** Written by preparation beside the fixture's own homes, outside every granted path. */
+export const geminiFramingPolicyPath = (run: Pick<PreparedConformance, 'home'>) =>
+  join(run.home, 'gemini-policy.toml')
+
 export function conformanceBinary(target: string) {
   if (target === 'cursor') return 'agent'
   if (target === 'antigravity') return 'agy'
@@ -83,6 +87,12 @@ export function conformanceRecipe(run: PreparedConformance, model?: string) {
     return {
       ...common,
       args: [
+        // The fixture is a directory wholeloop created; trust lasts this session only.
+        '--skip-trust',
+        // Headless Gemini denies every shell call and write; the admin policy grants only the
+        // exact checked launcher and the three framing files (geminiFramingPolicy).
+        '--admin-policy',
+        geminiFramingPolicyPath(run),
         '--prompt',
         'Follow the scenario on standard input.',
         '--output-format',
@@ -178,7 +188,7 @@ export function conformanceRecipe(run: PreparedConformance, model?: string) {
 export function conformancePrompt(run: PreparedConformance, scenario: Scenario): string {
   return [
     `Run the project-local ${basename(dirname(run.skill))} skill once, standalone. Load its actual installed SKILL.md and follow its instructions.`,
-    run.target === 'copilot' || run.target === 'antigravity'
+    run.target === 'copilot' || run.target === 'antigravity' || run.target === 'gemini'
       ? // These grants match the launcher path as the command, so it must not be run through node.
         `The project skill is at ${JSON.stringify(run.skill)}. Run its checked launcher directly as the command, without node: ${JSON.stringify(run.launcher)}. Any other command is denied.`
       : `The project skill is at ${JSON.stringify(run.skill)}. Use its checked launcher: node ${JSON.stringify(run.launcher)}.`,
@@ -193,7 +203,7 @@ export function conformancePrompt(run: PreparedConformance, scenario: Scenario):
     'Decode and preserve those exact artifact bytes. Use frame draft with that decision and verify its SHA-256 matches the declaration. If a content change is needed, stop for a new scripted declaration; do not approve your own revision.',
     'Perform the actual final semantic challenger review of those bytes, retaining unknowns as explicit evidence gaps. Only then use frame finalize with the matching review. The declaration does not supply a reviewer or waive review; do not fabricate a review from a structural check.',
     `Write the framing draft only at ${JSON.stringify(run.artifact)}; runtime state is ${JSON.stringify(run.state)}.`,
-    ...(run.target === 'copilot' || run.target === 'antigravity'
+    ...(run.target === 'copilot' || run.target === 'antigravity' || run.target === 'gemini'
       ? [
           `Save the frame decision JSON only at ${JSON.stringify(grantedFiles(run).decision)} and the final review JSON only at ${JSON.stringify(grantedFiles(run).review)}; writes anywhere else are denied.`,
         ]
@@ -203,6 +213,12 @@ export function conformancePrompt(run: PreparedConformance, scenario: Scenario):
     ...(run.target === 'antigravity'
       ? [
           'This headless session has exactly one turn: a background subagent cannot report back before it ends. Perform the final challenger review yourself in this turn, following the challenger agent instructions, instead of delegating it.',
+        ]
+      : []),
+    // Gemini's admin policy denies invoke_agent, so a delegated review would only be refused.
+    ...(run.target === 'gemini'
+      ? [
+          'Subagents are unavailable in this session. Perform the final challenger review yourself, following the challenger agent instructions, instead of delegating it.',
         ]
       : []),
     'Do not edit the repository, change configuration, commit, push, call remote services or start another step. Do not invent evidence, metrics, validation or approvals.',

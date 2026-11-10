@@ -8,6 +8,8 @@ const names = [
   '.cursor/cli.json',
   '.cursor/hooks.json',
   '.gemini/worker-settings.json',
+  '.gemini/worker-policy.toml',
+  '.gemini-home/.gemini/settings.json',
   '.agents/hooks.json',
 ] as const
 export type WorkerPolicyFile =

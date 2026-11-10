@@ -3,6 +3,14 @@
 - **Status:** Accepted
 - **Date:** 2026-10-20
 
+**Amended 2026-11-11.** Gemini 0.67.0 honours a system settings file only when root owns it, so the worker's file is skipped there. Gemini also refuses project configuration in an untrusted workspace. Both failures blocked the read-only probe and the framing scenario. Three changes, all observed on 0.67.0:
+
+- **Disposable home:** the observer gets its own `GEMINI_CLI_HOME`. Its user settings carry the same restrictions plus only the user's auth method, `security.auth.selectedType`, so no hook, skill, extension, MCP server or memory of the user reaches it. The credential stays in the client's own store.
+- **Admin-tier policy:** the read-only boundary is now an `--admin-policy` file. It denies every tool and every MCP server, then allows only the read tools. Gemini ignores supplemental admin policies when its system policy directory holds a `.toml` file, so such a file counts as an existing administrator policy and the worker refuses to start.
+- **Session trust:** `--skip-trust` trusts the directory wholeloop created for that session only. The framing scenario gets the same trust and an admin policy that grants exactly the checked launcher through `commandPrefix` and exact writes to the draft, decision and review files. Gemini splits compound commands, checks every part and downgrades redirections. A hand-written `commandRegex` was rejected: Gemini refuses it as a ReDoS risk and never anchors it.
+
+The read-only probe passed live (`gemini-3-flash-preview`; the default model returned 503). The framing scenario reached `frame finalize` with every grant honoured, and was then stopped by the free tier's daily request quota.
+
 ## Context
 
 Gemini has a headless entrypoint, but allowed-tools only bypasses confirmation and project settings may be dropped in an untrusted workspace. Plan mode alone is not a positive tool boundary. Existing managed settings must not be replaced, and redirecting the system settings path also changes the default defaults-file path.

@@ -8,6 +8,7 @@ import { canonicalDigest } from '../adapters/canonical.js'
 import { artifactDigest } from '../adapters/generate.js'
 import { openCodeMajor } from '../adapters/opencode-version.js'
 import { isObject } from '../config/schema.js'
+import { geminiFramingPolicy } from '../fanout/gemini-policy.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { manageInstallation } from '../installation/manage.js'
 import { installedName, installLocations } from '../installation/plan.js'
@@ -18,7 +19,13 @@ import {
   type ConformanceContext,
   type PreparedConformance,
 } from './contracts.js'
-import { conformanceInput, conformancePrompt, conformanceRecipe } from './recipes.js'
+import {
+  conformanceInput,
+  conformancePrompt,
+  conformanceRecipe,
+  geminiFramingPolicyPath,
+  grantedFiles,
+} from './recipes.js'
 import { conformanceScenario } from './scenario.js'
 
 const pinPattern = /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/
@@ -145,6 +152,12 @@ export function prepareConformance(context: ConformanceContext, target: string, 
     phase: 'prepared',
   }
   files.atomic('run.json', `${JSON.stringify(run)}\n`)
+  if (target === 'gemini')
+    writeFileSync(
+      geminiFramingPolicyPath(run),
+      geminiFramingPolicy({ launcher: run.launcher, files: Object.values(grantedFiles(run)) }),
+      { flag: 'wx', mode: 0o644 },
+    )
   files.atomic('prompt.txt', `${conformancePrompt(run, scenario)}\n`)
   files.atomic('input.txt', conformanceInput(run, scenario))
   return {

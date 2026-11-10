@@ -4,6 +4,26 @@
 
 ---
 
+## 2026-11-11 · P5-01 · Gemini 0.67 read-only boundary through its policy engine
+
+- Unpaused by the maintainer. Gemini 0.67 skips a system settings file that root does not own, and it drops project configuration in an untrusted workspace. That left the observer without its restrictions and the framing fixture without its skills.
+- The observer now gets:
+  - a disposable `GEMINI_CLI_HOME` whose user settings hold the same restrictions and only the user's auth method;
+  - an `--admin-policy` file that denies every tool and MCP server and allows only reading;
+  - `--skip-trust` for the directory wholeloop created.
+
+  A system policy directory holding a `.toml` file would silently void a supplemental admin policy, so it now counts as an administrator policy and the worker refuses to start.
+- The framing fixture gets an admin policy, written by `prepare`, that grants the exact launcher through `commandPrefix` and exact writes to the draft, decision and review files. The prompt now names those files and asks for the review in-turn, as it already did for Copilot and Antigravity. The session-label tool `update_topic` is allowed, because each denial cost a request.
+- Found and rejected:
+  - a hand-written `commandRegex`, which Gemini refuses as a ReDoS risk and never anchors;
+  - the earlier guess that the failures came from the environment. Exit 173 is Gemini's `TerminalQuotaError`.
+- **Live on 0.67.0:**
+  - the read-only probe passes;
+  - framing reached `frame finalize` with every grant honoured, then the free tier's daily quota (20 requests per model) ended it.
+
+  The default model returned 503, so runs used `GEMINI_MODEL`. P5-01 stays open until a run with quota passes. ADR-0071 amended.
+- Gate: CHECK PASS in 789s, 4701 tests, macOS arm64; the Linux matrix is recorded separately.
+
 ## 2026-11-10 · Local 1.0.0-rc.1 rehearsal
 
 - The history scan found one new result: the comment in `.gitleaksignore` that quotes the ADR-0078 prose. The P7-06 audit ran before that file was committed, so it could not see it. It was reviewed as a false positive and listed; the scan is now clean over 405 commits.

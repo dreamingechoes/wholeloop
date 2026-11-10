@@ -7,23 +7,28 @@ import {
   realpathSync,
   rmSync,
   symlinkSync,
+  writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { parse } from 'smol-toml'
 import { describe, expect, it } from 'vitest'
 import { headlessAdapter } from '../../../src/fanout/adapters.js'
 import {
   GEMINI_OBSERVER_TOOLS,
+  geminiAuthSelection,
   geminiInvocation,
   geminiWorkerEnvironment,
   geminiWorkerPolicy,
 } from '../../../src/fanout/gemini.js'
+import { geminiFramingPolicy, geminiReadOnlyPolicy } from '../../../src/fanout/gemini-policy.js'
 import { geminiSystemPaths } from '../../../src/fanout/gemini-system.js'
 import { stageWorkerPolicy, type WorkerPolicyFile } from '../../../src/fanout/policy-files.js'
 
 const managed = {
   settings: '/native/settings.json',
   defaults: '/native/system-defaults.json',
+  policies: '/native/policies',
   present: false,
 }
 const context = { repository: '/repo with spaces', directory: '/external/worker', env: {} }
@@ -34,6 +39,9 @@ describe('Gemini private observer policy', () => {
     expect(headlessAdapter('gemini').id).toBe('gemini')
     expect(invocation.command).toBe('gemini')
     expect(invocation.args).toEqual([
+      '--skip-trust',
+      '--admin-policy',
+      '/external/worker/.gemini/worker-policy.toml',
       '--prompt',
       'Follow the read-only assignment on standard input.',
       '--output-format',
@@ -68,11 +76,43 @@ describe('Gemini private observer policy', () => {
     expect(policy).not.toHaveProperty('model')
     expect(policy).not.toHaveProperty('security.folderTrust')
     expect(Object.keys(invocation.env).sort()).toEqual([
+      'GEMINI_CLI_HOME',
       'GEMINI_CLI_SYSTEM_DEFAULTS_PATH',
       'GEMINI_CLI_SYSTEM_SETTINGS_PATH',
       'NO_BROWSER',
     ])
     expect(invocation.env.GEMINI_CLI_SYSTEM_DEFAULTS_PATH).toBe(managed.defaults)
+    // Gemini 0.67 ignores a system settings file root does not own, so the same restrictions
+    // also live in the disposable home and the read-only boundary in admin-tier policy.
+    expect(invocation.env.GEMINI_CLI_HOME).toBe('/external/worker/.gemini-home')
+    expect(JSON.parse(invocation.files.get('.gemini-home/.gemini/settings.json') ?? '')).toEqual(
+      geminiWorkerPolicy(),
+    )
+    expect(invocation.files.get('.gemini/worker-policy.toml')).toBe(geminiReadOnlyPolicy())
+  })
+
+  it("copies only the user's auth method into the disposable home, never a credential", () => {
+    const home = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-gemini-auth-')))
+    try {
+      mkdirSync(join(home, '.gemini'))
+      writeFileSync(
+        join(home, '.gemini/settings.json'),
+        JSON.stringify({
+          security: { auth: { selectedType: 'gemini-api-key', apiKey: 'fake-secret' } },
+          hooks: { BeforeTool: [] },
+        }),
+      )
+      expect(geminiAuthSelection({ GEMINI_CLI_HOME: home })).toEqual({
+        security: { auth: { selectedType: 'gemini-api-key' } },
+      })
+      const invocation = geminiInvocation({ ...context, env: { GEMINI_CLI_HOME: home } }, managed)
+      const settings = invocation.files.get('.gemini-home/.gemini/settings.json') ?? ''
+      expect(settings).not.toContain('fake-secret')
+      expect(settings).not.toContain('BeforeTool')
+      expect(geminiAuthSelection({ GEMINI_CLI_HOME: join(home, 'missing') })).toEqual({})
+    } finally {
+      rmSync(home, { recursive: true, force: true })
+    }
   })
 
   it.each(['native', 'environment'] as const)(
@@ -111,10 +151,12 @@ describe('Gemini private observer policy', () => {
     expect(geminiSystemPaths('darwin')).toEqual({
       settings: '/Library/Application Support/GeminiCli/settings.json',
       defaults: '/Library/Application Support/GeminiCli/system-defaults.json',
+      policies: '/Library/Application Support/GeminiCli/policies',
     })
     expect(geminiSystemPaths('linux')).toEqual({
       settings: '/etc/gemini-cli/settings.json',
       defaults: '/etc/gemini-cli/system-defaults.json',
+      policies: '/etc/gemini-cli/policies',
     })
     expect(() => geminiSystemPaths('win32')).toThrow(/macOS and Linux/)
   })
@@ -164,5 +206,40 @@ describe('Gemini private observer policy', () => {
     ])
       expect(() => adapter.response(JSON.stringify(value), '')).toThrow()
     expect(() => adapter.response('progress\n{"response":"{}"}', '')).toThrow()
+  })
+})
+
+describe('Gemini admin-tier policy (0.67)', () => {
+  const rules = (toml: string) => parse(toml).rule as Record<string, unknown>[]
+  it('denies every tool and MCP server, then allows only reading for the observer', () => {
+    const read = rules(geminiReadOnlyPolicy())
+    expect(read[0]).toMatchObject({ toolName: '*', decision: 'deny' })
+    expect(read[1]).toMatchObject({ toolName: '*', mcpName: '*', decision: 'deny' })
+    const allowed = read.filter((rule) => rule.decision === 'allow')
+    expect(allowed).toHaveLength(1)
+    expect(allowed[0]?.toolName).not.toContain('write_file')
+    expect(allowed[0]?.toolName).not.toContain('run_shell_command')
+    expect(allowed[0]?.toolName).not.toContain('invoke_agent')
+  })
+  it('grants the framing scenario only its launcher and exact files', () => {
+    const framing = rules(
+      geminiFramingPolicy({ launcher: '/r/.gemini/skills/x/scripts/wl.mjs', files: ['/s/d.md'] }),
+    )
+    expect(framing).toContainEqual({
+      toolName: 'run_shell_command',
+      commandPrefix: '/r/.gemini/skills/x/scripts/wl.mjs',
+      decision: 'allow',
+      priority: 600,
+    })
+    const write = framing.find(
+      (rule) => Array.isArray(rule.toolName) && rule.toolName.includes('write_file'),
+    )
+    expect(write?.argsPattern).toBe('"file_path":"\\/s\\/d\\.md"')
+    // The exact-path pattern matches that file and neither a sibling nor a longer path.
+    const pattern = new RegExp(String(write?.argsPattern))
+    expect(pattern.test(JSON.stringify({ content: 'x', file_path: '/s/d.md' }))).toBe(true)
+    expect(pattern.test(JSON.stringify({ file_path: '/s/d.md.bak' }))).toBe(false)
+    expect(pattern.test(JSON.stringify({ file_path: '/s/other.md' }))).toBe(false)
+    expect(() => geminiFramingPolicy({ launcher: '/a b/wl.mjs', files: [] })).toThrow(/absolute/)
   })
 })

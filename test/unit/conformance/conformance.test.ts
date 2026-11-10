@@ -21,6 +21,7 @@ import {
   conformanceEnvironment,
   conformancePrompt,
   conformanceRecipe,
+  geminiFramingPolicyPath,
   grantedFiles,
 } from '../../../src/conformance/recipes.js'
 import { reportConformance, runConformance } from '../../../src/conformance/run.js'
@@ -163,6 +164,25 @@ describe('standalone conformance runner', () => {
       expect(JSON.parse(readFileSync(received, 'utf8')).message.content).toContain(
         'wl-agy-frame-problem',
       )
+    })
+  })
+
+  it('grants Gemini only its launcher and framing files through an admin policy it writes once', async () => {
+    await fixture(async (ctx) => {
+      const prepared = prepareConformance(ctx, 'gemini', '0.67.0'),
+        run = readConformance(ctx, prepared.id),
+        policy = geminiFramingPolicyPath(run)
+      // Trust is per session, for the directory wholeloop created; the policy is outside every grant.
+      expect(prepared.recipe.args.slice(0, 3)).toEqual(['--skip-trust', '--admin-policy', policy])
+      const toml = readFileSync(policy, 'utf8')
+      expect(toml).toContain(`commandPrefix = ${JSON.stringify(run.launcher)}`)
+      for (const file of Object.values(grantedFiles(run)))
+        expect(toml).toContain(file.split('/').at(-1)?.replace('.', '\\\\.'))
+      expect(Object.values(grantedFiles(run))).not.toContain(policy)
+      const prompt = readFileSync(prepared.prompt, 'utf8')
+      expect(prompt).toContain(grantedFiles(run).review)
+      expect(prompt).toContain('without node')
+      expect(prompt).toContain('Subagents are unavailable')
     })
   })
 

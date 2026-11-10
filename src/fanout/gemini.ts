@@ -1,7 +1,9 @@
 // Gemini headless worker: a restricted tool registry, environment and invocation.
+import { readFileSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 import { isObject } from '../config/schema.js'
 import type { HeadlessAdapter } from './adapters.js'
+import { geminiReadOnlyPolicy } from './gemini-policy.js'
 import { geminiManagedPolicy } from './gemini-system.js'
 import type { WorkerPolicyFile } from './policy-files.js'
 
@@ -36,6 +38,29 @@ export function geminiWorkerPolicy() {
   }
 }
 
+/**
+ * The user's chosen auth method, and nothing else, from their own settings. It
+ * names a method such as gemini-api-key; the credential stays in the client's
+ * store or environment and is never copied.
+ */
+export function geminiAuthSelection(environment: NodeJS.ProcessEnv) {
+  // Only the environment the launch receives; no ambient home lookup.
+  const home = environment.GEMINI_CLI_HOME ?? environment.HOME
+  if (!home) return {}
+  try {
+    const value: unknown = JSON.parse(readFileSync(join(home, '.gemini/settings.json'), 'utf8'))
+    const type =
+      isObject(value) && isObject(value.security) && isObject(value.security.auth)
+        ? value.security.auth.selectedType
+        : undefined
+    return typeof type === 'string' && /^[a-z][a-z-]{0,39}$/.test(type)
+      ? { security: { auth: { selectedType: type } } }
+      : {}
+  } catch {
+    return {}
+  }
+}
+
 export function geminiWorkerEnvironment(
   directory: string,
   environment: NodeJS.ProcessEnv,
@@ -49,6 +74,9 @@ export function geminiWorkerEnvironment(
   if (!isAbsolute(defaults) || /[\r\n]/.test(defaults))
     throw new Error('Preserve Gemini system defaults through an explicit absolute path')
   return {
+    // A disposable home: no user hook, skill, extension, MCP server or memory reaches the
+    // observer. Its settings carry the restrictions plus the user's auth selection only.
+    GEMINI_CLI_HOME: join(directory, '.gemini-home'),
     GEMINI_CLI_SYSTEM_SETTINGS_PATH: join(directory, '.gemini/worker-settings.json'),
     // The native default path is derived from the override directory; retain the original instead.
     GEMINI_CLI_SYSTEM_DEFAULTS_PATH: defaults,
@@ -66,6 +94,11 @@ export function geminiInvocation(
   return {
     command: 'gemini',
     args: [
+      // The directory is one wholeloop created for this worker; trust lasts this session only.
+      '--skip-trust',
+      // Gemini 0.67 ignores system settings that root does not own; admin-tier policy applies.
+      '--admin-policy',
+      join(directory, '.gemini/worker-policy.toml'),
       '--prompt',
       'Follow the read-only assignment on standard input.',
       '--output-format',
@@ -82,6 +115,11 @@ export function geminiInvocation(
     env: geminiWorkerEnvironment(directory, env, managed),
     files: new Map<WorkerPolicyFile, string>([
       ['.gemini/worker-settings.json', JSON.stringify(geminiWorkerPolicy())],
+      ['.gemini/worker-policy.toml', geminiReadOnlyPolicy()],
+      [
+        '.gemini-home/.gemini/settings.json',
+        JSON.stringify({ ...geminiWorkerPolicy(), ...geminiAuthSelection(env) }),
+      ],
     ]),
   }
 }
