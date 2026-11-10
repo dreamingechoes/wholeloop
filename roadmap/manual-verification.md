@@ -158,7 +158,7 @@ The secret-store references, per-launch injection, disposable client homes, the 
 - [ ] A Codex run that completes unattended with an injected key, and one with the ChatGPT sign-in.
 - [ ] A missing or invalid credential: a missing item ends at preflight with `public-host-credential-missing`, and an invalid one at its first launch with `authentication-required`.
 - [ ] Observe an exhausted Codex window live: the run waits in `waiting-external`, resumes after the reset and keeps its stages. Claude Code reports no window, so its exhaustion stays an infrastructure failure.
-- [ ] Linux: store and resolve through Secret Service on a desktop host, and confirm `credential-store-unavailable` on a host without one. Windows through WSL2 is untested.
+- [x] Linux: store and resolve through Secret Service on a desktop host, and confirm `credential-store-unavailable` on a host without one. Done on 2026-11-10 in disposable Debian 12 containers ([Linux platform matrix](#linux-platform-matrix-2026-11-10-source-4c1d28f)). Windows through WSL2 is untested.
 - [ ] Compare the exposure of an injected variable to other processes of the same user with stdin, where a client accepts stdin.
 
 ## Envelope-grant continuation (P6-41)
@@ -472,6 +472,33 @@ P6-07 adds persistent finite deadlines, reservations, CI/restart/repair counters
 The final code candidate archive is 3be6fdf392fb4e3f39903932d90d52161b637a5648e36f3c44f7c9d7637b27ac, based on 5f8d81f plus P6-07 source/tests; the copied macOS core is 85c9bc61c73c25caa6926e8038440140c3a80988ceeb329cae36db33ca89f30b. Actual pre-evidence-update package receipts are macOS 1a2ce5655b5d77cc01ba29f6c0432c00c59a51a30cd2031f5877954f40c826f6 and Linux 2025034c41984a216a3d6081aeb400b77ed4325caa0bd5cd8fda12d685b28f01. The Linux build uses the isolated dependency-cache path described below; these archives are not claimed identical. Final README/evidence edits receive another local package check.
 
 Preserve initial checks: both hosts pass 2286 tests before final review identifies unmetered legacy accounting. Add that regression, correct its missing queued-state setup and two expected report fields after the first targeted failure, then pass the final 2287-test checks. The first CLI probe also incorrectly supplies --store to the schema-only command; correct the probe, retaining option validation. Earlier process-timeout fixtures use an injected admission clock so the 1 ms test still reaches the actual bounded host call. No assertion is weakened and no fixture becomes native model, hard-metering, service or semantic QA certification.
+
+## Linux platform matrix (2026-11-10, source 4c1d28f)
+
+A network-free snapshot ran in Debian 12.15 containers on the maintainer's Docker Desktop.
+
+| Platform | Node | Result |
+| --- | --- | --- |
+| Linux arm64 | 24.22.0 | CHECK PASS in 294s, 4696 passed, 1 skipped (the macOS-only `sandbox-exec` boundary) |
+| Linux arm64 | 22.23.4 | CHECK PASS in 281s, 4696 passed, 1 skipped |
+| Linux arm64 | 20.20.2 | The built CLI runs version, state, status, build, install dry-run and doctor (`needs-attention` only for the uninstalled clients) |
+| Linux x64 (Rosetta emulation) | 24.22.0 | CHECK FAIL, 24 of 4697 failed; see below |
+
+The x64 failures are emulation artifacts, with eight still unproven:
+
+- **Ten are Rosetta artifacts:** it writes `$HOME/.cache/rosetta` for every x86 process, which fails the tests that prove a command leaves `HOME` untouched.
+- **One more is Rosetta:** it injects `UV_USE_IO_URING` into child environments, even when the parent passes an explicit environment.
+- **Five passed when rerun alone with one worker**, so contention under emulation caused them.
+- **Eight still fail alone.** All of them depend on short native time windows, such as 5-second control calls, 60-second timeouts or a decision deadline. Slow emulation is the likely cause but is not proven.
+
+Linux x64 is therefore not claimed; GitHub's x64 runners must confirm it natively.
+
+- [x] Secret Service, live in a disposable D-Bus session with an unlocked `gnome-keyring`:
+  - `credential-store` stores the value from stdin;
+  - `credential-check` resolves it to `CLAUDE_CODE_OAUTH_TOKEN`;
+  - neither output contains the value, `secret-tool` confirms it, and a missing item reports `credential-missing`;
+  - a host without a desktop store reports `credential-store-unavailable` for both commands.
+- [ ] Linux x64: confirm the complete check natively on the hosted CI runner after the first push, and diagnose any of the eight timing-bound cases that still fail there.
 
 ## Expanded delivery platform checks (2026-10-24)
 

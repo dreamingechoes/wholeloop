@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-11 · Linux platform matrix for 1.0.0
+
+- **The complete check passes on Linux arm64:** Debian 12.15, no network, on Node 24.22.0 (294s) and Node 22.23.4 (281s), with 4696 passed and the macOS-only `sandbox-exec` test skipped. The built CLI runs on Node 20.20.2 (version, state, status, build, install dry-run and doctor).
+- **Live P6-35 check on Linux:** worker credentials work through Secret Service in a disposable D-Bus and `gnome-keyring` session, and a host without a desktop store reports `credential-store-unavailable`.
+- **Linux x64 under Docker Desktop's Rosetta emulation fails 24 tests**, not claimed as a pass:
+  - eleven are emulator artifacts (Rosetta writes `$HOME/.cache/rosetta` and injects `UV_USE_IO_URING`);
+  - five pass when run alone;
+  - eight depend on short native time windows and still fail under emulation.
+
+  The hosted x64 runner must confirm it natively after the first push.
+
 ## 2026-11-11 · P5-01 · Gemini 0.67 read-only boundary through its policy engine
 
 - Unpaused by the maintainer. Gemini 0.67 skips a system settings file that root does not own, and it drops project configuration in an untrusted workspace. That left the observer without its restrictions and the framing fixture without its skills.
