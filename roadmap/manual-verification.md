@@ -71,6 +71,14 @@ The release pull request, release-on-merge, post-publication verification and fa
 ## Pre-publication history audit (P7-06, 2026-11-07)
 
 - [ ] Immediately before switching the repository to public (P7-14), run `npm run scan:history` on the final `main`, review any new finding, and confirm no other ref is pushed.
+- [x] Local `1.0.0-rc.1` rehearsal (2026-11-10, macOS arm64, nothing published):
+  - **History scan:** 405 commits; one new finding, the ignore file's own comment, was reviewed as a false positive and listed.
+  - **Release notes:** they cover all 405 commits with no attribution.
+  - **Preflight:** in a throwaway clone with the version set and `private` turned off, `release preflight` with the expected public `release.yml` context is `ready`.
+  - **Package:** `package:check` passes with exactly `LICENSE`, `README.md`, `dist/wl.mjs`, `dist/wl-runner.mjs` and `package.json`.
+  - **Delivery preview:** `release artifacts --dry-run` plans all seven client trees.
+
+  The release pull request sets the version but not `private`; turning `private` off is the maintainer's commit before dispatching it.
 - [x] Delete the local backup ref `refs/backup/pre-neutral-rewrite` once the rewritten history is confirmed (2026-11-08; it pointed to the pre-rewrite 27e3104).
 
 ## Supply-chain automation (P7-05, 2026-11-07)

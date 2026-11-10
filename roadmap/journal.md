@@ -4,6 +4,12 @@
 
 ---
 
+## 2026-11-10 · Local 1.0.0-rc.1 rehearsal
+
+- The history scan found one new result: the comment in `.gitleaksignore` that quotes the ADR-0078 prose. The P7-06 audit ran before that file was committed, so it could not see it. It was reviewed as a false positive and listed; the scan is now clean over 405 commits.
+- Release notes for `1.0.0-rc.1` cover the whole history with no attribution. In a throwaway clone with the version set and `private` turned off, the release preflight is `ready`, `package:check` passes with exactly the five expected files, and the delivery preview plans all seven clients. Nothing was tagged, pushed or published.
+- Found: the release pull request workflow sets the version but leaves `"private": true`, so turning it off is a maintainer commit before the first release.
+
 ## 2026-11-08 · P6-41 ✅ · A none run repairs itself under its own envelope grant
 
 - **Reducer:** on a correction revision it now accepts the run's own envelope grant (the one the run already ran under, still active) when the policy is `none`.
