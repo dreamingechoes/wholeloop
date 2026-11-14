@@ -245,7 +245,15 @@ export class DeliveryRunner {
           return this.limit(
             lease,
             context.plan.policy.intervention === 'none' ? 'blocked' : 'paused',
-            'Required runtime, noninteractive capability or non-delegable prerequisite is unavailable.',
+            // The host's closed reason, such as public-host-credential-missing,
+            // is the only trace of why a run never dispatched: with a runtime
+            // document the core skips its own preflight (ADR-0206). Free text
+            // from a host is never copied into the journal.
+            `Required runtime, noninteractive capability or non-delegable prerequisite is unavailable${
+              preflight.available && /^[a-z0-9-]{1,120}$/.test(preflight.value.reason)
+                ? ` (${preflight.value.reason})`
+                : ''
+            }.`,
           )
         const uncertain = this.store
           .record(digest)

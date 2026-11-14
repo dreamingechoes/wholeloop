@@ -65,6 +65,8 @@ describe('foreground runner refusals preserve truthful execution state', () => {
       expect(result).toMatchObject({ state: 'paused', ownership: 'released', outcome: null })
       expect(result.stages).toEqual([])
       expect(store.lifecycle.journal.get(request.run).reason).toContain('runtime')
+      // Only a closed reason identifier is copied; a host's free text is not.
+      expect(store.lifecycle.journal.get(request.run).reason).not.toContain('native boundary')
     })
   })
   it('terminates none with undelegated decisions without invoking even native preflight', async () => {

@@ -44,7 +44,7 @@ One repeat was approved after the fixes above, as a diagnostic that does not cou
 
 Two findings from it:
 
-- **The run receipt reported the core's preflight.** With a runtime document only the controller bundle composes the host, so the core's own preflight said `public-host-native-runtime-unavailable` beside a completed route. The core now reports no preflight when the bundle runs with a runtime; the child evaluates it before dispatch and the status carries the result. A compiled-CLI case fails without the change.
+- **The run receipt reported the core's preflight.** With a runtime document only the controller bundle composes the host, so the core's own preflight said `public-host-native-runtime-unavailable` beside a completed route. The core now reports no preflight when the bundle runs with a runtime; the child evaluates it before dispatch. A compiled-CLI case fails without the change. Amended 2026-11-14: the child's verdict did not reach the status or the journal, so a run blocked by a missing credential recorded only a generic reason. The engine now appends the host's closed reason identifier, such as `public-host-credential-missing`, to the blocking transition; free text from a host is never copied into the journal.
 - **Excerpts may be paraphrased.** The source worker noted in an open question that its excerpts came from the client's fetch tool, which summarizes pages, not from raw page bytes. The brief keeps that open, which is the honest outcome. Excerpt fidelity against the raw source is not established by these trials.
 
 ## Plan-scoped rubric rules

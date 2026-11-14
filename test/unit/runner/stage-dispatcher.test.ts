@@ -283,8 +283,9 @@ describe('static fixed-dispatch route preflight', () => {
         const receipt = await new DeliveryRunner(store).run(digest, dispatcher)
         expect(receipt.state).toBe('paused')
         expect(store.record(digest).stages).toEqual([])
+        // The host's closed reason is the only trace of why nothing dispatched.
         expect(store.lifecycle.journal.get(request.run).reason).toBe(
-          'Required runtime, noninteractive capability or non-delegable prerequisite is unavailable.',
+          'Required runtime, noninteractive capability or non-delegable prerequisite is unavailable (dispatcher-product-configuration-required).',
         )
       },
       { singleUnit: true },
