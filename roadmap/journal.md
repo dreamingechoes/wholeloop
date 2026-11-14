@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-14 · P7-09 ✅ · Pull requests to main
+
+- **Switch:** changes now reach `main` only through squash-merged pull requests with passing required checks, and the bootstrap workflow of committing straight to `main` ends here. `AGENTS.md`, the contributing guide and the roadmap's working loop say so.
+- **Applied at the maintainer's request:**
+  - squash-only merges, with the pull request title as the subject and branches deleted on merge;
+  - the `main` ruleset: pull request, three required checks on an up-to-date branch, linear history, no force push, no deletion, no bypass;
+  - the `release tags` ruleset: `v*` tags can be created but never moved or deleted.
+- **Verified:** GitHub reports all five rules on `main`, and this change's own pull request (#10) read `BLOCKED` while its checks were pending. A direct push to `main` was not attempted.
+
+---
+
 ## 2026-11-14 · P7-14 · The repository is public
 
 - **Dependencies first:** thirteen of twenty Dependabot alerts, all six high ones among them, were cleared with the earliest fixes already fourteen days old (`vitest` 5.0.3, `undici` 8.12.2, `markdown-it` 15.0.3). The lockfile was resolved with `npm install --before=2026-10-31` after a plain install had pulled releases one to three days old. None of the alerts reached the published bundles. The `hono` fixes wait for Dependabot until 2026-11-15 and 2026-11-16.
