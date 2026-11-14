@@ -10,6 +10,13 @@
 
 No worker claim is presented as the suite, and no worker gains a tool. Review gates are unchanged, since they already carry the diff.
 
+The next live attempt showed the evidence was used. Its verifier confirmed the status bytes and the suite, but it still reported `unavailable` for two reasons. Nothing said the changed paths were complete, and the exact `GET /` response is observed only at the later acceptance stage. By the maintainer's decision, the evidence now also carries:
+
+- the changed paths marked complete against the gate's base, as the gate derives them;
+- the pinned acceptance cases with the criteria and capability each covers, and a rule that runtime behavior covered by a listed case is observed by the controller before any publication, so its absence from this gate is no reason to report `unavailable`.
+
+The acceptance stage still observes that behavior before a pull request is opened. Rejected: running the pinned HTTP cases inside the verify round, which would duplicate the acceptance stage and reorder the route.
+
 ## Context
 
 The result decoder already rejects criterion results from every role except verifier and rejects unassigned verifier criterion IDs. Native response schemas nevertheless advertise unrestricted criterion arrays to all roles. This is an independently reproduced generation-contract inconsistency. The preceding actual builder's rejected response was not retained, so this finding does not establish that historical failure's cause.

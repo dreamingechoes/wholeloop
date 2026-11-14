@@ -197,6 +197,7 @@ describe('verify-gate evidence for read-only verifiers', () => {
       const plan = {
           gate: 'verify',
           repository: root,
+          base: { ref: 'refs/heads/main', sha: 'a'.repeat(40) },
           inputs: { paths: ['status.txt', 'removed.txt'], languages: [], slots: [] },
         } as unknown as GatePlan,
         suite: GateResult = {
@@ -208,8 +209,17 @@ describe('verify-gate evidence for read-only verifiers', () => {
         },
         claim: GateResult = { unit: 'criteria/status', status: 'ok', evidence: [], findings: [] }
       // A Codex verifier has no read tool; this is all it can judge from.
+      const cases = [{ id: 'public-status', criteria: ['status'], capability: 'http.request' }]
+      // Pinned acceptance coverage travels with its rule, so a verifier does not
+      // block on runtime behavior that the acceptance stage observes later.
+      expect(verifyGateEvidence(plan, [suite], cases)?.acceptance).toMatchObject({
+        cases,
+        rule: expect.stringContaining('observed by the controller at the acceptance stage'),
+      })
+      expect(verifyGateEvidence(plan, [suite])?.acceptance.cases).toEqual([])
       expect(verifyGateEvidence(plan, [claim, suite])).toMatchObject({
         suite,
+        changes: { base: 'a'.repeat(40), paths: ['status.txt', 'removed.txt'], complete: true },
         files: [
           { path: 'status.txt', text: 'public fixture\n' },
           { path: 'removed.txt', available: false },
