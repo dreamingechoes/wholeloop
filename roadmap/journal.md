@@ -4,6 +4,23 @@
 
 ---
 
+## 2026-11-14 · P6-27 and P6-35 · Codex campaign on gpt-6-luna
+
+- **Setup:** the Homebrew cask had moved Codex to 0.167.0, which the campaign pin refuses, so the exact 0.166.0 now runs from its own npm prefix. The campaign model for Codex is `gpt-6-luna`, by the maintainer's choice, at its default `medium` effort; the recipe never passed an effort, so the earlier `high` was not applied. The six boundary controls pass on that binary.
+- **EVAL-10 research: `three-passes`.** The trials took 327, 451 and 336 s, with no human wait and every launch host-observed. They came after one fix to the trial: its plan judge had been given claim-citation rules ([ADR-0206](../docs/decisions/0206-live-research-pilot-findings.md#plan-scoped-rubric-rules)).
+- **EVAL-09 implementation:** the first live attempt failed at acceptance definition. `gpt-6-luna` left one quote unescaped in a runner input nested two strings deep, and the core rejected the artifact. Nothing was published. Moving EVAL-09 to a stronger model is left to the maintainer.
+- **Worker credentials:**
+  - a missing item now ends at preflight with `public-host-credential-missing` in the journal; it had recorded only a generic reason before the engine fix;
+  - an invalid key fails at its first launch with `authentication-required`;
+  - the ChatGPT sign-in completes unattended.
+
+  An injected API key still needs a real key.
+- **Codex Git fallback and discovery:** the pre-push guard denied a real Codex `git push`. Codex found all seventeen skills and eight agents, spawned `wl-analyst` with its generated instructions and ran `$wl-status` through its packaged launcher.
+- **Fixed on the way:** the campaign scorer dropped its first input when `--require` was absent.
+- **Next:** EVAL-09 for Codex on the model the maintainer picks, then P6-41's seeded native repair and P6-40's hosted guidance trial.
+
+---
+
 ## 2026-11-11 · Linux platform matrix for 1.0.0
 
 - **The complete check passes on Linux arm64:** Debian 12.15, no network, on Node 24.22.0 (294s) and Node 22.23.4 (281s), with 4696 passed and the macOS-only `sandbox-exec` test skipped. The built CLI runs on Node 20.20.2 (version, state, status, build, install dry-run and doctor).
