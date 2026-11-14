@@ -133,9 +133,15 @@ The reference clients are fixed for the whole P6-27 campaign, so its three trial
 | Client | Version | Binary | Account | Model |
 | --- | --- | --- | --- | --- |
 | Claude Code | 2.1.316 (native installer, auto-update off) | `claude` | claude.ai subscription | `claude-opus-5-5`, exact ID rather than the `opus` alias, which can move |
-| Codex | 0.166.0 (Homebrew cask) | `codex` | ChatGPT subscription | `gpt-6.1-sol`, reasoning effort `high` |
+| Codex | 0.166.0 (npm `@openai/codex@0.166.0` in its own prefix, since 2026-11-14) | the package's native `vendor/aarch64-apple-darwin/bin/codex` | ChatGPT subscription | `gpt-6-luna` at the client's default reasoning effort, `medium` (since 2026-11-14; `gpt-6.1-sol` before) |
 
 A Homebrew cask cannot be pinned, so no general `brew upgrade` runs during the campaign. A trial that observes another version or model is reported separately, not counted toward the three.
+
+Codex changes on 2026-11-14, by the maintainer's decision:
+
+- **Binary.** The Homebrew cask had moved to 0.167.0, which the pinned recipe refuses. The exact 0.166.0 now lives outside Homebrew in `$HOME/.local/share/wholeloop-native/codex-0.166.0`, installed from npm with its registry integrity, a private cache and no install scripts. Its native binary is signed by the same team as the cask's and reports `codex-cli 0.166.0`. All six model-free boundary controls (`npm run eval:native-boundary`) pass with that binary first on `PATH`, every boundary property observed and the workspace unchanged. Rejected: re-pinning the campaign to 0.167.0, which the next cask update would break again.
+- **Model.** `gpt-6-luna` replaces `gpt-6.1-sol` to spend less of the subscription's usage window. Codex has no passing campaign trial yet, so no comparable result is lost; all three counted trials of a scenario still use one model. A trial that fails because a judge rejects the model's work, not because of a harness defect, still counts as failed. Repeated failures of that kind are a reason to move to a stronger model and restart the count of three.
+- **Reasoning effort.** The delivery recipe passes `--model` only, never a reasoning effort, so the client's default for the model applies: `medium` for `gpt-6-luna` in the 0.166.0 model list. The `high` this table named before was never passed by the recipe.
 
 - [x] Reference clients installed, signed in, versions and models fixed (2026-11-03).
 - [x] Per-trial budget fixed: wall-time and attempt limits only (2026-11-03). Both accounts are the smallest subscription tiers (Claude Pro, ChatGPT Plus), which meter no reliable token or currency cap, so no hard token or currency limit is declared that the runner could not enforce; each receipt keeps the usage its client reports.
@@ -227,7 +233,7 @@ It leaves its branch and pull request on the trial repository, like a live attem
 
 Each command prints its external retained directory. An attempt saves `results/report.json`, its immutable request/plan/grant and the store's original evidence. Reports include controller waits, every native receipt's status/provenance and client-reported usage, case statuses/reasons, exact base/core digests and sanitized effect observations. Failed attempts are retained without retry; their environments stay available for inspection. Successful runs retire only their own environments and retain the retirement observations. Rehearsal reports use `wholeloop/rehearsal-trial@1`, which `eval:campaign` rejects; real attempts use `wholeloop/live-trial@1`.
 
-For an already authorized live batch, first sign the dedicated client home in again. Resolve the pinned native executable and `gh` to absolute paths, then supply the same non-secret client/model/home variables used by the research trials. Claude's pinned binary is `$HOME/.local/share/claude/versions/2.1.316`, its model is `claude-opus-5-5`; Codex uses `gpt-6.1-sol`. A default home resolves beneath `$HOME/.local/state/wholeloop-native/<target>`.
+For an already authorized live batch, first sign the dedicated client home in again. Resolve the pinned native executable and `gh` to absolute paths, then supply the same non-secret client/model/home variables used by the research trials. Claude's pinned binary is `$HOME/.local/share/claude/versions/2.1.316`, its model is `claude-opus-5-5`; Codex's pinned binary is `$HOME/.local/share/wholeloop-native/codex-0.166.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex` and its model `gpt-6-luna`. A default home resolves beneath `$HOME/.local/state/wholeloop-native/<target>`.
 
 ```bash
 # WHOLELOOP_LIVE_TARGET, _MODEL and _CLIENT must already be set.
