@@ -119,6 +119,9 @@ describe('owned artifact stages preserve proposals separately from decisions and
       expect(brief.instruction).toContain('Every assertion expected value is JSON text')
       const example = /as in ("(?:\\.|[^"\\])*")/.exec(brief.instruction)?.[1]
       expect(example && JSON.parse(JSON.parse(example))).toBe('abc')
+      // A repository.diff case refuses any other path syntax when it starts,
+      // which stopped a live integration stage before its case could run.
+      expect(brief.instruction).toContain('JSON Pointer that starts with /')
       // Integration needs each milestone procedure verbatim in some case's actions.
       expect(brief.milestoneProcedures).toEqual(
         fixture.context.plan.milestones.map(({ id, criteria, procedure }) => ({
