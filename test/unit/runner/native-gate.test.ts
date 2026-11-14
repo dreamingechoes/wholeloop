@@ -1,7 +1,11 @@
 import { createHash } from 'node:crypto'
+import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import type { GatePlan, GateResult } from '../../../src/gates/contracts.js'
 import { prepareReviewInput } from '../../../src/review/input.js'
-import { RunnerNativeGateHost } from '../../../src/runner/native-gate.js'
+import { RunnerNativeGateHost, verifyGateEvidence } from '../../../src/runner/native-gate.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerNativeStage } from '../../../src/runner/native-stage.js'
 import { nativeGateFixture as setup } from '../../support/native-gate.js'
@@ -182,5 +186,41 @@ describe('owned read-only gate workers preserve observed execution boundaries', 
       })
       expect(new RunnerNativeScope(store.files, context.invocation).calls()).toHaveLength(0)
     })
+  })
+})
+
+describe('verify-gate evidence for read-only verifiers', () => {
+  it('carries the controller suite result and changed file bytes, never worker claims', () => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-verify-evidence-')))
+    try {
+      writeFileSync(join(root, 'status.txt'), 'public fixture\n')
+      const plan = {
+          gate: 'verify',
+          repository: root,
+          inputs: { paths: ['status.txt', 'removed.txt'], languages: [], slots: [] },
+        } as unknown as GatePlan,
+        suite: GateResult = {
+          unit: 'suite',
+          status: 'ok',
+          execution: { status: 'passed' },
+          evidence: ['suite: exit 0'],
+          findings: [],
+        },
+        claim: GateResult = { unit: 'criteria/status', status: 'ok', evidence: [], findings: [] }
+      // A Codex verifier has no read tool; this is all it can judge from.
+      expect(verifyGateEvidence(plan, [claim, suite])).toMatchObject({
+        suite,
+        files: [
+          { path: 'status.txt', text: 'public fixture\n' },
+          { path: 'removed.txt', available: false },
+        ],
+        omitted: 0,
+      })
+      // A worker's own result is never presented as the controller's suite.
+      expect(verifyGateEvidence(plan, [claim])?.suite).toBeNull()
+      expect(verifyGateEvidence({ ...plan, gate: 'review' }, [suite])).toBeUndefined()
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
   })
 })

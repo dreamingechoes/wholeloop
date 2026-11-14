@@ -3,6 +3,13 @@
 - **Status:** Accepted
 - **Date:** 2026-11-05
 
+**Amended 2026-11-14.** A verify gate's read-only worker received the round plan and its assignment, but neither the candidate's bytes nor the suite result. A live Codex 0.166.0 verifier on `gpt-6.1-sol`, with no read tool, reported that nothing was observable, and verification blocked after the suite had passed. The verify-gate input now carries two items:
+
+- the controller's own suite result for the round, which must pass before any verifier launches;
+- the changed paths' bytes at the gate snapshot, at most 64 KiB each and 256 KiB in total.
+
+No worker claim is presented as the suite, and no worker gains a tool. Review gates are unchanged, since they already carry the diff.
+
 ## Context
 
 The result decoder already rejects criterion results from every role except verifier and rejects unassigned verifier criterion IDs. Native response schemas nevertheless advertise unrestricted criterion arrays to all roles. This is an independently reproduced generation-contract inconsistency. The preceding actual builder's rejected response was not retained, so this finding does not establish that historical failure's cause.
