@@ -164,6 +164,9 @@ describe('native generation keeps rules it cannot enforce visible', () => {
     expect(ref?.description).toBe(
       `Must match the regular expression ${WORKER_PROPOSAL_SCHEMA.properties.artifacts.items.properties.ref.pattern}`,
     )
-    expect(rule.properties?.summary).not.toHaveProperty('description')
+    expect(rule.properties?.summary?.description).toBe('Must not be empty')
+    const evidence = rule.properties?.criteria?.items?.properties?.evidence
+    expect(evidence?.description).toBe('Must contain at least 1 item(s)')
+    expect(rule.properties?.artifacts).not.toHaveProperty('description')
   })
 })

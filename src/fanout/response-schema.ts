@@ -23,15 +23,22 @@ export function generationSchema(rule: Schema): Schema {
       // Preserve an explicit role prohibition without importing every public
       // array bound into the native subset. The core still validates all output.
       ...((rule as Schema & { maxItems?: number }).maxItems === 0 ? { maxItems: 0 } : {}),
+      ...(rule.minItems ? { description: `Must contain at least ${rule.minItems} item(s)` } : {}),
     }
   }
+  // Native structured output drops pattern and length bounds, but the core
+  // refuses a value that misses them after an expensive call; a live Codex
+  // builder named an artifact outside artifacts/ for that reason. The rule
+  // travels as a description instead.
+  const description = rule.pattern
+    ? `Must match the regular expression ${rule.pattern}`
+    : rule.minLength
+      ? 'Must not be empty'
+      : undefined
   return {
     type: rule.type,
     ...(rule.enum ? { enum: [...rule.enum] } : {}),
-    // Native structured output drops pattern, but the core refuses a value that
-    // misses it after an expensive call; a live Codex builder named an artifact
-    // outside artifacts/ for that reason. The rule travels as a description.
-    ...(rule.pattern ? { description: `Must match the regular expression ${rule.pattern}` } : {}),
+    ...(description ? { description } : {}),
   }
 }
 

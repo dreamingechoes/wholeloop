@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-10-22
 
-**Amended 2026-11-14.** The native generation subset dropped a string's `pattern` without trace, while the core still enforces it on readback. A live Codex 0.166.0 builder on `gpt-6.1-sol` returned an artifact ref outside `artifacts/`, and the proposal was refused at `proposal.artifacts[].ref` after 138 seconds. The generation schema now carries each dropped pattern as a `description` naming the regular expression. Codex accepts that keyword in structured output and followed it in a one-call probe. The core validator is unchanged. Rejected: passing `pattern` itself, which this subset never relied on and no client was observed to enforce.
+**Amended 2026-11-14.** The native generation subset dropped a string's `pattern` without trace, while the core still enforces it on readback. A live Codex 0.166.0 builder on `gpt-6.1-sol` returned an artifact ref outside `artifacts/`, and the proposal was refused at `proposal.artifacts[].ref` after 138 seconds. The generation schema now carries each dropped pattern as a `description` naming the regular expression, and likewise says when a string must not be empty or an array needs a minimum number of items. Codex accepts that keyword in structured output and followed it in a one-call probe. The core validator is unchanged. Rejected: passing `pattern` itself, which this subset never relied on and no client was observed to enforce.
 
 ## Context
 
