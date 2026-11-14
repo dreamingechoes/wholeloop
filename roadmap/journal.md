@@ -4,6 +4,24 @@
 
 ---
 
+## 2026-11-14 · P6-27 · Codex EVAL-09 three-passes
+
+- **Fixture version 2:** `status.txt` holds `pending` with a newline, and the app and suite ignore exactly one trailing newline. Codex's only builder tool always writes one. The maintainer merged it in `wholeloop-trials` and restored branch protection, which reads back unchanged.
+- **Thirteen harness fixes**, each from a live attempt that stopped one stage later than the last. Each closed a gap between what the core enforces and what a native worker is shown:
+  - expected values are JSON text, and assertion paths are JSON Pointers;
+  - schema patterns and minimums travel as descriptions;
+  - guidance pins name their roles;
+  - builders know the controller runs every check;
+  - verify and review workers get the suite result and the changed bytes;
+  - verifiers defer behavior that acceptance observes, by the maintainer's choice;
+  - producers get the milestone procedure and the approval rubric;
+  - the acceptance judge sees the pinned assertions and the integrated changed bytes.
+- **EVAL-09 on `gpt-6.1-sol`: `three-passes`** on core `c45baa1`. The trials took 651, 327 and 321 s, with no human wait, every launch host-observed and a ready pull request each (#2 to #4 in `wholeloop-trials`, left open for inspection). Together with EVAL-10, Codex meets P6-27's first criterion. Claude Code's EVAL-09 trials remain.
+- **Rehearsals:** two model-free rehearsals failed by time during a Time Machine backup that saturated the disk, and passed again in 176 s afterwards.
+- **Next:** Claude Code EVAL-09, then the native P6-41 repair and the P6-40 guidance trials.
+
+---
+
 ## 2026-11-14 · P6-27 and P6-35 · Codex campaign on gpt-6-luna
 
 - **Setup:** the Homebrew cask had moved Codex to 0.167.0, which the campaign pin refuses, so the exact 0.166.0 now runs from its own npm prefix. The campaign model for Codex is `gpt-6-luna`, by the maintainer's choice, at its default `medium` effort; the recipe never passed an effort, so the earlier `high` was not applied. The six boundary controls pass on that binary.

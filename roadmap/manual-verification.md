@@ -180,7 +180,26 @@ Codex 0.166.0 from its own npm prefix, `gpt-6-luna` at its default `medium` effo
   | 4 | 130 | implementation | the builder blocked because it could not run the planned checks; builders are now told the controller runs them | `8e9a49e253faaed37350dcbef040c09205bb36b24534026eb71ca930fdda22c6` |
   | 5 | 142 | verification | the suite failed on `public fixture\n` | `f41661939aacc8775f73891b250139ce42938dda8aa00dbbc0e77081173ee83d` |
 
-  Attempt 5 reached verification with every launch successful: the builder edited and the controller committed. The trailing newline is not a model error. Codex's only builder tool is `apply_patch`, which always ends a line with a newline and refuses the `\ No newline at end of file` marker, as a separate one-call probe on 0.166.0 confirmed. The pinned fixture requires `status.txt` to hold exactly `public fixture` with no newline, and `app.cjs` returns the file's bytes unchanged. EVAL-09 as pinned is therefore impossible for a contained Codex builder. Changing the hosted fixture or the builder's tools is the maintainer's decision; the trial repository's `main` is unchanged at `3aeeef7` with no open pull request.
+  Attempt 5 reached verification with every launch successful: the builder edited and the controller committed. The trailing newline is not a model error. Codex's only builder tool is `apply_patch`, which always ends a line with a newline and refuses the `\ No newline at end of file` marker, as a separate one-call probe on 0.166.0 confirmed. The pinned fixture requires `status.txt` to hold exactly `public fixture` with no newline, and `app.cjs` returns the file's bytes unchanged. EVAL-09 as pinned is therefore impossible for a contained Codex builder. The maintainer chose fixture version 2, merged as `wholeloop-trials` pull request #1 (`main` at `17d6506`, branch protection restored and read back unchanged).
+- **EVAL-09 on fixture version 2, `gpt-6.1-sol`.** Each attempt went further and exposed one more fact the core enforced but never gave its model. The record and ADR named for each was fixed with a test before the next attempt:
+  - verify-gate workers lacked the suite result and changed bytes (ADR-0221);
+  - verifiers blocked on HTTP behavior that only the acceptance stage observes (ADR-0221, by the maintainer's choice);
+  - review workers lacked the changed bytes (ADR-0221);
+  - acceptance producers paraphrased the milestone procedure that integration selects verbatim (ADR-0217);
+  - acceptance producers wrote non-pointer assertion paths that a `repository.diff` case refuses (ADR-0217);
+  - the build-plan producer never saw its approval rubric (ADR-0223);
+  - the acceptance judge saw neither the pinned assertions nor the integrated changed bytes (ADR-0207).
+
+  Two model-free rehearsals failed by time while a Time Machine backup saturated the disk, and passed again in 176 s once it finished; they are environmental. No failed attempt published anything, and all are retained in the campaign directory.
+- **EVAL-09, `three-passes`.** The first three attempts on core `c45baa1` passed. Each opened its owned pull request ready for review in `wholeloop-trials` (#2, #3 and #4, left open for inspection). Each had zero human waits and every launch host-observed:
+
+  | Trial | Seconds | Input / output tokens | Report SHA-256 |
+  | --- | --- | --- | --- |
+  | 1 | 651 | 329,703 / 7,969 | `d9430316c018d8978eadbccfa3f5e8c7520fc4b944449b4260a4320a8157cb09` |
+  | 2 | 327 | 347,391 / 8,045 | `719e689ab6bace7aa0c91d5aa31a866033224f01147a05cfaea35ca601ff3905` |
+  | 3 | 321 | 314,362 / 8,088 | `ff92161b072205a7265ceabbe4f2775ce09bbe042217fe87dcdb2e823a62817a` |
+
+  `npm run eval:campaign -- --require EVAL-09:codex,EVAL-10:codex` reports `three-passes` for both scenarios. The usage window read 7 percent before these trials.
 - **Worker credentials.** A missing Keychain item ended the route at preflight in under a second with no launch. The journal recorded only a generic reason until the engine began naming the host's reason, and now records `public-host-credential-missing`. A fabricated API key stored with `wl delivery credential-store` resolved, and the first launch failed with `authentication-required` and zero tokens, ending the route `blocked` in 18 s. The item was then deleted.
 - **Codex Git fallback.** In a disposable project with `wl install --target codex --scope project` and the returned `guard hooks install` command, Codex 0.166.0 under `workspace-write` appended a line, committed and ran `git push origin main`. The pre-push guard denied the push and the bare remote kept its revision. Codex did not use `--no-verify` or change Git configuration.
 - **Codex discovery and invocation.** In the same project, trusted only through a `-c` override, Codex listed all seventeen `wl-` skills and eight custom agents. wholeloop omits the launcher for Codex by design, so eight agents is the full set. Codex then spawned `wl-analyst`. Its session rollout records `agent_role: wl-analyst` under the parent thread and contains the generated developer instructions; the agent replied `wl-analyst`. A `$wl-status` invocation ran the skill's packaged launcher (`adapter root`, then `status --json`) and reported the store's items.
