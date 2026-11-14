@@ -69,14 +69,14 @@ The rulesets, CODEOWNERS, pull request template and title check are in the repos
 The release pull request, release-on-merge, post-publication verification and failure marking are implemented and tested with a fixture repository and logging stand-ins for GitHub and npm; no hosted run has executed.
 
 - [x] Allow GitHub Actions to create pull requests (2026-11-08; the default workflow token stays read-only).
-- [ ] When the repository becomes public, add the maintainer as required reviewer of the `release` environment. It exists since 2026-11-08 limited to `main`, but required reviewers need a paid plan on a private repository; until then the release preflight refuses to publish from a private repository.
+- [ ] When the repository becomes public, add the maintainer as required reviewer of the `release` environment. It exists since 2026-11-08 limited to `main`, but required reviewers need a paid plan on a private repository; until then the release preflight refuses to publish from a private repository. The repository became public on 2026-11-14; this step remains for the maintainer, since it decides who approves a publication.
 - [ ] Dispatch the Release pull request workflow for `1.0.0-rc.1` and confirm the hosted tree check passes, the branch and pull request are created and the dispatched CI run reports the required checks on the pull request.
-- [ ] Merge it and confirm the Release workflow plans a release from the push, prepares the bundle and stops at the `release` environment until approval; confirm an ordinary push to `main` that changes `package.json` without a new version prepares nothing.
+- [ ] Merge it and confirm the Release workflow plans a release from the push, prepares the bundle and stops at the `release` environment until approval; confirm an ordinary push to `main` that changes `package.json` without a new version prepares nothing. Partly observed on 2026-11-14: the push of `cb7832a`, which changed `package.json` without a new version, ran Release with `plan` passing and `prepare`, `publish` and `verify` skipped.
 - [ ] After the first publication, confirm the verify job installs the version from the registry on Node 20 and passes, and that `gh release edit` accepts `--prerelease --latest=false` together by marking a disposable release as failed.
 
 ## Pre-publication history audit (P7-06, 2026-11-07)
 
-- [ ] Immediately before switching the repository to public (P7-14), run `npm run scan:history` on the final `main`, review any new finding, and confirm no other ref is pushed.
+- [x] Immediately before switching the repository to public (P7-14), run `npm run scan:history` on the final `main`, review any new finding, and confirm no other ref is pushed. Done on 2026-11-14: `npm run scan:history` reported 0 findings across 432 commits at `cb7832a`, pushed as the final `main` before the switch. The only other refs on the remote are Dependabot's update branches, which GitHub creates.
 - [x] Local `1.0.0-rc.1` rehearsal (2026-11-10, macOS arm64, nothing published):
   - **History scan:** 405 commits; one new finding, the ignore file's own comment, was reviewed as a false positive and listed.
   - **Release notes:** they cover all 405 commits with no attribution.
@@ -92,8 +92,8 @@ The release pull request, release-on-merge, post-publication verification and fa
 The workflows, Dependabot configuration, licence and advisory checks and the release SBOM are implemented and linted locally; none of the hosted runs has executed.
 
 - [x] Enable Dependabot alerts and security updates (2026-11-08).
-- [ ] When the repository becomes public, enable private vulnerability reporting, which GitHub offers only on public repositories. CodeQL, Scorecard and dependency review skip while the repository is private, because code scanning needs Advanced Security there; they start running at the switch.
-- [ ] After the next push, confirm CodeQL, Scorecard and CI (including `check-dependencies.mjs --audit` and `npm audit signatures`) run green, and that dependency review runs on the first pull request.
+- [x] When the repository becomes public, enable private vulnerability reporting, which GitHub offers only on public repositories. CodeQL, Scorecard and dependency review skip while the repository is private, because code scanning needs Advanced Security there; they start running at the switch. Enabled on 2026-11-14 right after the switch; the API reads it back as enabled.
+- [x] After the next push, confirm CodeQL, Scorecard and CI (including `check-dependencies.mjs --audit` and `npm audit signatures`) run green, and that dependency review runs on the first pull request. Done on 2026-11-14 at `cb7832a`, once public: CI passed on Ubuntu and macOS with the audit and signature steps (375 packages with verified registry signatures), Scorecard passed, and CodeQL and dependency review passed on the first pull request after the switch. The first CI attempts were refused by billing while the repository was private and passed on rerun once the visibility change reached billing.
 - [x] Review the first Dependabot pull requests for npm and the pinned actions (2026-11-08). The action pins and the development updates that were at least two weeks old are applied on `main` (`@biomejs/biome` 2.6.3 with YAML formatting kept off, `mermaid` 12.2.0, `jsdom`, `smol-toml`, the MCP SDK); `markdownlint-cli2` 0.24.0 was declined because it adds a high-severity `re2js` advisory; the `@types/node` major was closed and is now ignored, and Dependabot waits fourteen days for new versions, as ADR-0019 requires.
 - [ ] Apply the security updates once their fixes are two weeks old. On 2026-11-14 the earliest fixed releases already past that age were applied: `vitest` 5.0.3, `undici` 8.12.2 and `markdown-it` 15.0.3, the last two through `overrides`. That cleared thirteen of twenty Dependabot alerts, all six high ones among them; the lockfile was resolved with `npm install --before=2026-10-31`, so every new version is at least 14 days old. Remaining: `hono` 4.13.16 and `@hono/node-server` 2.1.6 under `@modelcontextprotocol/sdk`, eligible on 2026-11-15 and 2026-11-16 through Dependabot. All are development-only; none reaches `dist/wl.mjs` or `dist/wl-runner.mjs`, whose bundled packages were listed from the build.
 
@@ -553,7 +553,7 @@ Linux x64 is therefore not claimed; GitHub's x64 runners must confirm it nativel
   - `credential-check` resolves it to `CLAUDE_CODE_OAUTH_TOKEN`;
   - neither output contains the value, `secret-tool` confirms it, and a missing item reports `credential-missing`;
   - a host without a desktop store reports `credential-store-unavailable` for both commands.
-- [ ] Linux x64: confirm the complete check natively on the hosted CI runner after the first push, and diagnose any of the eight timing-bound cases that still fail there.
+- [x] Linux x64: confirm the complete check natively on the hosted CI runner after the first push, and diagnose any of the eight timing-bound cases that still fail there. Done on 2026-11-14: the complete check passes natively on the hosted `ubuntu-latest` x64 runner at `cb7832a` (5.4 minutes), so none of the eight timing-bound cases fails outside emulation.
 
 ## Expanded delivery platform checks (2026-10-24)
 

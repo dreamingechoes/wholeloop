@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-14 · P7-14 · The repository is public
+
+- **Dependencies first:** thirteen of twenty Dependabot alerts, all six high ones among them, were cleared with the earliest fixes already fourteen days old (`vitest` 5.0.3, `undici` 8.12.2, `markdown-it` 15.0.3). The lockfile was resolved with `npm install --before=2026-10-31` after a plain install had pulled releases one to three days old. None of the alerts reached the published bundles. The `hono` fixes wait for Dependabot until 2026-11-15 and 2026-11-16.
+- **Switch:** with the maintainer's approval, the repository became public at `cb7832a`, after `npm run scan:history` reported 0 findings across 432 commits. Private vulnerability reporting is enabled.
+- **Hosted CI:** green on Ubuntu x64 and macOS, which confirms Linux x64 natively. Scorecard, CodeQL and dependency review ran green, and Release correctly prepared nothing for a dependency-only push. The account's Actions minutes were exhausted, and public standard runners need none.
+- **Left to the maintainer:** adding a required reviewer to the `release` environment, the P7-09 rulesets, and the rest of P7-14 (`1.0.0-rc.1`, fresh-machine timing).
+
+---
+
 ## 2026-11-14 · P5-01 ✅ · Gemini and Antigravity pass the framing scenario
 
 - Gemini 0.67.0 passed the standalone framing scenario live with `gemini-3-flash-preview`, run cf-90485b95307b343c8b58c41e, with process and journal evidence. Antigravity 1.5.3 had passed on 2026-11-08, so both tier-B Google CLIs now meet the criterion.

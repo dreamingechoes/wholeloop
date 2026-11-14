@@ -317,7 +317,7 @@ Moved from P5-05 (Distribution) on 2026-11-07 and extended with the public switc
 
 **Acceptance criteria:**
 
-- [ ] The repository is made public only after the maintainer explicitly approves it, and after P7-06 passes on the final history.
+- [x] The repository is made public only after the maintainer explicitly approves it, and after P7-06 passes on the final history. Done on 2026-11-14: approved by the maintainer, made public after `npm run scan:history` reported 0 findings across 432 commits at `cb7832a`.
 - [ ] `1.0.0-rc.1` is published on `next` with provenance through the release workflow.
 - [ ] A fresh machine goes from nothing to `wl doctor` green in under five minutes for each tier-A CLI (documented run), using the published release candidate.
 - [ ] Release notes contain no tool attribution.
