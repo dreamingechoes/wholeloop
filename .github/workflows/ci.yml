@@ -38,12 +38,12 @@ jobs:
       # devDependencies, so the audit targets what the bundle contains (P7-05).
       - name: Audit bundled dependencies and licences
         run: node scripts/check-dependencies.mjs --audit
-      # The registry sometimes answers without a key it still lists, and npm
-      # then reports EMISSINGSIGNATUREKEY for a correctly signed package: it
-      # failed twice in four runs for magic-string 1.4.5, whose key is published.
-      # One retry after a pause absorbs that; the second attempt must pass.
+      # An empty cache, not the one restored by setup-node: with the restored
+      # cache npm reported EMISSINGSIGNATUREKEY for magic-string 1.4.5 on both of
+      # two attempts twenty seconds apart, while the same npm 10.9.9 verifies it
+      # locally with a fresh or a warm cache and the registry lists its key.
       - name: Verify registry signatures and provenance of installed packages
-        run: npm audit signatures || { sleep 20; npm audit signatures; }
+        run: npm audit signatures --cache "$RUNNER_TEMP/npm-audit-cache"
 
   runtime:
     name: runtime · ubuntu-latest · node 20
