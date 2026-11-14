@@ -63,7 +63,15 @@ describe('GitHub workflows', () => {
         expect(job.if).toBe(['$', '{{ !github.event.repository.private }}'].join(''))
     }
     const ci = workflows.find(([name]) => name === 'ci.yml')?.[1] ?? ''
-    expect(ci).toContain('npm audit signatures')
+    const steps = (
+        parse(ci) as { jobs: Record<string, { steps?: { name?: string; run?: string }[] }> }
+      ).jobs.check?.steps,
+      signatures = steps?.find((step) => step.run?.includes('npm audit signatures'))?.run ?? ''
+    // A registry hiccup gets one retry, never a pass: both attempts are the real
+    // check, and nothing may turn a second failure into success.
+    expect(signatures.match(/npm audit signatures/g)).toHaveLength(2)
+    expect(signatures).not.toMatch(/\|\|\s*true|;\s*true|continue-on-error/)
+    expect(signatures).toMatch(/^npm audit signatures \|\| \{ sleep \d+; npm audit signatures; \}$/)
     expect(ci).toContain('node scripts/check-dependencies.mjs --audit')
   })
 })
