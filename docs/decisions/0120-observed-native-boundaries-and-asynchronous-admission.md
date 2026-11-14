@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-10-26
 
+**Amended 2026-11-14.** No delivery builder recipe has a shell: Claude Code gets read and edit tools, and Codex only its patch tool. The builder was never told so. A live Codex 0.166.0 builder on `gpt-6.1-sol` received an approved plan naming `npm run check` and pre-edit inspection, could neither read files nor run the suite, and returned `blocked` with no change after 130 seconds. Every builder assignment now states that it cannot run commands, that the controller runs the suite, QA and acceptance after it returns, and that it should inspect only through its tools and the supplied inputs. Rejected: giving builders a shell, which would widen the containment this record sets.
+
 ## Context
 
 The native transport deliberately refuses unobserved runtime capabilities. A fixed host needs actual permission/process observations before model input; version/help text, worker JSON and recipe declarations alone do not supply them. Such controls are asynchronous and can themselves own a process. Treating a timed-out control as an unavailable no-op would free its original attempt while a native group might still exist.

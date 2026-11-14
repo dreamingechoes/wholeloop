@@ -450,7 +450,7 @@ async function nativeFixture(
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');let input='';
 process.stdin.on('data',chunk=>input+=chunk);process.stdin.on('end',()=>{
 const payload=JSON.parse(input),assignment=payload.assignment,mode=${JSON.stringify(mode)};
-if(!mode.startsWith('inline'))fs.writeFileSync(path.join(process.cwd(),'outputs','environment.json'),JSON.stringify({keys:Object.keys(process.env).sort(),home:process.env.HOME,config:process.env.CLAUDE_CONFIG_DIR||process.env.CODEX_HOME||null,injected:process.env.CLAUDE_CODE_OAUTH_TOKEN||process.env.CODEX_API_KEY||null,args:process.argv.slice(2)}));
+if(!mode.startsWith('inline'))fs.writeFileSync(path.join(process.cwd(),'outputs','environment.json'),JSON.stringify({keys:Object.keys(process.env).sort(),home:process.env.HOME,config:process.env.CLAUDE_CONFIG_DIR||process.env.CODEX_HOME||null,injected:process.env.CLAUDE_CODE_OAUTH_TOKEN||process.env.CODEX_API_KEY||null,args:process.argv.slice(2),role:assignment.identity.role,execution:payload.execution??null}));
 if(mode==='timeout'||mode==='hang'){setInterval(()=>{},1000);return}
 if(mode==='permission'){console.error('Permission denied by native policy');process.exit(1)}
 if(mode==='model'){console.error('Model unavailable');process.exit(1)}
@@ -803,6 +803,10 @@ describe('actual synthetic native processes', () => {
             observed.keys.some((key: string) => /TOKEN|SECRET|API_KEY|NODE_OPTIONS/.test(key)),
           ).toBe(false)
           expect(observed.home).toContain(receipt.directory)
+          // No builder has a shell; it must not block on checks the controller runs.
+          if (observed.role === 'builder')
+            expect(observed.execution).toContain('The controller runs the declared suite')
+          else expect(observed.execution).toBeNull()
         },
         'complete',
         target,
