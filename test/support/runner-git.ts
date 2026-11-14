@@ -123,8 +123,11 @@ export async function runnerGitFixture(
             plan,
             stage,
             invocation,
+            // Sixty seconds, not fifteen: a review stage with fixture workers took
+            // over fifteen seconds on a hosted macOS runner, expired and ended
+            // blocked. Tests of expiry set their own past deadline instead.
             deadline: new Date(
-              Date.now() + (options.stageBudget === 'plan' ? plan.budgets.attemptMs : 15000),
+              Date.now() + (options.stageBudget === 'plan' ? plan.budgets.attemptMs : 60_000),
             ).toISOString(),
             signal: new AbortController().signal,
             current: () => store.live(lease, false),
