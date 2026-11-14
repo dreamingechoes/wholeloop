@@ -4,7 +4,7 @@
 
 Please **do not open a public issue**. Report it privately instead:
 
-- through [GitHub private vulnerability reporting](https://github.com/dreamingechoes/wholeloop/security/advisories/new) (enabled once the repository is public), or
+- through [GitHub private vulnerability reporting](https://github.com/dreamingechoes/wholeloop/security/advisories/new) (enabled since 2026-11-14), or
 - by email to **[hi@dreamingecho.es](mailto:hi@dreamingecho.es)** with `wholeloop security` in the subject.
 
 Include what you found, how to reproduce it, and the impact you expect. You will get an acknowledgement within five working days and a plan or a fix as soon as one is ready. Credit is given in the release notes unless you prefer otherwise.
