@@ -63,7 +63,12 @@ describe('GitHub workflows', () => {
         expect(job.if).toBe(['$', '{{ !github.event.repository.private }}'].join(''))
     }
     const ci = workflows.find(([name]) => name === 'ci.yml')?.[1] ?? ''
-    expect(ci).toContain('npm audit signatures')
+    const steps = (
+        parse(ci) as { jobs: Record<string, { steps?: { name?: string; run?: string }[] }> }
+      ).jobs.check?.steps,
+      signatures = steps?.find((step) => step.run?.includes('npm audit signatures'))?.run ?? ''
+    // One real check against an empty cache; nothing may turn a failure into success.
+    expect(signatures).toBe('npm audit signatures --cache "$RUNNER_TEMP/npm-audit-cache"')
     expect(ci).toContain('node scripts/check-dependencies.mjs --audit')
   })
 })
