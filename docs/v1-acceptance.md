@@ -202,7 +202,7 @@ The original 54-task roadmap has 40 complete and fourteen open tasks. Adding Pha
 | P1-14 ✅ | Real standalone scenario passes all four tier-A clients (done 2026-11-08) | — |
 | P3-08 ✅ | Actual tier-A hook payloads and guard behavior verified (done 2026-11-08) | — |
 | P4-01 ✅ | Launcher lacks a sending tool in each adapter (done 2026-11-08) | — |
-| P5-01 | Real scenario passes Gemini and Antigravity | Native access when blocked |
+| P5-01 ✅ | Real scenario passes Gemini and Antigravity (done 2026-11-14) | — |
 | P5-02 ✅ | Cursor real scenario and readonly behavior pass (done 2026-11-08) | — |
 | P5-04 | Actual latest regression creates the expected issue | CI credentials/protection/activation |
 | P7-14 (formerly P5-05) | History audit, approved visibility, published release candidate, fresh-machine timing and clean notes | Publication/ownership decision |

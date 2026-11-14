@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-14 · P5-01 ✅ · Gemini and Antigravity pass the framing scenario
+
+- Gemini 0.67.0 passed the standalone framing scenario live with `gemini-3-flash-preview`, run cf-90485b95307b343c8b58c41e, with process and journal evidence. Antigravity 1.5.3 had passed on 2026-11-08, so both tier-B Google CLIs now meet the criterion.
+- Nothing changed in code; the free tier's daily quota, which ended the 2026-11-11 attempt, had reset. That failed attempt stays recorded.
+- Narrowed: macOS arm64 and Node 24.22.0 only; Linux and other client versions were not run.
+- Gate: `VITEST_MAX_WORKERS=2 npm run check` reports CHECK PASS in 659s with 4706 tests passed on macOS arm64. Linux was not rerun for this change.
+
+---
+
 ## 2026-11-14 · P6-27 · Codex EVAL-09 three-passes
 
 - **Fixture version 2:** `status.txt` holds `pending` with a newline, and the app and suite ignore exactly one trailing newline. Codex's only builder tool always writes one. The maintainer merged it in `wholeloop-trials` and restored branch protection, which reads back unchanged.

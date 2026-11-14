@@ -18,7 +18,7 @@ Live results on 2026-11-08, macOS arm64, Node 24.22.0. A read-only PASS feeds P0
 | Codex | 0.166.0 | PASS: the read-only sandbox refused all three writes through its shell tool | Not repeated; the revised scenario passed earlier on 0.163.0 |
 | OpenCode | 2.2.5 | PASS: no write or shell tool | PASS, run cf-97f187d81879d2af1d9d7b65 on core f140b242, after two failures kept below |
 | Copilot | 1.0.83 | PASS: no write or shell tool | PASS, run cf-6d2e1e761ad5cc3fd17862d5, after granting only the exact launcher and the three framing files |
-| Gemini | 0.67.0 | PASS (2026-11-11, `gemini-3-flash-preview`): every write refused or had no tool | FAIL so far: it reached `frame finalize` with every grant honoured, then hit the free tier's daily request quota |
+| Gemini | 0.67.0 | PASS (2026-11-11, `gemini-3-flash-preview`): every write refused or had no tool | PASS (2026-11-14, `gemini-3-flash-preview`), run cf-90485b95307b343c8b58c41e; an earlier attempt reached `frame finalize` and then hit the free tier's daily request quota |
 | Antigravity | 1.5.3 | PASS: the observer had no write tool and the workspace is unchanged | PASS, run cf-9ea0ac99ec4ae55e10cea088, with the review performed in its single turn |
 | Cursor | 2026.11.05-86047df | PASS: its policy refused Write and Shell | PASS, run cf-45e0ec29f8536bf06a715170, with workspace trust and the free plan's `auto` model |
 
@@ -33,7 +33,7 @@ Live results on 2026-11-08, macOS arm64, Node 24.22.0. A read-only PASS feeds P0
   - `--skip-trust` trusts only the directory wholeloop created.
 
   The framing scenario gets an admin policy that grants the exact launcher and framing files.
-- [ ] Gemini framing: pass the scenario with `GEMINI_MODEL=gemini-3-flash-preview npm run native:check -- gemini --live --probe framing` once the key has quota. The free tier allows 20 requests a day per model, which one scenario can exceed; a billed key or the daily reset (midnight Pacific) avoids that. Exit 173 is Gemini's `TerminalQuotaError`.
+- [x] Gemini framing: passed on 2026-11-14, run cf-90485b95307b343c8b58c41e. Pass the scenario with `GEMINI_MODEL=gemini-3-flash-preview npm run native:check -- gemini --live --probe framing` once the key has quota. The free tier allows 20 requests a day per model, which one scenario can exceed; a billed key or the daily reset (midnight Pacific) avoids that. Exit 173 is Gemini's `TerminalQuotaError`.
 - [x] Hook payloads (P3-08): real Claude Code, Copilot and OpenCode payloads are fixtures that normalize to the same events; Copilot's raw `apply_patch` text no longer makes the guard deny every edit, and the generated Copilot plugin's guard denies `git push` live.
 - [x] Codex 0.166 hook payloads: captured without a bypass flag after the maintainer trusted the disposable repository's hooks once interactively. They normalize like the other clients; Codex sends `apply_patch` text as `tool_input.command`, which made the guard deny every Codex patch until the normalizer read it.
 - [x] MCP inheritance in launchers (P4-01): checked natively on Cursor (refused) and Codex (inherited; Codex now drafts headlessly with apps and plugins disabled). See [prepare-launch](#prepare-launch-and-real-no-send-isolation-p4-01).

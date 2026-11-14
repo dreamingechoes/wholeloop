@@ -8,7 +8,7 @@ Expanded 1.0.0 also includes [Phase 6](./phase-6-autonomous-delivery.md) and [Ph
 
 ## P5-01 · Adapters — Gemini CLI and Antigravity CLI
 
-**Status:** ⏸️ · **Size:** L · **Depends on:** P1-11
+**Status:** ✅ · **Size:** L · **Depends on:** P1-11
 
 **Goal** — Cover both of Google's CLIs.
 
@@ -16,7 +16,14 @@ Expanded 1.0.0 also includes [Phase 6](./phase-6-autonomous-delivery.md) and [Ph
 
 **Acceptance criteria:**
 
-- [ ] The P1 conformance scenario passes on both CLIs (sequential or headless engine where needed).
+- [x] The P1 conformance scenario passes on both CLIs (sequential or headless engine where needed).
+
+**Evidence** — The standalone framing scenario passes live on both CLIs, on macOS arm64 with Node 24.22.0, each with process and journal evidence:
+
+- Antigravity 1.5.3 passed on 2026-11-08 (run cf-9ea0ac99ec4ae55e10cea088).
+- Gemini 0.67.0 passed on 2026-11-14 with `gemini-3-flash-preview` (run cf-90485b95307b343c8b58c41e, source 486f566), through `GEMINI_MODEL=gemini-3-flash-preview npm run native:check -- gemini --live --probe framing`. Its receipt is retained outside the repository.
+
+Both clients' read-only probes also pass. Narrowed: Linux and other client versions were not run, and the earlier Gemini attempt that ended on the free tier's daily quota stays recorded below.
 
 **Progress (2026-11-11)** — The scenario passes live on Antigravity 1.5.3 (run cf-9ea0ac99ec4ae55e10cea088) and its read-only probe passes.
 
