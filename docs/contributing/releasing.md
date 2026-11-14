@@ -3,7 +3,7 @@
 > **TL;DR** — Prepare offline package checks, native delivery previews, release-note drafts and a source consistency plan locally. A dispatched release pull request carries the version and changelog; merging it prepares the reviewed bundle, and publication waits only for the `release` environment approval, then is verified from the registry. Visibility, npm ownership and provenance stay the maintainer's setup.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local packaging/delivery/notes/preflight, the release pull request, reviewed-bundle publication on merge and post-publication verification are implemented. Package version 0.0.0 remains private; actual public hosting, ownership/OIDC/provenance and release/tag/announcement remain unverified. These maintainer checks do not block local client setup.
+> **Status: 🚧 partial.** Local packaging/delivery/notes/preflight, the release pull request, reviewed-bundle publication on merge and post-publication verification are implemented. The repository has been public since 2026-11-14, with its rulesets applied and hosted CI green on Linux x64 and macOS. The package version 0.0.0 remains private; npm ownership, OIDC, provenance and the release, tag and announcement remain unverified. These maintainer checks do not block local client setup.
 
 ## Versions
 
