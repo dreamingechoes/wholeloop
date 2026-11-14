@@ -3,7 +3,10 @@ import { join } from 'node:path'
 import { expect, it } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
-import { RunnerAcceptanceStages } from '../../../src/runner/acceptance-stages.js'
+import {
+  acceptanceDefinitions,
+  RunnerAcceptanceStages,
+} from '../../../src/runner/acceptance-stages.js'
 import { RunnerAssemblyReadiness } from '../../../src/runner/assembly-readiness.js'
 import { RunnerFeatureReadiness } from '../../../src/runner/feature-readiness.js'
 import { RunnerHumanDecisions } from '../../../src/runner/human-decisions.js'
@@ -12,6 +15,7 @@ import { RunnerMilestoneReadiness } from '../../../src/runner/milestone-readines
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerNativeStage } from '../../../src/runner/native-stage.js'
 import { RunnerStore } from '../../../src/runner/store.js'
+import { acceptanceFixture } from '../../support/acceptance.js'
 import { runnerGitFixture } from '../../support/runner-git.js'
 
 it('cancels the original acceptance prefix after revocation without its input locator', async () => {
@@ -273,4 +277,32 @@ it('opens no supervised human acceptance until the complete current product is r
     },
     { singleUnit: true },
   )
+})
+
+it('shows the acceptance judge what each reported case asserted, never a private objective', async () => {
+  await acceptanceFixture(async ({ acceptance, plan }) => {
+    const pinned = acceptance.prepare(plan),
+      test = plan.cases[0]
+    if (!test) throw new Error('Fixture case required')
+    // A live judge saw only statuses and digests and could not tell what was observed.
+    const definitions = acceptanceDefinitions(acceptance.planning.sources.files.root, {
+      acceptancePlan: pinned.digest,
+      cases: [{ id: test.id }, { id: 'unknown-case' }],
+    })
+    expect(definitions.meaning).toContain('controller observations')
+    expect(definitions.cases[0]).toEqual({
+      id: test.id,
+      criteria: test.criteria,
+      capability: test.runner.capability,
+      assertions: test.assertions.map(({ id, description, subject, operator, path, expected }) => ({
+        id,
+        description,
+        subject,
+        operator,
+        ...(path === undefined ? {} : { path }),
+        ...(expected === undefined ? {} : { expected }),
+      })),
+    })
+    expect(definitions.cases[1]).toEqual({ id: 'unknown-case', private: true })
+  })
 })

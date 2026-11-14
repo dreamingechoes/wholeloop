@@ -82,6 +82,12 @@ Rejected:
 - Giving Codex builders a shell to write exact bytes, which would widen worker containment.
 - Pointing Codex trials at an unprotected base branch, which would stop exercising the protected base the campaign fixes.
 
+## Acceptance judge evidence
+
+Amended 2026-11-14. The delegated acceptance judge received the integration report: each case's status and evidence digests, with no account of what the case had asserted. A live Codex 0.166.0 attempt on `gpt-6.1-sol` passed integration, with its HTTP, repository-scope and suite cases observed by the controller. Its acceptance judge still blocked because it could not see the underlying evidence.
+
+The acceptance input now also carries `definitions`, derived from the immutable acceptance pin: each reported case's criteria, capability and pinned assertions, stating that the report's statuses are controller observations of those assertions. A private evaluator case appears only by id, as ADR-0208 requires for correction feedback. Readback recomputes `definitions` and accepts inputs captured before it existed. Rejected: copying raw HTTP bodies or process output into the judge's input, which would expose unbounded application output and private fixtures.
+
 ## Alternatives rejected
 
 - **A separate environments document.** It would need its own CLI flag, retained bytes and identity term, but the result would be the same digest-bound configuration.

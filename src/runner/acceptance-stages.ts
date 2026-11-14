@@ -15,6 +15,42 @@ import { RunnerNativeScope } from './native-scope.js'
 import { DeliveryRunnerError, runnerRoute } from './route.js'
 import type { RunnerRequest, RunnerStore } from './store.js'
 
+/**
+ * What each case in the integration report asserted, from the immutable pin.
+ * The judge saw only case statuses and evidence digests, so a live acceptance
+ * judge could not tell what had been observed and blocked. A private
+ * evaluator case keeps its objective private (ADR-0208): id and status only.
+ */
+export function acceptanceDefinitions(
+  root: string,
+  report: { acceptancePlan: string; cases: { id: string }[] },
+) {
+  const pinned = new DeliveryAcceptance(root).get(report.acceptancePlan).plan.cases
+  return {
+    meaning:
+      'Pinned assertions of each reported case. The case statuses in report are controller observations of these assertions, not worker claims.',
+    cases: report.cases.map(({ id }) => {
+      const test = pinned.find((item) => item.id === id)
+      if (!test || test.runner.capability === 'evaluator.private-http') return { id, private: true }
+      return {
+        id,
+        criteria: test.criteria,
+        capability: test.runner.capability,
+        assertions: test.assertions.map(
+          ({ id: assertion, description, subject, operator, path, expected }) => ({
+            id: assertion,
+            description,
+            subject,
+            operator,
+            ...(path === undefined ? {} : { path }),
+            ...(expected === undefined ? {} : { expected }),
+          }),
+        ),
+      }
+    }),
+  }
+}
+
 export interface RunnerAcceptanceOptions {
   identity: RunnerRequest['host']
   requests(
@@ -148,7 +184,13 @@ export class RunnerAcceptanceStages {
     if (
       sourceHash(text) !== artifact.sha256 ||
       input.schema !== 'wholeloop/runner-acceptance-input@1' ||
-      Object.keys(input).sort().join(',') !== 'criteria,origin,report,schema' ||
+      // Inputs captured before definitions were added stay readable.
+      !['criteria,origin,report,schema', 'criteria,definitions,origin,report,schema'].includes(
+        Object.keys(input).sort().join(','),
+      ) ||
+      (input.definitions !== undefined &&
+        contractDigest(input.definitions) !==
+          contractDigest(acceptanceDefinitions(this.store.files.root, input.report))) ||
       contractDigest(input.origin) !== contractDigest(origin) ||
       contractDigest(input.criteria) !== contractDigest(context.basis.plan.criteria) ||
       contractDigest(input.report) !==
@@ -324,6 +366,7 @@ export class RunnerAcceptanceStages {
           origin,
           criteria: context.plan.criteria,
           report,
+          definitions: acceptanceDefinitions(this.store.files.root, report),
         })
       safeSourceText(body, 256 * 1024)
       // Losing the budgeted input must not buy another capture or judgment.
