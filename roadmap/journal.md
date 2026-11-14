@@ -17,7 +17,14 @@
   An injected API key still needs a real key.
 - **Codex Git fallback and discovery:** the pre-push guard denied a real Codex `git push`. Codex found all seventeen skills and eight agents, spawned `wl-analyst` with its generated instructions and ran `$wl-status` through its packaged launcher.
 - **Fixed on the way:** the campaign scorer dropped its first input when `--require` was absent.
-- **Next:** EVAL-09 for Codex on the model the maintainer picks, then P6-41's seeded native repair and P6-40's hosted guidance trial.
+- **EVAL-09 on `gpt-6.1-sol`,** by the maintainer's choice. Five attempts each found a harness defect, fixed before the next:
+  - a JSON-text rule for `expected` values that the producer never saw;
+  - schema patterns and minimums dropped from native generation;
+  - build-plan context that did not say which roles each guidance pin reaches;
+  - builders not told that the controller runs every check.
+
+  The fifth reached verification: the builder edited and the controller committed. The suite then failed on a trailing newline that Codex's `apply_patch`, its only builder tool, always writes. The pinned fixture cannot be met by a contained Codex builder. Nothing was published.
+- **Next:** the maintainer's decision on the EVAL-09 fixture, then P6-41's seeded native repair and P6-40's hosted guidance trial, which need the same hosted repository.
 
 ---
 
