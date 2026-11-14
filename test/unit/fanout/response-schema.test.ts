@@ -3,9 +3,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { type Schema, validate } from '../../../src/config/schema.js'
+import { WORKER_PROPOSAL_SCHEMA } from '../../../src/delivery/worker-proposal.js'
 import { headlessAdapter } from '../../../src/fanout/adapters.js'
 import { stageWorkerPolicy } from '../../../src/fanout/policy-files.js'
-import { headlessResponseSchema } from '../../../src/fanout/response-schema.js'
+import { generationSchema, headlessResponseSchema } from '../../../src/fanout/response-schema.js'
 import { GATE_SCHEMAS, validateGateResult, validateGateVote } from '../../../src/gates/contracts.js'
 
 const identity = { assignment: 'a'.repeat(64), run: 'gate-0123456789abcdef', round: 1 }
@@ -150,5 +151,19 @@ describe('native exact headless response constraints', () => {
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
+  })
+})
+
+describe('native generation keeps rules it cannot enforce visible', () => {
+  it('turns a dropped string pattern into a description the producer can read', () => {
+    const rule = generationSchema(WORKER_PROPOSAL_SCHEMA as Schema)
+    const ref = rule.properties?.artifacts?.items?.properties?.ref
+    // A live Codex builder returned an artifact ref outside artifacts/ because
+    // its schema carried no trace of the pattern the core enforces on readback.
+    expect(ref).not.toHaveProperty('pattern')
+    expect(ref?.description).toBe(
+      `Must match the regular expression ${WORKER_PROPOSAL_SCHEMA.properties.artifacts.items.properties.ref.pattern}`,
+    )
+    expect(rule.properties?.summary).not.toHaveProperty('description')
   })
 })

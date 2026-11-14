@@ -25,7 +25,14 @@ export function generationSchema(rule: Schema): Schema {
       ...((rule as Schema & { maxItems?: number }).maxItems === 0 ? { maxItems: 0 } : {}),
     }
   }
-  return { type: rule.type, ...(rule.enum ? { enum: [...rule.enum] } : {}) }
+  return {
+    type: rule.type,
+    ...(rule.enum ? { enum: [...rule.enum] } : {}),
+    // Native structured output drops pattern, but the core refuses a value that
+    // misses it after an expensive call; a live Codex builder named an artifact
+    // outside artifacts/ for that reason. The rule travels as a description.
+    ...(rule.pattern ? { description: `Must match the regular expression ${rule.pattern}` } : {}),
+  }
 }
 
 /** Never reconstruct missing response identity after a model returns an unbound inner result. */

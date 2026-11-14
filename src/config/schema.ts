@@ -17,6 +17,7 @@ export interface Schema {
   minItems?: number
   uniqueItems?: boolean
   pattern?: string
+  description?: string
   'x-kind'?: string
 }
 
