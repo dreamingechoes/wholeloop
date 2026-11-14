@@ -16,7 +16,11 @@ const args = process.argv.slice(2),
           return { scenario, target }
         })
       : [],
-  inputs = args.filter((_, index) => index !== requireIndex && index !== requireIndex + 1)
+  // Without --require, requireIndex + 1 is 0, which would drop the first input.
+  inputs =
+    requireIndex >= 0
+      ? args.filter((_, index) => index !== requireIndex && index !== requireIndex + 1)
+      : args
 if (!inputs.length) throw new Error('Name at least one live trial directory or report')
 const trials = inputs.map((input) => {
   const path = statSync(input).isDirectory() ? join(input, 'results', 'report.json') : input
