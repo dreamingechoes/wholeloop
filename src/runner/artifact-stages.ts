@@ -252,6 +252,21 @@ export class RunnerArtifactStages {
         ...(context.stage.kind === 'acceptance-definition' && this.options.acceptanceContext
           ? { acceptanceContext: this.options.acceptanceContext(context) }
           : {}),
+        // Integration selects, for each milestone, the machine cases whose
+        // actions contain its procedure verbatim, and refuses the candidate
+        // when none does. A live producer paraphrased the procedure and the
+        // integration stage stopped before running any case.
+        ...(context.stage.kind === 'acceptance-definition'
+          ? {
+              milestoneProcedures: context.plan.milestones.map(({ id, criteria, procedure }) => ({
+                id,
+                criteria,
+                procedure,
+              })),
+              milestoneProcedureRule:
+                'For every milestone, at least one applicable machine case covering one of its criteria must list its procedure verbatim as one of its actions; other actions may follow.',
+            }
+          : {}),
         instruction:
           'Produce exactly one report artifact at artifacts/production.json containing JSON that follows response. Preserve original scope, source, ownership, exclusions, guidance, policy and unknowns. Only delivery-plan proposals for definition or plan stages use the next revision and original digest as previous. Acceptance definitions retain the exact current run/revision/plan/source constants in response. Use the installed acceptanceContext input formats and fixture identifiers when supplied; never invent capabilities or waive a criterion because its required observation is unavailable. Define complete acceptance cases before any builder; never waive human ownership or claim tests, execution, approval or delivery completion. Keep outer criteria/findings/unknowns empty; encode missing facts explicitly in the artifact. Every assertion expected value is JSON text, parsed before comparison: quote a string, as in "\\"abc\\"", and write numbers, booleans, arrays and objects as JSON.',
       })

@@ -119,6 +119,16 @@ describe('owned artifact stages preserve proposals separately from decisions and
       expect(brief.instruction).toContain('Every assertion expected value is JSON text')
       const example = /as in ("(?:\\.|[^"\\])*")/.exec(brief.instruction)?.[1]
       expect(example && JSON.parse(JSON.parse(example))).toBe('abc')
+      // Integration needs each milestone procedure verbatim in some case's actions.
+      expect(brief.milestoneProcedures).toEqual(
+        fixture.context.plan.milestones.map(({ id, criteria, procedure }) => ({
+          id,
+          criteria,
+          procedure,
+        })),
+      )
+      expect(brief.milestoneProcedures.length).toBeGreaterThan(0)
+      expect(brief.milestoneProcedureRule).toContain('verbatim')
     })
   })
   it('supplies the installed acceptance input contract without changing the native assignment scope', async () => {
