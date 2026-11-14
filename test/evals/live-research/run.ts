@@ -193,9 +193,27 @@ const bindings: NativeBindings = {
       },
     ],
   },
+  // WHOLELOOP_LIVE_CREDENTIAL names an API-key item stored with
+  // `wl delivery credential-store`, so P6-35's missing, invalid and injected
+  // credential trials run through the same route as the campaign. Without it
+  // the client keeps its own sign-in in the dedicated home. A credential
+  // replaces the home: the controller gives each launch a disposable one.
+  credential = process.env.WHOLELOOP_LIVE_CREDENTIAL,
   runtime: NativeRuntime = {
     schema: 'wholeloop/native-runtime@1',
-    clients: [{ target, client: realpathSync(client), store: home }],
+    clients: [
+      credential
+        ? {
+            target,
+            client: realpathSync(client),
+            credential: {
+              store: process.platform === 'darwin' ? 'macos-keychain' : 'secret-service',
+              item: credential,
+              kind: 'api-key',
+            },
+          }
+        : { target, client: realpathSync(client), store: home },
+    ],
   }
 writeFileSync(join(dir, 'bindings.json'), JSON.stringify(bindings))
 writeFileSync(join(dir, 'runtime.json'), JSON.stringify(runtime))
