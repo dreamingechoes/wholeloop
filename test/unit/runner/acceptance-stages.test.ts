@@ -1,9 +1,12 @@
-import { chmodSync, existsSync } from 'node:fs'
+import { chmodSync, existsSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, it } from 'vitest'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
+import type { DeliveryPlan } from '../../../src/delivery/plan.js'
 import {
+  acceptanceCandidate,
   acceptanceDefinitions,
   RunnerAcceptanceStages,
 } from '../../../src/runner/acceptance-stages.js'
@@ -16,6 +19,7 @@ import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerNativeStage } from '../../../src/runner/native-stage.js'
 import { RunnerStore } from '../../../src/runner/store.js'
 import { acceptanceFixture } from '../../support/acceptance.js'
+import { git } from '../../support/delivery.js'
 import { runnerGitFixture } from '../../support/runner-git.js'
 
 it('cancels the original acceptance prefix after revocation without its input locator', async () => {
@@ -305,4 +309,48 @@ it('shows the acceptance judge what each reported case asserted, never a private
     })
     expect(definitions.cases[1]).toEqual({ id: 'unknown-case', private: true })
   })
+})
+
+it('shows the acceptance judge the exact changed bytes of the integrated commit', () => {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-acceptance-candidate-')))
+  try {
+    git(root, ['init', '-b', 'main'])
+    git(root, ['config', 'user.name', 'Fixture Owner'])
+    git(root, ['config', 'user.email', 'fixture@example.test'])
+    writeFileSync(join(root, 'status.txt'), 'pending\n')
+    writeFileSync(join(root, 'app.cjs'), 'unchanged\n')
+    git(root, ['add', '.'])
+    git(root, ['commit', '-m', 'test: seed the base', '-m', 'Pin the original bytes.'])
+    const base = git(root, ['rev-parse', 'HEAD']).trim()
+    writeFileSync(join(root, 'status.txt'), 'public fixture\n')
+    git(root, ['commit', '-am', 'feat: change the status', '-m', 'Produce the candidate.'])
+    const head = git(root, ['rev-parse', 'HEAD']).trim(),
+      plan = { repositories: [{ id: 'app', root, base }] } as unknown as DeliveryPlan
+    // A live challenger could not tie the HTTP response to the file content.
+    expect(
+      acceptanceCandidate(plan, {
+        bindings: {
+          candidates: [
+            { repository: 'app', head },
+            { repository: 'other', head },
+          ],
+        },
+      }),
+    ).toMatchObject({
+      meaning: expect.stringContaining('identical to the base'),
+      repositories: [
+        {
+          repository: 'app',
+          base,
+          head,
+          paths: ['status.txt'],
+          files: [{ path: 'status.txt', text: 'public fixture\n' }],
+          omitted: 0,
+        },
+        { repository: 'other', available: false },
+      ],
+    })
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
 })

@@ -88,6 +88,8 @@ Amended 2026-11-14. The delegated acceptance judge received the integration repo
 
 The acceptance input now also carries `definitions`, derived from the immutable acceptance pin: each reported case's criteria, capability and pinned assertions, stating that the report's statuses are controller observations of those assertions. A private evaluator case appears only by id, as ADR-0208 requires for correction feedback. Readback recomputes `definitions` and accepts inputs captured before it existed. Rejected: copying raw HTTP bodies or process output into the judge's input, which would expose unbounded application output and private fixtures.
 
+The next attempt's judge accepted, but its challenger did not support the judgment: no assertion covered the resulting `status.txt` content, and it could not see the application that serves it. The input now also carries `candidate`, the complete changed paths from each plan base to the exact integrated commit, with their bytes read from Git by the controller. Files are bounded at 64 KiB each, 256 KiB in total and 50 paths. Commits are immutable, so these are facts about the candidate. Readback checks the field's shape but does not recompute it, because Git object reads refuse to run inside sealed observations. The captured artifact is bound by its digest and its observed budget entry, as `report` already is.
+
 ## Alternatives rejected
 
 - **A separate environments document.** It would need its own CLI flag, retained bytes and identity term, but the result would be the same digest-bound configuration.

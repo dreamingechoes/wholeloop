@@ -6,6 +6,8 @@ import { NativeDelegatedDecisionHost } from '../decisions/native-host.js'
 import type { DecisionRequest } from '../decisions/store.js'
 import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'
 import type { NativeProcessRunner } from '../delivery/native-host.js'
+import type { DeliveryPlan } from '../delivery/plan.js'
+import { git, gitObjects } from '../worktrees/git.js'
 import { RunnerDecisionStages } from './decision-stages.js'
 import type { RunnerStageContext, RunnerStageObservation } from './engine.js'
 import type { RunnerStageRecord } from './events.js'
@@ -46,6 +48,60 @@ export function acceptanceDefinitions(
             ...(expected === undefined ? {} : { expected }),
           }),
         ),
+      }
+    }),
+  }
+}
+
+const CANDIDATE_FILE_LIMIT = 64 * 1024,
+  CANDIDATE_TOTAL_LIMIT = 256 * 1024,
+  CANDIDATE_FILES = 50
+
+/**
+ * The complete change from each repository's plan base to the exact
+ * integrated commit, with the changed bytes read from Git by the controller.
+ * A live challenger could not tie the observed HTTP response to the required
+ * file content without them. Commits are immutable, so these are facts about
+ * the candidate, not worker claims.
+ */
+export function acceptanceCandidate(
+  plan: Readonly<DeliveryPlan>,
+  report: { bindings: { candidates: { repository: string; head: string }[] } },
+) {
+  let total = 0
+  return {
+    meaning:
+      'Complete changed paths from each plan base to the exact integrated commit, with their bytes read from Git by the controller. Every other path is identical to the base.',
+    repositories: report.bindings.candidates.map(({ repository, head }) => {
+      const owned = plan.repositories.find((item) => item.id === repository)
+      if (!owned || !/^[a-f0-9]{40,64}$/.test(head)) return { repository, available: false }
+      const paths = git(owned.root, ['diff', '--name-only', '-z', owned.base, head])
+        .split('\0')
+        .filter(Boolean)
+        .sort()
+      return {
+        repository,
+        base: owned.base,
+        head,
+        paths,
+        files: paths.slice(0, CANDIDATE_FILES).map((path) => {
+          try {
+            const bytes = gitObjects(
+                owned.root,
+                ['cat-file', 'blob', `${head}:${path}`],
+                undefined,
+                CANDIDATE_FILE_LIMIT,
+              ),
+              text = new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+            total += bytes.length
+            if (total > CANDIDATE_TOTAL_LIMIT) return { path, available: false }
+            return { path, sha256: sourceHash(text), text }
+          } catch {
+            // Deleted, binary or oversized paths stay listed as unavailable.
+            return { path, available: false }
+          }
+        }),
+        omitted: Math.max(0, paths.length - CANDIDATE_FILES),
       }
     }),
   }
@@ -185,9 +241,16 @@ export class RunnerAcceptanceStages {
       sourceHash(text) !== artifact.sha256 ||
       input.schema !== 'wholeloop/runner-acceptance-input@1' ||
       // Inputs captured before definitions were added stay readable.
-      !['criteria,origin,report,schema', 'criteria,definitions,origin,report,schema'].includes(
-        Object.keys(input).sort().join(','),
-      ) ||
+      ![
+        'criteria,origin,report,schema',
+        'criteria,definitions,origin,report,schema',
+        'candidate,criteria,definitions,origin,report,schema',
+      ].includes(Object.keys(input).sort().join(',')) ||
+      // The candidate field is not recomputed here: Git object reads refuse to
+      // run inside sealed observations, and the captured artifact is already
+      // bound by its digest and the budget's observed entry, as report is.
+      (input.candidate !== undefined &&
+        (typeof input.candidate !== 'object' || !Array.isArray(input.candidate.repositories))) ||
       (input.definitions !== undefined &&
         contractDigest(input.definitions) !==
           contractDigest(acceptanceDefinitions(this.store.files.root, input.report))) ||
@@ -367,6 +430,7 @@ export class RunnerAcceptanceStages {
           criteria: context.plan.criteria,
           report,
           definitions: acceptanceDefinitions(this.store.files.root, report),
+          candidate: acceptanceCandidate(context.plan, report),
         })
       safeSourceText(body, 256 * 1024)
       // Losing the budgeted input must not buy another capture or judgment.
