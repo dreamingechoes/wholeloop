@@ -13,6 +13,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { DeliveryAcceptance } from '../../../src/acceptance/store.js'
+import { guidanceRoles } from '../../../src/delivery/guidance.js'
 import type { NativeRuntime } from '../../../src/delivery/native-runtime.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { PublicBuildPlanInputs } from '../../../src/runner/public-build-plan-inputs.js'
@@ -281,6 +282,14 @@ describe('public to-pr composition (ADR-0207)', () => {
                   file.path === 'app.cjs' && file.text === SEED['app.cjs'],
               ),
             ).toBe(true)
+            // Every pin carries its roles, so a reviewer-only rubric is not
+            // mistaken for missing build-planning context.
+            expect(inputs.guidance.length).toBeGreaterThan(0)
+            for (const pin of inputs.guidance) expect(pin.roles).toEqual(guidanceRoles(pin.slot))
+            expect(
+              inputs.guidance.find((pin: { slot: string }) => pin.slot === 'review.rubric')?.roles,
+            ).toEqual(['reviewer', 'refuter'])
+            expect(inputs.guidanceRule).toContain('not build-planning input')
             const decision = JSON.parse(
               readFileSync(
                 store.files.path(`delivery/runner-decisions/${current.invocation}.json`),

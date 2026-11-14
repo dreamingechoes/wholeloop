@@ -2,6 +2,7 @@
 import { existsSync } from 'node:fs'
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { contractDigest } from '../contracts/compatibility.js'
+import { guidanceRoles } from '../delivery/guidance.js'
 import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'
 import { type NativeRuntime, nativeRuntimeRepository } from '../delivery/native-runtime.js'
 import type { WorkerContext } from '../delivery/worker-protocol.js'
@@ -110,6 +111,17 @@ export class PublicBuildPlanInputs {
           provenance: definition.provenance,
         },
       },
+      // The plan lists every guidance pin by hash, but each reaches only its
+      // roles. Without saying so, a live builder and its plan judge treated the
+      // reviewer-only REVIEW.md as missing context and blocked the plan.
+      guidance: (context.plan.guidance ?? []).map((pin) => ({
+        slot: pin.slot,
+        ref: pin.ref,
+        repository: pin.repository,
+        roles: guidanceRoles(pin.slot),
+      })),
+      guidanceRule:
+        'Each pinned guidance file reaches only its listed roles. A pin for other roles, such as a review rubric, is not build-planning input and its absence here is not a missing fact.',
       meaning:
         'Selected current source and pinned acceptance definitions only; no execution, acceptance, approval or authority is established.',
     })
