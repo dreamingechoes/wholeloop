@@ -113,6 +113,12 @@ describe('owned artifact stages preserve proposals separately from decisions and
         count: 1,
       })
       expect(brief.instruction).not.toContain('Definition/plan proposals')
+      // The core parses every expected value as JSON (assertion-json), but the
+      // frozen schema only says string; a live gpt-6.1-sol producer wrote a bare
+      // commit hash. The brief must state the rule, and its example must parse.
+      expect(brief.instruction).toContain('Every assertion expected value is JSON text')
+      const example = /as in ("(?:\\.|[^"\\])*")/.exec(brief.instruction)?.[1]
+      expect(example && JSON.parse(JSON.parse(example))).toBe('abc')
     })
   })
   it('supplies the installed acceptance input contract without changing the native assignment scope', async () => {

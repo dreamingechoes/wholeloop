@@ -3,6 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-11-05
 
+**Amended 2026-11-14.** The core parses every assertion's `expected` value as JSON and refuses the plan with `assertion-json` otherwise. The frozen `wholeloop/acceptance-plan@1` schema the producer reads says only `string`. A live Codex attempt on `gpt-6.1-sol` wrote a bare commit hash as one expected value, and the artifact was refused. The producer brief now states the rule with an example that parses. The schema stays unchanged, because its declaration is part of the v1 compatibility baseline. The refusal was correct and stays strict.
+
 ## Context
 
 The second actual implementation pilot completes its native producer call but stops before workspace allocation. Its acceptance artifact increments revision one to two, following an ambiguous instruction about definition/plan successors. Acceptance definitions describe the current delivery revision. The same artifact invents a flat HTTP input and an unavailable repository inspection capability because the producer receives the generic case schema without the installed observation formats or recipe identifiers. Existing validation correctly refuses the artifact; a successful native process is not valid production.
