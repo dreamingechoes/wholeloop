@@ -47,6 +47,12 @@ Two findings from it:
 - **The run receipt reported the core's preflight.** With a runtime document only the controller bundle composes the host, so the core's own preflight said `public-host-native-runtime-unavailable` beside a completed route. The core now reports no preflight when the bundle runs with a runtime; the child evaluates it before dispatch and the status carries the result. A compiled-CLI case fails without the change.
 - **Excerpts may be paraphrased.** The source worker noted in an open question that its excerpts came from the client's fetch tool, which summarizes pages, not from raw page bytes. The brief keeps that open, which is the honest outcome. Excerpt fidelity against the raw source is not established by these trials.
 
+## Plan-scoped rubric rules
+
+Amended 2026-11-14. The first Codex attempt on `gpt-6-luna` ended `blocked` after 30 seconds and two successful launches. The plan judge rejected the plan because it carried no citations and no concrete source targets, and its challenger supported the rejection. The judge applied the trial's only rules as written: both rubrics shared the claim rules, "every retained load-bearing claim needs cited public evidence", and a plan has no claims yet. Claude Code on `claude-opus-5-5` had read the same rules charitably and accepted.
+
+The `research-plan` rubric now has its own rules: the angles together reach every part of the pinned question and say how public evidence will be found, and missing or contradictory evidence stays an open question rather than being decided in advance. The `research-sources` rubric keeps the claim rules unchanged. The attempt is retained as a failed attempt on the earlier rubric and is not scored with the corrected trials. Rejected: keeping the shared rules and moving Codex to a stronger model, which would hide a defect in the trial behind a more lenient judge.
+
 ## Alternatives rejected
 
 - Accepting any uncertainty ID would widen what a machine decision may accept, which only the maintainer can choose.

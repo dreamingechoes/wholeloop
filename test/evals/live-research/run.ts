@@ -78,10 +78,28 @@ const delegations = (['research-plan', 'research-sources'] as const).map((id) =>
         id === 'research-plan'
           ? 'Accept a research plan only when its angles can answer the pinned question from public sources.'
           : 'Accept the source work only when every retained claim cites public evidence and refuted or unsupported claims stay visible.',
-      rules: [
-        { id: 'coverage', text: 'Every retained load-bearing claim needs cited public evidence.' },
-        { id: 'honesty', text: 'Missing or contradictory evidence stays an open question.' },
-      ],
+      // A plan has no claims yet, so its judge gets plan-scoped rules. With the
+      // claim rules below, Codex's plan judge on gpt-6-luna rejected a plan for
+      // carrying no citations, which only the brief can have (ADR-0206).
+      rules:
+        id === 'research-plan'
+          ? [
+              {
+                id: 'coverage',
+                text: 'The angles together reach every part of the pinned question and say how public evidence will be found.',
+              },
+              {
+                id: 'honesty',
+                text: 'The plan keeps missing or contradictory evidence as open questions instead of deciding them in advance.',
+              },
+            ]
+          : [
+              {
+                id: 'coverage',
+                text: 'Every retained load-bearing claim needs cited public evidence.',
+              },
+              { id: 'honesty', text: 'Missing or contradictory evidence stays an open question.' },
+            ],
       outcomes: ['accept', 'reject'],
       // Uncertainties a public-web answer can honestly carry; the judges are told
       // these IDs, and any other uncertainty still blocks the decision.
