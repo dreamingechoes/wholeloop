@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type { GatePlan, GateResult } from '../../../src/gates/contracts.js'
 import { prepareReviewInput } from '../../../src/review/input.js'
-import { RunnerNativeGateHost, verifyGateEvidence } from '../../../src/runner/native-gate.js'
+import { gateEvidence, RunnerNativeGateHost } from '../../../src/runner/native-gate.js'
 import { RunnerNativeScope } from '../../../src/runner/native-scope.js'
 import { RunnerNativeStage } from '../../../src/runner/native-stage.js'
 import { nativeGateFixture as setup } from '../../support/native-gate.js'
@@ -212,12 +212,12 @@ describe('verify-gate evidence for read-only verifiers', () => {
       const cases = [{ id: 'public-status', criteria: ['status'], capability: 'http.request' }]
       // Pinned acceptance coverage travels with its rule, so a verifier does not
       // block on runtime behavior that the acceptance stage observes later.
-      expect(verifyGateEvidence(plan, [suite], cases)?.acceptance).toMatchObject({
+      expect(gateEvidence(plan, [suite], cases)?.acceptance).toMatchObject({
         cases,
         rule: expect.stringContaining('observed by the controller at the acceptance stage'),
       })
-      expect(verifyGateEvidence(plan, [suite])?.acceptance.cases).toEqual([])
-      expect(verifyGateEvidence(plan, [claim, suite])).toMatchObject({
+      expect(gateEvidence(plan, [suite])).toMatchObject({ acceptance: { cases: [] } })
+      expect(gateEvidence(plan, [claim, suite])).toMatchObject({
         suite,
         changes: { base: 'a'.repeat(40), paths: ['status.txt', 'removed.txt'], complete: true },
         files: [
@@ -227,8 +227,15 @@ describe('verify-gate evidence for read-only verifiers', () => {
         omitted: 0,
       })
       // A worker's own result is never presented as the controller's suite.
-      expect(verifyGateEvidence(plan, [claim])?.suite).toBeNull()
-      expect(verifyGateEvidence({ ...plan, gate: 'review' }, [suite])).toBeUndefined()
+      expect(gateEvidence(plan, [claim])?.suite).toBeNull()
+      // A review worker gets the complete change set and bytes, never the suite.
+      const review = gateEvidence({ ...plan, gate: 'review' }, [suite])
+      expect(review).toMatchObject({
+        changes: { complete: true },
+        files: [{ path: 'status.txt', text: 'public fixture\n' }, { path: 'removed.txt' }],
+      })
+      expect(review).not.toHaveProperty('suite')
+      expect(review).not.toHaveProperty('acceptance')
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

@@ -17,6 +17,8 @@ The next live attempt showed the evidence was used. Its verifier confirmed the s
 
 The acceptance stage still observes that behavior before a pull request is opened. Rejected: running the pinned HTTP cases inside the verify round, which would duplicate the acceptance stage and reorder the route.
 
+A later attempt passed verification, and its Codex reviewer then reported `unavailable`: it confirmed the diff but could not read the candidate files for a full inspection. Review-gate workers now receive the same complete change set and changed file bytes, without the suite result or acceptance coverage, which belong to verification. This replaces the earlier statement that review gates were unchanged.
+
 ## Context
 
 The result decoder already rejects criterion results from every role except verifier and rejects unassigned verifier criterion IDs. Native response schemas nevertheless advertise unrestricted criterion arrays to all roles. This is an independently reproduced generation-contract inconsistency. The preceding actual builder's rejected response was not retained, so this finding does not establish that historical failure's cause.
