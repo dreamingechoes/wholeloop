@@ -71,6 +71,17 @@ Publication also needs the GitHub CLI. ADR-0205 rejected resolving a client thro
 
 Research-report runs still carry no repository guidance: their workers read sources, not a repository. The model-backed EVAL-09 variant whose builder must follow a repository skill needs the hosted trial repository and model accounts, and is listed in manual verification.
 
+## Trial fixture version 2
+
+Amended 2026-11-14. The first hosted EVAL-09 fixture pinned `status.txt` as `pending` with no trailing newline, and its app and suite compared the file's bytes exactly. A contained Codex builder has only `apply_patch`, which always ends a line with a newline and refuses the no-newline marker. A live Codex 0.166.0 attempt therefore reached verification and failed on `public fixture\n`. The fixture could never be met by that builder, whatever the model.
+
+Version 2 pins `status.txt` as `pending\n`, and the trial's `app.cjs` and `suite.cjs` ignore exactly one trailing newline; a second newline still fails. The task text, the review rubric, the package, the CI workflow and the shared `SEED` of the other public fixtures are unchanged. The hosted repository receives this change through a pull request that the maintainer merges, because `main` requires a passing check that fails by design until the task is done.
+
+Rejected:
+
+- Giving Codex builders a shell to write exact bytes, which would widen worker containment.
+- Pointing Codex trials at an unprotected base branch, which would stop exercising the protected base the campaign fixes.
+
 ## Alternatives rejected
 
 - **A separate environments document.** It would need its own CLI flag, retained bytes and identity term, but the result would be the same digest-bound configuration.

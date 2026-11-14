@@ -93,7 +93,7 @@ describe('EVAL-09 live implementation trial', () => {
       expect(source.mapping[1]).toMatchObject({ role: 'context', startLine: 2, endLine: 2 })
       expect(initial).toMatchObject({
         base: git(root, ['rev-parse', 'HEAD']),
-        files: [{ ref: 'status.txt', sha256: sourceHash('pending'), text: 'pending' }],
+        files: [{ ref: 'status.txt', sha256: sourceHash('pending\n'), text: 'pending\n' }],
       })
       const recipe = new EnvironmentRecipes(store).get(trialRecipe(store, root))
       expect(recipe.files.map((file) => file.ref).sort()).toEqual([
@@ -105,10 +105,14 @@ describe('EVAL-09 live implementation trial', () => {
       const check = () =>
         spawnSync(process.execPath, ['suite.cjs'], { cwd: root, encoding: 'utf8' })
       expect(check().status).toBe(1)
+      // Codex's patch tool always ends a line with a newline, so exactly one is
+      // ignored; a second still fails and the initial bytes stay pinned.
       writeFileSync(join(root, 'status.txt'), 'public fixture')
       expect(check().status).toBe(0)
       expect(() => trialSource(root)).toThrow('Changed initial status source')
       writeFileSync(join(root, 'status.txt'), 'public fixture\n')
+      expect(check().status).toBe(0)
+      writeFileSync(join(root, 'status.txt'), 'public fixture\n\n')
       expect(check().status).toBe(1)
       expect(() => verifyTrialSeed(root)).toThrow('Changed campaign input: status.txt')
       // A checkout symlink must be rejected before any target bytes are read.
@@ -116,7 +120,7 @@ describe('EVAL-09 live implementation trial', () => {
       symlinkSync('suite.cjs', join(root, 'status.txt'))
       expect(() => verifyTrialSeed(root)).toThrow('Non-regular campaign input: status.txt')
       unlinkSync(join(root, 'status.txt'))
-      writeFileSync(join(root, 'status.txt'), 'pending')
+      writeFileSync(join(root, 'status.txt'), 'pending\n')
       writeFileSync(join(root, 'AGENTS.md'), 'Unexpected additional guidance.\n')
       git(root, ['add', 'AGENTS.md'])
       git(root, [

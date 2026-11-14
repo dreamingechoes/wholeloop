@@ -241,7 +241,7 @@ The first actual Codex attempt on 2026-11-05 blocks at workspace allocation afte
 
 `npm run eval:live-implementation` runs one EVAL-09 attempt through the built public `wl delivery run`. It pins a fresh clone of the campaign repository's `main`, the source, rubric, environment recipe and declared suite, and delegates only build-plan approval and acceptance. The grant permits non-force publication and readying, with no merge. It checks the repository's exact private identity and initial fixture bytes before launching a worker.
 
-The small application reads `status.txt` through its public HTTP endpoint. The initial value is `pending`; the requested value is `public fixture`. The unchanged suite must fail before implementation. Its code, the HTTP entrypoint, package and review rubric stay pinned. The CI fixture reuses this project's pinned checkout/setup-node actions and runs the same suite without dependencies. This small trial exercises transport and QA; complex feature delivery remains separate evidence.
+The small application reads `status.txt` through its public HTTP endpoint. The initial value is `pending`; the requested value is `public fixture`. Since fixture version 2 (2026-11-14, [ADR-0207](../docs/decisions/0207-public-implementation-route-composition.md#trial-fixture-version-2)), the file holds `pending\n`, and the app and suite ignore exactly one trailing newline. The unchanged suite must fail before implementation. Its code, the HTTP entrypoint, package and review rubric stay pinned. The CI fixture reuses this project's pinned checkout/setup-node actions and runs the same suite without dependencies. This small trial exercises transport and QA; complex feature delivery remains separate evidence.
 
 From the wholeloop checkout:
 
