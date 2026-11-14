@@ -19,6 +19,41 @@ const record = (fixture: Parameters<Parameters<typeof setup>[0]>[0]) => {
   return value
 }
 describe('owned builder plans precede their delegated approval', () => {
+  it('shows the producer the pinned rubric its plan will be judged by', async () => {
+    await setup(async (fixture) => {
+      // The engine pins every delegated rubric before dispatching any stage.
+      fixture.store.decisions.pin(fixture.context.request.grant)
+      await new RunnerArtifactStages(fixture.store, fixture.options.production).execute(
+        fixture.context,
+      )
+      const binding = JSON.parse(
+          readFileSync(
+            fixture.store.files.path(
+              `delivery/runner-artifacts/${fixture.context.invocation}.json`,
+            ),
+            'utf8',
+          ),
+        ),
+        brief = JSON.parse(binding.lease.assignment.brief),
+        delegation = fixture.context.plan.policy.delegations?.find(
+          (item) => item.id === 'approve-build-plan',
+        )
+      if (!delegation) throw new Error('Fixture delegation required')
+      const pinned = JSON.parse(
+        readFileSync(
+          fixture.store.files.path(`delivery/decision-rubrics/${delegation.rubric.sha256}.json`),
+          'utf8',
+        ),
+      )
+      // A live judge rejected a plan for a rule its producer had never seen.
+      expect(brief.approvalRubric).toEqual({
+        decision: 'approve-build-plan',
+        purpose: pinned.purpose,
+        rules: pinned.rules,
+      })
+      expect(brief.approvalRule).toContain('independent judge')
+    })
+  })
   it('refuses missing delegation before producing an artifact or constructing a decision host', async () => {
     await setup(
       async ({ stages, context, store }) => {

@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-11-05
 
-**Amended 2026-11-14.** The plan in the brief lists every guidance pin by hash, but each pin reaches only the roles of its slot. A live Codex 0.166.0 builder on `gpt-6.1-sol` marked the reviewer-only `REVIEW.md` as unavailable, and its plan judge kept that as a blocking uncertainty owned by the controller. The shared build-plan context now lists each pin with its roles from `guidanceRoles` and states that a pin for other roles is not build-planning input. No guidance content is added to any role.
+**Amended 2026-11-14.** The plan in the brief lists every guidance pin by hash, but each pin reaches only the roles of its slot. A live Codex 0.166.0 builder on `gpt-6.1-sol` marked the reviewer-only `REVIEW.md` as unavailable, and its plan judge kept that as a blocking uncertainty owned by the controller. The shared build-plan context now lists each pin with its roles from `guidanceRoles` and states that a pin for other roles is not build-planning input. No guidance content is added to any role. The same day, a judge rejected a builder plan for lacking the pre-edit inspection its rubric required, while the producer had seen only that rubric's reference and digest. The build-plan producer brief now carries the pinned `approve-build-plan` rubric, its purpose and rules, verified against its digest and omitted when unpinned. Rubrics are policy; no private acceptance case reaches the producer.
 
 ## Context
 

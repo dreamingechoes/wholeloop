@@ -8,7 +8,7 @@ import {
 import { DeliveryAcceptance } from '../acceptance/store.js'
 import { BUILDER_PLAN_SCHEMA, validateBuilderPlan } from '../build/contracts.js'
 import { contractDigest } from '../contracts/compatibility.js'
-import { readSourceFile, safeSourceText } from '../delivery/input.js'
+import { readSourceFile, safeSourceText, sourceHash } from '../delivery/input.js'
 import type {
   NativeProcessRunner,
   NativeRunOptions,
@@ -180,6 +180,32 @@ export class RunnerArtifactStages {
       throw new DeliveryRunnerError('artifact-stage-workspace-missing')
     return { binding, ...selected }
   }
+  /**
+   * The pinned rubric an independent judge will apply to a builder plan. The
+   * producer saw only its reference and digest, so a live builder plan was
+   * rejected for missing a pre-edit inspection the rubric required. Rubrics
+   * are policy, not private acceptance; an unpinned one is simply omitted.
+   */
+  private approvalRubric(plan: Readonly<DeliveryPlan>) {
+    const delegation = plan.policy.delegations?.find((item) => item.id === 'approve-build-plan')
+    if (!delegation) return {}
+    try {
+      const text = readSourceFile(
+          this.store.files.root,
+          `delivery/decision-rubrics/${delegation.rubric.sha256}.json`,
+          64 * 1024,
+        ),
+        rubric = JSON.parse(text) as { purpose?: unknown; rules?: unknown }
+      if (sourceHash(text) !== delegation.rubric.sha256) return {}
+      return {
+        approvalRubric: { decision: delegation.id, purpose: rubric.purpose, rules: rubric.rules },
+        approvalRule:
+          'An independent judge approves this plan against approvalRubric before any code changes. Address each rule explicitly.',
+      }
+    } catch {
+      return {}
+    }
+  }
   private response(kind: string, plan: Readonly<DeliveryPlan>) {
     if (kind === 'acceptance-definition') {
       const schema = ACCEPTANCE_SCHEMAS.plan
@@ -252,6 +278,7 @@ export class RunnerArtifactStages {
         ...(context.stage.kind === 'acceptance-definition' && this.options.acceptanceContext
           ? { acceptanceContext: this.options.acceptanceContext(context) }
           : {}),
+        ...(context.stage.kind === 'build-plan' ? this.approvalRubric(context.plan) : {}),
         // Integration selects, for each milestone, the machine cases whose
         // actions contain its procedure verbatim, and refuses the candidate
         // when none does. A live producer paraphrased the procedure and the
