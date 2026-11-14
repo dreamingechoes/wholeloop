@@ -202,7 +202,7 @@ flowchart LR
 
 ## P7-09 · Pull-request contribution workflow
 
-**Status:** ⏸️ · **Size:** S · **Depends on:** P7-05
+**Status:** ✅ · **Size:** S · **Depends on:** P7-05
 
 **Goal** — Switch from the bootstrap workflow to reviewed pull requests before the repository is public.
 
@@ -210,12 +210,21 @@ flowchart LR
 
 **Acceptance criteria:**
 
-- [ ] `main` accepts changes only through pull requests with passing required checks.
-- [ ] Contributor and agent instructions describe the same workflow.
+- [x] `main` accepts changes only through pull requests with passing required checks.
+- [x] Contributor and agent instructions describe the same workflow.
 
 **Timing (2026-11-08)** — The maintainer announces the switch just before the repository becomes public (P7-14), so commits keep going straight to `main` until then.
 
-**Evidence (prepared, awaiting the maintainer)** — `.github/rulesets/main.json` allows changes to `main` only through squash-merged pull requests with up-to-date required checks and no bypass, and `.github/rulesets/release-tags.json` makes release tags immutable once created; a test keeps the required checks equal to the expanded CI job names. `.github/CODEOWNERS` assigns every path to the repository owner, the pull request template asks for a conventional title and a passing gate, and the CI commit check now validates the pull request title, which a squash merge turns into the subject on `main`. The contributing guide describes the workflow from the switch. Applying the rulesets and merge settings needs the maintainer's account, and the `AGENTS.md` bootstrap line changes only when the maintainer announces the switch; both are in manual verification, so the criteria stay open.
+**Evidence** — Applied on 2026-11-14 at the maintainer's request, once the repository was public:
+
+- The merge settings read back as squash-only, with the pull request title as the subject, the commit messages as the body, and branches deleted on merge.
+- Rulesets `main` (27280901) and `release tags` (27280902) are active with no bypass actor.
+- GitHub reports these rules on `main`: deletion, non-fast-forward, required linear history, pull request, and required status checks for the Ubuntu and macOS check jobs and the Node 20 runtime job.
+- Pull request #10, which announces the switch in `AGENTS.md`, the contributing guide and the roadmap, read `BLOCKED` while those checks were pending.
+
+Narrowed: a direct push to `main` was not attempted, so its refusal rests on the reported rules.
+
+**Prepared earlier** — `.github/rulesets/main.json` allows changes to `main` only through squash-merged pull requests with up-to-date required checks and no bypass, and `.github/rulesets/release-tags.json` makes release tags immutable once created; a test keeps the required checks equal to the expanded CI job names. `.github/CODEOWNERS` assigns every path to the repository owner, the pull request template asks for a conventional title and a passing gate, and the CI commit check now validates the pull request title, which a squash merge turns into the subject on `main`. The contributing guide describes the workflow from the switch. Applying the rulesets and merge settings needs the maintainer's account, and the `AGENTS.md` bootstrap line changes only when the maintainer announces the switch; both are in manual verification, so the criteria stay open.
 
 **Tests** — Commit-message and PR checks in CI.
 

@@ -58,11 +58,11 @@ Remote service integrations are **experimental · fixture-tested · service-unve
 
 ## Pull-request contribution workflow (P7-09, 2026-11-07)
 
-The rulesets, CODEOWNERS, pull request template and title check are in the repository; nothing has been applied to the hosted repository.
+The rulesets, CODEOWNERS, pull request template and title check are in the repository, and since 2026-11-14 the rulesets and merge settings are applied to the hosted repository.
 
-- [ ] Set the merge options: squash merging only, with the pull request title as the commit title and the commit messages as its body, and delete branches on merge (`gh api -X PATCH repos/dreamingechoes/wholeloop -F allow_merge_commit=false -F allow_rebase_merge=false -F allow_squash_merge=true -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=COMMIT_MESSAGES -F delete_branch_on_merge=true`).
-- [ ] Apply both rulesets (`gh api repos/dreamingechoes/wholeloop/rulesets --method POST --input .github/rulesets/main.json`, then the same for `release-tags.json`), and confirm a direct push to `main` is refused and a pull request cannot merge before its required checks pass.
-- [ ] Announce the switch: replace the bootstrap line in `AGENTS.md` and the bootstrap note in `CONTRIBUTING.md` with the pull-request workflow, record it in the journal and mark P7-09 complete. Proposed `AGENTS.md` line: "**Pull requests to `main`.** Every change reaches `main` through a branch and a pull request with passing required checks, squash-merged under a Conventional Commit title."
+- [x] Set the merge options: squash merging only, with the pull request title as the commit title and the commit messages as its body, and delete branches on merge (`gh api -X PATCH repos/dreamingechoes/wholeloop -F allow_merge_commit=false -F allow_rebase_merge=false -F allow_squash_merge=true -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=COMMIT_MESSAGES -F delete_branch_on_merge=true`). Done on 2026-11-14; the settings read back as requested.
+- [x] Apply both rulesets (`gh api repos/dreamingechoes/wholeloop/rulesets --method POST --input .github/rulesets/main.json`, then the same for `release-tags.json`), and confirm a direct push to `main` is refused and a pull request cannot merge before its required checks pass. Done on 2026-11-14 (rulesets 27280901 and 27280902). GitHub reports all five rules on `main`, and pull request #10 read `BLOCKED` while its required checks were pending. A direct push to `main` was not attempted.
+- [x] Announce the switch: replace the bootstrap line in `AGENTS.md` and the bootstrap note in `CONTRIBUTING.md` with the pull-request workflow, record it in the journal and mark P7-09 complete. Proposed `AGENTS.md` line: "**Pull requests to `main`.** Every change reaches `main` through a branch and a pull request with passing required checks, squash-merged under a Conventional Commit title." Done on 2026-11-14 through pull request #10.
 
 ## Release automation (P7-08, 2026-11-07)
 

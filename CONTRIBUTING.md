@@ -1,6 +1,6 @@
 # Contributing to wholeloop
 
-`wholeloop` is built in small, self-contained tasks. Start with the working agreement and current journal; the repository remains private until the maintainer explicitly approves public release.
+`wholeloop` is built in small, self-contained tasks. Start with the working agreement and current journal; the repository has been public since 2026-11-14.
 
 To use wholeloop rather than change it, start with the [README](./README.md) and [getting started](./docs/getting-started.md). The agreement below concerns implementation of this repository.
 
@@ -12,7 +12,7 @@ To use wholeloop rather than change it, start with the [README](./README.md) and
 
 ## Making a change
 
-- **One task, end to end.** Code, tests and documentation land in the same change. Follow the current bootstrap commit workflow below.
+- **One task, end to end.** Code, tests and documentation land in the same change. Follow the pull-request workflow below.
 - **Determinism first.** Anything with one right answer goes into the core, with a test.
 - **Keep harness files short.** Size budgets are enforced ([ADR-0011](./docs/decisions/0011-size-budgets-and-enforcement.md)).
 - **Docs follow the style guide.** Status banner, TL;DR, templates, Mermaid palette, generated navigation ([docs-style](./docs/contributing/docs-style.md)).
@@ -20,15 +20,12 @@ To use wholeloop rather than change it, start with the [README](./README.md) and
 
 ## Commits and pull requests
 
-> [!NOTE]
-> **Bootstrap phase:** while the foundations are being built, changes are committed directly to `main`. Branches and pull requests become the workflow once the switch is announced in the [journal](./roadmap/journal.md).
-
-From the switch, every change reaches `main` through a pull request, and the same applies to coding agents through `AGENTS.md`:
+Every change reaches `main` through a pull request, and the same applies to coding agents through `AGENTS.md`. The bootstrap workflow of committing straight to `main` ended on 2026-11-14, as the [journal](./roadmap/journal.md) records.
 
 - Branch from `main` and open a pull request; describe what changed, why, the roadmap task and how it was verified.
 - The required checks are the CI jobs on Ubuntu and macOS and the Node 20 runtime job; the branch must be up to date with `main` before merging.
 - Pull requests are squash-merged. The title becomes the commit subject on `main`, so CI validates it with the same rules as a commit; the commit messages, also validated, become its body.
-- `.github/CODEOWNERS` requests the maintainer's review on every path. [`.github/rulesets/main.json`](./.github/rulesets/main.json) and [`.github/rulesets/release-tags.json`](./.github/rulesets/release-tags.json) define the branch and tag rules the maintainer applies to the hosted repository; release tags can be created once and never moved or deleted.
+- `.github/CODEOWNERS` requests the maintainer's review on every path. [`.github/rulesets/main.json`](./.github/rulesets/main.json) and [`.github/rulesets/release-tags.json`](./.github/rulesets/release-tags.json) define the branch and tag rules applied to the hosted repository; release tags can be created once and never moved or deleted.
 
 - [Conventional commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:` — imperative subject, ≤ 72 characters, one concern per commit.
 - **No tool attribution.** No `Co-Authored-By` trailers for AI assistants, no "generated with" footers — in commits, PR descriptions or anywhere else ([ADR-0017](./docs/decisions/0017-no-tool-attribution-in-history.md)). Use whatever tools you like; the history records people.
