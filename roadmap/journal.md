@@ -4,6 +4,22 @@
 
 ---
 
+## 2026-11-15 · P7-05 follow-up · Code scanning triage after 1.0.0
+
+- **Found:** 79 open code-scanning alerts after the repository went public.
+- **Scope:** CodeQL no longer analyses `test/`. The 26 alerts there came from tests that build fake scripts, fixtures and deliberately unsafe inputs, none of which ship; `src/` and `scripts/` stay in scope.
+- **Fixed:** `check-dependencies.mjs` escapes every `@` in a package URL. Only one can occur, but the code now says so plainly.
+- **Dismissed with a reason:**
+  - CodeQL #78 and #79 in conformance provisioning are by design. Downloads come only from a fixed host allowlist, refuse redirects, and are checked against the pinned integrity when one exists.
+- **Scorecard exceptions:**
+  - `CodeReview` and `BranchProtection` are dismissed: approvals need a second maintainer. `main` still requires pull requests, three checks, linear history and no force pushes.
+  - `Fuzzing` and `CII Best Practices` are dismissed for now.
+  - `Maintained` and `Vulnerabilities` will clear on their own, with the repository's age and the pending `hono` updates.
+  - `PinnedDependencies`, for the global npm install in the workflows, waits for a decision.
+- **Open:** the 40 `js/file-system-race` alerts in `src/` and `scripts/` are real check-then-use pairs with low risk for a local CLI. Their refactor through the opened descriptor is #34, in the 1.0.1 milestone.
+
+---
+
 ## 2026-11-15 · P7-15 · 1.0.0 is published
 
 - **Published:** `wholeloop@1.0.0` on npm `latest` with SLSA provenance, from `8c2930b` through Release run 43759541219, after the maintainer approved the `release` environment.

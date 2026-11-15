@@ -1,0 +1,6 @@
+# What CodeQL analyses (P7-05). Tests are excluded: they build fake scripts,
+# fixtures and deliberately unsafe inputs that never ship, and their 26 alerts
+# hid the findings in code that runs. src/ and scripts/ stay in scope.
+name: wholeloop
+paths-ignore:
+  - test
