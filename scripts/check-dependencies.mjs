@@ -100,7 +100,7 @@ export function bundledSbom(lock, bundled, version) {
       type: 'library',
       name,
       version: entry.version,
-      purl: `pkg:npm/${name.replace('@', '%40')}@${entry.version}`,
+      purl: `pkg:npm/${name.replaceAll('@', '%40')}@${entry.version}`,
       ...(license ? { licenses: [{ expression: license }] } : {}),
       ...(entry.integrity
         ? {
