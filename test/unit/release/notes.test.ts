@@ -191,6 +191,17 @@ describe('complete local Git release history', () => {
       unlinkSync(join(root, '.git/shallow'))
       git('config', 'remote.fixture.promisor', 'true')
       expect(() => releaseHistory(root, undefined)).toThrow(/lazy object fetching/)
+      git('config', '--unset', 'remote.fixture.promisor')
+      // CI tests a pull request on a synthetic merge commit; only the commits
+      // it joins belong in the notes, never the merge itself.
+      git('switch', '-c', 'topic', first)
+      git('commit', '--allow-empty', '-m', 'feat: add the topic', '-m', 'Fixture topic change.')
+      const topic = git('rev-parse', 'HEAD')
+      git('switch', 'main')
+      git('merge', '--no-ff', 'topic', '-m', `Merge ${topic} into ${second}`)
+      const merged = releaseHistory(root, undefined)
+      expect(merged.commits.map((item) => item.sha)).toContain(topic)
+      expect(merged.commits.some((item) => item.message.startsWith('Merge '))).toBe(false)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
