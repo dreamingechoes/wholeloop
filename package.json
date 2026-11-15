@@ -1,6 +1,6 @@
 {
   "name": "wholeloop",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.1",
   "description": "A CLI-agnostic AI development harness that closes the whole loop: define, build, roll out, learn.",
   "license": "MIT",
   "author": "Iván González Sáiz <hi@dreamingecho.es>",
