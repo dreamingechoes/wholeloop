@@ -3,7 +3,7 @@
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The external journal, typed items, atomic projections, state commands, mailbox and bounded context packs are implemented. The step engine records framing outcomes, research evidence, spec plans, stable child scope definitions, slice/part contracts, worktree allocation/lifecycle events and inherited required decisions; later Build/Rollout/Learn workflows and canonical URL adoption/shared outboxes are implemented locally. Optional journal attribution includes packaged client declarations and private person-decision metadata. Live adapter execution remains an manual conformance check. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md).
+> **Status: ✅ implemented.** The external journal, typed items, projections, state commands, mailbox, context packs and journal attribution ship in 1.0 and are tested. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md).
 
 ---
 

@@ -3,7 +3,7 @@
 > **TL;DR** — The step that closes the line. With the checkpoint evidence in front of you, you choose one of four outcomes — keep, iterate, kill or unflag — and say why. The decision is recorded, the scope closes, any clean-up is proposed as work, and whatever was learned is carried into the next idea instead of being lost in someone's notes.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local evidence-pinned counterarguments, explicit outcomes, linked framing drafts, cleanup proposals and guarded closure are fixture-tested. Real semantic/client verification and external follow-up execution remain owner checks.
+> **Status: ✅ implemented.** Evidence-pinned counterarguments, explicit outcomes, linked framing drafts, cleanup proposals and guarded closure are tested. Follow-up in external services is experimental.
 
 ---
 

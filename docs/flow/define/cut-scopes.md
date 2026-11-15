@@ -3,7 +3,7 @@
 > **TL;DR** — Splits an approved spec into **scopes**: pieces you can release and measure independently. Often there is just one. Each scope gets a goal, the metrics it is responsible for, a delivery mode, a flag name and a simple/complex call, and can show up in your tracker too. Ends at the second **approve** decision point.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local plans validate metric/story ownership, create stable child scopes and tracker references atomically, and stop for revision-bound approval. Remote tracker execution and live challenger sessions remain manual conformance.
+> **Status: ✅ implemented.** Plans validate metric and story ownership, create stable child scopes and tracker references atomically, and stop for revision-bound approval. Remote trackers are experimental.
 
 Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
 

@@ -3,7 +3,7 @@
 > **TL;DR** — Discover setup candidates, explicitly select their exact bytes into an isolated environment recipe and detect later changes. Preparation starts no container, script, model or network request.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Inert discovery, recipe validation and immutable external selection are implemented. [Owned Docker provisioning/readiness](./delivery-docker.md) and its [retirement](./delivery-lifecycle.md) are implemented separately. This guide proves planning only.
+> **Status: ✅ implemented, experimental.** Discovery, recipe validation and immutable selection are tested. [Docker provisioning](./delivery-docker.md) and [retirement](./delivery-lifecycle.md) have their own guides. Autonomous delivery may change in a minor release.
 
 ## Prerequisites and stopping point
 

@@ -3,7 +3,7 @@
 > **TL;DR** — A model's output cannot be unit-tested; almost everything around it can. `wholeloop` moves every decision with one right answer into the core, tests it without a model, snapshot-tests what it generates, runs real workflows against stubbed agents, smoke-tests each CLI headlessly, and keeps stochastic evals for the thin layer that is genuinely stochastic.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Unit, snapshot, contract, stubbed-workflow and isolated offline npm delivery checks run locally, alongside a reproducible definition corpus and deterministic baseline. A labelled gate corpus reports per-lens matrices before/after runtime refutation from explicit observations. A grounding corpus exercises real ramp/impact collectors with synthetic missing-data traps and exact numeric provenance. A disposable seven-target framing runner separates explicit simulation from owner-run pinned live processes and names missing journal events. Live model measurements, narrative grounding and nightly client conformance remain pending. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md).
+> **Status: ✅ implemented.** Unit, snapshot, contract, workflow, corpus and offline package checks run in the full gate. Live model measurements stay outside the gate, and nightly client conformance is built but not yet enabled. Decisions: [ADR-0003](../decisions/0003-deterministic-core-cli.md), [ADR-0011](../decisions/0011-size-budgets-and-enforcement.md).
 
 ---
 

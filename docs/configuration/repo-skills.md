@@ -3,7 +3,7 @@
 > **TL;DR** — Each step declares named **slots** (`build.frontend`, `verify.suite`, `review.rubric`…). Before acting, `wl discover` scans your repository for the skills, agents, rules and commands it already has — for every major CLI, not just the one you are using — and binds each slot to the most specific match. The harness's own defaults are the last resort, never the first.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Discovery v1, cached capability maps, slot resolution, explicit choices and step bindings are implemented. Design-system MCP discovery and richer language-specific rules arrive with providers and build workflows. Decision: [ADR-0009](../decisions/0009-repo-first-capability-resolution.md).
+> **Status: 🚧 partial.** Discovery, cached capability maps, slot resolution, explicit choices and step bindings are implemented. Design-system MCP discovery and richer language-specific rules are planned. Decision: [ADR-0009](../decisions/0009-repo-first-capability-resolution.md).
 
 ---
 

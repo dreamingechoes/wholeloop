@@ -3,7 +3,7 @@
 > **TL;DR** — There is nothing to configure before your first run: anything missing becomes a question, and the answer is remembered at the scope you choose. Settings come in two kinds. **Personal** settings (your interaction profile) follow you. **Team** settings (providers, slot bindings, lenses, templates) follow the repository.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Schema, deterministic loader and `wl config show --explain` are available. Custom profile presets are loaded from manifest catalogs. External provider operations run through the client's MCP connection and are experimental. The key reference below is generated from the JSON Schema.
+> **Status: ✅ implemented.** The schema, the layered loader and `wl config show --explain` ship in 1.0. The key reference below is generated from the JSON Schema.
 
 ---
 

@@ -3,7 +3,7 @@
 > **TL;DR** — Every expanded delivery case has concrete local controls below. These links identify executable checks and hard-rule enforcers; they do not turn a fixture pass into native, hosted or cross-platform acceptance.
 
 > [!NOTE]
-> **Status: 🚧 partial.** All 86 declared cases map to executable local controls and registered hard rules. The docs gate rejects missing cases, invented controls and downgraded required evidence classes. Final-tree verification is recorded in the journal. Reference-client campaigns, hosted protection/merge trials and original release obligations keep their separate records.
+> **Status: ✅ implemented, experimental.** All 86 declared cases map to executable controls and registered hard rules, and the docs gate rejects missing cases, invented controls and downgraded evidence classes. Native and hosted campaigns keep their own records.
 
 ## Read the evidence classes
 

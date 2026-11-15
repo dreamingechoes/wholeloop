@@ -3,7 +3,7 @@
 > **TL;DR** — Prepare one durable controller request, inspect the full ordered route, run and reconcile it from the terminal and exercise pause/resume/stop without launching a model. Native stages need explicitly bound clients and trusted runtime proof.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Schema, prepare, status, operator controls and the public run/reconcile commands are available, with automated synthetic/reference-transport coverage. Native adapters join the public host only with trusted runtime proof; no live native or hosted acceptance is claimed.
+> **Status: ✅ implemented, experimental.** Prepare, status, operator controls, run and reconcile are tested with reference transports, and live trials passed with Codex. Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
