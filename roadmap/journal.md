@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-15 · P7-15 · Squash-merge suffix in commit subjects
+
+- **Problem:** previewing the `1.0.0` notes rejected three commits on `main` as non-conventional, and the release pull request's version step requires a clean draft, so it would have stopped. Their 68–69 character titles had passed every check, but GitHub's squash merge appends `(#N)`, which took them to 74–75 characters.
+- **Changed:** the shared subject validator does not count a trailing `(#N)` toward the 72-character limit. The hook, the CI check and the release notes stay in agreement. ADR-0017 is amended.
+- **Rejected:** requiring titles of 66 characters or fewer, which cannot repair commits already on `main`. Rewriting history is also rejected.
+- **Verified:** `wl release notes --from v1.0.0-rc.1 --version 1.0.0` now returns a draft with no rejections. The new commit and notes tests fail without the change.
+
+---
+
 ## 2026-11-15 · P7-14 follow-up · Release pull request checks without approval
 
 - **Problem:** in the `1.0.0-rc.1` release, the CI run dispatched on the release branch never counted toward the required checks. The pull request's own runs waited in `action_required` until approved, because the workflow token had opened it.
