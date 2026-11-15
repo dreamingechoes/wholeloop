@@ -54,6 +54,19 @@ export function compareVersions(a, b) {
   return 0
 }
 
+// The release a version's notes start from. A final version starts at the
+// previous final version, so 1.0.0 describes everything since the last stable
+// release rather than only the fixes after its last candidate; a pre-release
+// starts at the version just before it. Rejected: starting every version at
+// the previous tag, which left the 1.0.0 notes with a single entry.
+export function previousVersion(version, versions) {
+  const final = !version.includes('-')
+  return versions
+    .filter((other) => compareVersions(other, version) < 0 && !(final && other.includes('-')))
+    .sort(compareVersions)
+    .at(-1)
+}
+
 // Headings carry no date: the untagged section a release pull request adds must
 // match, byte for byte, the section generated once its tag exists, or the gate
 // would fail on the default branch after every release. The GitHub Release
@@ -82,10 +95,15 @@ export function changelog(withNext) {
     .split('\n')
     .filter((tag) => semver.test(tag))
     .sort((a, b) => compareVersions(a.slice(1), b.slice(1)))
-  const sections = tags.map((tag, index) => section(tags[index - 1], tag, semver.exec(tag)?.[1]))
+  const versions = tags.map((tag) => tag.slice(1))
+  const start = (version) => {
+    const previous = previousVersion(version, versions)
+    return previous ? `v${previous}` : undefined
+  }
+  const sections = versions.map((version) => section(start(version), `v${version}`, version))
   const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
-  if (withNext && !tags.includes(`v${version}`))
-    sections.push(section(tags.at(-1), 'HEAD', version))
+  if (withNext && !versions.includes(version))
+    sections.push(section(start(version), 'HEAD', version))
   return `${HEADER}\n${sections.length ? sections.reverse().join('\n') : 'No release has been tagged yet.\n'}`
 }
 

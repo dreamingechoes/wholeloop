@@ -15,7 +15,7 @@ import {
 import { tmpdir } from 'node:os'
 import { delimiter, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { compareVersions } from './changelog.mjs'
+import { previousVersion } from './changelog.mjs'
 
 const repository = fileURLToPath(new URL('../', import.meta.url))
 let stage = 'input validation'
@@ -99,13 +99,10 @@ function releaseTags() {
     .map((tag) => tag.slice(1))
     .filter((version) => releaseVersion.test(version))
 }
-// The previous release is the highest tagged version below this one, so a
-// final version after its candidates starts its range at the last candidate.
+// The changelog's rule, so the notes, the version check and the changelog
+// share one range: a final version starts at the previous final version.
 function previousRelease(version, tags = releaseTags()) {
-  return tags
-    .filter((tag) => compareVersions(tag, version) < 0)
-    .sort(compareVersions)
-    .at(-1)
+  return previousVersion(version, tags)
 }
 function packageVersion(revision) {
   const text = revision

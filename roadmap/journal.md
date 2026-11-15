@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-15 · P7-15 · Stable release notes cover the whole stable range
+
+- **Problem:** the notes, version check and changelog section of a version started at the previous tag. For `1.0.0` that meant `1.0.0-rc.1`, so the first stable release would have listed a single documentation entry.
+- **Changed:** a final version now starts at the previous final version, and a pre-release still starts at the version just before it. One function in the changelog generator holds the rule, and the release workflow uses it too. `1.0.0` therefore covers the whole history, and `1.1.0` will cover everything since `1.0.0`. ADR-0068 is amended.
+- **Rejected:** keeping the previous-tag range and pointing readers to the candidate's notes.
+- **Verified:** the `1.0.0` notes over the whole history are a draft with no rejections. Range tests cover candidates and final versions, and the changelog fixture checks that the final section restates its candidate's changes.
+
+---
+
 ## 2026-11-15 · P7-15 · Squash-merge suffix in commit subjects
 
 - **Problem:** previewing the `1.0.0` notes rejected three commits on `main` as non-conventional, and the release pull request's version step requires a clean draft, so it would have stopped. Their 68–69 character titles had passed every check, but GitHub's squash merge appends `(#N)`, which took them to 74–75 characters.
