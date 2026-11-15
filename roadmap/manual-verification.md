@@ -70,9 +70,17 @@ The release pull request, release-on-merge, post-publication verification and fa
 
 - [x] Allow GitHub Actions to create pull requests (2026-11-08; the default workflow token stays read-only).
 - [ ] When the repository becomes public, add the maintainer as required reviewer of the `release` environment. It exists since 2026-11-08 limited to `main`, but required reviewers need a paid plan on a private repository; until then the release preflight refuses to publish from a private repository. The repository became public on 2026-11-14; this step remains for the maintainer, since it decides who approves a publication.
-- [ ] Dispatch the Release pull request workflow for `1.0.0-rc.1` and confirm the hosted tree check passes, the branch and pull request are created and the dispatched CI run reports the required checks on the pull request.
-- [ ] Merge it and confirm the Release workflow plans a release from the push, prepares the bundle and stops at the `release` environment until approval; confirm an ordinary push to `main` that changes `package.json` without a new version prepares nothing. Partly observed on 2026-11-14: the push of `cb7832a`, which changed `package.json` without a new version, ran Release with `plan` passing and `prepare`, `publish` and `verify` skipped.
-- [ ] After the first publication, confirm the verify job installs the version from the registry on Node 20 and passes, and that `gh release edit` accepts `--prerelease --latest=false` together by marking a disposable release as failed.
+- [ ] Dispatch the Release pull request workflow for `1.0.0-rc.1` and confirm the hosted tree check passes, the branch and pull request are created and the dispatched CI run reports the required checks on the pull request. Observed on 2026-11-15:
+  - The tree check passes, and the branch and pull request are created.
+  - The dispatched CI run passes, but GitHub does not count it toward the pull request's required checks.
+  - The pull request's own `pull_request` runs wait in `action_required`, because the bot opened it, until someone approves them.
+  - Before passing, the flow needed #16, #18 and #20: tests pinned to `0.0.0`, the release commit, and the synthetic merge commit in the changelog.
+- [x] Merge it and confirm the Release workflow plans a release from the push, prepares the bundle and stops at the `release` environment until approval; confirm an ordinary push to `main` that changes `package.json` without a new version prepares nothing. Partly observed on 2026-11-14: the push of `cb7832a`, which changed `package.json` without a new version, ran Release with `plan` passing and `prepare`, `publish` and `verify` skipped. Done on 2026-11-15: merging #21 (`bf63b12`) ran Release, whose `plan` and `prepare` passed (verified bundle, npm tag `next`), and `publish` waited at the `release` environment until approval.
+- [ ] After the first publication, confirm the verify job installs the version from the registry on Node 20 and passes, and that `gh release edit` accepts `--prerelease --latest=false` together by marking a disposable release as failed. Observed on 2026-11-15:
+  - The hosted `verify` failed twice: first before npm served the version, then because it required `observed` from `wl doctor`. On a runner with no coding client, doctor reports `needs-attention`. #22 fixed the check.
+  - With the fix, `verify-published 1.0.0-rc.1` passes against the real package in a clean `node:20-bookworm` container.
+  - `mark-failed` showed live that `gh release edit` accepts `--prerelease --latest=false` together. The release title and notes were restored after the false mark.
+  - A hosted `verify` that passes remains for the next release.
 
 ## Pre-publication history audit (P7-06, 2026-11-07)
 
