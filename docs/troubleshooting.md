@@ -3,7 +3,7 @@
 > **TL;DR** — Separate source build, managed files, native discovery, model access and workflow state. Diagnose the named boundary before reinstalling or granting permissions. A stored preflight, copied plugin or zero process exit is not evidence that a complete native step succeeded.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Core diagnostics, ownership checks, redacted conformance diagnosis and recovery commands are implemented. Remedies below describe how to investigate; they do not certify the current account, native permissions or service availability.
+> **Status: ✅ implemented.** Diagnostics, ownership checks, redacted conformance diagnosis and the recovery commands below ship in 1.0. The remedies show how to investigate; they cannot certify your account, a client's permissions or a service's availability.
 
 ## Start with the symptom
 

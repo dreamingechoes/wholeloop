@@ -3,7 +3,7 @@
 > **TL;DR** — Pin objective cases, start the declared Docker application and execute each case with a stable key. Wholeloop compares complete real responses or command output; unit suites and manual acceptance remain separate evidence.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The fixed host, exact effect/candidate binding, complete output checks, restart/persistence and once-per-round suite reuse pass local automated verification and actual Docker observations. [Browser execution](./delivery-browsers.md) is also available; [private HTTP regression evaluation](./delivery-private-acceptance.md) is available. Semantic/native certification remains separate. No native model or vendor account is required for this evaluator.
+> **Status: ✅ implemented, experimental.** The fixed host, effect and candidate binding, output checks, restart and suite reuse are tested and were observed in Docker. No model or vendor account is needed. Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

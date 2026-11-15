@@ -3,7 +3,7 @@
 > **TL;DR** — Expanded 1.0 now includes 38 accepted autonomous-delivery/research tasks authorized for implementation, alongside the original native/workflow/release acceptance. Existing observations stay valid at their recorded scope. Remote services remain experimental; accounts with every vendor are not required.
 
 > [!NOTE]
-> **Status: 🚧 partial.** This is the acceptance runbook for the defined roadmap. Procedures below describe expected results, not completed tests. Check off observations only after execution. The [manual backlog](../roadmap/manual-verification.md) preserves detailed cases; the [journal](../roadmap/journal.md) records actual results.
+> **Status: ✅ current.** What 1.0 was accepted on, and who verifies the rest. Procedures describe expected results; only checked observations were run. The [manual backlog](../roadmap/manual-verification.md) keeps the detailed cases and the [journal](../roadmap/journal.md) the results.
 
 ## Start with these distinctions
 

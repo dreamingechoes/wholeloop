@@ -3,7 +3,7 @@
 > **TL;DR** — Enqueue exact work slots, inspect retained dependency/admission reasons and repeat requests without duplication. Queue metadata is available before the actual backend/worker runner; no worker starts through these commands.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Durable queue ordering, reservations, atomic claims and fencing are implemented and fixture/process-tested. Actual worker dispatch, protected environments and complete unattended execution remain subsequent Phase 6 work.
+> **Status: ✅ implemented, experimental.** Queue ordering, reservations, atomic claims and fencing are tested with real processes. Autonomous delivery may change in a minor release.
 
 ## Before you start
 

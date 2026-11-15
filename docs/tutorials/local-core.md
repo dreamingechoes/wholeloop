@@ -3,7 +3,7 @@
 > **TL;DR** — Create a disposable project and an isolated configuration/store, begin framing, inspect its preflight and recover its context. No coding client, model account or remote service is required. This exercises the core, not an AI-generated framing or native permission boundary.
 
 > [!NOTE]
-> **Status: ✅ implemented.** These commands exercise source-built configuration, missing-input handling, initiative reuse, status and resume. Native skill loading, drafting, semantic review and completion are separate activities in [first framing](./first-framing.md).
+> **Status: ✅ implemented.** These commands exercise configuration, missing-input handling, initiative reuse, status and resume. Loading the skills in a client is covered in [first framing](./first-framing.md).
 
 ## Before you start
 

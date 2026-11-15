@@ -3,7 +3,7 @@
 > **TL;DR** — The quality gate for behaviour. It runs your repository's own checks a single time, takes the slice's acceptance criteria exactly as written, and gives each one to a read-only verifier that tests it against what the code really does. It also asks whether the tests you touched would notice if the feature broke. Every finding is challenged before it blocks. It reports; the builder repairs; the loop repeats until green.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Gate planning, per-criterion coverage, budgets, refutations and snapshot-bound verdicts are implemented. Actual once-per-round suite execution, standalone criteria questions, isolated branch workspaces, constant-assertion lint, semantic changed-test groups and canonical receipts are implemented with real process/Git fixtures and stubbed semantic workers. Live clients, authenticated PR resolution and broader mutation/visual checks remain owner verification. The optional [declared API/CLI host](../../tutorials/delivery-behaviors.md) adds actual owned application behavior and reuses the pinned suite cache without changing the supervised flow.
+> **Status: ✅ implemented.** Gate planning, per-criterion coverage, budgets, refutations, snapshot-bound verdicts, once-per-round suites, isolated workspaces and changed-test checks are tested with real processes and Git. The optional [declared API/CLI host](../../tutorials/delivery-behaviors.md) adds observed application behaviour.
 
 ---
 

@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-15 · P7-15 · Documentation status for 1.0
+
+- **Banners:** the 71 status banners that described work in progress were rewritten for the released state. Each now has one or two sentences: what works, what does not, and the decision behind it. 39 pages read `✅ implemented`, and 26 read `✅ implemented, experimental` for autonomous delivery and remote provider operations. Five stay `🚧 partial`, where something real is missing: execution isolation of headless gate workers, design-system discovery, extension templates for other workflows, and nightly conformance, which is built but disabled.
+- **Style:** the docs style guide defines the `, experimental` qualifier, and it keeps dates, task history and work in progress out of banners.
+- **Out-of-date text:** removed the pre-release wording from the FAQ, the releasing guide, the compatibility page and the platforms TL;DR.
+- **README:** the package README is what npm shows once a version is on `latest`. The GitHub alert syntax and the Mermaid diagram render as raw text there, so the status is a plain quote, and the loop is described by its table and links to the diagram in the flow page.
+- **Kept:** limitations that are still true, such as Linux runs of native clients, live service certification and native certification of autonomous delivery after 1.0.
+
+---
+
 ## 2026-11-15 · P7-15 · Stable release notes cover the whole stable range
 
 - **Problem:** the notes, version check and changelog section of a version started at the previous tag. For `1.0.0` that meant `1.0.0-rc.1`, so the first stable release would have listed a single documentation entry.

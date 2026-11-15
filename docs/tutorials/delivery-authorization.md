@@ -3,7 +3,7 @@
 > **TL;DR** — Record one explicit grant for a prepared plan or initial request envelope, inspect its finite deadline and revoke it without losing history. This configures authority; it starts no worker and performs no publication or merge.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Operator grant/revocation lifecycle and scoped broker admission/request validation are implemented and fixture-tested. Role-bound native/backend contracts and the [delegated-decision controller](./delivery-decisions.md) are implemented separately; complete unattended orchestration remains pending. Actual native filesystem/credential containment remains unverified.
+> **Status: ✅ implemented, experimental.** Operator grants, revocation and scoped broker admission are tested. Filesystem and credential containment of native workers is not yet verified live (P6-35). Autonomous delivery may change in a minor release.
 
 ## Before you start
 

@@ -3,7 +3,7 @@
 > **TL;DR** — Capture a file, inline request, existing item or complete remote observation before planning work. The result is an immutable source ID in an external store. Intake requires no model and starts no worker.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Local and imported source intake, explicit extraction maps and the programmatic existing-provider host path are implemented and fixture-tested. Remote service certification remains experimental. [Plan preparation](./delivery-plan.md) and [operator grant metadata](./delivery-authorization.md) are available; actual workers and the unattended runner are subsequent Phase 6 increments.
+> **Status: ✅ implemented, experimental.** Local and imported source intake, extraction maps and the existing-provider path are tested. Autonomous delivery may change in a minor release.
 
 ## Before you start
 

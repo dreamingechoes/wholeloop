@@ -3,7 +3,7 @@
 > **TL;DR** — Pick a bounded behavior in an application you can run. Agree on observable criteria, let the builder work in its allocated Git worktree, inspect verification/review evidence and test it yourself before deciding whether to publish. Larger initiatives can join the same path after framing, specification and scope approval.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local build/worktree/gate/publication contracts are implemented. These are native usage instructions, not an executed end-to-end transcript for every client. Actual role isolation, model behavior and remote publication remain separate acceptance checks.
+> **Status: ✅ implemented.** The build, worktree, gate and publication contracts used here are tested. Model behaviour and remote publication depend on your client and providers.
 
 ## Choose a change you can verify
 

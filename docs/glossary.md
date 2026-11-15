@@ -3,7 +3,7 @@
 > **TL;DR** — Every term `wholeloop` uses, in one line each, plus how it maps to vocabulary your team may already have.
 
 > [!NOTE]
-> **Status: 🚧 partial.** These terms describe the implemented local core and canonical role contracts. Native engine availability and authenticated provider behavior retain the limits in [platforms](./platforms/README.md) and [providers](./configuration/providers.md); definitions do not establish conformance.
+> **Status: ✅ implemented.** These terms describe the shipped core and its role contracts. Client and provider limits are in [platforms](./platforms/README.md) and [providers](./configuration/providers.md).
 
 ---
 

@@ -4,8 +4,7 @@
 
 wholeloop supplies the process around the model: what context to load, which questions and checks to run, where a person decides and what to remember between conversations. It installs into the coding client you already use, and you can take one step for a small job or the whole loop for a feature.
 
-> [!NOTE]
-> **Status: preparing 1.0.0.** The first release is not on npm yet. Until it is, build the CLI from source as the [development guide](./docs/contributing/development.md) describes and use `node dist/wl.mjs` wherever this page says `wl`. Native client behaviour is checked per client version; [platforms](./docs/platforms/README.md) records what each client has been checked against.
+> **Status: ✅ stable since 1.0.0.** Install it from npm with `npm install --global wholeloop`. Autonomous delivery (`wl delivery`) is experimental and may change in a minor release; [platforms](./docs/platforms/README.md) lists the client versions each adapter was checked against.
 
 ## Contents
 
@@ -39,42 +38,9 @@ What changes in practice:
 
 ## The loop
 
-Four blocks, thirteen steps, one line.
+Four blocks, thirteen steps, one line: define the problem, build it, roll it out, learn from it. [The flow](./docs/flow/README.md) draws the whole loop.
 
-```mermaid
-flowchart LR
-  subgraph D["DEFINE · shape the problem"]
-    direction TB
-    d0["research<br/><i>optional, only when it's hard</i>"]:::opt --> d1["frame-problem<br/>problem and owner"]
-    d1 --> d2["write-spec<br/>with its metrics"] --> g1{{"approve"}}:::person --> d3["cut-scopes<br/>one per scope"]
-  end
-  subgraph B["BUILD · ship it right"]
-    direction TB
-    b1["slice-work<br/>vertical slices"] --> b2["build-slice<br/>one slice at a time"]
-    b2 --> b3["verify-works<br/>does it work?"] --> b4["review-code<br/>is it well written?"]
-    b4 -. "until green" .-> b2
-    b4 --> g2{{"test it"}}:::person --> b5["open-pr<br/>never merges itself"]
-  end
-  subgraph R["ROLLOUT · release with care"]
-    direction TB
-    r1["prepare-launch<br/>comms drafted, never sent"] --> r2["ramp-exposure<br/>0 → 50 → 100%"] --> g3{{"ramp"}}:::person
-  end
-  subgraph L["LEARN · measure, then decide"]
-    direction TB
-    l1["measure-impact<br/>launch · D+7 · D+30"] --> l2["decide-next<br/>keep · iterate · kill · unflag"] --> g4{{"decide"}}:::person
-  end
-  D --> B --> R --> L
-  L -. "what we learn feeds the next idea" .-> d1
-
-  classDef opt stroke-dasharray:5 3;
-  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
-  style D fill:#d9f2e3,stroke:#1f7a45,color:#0b2e1a
-  style B fill:#dce9fb,stroke:#2f6fc4,color:#0b1f3a
-  style R fill:#fbecd0,stroke:#b7791f,color:#3a2606
-  style L fill:#f6dcef,stroke:#b03a8c,color:#3a0b2c
-```
-
-The orange hexagons are the main human decision points. Framing also needs the owner's explicit outcome and approval of its final revision, so the specification is not the first time your judgement matters. In this supervised flow, merging is a person's decision: the harness never sends a message to a user, never changes a feature flag and never merges, unless you separately authorize an autonomous run to merge.
+A person decides at the end of each block: approving the specification, testing the change before its pull request, ramping exposure and choosing what comes next. Framing also needs the owner's explicit outcome and approval of its final revision, so the specification is not the first time your judgement matters. In this supervised flow, merging is a person's decision: the harness never sends a message to a user, never changes a feature flag and never merges, unless you separately authorize an autonomous run to merge.
 
 **Use all of it, or just one step.** Every step is a complete entry point: `research` a topic, `build-slice` a small fix or `review-code` a pull request without running anything before it. The full loop is what you get when you chain them with `next`, and an approved scope can also be handed to an autonomous run that builds, verifies and reviews it in isolated worktrees and containers up to a pull request ([autonomous delivery](./docs/architecture/autonomous-delivery.md)). That part is **experimental** in 1.0.0: its commands may still change in a minor release, and unattended runs are still being certified with native clients.
 

@@ -3,7 +3,7 @@
 > **TL;DR** — Start with an executable tutorial, then use the configuration and step references when you need them. Try local state without a model, frame one idea in a coding client, or work through a small change. Architecture and maintainer release work have separate reading paths.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The core, all thirteen steps and seven client renderers are implemented, and the first npm release is in preparation. Native acceptance and scheduled activation remain open. Generated artifacts and simulations are not live certification. Remote integrations are experimental, fixture-tested and service-unverified. [What remains for 1.0](./v1-acceptance.md).
+> **Status: ✅ implemented.** The core, all thirteen steps and seven client adapters ship in 1.0. Remote integrations run through your client's MCP connection and are experimental, as is autonomous delivery. [What 1.0 covers](./v1-acceptance.md).
 
 ## Contents
 

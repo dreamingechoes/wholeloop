@@ -3,7 +3,7 @@
 > **TL;DR** — Install the `wl` CLI from npm, install for one named client, restart that client in your application repository and request the framing skill. Start with local storage; remote service accounts are optional. The core-only tour works without a model account.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Installation, all seven artifact targets and local workflows are implemented. The first npm release is in preparation; until it is published, use the source build from the [development guide](./contributing/development.md) and run `node /absolute/path/to/dist/wl.mjs` wherever this page says `wl`. Native discovery, authentication and permissions remain scoped to the observations in [V1 acceptance](./v1-acceptance.md).
+> **Status: ✅ implemented.** Installation from npm, all seven client targets and the local workflows are tested. A client's discovery, sign-in and permissions are verified only as far as [V1 acceptance](./v1-acceptance.md) records.
 
 ## Contents
 

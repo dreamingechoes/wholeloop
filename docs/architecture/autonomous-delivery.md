@@ -3,7 +3,7 @@
 > **TL;DR** — The runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
 > [!NOTE]
-> **Status: 🚧 partial, experimental in 1.0.0.** Autonomous delivery ships experimental: its commands and schemas may change in a minor release, and its certification with signed-in native clients continues after the release ([compatibility](../extending/compatibility.md#experimental-surfaces)). The expanded scope was accepted, and sequential implementation authorized, on 2026-10-24. Source intake, plan/envelope preparation, operator/broker metadata, journaled state, durable claims and local checkpoint/effect/ownership recovery and persistent finite budgets and role-bound worker/context contracts are implemented. Dedicated native-host contracts and owned Docker API/CLI/browser execution are also implemented. Actual native-model certification and complete unattended flows remain pending; existing supervised behavior and acceptance evidence remain unchanged.
+> **Status: ✅ implemented, experimental.** Autonomous delivery ships experimental: its commands and schemas may change in a minor release ([compatibility](../extending/compatibility.md#experimental-surfaces)). Every stage below is implemented and tested, and live trials passed with Codex; certification across signed-in clients continues after 1.0 (P6-27).
 
 ## Observed behavior hosts
 

@@ -3,7 +3,7 @@
 > **TL;DR** — Pin private HTTP cases before the builder runs. Wholeloop mounts them only into the owned evaluator, executes the same definition on the actual base and candidate, and withholds regression acceptance until the relevant red/green result is observed.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The private host, immutable definitions, observed red/green comparison and aggregate guard pass unit and actual Docker verification, including native synthetic counters, missing mutation capability, port 80 and candidate invalidation. Independent native-client/model and Linux-host acceptance remain separate.
+> **Status: ✅ implemented, experimental.** The private host, immutable definitions and observed red and green comparison are tested and were observed in Docker. Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

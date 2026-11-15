@@ -3,7 +3,7 @@
 > **TL;DR** — An agent is a model plus a harness. The model is rented and identical for everyone; the harness is what makes the outcome depend on the *system* rather than on who happens to be driving. `wholeloop` is a harness built around one agreed path, from a loose idea to a measured result, that respects whatever your repository already knows. It serves one person as well as a team, and it lets people decide either at each step or in advance, within limits they set. The last section tells how those two ideas grew out of the first version.
 
 > [!NOTE]
-> **Status: 🚧 partial.** These principles guide the implemented deterministic core and canonical harness. Client narration, immediate stopping and provider behavior also depend on actual hosts; native/model conformance and operational checks remain in the [manual checklist](../roadmap/manual-verification.md).
+> **Status: ✅ implemented.** The deterministic core and the shipped skills follow these principles. How a client narrates or stops also depends on the client itself.
 
 ---
 

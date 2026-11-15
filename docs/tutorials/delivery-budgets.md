@@ -3,7 +3,7 @@
 > **TL;DR** — Bind optional usage constraints before execution, inspect unknown consumption honestly and capture binary evidence under a persistent byte quota. Restarting a process or revising a plan does not reset allowances.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Persistent admission, usage accounting, no-progress detection and bounded artifact capture are implemented and process/fixture-tested. Actual native hard token/currency metering and complete unattended execution remain later Phase 6 work.
+> **Status: ✅ implemented, experimental.** Admission, usage accounting, no-progress detection and bounded artifact capture are tested. Token and currency limits rely on what each client reports. Autonomous delivery may change in a minor release.
 
 ## Before you start
 
