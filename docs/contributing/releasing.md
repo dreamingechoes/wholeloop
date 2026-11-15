@@ -124,7 +124,7 @@ The whole release runs in GitHub Actions; the maintainer's only release-specific
 2. Review and merge it like any other pull request.
 3. The merge is a default-branch push that changes the package version to one without a tag. The [Release workflow](../../.github/workflows/release.yml) plans from that fact (any other push prepares nothing), runs all checks, reads actual repository metadata, prepares the reviewed bundle and uploads a seven-day artifact. Its summary links the exact artifact and an independently retained manifest digest. Inspect bundle.json, the notes and both archives.
 4. Approve the `release` environment. Publication checks the immutable artifact ID/digest, selected core, all hashes and refreshed source/context. It installs no source dependencies and does not rebuild after approval.
-5. A clean runner with Node 20 installs the published version from the registry into an empty prefix, checks its dist-tag and runs `wl --version` and `wl doctor`. If that fails, the run marks the GitHub Release as failed and links [the recovery procedure](#recover-from-a-bad-release).
+5. A clean runner with Node 20 installs the published version from the registry into an empty prefix, waiting up to twenty minutes for npm to serve it, checks its dist-tag and runs `wl --version` and `wl doctor`. If that fails, the run marks the GitHub Release as failed and links [the recovery procedure](#recover-from-a-bad-release).
 
 A manual dispatch of the Release workflow remains for a release whose version is already committed: version is that exact package version, from is the previous release ref (empty only for the initial release) and publish defaults to false, so a dispatch without it only prepares.
 

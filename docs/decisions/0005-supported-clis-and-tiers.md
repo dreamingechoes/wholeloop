@@ -27,7 +27,7 @@ Notable facts that shaped the tiers:
 **How support is kept honest:**
 
 - CLI versions are **pinned** in the conformance suite.
-- A scripted scenario runs **headless** against each tier-A CLI nightly and before every release, with structural assertions on the journal.
+- A scripted scenario runs **headless** against each tier-A CLI nightly and before every release, with structural assertions on the journal. *Amended 2026-11-15:* the nightly run is built but stays disabled until the maintainer adds client credentials (P5-04, moved after 1.0.0). Before 1.0.0 the scenario was run live on every client instead.
 - The compatibility matrix in the docs is **generated** from those results.
 - Unverified capabilities are spiked in [P0-03](../../roadmap/phase-0-foundations.md#p0-03--cli-conformance-spike) before any design relies on them.
 

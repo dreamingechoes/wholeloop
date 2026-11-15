@@ -72,7 +72,9 @@ The framing scenario reached `frame finalize` with the exact launcher and file g
 
 ## P5-04 · Nightly conformance and the generated matrix
 
-**Status:** ⏸️ · **Size:** M · **Depends on:** P1-14, P5-01, P5-02
+**Status:** ⏸️ · **Size:** M · **Depends on:** P1-14, P5-01, P5-02 · **Release:** after 1.0.0
+
+**Moved after 1.0.0** on 2026-11-15, by the maintainer's decision. Its criterion can only be met when a real regression appears on a client's latest version, so it cannot close on a schedule. The standalone scenario it automates passed live on all seven clients before 1.0.0 (P1-14, P5-01, P5-02). The workflow stays disabled until the maintainer adds client credentials.
 
 **Goal** — Know the moment a CLI release breaks something.
 

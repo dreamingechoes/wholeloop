@@ -350,12 +350,18 @@ Moved from P5-07 on 2026-11-07; its checked criterion and local implementation a
 **Acceptance criteria:**
 
 - [x] Every schema has a version and a compatibility test.
-- [ ] The 1.0.0 release is tagged, published on `latest` and announced.
+- [x] The 1.0.0 release is tagged and published on `latest`. Done on 2026-11-15:
+  - #30 was opened by the release app and merged as `8c2930b`.
+  - Release run 43759541219 published `1.0.0` after the maintainer approved the `release` environment.
+  - npm serves it on `latest` with SLSA provenance, and its tarball matches the reviewed bundle byte for byte (sha256 `bbb01f3a9716fc145d112df264f36fc1428cd919a547108767b680bd6a1da2d0`).
+  - Tag `v1.0.0` points at `8c2930b`, and the GitHub Release is Latest with six assets.
+  - The first `verify` failed on registry propagation and marked the release. Its re-run passed, and the release was restored.
+- [ ] The 1.0.0 release is announced. Left open by the maintainer's decision on 2026-11-15: no channel is needed yet. When one is chosen, `wl prepare-launch` drafts the announcement, and the maintainer publishes it.
 - [x] Phase 6's expanded contracts, zero-intervention research/implementation, actual QA/integration, authorized PR/merge and required capability-level acceptance are closed through P7-13. Amended 2026-11-08: they ship experimental, and their native certification continues after 1.0.0.
 
-**Local implementation:** source/compiled command registration checks every declared output. The v1 candidate records fifty-three source schemas, 147 output variants, thirteen step definitions, 157 command signatures and five exit codes. Individual compatibility cases retain declaration identities, command options/signatures and exit meanings; public adapter/distribution manifests validate before emission. The compatibility/deprecation policy preserves existing 1.x contracts and requires new identities/migrations for changed formats. Conservative fingerprints do not prove runtime semantics or native support. Actual release/tag/announcement, released README status and remaining delivery/native acceptance remain open; package version/privacy are unchanged. Further collector, headless and distribution code does not wait for manual checks and adds new identities to this candidate.
+**Local implementation:** source/compiled command registration checks every declared output. The v1 candidate records fifty-three source schemas, 147 output variants, thirteen step definitions, 157 command signatures and five exit codes. Individual compatibility cases retain declaration identities, command options/signatures and exit meanings; public adapter/distribution manifests validate before emission. The compatibility/deprecation policy preserves existing 1.x contracts and requires new identities/migrations for changed formats. Conservative fingerprints do not prove runtime semantics or native support. The release and the released README status are done; the announcement and the native certification of autonomous delivery after 1.0 remain. Further collector, headless and distribution code does not wait for manual checks and adds new identities to this candidate.
 
-**Docs** — compatibility policy, ADR-0065, ADR-0066; released README status remains pending.
+**Docs** — compatibility policy, ADR-0065, ADR-0066; the README describes the released state.
 
 ## P7-16 · Retire built-in service clients
 

@@ -192,7 +192,7 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-On 2026-11-15 the roadmap has 116 tasks, 101 complete and 15 open (see the [roadmap](../roadmap/README.md) for the current breakdown). Before 1.0.0, P5-04 nightly conformance and P7-15 remain open. The breakdown below dates from the expansion and keeps its original wording; at that time Phases 6 and 7 brought the roadmap to 107 tasks, 73 complete and 34 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-27 native evaluations, P6-35 worker credentials and P6-40 repository guidance in autonomous runs remain pending; and the sixteen [Phase 7](../roadmap/phase-7-release-readiness.md) release-readiness tasks are planned, including P7-13 (formerly P6-32), P7-14 (formerly P5-05) and P7-15 (formerly P5-07). The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
+On 2026-11-15 the roadmap has 116 tasks, 101 complete and 15 open (see the [roadmap](../roadmap/README.md) for the current breakdown). 1.0.0 was published on 2026-11-15. P7-15 stays open only for its announcement, and P5-04 nightly conformance moved after 1.0.0. The breakdown below dates from the expansion and keeps its original wording; at that time Phases 6 and 7 brought the roadmap to 107 tasks, 73 complete and 34 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-27 native evaluations, P6-35 worker credentials and P6-40 repository guidance in autonomous runs remain pending; and the sixteen [Phase 7](../roadmap/phase-7-release-readiness.md) release-readiness tasks are planned, including P7-13 (formerly P6-32), P7-14 (formerly P5-05) and P7-15 (formerly P5-07). The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Maintainer involvement |
 | --- | --- | --- |
@@ -207,9 +207,9 @@ On 2026-11-15 the roadmap has 116 tasks, 101 complete and 15 open (see the [road
 | P4-01 ✅ | Launcher lacks a sending tool in each adapter (done 2026-11-08) | — |
 | P5-01 ✅ | Real scenario passes Gemini and Antigravity (done 2026-11-14) | — |
 | P5-02 ✅ | Cursor real scenario and readonly behavior pass (done 2026-11-08) | — |
-| P5-04 | Actual latest regression creates the expected issue | CI credentials/protection/activation |
+| P5-04 (after 1.0.0) | Actual latest regression creates the expected issue | CI credentials/protection/activation |
 | P7-14 ✅ (formerly P5-05) | History audit, approved visibility, published release candidate, fresh-machine timing and clean notes (done 2026-11-15) | — |
-| P7-15 (formerly P5-07) | Actual 1.0.0 tag, publication and announcement after remaining acceptance | Final release approval |
+| P7-15 (formerly P5-07) | 1.0.0 tag and publication (done 2026-11-15); announcement pending | Announcement channel |
 
 P4-05 is complete with fixture-tested MCP priority and no transport switch on failure; the built-in HTTP bridges were retired by P7-16. Its unavailable service contracts retain pending handoffs. Service-account certification is a deferred backlog, not one more release gate for every vendor. Other robustness cases in the manual backlog document limitations and follow-up scope rather than silently expanding the task table into hundreds of maintainer-only release prerequisites.
 

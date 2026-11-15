@@ -307,11 +307,20 @@ function verifyPublished(version) {
   evidence.push(temporary)
   const npm = npmRunner(temporary, false, temporary)
   const prefix = join(temporary, 'prefix')
+  // npm lists a new version minutes after publication and serves its tarball
+  // later still: 1.0.0 appeared after about three minutes and installed after
+  // about eight and a half, while two minutes of retries marked both releases
+  // failed. Twenty attempts a minute apart cover that with margin. The pause
+  // is configurable only so tests can retry without waiting.
+  const attempts = 20
+  const interval = Number(process.env.RELEASE_VERIFY_PAUSE_MS ?? 60_000)
   for (let attempt = 1; ; attempt++) {
     try {
+      // --prefer-online stops npm's cache from replaying a 404 between attempts.
       npm([
         'install',
         '--global',
+        '--prefer-online',
         '--prefix',
         prefix,
         '--registry',
@@ -320,8 +329,8 @@ function verifyPublished(version) {
       ])
       break
     } catch (error) {
-      if (attempt === 5) throw error
-      pause(30_000)
+      if (attempt === attempts) throw error
+      pause(interval)
     }
   }
   stage = 'post-publication dist-tag'
