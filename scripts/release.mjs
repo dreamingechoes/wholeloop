@@ -206,14 +206,18 @@ function bump(version) {
 }
 
 // The second half: commit exactly the three changed files through the Git
-// Data API, create the branch without overwriting one, open the pull request
-// and dispatch CI on it. Pull requests opened with the workflow token start no
-// pull_request workflows, so the checks are dispatched explicitly. No Git
-// credential is written to the checkout.
+// Data API, create the branch without overwriting one and open the pull
+// request. Its checks are the pull request's own runs: a dispatched CI run
+// passed on the branch but never counted toward the required checks. With the
+// workflow token GitHub holds those runs for a maintainer's approval; a
+// GitHub App token, when the release app is configured, starts them directly.
+// No Git credential is written to the checkout.
 function openPullRequest(version) {
   stage = 'release pull request'
   const slug = actionsRepository()
   assert(releaseVersion.test(version ?? ''))
+  const token = process.env.RELEASE_PR_TOKEN ?? ''
+  assert(['app', 'workflow'].includes(token), 'RELEASE_PR_TOKEN must be app or workflow')
   const ref = process.env.GITHUB_REF ?? ''
   assert(/^refs\/heads\/[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$/.test(ref))
   const base = ref.slice('refs/heads/'.length)
@@ -287,10 +291,12 @@ function openPullRequest(version) {
       '-',
     ],
     process.env,
-    `${body}\n\nReview the version and the changelog. The required checks run through a dispatched CI run on this branch.\n`,
+    `${body}\n\nReview the version and the changelog. ${
+      token === 'app'
+        ? 'The required checks run on this pull request.'
+        : 'The workflow token opened this pull request, so its checks wait for a maintainer to approve the runs.'
+    }\n`,
   )
-  stage = 'release pull request checks'
-  command('gh', ['workflow', 'run', 'ci.yml', '--repo', slug, '--ref', branch])
   outputs({ branch, commit: commit.sha })
 }
 

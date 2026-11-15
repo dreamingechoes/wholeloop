@@ -4,6 +4,13 @@ name: Release pull request
 # regenerated changelog, after the full gate. Merging it starts release.yml,
 # which still waits for the protected release environment before publishing.
 # The repository must allow GitHub Actions to create pull requests.
+#
+# When the release-pull-request environment defines the RELEASE_APP_CLIENT_ID
+# variable and the RELEASE_APP_PRIVATE_KEY secret, the pull request is opened
+# with a short-lived GitHub App token, so its pull_request checks start on
+# their own. Without them the workflow token opens it and GitHub holds those
+# runs for a maintainer's approval. The token is minted only after the full
+# gate, so no dependency script runs while it exists.
 on:
   workflow_dispatch:
     inputs:
@@ -24,10 +31,10 @@ jobs:
     if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: release-pull-request
     permissions:
       contents: write
       pull-requests: write
-      actions: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -46,8 +53,18 @@ jobs:
         env:
           RELEASE_VERSION: ${{ inputs.version }}
       - run: npm run check
+      - name: Mint the release app token
+        id: app
+        if: vars.RELEASE_APP_CLIENT_ID != ''
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
       - name: Commit through the API and open the pull request
         run: node scripts/release.mjs open-pr "$RELEASE_VERSION"
         env:
           RELEASE_VERSION: ${{ inputs.version }}
-          GH_TOKEN: ${{ github.token }}
+          RELEASE_PR_TOKEN: ${{ steps.app.outcome == 'success' && 'app' || 'workflow' }}
+          GH_TOKEN: ${{ steps.app.outputs.token || github.token }}

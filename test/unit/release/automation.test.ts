@@ -200,7 +200,7 @@ describe('release pull request', () => {
     expect(git('tag', '--list')).toBe('v1.0.0')
   })
 
-  it('commits the exact files through the API, then opens the pull request and its checks', () => {
+  it('commits the exact files through the API, then opens the pull request', () => {
     commit('feat: add a second command')
     expect(run(['bump', '1.1.0']).status).toBe(0)
     const index = { ...environment, GIT_INDEX_FILE: join(root, 'index') }
@@ -216,17 +216,18 @@ if (args[1]?.endsWith('/git/trees')) process.stdout.write(JSON.stringify({ sha }
 if (args[1]?.endsWith('/git/commits')) process.stdout.write(JSON.stringify({ sha: 'c'.repeat(40), tree: { sha } }))
 if (args[1]?.endsWith('/git/refs')) process.stdout.write('{}')`,
     )
-    const opened = run(['open-pr', '1.1.0'], { env: { ...actions, FIXTURE_TREE: tree } })
+    const workflow = { ...actions, RELEASE_PR_TOKEN: 'workflow' }
+    const opened = run(['open-pr', '1.1.0'], { env: { ...workflow, FIXTURE_TREE: tree } })
     expect(opened.status, opened.stderr).toBe(0)
     const operations = logged()
+    // No CI dispatch: a dispatched run never counted toward the required checks.
     expect(operations.map(({ args }) => args.slice(0, 2))).toEqual([
       ['api', 'repos/fixture/wholeloop/git/trees'],
       ['api', 'repos/fixture/wholeloop/git/commits'],
       ['api', 'repos/fixture/wholeloop/git/refs'],
       ['pr', 'create'],
-      ['workflow', 'run'],
     ])
-    const [trees, commits, refs, pr, checks] = operations
+    const [trees, commits, refs, pr] = operations
     expect(
       JSON.parse(trees?.input ?? '{}')
         .tree.map((entry: { path: string }) => entry.path)
@@ -251,16 +252,24 @@ if (args[1]?.endsWith('/git/refs')) process.stdout.write('{}')`,
     expect(pr?.args).toEqual(
       expect.arrayContaining(['--base', 'main', '--head', 'release/v1.1.0', '--body-file', '-']),
     )
-    expect(checks?.args).toEqual(expect.arrayContaining(['ci.yml', '--ref', 'release/v1.1.0']))
+    expect(pr?.input).toContain('its checks wait for a maintainer to approve the runs')
 
+    // A release app token starts the pull request's own checks; the body says so.
     unlinkSync(calls)
+    const app = { ...actions, RELEASE_PR_TOKEN: 'app', FIXTURE_TREE: tree }
+    expect(run(['open-pr', '1.1.0'], { env: app }).status).toBe(0)
+    expect(logged().at(-1)?.input).toContain('The required checks run on this pull request.')
+    unlinkSync(calls)
+    expect(run(['open-pr', '1.1.0'], { env: { ...actions, FIXTURE_TREE: tree } }).status).toBe(1)
+    expect(logged()).toHaveLength(0)
+
     expect(
-      run(['open-pr', '1.1.0'], { env: { ...actions, FIXTURE_TREE: '0'.repeat(40) } }).status,
+      run(['open-pr', '1.1.0'], { env: { ...workflow, FIXTURE_TREE: '0'.repeat(40) } }).status,
     ).toBe(1)
     expect(logged()).toHaveLength(1)
     unlinkSync(calls)
     writeFileSync(join(repository, 'extra.txt'), 'unexpected')
-    expect(run(['open-pr', '1.1.0'], { env: { ...actions, FIXTURE_TREE: tree } }).status).toBe(1)
+    expect(run(['open-pr', '1.1.0'], { env: { ...workflow, FIXTURE_TREE: tree } }).status).toBe(1)
     expect(logged()).toHaveLength(0)
     expect(run(['open-pr', '1.1.0'], { env: { FIXTURE_TREE: tree } }).status).toBe(1)
     expect(git('branch', '--list')).toBe('* main')
@@ -397,18 +406,47 @@ describe('release workflows', () => {
     expect(releasePr.permissions).toEqual({ contents: 'read' })
     expect(releasePr.concurrency.group).toBe(release.concurrency.group)
     const job = releasePr.jobs.open
-    expect(job.permissions).toEqual({
-      contents: 'write',
-      'pull-requests': 'write',
-      actions: 'write',
-    })
-    const steps = job.steps as { uses?: string; run?: string; with?: Record<string, unknown> }[]
+    expect(job.permissions).toEqual({ contents: 'write', 'pull-requests': 'write' })
+    // The app's key lives in its own environment, not in repository secrets.
+    expect(job.environment).toBe('release-pull-request')
+    type Step = {
+      id?: string
+      if?: string
+      uses?: string
+      run?: string
+      with?: Record<string, unknown>
+      env?: Record<string, string>
+    }
+    const steps = job.steps as Step[]
     const at = (pattern: RegExp) => steps.findIndex((step) => pattern.test(step.run ?? ''))
     expect(at(/^npm ci$/)).toBeLessThan(at(/^npm run build$/))
     expect(at(/^npm run build$/)).toBeLessThan(at(/release\.mjs bump/))
     expect(at(/release\.mjs bump/)).toBeLessThan(at(/^npm run check$/))
-    expect(at(/^npm run check$/)).toBeLessThan(at(/release\.mjs open-pr/))
     expect(at(/release\.mjs open-pr/)).toBe(steps.length - 1)
+    // The app token is minted after every dependency script has run, is
+    // optional, and asks for no more than the commit and the pull request need.
+    const mint = steps.findIndex((step) =>
+      step.uses?.startsWith('actions/create-github-app-token@'),
+    )
+    expect(mint).toBe(at(/^npm run check$/) + 1)
+    expect(mint).toBe(steps.length - 2)
+    const app = steps[mint] as Step
+    const expression = (body: string) => `\${{ ${body} }}`
+    expect(app.id).toBe('app')
+    expect(app.if).toBe("vars.RELEASE_APP_CLIENT_ID != ''")
+    expect(app.with).toEqual({
+      'client-id': expression('vars.RELEASE_APP_CLIENT_ID'),
+      'private-key': expression('secrets.RELEASE_APP_PRIVATE_KEY'),
+      'permission-contents': 'write',
+      'permission-pull-requests': 'write',
+    })
+    expect(steps.at(-1)?.env).toEqual({
+      RELEASE_VERSION: expression('inputs.version'),
+      RELEASE_PR_TOKEN: expression("steps.app.outcome == 'success' && 'app' || 'workflow'"),
+      GH_TOKEN: expression('steps.app.outputs.token || github.token'),
+    })
+    for (const step of steps.slice(0, mint))
+      expect(JSON.stringify(step)).not.toMatch(/secrets\.|steps\.app/)
     for (const step of steps) {
       if (step.uses) expect(step.uses).toMatch(/@[a-f0-9]{40}$/)
       if (step.run) expect(step.run).not.toContain('${{')
