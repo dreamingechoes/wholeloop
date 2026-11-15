@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-15 · P7-14 follow-up · Release pull request checks without approval
+
+- **Problem:** in the `1.0.0-rc.1` release, the CI run dispatched on the release branch never counted toward the required checks. The pull request's own runs waited in `action_required` until approved, because the workflow token had opened it.
+- **Changed:** the dispatch and the job's `actions: write` are removed. When the `release-pull-request` environment configures a GitHub App, the workflow opens the pull request with a short-lived installation token instead, so its checks start on their own. The token is minted after the full gate, with only contents and pull-requests write, and revoked when the job ends. Without the app, the workflow token is used as before, and the pull request says its runs need approval.
+- **Decided:** ADR-0069 is amended. Its earlier rejection of a GitHub App is reversed only as this opt-in, and a personal access token stays rejected.
+- **Verified:** the workflow and fixture tests cover both token modes and the absence of a dispatch.
+- **Open:** creating the app and the environment is the maintainer's setup. The behaviour on GitHub is in manual verification.
+
+---
+
 ## 2026-11-15 · P7-14 ✅ · Fresh-machine timing and clean notes
 
 - **Timed:** each tier-A client ran in its own fresh `node:22-bookworm` container on Linux arm64, with Node 22.23.4, Git 2.39.5 and an empty npm cache. Each followed the documented route: install `wholeloop@1.0.0-rc.1` from npm, install the client from npm, run `wl install --target <client> --scope user`, then `wl doctor --target <client>`. Every step exited 0, and doctor reported `observed` with no failing check.
