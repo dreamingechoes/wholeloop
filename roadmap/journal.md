@@ -4,6 +4,19 @@
 
 ---
 
+## 2026-11-15 · P7-14 ✅ · Fresh-machine timing and clean notes
+
+- **Timed:** each tier-A client ran in its own fresh `node:22-bookworm` container on Linux arm64, with Node 22.23.4, Git 2.39.5 and an empty npm cache. Each followed the documented route: install `wholeloop@1.0.0-rc.1` from npm, install the client from npm, run `wl install --target <client> --scope user`, then `wl doctor --target <client>`. Every step exited 0, and doctor reported `observed` with no failing check.
+  - Claude Code 2.1.325: 4.5 s.
+  - Codex 0.169.0: 5.6 s.
+  - OpenCode 1.19.5: 6.2 s.
+  - Copilot CLI 1.0.112: 6.6 s.
+- **Notes:** the published `v1.0.0-rc.1` notes and `CHANGELOG.md` carry no attribution trailers or footers; client names appear only as subjects of product changes.
+- **Narrowed:** the timing ran on Linux only, and macOS stays in manual verification. Doctor observes versions; native discovery and sign-in of each delivered target are separate checks. The image pull is excluded from the timings.
+- **Result:** P7-14 is complete; 101 of 116 tasks are done. Before 1.0.0, P5-04 nightly conformance and P7-15 remain.
+
+---
+
 ## 2026-11-15 · P7-14 · 1.0.0-rc.1 is published
 
 - **Published:** `wholeloop@1.0.0-rc.1` on npm `next` with SLSA provenance, from `bf63b12` through the Release workflow. The maintainer delegated the `release` approval. Tag `v1.0.0-rc.1` and a GitHub Release with six assets are published; `latest` stays on the `0.0.1` placeholder.
