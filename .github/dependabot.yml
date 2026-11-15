@@ -15,8 +15,11 @@ updates:
     ignore:
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+    # The group name appears in the pull request title, which becomes the
+    # squash-merge subject: with "development" the title reached 78
+    # characters and the commit check refused it, so the name stays short.
     groups:
-      development:
+      dev:
         dependency-type: development
         update-types: [minor, patch]
   - package-ecosystem: github-actions
