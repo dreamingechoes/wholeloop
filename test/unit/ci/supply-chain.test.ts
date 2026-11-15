@@ -63,13 +63,38 @@ describe('GitHub workflows', () => {
         expect(job.if).toBe(['$', '{{ !github.event.repository.private }}'].join(''))
     }
     const ci = workflows.find(([name]) => name === 'ci.yml')?.[1] ?? ''
-    const steps = (
-        parse(ci) as { jobs: Record<string, { steps?: { name?: string; run?: string }[] }> }
-      ).jobs.check?.steps,
-      signatures = steps?.find((step) => step.run?.includes('npm audit signatures'))?.run ?? ''
-    // One real check against an empty cache; nothing may turn a failure into success.
-    expect(signatures).toBe('npm audit signatures --cache "$RUNNER_TEMP/npm-audit-cache"')
     expect(ci).toContain('node scripts/check-dependencies.mjs --audit')
+    // Registry signatures run in their own reported workflow, not as a required
+    // check: hosted runners failed them on an external key condition (P7-05).
+    expect(ci).not.toContain('npm audit signatures')
+    const signatures = parse(workflows.find(([name]) => name === 'signatures.yml')?.[1] ?? '') as {
+        on: Record<string, unknown>
+        jobs: Record<
+          string,
+          { name: string; 'continue-on-error'?: unknown; steps: { run?: string }[] }
+        >
+      },
+      jobs = Object.values(signatures.jobs),
+      run =
+        jobs.flatMap((job) => job.steps).find((step) => step.run?.includes('npm audit signatures'))
+          ?.run ?? ''
+    expect(Object.keys(signatures.on)).toEqual(expect.arrayContaining(['push', 'pull_request']))
+    expect(jobs.every((job) => job['continue-on-error'] === undefined)).toBe(true)
+    // The job still fails with the audit's own status; the log lines only explain it.
+    expect(run.split('\n')[0]).toBe(
+      'npm audit signatures --cache "$RUNNER_TEMP/npm-audit-cache" && exit 0',
+    )
+    expect(run).toContain('status=$?')
+    expect(run.trim().split('\n').at(-1)).toBe('exit "$status"')
+    const required = (
+      JSON.parse(readFileSync(join(root, '.github/rulesets/main.json'), 'utf8')).rules as {
+        type: string
+        parameters?: { required_status_checks?: { context: string }[] }
+      }[]
+    )
+      .flatMap((rule) => rule.parameters?.required_status_checks ?? [])
+      .map((check) => check.context)
+    expect(required).not.toContain(jobs[0]?.name)
   })
 })
 
