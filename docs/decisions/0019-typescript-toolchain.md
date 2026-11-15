@@ -32,7 +32,7 @@ Dependencies are pinned to **exact versions** that were published at least two w
 ### Negative
 
 - Known, documented dev-only advisories may exist at any time. Today: `braces` ≤ 3.0.3 (GHSA-vfj7-8cjw-p6xm, no fixed release yet) reaches us through `markdownlint-cli2`'s globbing, which only ever receives our own fixed patterns. CI audits runtime dependencies (none yet) at `high`; dev advisories are reviewed by hand.
-- `overrides` force patched transitive versions where the parent pins a vulnerable one (`smol-toml` 1.9.0, `katex` 0.18.9 — the latter only used by markdownlint for math, which these docs do not contain). Each override is removed once the parent catches up.
+- `overrides` force patched transitive versions where the parent pins a vulnerable one (`smol-toml` 1.9.0, `katex` 0.18.9 — the latter only used by markdownlint for math, which these docs do not contain — and `re2js` 2.8.7, which `markdownlint` 0.42.0 pins at 2.8.6 below its fix for quadratic-time lookbehind matching). Each override is removed once the parent catches up.
 
 ## Alternatives considered
 
