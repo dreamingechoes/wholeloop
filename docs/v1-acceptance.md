@@ -182,7 +182,7 @@ The implementation side prepares the exact bundle, notes, test results and comma
 - Confirm npm ownership and the intended public repository/package identity.
 - Approve public visibility and the exact reviewed [release bundle](./contributing/releasing.md), version, notes and distribution assets.
 - Complete the timed fresh-machine install for each tier-A client; doctor must explain failures with actionable remedies.
-- Verify actual provenance/publication/tag/announcement. The current private 0.0.0 package is a development build, not a released 1.0.
+- Verify actual provenance/publication/tag/announcement. The current 0.0.0 package is a development build, not a released 1.0; only the release workflow publishes it.
 
 Optional compiled binaries are not a new mandatory release requirement. The full defined roadmap still includes its explicit publication and client criteria.
 
