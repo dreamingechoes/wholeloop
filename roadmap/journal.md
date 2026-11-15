@@ -4,6 +4,23 @@
 
 ---
 
+## 2026-11-15 · P7-15 · 1.0.0 is published
+
+- **Published:** `wholeloop@1.0.0` on npm `latest` with SLSA provenance, from `8c2930b` through Release run 43759541219, after the maintainer approved the `release` environment.
+  - The tarball matches the reviewed bundle byte for byte.
+  - Tag `v1.0.0` and a Latest GitHub Release with six assets are published.
+  - `next` stays on `1.0.0-rc.1`.
+- **Release app, first hosted run:** #30 was opened by `wholeloop-release[bot]`, and its checks started without approval.
+- **Defect:** the first `verify` failed on registry propagation, as it had for `1.0.0-rc.1`. npm listed the version after about three minutes and served its tarball after about eight and a half, while `verify` retried for about two minutes.
+  - The re-run passed on Node 20, and the release title, exact notes and Latest badge were restored.
+  - Verification now retries for twenty minutes with `--prefer-online`, the job allows thirty minutes, and ADR-0069 is amended.
+- **Decided by the maintainer:**
+  - The announcement is not needed yet, so P7-15 stays open for that criterion alone.
+  - P5-04 nightly conformance moved after 1.0.0, because its criterion waits for a real regression; ADR-0005 is amended.
+- **Manual verification:** the release environment reviewer, the release pull request flow, the release app and a hosted `verify` that passes are recorded.
+
+---
+
 ## 2026-11-15 · P7-15 · Documentation status for 1.0
 
 - **Banners:** the 71 status banners that described work in progress were rewritten for the released state. Each now has one or two sentences: what works, what does not, and the decision behind it. 39 pages read `✅ implemented`, and 26 read `✅ implemented, experimental` for autonomous delivery and remote provider operations. Five stay `🚧 partial`, where something real is missing: execution isolation of headless gate workers, design-system discovery, extension templates for other workflows, and nightly conformance, which is built but disabled.

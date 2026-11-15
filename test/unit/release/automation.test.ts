@@ -283,6 +283,13 @@ describe('post-publication verification', () => {
     const npm = fake(
       'npm.cjs',
       `if (args.includes('install')) {
+  // FIXTURE_UNPUBLISHED counts installs that fail as if npm had not served the version yet.
+  const pending = process.env.FIXTURE_UNPUBLISHED
+  if (pending) {
+    const tries = (fs.existsSync(pending) ? Number(fs.readFileSync(pending, 'utf8')) : 0) + 1
+    fs.writeFileSync(pending, String(tries))
+    if (tries <= Number(process.env.FIXTURE_UNPUBLISHED_TRIES)) process.exit(1)
+  }
   const prefix = args[args.indexOf('--prefix') + 1]
   fs.mkdirSync(prefix + '/bin', { recursive: true })
   fs.writeFileSync(prefix + '/bin/wl', '#!${process.execPath}\\n' +
@@ -313,6 +320,7 @@ if (args.includes('view')) process.stdout.write(JSON.stringify({ latest: process
       expect.arrayContaining([
         'install',
         '--global',
+        '--prefer-online',
         '--ignore-scripts',
         '--registry',
         'https://registry.npmjs.org/',
@@ -328,6 +336,23 @@ if (args.includes('view')) process.stdout.write(JSON.stringify({ latest: process
     expect(
       run(['verify-published', '1.1.0'], { env: { ...registry(), FIXTURE_CLIENT: '1' } }).status,
     ).toBe(0)
+  })
+
+  // npm served 1.0.0's tarball about eight and a half minutes after publication.
+  it('waits for the registry to serve the version, then gives up after twenty attempts', () => {
+    const counter = join(root, 'install-attempts')
+    const waiting = { ...registry(), RELEASE_VERIFY_PAUSE_MS: '0', FIXTURE_UNPUBLISHED: counter }
+    const late = run(['verify-published', '1.1.0'], {
+      env: { ...waiting, FIXTURE_UNPUBLISHED_TRIES: '12' },
+    })
+    expect(late.status, late.stderr).toBe(0)
+    expect(readFileSync(counter, 'utf8')).toBe('13')
+    unlinkSync(counter)
+    const never = run(['verify-published', '1.1.0'], {
+      env: { ...waiting, FIXTURE_UNPUBLISHED_TRIES: '99' },
+    })
+    expect(never.status).toBe(1)
+    expect(readFileSync(counter, 'utf8')).toBe('20')
   })
 
   it.each([
