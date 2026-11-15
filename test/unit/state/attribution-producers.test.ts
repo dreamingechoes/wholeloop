@@ -17,6 +17,7 @@ import {
 } from '../../../src/state/attribution-context.js'
 import { event } from '../../../src/state/events.js'
 import { StateStore } from '../../../src/state/store.js'
+import { VERSION } from '../../../src/version.js'
 import { runnerPlanFixture } from '../../support/runner-plan.js'
 
 const core = resolve('dist/wl.mjs'),
@@ -111,7 +112,7 @@ describe('attribution producers', () => {
         const output = join(root, id)
         writeAdapter(
           output,
-          generateAdapter(id, bundledCanonical(), readFileSync(core, 'utf8'), '0.0.0'),
+          generateAdapter(id, bundledCanonical(), readFileSync(core, 'utf8'), VERSION),
         )
         const executable = join(output, 'bin/wl.mjs'),
           created = invoke(

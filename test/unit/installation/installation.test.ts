@@ -33,6 +33,7 @@ import {
   installLocations,
 } from '../../../src/installation/plan.js'
 import { installationScope, readReceipt, saveReceipt } from '../../../src/installation/receipts.js'
+import { VERSION } from '../../../src/version.js'
 
 const targets = ['claude', 'codex', 'opencode', 'copilot']
 const currentCore = () => readFileSync(resolve('dist/wl.mjs'), 'utf8')
@@ -111,7 +112,7 @@ function fixture(
       ),
     ),
     core: currentCore(),
-    version: '0.0.0',
+    version: VERSION,
   })
   try {
     run({ dir, context, env, input })
@@ -137,7 +138,7 @@ describe('owned native installation and retained external history', () => {
             scope.artifact(target),
             bundledCanonical(),
             currentCore(),
-            '0.0.0',
+            VERSION,
           ),
         ),
       )
@@ -426,7 +427,7 @@ describe('owned native installation and retained external history', () => {
         component.artifact,
         changed,
         currentCore(),
-        '0.0.0',
+        VERSION,
       )
       const after = {
         ...component,

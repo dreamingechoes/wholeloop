@@ -26,6 +26,11 @@ import { inspectInstallation } from '../../../src/installation/inspect.js'
 import { manageInstallation } from '../../../src/installation/manage.js'
 import { installLocations } from '../../../src/installation/plan.js'
 import { canonicalPath } from '../../../src/state/paths.js'
+import { VERSION } from '../../../src/version.js'
+
+// Golden trees are snapshots of a fixed version; renders that run the core
+// use the package VERSION, which the core checks at launch.
+const GOLDEN_VERSION = '0.0.0'
 
 const minimal = new Map([
   [
@@ -68,13 +73,18 @@ function hook(path: string, root: string, home: string, payload: unknown) {
 
 describe('Antigravity native adapter and transport', () => {
   it('renders a closed plugin manifest, strict observer tools and stable native golden', () => {
-    const generated = generateAdapter('antigravity', minimal, '#!/usr/bin/env node\n', '0.0.0')
+    const generated = generateAdapter(
+      'antigravity',
+      minimal,
+      '#!/usr/bin/env node\n',
+      GOLDEN_VERSION,
+    )
     expect(Object.fromEntries(generated.files)).toMatchSnapshot()
     expect(JSON.parse(generated.files.get('plugin.json')?.content ?? '{}')).toEqual({
       name: 'wholeloop',
       description: expect.any(String),
     })
-    const complete = generateAdapter('antigravity', bundledCanonical(), core(), '0.0.0')
+    const complete = generateAdapter('antigravity', bundledCanonical(), core(), VERSION)
     expect(complete.manifest.skills).toHaveLength(17)
     expect(complete.manifest.agents).toHaveLength(9)
     for (const [path, file] of complete.files) {
@@ -118,7 +128,7 @@ describe('Antigravity native adapter and transport', () => {
           targets: ['codex', 'antigravity'],
           canonical: minimal,
           core: core(),
-          version: '0.0.0',
+          version: VERSION,
         }
         const installed = manageInstallation('install', input)
         const locations = installLocations('antigravity', context)
@@ -225,7 +235,7 @@ describe('Antigravity native adapter and transport', () => {
         targets: ['codex', 'antigravity'],
         canonical: minimal,
         core: core(),
-        version: '0.0.0',
+        version: VERSION,
       }
       expect(() => manageInstallation('install', input)).toThrow()
       expect(readFileSync(path, 'utf8')).toBe('{"personal":{}}\n')
@@ -239,7 +249,7 @@ describe('Antigravity native adapter and transport', () => {
       mkdirSync(home)
       const original = join(dir, 'original')
       const native = join(home, '.gemini/antigravity-cli/plugins/wholeloop')
-      writeAdapter(original, generateAdapter('antigravity', minimal, core(), '0.0.0'))
+      writeAdapter(original, generateAdapter('antigravity', minimal, core(), VERSION))
       mkdirSync(join(native, '..'), { recursive: true })
       renameSync(original, native)
       expect(
