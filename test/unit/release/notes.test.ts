@@ -58,6 +58,19 @@ describe('Conventional Commit release drafts', () => {
     const notes = releaseNotes([commit(subject)], '0.0.0')
     expect(notes).toMatchObject({ impact, version: '0.0.0', status: 'draft' })
   })
+  it('drafts squash-merged subjects whose only excess is the pull request number', () => {
+    // The three subjects that reached main after 1.0.0-rc.1 and stopped the notes.
+    const notes = releaseNotes(
+      [
+        commit("fix(release): accept a clean runner's doctor report after publishing (#22)"),
+        commit('docs(roadmap): record fresh-machine timing for the release candidate (#24)', 'b'),
+        commit('ci(release): open the release pull request with an optional app token (#25)', 'c'),
+      ],
+      '1.0.0',
+    )
+    expect(notes).toMatchObject({ status: 'draft', impact: 'patch', rejected: [] })
+    expect(notes.markdown).toContain('optional app token (#25)')
+  })
   it('reports rejected identities without copying unsafe subjects into the draft', () => {
     const notes = releaseNotes(
       [commit('legacy fixture subject'), commit('docs: generated with helper', 'b')],

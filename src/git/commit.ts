@@ -2,17 +2,24 @@
 // subject the same way.
 const SUBJECT =
   /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9][a-z0-9./-]*\))?!?: ([a-z0-9].*)$/
+// GitHub appends " (#N)" to the pull request title when it squash-merges, so a
+// title that met the limit lands on main over it. The limit is on what the
+// author writes; counting the suffix rejected three merged release commits as
+// non-conventional, which stops release notes. Rejected: requiring titles of 66
+// characters or fewer, which cannot repair commits already on main.
+const MERGE_SUFFIX = / \(#[1-9][0-9]*\)$/
 const TOOL =
   /\b(ai|claude|anthropic|codex|openai|copilot|cursor|gemini|gpt|opencode|antigravity|assistant|chatgpt|aider|devin|augment|windsurf|bot)\b/i
 
 /** Commit hygiene and release classification share the existing subject grammar. */
 export function parseConventionalSubject(subject: string) {
   const match = SUBJECT.exec(subject)
+  const written = subject.replace(MERGE_SUFFIX, '')
   if (
     !match?.[1] ||
     !match[3] ||
-    subject.length > 72 ||
-    subject.endsWith('.') ||
+    written.length > 72 ||
+    written.endsWith('.') ||
     match[3] !== match[3].toLowerCase()
   )
     return undefined

@@ -6,6 +6,8 @@ describe('commit hygiene', () => {
     'feat(core): add state replay',
     'fix!: reject unsafe paths',
     'docs: clarify configuration',
+    // A 72-character title that GitHub's squash merge suffixed with its number.
+    `fix(release): ${'x'.repeat(58)} (#22)`,
   ])('accepts %s', (subject) => {
     expect(
       checkCommit(`${subject}\n\nKeep deterministic behavior. Verified with unit tests.\n`),
@@ -16,6 +18,9 @@ describe('commit hygiene', () => {
     'feat: Add replay\n\nReason.',
     'feat: add replay.\n\nReason.',
     `feat: ${'x'.repeat(70)}\n\nReason.`,
+    `feat: ${'x'.repeat(67)} (#22)\n\nReason.`,
+    'feat: add replay. (#22)\n\nReason.',
+    `feat: ${'x'.repeat(63)} (#0)\n\nReason.`,
     'feat: add replay\nReason.',
     'feat: add replay\n',
     'feat: add replay\n\nReason.\n\nCo-Authored-By: Claude <noreply@example.com>',
