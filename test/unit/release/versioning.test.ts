@@ -3,6 +3,8 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+// @ts-expect-error The repository script is plain JavaScript without declarations.
+import { previousVersion } from '../../../scripts/changelog.mjs'
 import { releaseNotes, versionBump } from '../../../src/release/notes.js'
 
 describe('version changes follow the range impact', () => {
@@ -63,6 +65,20 @@ describe('release-recording commits', () => {
   })
 })
 
+describe('release ranges', () => {
+  it.each([
+    { version: '1.0.0', previous: undefined },
+    { version: '1.0.0-rc.2', previous: '1.0.0-rc.1' },
+    { version: '1.1.0-rc.1', previous: '1.0.0' },
+    { version: '1.1.0', previous: '1.0.0' },
+    { version: '1.1.1', previous: '1.1.0' },
+  ])('starts $version at $previous', ({ version, previous }) => {
+    const tags = ['1.0.0-rc.1', '1.0.0-rc.2', '1.0.0', '1.1.0-rc.1', '1.1.0-rc.2', '1.1.0']
+    const known = tags.filter((tag) => tag !== version)
+    expect(previousVersion(version, version === '1.0.0' ? ['1.0.0-rc.1'] : known)).toBe(previous)
+  })
+})
+
 describe('generated changelog', () => {
   it('is built from release tags, checked, and accepts the untagged next version', () => {
     const root = mkdtempSync(join(tmpdir(), 'wl-changelog-'))
@@ -112,6 +128,11 @@ describe('generated changelog', () => {
       const text = readFileSync(join(root, 'CHANGELOG.md'), 'utf8')
       expect(text.indexOf('## 1.0.0\n')).toBeLessThan(text.indexOf('## 1.0.0-rc.1\n'))
       expect(text).toContain('correct the first command')
+      // The final version restates its candidate's changes: its range starts at
+      // the previous final version, here the whole history.
+      const final = text.slice(text.indexOf('## 1.0.0\n'), text.indexOf('## 1.0.0-rc.1\n'))
+      expect(final).toContain('add the first command')
+      expect(final).toContain('correct the first command')
       expect(text).not.toContain('add a second command')
       expect(script('--check').status).toBe(0)
       writeFileSync(join(root, 'CHANGELOG.md'), `${text}Hand edit.\n`)

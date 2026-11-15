@@ -5,6 +5,8 @@
 
 ## Context
 
+**Amended 2026-11-15 (P7-15).** A final version's notes, version check and changelog section now start at the previous final version, not at the previous tag. Starting at the previous tag left the `1.0.0` notes with a single entry, the fixes since `1.0.0-rc.1`, so the first stable release would not have described what it contains. A pre-release still starts at the version just before it. The rule lives in one function, shared by the changelog generator and the release workflow. Rejected: keeping the previous-tag range and pointing readers to the candidate notes, which leaves a stable release's own notes nearly empty.
+
 **Amended 2026-11-07 (P7-07).** Versions are full `x.y.z`, with pre-releases on `next` before a final `latest`. When `release notes` starts its range at a version tag, it compares the requested version with the range's impact: a breaking change needs a new major version (a new minor before `1.0.0`), a feature at least a minor one, and a pre-release cycle may carry any change until the release is final. A smaller change keeps the draft in review, and release preparation refuses it. `CHANGELOG.md` is generated from the same drafts by `npm run changelog` and checked by `npm run check`; it is never edited by hand. Rejected: a hand-maintained changelog, which drifts from the release notes and can carry wording no commit check has seen.
 
 **Amended 2026-11-07 (P7-08).** The event check accepts the default-branch push that merges a release pull request as well as an explicit dispatch, and its reason is now `not-release-event`. Every other condition is unchanged, and publication still waits for the protected release environment ([ADR-0069](0069-reviewed-release-bundles-and-explicit-activation.md)).
