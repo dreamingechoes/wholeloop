@@ -4,6 +4,26 @@
 
 ---
 
+## 2026-11-15 · P7-14 · 1.0.0-rc.1 is published
+
+- **Published:** `wholeloop@1.0.0-rc.1` on npm `next` with SLSA provenance, from `bf63b12` through the Release workflow. The maintainer delegated the `release` approval. Tag `v1.0.0-rc.1` and a GitHub Release with six assets are published; `latest` stays on the `0.0.1` placeholder.
+- **Defects found on the way, each fixed through its own pull request:**
+  - #16: tests pinned the package version to `0.0.0`.
+  - #18: the release commit added a changelog line after the file was written.
+  - #20: GitHub's synthetic merge commit changed the changelog in pull-request runs.
+  - #22: the post-publication check required a coding client on a clean runner.
+- **Release pull requests:** #17 and #19 were closed and dispatched again after those fixes.
+- **Verified:**
+  - From npm, `wl --version` reports `1.0.0-rc.1` on Node 20 Linux and Node 24 macOS.
+  - The fixed `verify-published` passes against the real package in a clean `node:20-bookworm` container.
+  - The release title and notes were restored after `mark-failed` marked it on the false failure.
+- **Open:**
+  - The Release pull request's `pull_request` runs need approval because the bot opens it.
+  - P7-14's fresh-machine timing.
+  - P7-15.
+
+---
+
 ## 2026-11-14 · P7-09 ✅ · Pull requests to main
 
 - **Switch:** changes now reach `main` only through squash-merged pull requests with passing required checks, and the bootstrap workflow of committing straight to `main` ends here. `AGENTS.md`, the contributing guide and the roadmap's working loop say so.
