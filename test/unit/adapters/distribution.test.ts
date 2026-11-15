@@ -147,6 +147,9 @@ describe('local distribution delivery previews', () => {
     'runs the compiled complete preview, exact dry run and moved bundled launchers without changing privacy',
     () =>
       fixture((root) => {
+        // Compare with the value before the preview, not a fixed literal: the
+        // package became publishable for 1.0.0, and the preview must not touch it.
+        const privacy = JSON.parse(readFileSync('package.json', 'utf8')).private
         const output = join(root, 'preview with spaces')
         const cli = (args: string[]) =>
           spawnSync(
@@ -188,7 +191,7 @@ describe('local distribution delivery previews', () => {
         )
         expect(launcher.status, launcher.stdout + launcher.stderr).toBe(0)
         expect(JSON.parse(launcher.stdout).root).toBe(join(moved, 'codex'))
-        expect(JSON.parse(readFileSync('package.json', 'utf8')).private).toBe(true)
+        expect(JSON.parse(readFileSync('package.json', 'utf8')).private).toBe(privacy)
       }),
     60000,
   )

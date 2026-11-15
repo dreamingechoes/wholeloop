@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/dreamingechoes/wholeloop.git"
   },
-  "private": true,
+  "private": false,
   "type": "module",
   "engines": {
     "node": ">=20"
