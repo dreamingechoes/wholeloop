@@ -317,6 +317,9 @@ if(process.argv.includes('POST')) {
           '--notes-file',
         ]),
       )
+      // A pre-release goes to next and never becomes the latest GitHub release;
+      // the expectation follows the package version, as the release does.
+      const npmTag = pkg.version.includes('-') ? 'next' : 'latest'
       expect(operations[2]).toEqual(
         expect.arrayContaining([
           'publish',
@@ -324,11 +327,16 @@ if(process.argv.includes('POST')) {
           '--provenance',
           '--ignore-scripts',
           '--tag',
-          'latest',
+          npmTag,
         ]),
       )
       expect(operations[3]).toEqual(
-        expect.arrayContaining(['release', 'edit', '--draft=false', '--latest=true']),
+        expect.arrayContaining([
+          'release',
+          'edit',
+          '--draft=false',
+          `--latest=${npmTag === 'latest'}`,
+        ]),
       )
       unlinkSync(calls)
       expect(

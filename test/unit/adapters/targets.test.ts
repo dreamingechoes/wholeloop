@@ -15,6 +15,11 @@ import { describe, expect, it } from 'vitest'
 import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import { adapterFor, generateAdapter } from '../../../src/adapters/generate.js'
 import { frontmatter } from '../../../src/harness/frontmatter.js'
+import { VERSION } from '../../../src/version.js'
+
+// Golden trees are snapshots of a fixed version; renders that run the core
+// use the package VERSION, which the core checks at launch.
+const GOLDEN_VERSION = '0.0.0'
 
 const core = '#!/usr/bin/env node\nconsole.log("fixture core")\n'
 const sources = new Map([
@@ -39,7 +44,7 @@ function fixture(run: (dir: string) => void) {
 
 describe('additional tier-A render targets', () => {
   it.each(['codex', 'opencode', 'copilot'])('%s matches its native golden tree', (id) => {
-    const generated = generateAdapter(id, sources, core, '0.0.0')
+    const generated = generateAdapter(id, sources, core, GOLDEN_VERSION)
     expect(Object.fromEntries(generated.files)).toMatchSnapshot()
     expect(generated.manifest.skills).toEqual(['wl-next'])
     expect(generated.manifest.agents).toEqual(['wl-reviewer'])
@@ -59,12 +64,12 @@ describe('additional tier-A render targets', () => {
         `harness/skills/${name}/SKILL.md`,
         (sources.get('harness/skills/next/SKILL.md') ?? '').replace('name: next', `name: ${name}`),
       )
-      expect(() => generateAdapter(id, changed, core, '0.0.0')).toThrow(/64-character/)
+      expect(() => generateAdapter(id, changed, core, VERSION)).toThrow(/64-character/)
     },
   )
   it('uses portable root manifests without leaking native component path fields', () => {
     for (const id of ['codex', 'copilot']) {
-      const files = generateAdapter(id, sources, core, '0.0.0').files
+      const files = generateAdapter(id, sources, core, VERSION).files
       const manifest = JSON.parse(files.get('plugin.json')?.content ?? '{}')
       expect(manifest.$schema).toBe('https://agent-plugins.org/schemas/1.0.0/plugin.schema.json')
       expect(
@@ -88,7 +93,7 @@ describe('additional tier-A render targets', () => {
   })
   it('keeps Codex permission inheritance explicit instead of emitting a false per-role sandbox', () => {
     const adapter = adapterFor('codex')
-    const files = generateAdapter('codex', sources, core, '0.0.0').files
+    const files = generateAdapter('codex', sources, core, VERSION).files
     const agent = toml(files.get(adapter.paths('agent', 'reviewer'))?.content ?? '')
     expect(agent).toMatchObject({
       name: 'wl-reviewer',
@@ -145,8 +150,8 @@ describe('additional tier-A render targets', () => {
       `${changed.get('harness/skills/next/SKILL.md')}\nRetain the unique changed contract.\n`,
     )
     for (const id of ['claude', 'codex', 'opencode', 'copilot']) {
-      const before = generateAdapter(id, sources, core, '0.0.0')
-      const after = generateAdapter(id, changed, core, '0.0.0')
+      const before = generateAdapter(id, sources, core, VERSION)
+      const after = generateAdapter(id, changed, core, VERSION)
       expect(after.manifest.source).not.toBe(before.manifest.source)
       expect(after.manifest.skills).toHaveLength(1)
       expect(after.manifest.agents).toHaveLength(1)
@@ -190,7 +195,7 @@ describe('additional tier-A render targets', () => {
         expect(JSON.parse(root.stdout)).toMatchObject({
           root: realpathSync(output),
           target: id,
-          version: '0.0.0',
+          version: VERSION,
         })
         const next = call('next', 'Launch from a real path', '--owner', 'Alex')
         expect(next.status).toBe(0)
@@ -216,7 +221,7 @@ describe('additional tier-A render targets', () => {
   })
   it('renders all canonical roles and skills for each target from the same embedded catalog', () => {
     for (const id of ['claude', 'codex', 'opencode', 'copilot']) {
-      const generated = generateAdapter(id, bundledCanonical(), core, '0.0.0')
+      const generated = generateAdapter(id, bundledCanonical(), core, VERSION)
       expect(generated.manifest.skills).toHaveLength(17)
       // Codex drafts launches headlessly; its native agents would inherit every MCP server.
       expect(generated.manifest.agents).toHaveLength(id === 'codex' ? 8 : 9)

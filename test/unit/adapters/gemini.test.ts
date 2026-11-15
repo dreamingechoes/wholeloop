@@ -25,6 +25,11 @@ import { BUILTINS } from '../../../src/providers/builtins.js'
 import { detectMcp } from '../../../src/providers/detect.js'
 import { renderMcp } from '../../../src/providers/mcp.js'
 import { canonicalPath } from '../../../src/state/paths.js'
+import { VERSION } from '../../../src/version.js'
+
+// Golden trees are snapshots of a fixed version; renders that run the core
+// use the package VERSION, which the core checks at launch.
+const GOLDEN_VERSION = '0.0.0'
 
 const core = '#!/usr/bin/env node\nconsole.log("fixture core")\n'
 const minimal = new Map([
@@ -106,7 +111,7 @@ describe('Gemini extension and native overlays', () => {
     })
   })
   it('matches the Gemini native golden tree with a pinned native hook and explicit overlay Git fallback', () => {
-    const rendered = generateAdapter('gemini', minimal, core, '0.0.0')
+    const rendered = generateAdapter('gemini', minimal, core, GOLDEN_VERSION)
     expect(Object.fromEntries(rendered.files)).toMatchSnapshot()
     expect(rendered.manifest.capabilities).toMatchObject({
       conformance: 'unverified',
@@ -117,12 +122,12 @@ describe('Gemini extension and native overlays', () => {
     expect([...rendered.files.keys()]).toContain('hooks/hooks.json')
     expect(JSON.parse(rendered.files.get('gemini-extension.json')?.content ?? '{}')).toEqual({
       name: 'wholeloop',
-      version: '0.0.0',
+      version: GOLDEN_VERSION,
       description: expect.any(String),
     })
   })
   it('keeps the complete catalog within native budgets and reduces observer channels', () => {
-    const rendered = generateAdapter('gemini', bundledCanonical(), core, '0.0.0')
+    const rendered = generateAdapter('gemini', bundledCanonical(), core, VERSION)
     expect(rendered.manifest.skills).toHaveLength(17)
     expect(rendered.manifest.agents).toHaveLength(9)
     for (const [path, file] of rendered.files) {
@@ -164,8 +169,8 @@ describe('Gemini extension and native overlays', () => {
       `${minimal.get('harness/skills/next/SKILL.md')}\nRetain the exact current owner.\n`,
     )
     for (const target of ['claude', 'codex', 'opencode', 'copilot', 'gemini']) {
-      const before = generateAdapter(target, minimal, core, '0.0.0')
-      const after = generateAdapter(target, changed, core, '0.0.0')
+      const before = generateAdapter(target, minimal, core, VERSION)
+      const after = generateAdapter(target, changed, core, VERSION)
       expect(after.manifest.source).not.toBe(before.manifest.source)
       expect(
         [...after.files.values()].some((file) =>
@@ -195,7 +200,7 @@ describe('Gemini extension and native overlays', () => {
           targets: ['gemini'],
           canonical: minimal,
           core: readFileSync(resolve('dist/wl.mjs'), 'utf8'),
-          version: '0.0.0',
+          version: VERSION,
         }
         const installed = manageInstallation('install', input)
         const locations = installLocations('gemini', context)
@@ -245,7 +250,7 @@ describe('Gemini extension and native overlays', () => {
         'gemini',
         bundledCanonical(),
         readFileSync(binary, 'utf8'),
-        '0.0.0',
+        VERSION,
       )
       writeAdapter(original, generated)
       renameSync(original, output)

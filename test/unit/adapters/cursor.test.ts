@@ -26,6 +26,11 @@ import { inspectInstallation } from '../../../src/installation/inspect.js'
 import { manageInstallation } from '../../../src/installation/manage.js'
 import { installLocations } from '../../../src/installation/plan.js'
 import { canonicalPath } from '../../../src/state/paths.js'
+import { VERSION } from '../../../src/version.js'
+
+// Golden trees are snapshots of a fixed version; renders that run the core
+// use the package VERSION, which the core checks at launch.
+const GOLDEN_VERSION = '0.0.0'
 
 const minimal = new Map([
   [
@@ -83,7 +88,7 @@ const payload = (root: string, tool_name: string, tool_input: object = {}) => ({
 
 describe('Cursor native contracts and managed overlays', () => {
   it('matches its dual manifests, readonly roles, opt-in rule and hook golden', () => {
-    const generated = generateAdapter('cursor', minimal, '#!/usr/bin/env node\n', '0.0.0')
+    const generated = generateAdapter('cursor', minimal, '#!/usr/bin/env node\n', GOLDEN_VERSION)
     expect(Object.fromEntries(generated.files)).toMatchSnapshot()
     expect(
       JSON.parse(generated.files.get('.cursor-plugin/plugin.json')?.content ?? '{}'),
@@ -95,14 +100,14 @@ describe('Cursor native contracts and managed overlays', () => {
     })
     expect(JSON.parse(generated.files.get('plugin.json')?.content ?? '{}')).toEqual({
       name: 'wholeloop',
-      version: '0.0.0',
+      version: GOLDEN_VERSION,
       description: expect.any(String),
       $schema: 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',
     })
     expect(frontmatter(generated.files.get('rules/wholeloop.mdc')?.content ?? '')).toMatchObject({
       alwaysApply: false,
     })
-    const complete = generateAdapter('cursor', bundledCanonical(), core(), '0.0.0')
+    const complete = generateAdapter('cursor', bundledCanonical(), core(), VERSION)
     expect(complete.manifest.skills).toHaveLength(17)
     expect(complete.manifest.agents).toHaveLength(9)
     for (const [path, file] of complete.files) {
@@ -128,7 +133,7 @@ describe('Cursor native contracts and managed overlays', () => {
       'harness/skills/next/SKILL.md',
       `${minimal.get('harness/skills/next/SKILL.md')}\nPreserve the current owner.\n`,
     )
-    const updated = generateAdapter('cursor', changed, '#!/usr/bin/env node\n', '0.0.0')
+    const updated = generateAdapter('cursor', changed, '#!/usr/bin/env node\n', VERSION)
     expect(updated.manifest.source).not.toBe(generated.manifest.source)
     expect(updated.files.get('skills/wl-next/SKILL.md')?.content).toContain(
       'Preserve the current owner.',
@@ -154,7 +159,7 @@ describe('Cursor native contracts and managed overlays', () => {
           targets: ['cursor'],
           canonical: minimal,
           core: core(),
-          version: '0.0.0',
+          version: VERSION,
         }
         const installed = manageInstallation('install', input)
         expect(inspectInstallation(input).status).toBe('current')
@@ -251,7 +256,7 @@ describe('Cursor native contracts and managed overlays', () => {
         targets: ['codex', 'cursor'],
         canonical: minimal,
         core: core(),
-        version: '0.0.0',
+        version: VERSION,
       }
       expect(() => manageInstallation('install', input)).toThrow()
       expect(readFileSync(shared, 'utf8')).toBe('{"personal":true}\n')
@@ -265,7 +270,7 @@ describe('Cursor native contracts and managed overlays', () => {
       const relocated = join(dir, "plugin ' # $(touch PWNED)")
       mkdirSync(root)
       mkdirSync(home)
-      writeAdapter(original, generateAdapter('cursor', minimal, core(), '0.0.0'))
+      writeAdapter(original, generateAdapter('cursor', minimal, core(), VERSION))
       renameSync(original, relocated)
       const hook = JSON.parse(readFileSync(join(relocated, 'hooks/hooks.json'), 'utf8')).hooks
         .preToolUse[0]
@@ -297,7 +302,7 @@ describe('Cursor native contracts and managed overlays', () => {
       const binary = core()
       writeAdapter(
         join(original, '.wholeloop/distribution/cursor'),
-        generateAdapter('cursor', minimal, binary, '0.0.0'),
+        generateAdapter('cursor', minimal, binary, VERSION),
       )
       const hook = cursorHook(artifactDigest(binary), { kind: 'project' }).hooks.preToolUse[0]
       if (!hook) throw new Error('Missing native hook')
