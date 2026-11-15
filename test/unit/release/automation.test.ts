@@ -278,13 +278,18 @@ describe('post-publication verification', () => {
   fs.mkdirSync(prefix + '/bin', { recursive: true })
   fs.writeFileSync(prefix + '/bin/wl', '#!${process.execPath}\\n' +
     "if (process.argv[2] === '--version') console.log(process.env.FIXTURE_PRINTED ?? '1.1.0')\\n" +
-    "else { console.log(JSON.stringify({ status: process.env.FIXTURE_DOCTOR ?? 'observed' })); process.exitCode = process.env.FIXTURE_DOCTOR ? 3 : 0 }\\n", { mode: 0o755 })
+    "else { const failing = process.env.FIXTURE_DOCTOR_FAIL; const client = process.env.FIXTURE_CLIENT === '1';" +
+    " const checks = [['node', 'pass'], ['git', 'pass'], ['store', failing === 'store' ? 'fail' : 'pass'], ['cli.any', client ? 'pass' : 'fail']].map(([id, status]) => ({ id, status }));" +
+    " const fails = checks.some((check) => check.status === 'fail');" +
+    " console.log(JSON.stringify({ schema: process.env.FIXTURE_SCHEMA ?? 'wholeloop/doctor@1', status: fails ? 'needs-attention' : 'observed', checks })); process.exitCode = fails ? 3 : 0 }\\n", { mode: 0o755 })
 }
 if (args.includes('view')) process.stdout.write(JSON.stringify({ latest: process.env.FIXTURE_LATEST ?? '1.1.0', next: '1.1.0-rc.1' }))`,
     )
     return { npm_execpath: npm }
   }
 
+  // A clean runner has no coding client: doctor reports needs-attention with
+  // exit 3 and only cli.any failing, which is a successful installation.
   it('installs the published version into an empty prefix and runs it', () => {
     const verified = run(['verify-published', '1.1.0'], { env: registry() })
     expect(verified.status, verified.stderr).toBe(0)
@@ -310,11 +315,16 @@ if (args.includes('view')) process.stdout.write(JSON.stringify({ latest: process
         env: { ...registry(), FIXTURE_PRINTED: '1.1.0-rc.1' },
       }).status,
     ).toBe(0)
+    // A runner that does have a coding client reports observed with exit 0.
+    expect(
+      run(['verify-published', '1.1.0'], { env: { ...registry(), FIXTURE_CLIENT: '1' } }).status,
+    ).toBe(0)
   })
 
   it.each([
     ['a different printed version', { FIXTURE_PRINTED: '1.0.0' }],
-    ['a failing doctor', { FIXTURE_DOCTOR: 'blocked' }],
+    ['a failing store check', { FIXTURE_DOCTOR_FAIL: 'store' }],
+    ['a report without the doctor schema', { FIXTURE_SCHEMA: 'other' }],
     ['a dist-tag on another version', { FIXTURE_LATEST: '1.0.0' }],
   ])('fails on %s', (_, facts) => {
     const failed = run(['verify-published', '1.1.0'], { env: { ...registry(), ...facts } })

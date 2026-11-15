@@ -335,8 +335,24 @@ function verifyPublished(version) {
   }
   const wl = join(prefix, 'bin', 'wl')
   assert.equal(command(wl, ['--version'], environment, undefined, temporary), version)
-  const doctor = JSON.parse(command(wl, ['doctor', '--json'], environment, undefined, temporary))
-  assert.equal(doctor.status, 'observed')
+  // A clean runner has no coding client, so doctor honestly reports
+  // needs-attention with exit 3 and a failing cli.any check. Requiring
+  // "observed" failed the 1.0.0-rc.1 check although the package installed and
+  // ran. The core's own checks must pass, and no other check may fail.
+  const report = spawnSync(wl, ['doctor', '--json'], {
+    cwd: temporary,
+    env: environment,
+    encoding: 'utf8',
+    timeout: 120_000,
+    killSignal: 'SIGKILL',
+    maxBuffer: 4 * 1024 * 1024,
+  })
+  assert(!report.error && (report.status === 0 || report.status === 3))
+  const doctor = JSON.parse(report.stdout)
+  assert.equal(doctor.schema, 'wholeloop/doctor@1')
+  const checks = new Map(doctor.checks.map((check) => [check.id, check.status]))
+  for (const id of ['node', 'git', 'store']) assert.equal(checks.get(id), 'pass')
+  assert(doctor.checks.every((check) => check.status !== 'fail' || check.id === 'cli.any'))
   console.log(
     JSON.stringify({
       schema: 'wholeloop/release-verification@1',
