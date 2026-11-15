@@ -1,0 +1,43 @@
+name: Signatures
+
+# Registry signatures and provenance attestations of every installed package,
+# reported on its own and not a required check. From 2026-11-14, hosted Ubuntu
+# runners failed it repeatedly with EMISSINGSIGNATUREKEY for magic-string 1.4.5,
+# even with an empty cache. The key it names is listed as valid in npm's TUF
+# target and its registry endpoint, and the same npm and Node verify the
+# package locally. A required check would have blocked every merge on that
+# external condition. A red run here still means do not release until
+# explained (SECURITY.md). When it fails, it prints the key, TUF, Sigstore and
+# signature lines of npm's debug log to find the cause.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signatures-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: signatures · ubuntu-latest · node 22
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Verify registry signatures and provenance of installed packages
+        run: |
+          npm audit signatures --cache "$RUNNER_TEMP/npm-audit-cache" && exit 0
+          status=$?
+          # This job holds no token, so the debug log carries no credential.
+          grep -h -i -E 'v1/keys|keys\.json|tuf|sigstore|signature|EMISSING' "$RUNNER_TEMP"/npm-audit-cache/_logs/*-debug-0.log | tail -80 || true
+          exit "$status"

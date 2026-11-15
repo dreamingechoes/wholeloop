@@ -257,6 +257,7 @@
 | [0244](./0244-environment-and-docker-read-amplification.md) | Environment and Docker read amplification | Accepted | 2026-11-06 |
 | [0245](./0245-require-docker-for-project-code-execution.md) | Require Docker for project code execution | Accepted | 2026-11-06 |
 | [0246](./0246-dogfooded-maintainer-skills-and-agents.md) | Dogfooded maintainer skills and agents | Accepted | 2026-11-07 |
+| [0255](./0255-report-registry-signatures-without-requiring-them.md) | Report registry signatures without requiring them | Accepted | 2026-11-15 |
 
 ## Lifecycle
 
