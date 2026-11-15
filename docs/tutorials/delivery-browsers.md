@@ -3,7 +3,7 @@
 > **TL;DR** — Pin a grounded UI journey, provision its application and reviewed browser image, then execute the case through the existing acceptance command. Wholeloop observes real MCP actions, UI checks, owned backend responses and bounded captures; screenshots alone cannot prove persistence.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The fixed host exercises actual isolated Chromium through private stdio MCP. The model-free evaluator observes a cosmetic UI failure, repaired persistence after restart and fresh context, private-control denial and stable-key reuse. Native coding-client/model checks and independent Linux-controller acceptance remain separate.
+> **Status: ✅ implemented, experimental.** The fixed host drives isolated Chromium through private MCP, and the model-free evaluator observes UI failures, restarts and denied private controls. Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

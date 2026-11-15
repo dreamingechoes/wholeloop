@@ -3,7 +3,7 @@
 > **TL;DR** — A handful of personal dials shape the conversation: how much it explains, how technical it gets, how hard it pushes back, how much happens at once, how often it pauses, and in which language. Pick a preset or tune single dials. No dial can lower coverage, skip a decision point or let the harness guess instead of ask.
 
 > [!NOTE]
-> **Status: ✅ implemented.** Built-in/custom presets, layered dials, CLI setters, transient overrides and the ten-line renderer are tested. Custom manifests use the implemented extension catalog. Decision: [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md).
+> **Status: ✅ implemented.** Built-in and custom presets, layered dials, setters, transient overrides and the ten-line renderer are tested. Decision: [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md).
 
 Custom presets use the same layered manifest catalog as templates and lenses. Select any validated ID with `wl profile preset <id>`; `wl profile list|test|scaffold` helps inspect and author it. See [custom profiles](../extending/lenses-templates-profiles.md#profiles).
 

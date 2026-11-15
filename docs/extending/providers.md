@@ -3,7 +3,7 @@
 > **TL;DR** — A provider is a folder with a `provider.yml` and, optionally, a few short guidance files. The manifest says which capabilities it serves, how to detect it, how to connect it in each CLI, which tool fulfils each verb, and what to hand over when it is not available. Most providers are under fifty lines.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Schema, inheritance, package loading, inspection/scaffolding and tier-A MCP rendering are implemented. Client-owned MCP transport planning and reviewed bindings are implemented. Authenticated probes remain manual. The manifest format is versioned (`schema: 1`) from day one.
+> **Status: ✅ implemented.** The manifest schema (`schema: 1`), inheritance, loading, inspection, scaffolding, MCP rendering and transport planning are tested. Authenticated checks against each real service are not part of the gate.
 
 ---
 

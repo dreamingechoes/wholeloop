@@ -1,9 +1,9 @@
 # Platforms — one harness, every agentic CLI
 
-> **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. Tier A CLIs are supported from the first release; tier B follow. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
+> **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. All seven CLIs are supported in 1.0; tier B ones fill some gaps with equivalents. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local artifact generation for all four tier-A targets plus Gemini, Antigravity and Cursor and self-contained core packaging are implemented; owned native installation, guard bindings and a disposable framing runner are available. The four tier-A columns of the matrix were verified against the native clients on 2026-11-08, macOS arm64 ([conformance notes](../../test/conformance/notes/README.md)). The tier-B columns were researched in October 2026 and checked by their adapter tasks; items marked ❓ are not yet verified against the client. The standalone framing scenario passes live on all seven clients, the last being Gemini 0.67.0 on 2026-11-14. The complete check passes on hosted Linux x64 and macOS runners; native clients have not been run on Linux. Local adapter declarations are generated and checked from code. Explicit fresh collection and bounded reported matrices support page comparison/regeneration; structural issue drafts/delivery are implemented; host version resolution/private acquisition are implemented; disabled nightly automation is implemented, while maintainer activation and actual native/service checks remain pending.
+> **Status: ✅ implemented.** Seven client adapters ship in 1.0. The tier-A columns were verified against the native clients on macOS arm64 ([conformance notes](../../test/conformance/notes/README.md)), and the standalone framing scenario passed live on all seven clients. Items marked ❓ are not verified against the client, and native clients have not been run on Linux. Nightly conformance is built but not yet enabled.
 
 ---
 

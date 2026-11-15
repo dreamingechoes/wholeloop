@@ -4,8 +4,7 @@
 
 wholeloop supplies the process around the model: what context to load, which questions and checks to run, where a person decides and what to remember between conversations. It installs into the coding client you already use, and you can take one step for a small job or the whole loop for a feature.
 
-> [!NOTE]
-> **Status: preparing 1.0.0.** The first release is not on npm yet. Until it is, build the CLI from source as the [development guide](./docs/contributing/development.md) describes and use `node dist/wl.mjs` wherever this page says `wl`. Native client behaviour is checked per client version; [platforms](./docs/platforms/README.md) records what each client has been checked against.
+> **Status: ✅ stable since 1.0.0.** Install it from npm with `npm install --global wholeloop`. Autonomous delivery (`wl delivery`) is experimental and may change in a minor release; [platforms](./docs/platforms/README.md) lists the client versions each adapter was checked against.
 
 ## Contents
 

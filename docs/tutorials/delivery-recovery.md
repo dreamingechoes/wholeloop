@@ -3,7 +3,7 @@
 > **TL;DR** — Track a prepared plan, inspect it from independent processes, read its retained events and rebuild a missing projection. None of these operations starts a worker, grants authority or performs an external effect.
 
 > [!NOTE]
-> **Status: ✅ implemented.** The commands below exercise local delivery metadata and cache recovery. [Checkpoint/ownership recovery and explicit stopped-writer repair](./delivery-checkpoints.md) are also available. Complete runner, actual native/backend workers and endpoint acceptance remain subsequent Phase 6 work.
+> **Status: ✅ implemented, experimental.** Metadata and cache recovery are tested; [checkpoint recovery](./delivery-checkpoints.md) covers ownership and stopped writers. Autonomous delivery may change in a minor release.
 
 ## Before you start
 

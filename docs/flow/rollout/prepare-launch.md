@@ -3,7 +3,7 @@
 > **TL;DR** — Turns a merged scope into a launch kit: a rollout plan, announcement drafts for every audience, dashboards built from the spec's measurement plan, and enablement material for the people who will answer questions about it. Everything is prepared; nothing is sent. A person reads, adjusts and sends.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The local/core implementation includes pinned measurement inputs, loaded voice/templates, a read-only drafting host, complete local kits, exact-metric dashboard specs, handoffs and an intent-journaled draft/create publication boundary. Per-CLI launcher no-send tests pass, with native checks on Cursor and Codex; Codex drafts through `wl launch draft` in an isolated headless worker. Authenticated provider execution and merge/flag observations remain owner verification.
+> **Status: ✅ implemented.** Pinned measurement inputs, repository voice and templates, a read-only drafting host, complete kits, dashboard specs and the draft/create boundary are tested, and no launcher can send. Provider publication is experimental.
 
 ---
 

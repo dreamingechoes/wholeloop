@@ -3,7 +3,7 @@
 > **TL;DR** — Splits a scope into **vertical slices** in a set order: each slice is something a user can actually do, working from screen to database — not "the API part" or "the UI part". Objective, acceptance criteria and test cases are written for every slice *before* any code. When a slice touches several repositories it gets one part per repository, and the shared contract is settled first. A challenger pokes holes in the split before any building starts.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Versioned plans, structural lint, pinned inherited criteria, atomic stable slices/parts, local tracker references and dependency-aware next routing are implemented. Live semantic critique and remote mirroring remain manual.
+> **Status: ✅ implemented.** Versioned plans, structural lint, inherited criteria, stable slices and parts, local tracker references and dependency-aware routing are tested. Remote tracker mirroring is experimental.
 
 ---
 

@@ -33,6 +33,8 @@ Every page starts, after the title and TL;DR, with exactly one of:
 | `🚧 partial` | Some of it works; the page says which parts |
 | `✅ implemented` | Matches the released behaviour, verified by tests or conformance runs |
 
+Add `, experimental` after the label when the page covers an [experimental surface](../extending/compatibility.md#experimental-surfaces), such as autonomous delivery or remote provider operations: the behaviour is released and tested, but it may change in a minor release. Keep a banner to one or two sentences: what works, what does not, and the decision behind it. Dates, task history and work in progress belong in the [journal](../../roadmap/journal.md), not in the banner.
+
 Banners are updated **in the same change** that moves the behaviour.
 
 ## Referenced decisions

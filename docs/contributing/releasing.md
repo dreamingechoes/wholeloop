@@ -3,7 +3,7 @@
 > **TL;DR** — Prepare offline package checks, native delivery previews, release-note drafts and a source consistency plan locally. A dispatched release pull request carries the version and changelog; merging it prepares the reviewed bundle, and publication waits only for the `release` environment approval, then is verified from the registry. Visibility, npm ownership and provenance stay the maintainer's setup.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Local packaging/delivery/notes/preflight, the release pull request, reviewed-bundle publication on merge and post-publication verification are implemented. The repository has been public since 2026-11-14, with its rulesets applied and hosted CI green on Linux x64 and macOS. `1.0.0-rc.1` was published through this flow on 2026-11-15, with OIDC trusted publishing and provenance. The optional release app for the release pull request is implemented but has not run on GitHub yet. These maintainer checks do not block local client setup.
+> **Status: ✅ implemented.** The release pull request, reviewed-bundle publication on merge and npm trusted publishing with provenance have run on GitHub. Post-publication verification passes against the published package in a clean container, and the optional release app has not opened a release pull request yet.
 
 ## Versions
 
@@ -128,7 +128,7 @@ The whole release runs in GitHub Actions; the maintainer's only release-specific
 
 A manual dispatch of the Release workflow remains for a release whose version is already committed: version is that exact package version, from is the previous release ref (empty only for the initial release) and publish defaults to false, so a dispatch without it only prepares.
 
-Before the first release, the maintainer completes these setup steps:
+The maintainer completed these setup steps before `1.0.0-rc.1`; repeat them only for a new repository or package:
 
 1. Approve public repository visibility explicitly, reserve/control the npm name, and commit explicit private false.
 2. Configure the release GitHub environment with required maintainer approval and default-branch deployment restrictions. Verify the protection exists before merging a release pull request; an unprotected environment does not provide a review gate.
@@ -148,7 +148,7 @@ A published npm version is never unpublished or overwritten: unpublishing breaks
 4. Fix the cause on the default branch and release the next patch version, or the next pre-release, through the release pull request. Publication moves the dist-tag to it.
 5. Record what happened in the journal and, when the cause is in the release process, amend the decision that owns it.
 
-The native tar is a hosted release asset after successful activation. Download and extract that trusted release into a new local directory before registering its relative Claude marketplace or loading another native tree. The source repository root itself is not the generated marketplace. Remote Git marketplace registration and optional compiled binaries are not supplied by this workflow. Actual Actions, Linux, environment protection, npm OIDC/provenance and native installation remain manual verification; no publication was run during implementation.
+The native tar is a hosted release asset after successful activation. Download and extract that trusted release into a new local directory before registering its relative Claude marketplace or loading another native tree. The source repository root itself is not the generated marketplace. Remote Git marketplace registration and optional compiled binaries are not supplied by this workflow. Native installation from a downloaded release tree remains a manual check.
 
 <!-- docnav -->
 [◀ Authoring](authoring.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Nightly conformance ▶](conformance.md)

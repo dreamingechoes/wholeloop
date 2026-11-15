@@ -3,7 +3,7 @@
 > **TL;DR** — Build once, choose a named target, inspect its dry run and install its owned components. Run doctor for that target, then restart the native client and verify discovery and permissions. File installation and native activation are separate observations.
 
 > [!NOTE]
-> **Status: 🚧 partial.** The seven source-built installation paths, packaged resources and diagnostics are implemented and tested locally. Claude loose-skill framing and status recovery across sessions were observed by hand; broader discovery, trust, permissions, authentication and model scenarios remain manual verification. Published npm/remote-marketplace delivery remains pending.
+> **Status: ✅ implemented.** Installation for all seven clients, packaged resources and diagnostics are tested, and installation from npm takes seconds per tier-A client on a fresh Linux machine. Discovery, trust and sign-in are verified only as far as [V1 acceptance](../v1-acceptance.md) records.
 
 ## Before choosing a target
 

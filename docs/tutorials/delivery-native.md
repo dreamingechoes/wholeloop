@@ -3,7 +3,7 @@
 > **TL;DR** — Dedicated delivery hosts keep builders separate from the existing read-only gate engine. A pinned recipe and an installed client still need actual runtime proof; metadata alone starts no worker.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Reference recipes, capability negotiation, bounded controller execution and retained receipts are implemented and synthetic-process-tested. Actual native/backend conformance and complete unattended routing still need signed-in native clients. The command below inspects contracts only.
+> **Status: ✅ implemented, experimental.** Reference recipes, capability negotiation, bounded execution and receipts are tested, and live trials passed with Codex. The command below inspects contracts only. Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

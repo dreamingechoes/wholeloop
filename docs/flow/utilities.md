@@ -3,7 +3,7 @@
 > **TL;DR** — The `next` skill orchestrates available steps until a decision; the terminal `wl next` returns the next core contract. `status` inspects stored work, `setup` selects scoped profile/destination preferences, and `sync` reconciles exact delivery evidence. None of these names implies automatic model calls or client authentication.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Canonical skills and local `wl next`, `wl status`, `wl setup` and evidence-backed `wl sync` are implemented, as are URL adoption and explicit shared publication. Generated client installation and `sync` against hosted services still need native conformance.
+> **Status: ✅ implemented.** `wl next`, `wl status`, `wl setup` and evidence-backed `wl sync` ship in 1.0, with URL adoption and explicit shared publication. `sync` against hosted services runs through the client and is experimental.
 
 ---
 
