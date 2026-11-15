@@ -45,6 +45,24 @@ describe('version changes follow the range impact', () => {
   })
 })
 
+describe('release-recording commits', () => {
+  it('leaves out the commit that only records a release, before and after its squash', () => {
+    const notes = releaseNotes(
+      [
+        { sha: 'a'.repeat(40), message: 'feat: add the command' },
+        { sha: 'b'.repeat(40), message: 'chore(release): v1.0.0-rc.1' },
+        { sha: 'c'.repeat(40), message: 'chore(release): v1.0.0-rc.1 (#17)' },
+        { sha: 'd'.repeat(40), message: 'chore(release): tidy the workflow' },
+      ],
+      '1.0.0-rc.1',
+    )
+    expect(notes.count).toBe(2)
+    expect(notes.markdown).not.toContain('v1.0.0-rc.1 (')
+    expect(notes.markdown).toContain('tidy the workflow')
+    expect(notes.rejected).toEqual([])
+  })
+})
+
 describe('generated changelog', () => {
   it('is built from release tags, checked, and accepts the untagged next version', () => {
     const root = mkdtempSync(join(tmpdir(), 'wl-changelog-'))
@@ -103,6 +121,12 @@ describe('generated changelog', () => {
       expect(next.startsWith(text.slice(0, text.indexOf('## ')))).toBe(true)
       expect(next).toContain('## 1.1.0\n')
       expect(next).toContain('add a second command')
+      expect(script('--check').status).toBe(0)
+      // The release pull request commits the file after generating it, and the
+      // squash merge renames that commit; neither may add a changelog line.
+      commit('chore(release): v1.1.0')
+      expect(script('--check').status).toBe(0)
+      commit('chore(release): v1.1.0 (#17)')
       expect(script('--check').status).toBe(0)
       // Merging the release pull request and tagging it must not invalidate the file.
       git('tag', 'v1.1.0')

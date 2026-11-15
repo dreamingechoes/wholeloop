@@ -89,6 +89,19 @@ export function releaseNotes(
       })
       continue
     }
+    // The commit that records a release (chore(release): vX.Y.Z, plus " (#N)"
+    // once squash-merged) changes nothing for users. Listing it made the
+    // changelog differ after the commit existed: the release pull request wrote
+    // the file before creating it, so its own gate, the release run and every
+    // later default-branch gate regenerated an extra line.
+    const recorded = /^v(\S+?)(?: \(#\d+\))?$/.exec(parsed.description)?.[1]
+    if (
+      parsed.type === 'chore' &&
+      parsed.scope === 'release' &&
+      recorded &&
+      isReleaseVersion(recorded)
+    )
+      continue
     accepted.push({
       sha: commit.sha,
       ...parsed,
