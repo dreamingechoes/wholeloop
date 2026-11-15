@@ -89,6 +89,10 @@ export function releaseHistory(repository: string, from: string | undefined, to 
     '--max-count=1001',
     '--no-decorate',
     '--no-notes',
+    // Merges carry no change of their own: the default branch is squash-only,
+    // and CI tests a pull request on GitHub's synthetic merge commit, whose
+    // "Merge <sha> into <sha>" subject made the generated changelog differ.
+    '--no-merges',
     '--format=%H%x00%B%x00',
     end,
     ...(start ? [`^${start}`] : []),
