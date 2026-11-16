@@ -1,11 +1,11 @@
 // Prepares a review round's pinned input and rubric.
 import { createHash } from 'node:crypto'
-import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
 import type { FlowEngine } from '../flow/engine.js'
+import { readRegularText } from '../fs/regular-file.js'
 import type { GatePlan } from '../gates/contracts.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
@@ -34,13 +34,12 @@ export function reviewRubric(engine: FlowEngine, root: string) {
   if (selected.origin !== 'harness') {
     const base = selected.origin === 'user' ? engine.home : root
     const file = canonicalPath(isAbsolute(selected.ref) ? selected.ref : join(base, selected.ref))
-    if (
-      !inside(canonicalPath(base), file) ||
-      !statSync(file).isFile() ||
-      statSync(file).size > 1024 * 1024
-    )
+    // The canonical path is checked, then read through one descriptor that refuses a link
+    // swapped in after the check.
+    const text = inside(canonicalPath(base), file) ? readRegularText(file, 1024 * 1024) : undefined
+    if (text === undefined)
       throw new Error('Review rubric must be a readable local file under 1 MiB')
-    content = readFileSync(file, 'utf8')
+    content = text
     if (!content.trim()) throw new Error('Review rubric must not be empty')
   }
   return { ref: selected.ref, origin: selected.origin, digest: digest(content), content }

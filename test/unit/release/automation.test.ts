@@ -44,7 +44,12 @@ beforeEach(() => {
     GITHUB_OUTPUT: join(root, 'outputs'),
     TMPDIR: root,
   }
-  for (const file of ['scripts/release.mjs', 'scripts/changelog.mjs', 'dist/wl.mjs'])
+  for (const file of [
+    'scripts/release.mjs',
+    'scripts/changelog.mjs',
+    'scripts/regular-file.mjs',
+    'dist/wl.mjs',
+  ])
     copyFileSync(resolve(file), join(repository, file))
   writeFileSync(join(repository, '.gitignore'), 'dist/\n')
   setVersion('1.0.0')

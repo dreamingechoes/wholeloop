@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { lstatSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { readRegularFile } from './regular-file.mjs'
 
 const repository = fileURLToPath(new URL('../', import.meta.url))
 const core = join(repository, 'dist/wl.mjs')
@@ -26,11 +26,11 @@ function command(executable, args, options = {}) {
   return result.stdout.trim()
 }
 function bounded(path, limit = 1024 * 1024) {
-  const stat = lstatSync(path)
-  assert(stat.isFile() && !stat.isSymbolicLink() && stat.size <= limit)
-  const bytes = readFileSync(path)
-  assert(bytes.byteLength <= limit)
-  return bytes
+  try {
+    return readRegularFile(path, limit)
+  } catch {
+    assert.fail('Expected a bounded regular file')
+  }
 }
 
 try {

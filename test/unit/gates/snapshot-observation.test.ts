@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { chmodSync, readFileSync, renameSync, symlinkSync, writeFileSync } from 'node:fs'
+import { chmodSync, openSync, renameSync, symlinkSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { workspaceSnapshot } from '../../../src/gates/snapshot.js'
@@ -8,7 +8,8 @@ import { fixture } from '../../support/delivery.js'
 
 vi.mock('node:fs', async (original) => {
   const fs = await original<typeof import('node:fs')>()
-  return { ...fs, readFileSync: vi.fn(fs.readFileSync) }
+  // Files are read through one opened descriptor, so an open is one physical read.
+  return { ...fs, openSync: vi.fn(fs.openSync) }
 })
 vi.mock('node:child_process', async (original) => {
   const processes = await original<typeof import('node:child_process')>()
@@ -21,7 +22,7 @@ describe('workspace bytes within fixed read observations', () => {
     fixture(async ({ root }) => {
       const expected = workspaceSnapshot(root),
         file = join(root, 'app.txt')
-      vi.mocked(readFileSync).mockClear()
+      vi.mocked(openSync).mockClear()
       vi.mocked(spawnSync).mockClear()
       await withReadObservation(new AbortController().signal, async () => {
         for (let index = 0; index < count; index++) {
@@ -30,9 +31,7 @@ describe('workspace bytes within fixed read observations', () => {
           value.digest = 'caller-edit'
         }
       })
-      const files = vi
-          .mocked(readFileSync)
-          .mock.calls.filter(([path]) => String(path) === file).length,
+      const files = vi.mocked(openSync).mock.calls.filter(([path]) => String(path) === file).length,
         git = vi.mocked(spawnSync).mock.calls.filter(([command]) => command === 'git').length
       console.info('Workspace observation work:', JSON.stringify({ count, files, git }))
       expect(files).toBe(2)

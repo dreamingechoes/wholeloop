@@ -2,13 +2,14 @@
 // identity.
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
-import { lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { lstatSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { canonicalDigest } from '../adapters/canonical.js'
 import { artifactDigest } from '../adapters/generate.js'
 import { openCodeMajor } from '../adapters/opencode-version.js'
 import { isObject } from '../config/schema.js'
 import { geminiFramingPolicy } from '../fanout/gemini-policy.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { manageInstallation } from '../installation/manage.js'
 import { installedName, installLocations } from '../installation/plan.js'
@@ -179,12 +180,11 @@ export function prepareConformance(context: ConformanceContext, target: string, 
 export function readConformance(context: ConformanceContext, id: string): PreparedConformance {
   const files = runFiles(context, id)
   const path = files.path('run.json')
-  const stat = lstatSync(path)
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 65536)
-    throw new Error('Invalid conformance run metadata')
+  const raw = readRegularText(path, 65536)
+  if (raw === undefined) throw new Error('Invalid conformance run metadata')
   let value: unknown
   try {
-    value = JSON.parse(readFileSync(path, 'utf8'))
+    value = JSON.parse(raw)
   } catch {
     throw new Error('Invalid conformance run metadata; contents omitted')
   }

@@ -102,7 +102,13 @@ export class DeliveryJournal {
 
   private readPhysicalSnapshot() {
     const directory = this.ownedPath('delivery/journal')
-    if (!existsSync(directory))
+    // Open first and treat ENOENT as absence: an existence check before the open could be
+    // answered by a directory that is gone, or replaced, by the time it is opened.
+    let fd: number
+    try {
+      fd = openSync(directory, constants.O_RDONLY | constants.O_DIRECTORY | constants.O_NOFOLLOW)
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
       return {
         bytes: Buffer.from('absent'),
         value: {
@@ -113,10 +119,7 @@ export class DeliveryJournal {
           owner: undefined as typeof replayed,
         },
       }
-    const fd = openSync(
-      directory,
-      constants.O_RDONLY | constants.O_DIRECTORY | constants.O_NOFOLLOW,
-    )
+    }
     try {
       const ownedReplay = replayed?.directory === directory ? replayed : undefined
       const original = fstatSync(fd, { bigint: true }),

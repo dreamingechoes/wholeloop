@@ -1,7 +1,8 @@
 // `wl release verify`: checks a prepared release bundle's bytes against its retained digest.
-import { lstatSync, readdirSync, readFileSync, realpathSync } from 'node:fs'
+import { lstatSync, readdirSync, realpathSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { readRegularFile } from '../fs/regular-file.js'
 import { RELEASE_FILES, releaseDigest, verifyReleaseBundle } from '../release/bundle.js'
 import { releaseSource } from '../release/history.js'
 import { releasePreflight } from '../release/preflight.js'
@@ -11,11 +12,9 @@ import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
 
 function boundedFile(path: string, limit: number) {
-  const stat = lstatSync(path)
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit) throw new Error()
-  const bytes = readFileSync(path)
-  if (bytes.byteLength > limit) throw new Error()
-  return bytes
+  const file = readRegularFile(path, limit)
+  if (!file) throw new Error()
+  return file.bytes
 }
 
 export function releaseVerifyCommand(

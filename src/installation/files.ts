@@ -9,13 +9,13 @@ import {
   mkdirSync,
   openSync,
   readdirSync,
-  readFileSync,
   renameSync,
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { artifactDigest } from '../adapters/generate.js'
+import { readRegularFile } from '../fs/regular-file.js'
 import type { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import type { Component, OwnedFile } from './contracts.js'
@@ -31,15 +31,11 @@ export function exists(path: string) {
   }
 }
 export function bytes(file: OwnedFile) {
-  const stat = lstatSync(file.path)
-  if (
-    !stat.isFile() ||
-    stat.isSymbolicLink() ||
-    stat.size > 4 * 1024 * 1024 ||
-    canonicalPath(file.path) !== file.path
-  )
-    throw new Error('An installed file is unsafe; preserve it before continuing')
-  return { content: readFileSync(file.path, 'utf8'), mode: stat.mode & 0o777 }
+  // Content and mode come from the descriptor that passed the checks, not a second lookup.
+  const owned =
+    canonicalPath(file.path) === file.path ? readRegularFile(file.path, 4 * 1024 * 1024) : undefined
+  if (!owned) throw new Error('An installed file is unsafe; preserve it before continuing')
+  return { content: owned.bytes.toString('utf8'), mode: owned.mode }
 }
 export function matches(file: OwnedFile) {
   const current = bytes(file)

@@ -16,6 +16,7 @@ import { tmpdir } from 'node:os'
 import { delimiter, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { gunzipSync } from 'node:zlib'
+import { readRegularFile } from './regular-file.mjs'
 
 const repository = fileURLToPath(new URL('../', import.meta.url))
 const packages = {
@@ -363,10 +364,13 @@ async function main() {
     const expectedCore = process.env.CONFORMANCE_CORE_SHA256
     if (expectedCore !== undefined || process.env.GITHUB_ACTIONS === 'true') {
       assert(/^[a-f0-9]{64}$/.test(expectedCore ?? ''))
-      const core = join(repository, 'dist/wl.mjs'),
-        stat = lstatSync(core)
-      assert(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 128 * 1024 * 1024)
-      assert.equal(hash('sha256', readFileSync(core)), expectedCore)
+      let core
+      try {
+        core = readRegularFile(join(repository, 'dist/wl.mjs'), 128 * 1024 * 1024)
+      } catch {
+        assert.fail('The built core must be a bounded regular file')
+      }
+      assert.equal(hash('sha256', core), expectedCore)
     }
     assert(
       ['darwin', 'linux'].includes(process.platform) && ['x64', 'arm64'].includes(process.arch),

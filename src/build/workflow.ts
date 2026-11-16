@@ -1,6 +1,5 @@
 // The build-slice workflow: agreement, builder plan, suite assignment and receipt.
 import { createHash } from 'node:crypto'
-import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
@@ -10,6 +9,7 @@ import { discover } from '../discovery/tree.js'
 import { environmentReceipt } from '../environment/ledger.js'
 import { FlowEngine } from '../flow/engine.js'
 import { decisionTrail } from '../flow/plan.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import type { Profile } from '../profile/presets.js'
@@ -231,13 +231,13 @@ export class BuildWorkflow {
         continue
       const root = selected.origin === 'user' ? engine.home : engine.root
       const file = canonicalPath(isAbsolute(selected.ref) ? selected.ref : join(root, selected.ref))
-      if (
-        !inside(canonicalPath(root), file) ||
-        !statSync(file).isFile() ||
-        statSync(file).size > 1024 * 1024
-      )
+      // The canonical path is checked, then read through one descriptor that refuses a link
+      // swapped in after the check.
+      const content = inside(canonicalPath(root), file)
+        ? readRegularText(file, 1024 * 1024)
+        : undefined
+      if (content === undefined)
         throw new Error('Selected build guidance must be a readable local file under 1 MiB')
-      const content = readFileSync(file, 'utf8')
       guidance.push({
         slot: binding.slot,
         ref: selected.ref,

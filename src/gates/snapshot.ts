@@ -1,14 +1,27 @@
 // Snapshots a workspace by hashing bytes and index entries, never copying files into state.
 import { createHash } from 'node:crypto'
-import { lstatSync, readFileSync, readlinkSync } from 'node:fs'
+import { lstatSync, readlinkSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { readSourceBytes } from '../delivery/input.js'
+import { RegularFileError, readRegularFileStrict } from '../fs/regular-file.js'
 import {
   assertObservationWritable,
   inReadObservation,
   observedRead,
 } from '../state/read-observation.js'
 import { currentHead, git, gitEnvironmentIdentity } from '../worktrees/git.js'
+
+// lstat above chose the file branch; read through one descriptor so a file swapped for a link
+// afterwards is refused, and a file removed in between counts as absent like the lstat ENOENT.
+function unboundedFile(file: string): Buffer {
+  try {
+    return readRegularFileStrict(file, Number.MAX_SAFE_INTEGER).bytes
+  } catch (error) {
+    if (error instanceof RegularFileError && error.reason === 'missing')
+      throw Object.assign(new Error('Workspace file disappeared'), { code: 'ENOENT' })
+    throw new Error('Gate snapshots need regular files; inspect submodules explicitly')
+  }
+}
 
 export interface WorkspaceSnapshot {
   digest: string
@@ -94,7 +107,7 @@ function readWorkspaceSnapshot(root: string, bounds?: SnapshotBounds): Workspace
       } else if (stat.isFile()) {
         const content = bounds
           ? readSourceBytes(root, path, bounds.maxFileBytes)
-          : readFileSync(file)
+          : unboundedFile(file)
         bytes += content.length
         if (bounds && bytes > bounds.maxBytes)
           throw new Error('Workspace snapshot exceeds its byte limit')

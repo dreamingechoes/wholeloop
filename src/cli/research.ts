@@ -1,6 +1,6 @@
 // `wl research`: plans and records research rounds.
-import { readFileSync, statSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { ResearchWorkflow } from '../research/workflow.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
@@ -26,9 +26,11 @@ export function researchCommand(
     else {
       const file = options['--file']
       if (typeof file !== 'string') throw new CliError('Provide --file <json-report>', EXIT.input)
-      if (!statSync(file).isFile() || statSync(file).size > 1024 * 1024)
+      // A linked report is still accepted, as before; the check and the read share one descriptor.
+      const report = readRegularText(file, 1024 * 1024, { follow: true })
+      if (report === undefined)
         throw new CliError('Research reports must be regular files under 1 MiB')
-      const value: unknown = JSON.parse(readFileSync(file, 'utf8'))
+      const value: unknown = JSON.parse(report)
       payload =
         command === 'research submit'
           ? workflow.submit(subject, value)

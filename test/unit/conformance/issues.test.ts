@@ -91,6 +91,7 @@ describe('bounded issue delivery host with synthetic GitHub only', () => {
       body = join(root, 'body.md')
     copyFileSync(resolve('dist/wl.mjs'), core)
     copyFileSync(resolve('scripts/conformance-issues.mjs'), script)
+    copyFileSync(resolve('scripts/regular-file.mjs'), join(repo, 'scripts/regular-file.mjs'))
     const hash = createHash('sha256').update(readFileSync(core)).digest('hex')
     const observations = reportedRegression(hash, new Date(Date.now() - 1000).toISOString())
     writeFileSync(input, JSON.stringify(observations))

@@ -1,10 +1,10 @@
 // Repository guidance for learning decisions.
-import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 import { isObject } from '../config/schema.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
 import type { FlowEngine } from '../flow/engine.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { measurementDigest } from '../launch/measurement.js'
 import { canonicalPath, inside } from '../state/paths.js'
 
@@ -25,13 +25,12 @@ export function learningGuidance(engine: FlowEngine) {
   if (selected.origin !== 'harness') {
     const base = selected.origin === 'user' ? engine.home : engine.root
     const file = canonicalPath(isAbsolute(selected.ref) ? selected.ref : join(base, selected.ref))
-    if (
-      !inside(canonicalPath(base), file) ||
-      !statSync(file).isFile() ||
-      statSync(file).size > 1024 * 1024
-    )
+    // The canonical path is checked, then read through one descriptor that refuses a link
+    // swapped in after the check.
+    const text = inside(canonicalPath(base), file) ? readRegularText(file, 1024 * 1024) : undefined
+    if (text === undefined)
       throw new Error('Learning decision guidance must be a readable local file under 1 MiB')
-    content = readFileSync(file, 'utf8')
+    content = text
     if (!content.trim()) throw new Error('Learning decision guidance needs meaningful instructions')
   }
   return { ref: selected.ref, origin: selected.origin, digest: measurementDigest(content), content }

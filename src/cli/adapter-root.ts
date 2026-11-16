@@ -1,10 +1,11 @@
 // Finds the packaged adapter and client root from the core actually imported, even through a
 // symlinked launcher.
-import { lstatSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { adapterFor, artifactDigest } from '../adapters/generate.js'
 import { isObject } from '../config/schema.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { canonicalPath } from '../state/paths.js'
 import { VERSION } from '../version.js'
 import { CliError } from './errors.js'
@@ -40,10 +41,9 @@ export function adapterRoot(json: boolean, io: Io) {
 export function packagedAdapter(executable: string) {
   const root = canonicalPath(join(dirname(executable), '..'))
   const file = join(root, 'wholeloop-artifacts.json')
-  const stat = lstatSync(file)
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1024 * 1024)
-    throw new Error('No regular ownership manifest')
-  const value: unknown = JSON.parse(readFileSync(file, 'utf8'))
+  const manifest = readRegularText(file, 1024 * 1024)
+  if (manifest === undefined) throw new Error('No regular ownership manifest')
+  const value: unknown = JSON.parse(manifest)
   if (
     !isObject(value) ||
     value.schema !== 'wholeloop/adapter-artifacts@1' ||

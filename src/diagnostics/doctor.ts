@@ -2,19 +2,12 @@
 // or certifying anything.
 import { spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import {
-  existsSync,
-  lstatSync,
-  mkdtempSync,
-  readFileSync,
-  rmdirSync,
-  rmSync,
-  statSync,
-} from 'node:fs'
+import { existsSync, lstatSync, mkdtempSync, rmdirSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { artifactDigest, generateAdapter } from '../adapters/generate.js'
 import { loadConfig, loadExtensionOptions } from '../config/load.js'
+import { readRegularFile, readRegularText } from '../fs/regular-file.js'
 import type { InstallInput } from '../installation/contracts.js'
 import { inspectInstallation } from '../installation/inspect.js'
 import { detectMcp, detectProvider } from '../providers/detect.js'
@@ -192,14 +185,14 @@ export function inspectArtifact(path: string, expected: ReturnType<typeof genera
   if (lstatSync(resolve(path)).isSymbolicLink()) throw new Error('Artifact root is a symlink')
   for (const [relative, file] of expected.files) {
     const absolute = join(root, relative)
-    const stat = lstatSync(absolute)
+    // Mode and digest come from the descriptor that was read, so they describe the same file.
+    const found = inside(root, canonicalPath(absolute))
+      ? readRegularFile(absolute, 4 * 1024 * 1024)
+      : undefined
     if (
-      !inside(root, canonicalPath(absolute)) ||
-      !stat.isFile() ||
-      stat.isSymbolicLink() ||
-      stat.size > 4 * 1024 * 1024 ||
-      (stat.mode & 0o777) !== file.mode ||
-      artifactDigest(readFileSync(absolute, 'utf8')) !== artifactDigest(file.content)
+      !found ||
+      found.mode !== file.mode ||
+      artifactDigest(found.bytes.toString('utf8')) !== artifactDigest(file.content)
     )
       throw new Error('Generated artifact is missing, edited or stale')
   }
@@ -217,19 +210,17 @@ export function expectedArtifact(
     try {
       const hook = join(path, '.opencode/plugins/wholeloop.js')
       const directory = lstatSync(path)
-      const stat = lstatSync(hook)
       // Format detection must obey the same containment boundary as full inspection.
-      if (
+      const content =
         directory.isDirectory() &&
         !directory.isSymbolicLink() &&
-        stat.isFile() &&
-        !stat.isSymbolicLink() &&
-        stat.size <= 65536 &&
         inside(canonicalPath(path), canonicalPath(hook))
-      ) {
+          ? readRegularText(hook, 65536)
+          : undefined
+      if (content !== undefined) {
         const modern = generateAdapter(target, canonical, core, version, '2.0.0')
         if (
-          artifactDigest(readFileSync(hook, 'utf8')) ===
+          artifactDigest(content) ===
           artifactDigest(modern.files.get('.opencode/plugins/wholeloop.js')?.content ?? '')
         )
           return modern

@@ -1,10 +1,11 @@
 // Opt-in Git hooks that chain to existing ones instead of replacing them.
 import { spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import { chmodSync, existsSync, lstatSync, readdirSync, readFileSync, renameSync } from 'node:fs'
+import { chmodSync, existsSync, lstatSync, readdirSync, renameSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 import { artifactDigest } from '../adapters/generate.js'
 import { isObject } from '../config/schema.js'
+import { readRegularFile } from '../fs/regular-file.js'
 import { StoreFiles } from '../state/files.js'
 import { canonicalPath, storePath } from '../state/paths.js'
 import { git, repository } from '../worktrees/git.js'
@@ -21,10 +22,10 @@ function localValues(root: string, scope = '--local') {
   return result.status === 1 ? [] : result.stdout.split('\0').filter(Boolean)
 }
 function file(path: string) {
-  const stat = lstatSync(path)
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 4 * 1024 * 1024)
-    throw new Error('Guard installation files must be bounded regular files')
-  return { content: readFileSync(path, 'utf8'), mode: stat.mode & 0o777 }
+  // Content and mode come from one descriptor, so they belong to the file that was checked.
+  const found = readRegularFile(path, 4 * 1024 * 1024)
+  if (!found) throw new Error('Guard installation files must be bounded regular files')
+  return { content: found.bytes.toString('utf8'), mode: found.mode }
 }
 interface Receipt {
   schema: 'wholeloop/git-guards-receipt@1'

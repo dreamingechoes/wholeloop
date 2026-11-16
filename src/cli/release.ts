@@ -1,10 +1,11 @@
 // `wl release`: preflight, notes and native delivery artifacts.
-import { lstatSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
 import { generateDistribution } from '../adapters/distribution.js'
 import { writeOwnedArtifacts } from '../adapters/owned-output.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { releaseHistory, releaseSource } from '../release/history.js'
 import { isReleaseVersion, releaseNotes } from '../release/notes.js'
 import { releasePreflight } from '../release/preflight.js'
@@ -27,11 +28,8 @@ export function releasePreflightCommand(
     throw new CliError('Use release preflight --version <version> --context <CI metadata JSON>')
   const read = (file: string, limit: number) => {
     try {
-      const path = resolve(root, file),
-        stat = lstatSync(path)
-      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit) throw new Error()
-      const text = readFileSync(path, 'utf8')
-      if (Buffer.byteLength(text) > limit) throw new Error()
+      const text = readRegularText(resolve(root, file), limit)
+      if (text === undefined) throw new Error()
       return JSON.parse(text) as unknown
     } catch {
       throw new CliError(
