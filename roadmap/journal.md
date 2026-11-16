@@ -11,7 +11,7 @@
 - **Callers:** every flagged site now reads through it. Callers that refused links still do; the few that followed them (research reports, gate corpora, discovery inside its boundary, recovery bundles) still do, and now read what they checked. Content and mode come from the same descriptor wherever both were checked. Discovery still skips files over 1 MiB with a warning; a gate snapshot still treats a vanished file as absent.
 - **Behaviour change:** a missing file at these sites now fails with the caller's own message instead of a raw `ENOENT`, and the delivery journal directory is opened directly, treating `ENOENT` as an empty journal, rather than checked for existence first.
 - **Not a race:** the delivery journal segment reader already compared the opened descriptor with the path before and after reading; it carries a comment saying so, and changes nothing else.
-- **CodeQL:** the pull request's analysis reports no `js/file-system-race` result, so the 40 alerts close on merge without dismissals.
+- **CodeQL:** 39 of the 40 alerts closed with the merge. The journal segment reader's alert stayed open, because a pull request's analysis only reports the lines it changes; it was dismissed as a false positive with the reason above.
 - **Tests:** the helper is tested against a link, a directory, a missing path, an oversized file, a path replaced by a link or renamed over after the open, and a file that grows after it.
 
 ---
