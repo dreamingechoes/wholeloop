@@ -29,7 +29,7 @@ Run npm run check for the complete local suite, including offline package instal
 | [Antigravity](#antigravity) | antigravity | agy | wl-agy-frame-problem |
 | [Cursor](#cursor) | cursor | agent | wl-frame-problem |
 
-Choose the section for your client. Select the same explicit target in doctor; its version/file diagnostics are not proof of native activation or a model run. Edited/unowned output is preserved and refused. Inspect a reported conflict and its retained backups before choosing a fresh output/scope.
+Choose the section for your client. Select the same explicit target in doctor; its version/file diagnostics are not proof of native activation or a model run. Edited/unowned output is preserved and refused. Inspect a reported conflict and its retained backups before choosing a fresh output/scope. The returned Git guard command is per repository: after a user-scope install it shows `<repository>` in place of the path, to be replaced with each application repository you want guarded; a project-scope install names its own repository.
 
 ## Claude Code
 
