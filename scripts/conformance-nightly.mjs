@@ -7,13 +7,13 @@ import {
   lstatSync,
   mkdirSync,
   readdirSync,
-  readFileSync,
   realpathSync,
   writeFileSync,
 } from 'node:fs'
 import { delimiter, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { assertExternalDestination } from './conformance-provision.mjs'
+import { readRegularFile } from './regular-file.mjs'
 
 const repository = fileURLToPath(new URL('../', import.meta.url))
 const targets = ['claude', 'codex', 'opencode', 'copilot', 'gemini', 'antigravity', 'cursor']
@@ -28,11 +28,11 @@ const keyNames = {
 }
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex')
 function bounded(path, limit = 1024 * 1024) {
-  const stat = lstatSync(path)
-  assert(stat.isFile() && !stat.isSymbolicLink() && stat.size <= limit)
-  const bytes = readFileSync(path)
-  assert(bytes.length <= limit)
-  return bytes
+  try {
+    return readRegularFile(path, limit)
+  } catch {
+    assert.fail('Expected a bounded regular file')
+  }
 }
 const cleanEnv = () => ({
   PATH: [dirname(process.execPath), '/usr/bin', '/bin'].join(delimiter),

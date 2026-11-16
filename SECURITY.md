@@ -34,4 +34,6 @@ Until 1.0, only the latest release receives security fixes.
 | CodeQL | Pushes, pull requests and weekly, over `src/` and `scripts/` (tests are excluded in `.github/codeql/codeql-config.yml`) | A code-scanning alert | Confirm it, then fix it like any defect with a regression test, or dismiss it with a written reason. |
 | OpenSSF Scorecard | Pushes to `main` and weekly | A lower score on a repository practice | Fix the practice when it is a real gap; record deliberate exceptions in the journal. |
 
+Code that reads a file it has to check first (a regular file, not a link, within a size limit) reads it through `src/fs/regular-file.ts`, or `scripts/regular-file.mjs` in the scripts. Both open the file once and check and read the same descriptor, which closes the gap CodeQL reports as `js/file-system-race`.
+
 A finding that could expose users is handled privately as described above, never in a public issue.

@@ -1,6 +1,5 @@
 // The open-pr workflow: plan, human testing of the exact snapshot and draft-only publication.
 import { createHash } from 'node:crypto'
-import { readFileSync, statSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 import { assertBuildGreen } from '../build/contracts.js'
 import { BuildWorkflow } from '../build/workflow.js'
@@ -12,6 +11,7 @@ import { environmentReceipt } from '../environment/ledger.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { decisionTrail } from '../flow/plan.js'
 import { checkShape } from '../flow/registry.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { hasToolAttribution } from '../git/commit.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
@@ -56,13 +56,11 @@ function convention(engine: FlowEngine, root: string) {
   if (origin !== 'harness') {
     const base = origin === 'user' ? engine.home : root
     const file = canonicalPath(isAbsolute(ref) ? ref : join(base, ref))
-    if (
-      !inside(canonicalPath(base), file) ||
-      !statSync(file).isFile() ||
-      statSync(file).size > 1024 * 1024
-    )
-      throw new Error('PR convention must be a local file under 1 MiB')
-    content = readFileSync(file, 'utf8')
+    // The canonical path is checked, then read through one descriptor that refuses a link
+    // swapped in after the check.
+    const text = inside(canonicalPath(base), file) ? readRegularText(file, 1024 * 1024) : undefined
+    if (text === undefined) throw new Error('PR convention must be a local file under 1 MiB')
+    content = text
   }
   return { ref, origin, digest: hash(content), content }
 }

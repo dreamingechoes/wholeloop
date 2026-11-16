@@ -33,6 +33,8 @@ export function readJournalSegment(
   try {
     if (!journalFile(name)) throw new DeliveryJournalError('unreadable-journal-segment')
     parent()
+    // Not a check-then-use race: the open refuses a link, and the descriptor's identity must match
+    // this lstat before the read and a second lstat after it, so a swap at any point is refused.
     const selected = join(directory, name),
       leaf = lstatSync(selected, { bigint: true })
     if (leaf.isSymbolicLink()) throw new DeliveryJournalError('aliased-journal-path')

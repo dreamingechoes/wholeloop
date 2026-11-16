@@ -1,8 +1,9 @@
 // Builds and caches the repository capability map that discovery returns.
 import { createHash } from 'node:crypto'
-import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, relative, sep } from 'node:path'
+import { RegularFileError, readRegularFileStrict } from '../fs/regular-file.js'
 import type { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { inReadObservation, observedRead } from '../state/read-observation.js'
@@ -70,12 +71,19 @@ export function readInventory(
         }
       }
       const name = relative(root, path).split(sep).join('/')
-      if (!fileKind(name) || !statSync(path).isFile()) continue
-      if (statSync(path).size > 1024 * 1024) {
-        warnings.push(`Skipped file larger than 1 MiB: ${name}`)
-        continue
+      if (!fileKind(name)) continue
+      // Links inside the boundary were followed above and still are; type and size come from
+      // the descriptor that is read, so a file swapped after the walk cannot slip through.
+      try {
+        files.set(
+          name,
+          readRegularFileStrict(path, 1024 * 1024, { follow: true }).bytes.toString('utf8'),
+        )
+      } catch (error) {
+        if (!(error instanceof RegularFileError)) throw error
+        if (error.reason === 'too-large') warnings.push(`Skipped file larger than 1 MiB: ${name}`)
+        else if (error.reason === 'unreadable') throw error
       }
-      files.set(name, readFileSync(path, 'utf8'))
     }
   }
   for (const start of starts) walk(join(root, start))

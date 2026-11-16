@@ -1,6 +1,6 @@
 // The operator report: outcomes, next actions, diagnostics and recovery bundles.
 import { createHash } from 'node:crypto'
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { contractDigest } from '../contracts/compatibility.js'
 import type { AuthorizationReceipt } from '../delivery/authority.js'
@@ -8,6 +8,7 @@ import { DeliveryBudgets } from '../delivery/budgets.js'
 import { deliveryEffects } from '../delivery/effect-events.js'
 import type { DeliveryEvent, DeliveryOutcome, DeliveryProjection } from '../delivery/events.js'
 import { DeliveryLifecycle } from '../delivery/lifecycle.js'
+import { RegularFileError, readRegularFileStrict } from '../fs/regular-file.js'
 import { VERSION } from '../version.js'
 import { git } from '../worktrees/git.js'
 import { deliveryRunner } from './events.js'
@@ -353,13 +354,18 @@ export function importRecoveryBundle(
     if (!listed.has(path)) throw new DeliveryRunnerError('recovery-bundle-unlisted-file')
   for (const file of manifest.files) {
     const path = resolve(source, 'files', file.path)
-    if (
-      relative(join(source, 'files'), path).startsWith('..') ||
-      !existsSync(path) ||
-      !statSync(path).isFile()
-    )
+    if (relative(join(source, 'files'), path).startsWith('..'))
       throw new DeliveryRunnerError('recovery-bundle-file')
-    const bytes = readFileSync(path)
+    // Links were followed before and still are; the listed size bounds the read, and a larger
+    // file fails as tampered just as a wrong digest does.
+    let bytes: Buffer
+    try {
+      bytes = readRegularFileStrict(path, file.bytes, { follow: true }).bytes
+    } catch (error) {
+      if (error instanceof RegularFileError && error.reason === 'too-large')
+        throw new DeliveryRunnerError('recovery-bundle-tampered')
+      throw new DeliveryRunnerError('recovery-bundle-file')
+    }
     if (bytes.length !== file.bytes || hash(bytes) !== file.sha256)
       throw new DeliveryRunnerError('recovery-bundle-tampered')
   }

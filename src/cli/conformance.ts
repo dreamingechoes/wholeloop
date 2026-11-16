@@ -1,5 +1,5 @@
 // `wl conformance`: prepares, runs, collects and reports native client conformance.
-import { lstatSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
@@ -11,6 +11,7 @@ import { conformanceMatrix, conformanceMatrixMarkdown } from '../conformance/mat
 import { conformancePage } from '../conformance/page.js'
 import { prepareConformance } from '../conformance/prepare.js'
 import { reportConformance, runConformance } from '../conformance/run.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { storePath } from '../state/paths.js'
 import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
@@ -28,12 +29,9 @@ export async function conformanceCommand(
     if (positional.length !== 1) throw new CliError('Provide one downloads JSON file')
     let input: unknown
     try {
-      const path = resolve(root, positional[0] ?? ''),
-        stat = lstatSync(path)
-      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 65536) throw new Error()
-      const bytes = readFileSync(path)
-      if (bytes.length > 65536) throw new Error()
-      input = JSON.parse(bytes.toString('utf8'))
+      const text = readRegularText(resolve(root, positional[0] ?? ''), 65536)
+      if (text === undefined) throw new Error()
+      input = JSON.parse(text)
     } catch {
       throw new CliError(
         'Provide a regular downloads JSON file of at most 64 KiB; contents omitted',
@@ -60,11 +58,8 @@ export async function conformanceCommand(
       )
     let input: unknown
     try {
-      const path = resolve(root, file)
-      const stat = lstatSync(path)
-      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1024 * 1024) throw new Error()
-      const raw = readFileSync(path, 'utf8')
-      if (Buffer.byteLength(raw) > 1024 * 1024) throw new Error()
+      const raw = readRegularText(resolve(root, file), 1024 * 1024)
+      if (raw === undefined) throw new Error()
       input = JSON.parse(raw)
     } catch {
       throw new CliError('Provide one regular results JSON file of at most 1 MiB; contents omitted')
@@ -109,11 +104,8 @@ export async function conformanceCommand(
       )
     let plan: unknown
     try {
-      const path = resolve(root, file),
-        stat = lstatSync(path)
-      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 65536) throw new Error()
-      const raw = readFileSync(path, 'utf8')
-      if (Buffer.byteLength(raw) > 65536) throw new Error()
+      const raw = readRegularText(resolve(root, file), 65536)
+      if (raw === undefined) throw new Error()
       plan = JSON.parse(raw)
     } catch {
       throw new CliError(

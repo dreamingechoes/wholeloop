@@ -4,10 +4,8 @@ import { createHash } from 'node:crypto'
 import {
   appendFileSync,
   copyFileSync,
-  lstatSync,
   mkdirSync,
   mkdtempSync,
-  readFileSync,
   realpathSync,
   renameSync,
   writeFileSync,
@@ -16,6 +14,7 @@ import { tmpdir } from 'node:os'
 import { delimiter, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { previousVersion } from './changelog.mjs'
+import { readRegularFile } from './regular-file.mjs'
 
 const repository = fileURLToPath(new URL('../', import.meta.url))
 let stage = 'input validation'
@@ -49,11 +48,11 @@ function writeJson(file, value) {
   writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, { flag: 'wx', mode: 0o600 })
 }
 function bounded(file, limit = 65536) {
-  const stat = lstatSync(file)
-  assert(stat.isFile() && !stat.isSymbolicLink() && stat.size <= limit)
-  const bytes = readFileSync(file)
-  assert(bytes.byteLength <= limit)
-  return bytes
+  try {
+    return readRegularFile(file, limit)
+  } catch {
+    assert.fail('Expected a bounded regular file')
+  }
 }
 
 function npmRunner(temporary, offline, cwd = repository) {

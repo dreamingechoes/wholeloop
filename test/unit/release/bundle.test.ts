@@ -161,6 +161,7 @@ describe('release host preparation and activation transport', () => {
         'dist/wl-runner.mjs',
         'scripts/release.mjs',
         'scripts/changelog.mjs',
+        'scripts/regular-file.mjs',
       ])
         copyFileSync(resolve(file), join(repository, file))
       writeFileSync(join(repository, '.gitignore'), 'dist/\n')

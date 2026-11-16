@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-11-16 · 1.0.1 · Files are checked and read through one descriptor
+
+- **Why (#34):** CodeQL reported 40 `js/file-system-race` alerts in `src/` and `scripts/`. Most checked a path (a regular file, not a link, within a size limit) and then read it by name, so the file read was not guaranteed to be the file checked.
+- **Helper:** `src/fs/regular-file.ts` opens the path once, without following a final link unless asked, checks type and size on the descriptor and reads it to the end, refusing a file that grows past the limit. It reports why a read was refused (missing, not regular, too large, unreadable), because some callers treat those differently. `scripts/regular-file.mjs` mirrors it for the scripts, which run without a build.
+- **Callers:** every flagged site now reads through it. Callers that refused links still do; the few that followed them (research reports, gate corpora, discovery inside its boundary, recovery bundles) still do, and now read what they checked. Content and mode come from the same descriptor wherever both were checked. Discovery still skips files over 1 MiB with a warning; a gate snapshot still treats a vanished file as absent.
+- **Behaviour change:** a missing file at these sites now fails with the caller's own message instead of a raw `ENOENT`, and the delivery journal directory is opened directly, treating `ENOENT` as an empty journal, rather than checked for existence first.
+- **Not a race:** the delivery journal segment reader already compared the opened descriptor with the path before and after reading; it carries a comment saying so, and changes nothing else.
+- **CodeQL:** the pull request's analysis reports no `js/file-system-race` result, so the 40 alerts close on merge without dismissals.
+- **Tests:** the helper is tested against a link, a directory, a missing path, an oversized file, a path replaced by a link or renamed over after the open, and a file that grows after it.
+
+---
+
 ## 2026-11-16 · 1.0.1 · Install results that point at real things
 
 - **Backups (#32):** install and uninstall reserved a backup path before archiving anything and always reported it, so a first install named a directory that did not exist. The result now includes `backup` only when that directory was written; an upgrade and an uninstall, which keeps the removal core, still report theirs. The field was already optional in the contract.

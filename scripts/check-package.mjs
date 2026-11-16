@@ -15,6 +15,7 @@ import {
 import { tmpdir } from 'node:os'
 import { delimiter, dirname, isAbsolute, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { readRegularFile } from './regular-file.mjs'
 
 const repository = fileURLToPath(new URL('../', import.meta.url))
 const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-package-check-')))
@@ -88,9 +89,13 @@ try {
   const before = new Map(
     expected.map((file) => {
       const path = join(repository, file)
-      const stat = lstatSync(path)
-      assert(stat.isFile() && !stat.isSymbolicLink(), 'Package input must be a regular source file')
-      return [file, readFileSync(path)]
+      let bytes
+      try {
+        bytes = readRegularFile(path, 128 * 1024 * 1024)
+      } catch {
+        assert.fail('Package input must be a regular source file')
+      }
+      return [file, bytes]
     }),
   )
   const pkg = JSON.parse(before.get('package.json').toString())

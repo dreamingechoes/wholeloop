@@ -1,8 +1,9 @@
 // The gate evaluation corpus and the scoring of reviewer predictions.
 import { createHash } from 'node:crypto'
-import { readFileSync, realpathSync, statSync } from 'node:fs'
+import { realpathSync } from 'node:fs'
 import { dirname, isAbsolute, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
+import { RegularFileError, readRegularFileStrict, readRegularText } from '../fs/regular-file.js'
 import { inside } from '../state/paths.js'
 import { BUILTIN_LENSES } from './builtins.js'
 import {
@@ -41,8 +42,17 @@ const keys = (value: Record<string, unknown>, expected: string[]) =>
 const lens = (value: unknown): value is EvalLens => BUILTIN_LENSES.some(([id]) => id === value)
 
 export function loadGateCorpus(file: string): GateCorpus {
-  if (statSync(file).size > 1024 * 1024) throw new Error('Gate corpus manifest exceeds 1 MiB')
-  const value: unknown = JSON.parse(readFileSync(file, 'utf8'))
+  let manifest: string
+  try {
+    manifest = readRegularFileStrict(file, 1024 * 1024, { follow: true }).bytes.toString('utf8')
+  } catch (error) {
+    throw new Error(
+      error instanceof RegularFileError && error.reason === 'too-large'
+        ? 'Gate corpus manifest exceeds 1 MiB'
+        : 'Gate corpus manifest must be a readable regular file',
+    )
+  }
+  const value: unknown = JSON.parse(manifest)
   if (
     !isObject(value) ||
     !keys(value, ['schema', 'seed', 'cases']) ||
@@ -73,15 +83,16 @@ export function loadGateCorpus(file: string): GateCorpus {
       throw new Error('Invalid gate case or lens label')
     const path = realpathSync(resolve(root, entry.artifact))
     if (!inside(root, path)) throw new Error('Gate artifact escapes its corpus')
-    if (!statSync(path).isFile() || statSync(path).size > 1024 * 1024)
-      throw new Error('Gate snippet must be a regular file under 1 MiB')
+    // The real path was checked above; reading it without following links keeps it the same file.
+    const content = readRegularText(path, 1024 * 1024)
+    if (content === undefined) throw new Error('Gate snippet must be a regular file under 1 MiB')
     return {
       id: entry.id,
       lens: entry.lens,
       artifact: entry.artifact,
       defect: entry.defect,
       why: entry.why,
-      content: readFileSync(path, 'utf8'),
+      content,
     }
   })
   if (new Set(cases.map((entry) => entry.id)).size !== cases.length)

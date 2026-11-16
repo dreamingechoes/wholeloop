@@ -1,8 +1,8 @@
 // The rollout host: drafts and flag proposals as store artifacts, never sent messages or flag
 // writes.
-import { readFileSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { measurementDigest } from '../launch/measurement.js'
 import type { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
@@ -130,15 +130,15 @@ export function rolloutHost(
         if (typeof args.file !== 'string' || !args.file.trim())
           throw new Error('Confirm the repository flag configuration file')
         const file = canonicalPath(resolve(root, args.file))
-        if (
-          !inside(canonicalPath(root), file) ||
-          !statSync(file).isFile() ||
-          statSync(file).size > 1024 * 1024
-        )
+        // The canonical path is checked, then read through one descriptor that refuses a link
+        // swapped in after the check.
+        const content = inside(canonicalPath(root), file)
+          ? readRegularText(file, 1024 * 1024)
+          : undefined
+        if (content === undefined)
           throw new Error('Flag config must be a local repository file under 1 MiB')
         if (!PROVIDER_ID.test(call.provider))
           throw new Error('Use a validated provider identity for rollout artifacts')
-        const content = readFileSync(file, 'utf8')
         const data: unknown = JSON.parse(content)
         if (
           !isObject(data) ||

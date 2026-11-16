@@ -1,8 +1,9 @@
 // Loads extension manifests from the four layers into one validated catalog.
-import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, realpathSync } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
 import { parse } from 'yaml'
 import { isObject } from '../config/schema.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { inside } from '../state/paths.js'
 import { installedPackageRoot, MANIFEST_ID, mergeManifest } from './common.js'
 
@@ -68,13 +69,12 @@ export function loadCatalog<T extends Manifest>(
   }))
   function read(file: string, id: string, priority: number): void {
     try {
-      if (
-        !inside(realpathSync(dirname(file)), realpathSync(file)) ||
-        !statSync(file).isFile() ||
-        statSync(file).size > 1024 * 1024
-      )
-        throw new Error('Manifest must be a local file under 1 MiB')
-      const content = readFileSync(file, 'utf8')
+      // Read the real path that was checked, without following links, so the check holds.
+      const real = realpathSync(file)
+      const content = inside(realpathSync(dirname(file)), real)
+        ? readRegularText(real, 1024 * 1024)
+        : undefined
+      if (content === undefined) throw new Error('Manifest must be a local file under 1 MiB')
       const value: unknown = adapter.parse ? adapter.parse(content, file) : parse(content)
       if (!isObject(value) || value.id !== id || !MANIFEST_ID.test(id))
         throw new Error('Manifest id must match its filename or directory')
@@ -163,15 +163,20 @@ export function loadCatalog<T extends Manifest>(
           !own && inherited[resource.id]
             ? inherited[resource.id]
             : join(candidate.directory, resource.path)
-        if (
-          !file ||
-          !existsSync(file) ||
-          (own && !inside(realpathSync(candidate.directory), realpathSync(file)))
-        )
-          throw new Error(`Resource ${resource.id} is missing or escapes its manifest directory`)
-        if (!statSync(file).isFile() || statSync(file).size > 1024 * 1024)
+        const missing = `Resource ${resource.id} is missing or escapes its manifest directory`
+        if (!file) throw new Error(missing)
+        let real: string
+        try {
+          real = realpathSync(file)
+        } catch {
+          throw new Error(missing)
+        }
+        if (own && !inside(realpathSync(candidate.directory), real)) throw new Error(missing)
+        // An inherited resource could be a link before; its real path is read the same way now.
+        const content = readRegularText(real, 1024 * 1024)
+        if (content === undefined)
           throw new Error(`Resource ${resource.id} must be a regular file under 1 MiB`)
-        if (readFileSync(file, 'utf8').trimEnd().split('\n').length > resource.maxLines)
+        if (content.trimEnd().split('\n').length > resource.maxLines)
           throw new Error(`Resource ${resource.id} exceeds ${resource.maxLines} lines`)
         resources[resource.id] = file
       }

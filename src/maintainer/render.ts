@@ -1,16 +1,9 @@
 // Renders the repository's own maintainer skills and agents into every client's format (ADR-0246).
 import { createHash } from 'node:crypto'
-import {
-  existsSync,
-  lstatSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, posix, relative, sep } from 'node:path'
 import { ADAPTERS } from '../adapters/generate.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { checkBudgets } from '../harness/budgets.js'
 import { checkFrontmatter } from '../harness/frontmatter.js'
 import { installLocations } from '../installation/plan.js'
@@ -164,20 +157,23 @@ export function maintainerDrift(root: string): string[] {
   const problems = sourceProblems(sources)
   if (problems.length) return problems
   const rendered = renderMaintainer(root, sources)
-  const manifest = existsSync(join(root, MANIFEST))
-    ? readFileSync(join(root, MANIFEST), 'utf8')
-    : ''
+  const manifest = currentText(join(root, MANIFEST)) ?? ''
   if (manifest !== rendered.manifest) problems.push(`${MANIFEST}: out of date`)
   for (const [path, content] of rendered.files) {
     const file = join(root, path)
-    if (!existsSync(file) || !lstatSync(file).isFile()) problems.push(`${path}: missing`)
-    else if (readFileSync(file, 'utf8') !== content) problems.push(`${path}: edited or stale`)
+    const current = currentText(file)
+    if (current === undefined) problems.push(`${path}: missing`)
+    else if (current !== content) problems.push(`${path}: edited or stale`)
   }
   for (const path of recorded(root))
     if (!rendered.files.has(path) && existsSync(join(root, path)))
       problems.push(`${path}: no longer rendered from any source`)
   return problems
 }
+
+// A rendered file as it is now, or undefined when it is missing or not a regular file. One read
+// replaces an existence check followed by a read of the same path.
+const currentText = (file: string) => readRegularText(file, Number.MAX_SAFE_INTEGER)
 
 /** Write the render and remove files a previous render produced that no source produces now. */
 export function writeMaintainer(root: string): { written: number; removed: number } {
@@ -195,15 +191,12 @@ export function writeMaintainer(root: string): { written: number; removed: numbe
   for (const [path, content] of rendered.files) {
     const file = join(root, path)
     // Identical bytes are not rewritten.
-    if (existsSync(file) && readFileSync(file, 'utf8') === content) continue
+    if (currentText(file) === content) continue
     mkdirSync(dirname(file), { recursive: true })
     writeFileSync(file, content)
     written++
   }
-  if (
-    !existsSync(join(root, MANIFEST)) ||
-    readFileSync(join(root, MANIFEST), 'utf8') !== rendered.manifest
-  )
+  if (currentText(join(root, MANIFEST)) !== rendered.manifest)
     writeFileSync(join(root, MANIFEST), rendered.manifest)
   return { written, removed }
 }

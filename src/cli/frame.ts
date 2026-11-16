@@ -1,5 +1,4 @@
 // `wl frame`: framing drafts and their schema.
-import { lstatSync, readFileSync } from 'node:fs'
 import { FlowEngine } from '../flow/engine.js'
 import {
   FRAME_DECISION_SCHEMA,
@@ -7,6 +6,7 @@ import {
   finalizeFrame,
   prepareFrame,
 } from '../framing/finalize.js'
+import { readRegularText } from '../fs/regular-file.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
@@ -42,11 +42,9 @@ export function frameCommand(
       'Provide --for <initiative> --artifact <draft.md> --file <decision-or-review.json>',
     )
   const read = (path: string, limit: number) => {
-    const stat = lstatSync(path)
-    if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit) throw new Error()
-    const bytes = readFileSync(path)
-    if (bytes.length > limit) throw new Error()
-    return bytes.toString('utf8')
+    const text = readRegularText(path, limit)
+    if (text === undefined) throw new Error()
+    return text
   }
   let content: string, input: unknown
   try {

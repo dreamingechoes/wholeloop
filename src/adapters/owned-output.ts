@@ -6,12 +6,12 @@ import {
   lstatSync,
   mkdirSync,
   readdirSync,
-  readFileSync,
   renameSync,
   writeFileSync,
 } from 'node:fs'
 import { basename, dirname, join, posix, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
+import { readRegularFile, readRegularText } from '../fs/regular-file.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import type { RenderedFile } from './contracts.js'
 import { artifactDigest } from './generate.js'
@@ -57,12 +57,11 @@ export function writeOwnedArtifacts(output: string, generated: OwnedArtifacts, d
   const root = join(canonicalPath(dirname(requested)), basename(requested))
   let previous: unknown
   if (existsSync(root)) {
+    // Read once: the same bytes are parsed here and compared with the new manifest below.
+    const manifest = readRegularText(join(root, 'wholeloop-artifacts.json'), 1024 * 1024)
     try {
-      const manifest = join(root, 'wholeloop-artifacts.json')
-      const stat = lstatSync(manifest)
-      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1024 * 1024)
-        throw new Error('Unsafe ownership manifest')
-      previous = JSON.parse(readFileSync(manifest, 'utf8'))
+      if (manifest === undefined) throw new Error('Unsafe ownership manifest')
+      previous = JSON.parse(manifest)
     } catch {
       throw new Error(
         'Output exists without an owned artifact manifest; choose a new --out directory',
@@ -95,23 +94,21 @@ export function writeOwnedArtifacts(output: string, generated: OwnedArtifacts, d
         throw new Error('Invalid previous artifact manifest: unsafe path')
       known.add(entry.path)
       const file = join(root, entry.path)
+      // Digest and mode come from the descriptor that was read, so they describe the same file.
+      const owned = inside(root, canonicalPath(file))
+        ? readRegularFile(file, Number.MAX_SAFE_INTEGER)
+        : undefined
       if (
-        !inside(root, canonicalPath(file)) ||
-        !existsSync(file) ||
-        !lstatSync(file).isFile() ||
-        lstatSync(file).isSymbolicLink() ||
-        artifactDigest(readFileSync(file, 'utf8')) !== entry.sha256 ||
-        (lstatSync(file).mode & 0o777) !== entry.mode
+        !owned ||
+        artifactDigest(owned.bytes.toString('utf8')) !== entry.sha256 ||
+        owned.mode !== entry.mode
       )
         throw new Error(
           'Generated output contains changed/missing/unsafe files; preserve it and choose a new --out directory',
         )
     }
     assertKnownTree(root, known)
-    if (
-      readFileSync(join(root, 'wholeloop-artifacts.json'), 'utf8') ===
-      generated.files.get('wholeloop-artifacts.json')?.content
-    )
+    if (manifest === generated.files.get('wholeloop-artifacts.json')?.content)
       return {
         output: root,
         status: dryRun ? ('planned' as const) : ('already-correct' as const),

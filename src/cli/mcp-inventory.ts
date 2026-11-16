@@ -1,6 +1,6 @@
 // Reads the client's reported MCP tool inventory from one bounded regular file.
-import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { readRegularText } from '../fs/regular-file.js'
 import { type ClientMcpInventory, clientMcpInventory } from '../providers/transport.js'
 import { CliError } from './errors.js'
 
@@ -14,11 +14,9 @@ import { CliError } from './errors.js'
 export function readClientInventory(root: string, path: string): ClientMcpInventory {
   try {
     const file = resolve(root, path)
-    const stat = lstatSync(file)
-    if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 65536) throw new Error()
-    const bytes = readFileSync(file)
-    if (bytes.length > 65536) throw new Error()
-    return clientMcpInventory(JSON.parse(bytes.toString('utf8')))
+    const text = readRegularText(file, 65536)
+    if (text === undefined) throw new Error()
+    return clientMcpInventory(JSON.parse(text))
   } catch {
     throw new CliError(
       'Use one regular non-secret client MCP inventory file under 64 KiB; contents omitted',
