@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-16 · 1.0.1 · README diagrams that npm can show
+
+- **Why:** npm renders a package README without Mermaid, so the loop diagram showed as code on the package page. The README also had only that one diagram, which explains the flow but not how the pieces fit or what a step does.
+- **Change:** the README's diagrams are SVG files rendered from `.mmd` sources in `docs/assets/diagrams/` by `npm run docs:diagrams` (mermaid-cli 12.2.0 through `npm exec` with a cooldown date, and the local Chrome), linked by absolute raw URL so npm can load them. Two new diagrams join the loop: how the client, skills, core, store, repository, Docker and optional services fit together, and the exchange every step has with the core.
+- **Rendering choices:** plain SVG text instead of HTML labels, because images shown through `<img>` do not render HTML everywhere; a common font, because Chrome measured the boxes with the font it had; one light render on white, because a dark render made the subgraph fills unreadable and npm shows a single image.
+- **Check:** each SVG starts with its source's SHA-256, and the Mermaid check parses the sources and fails on a missing or stale SVG, so the gate needs no browser.
+- **Also:** the README's status line gave way to badges for the npm version, CI, Node, licence and OpenSSF Scorecard. Docs style, the development guide and ADR-0016 describe the new flow.
+- **Rejected:** rewriting a separate README for the package at release time (publishes bytes that differ from the reviewed source) and a third-party Mermaid rendering service (the README would depend on it).
+
+---
+
 ## 2026-11-16 · 1.0.1 · Status notes only where the status matters
 
 - **Why:** after 1.0.0, 42 of the 73 status banners said a page was implemented, which a reader assumes of released documentation. They added a line of noise to most pages and hid the notes that matter.

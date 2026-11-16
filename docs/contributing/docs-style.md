@@ -52,6 +52,10 @@ Use `npm run docs:references` to build and regenerate together. Existing docs:co
 
 When changing an autonomous-delivery specification case, update [the acceptance map](../reference/delivery-acceptance.md) in the same change. The docs gate requires every accepted case definition and one row per declared case, its exact definition file, existing test/evaluation links and executable hard-rule enforcers from enforcement.yml. Required native, hosted, backend and host-platform labels cannot be downgraded. A local gate result does not close external acceptance; retain its observed records and failures in the manual matrix. The existing docs-check JSON identity remains unchanged.
 
+## README diagrams
+
+The root README is also the package page on npm, which shows Mermaid as code. Its diagrams are therefore images: each one has a `.mmd` source in `docs/assets/diagrams/` and an SVG rendered from it with `npm run docs:diagrams`, linked from the README by its absolute `raw.githubusercontent.com` URL so npm can load it. The SVGs use plain text labels, a common font and a white background, so they read the same on GitHub's light and dark themes and on npm. Each SVG starts with its source's SHA-256; the Mermaid check parses the sources and fails when an SVG is missing or older than its source. Biome skips the rendered SVGs, which are generated output. Diagrams inside `docs/` stay Mermaid code blocks, which GitHub renders.
+
 ## Page templates
 
 ### Step page (`docs/flow/<block>/<step>.md`)
