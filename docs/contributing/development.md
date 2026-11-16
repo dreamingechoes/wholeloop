@@ -2,8 +2,7 @@
 
 > **TL;DR** — Clone, `npm ci`, `npm run build`, and run `node dist/wl.mjs` in place of `wl`. `npm run check` is the full gate and ends in `CHECK PASS` or `CHECK FAIL (<step>)`; `npm run check:fast` runs the same steps with only the related tests. Steps that execute project code need a local Docker daemon.
 
-> [!NOTE]
-> **Status: ✅ current.** This page is for changing wholeloop. To use it, install the published package as the [README](../../README.md) describes.
+This page is for changing wholeloop. To use it, install the published package as the [README](../../README.md) describes.
 
 ## Contents
 

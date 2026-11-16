@@ -2,8 +2,7 @@
 
 > **TL;DR** — Run one framing in your coding client, answer the fixed questions honestly, review the exact final draft and choose an outcome. A completed on-hold result is a successful exercise. Restart the client and verify that the same decision is still there.
 
-> [!NOTE]
-> **Status: ✅ implemented.** A practice procedure for a real client; the standalone framing scenario behind it passed live on all seven clients ([V1 acceptance](../v1-acceptance.md)).
+A practice procedure for a real client; the standalone framing scenario behind it passed live on all seven clients ([V1 acceptance](../v1-acceptance.md)).
 
 ## Before you start
 

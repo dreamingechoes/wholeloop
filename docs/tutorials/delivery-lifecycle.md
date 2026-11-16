@@ -2,8 +2,8 @@
 
 > **TL;DR** — Stop fences further startup, observes owned containers stopped and retains data. Explicit retirement removes only exact owned resources after shutdown. A stable request can recover an interruption without repeating an already applied removal.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Stop requests, cancellation, partial recovery and Docker retirement are tested and were observed on a macOS controller with a Linux daemon. Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Stop requests, cancellation, partial recovery and Docker retirement are tested and were observed on a macOS controller with a Linux daemon. Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

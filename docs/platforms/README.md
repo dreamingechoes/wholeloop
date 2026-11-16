@@ -2,8 +2,7 @@
 
 > **TL;DR** — The canonical harness is written once in open formats; a per-CLI adapter generates the files each tool expects. All seven CLIs are supported in 1.0; tier B ones fill some gaps with equivalents. Where a CLI lacks a feature, the harness degrades to an equivalent — never to less coverage.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Seven client adapters ship in 1.0. The tier-A columns were verified against the native clients on macOS arm64 ([conformance notes](../../test/conformance/notes/README.md)), and the standalone framing scenario passed live on all seven clients. Items marked ❓ are not verified against the client, and native clients have not been run on Linux. Nightly conformance is built but not yet enabled.
+The tier-A columns were verified against the native clients on macOS arm64 ([conformance notes](../../test/conformance/notes/README.md)), and the standalone framing scenario passed live on all seven clients. Items marked ❓ are not verified against the client, and native clients have not been run on Linux. Nightly conformance is built but not yet enabled.
 
 ---
 

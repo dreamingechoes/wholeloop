@@ -2,8 +2,8 @@
 
 > **TL;DR** — Capture a file, inline request, existing item or complete remote observation before planning work. The result is an immutable source ID in an external store. Intake requires no model and starts no worker.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Local and imported source intake, extraction maps and the existing-provider path are tested. Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Local and imported source intake, extraction maps and the existing-provider path are tested. Autonomous delivery may change in a minor release.
 
 ## Before you start
 

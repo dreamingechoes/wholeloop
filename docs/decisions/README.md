@@ -2,9 +2,6 @@
 
 > **TL;DR** — Every choice that would be expensive to reverse, or that someone will one day want to undo, is written down here as a short Architecture Decision Record: the context, the decision, what it costs, and what we turned down. Read the relevant ADR before changing a rule; write one before changing a decision.
 
-> [!NOTE]
-> **Status: ✅ in force.** These records are the reference the rest of the documentation links to.
-
 ---
 
 ## Index

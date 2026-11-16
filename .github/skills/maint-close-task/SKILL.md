@@ -1,6 +1,6 @@
 ---
 name: maint-close-task
-description: Close a finished roadmap task in this repository - criteria, evidence, journal, banners, counts, generated references and the final gate. Use when a task's code, tests and docs are done and need to be recorded.
+description: Close a finished roadmap task in this repository - criteria, evidence, journal, status notes, counts, generated references and the final gate. Use when a task's code, tests and docs are done and need to be recorded.
 ---
 <!-- Generated from maintainer/ by npm run maintainer:render; edit the source instead. -->
 
@@ -17,7 +17,7 @@ description: Close a finished roadmap task in this repository - criteria, eviden
 - In the phase file: set the status to ✅ and add an **Evidence** paragraph under the criteria: what ran, what passed, what was narrowed.
 - In `roadmap/journal.md`: a new entry at the top, `## <date> · <task> ✅ · <title>`, a few bullets on what changed, what was decided and rejected, and the verification result.
 - In `roadmap/README.md`: run `node scripts/roadmap-status.mjs` and copy its completed and open counts; `npm run check` fails when they disagree.
-- Status banners of every page the task changed move in the same change (see `docs/contributing/docs-style.md`).
+- Status notes of every page the task changed move in the same change: add, update or remove the Experimental, Partial or Design note (see `docs/contributing/docs-style.md`).
 
 ## Regenerate
 

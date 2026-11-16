@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-16 · 1.0.1 · Status notes only where the status matters
+
+- **Why:** after 1.0.0, 42 of the 73 status banners said a page was implemented, which a reader assumes of released documentation. They added a line of noise to most pages and hid the notes that matter.
+- **Rule (ADR-0016 amended, docs style):** a page describes released behaviour unless a note right after its TL;DR says otherwise: **Experimental** (26 pages, as an `[!IMPORTANT]` alert), **Partial** (5 pages, naming what is missing) or **Design**. `wl docs check` no longer requires a banner and refuses the retired `**Status:**` form.
+- **Pages:** each implemented banner was read before it went. Limits, decision links and where evidence lives stay as an ordinary sentence under the TL;DR, such as remote publication being experimental on a step page; claims that only said a feature ships or is tested were dropped. The releasing guide's banner still said the release app had not opened a pull request; it went with the rest.
+- **Also:** AGENTS.md, CONTRIBUTING, the pull request template, the roadmap guide and the maintainer close-task skill and docs-auditor agent use the new rule.
+
+---
+
 ## 2026-11-16 · 1.0.1 · npm from an exact Node in release workflows
 
 - **Why:** four OpenSSF Scorecard `PinnedDependencies` alerts, all the same line: `npm install --global npm@11.8.0` in the release prepare and publish jobs, the release pull request job and the conformance job. A global install is not pinned by hash.

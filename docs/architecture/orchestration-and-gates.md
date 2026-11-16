@@ -2,8 +2,7 @@
 
 > **TL;DR** — Eight short agent roles do the work. They run on whichever **engine** the CLI supports best — native subagents, headless worker processes, or one after another — and the result is the same, because everything that decides (lens sets, thresholds, round caps, aggregation) lives in the core, not in the engine.
 
-> [!NOTE]
-> **Status: ✅ implemented.** The conductor and research roles, research scheduling and refutation, journaled gate plans and verdicts, once-per-round suites, incremental review and the headless process host are tested; a compiled six-lens review passed live on Codex. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md).
+A compiled six-lens review passed live on Codex. Decisions: [ADR-0006](../decisions/0006-orchestration-tiers.md), [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md).
 
 ---
 

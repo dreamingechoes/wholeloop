@@ -2,8 +2,7 @@
 
 > **TL;DR** — At each checkpoint — launch, day 7, day 30 by default — it runs the measurement plan the spec pinned, against the sources that plan names, and lays every result beside its target with a verdict. It adds what people are saying, and it never fills a gap with a guess: a number it couldn't read is reported as missing. The outcome is the evidence `decide-next` needs.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Checkpoint planning, exact reads, grounded arithmetic, qualitative quotes, repository-guided layouts and draft dispatch are tested. Reading real sources through providers is experimental.
+Reading real sources through providers is experimental.
 
 ---
 

@@ -2,8 +2,7 @@
 
 > **TL;DR** — The v1 baseline freezes existing schema declarations, step contracts, command signatures and exit codes. New commands and optional flags are additive; changing an existing format needs a new identity and a migration path. Commit classifications alone do not establish compatibility.
 
-> [!NOTE]
-> **Status: ✅ implemented.** The checked v1 baseline covers 178 source JSON Schemas, 232 command-output variants, thirteen steps, 242 commands and five exit codes, and the deprecation policy below applies from 1.0.
+The checked v1 baseline covers 178 source JSON Schemas, 232 command-output variants, thirteen steps, 242 commands and five exit codes, and the deprecation policy below applies from 1.0.
 
 ## What is versioned
 

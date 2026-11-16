@@ -2,8 +2,7 @@
 
 > **TL;DR** — Moves a scope from nobody to everyone in stages — internal, a small percentage, half, all — and at each stage gathers the evidence that says whether it is safe to go further: errors, health signals, the key metrics. It proposes the next move; a person flips the flag. Run it whenever the next stage is due, even weeks apart.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Pinned plans, normalized evidence, per-stage human decisions, proposal-only dispatch and separate confirmations are tested. Flag changes through providers are experimental.
+Flag changes through providers are experimental.
 
 ---
 

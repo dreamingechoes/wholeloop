@@ -2,8 +2,7 @@
 
 > **TL;DR** — The questions people ask in the first ten minutes, answered in a few lines each, with a link to the page that goes deeper.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Answers describe 1.0. Remote integrations and autonomous delivery are experimental; [V1 acceptance](./v1-acceptance.md) separates what was verified on which client.
+Remote integrations and autonomous delivery are experimental; [V1 acceptance](./v1-acceptance.md) separates what was verified on which client.
 
 ---
 

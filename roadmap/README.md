@@ -65,7 +65,7 @@ Phase IDs preserve the existing history: P6 is inside expanded 1.0.0, and P7 clo
 
 - [ ] observable, testable statements
 
-**Docs** — pages whose status banner or content this task changes.
+**Docs** — pages whose content or status note this task changes.
 ```
 
 | Status | Meaning |
@@ -87,7 +87,7 @@ Phase IDs preserve the existing history: P6 is inside expanded 1.0.0, and P7 clo
 2. **Pick.** The first ⬜ task whose dependencies are ✅ and whose phase is authorized and not on review hold. Mark it 🔄 in the phase file.
 3. **Do it end to end.** Code, tests and docs land together. Keep files inside the [size budgets](../docs/decisions/0011-size-budgets-and-enforcement.md).
 4. **Check.** Every acceptance criterion ticked, all local checks green.
-5. **Record.** Mark the task ✅, add a journal entry (what changed, decisions taken, follow-ups), update status banners in the docs.
+5. **Record.** Mark the task ✅, add a journal entry (what changed, decisions taken, follow-ups), update the status notes of the pages it changes.
 6. **Commit.** Conventional commits, one concern each, no tool attribution ([ADR-0017](../docs/decisions/0017-no-tool-attribution-in-history.md)). Every change reaches `main` through a squash-merged pull request with passing required checks; the bootstrap workflow of committing straight to `main` ended on 2026-11-14 (see [AGENTS.md](../AGENTS.md)).
 
 A decision that changes the design goes into a new ADR in the same change — never only into the journal.

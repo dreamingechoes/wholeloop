@@ -38,13 +38,21 @@ export function checkNav(nav: Nav, tree: Tree): Problem[] {
     } else if (expected !== content) {
       problems.push({ file, rule: 'docnav', message: 'footer is out of date — run `wl docs nav`' })
     }
-    if (
-      !content
-        .split('\n')
-        .slice(0, 15)
-        .some((line) => BANNER.test(line))
-    ) {
-      problems.push({ file, rule: 'banner', message: 'no status banner in the first 15 lines' })
+    // Since 1.0.1 a page describes released behaviour unless a note says otherwise, so the old
+    // per-page status banner is refused rather than required: it said "implemented" on nearly
+    // every page and hid the few notes that matter (ADR-0016).
+    const banner = content
+      .split('\n')
+      .slice(0, 15)
+      .findIndex((line) => BANNER.test(line))
+    if (banner !== -1) {
+      problems.push({
+        file,
+        line: banner + 1,
+        rule: 'banner',
+        message:
+          'status banners are retired; keep a note only for an experimental, partial or design page (docs-style)',
+      })
     }
   })
   for (const file of tree.files.keys()) {

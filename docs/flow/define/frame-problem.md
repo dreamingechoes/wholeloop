@@ -2,8 +2,7 @@
 
 > **TL;DR** — Give it a rough idea — one sentence, a copied thread, a research brief — and it works through a short, fixed list of questions: what hurts and for whom, what supports that, what would change if we got it right, and what would make us walk away. It opens the **initiative**, names the person who owns it, and finishes with a clear call: write the spec next, or record why not.
 
-> [!NOTE]
-> **Status: ✅ implemented.** All eight framing questions, ownership, explicit TBD markers, reuse, argued drop or hold outcomes and reviewed finalization are enforced by the core. The standalone framing scenario passed live on all seven clients. Remote publication is experimental. Decision: [ADR-0086](../../decisions/0086-exact-final-framing-review-and-owner-decisions.md).
+The standalone framing scenario passed live on all seven clients. Remote publication is experimental. Decision: [ADR-0086](../../decisions/0086-exact-final-framing-review-and-owner-decisions.md).
 
 The separate [delegated-decision controller](../../tutorials/delivery-decisions.md) records explicitly authorized exact-revision machine judgments with independent challenge. It never writes this step's legacy human approval fields. The commands on this page retain their supervised contract; complete native unattended orchestration remains under implementation.
 

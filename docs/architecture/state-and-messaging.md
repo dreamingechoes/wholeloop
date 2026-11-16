@@ -2,8 +2,7 @@
 
 > **TL;DR** — One store per person, outside every repository. An append-only **journal** of events is the source of truth; readable **projections** are regenerated from it; a **mailbox** carries messages between agents and steps. Only `wl` writes to it. Any session, in any CLI, can resume from it.
 
-> [!NOTE]
-> **Status: ✅ implemented.** The external journal, typed items, projections, state commands, mailbox, context packs and journal attribution ship in 1.0 and are tested. Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md).
+Decision: [ADR-0004](../decisions/0004-state-outside-the-repo.md).
 
 ---
 

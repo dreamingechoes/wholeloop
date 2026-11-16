@@ -2,8 +2,8 @@
 
 > **TL;DR** — An original private grant can delegate a named decision under a pinned purpose-specific rubric. A trusted host records the exact evidence, a machine judgment and independent challenge. None-policy limitations block without a human prompt; fixture judgments grant no actual execution authority.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** The decision policy, private rubric pins, records and no-prompt fallbacks are tested on macOS and Linux. See [ADR-0112](../decisions/0112-private-delegation-and-independent-machine-decisions.md). Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** The decision policy, private rubric pins, records and no-prompt fallbacks are tested on macOS and Linux. See [ADR-0112](../decisions/0112-private-delegation-and-independent-machine-decisions.md). Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

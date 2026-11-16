@@ -2,8 +2,7 @@
 
 > **TL;DR** — Every term `wholeloop` uses, in one line each, plus how it maps to vocabulary your team may already have.
 
-> [!NOTE]
-> **Status: ✅ implemented.** These terms describe the shipped core and its role contracts. Client and provider limits are in [platforms](./platforms/README.md) and [providers](./configuration/providers.md).
+Client and provider limits are in [platforms](./platforms/README.md) and [providers](./configuration/providers.md).
 
 ---
 

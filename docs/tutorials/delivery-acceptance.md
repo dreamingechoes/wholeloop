@@ -2,8 +2,8 @@
 
 > **TL;DR** — Pin the agreed cases before execution, preserve human/machine ownership and inspect coverage against the exact candidate. Artifact capture and sealed reports remain private, bounded and separate from publication permission.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Closed definitions, evidence validation, typed reports, human notes and budgeted artifacts are tested. Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Closed definitions, evidence validation, typed reports, human notes and budgeted artifacts are tested. Autonomous delivery may change in a minor release.
 
 ## Before you start
 

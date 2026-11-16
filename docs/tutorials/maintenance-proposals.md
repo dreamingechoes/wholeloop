@@ -2,8 +2,8 @@
 
 > **TL;DR** — Pin a local inspection, turn its finding into a reviewable proposal, and admit current proposals within an operator envelope. Admission captures each one as its own delivery request. It never changes code, writes a tracker, plans a run or issues a grant.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** `wl maintenance`, deduplicated proposals, retained dismissals and once-only admission are tested ([ADR-0195](../decisions/0195-maintenance-proposals-and-recurring-admission.md), [ADR-0196](../decisions/0196-maintenance-commands-and-recurring-delivery-intake.md)). Planning and authorizing an admitted run are the [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md) steps.
+> [!IMPORTANT]
+> **Experimental.** `wl maintenance`, deduplicated proposals, retained dismissals and once-only admission are tested ([ADR-0195](../decisions/0195-maintenance-proposals-and-recurring-admission.md), [ADR-0196](../decisions/0196-maintenance-commands-and-recurring-delivery-intake.md)). Planning and authorizing an admitted run are the [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md) steps.
 
 ## Before you start
 

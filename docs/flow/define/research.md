@@ -2,8 +2,7 @@
 
 > **TL;DR** — Splits a question into angles, investigates each one against a real source in parallel, lets a challenger try to refute the claims the conclusion rests on, and hands back a brief: claims with evidence and confidence, plus the open questions nothing could answer. Optional in the flow; useful on its own any day.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Source planning, structured submissions, active refutation and the journaled brief are tested, and eleven source mappings have bounded guidance. Live fan-out depends on the client, and authenticated sources are experimental.
+Live fan-out depends on the client, and authenticated sources are experimental.
 
 Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
 

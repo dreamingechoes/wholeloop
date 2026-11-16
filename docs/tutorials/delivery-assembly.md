@@ -2,8 +2,8 @@
 
 > **TL;DR** — Build a separate owned integration worktree from every required committed part, then test the actual combined application and contracts. Keep failed assemblies and reports; a repair creates a new vector under the original finite budget.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Owned assembly, conflict and repair ownership, verification and bounded reports are tested and were observed with Docker and Git. See [ADR-0110](../decisions/0110-owned-assembly-and-complete-milestone-verification.md). Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Owned assembly, conflict and repair ownership, verification and bounded reports are tested and were observed with Docker and Git. See [ADR-0110](../decisions/0110-owned-assembly-and-complete-milestone-verification.md). Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

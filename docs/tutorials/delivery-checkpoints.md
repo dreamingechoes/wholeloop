@@ -2,8 +2,8 @@
 
 > **TL;DR** — Pin exact input bytes, detect a changed input from a fresh process and resume the same run after restoring it. Inspect retained effects and writer locks separately. These commands start no worker or external operation.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Checkpoint manifests, effect and worker recovery and stopped-writer lock retention are tested with real processes. Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Checkpoint manifests, effect and worker recovery and stopped-writer lock retention are tested with real processes. Autonomous delivery may change in a minor release.
 
 ## Before you start
 

@@ -1,9 +1,8 @@
 # Documentation style — how every page is written
 
-> **TL;DR** — Documentation is part of the product, not a by-product. Every page has a status banner, a TL;DR, a predictable structure, Mermaid diagrams in the shared palette, and a generated navigation footer. CI checks all of it.
+> **TL;DR** — Documentation is part of the product, not a by-product. Every page has a TL;DR, a predictable structure, a status note only when its behaviour is not settled, Mermaid diagrams in the shared palette, and a generated navigation footer. CI checks all of it.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Enforced on every change by `npm run check`: `wl docs check` (docnav, nav listing, status banners, links, anchors, referenced ADR status/supersession), markdownlint and the Mermaid parse check.
+Enforced on every change by `npm run check`: `wl docs check` (docnav, nav listing, status notes, links, anchors, referenced ADR status/supersession), markdownlint and the Mermaid parse check.
 
 ---
 
@@ -13,7 +12,7 @@
 - **Concise and dense, never a wall.** Short paragraphs, bullets, tables. A long page opens with a TL;DR.
 - **Warm and direct.** Write for a newcomer who is smart and short on time. Prefer "you" over "the user".
 - **Say why.** A rule without its reason invites someone to delete it. Long reasons go to an [ADR](../decisions/README.md); the page links it.
-- **Honest status.** Never describe planned behaviour as if it existed. The status banner says which is which.
+- **Honest status.** Never describe planned behaviour as if it existed. A page describes released behaviour unless its status note says otherwise.
 
 ## Markdown source layout
 
@@ -23,19 +22,19 @@ Preserve literal and structural line breaks: fenced/indented code, inline code, 
 
 Run `npm run lint:md` to check the convention through the parser-aware WL001 rule. Run `npm run lint:md:fix` to join soft-wrapped prose and apply the existing Markdown fixes. Both use the project's existing markdownlint toolchain; no additional formatter or dependency is needed. Review the diff before committing, especially literal examples and generated content.
 
-## Status banner
+## Status notes
 
-Every page starts, after the title and TL;DR, with exactly one of:
+A page describes the released behaviour, so it needs no status line to say that it exists. Add a note right after the TL;DR only when a reader must know that the page's behaviour is not settled:
 
-| Banner | Meaning |
+| Note | Use it when |
 | --- | --- |
-| `📐 design` | Target behaviour; nothing implemented yet |
-| `🚧 partial` | Some of it works; the page says which parts |
-| `✅ implemented` | Matches the released behaviour, verified by tests or conformance runs |
+| `> [!IMPORTANT]` then `> **Experimental.** …` | The page covers an [experimental surface](../extending/compatibility.md#experimental-surfaces), such as autonomous delivery: released and tested, but it may change in a minor release |
+| `> [!NOTE]` then `> **Partial.** …` | Part of the behaviour is missing; say which part |
+| `> [!NOTE]` then `> **Design.** …` | The page describes target behaviour that is not implemented yet |
 
-Add `, experimental` after the label when the page covers an [experimental surface](../extending/compatibility.md#experimental-surfaces), such as autonomous delivery or remote provider operations: the behaviour is released and tested, but it may change in a minor release. Keep a banner to one or two sentences: what works, what does not, and the decision behind it. Dates, task history and work in progress belong in the [journal](../../roadmap/journal.md), not in the banner.
+Keep a note to one or two sentences: what is not settled and, when it helps, the decision behind it. A limit that applies to a page without changing its status, such as remote publication being experimental on a step page, is an ordinary sentence under the TL;DR. Dates, task history and work in progress belong in the [journal](../../roadmap/journal.md).
 
-Banners are updated **in the same change** that moves the behaviour.
+Notes change **in the same change** that moves the behaviour, and a note is removed when the behaviour settles. `wl docs check` refuses the `> **Status: …**` banner every page carried before 1.0.1, so they cannot return ([ADR-0016](../decisions/0016-documentation-is-part-of-the-product.md)).
 
 ## Referenced decisions
 
@@ -43,7 +42,7 @@ Every linked numbered ADR and plain ADR-NNNN mention needs exactly one metadata 
 
 ## Generated references
 
-Build first, then run `wl docs check` to check navigation, status banners, links, anchors and the current command/config/provider tables. Reference comparison uses the built core's contracts, not a person's resolved configuration or authenticated services. Rebuild after changing source definitions. Missing pages or missing, reversed or duplicate marker pairs fail; an absent marker must never turn a check into an empty successful comparison.
+Build first, then run `wl docs check` to check navigation, status notes, links, anchors and the current command/config/provider tables. Reference comparison uses the built core's contracts, not a person's resolved configuration or authenticated services. Rebuild after changing source definitions. Missing pages or missing, reversed or duplicate marker pairs fail; an absent marker must never turn a check into an empty successful comparison.
 
 `wl docs reference` checks tables without changing files and exits 4 on drift. `wl docs reference --write` explicitly regenerates all four sections; --kind commands/config/providers/platforms selects one. It preflights every selected page/marker before writing, preserves surrounding prose and skips unchanged pages. The write batch is not a crash-atomic multi-file transaction; inspect an interrupted write and regenerate after restoring any incomplete markers. Valid semantic stale tables are replaced from source, while malformed ownership markers require inspection.
 
@@ -62,8 +61,7 @@ When changing an autonomous-delivery specification case, update [the acceptance 
 
 > **TL;DR** — 2–3 sentences.
 
-> [!NOTE]
-> **Status: …**
+(A status note only if the step is experimental, partial or a design.)
 
 ## At a glance
 | | |

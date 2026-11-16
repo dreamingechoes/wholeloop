@@ -2,8 +2,7 @@
 
 > **TL;DR** — Install the `wl` CLI from npm, install wholeloop into one coding client, restart that client in your application repository and ask for the framing skill. Everything is stored locally to start with; no service account is needed. The local core tour works without a model account.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Installation from npm, all seven client targets and the local workflows are tested. How far each client's discovery, sign-in and permissions were checked is recorded in [V1 acceptance](./v1-acceptance.md).
+How far each client's discovery, sign-in and permissions were checked is recorded in [V1 acceptance](./v1-acceptance.md).
 
 ## Contents
 

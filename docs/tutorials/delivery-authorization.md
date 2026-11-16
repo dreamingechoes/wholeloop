@@ -2,8 +2,8 @@
 
 > **TL;DR** — Record one explicit grant for a prepared plan or initial request envelope, inspect its finite deadline and revoke it without losing history. This configures authority; it starts no worker and performs no publication or merge.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Operator grants, revocation and scoped broker admission are tested. Filesystem and credential containment of native workers is not yet verified live (P6-35). Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Operator grants, revocation and scoped broker admission are tested. Filesystem and credential containment of native workers is not yet verified live (P6-35). Autonomous delivery may change in a minor release.
 
 ## Before you start
 

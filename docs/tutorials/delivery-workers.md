@@ -2,8 +2,8 @@
 
 > **TL;DR** — A worker receives one exact fresh assignment, explicit pinned context and role tools. Its response stays a claim; the controller records actual execution separately, and acceptance remains a later independent decision.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Assignment and result codecs, lease-bound context and observation checks are tested. This guide starts no worker. Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Assignment and result codecs, lease-bound context and observation checks are tested. This guide starts no worker. Autonomous delivery may change in a minor release.
 
 ## Inspect the contracts
 
