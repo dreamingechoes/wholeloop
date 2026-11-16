@@ -1,0 +1,13 @@
+sequenceDiagram
+  autonumber
+  participant P as You
+  participant S as Skill in your client
+  participant C as wl core
+  S->>C: begin the step
+  C-->>S: what exists, open questions, your repository's guidance
+  S->>P: preflight: plan, limits, how to stop, plus questions
+  P-->>S: answers
+  Note over S: the work: research, writing, building, reviewing
+  S->>C: complete the step with its artifact
+  C-->>S: checked, recorded, what can come next
+  S->>P: receipt, and your decision when one is due

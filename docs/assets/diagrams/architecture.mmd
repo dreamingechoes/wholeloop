@@ -1,0 +1,25 @@
+flowchart LR
+  you(["You"]):::person
+  subgraph C["Your coding client"]
+    direction TB
+    skills["wholeloop skills and roles<br/>ask · draft<br/>build · review"]
+    model["Your model and tools"]
+    skills --> model
+  end
+  core["wl core<br/>rules · state · gates"]
+  store[("Your store<br/>outside every repository")]
+  repo["Your repository<br/>conventions first,<br/>changes in worktrees"]
+  docker["Docker<br/>runs your project's code"]
+  services["Optional services<br/>through your client's MCP"]
+
+  you <--> skills
+  skills <--> core
+  core --> store
+  skills --> repo
+  repo --> docker
+  skills -.-> services
+
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  style C fill:#dce9fb,stroke:#2f6fc4,color:#0b1f3a
+  style core fill:#d9f2e3,stroke:#1f7a45,color:#0b2e1a
+  style store fill:#fbecd0,stroke:#b7791f,color:#3a2606

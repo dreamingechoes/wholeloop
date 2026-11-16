@@ -109,7 +109,8 @@
     "eval:live-implementation": "npm run build && node scripts/check-live-implementation.mjs",
     "eval:campaign": "node scripts/check-campaign.mjs",
     "eval:ci-continuation": "node scripts/check-ci-continuation.mjs",
-    "native:check": "npm run build && node scripts/native-checks.mjs"
+    "native:check": "npm run build && node scripts/native-checks.mjs",
+    "docs:diagrams": "node scripts/render-diagrams.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.4",

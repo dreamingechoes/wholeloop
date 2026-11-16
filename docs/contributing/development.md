@@ -81,6 +81,7 @@ The hook runs the built validator on every commit message: a lowercase Conventio
 | `npm run perf:calibrate`, `npm run perf:route` | Measurement-only performance tools; see the maintainer skill `maint-investigate-performance` |
 | `npm run scan:history` | Scan the published history for secrets with gitleaks in Docker ([release preparation](./releasing.md#audit-the-history-before-it-becomes-public)) |
 | `npm run changelog` | Regenerate `CHANGELOG.md` from the release tags ([versions](./releasing.md#versions)) |
+| `npm run docs:diagrams` | Render the README diagrams in `docs/assets/diagrams/` to SVG after editing their `.mmd` sources; needs Chrome or Chromium (`CHROME_PATH`) ([docs style](./docs-style.md#readme-diagrams)) |
 
 How to work on a task, write commits and open pull requests is in the [contributing guide](../../CONTRIBUTING.md) and [AGENTS.md](../../AGENTS.md).
 
