@@ -5,13 +5,17 @@ import { contractDigest } from '../contracts/compatibility.js'
 import type { CheckpointStage } from '../delivery/checkpoint-events.js'
 import type { DeliveryOutcome } from '../delivery/events.js'
 import { safeSourceText } from '../delivery/input.js'
-import { ENVELOPE_CONTINUATION_EFFECTS } from '../delivery/lifecycle.js'
+import {
+  ENVELOPE_CI_CONTINUATION_EFFECTS,
+  ENVELOPE_CONTINUATION_EFFECTS,
+} from '../delivery/lifecycle.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
 import { validateDeliveryShape } from '../delivery/plan.js'
 import { boundedRecoveryCall } from '../delivery/read-retry.js'
 import { executedThroughEffect } from '../delivery/reducer.js'
 import { deliveryDecision } from '../state/attribution.js'
 import { retainedDecisionRationale } from './attribution.js'
+import { continueCiDelivery } from './ci-continuation.js'
 import { continueDelivery } from './continuation.js'
 import { deliveryRunner, type RunnerRuntime, type RunnerStageRecord } from './events.js'
 import { ForegroundOwner } from './foreground-owner.js'
@@ -85,6 +89,12 @@ export interface DeliveryRunnerHost {
     stage: Readonly<RunnerStageRecord>,
     signal: AbortSignal,
   ): Promise<void>
+  /**
+   * Stops the environments a failed request left running, keeping their data and
+   * evidence, before an unattended continuation provisions its own. True when none
+   * remain running; a host without environments may leave this out.
+   */
+  release?(request: Readonly<RunnerRequest>, signal?: AbortSignal): Promise<boolean>
   endpoint(
     request: Readonly<RunnerRequest>,
     plan: Readonly<DeliveryPlan>,
@@ -103,56 +113,113 @@ export interface DeliveryRunnerHost {
   ): Promise<{ resetsAt: string } | undefined>
 }
 const TERMINAL = new Set(['completed', 'failed', 'blocked', 'exhausted', 'stopped'])
+/** An admissible unattended continuation, selected by reads only; nothing is recorded yet. */
+interface EnvelopeSelection {
+  kind: 'repair' | 'ci'
+  run: string
+  input: { request: string; stage: string; unit: string }
+}
+
 /**
- * Records the continuation of a failed none run under its own envelope grant
- * and returns the successor request, or undefined when any condition fails.
- * The owning unit must be unambiguous: the plan has exactly one code unit,
- * because a unit is never guessed from failure text (ADR-0197).
+ * Selects the continuation of a failed none run under its own envelope grant, or
+ * undefined when any condition fails, without recording anything. The owning unit
+ * must be unambiguous: the plan has exactly one code unit, because a unit is never
+ * guessed from failure text (ADR-0197). Integration and acceptance failures follow
+ * ADR-0198; a failed required check follows ADR-0248 and also needs git.push.
  */
-export function envelopeContinuation(store: RunnerStore, digest: string): string | undefined {
+export function selectEnvelopeContinuation(
+  store: RunnerStore,
+  digest: string,
+): EnvelopeSelection | undefined {
   try {
     const request = store.get(digest),
       { plan } = store.basis(request),
       state = store.lifecycle.journal.view(request.run),
-      grant = store.lifecycle.authority.inspect(request.grant)
+      grant = store.lifecycle.authority.inspect(request.grant),
+      effects = grant.grant.effects
     if (
       plan.policy.intervention !== 'none' ||
       !['failed', 'blocked'].includes(state.state) ||
       grant.status !== 'active' ||
       grant.grant.basis.kind !== 'envelope' ||
-      !ENVELOPE_CONTINUATION_EFFECTS.every((effect) => grant.grant.effects.includes(effect))
+      !ENVELOPE_CONTINUATION_EFFECTS.every((effect) => effects.includes(effect))
     )
       return undefined
-    const failure = store
-        .record(digest)
-        .stages.filter(
-          (stage) =>
-            ['failed', 'blocked'].includes(stage.status) &&
-            (stage.id === 'acceptance' || stage.id.startsWith('integration:')),
-        )
-        .at(-1),
-      units = plan.work.filter((unit) => unit.repository && unit.role !== 'research')
-    if (!failure || units.length !== 1 || !units[0]) return undefined
-    const input = { request: digest, stage: failure.id, unit: units[0].id }
-    if (continueDelivery(store.lifecycle, request.run, input).admission.status !== 'admissible')
-      return undefined
-    const accepted = continueDelivery(store.lifecycle, request.run, input, {
-      operator: 'wholeloop controller',
-      reason: "Unattended repair under the run's own envelope grant (ADR-0198).",
-      authority: 'envelope-grant',
-    })
+    const units = plan.work.filter((unit) => unit.repository && unit.role !== 'research')
+    if (units.length !== 1 || !units[0]) return undefined
+    const unit = units[0].id,
+      stages = store.record(digest).stages
+    if (stages.some((stage) => stage.id === 'ci' && stage.status === 'failed')) {
+      const input = { request: digest, stage: 'ci', unit }
+      return ENVELOPE_CI_CONTINUATION_EFFECTS.every((effect) => effects.includes(effect)) &&
+        continueCiDelivery(store.lifecycle, request.run, input).admission.status === 'admissible'
+        ? { kind: 'ci', run: request.run, input }
+        : undefined
+    }
+    const failure = stages
+      .filter(
+        (stage) =>
+          ['failed', 'blocked'].includes(stage.status) &&
+          (stage.id === 'acceptance' || stage.id.startsWith('integration:')),
+      )
+      .at(-1)
+    if (!failure) return undefined
+    const input = { request: digest, stage: failure.id, unit }
+    return continueDelivery(store.lifecycle, request.run, input).admission.status === 'admissible'
+      ? { kind: 'repair', run: request.run, input }
+      : undefined
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Records a selected continuation under the run's own envelope grant and returns the
+ * successor request. continueCiDelivery and continueDelivery check the failure and
+ * the budgets again; DeliveryLifecycle.track checks the grant's effects and, for CI,
+ * this continuation's mark before the grant is accepted.
+ */
+export function acceptEnvelopeContinuation(
+  store: RunnerStore,
+  selection: Readonly<EnvelopeSelection>,
+): string | undefined {
+  try {
+    const request = store.get(selection.input.request),
+      accepted =
+        selection.kind === 'ci'
+          ? continueCiDelivery(
+              store.lifecycle,
+              selection.run,
+              { request: selection.input.request, unit: selection.input.unit },
+              {
+                operator: 'wholeloop controller',
+                reason: "Unattended CI repair under the run's own envelope grant (ADR-0248).",
+                authority: 'envelope-grant',
+              },
+            )
+          : continueDelivery(store.lifecycle, selection.run, selection.input, {
+              operator: 'wholeloop controller',
+              reason: "Unattended repair under the run's own envelope grant (ADR-0198).",
+              authority: 'envelope-grant',
+            })
     if (!accepted.accepted) return undefined
-    const { revision, digest: plan2 } = accepted.record
-    store.lifecycle.track({ run: request.run, revision, grant: request.grant })
+    const { revision, digest: plan } = accepted.record
+    store.lifecycle.track({ run: selection.run, revision, grant: request.grant })
     return store.prepare({
       ...request,
-      key: `${request.key.slice(0, 100)}-repair-${revision}`,
+      key: `${request.key.slice(0, 100)}-${selection.kind === 'ci' ? 'ci-repair' : 'repair'}-${revision}`,
       revision,
-      plan: plan2,
+      plan,
     }).digest
   } catch {
     return undefined
   }
+}
+
+/** Selects and records in one step, for callers that release nothing in between. */
+export function envelopeContinuation(store: RunnerStore, digest: string): string | undefined {
+  const selection = selectEnvelopeContinuation(store, digest)
+  return selection ? acceptEnvelopeContinuation(store, selection) : undefined
 }
 /** Resolves after the delay or as soon as the signal aborts. */
 function abortableSleep(milliseconds: number, signal: AbortSignal) {
@@ -496,10 +563,11 @@ export class DeliveryRunner {
   }
 
   /**
-   * Runs a request and, when a none run fails at integration or acceptance,
-   * continues it unattended under its own still-active envelope grant
-   * (ADR-0198), within the plan's repair budget, in this same invocation.
-   * Every other failure ends as before and waits for an operator.
+   * Runs a request and, when a none run fails at integration or acceptance
+   * (ADR-0198) or at a required CI check (ADR-0248), continues it unattended
+   * under its own still-active envelope grant, within the plan's repair and
+   * push budgets, in this same invocation. Every other failure ends as before
+   * and waits for an operator.
    */
   async runWithRepairs(
     digest: string,
@@ -511,7 +579,14 @@ export class DeliveryRunner {
     const controller = options.lease?.controller ?? options.controller
     for (;;) {
       if (options.signal?.aborted) return status
-      const next = envelopeContinuation(this.store, current)
+      const selection = selectEnvelopeContinuation(this.store, current)
+      if (!selection) return status
+      // The failed request's environments still hold the daemon's capacity. Stop them,
+      // keeping their data and evidence, before the continuation provisions its own;
+      // without that the run ends here and waits for an operator, as before (ADR-0248).
+      if (host.release && !(await host.release(this.store.get(current), options.signal)))
+        return status
+      const next = acceptEnvelopeContinuation(this.store, selection)
       if (!next) return status
       current = next
       status = await this.run(current, host, {

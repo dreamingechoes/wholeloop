@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-17 · P8-01 🔄 · CI correction continuation under the envelope grant
+
+- **Decision:** the maintainer accepted ADR-0247 (factory phasing) and ADR-0248 (this continuation) on 2026-11-16. 1.1.0 carries this capability with the command-line work already on `main`.
+- **Controller:** `runWithRepairs` now continues a `none` run after a failed required check, under the run's own still-active envelope grant. It needs `git.push` besides the repair effects, a failure classified `repair` with push budget left, and exactly one code unit, the same narrowing as P6-41. Selection reads only; acceptance records the continuation as `envelope-grant-continuation` and runs it in the same invocation.
+- **Mark:** kept in the continuation receipt, because the version-one registration schema is frozen. `DeliveryLifecycle.track` admits the envelope grant on a CI correction only with that mark and `git.push`, so an operator's CI proposal still needs a new grant. A mutation that drops the check fails the operator-proposal test.
+- **Findings from the model-free rehearsal** (`npm run eval:ci-continuation -- --unattended`): the continuation's verification could not run beside the failed request's live environments, and the envelope grant's effect limit is shared with the original attempt. The controller now asks the host to stop the predecessor's environments, keeping their data and evidence, before recording the continuation, and continues nothing if a stop is not observed; without that step the rehearsal fails, so it is required. The effect limit is documented: size the envelope grant for the original attempt plus its repairs. Both also apply to P6-41's continuations, whose tests were synthetic.
+- **Verified:** `CHECK PASS in 670s`; five new continuation tests and two release-ordering tests; the unattended rehearsal ends with the original CI failed, the correction passed, the second CI passed, the original pull request updated and merge blocked as ungranted.
+- **Open:** the live scenario with Codex on `dreamingechoes/wholeloop-trials` (branch `ci-trial`, a CI-only release-note check under branch protection).
+
+---
+
 ## 2026-11-16 · 1.0.1 · README diagrams that npm can show
 
 - **Why:** npm renders a package README without Mermaid, so the loop diagram showed as code on the package page. The README also had only that one diagram, which explains the flow but not how the pieces fit or what a step does.

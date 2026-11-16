@@ -2,6 +2,8 @@ import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import { chmodSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { contractDigest } from '../../../src/contracts/compatibility.js'
+import { sourceHash } from '../../../src/delivery/input.js'
 import type { NativeRuntime } from '../../../src/delivery/native-runtime.js'
 import { DockerCli } from '../../../src/environment/docker-command.js'
 import { EnvironmentLifecycle } from '../../../src/environment/lifecycle.js'
@@ -9,7 +11,8 @@ import { EnvironmentResources } from '../../../src/environment/runtime.js'
 import { continueCiDelivery } from '../../../src/runner/ci-continuation.js'
 import { originalCiFailure } from '../../../src/runner/ci-failure.js'
 import type { RunnerCiHost } from '../../../src/runner/ci-observations.js'
-import { DeliveryRunner } from '../../../src/runner/engine.js'
+import { DeliveryRunner, type DeliveryRunnerHost } from '../../../src/runner/engine.js'
+import { deliveryRunner } from '../../../src/runner/events.js'
 import { RunnerGitStages } from '../../../src/runner/git-stages.js'
 import {
   composeInstalledImplementation,
@@ -18,7 +21,7 @@ import {
 } from '../../../src/runner/public-composition.js'
 import { GithubCliCodeHost } from '../../../src/runner/publication-host.js'
 import { runnerRoute } from '../../../src/runner/route.js'
-import { RunnerStore } from '../../../src/runner/store.js'
+import { type RunnerRequest, RunnerStore } from '../../../src/runner/store.js'
 import { verifyCiContinuation } from '../../support/ci-continuation.js'
 import { authorization, mergePolicy } from '../../support/delivery.js'
 import {
@@ -37,6 +40,9 @@ import { runnerGitFixture } from '../../support/runner-git.js'
 /** Fixed SDK CI continuation with synthetic native/host facts and actual Git/Docker. */
 const destination = process.argv[2]
 if (!destination) throw new Error('Provide an external evidence directory')
+// ADR-0248: --unattended starts a none run under its own envelope grant and lets
+// runWithRepairs record and run the CI correction itself, with no operator step.
+const unattended = process.argv.includes('--unattended')
 mkdirSync(destination, { recursive: true })
 const dir = realpathSync(destination),
   log = join(dir, 'calls.jsonl'),
@@ -62,9 +68,99 @@ const dir = realpathSync(destination),
     retiredBeforeContinuation: 0,
     environments: [] as { id: string; retirement: string }[],
     reason: '',
+    mode: 'operator' as 'operator' | 'unattended',
     acceptance: 'not-established',
     publication: 'not-performed' as string,
   }
+/** One composed host per request, so a continuation's successor gets its own (ADR-0248). */
+function perRequest(
+  store: RunnerStore,
+  compose: (request: RunnerRequest) => DeliveryRunnerHost,
+  identity: RunnerRequest['host'],
+): DeliveryRunnerHost {
+  const hosts = new Map<string, DeliveryRunnerHost>(),
+    host = (request: Readonly<RunnerRequest>) => {
+      const key = contractDigest(request)
+      let value = hosts.get(key)
+      if (!value) {
+        value = compose(store.get(key))
+        hosts.set(key, value)
+      }
+      return value
+    }
+  return {
+    identity,
+    preflight: (request, plan, stages, signal) =>
+      host(request).preflight(request, plan, stages, signal),
+    execute: (context) => host(context.request).execute(context),
+    inspect: (request, stage, signal) => host(request).inspect(request, stage, signal),
+    stop: (request, stage, signal) =>
+      host(request).stop?.(request, stage, signal) ?? Promise.resolve(),
+    endpoint: (request, ...rest) => host(request).endpoint(request, ...rest),
+    release: (request, signal) => host(request).release?.(request, signal) ?? Promise.resolve(true),
+  }
+}
+
+/** The whole correction in one runWithRepairs call: no retirement, proposal or grant by hand. */
+async function unattendedRun(
+  store: RunnerStore,
+  request: RunnerRequest,
+  digest: string,
+  compose: (request: RunnerRequest) => DeliveryRunnerHost,
+  bare: string,
+  dir: string,
+) {
+  const last = await new DeliveryRunner(store).runWithRepairs(
+      digest,
+      perRequest(store, compose, request.host),
+    ),
+    state = store.lifecycle.journal.view(request.run),
+    records = deliveryRunner(state).records,
+    first = store.inspect(digest),
+    successor = records.at(-1)?.request ?? '',
+    correction = last.stages.find((stage) => stage.id === 'correction-1:search'),
+    receipt = JSON.parse(store.files.read(`delivery/continuations/${request.run}/2.json`) ?? '{}')
+  report.mode = 'unattended'
+  report.first = {
+    state: first.state,
+    outcome: first.outcome ?? null,
+    failed: first.stages.find((stage) => stage.id === 'ci' && stage.status === 'failed')?.id ?? '',
+  }
+  assert.equal(report.first.failed, 'ci', JSON.stringify(first.stages.map((s) => [s.id, s.status])))
+  assert.notEqual(successor, digest, 'The controller must have prepared a continuation')
+  assert.equal(store.get(successor).grant, request.grant, 'The envelope grant must carry on')
+  assert.equal(receipt.authority, 'envelope-grant-continuation')
+  assert.equal(receipt.operator, 'wholeloop controller')
+  report.second = {
+    state: last.state,
+    outcome: last.outcome ?? null,
+    correction: correction?.status ?? '',
+    stages: last.stages.length,
+    ci: last.stages.find((stage) => stage.id === 'ci')?.status ?? '',
+    publication: last.stages.find((stage) => stage.id === 'publication')?.status ?? '',
+    admission: last.stages.find((stage) => stage.id === 'ci-correction-admission')?.status ?? '',
+    seededAtPublishedHead: true,
+  }
+  assert.equal(
+    correction?.status,
+    'passed',
+    JSON.stringify(last.stages.map((s) => [s.id, s.status])),
+  )
+  const stages = JSON.stringify(last.stages.map((s) => [s.id, s.status]))
+  assert.equal(report.second.admission, 'passed', stages)
+  assert.equal(report.second.publication, 'passed', stages)
+  assert.equal(report.second.ci, 'passed', stages)
+  const verified = await verifyCiContinuation({
+    store,
+    first: digest,
+    second: successor,
+    bare,
+    host: new GithubCliCodeHost(runtimeGithub(join(dir, 'bin', 'gh'))),
+  })
+  report.pullRequest = { url: verified.pr, head: verified.head, status: verified.application }
+  report.publication = 'original-pr-updated-and-still-ready'
+}
+
 mkdirSync(join(dir, 'bin'), { recursive: true })
 mkdirSync(join(dir, 'codex-home'), { recursive: true, mode: 0o700 })
 writeFileSync(join(dir, 'bin', 'codex'), SYNTHETIC_CODEX(log, 'ci-correction'))
@@ -196,6 +292,10 @@ try {
         { request: digest, controller: owned.controller, generation: owned.generation },
         'Hand the public to-pr route to its actual engine.',
       )
+      if (unattended) {
+        await unattendedRun(store, request, digest, compose, bare, dir)
+        return
+      }
       // First run: product QA passes; the fixed synthetic required CI check fails.
       const first = await new DeliveryRunner(store).run(digest, compose(request)),
         failure = first.stages.find((stage) => stage.id === 'ci')
@@ -326,13 +426,44 @@ try {
       singleUnit: true,
       stageBudget: 'plan',
       retain: true,
+      // The continuation runs under the same envelope grant, so its effect limit covers
+      // the original attempt and one repair, where the operator path gets a new grant.
+      ...(unattended ? { withinEnvelope: true, effectLimit: 40 } : {}),
       seed: SEED,
-      decisions: [...DELEGATED],
+      decisions: unattended ? [...DELEGATED, 'delivery-plan'] : [...DELEGATED],
       effects: ['git.push', 'pr.create', 'pr.ready'],
       configure: (plan, files) => {
         toPr(plan, files, 'ssh')
         plan.policy.endpoint = 'to-merge'
         plan.policy.merge = mergePolicy()
+        // Under an envelope grant the plan stage accepts the derived plan by delegated
+        // decision, so the unattended mode delegates delivery-plan as well.
+        if (unattended) {
+          plan.policy.intervention = 'none'
+          const [first] = plan.policy.delegations ?? []
+          if (!first) throw new Error('Delegations from toPr are required')
+          const text = JSON.stringify({
+            schema: 'wholeloop/delegated-decision-rubric@1',
+            decision: 'delivery-plan',
+            purpose: 'Accept only a plan that stays inside the approved envelope.',
+            rules: [{ id: 'scope', text: 'Preserve the approved scope and source.' }],
+            outcomes: ['accept', 'reject'],
+            unknowns: { allowed: [], defaults: [] },
+            timeoutMs: 10000,
+          })
+          files.atomic('rubrics/delivery-plan.json', text)
+          plan.policy.delegations = [
+            ...(plan.policy.delegations ?? []),
+            {
+              ...first,
+              id: 'delivery-plan',
+              rubric: {
+                ref: 'rubrics/delivery-plan.json',
+                sha256: sourceHash(text),
+              },
+            },
+          ]
+        }
         plan.budgets.attemptMs = 240000
         plan.budgets.wallTimeMs = 1800000
       },

@@ -8,8 +8,9 @@ import { harnessAssets } from './harness-assets.mjs'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const args = process.argv.slice(2)
-if (args.some((arg) => arg !== '--retire-success'))
-  throw new Error('Supported option: --retire-success')
+// --unattended rehearses ADR-0248: the controller continues under the run's envelope grant.
+if (args.some((arg) => !['--retire-success', '--unattended'].includes(arg)))
+  throw new Error('Supported options: --retire-success, --unattended')
 const destination = realpathSync(
     mkdtempSync(join(tmpdir(), 'wholeloop-ci-continuation-evaluation-')),
   ),
