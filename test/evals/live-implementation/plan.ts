@@ -7,6 +7,7 @@ import { TASK, TRIAL_FILES, TRIAL_REPOSITORY } from './fixture.js'
 export function trialPlan(
   files: StoreFiles,
   input: { run: string; source: string; root: string; base: string },
+  task = TASK,
 ): DeliveryPlan {
   return {
     schema: 'wholeloop/delivery-plan@1',
@@ -50,7 +51,7 @@ export function trialPlan(
               ? 'Approve only a bounded implementation plan and its proposed falsifying checks before code changes.'
               : 'Accept only exact-revision evidence satisfying the pinned HTTP status task.',
           rules: [
-            { id: 'scope', text: TASK },
+            { id: 'scope', text: task },
             {
               id: id === 'approve-build-plan' ? 'planned-validation' : 'evidence',
               text:
@@ -78,7 +79,7 @@ export function trialPlan(
     criteria: [
       {
         id: 'status',
-        text: TASK,
+        text: task,
         test: 'Run npm run check and GET /; assert the exact JSON status.',
         outcomes: ['status'],
         acceptance: 'machine',

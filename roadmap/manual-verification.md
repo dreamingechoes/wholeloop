@@ -225,13 +225,32 @@ The secret-store references, per-launch injection, disposable client homes, the 
 - [x] A missing or invalid credential: a missing item ends at preflight with `public-host-credential-missing`, and an invalid one at its first launch with `authentication-required`. Done on 2026-11-14 with Codex 0.166.0 through the live research route ([Codex campaign](#codex-campaign-2026-11-14)).
 - [ ] Observe an exhausted Codex window live: the run waits in `waiting-external`, resumes after the reset and keeps its stages. Claude Code reports no window, so its exhaustion stays an infrastructure failure.
 - [x] Linux: store and resolve through Secret Service on a desktop host, and confirm `credential-store-unavailable` on a host without one. Done on 2026-11-10 in disposable Debian 12 containers ([Linux platform matrix](#linux-platform-matrix-2026-11-10-source-4c1d28f)). Windows through WSL2 is untested.
-- [ ] Compare the exposure of an injected variable to other processes of the same user with stdin, where a client accepts stdin. Codex, 2026-11-14 on macOS 27.2: `ps -E` shows an injected `CODEX_API_KEY` of a running `codex app-server` to any process of the same user; only SIP-protected platform binaries hide their environment. Codex has no per-launch stdin path: `codex login --with-api-key` reads stdin but stores the key in its credential store, and stdin to `codex exec` is the prompt. Claude Code is not compared yet.
+- [ ] Compare the exposure of an injected variable to other processes of the same user with stdin, where a client accepts stdin. Codex, 2026-11-14 on macOS 27.2: `ps -E` shows an injected `CODEX_API_KEY` of a running `codex app-server` to any process of the same user; only SIP-protected platform binaries hide their environment. Codex has no per-launch stdin path: `codex login --with-api-key` reads stdin but stores the key in its credential store, and stdin to `codex exec` is the prompt. Claude Code 2.1.326 (`claude --help`, 2026-11-17) takes a credential only from `ANTHROPIC_API_KEY` or an `apiKeyHelper` command named in `--settings`, so it has no stdin path either; an `apiKeyHelper` would keep the key out of the launched process's environment and is the option to evaluate next.
+
+## CI correction continuation (P8-01)
+
+A `none` run continues after a repairable required-check failure under its own envelope grant ([ADR-0248](../docs/decisions/0248-ci-correction-continuation-under-the-envelope-grant.md)). Model-free, `npm run eval:ci-continuation -- --unattended` passes with real Git and Docker: the original check fails, the controller continues under the same grant, the correction, a fresh check and the update of the original pull request pass, and merge stays blocked as ungranted.
+
+- [ ] A live scenario on a reference client reaches a green required check with no human step.
+
+Live attempts on 2026-11-16 and 2026-11-17, all with Codex 0.166.0 and `gpt-6.1-sol` against `dreamingechoes/wholeloop-trials`, branch `ci-trial`. That branch adds `ci-check.cjs`, a CI-only check the local suite never runs, under classic branch protection requiring `test` from GitHub Actions. Run with `WHOLELOOP_LIVE_CONFIRM=spend-quota-and-publish npm run eval:live-ci-correction`; each attempt's pull request was closed with a note.
+
+1. **Harness:** the bundle failed to load. Fixed in the entry script.
+2. **Core gap:** the original route passed, the required check failed on GitHub and the controller continued under the same envelope grant. The correction's build plan was then rejected: its judge had neither the CI facts nor the published candidate's changes. Fixed: the build-plan inputs of a CI correction carry the failed checks, the published head and pull request, and every changed path with its bytes.
+3. **Core gap:** the plan was approved, but the builder patched lines from the original source that the published candidate had already changed. Codex workers have no read tool. Fixed: the correction's builders receive the same inputs.
+4. **Budget:** the builder produced the right repair, and the run's builder restarts, shared with the original attempt, deferred the next launch. Run budgets now have to be sized for the repairs too, which ADR-0248 records.
+5. **Scenario:** the correction's planner correctly refused, because the task's pinned acceptance allowed only `status.txt` to change while the CI check needed `CHANGES.md`.
+6. and 7. **Scenario:** with the release note in the task, or merely allowed, the acceptance producer blocked before any build, because a line naming the pull request, or a passing required check, cannot be verified before publication.
+
+What a passing scenario needs: a CI-only failure that the first candidate cannot satisfy, and whose repair stays inside acceptance cases that can be pinned before publication. A check that runs the same suite in a different environment, where the defect reproduces locally once the builder knows of it, fits both; a release note naming the pull request does not.
 
 ## Envelope-grant continuation (P6-41)
 
 `none` runs continue unattended under their own envelope grant, tested on a synthetic controller host ([ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md)).
 
 - [ ] In a native trial (P6-27), seed a repairable integration or acceptance failure in a one-code-unit `none` run under an envelope grant with the repair effects. Confirm that it repairs itself within its repair budget and reaches its endpoint with no human step.
+
+The shared part of this path, a controller continuation recorded under the run's own envelope grant in the same invocation, was observed live through the CI route in P8-01's attempts 2 to 5 ([above](#ci-correction-continuation-p8-01)). Those attempts also showed that the failed request's environments must be stopped and the run's budgets sized for repairs, which now applies here too. An integration or acceptance seed remains.
 
 ## Codex-only campaign preflight (2026-11-05)
 

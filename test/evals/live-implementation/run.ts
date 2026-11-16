@@ -200,11 +200,10 @@ try {
     gh = realpathSync(process.env.WHOLELOOP_LIVE_GH ?? command('which', ['gh']))
     const repository = JSON.parse(command(gh, ['api', `repos/${TRIAL_REPOSITORY}`])) as {
       full_name?: string
-      private?: boolean
       default_branch?: string
     }
     assert.equal(repository.full_name, TRIAL_REPOSITORY)
-    assert.equal(repository.private, true, 'The campaign repository must remain private')
+    // Public since 2026-11-16, so hosted Actions runs are free; nothing private is pushed there.
     assert.equal(repository.default_branch, 'main')
     command('git', [
       'clone',
