@@ -61,4 +61,4 @@ Only the trusted host records actual runtime identity, exit/cancellation, output
 There is no CLI command to import a successful process receipt or mark a worker completed from arbitrary JSON. Native dispatch and backend isolation are subsequent tasks. See [ADR-0100](../decisions/0100-role-bound-worker-contexts-and-execution-observations.md), the [runner specification](../../roadmap/specifications/autonomous-delivery/02-durable-runner.md) and the [acceptance boundaries](../v1-acceptance.md).
 
 <!-- docnav -->
-[◀ Delivery budgets](delivery-budgets.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Native delivery hosts ▶](delivery-native.md)
+[◀ Delivery queue](delivery-queue.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Native delivery hosts ▶](delivery-native.md)

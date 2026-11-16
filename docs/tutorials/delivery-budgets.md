@@ -84,4 +84,4 @@ Usage reports keep delta/cumulative identities, finality and fixture/host proven
 Repeated failure signatures retain their candidate/findings and exhaust the no-progress allowance. Only a new typed validated result resets the streak; a heartbeat, narration or repeated identical artifact cannot. Exhaustion does not release live worker ownership, erase gate rounds or reopen an endpoint. See [ADR-0099](../decisions/0099-persistent-finite-delivery-budgets.md) and the [expanded controls contract](../../roadmap/specifications/autonomous-delivery/07-controls-and-observability.md).
 
 <!-- docnav -->
-[◀ Delivery checkpoints](delivery-checkpoints.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery workers ▶](delivery-workers.md)
+[◀ Native delivery hosts](delivery-native.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery checkpoints ▶](delivery-checkpoints.md)

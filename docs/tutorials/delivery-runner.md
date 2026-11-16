@@ -394,4 +394,4 @@ Run npm run eval:runner-verification-continuation -- --predecessor-readiness --r
 A ready result names the exact unit commit and original QA evidence. It neither completes the delivery nor supplies feature acceptance. Later integration and re-entry controls combine readiness with fresh behavioral verification after review repairs; current public composition is listed above, with separate native acceptance. See [ADR-0153](../decisions/0153-current-joint-unit-qa-readiness.md).
 
 <!-- docnav -->
-[◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)
+[◀ Delegated machine decisions](delivery-decisions.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery queue ▶](delivery-queue.md)

@@ -98,4 +98,4 @@ The first admission re-runs the inspection, finds the same evidence and reports 
 You have reached the stopping point when one admission exists per proposal and the delivery source carries its mapped criteria. Planning and authorization stay explicit; see [delivery planning](./delivery-plan.md).
 
 <!-- docnav -->
-[◀ Original delivery evaluation fixtures](delivery-evaluation-fixtures.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ Original delivery evaluation fixtures](delivery-evaluation-fixtures.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [V1 acceptance ▶](../v1-acceptance.md)

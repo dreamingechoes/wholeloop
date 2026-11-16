@@ -9,60 +9,70 @@
 
 - [Start with your goal](#start-with-your-goal)
 - [Tutorials and everyday use](#tutorials-and-everyday-use)
+- [Autonomous delivery (experimental)](#autonomous-delivery-experimental)
 - [All thirteen steps](#all-thirteen-steps)
 - [Configuration and integrations](#configuration-and-integrations)
 - [Architecture and extensions](#architecture-and-extensions)
 - [Contributing, acceptance and release](#contributing-acceptance-and-release)
 - [Reading paths](#reading-paths)
+- [Getting help](#getting-help)
 
 ## Start with your goal
 
-To hand an approved scope to an autonomous run, start with the [autonomous-delivery design](./architecture/autonomous-delivery.md) and the delivery tutorials below. Autonomous delivery is experimental in 1.0.0: its commands and schemas may change in a minor release. Source intake, planning, authorization and the research-report and to-PR routes are implemented; unattended runs are still being certified with signed-in native clients and hosted services.
-
-| Goal | First page | Successful stopping point |
+| Goal | First page | You are done when |
 | --- | --- | --- |
-| Install in my existing coding client | [Getting started](./getting-started.md) | Managed files installed, doctor interpreted, skill selected |
-| Try it without a model account | [Local core tour](./tutorials/local-core.md) | An initiative, preflight questions and recoverable local context |
-| Understand what to answer during framing | [First framing](./tutorials/first-framing.md) | An approved final draft or recorded no-go, followed by recovery |
-| Build a bounded change | [Small-change walkthrough](./tutorials/small-change.md) | Verified/reviewed work and a human testing handoff before publication |
-| Pin a request before delivery planning | [Delivery intake](./tutorials/delivery-intake.md) | An immutable source revision without starting workers |
-| Recover from a setup/workflow problem | [Troubleshooting](./troubleshooting.md) | A specific diagnosis and next action |
-| Inspect expanded delivery coverage | [Acceptance case map](./reference/delivery-acceptance.md) | Concrete controls and explicit native/hosted/backend evidence limits |
-| Assess readiness for 1.0 | [Acceptance](./v1-acceptance.md) | Executed checks separated from maintainer decisions and deferred services |
+| Install it in my coding client | [Getting started](./getting-started.md) | The files are installed, doctor passes and the client shows the skills |
+| Try it without a model account | [Local core tour](./tutorials/local-core.md) | You have an item, its questions and its context recovered in a new terminal |
+| Know what to answer during framing | [First framing](./tutorials/first-framing.md) | Your final draft is approved, or your no-go is recorded, and a new session finds it |
+| Build one bounded change | [Small-change walkthrough](./tutorials/small-change.md) | The change is verified and reviewed, and waiting for you to test it |
+| Fix a setup or workflow problem | [Troubleshooting](./troubleshooting.md) | You know which part failed and what to do next |
+| Hand an approved scope to an autonomous run | [Autonomous delivery](#autonomous-delivery-experimental) | You know which tutorials apply; the feature is experimental |
+| See what 1.0 covers | [V1 acceptance](./v1-acceptance.md) | You can tell what was tested from what is still open |
 
 ## Tutorials and everyday use
 
 | Page | What it answers |
 | --- | --- |
 | [Getting started](./getting-started.md) | Requirements, installation from npm, client setup, first skill, updates and removal |
-| [Local client setup](./platforms/local-onboarding.md) | Targets, names, native directories and activation boundaries for seven clients |
+| [Local client setup](./platforms/local-onboarding.md) | Targets, skill names, native directories and activation for seven clients |
 | [Local core tour](./tutorials/local-core.md) | What the deterministic CLI does without a model |
-| [First framing](./tutorials/first-framing.md) | Context, answers, owner outcome, exact final review and session recovery |
-| [Small change](./tutorials/small-change.md) | Criteria, worktrees, gates and the human testing handoff |
-| [Delivery intake](./tutorials/delivery-intake.md) | Bounded local/item/remote input, explicit maps and recoverable source identity |
-| [Delivery planning](./tutorials/delivery-plan.md) | Explicit criterion ownership, dependency contracts, initial envelopes and plan revisions |
-| [Integrated milestone candidates](./tutorials/delivery-integration-candidates.md) | Exact committed vectors, protected inputs, stale inspection and conservative comparison |
-| [Owned assembly and combined verification](./tutorials/delivery-assembly.md) | Separate integration worktrees, retained conflicts, bounded repairs and actual whole-milestone behavior |
-| [Original delivery evaluation fixtures](./tutorials/delivery-evaluation-fixtures.md) | Pinned original applications, protected expectations and actual baseline/reference controls |
-| [Delegated machine decisions](./tutorials/delivery-decisions.md) | Pinned purpose-specific policy, independent machine provenance and no-prompt limitations |
-| [Delivery authorization](./tutorials/delivery-authorization.md) | Exact operator grants, finite deadlines, revocation and the worker trust boundary |
-| [Delivery recovery](./tutorials/delivery-recovery.md) | Independent-process history inspection and cache repair without reconstructing authority |
-| [Delivery runner controls](./tutorials/delivery-runner.md) | Owned route preparation, explicit controls and current foreground execution limits |
-| [Delivery queue](./tutorials/delivery-queue.md) | Durable work slots, dependency reasons and the boundary before actual worker dispatch |
-| [Docker application environments](./tutorials/delivery-docker.md) | Scoped provisioning, actual resource/readiness observations and model-free Docker evaluation |
-| [Environment stop and retirement](./tutorials/delivery-lifecycle.md) | Observed shutdown, retained data and interrupted exact-resource cleanup |
-| [Execute API and CLI acceptance](./tutorials/delivery-behaviors.md) | Declared commands, owned endpoints, real restart/persistence and model-free behavior evaluation |
-| [Behavioral acceptance and evidence](./tutorials/delivery-acceptance.md) | Pin complete cases, distinguish human observations and retain immutable private evidence |
-| [Environment planning](./tutorials/delivery-environments.md) | Inert discovery, pinned setup origins and explicit isolated resource plans |
-| [Native delivery hosts](./tutorials/delivery-native.md) | Pinned reference recipes, runtime-proof requirements and explicit unsupported targets |
-| [Delivery workers](./tutorials/delivery-workers.md) | Exact role contexts, worker claims and separate controller execution evidence |
-| [Delivery budgets](./tutorials/delivery-budgets.md) | Persistent finite limits, unknown usage and bounded evidence capture |
-| [Delivery checkpoints](./tutorials/delivery-checkpoints.md) | Exact input manifests, stale refusal, same-run recovery and explicit lock inspection |
+| [First framing](./tutorials/first-framing.md) | Context, answers, owner outcome, final review and recovery in a new session |
+| [Small change](./tutorials/small-change.md) | Criteria, worktrees, gates and the handoff for your own testing |
 | [Utilities](./flow/utilities.md) | Skills versus core calls for `next`, `status`, `setup` and `sync` |
 | [Troubleshooting](./troubleshooting.md) | Executable paths, discovery, permissions, state and exit codes |
 | [FAQ](./faq.md) | Short answers and links for common choices |
 | [Concepts](./concepts.md) | Initiatives, scopes, slices, parts, artifacts, providers and decisions |
 | [Glossary](./glossary.md) | Vocabulary and mappings to common team terminology |
+
+## Autonomous delivery (experimental)
+
+An approved scope can be handed to an autonomous run that builds, verifies and reviews it in isolated worktrees and containers, up to a pull request. It is **experimental** in 1.0: its commands and schemas may change in a minor release. Source intake, planning, authorization and the research-report and to-PR routes are implemented; unattended runs are still being certified with signed-in native clients and hosted services. Start with the [design](./architecture/autonomous-delivery.md); the tutorials follow the order of a run.
+
+| Page | What it answers |
+| --- | --- |
+| [Delivery intake](./tutorials/delivery-intake.md) | Bounded local/item/remote input, explicit maps and recoverable source identity |
+| [Delivery planning](./tutorials/delivery-plan.md) | Explicit criterion ownership, dependency contracts, initial envelopes and plan revisions |
+| [Delivery authorization](./tutorials/delivery-authorization.md) | Exact operator grants, finite deadlines, revocation and the worker trust boundary |
+| [Delegated machine decisions](./tutorials/delivery-decisions.md) | Pinned purpose-specific policy, independent machine provenance and no-prompt limitations |
+| [Delivery runner controls](./tutorials/delivery-runner.md) | Owned route preparation, explicit controls and current foreground execution limits |
+| [Delivery queue](./tutorials/delivery-queue.md) | Durable work slots, dependency reasons and the boundary before actual worker dispatch |
+| [Delivery workers](./tutorials/delivery-workers.md) | Exact role contexts, worker claims and separate controller execution evidence |
+| [Native delivery hosts](./tutorials/delivery-native.md) | Pinned reference recipes, runtime-proof requirements and explicit unsupported targets |
+| [Delivery budgets](./tutorials/delivery-budgets.md) | Persistent finite limits, unknown usage and bounded evidence capture |
+| [Delivery checkpoints](./tutorials/delivery-checkpoints.md) | Exact input manifests, stale refusal, same-run recovery and explicit lock inspection |
+| [Delivery recovery](./tutorials/delivery-recovery.md) | Independent-process history inspection and cache repair without reconstructing authority |
+| [Environment planning](./tutorials/delivery-environments.md) | Inert discovery, pinned setup origins and explicit isolated resource plans |
+| [Docker application environments](./tutorials/delivery-docker.md) | Scoped provisioning, actual resource/readiness observations and model-free Docker evaluation |
+| [Environment stop and retirement](./tutorials/delivery-lifecycle.md) | Observed shutdown, retained data and interrupted exact-resource cleanup |
+| [Behavioral acceptance and evidence](./tutorials/delivery-acceptance.md) | Pin complete cases, distinguish human observations and retain immutable private evidence |
+| [Execute API and CLI acceptance](./tutorials/delivery-behaviors.md) | Declared commands, owned endpoints, real restart/persistence and model-free behavior evaluation |
+| [Execute isolated browser acceptance](./tutorials/delivery-browsers.md) | A pinned UI journey run through a reviewed browser image, with real backend checks beyond screenshots |
+| [Private acceptance and regression sensitivity](./tutorials/delivery-private-acceptance.md) | Private cases the builder never sees, run on the base and the candidate before a regression counts as caught |
+| [Integrated milestone candidates](./tutorials/delivery-integration-candidates.md) | Exact committed vectors, protected inputs, stale inspection and conservative comparison |
+| [Owned assembly and combined verification](./tutorials/delivery-assembly.md) | Separate integration worktrees, retained conflicts, bounded repairs and actual whole-milestone behavior |
+| [Original delivery evaluation fixtures](./tutorials/delivery-evaluation-fixtures.md) | Pinned original applications, protected expectations and actual baseline/reference controls |
+| [Maintenance proposals](./tutorials/maintenance-proposals.md) | Turning a pinned inspection finding into a reviewable delivery request |
+| [Acceptance case map](./reference/delivery-acceptance.md) | Each delivery acceptance case with its controls, tests and evidence limits |
 
 ## All thirteen steps
 
@@ -135,6 +145,11 @@ Start locally. Remote providers are optional until your work needs their capabil
 - **Everyday development:** small change → the relevant step reference → configuration or troubleshooting as needed.
 - **Team adoption:** concepts → repository guidance → profiles → providers → actual client permission checks.
 - **Contributing:** contribution guide → working agreement → roadmap/journal → architecture → authoring and checks.
+- **Autonomous delivery:** concepts → delivery design → intake → planning → authorization → runner controls.
+
+## Getting help
+
+Ask questions and share ideas in [Discussions](https://github.com/dreamingechoes/wholeloop/discussions). Report a bug or request a provider through [issues](https://github.com/dreamingechoes/wholeloop/issues/new/choose), and a security problem privately as [SECURITY.md](../SECURITY.md) describes.
 
 <!-- docnav -->
 [🧭 Concepts](concepts.md)  ·  [Philosophy ▶](philosophy.md)

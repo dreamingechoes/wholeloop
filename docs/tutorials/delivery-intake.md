@@ -83,4 +83,4 @@ Content is limited to 1 MiB of UTF-8 bytes. The request JSON wrapper is limited 
 You have reached the stopping point when the same ID survives another invocation and changed text produces a new ID. Retain the temporary directory if you want to inspect the snapshots. [Planning](./delivery-plan.md), [authorization](./delivery-authorization.md) and the [runner](./delivery-runner.md) are separate steps; the original [small-change route](./small-change.md) remains available.
 
 <!-- docnav -->
-[◀ Small change](small-change.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery planning ▶](delivery-plan.md)
+[◀ Troubleshooting](../troubleshooting.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery planning ▶](delivery-plan.md)

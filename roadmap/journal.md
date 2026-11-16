@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-16 · Docs · First-use pass after 1.0.0
+
+- **Why:** a read-through as a new user found the first pages hard to follow. The docs index opened with autonomous delivery, 21 of the 25 tutorials are experimental delivery pages and most were listed among the everyday ones, and getting started and troubleshooting were dense with compressed phrasing and caveats.
+- **Docs index:** everyday tutorials come first. Autonomous delivery has its own section, marked experimental, with its tutorials in the order of a run; the browser and private acceptance tutorials were missing from the index and are listed now. The navigation footers follow the same order.
+- **Getting started and troubleshooting:** rewritten in plain language with the same headings, so existing links keep working. What installation does not do is gathered in one section, and the delivery problems in troubleshooting sit under their own heading.
+- **Glossary:** adds install scope, owned file, step contract and target, and says that an install scope is not a scope of work.
+- **Help and discovery:** Discussions is enabled for questions and linked from the README, CONTRIBUTING, the issue chooser and the docs. The package lists npm keywords that match the repository topics.
+- **Not changed:** the CHANGELOG is generated from commits and checked, so a hand-written highlights section was left out. The CLI findings from the same read-through are #39 to #42 in the 1.0.1 milestone.
+
+---
+
 ## 2026-11-15 · P7-05 follow-up · Code scanning triage after 1.0.0
 
 - **Found:** 79 open code-scanning alerts after the repository went public.

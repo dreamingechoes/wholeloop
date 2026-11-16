@@ -102,4 +102,4 @@ Image acquisition, scoped egress and secret-reference providers are requested ca
 Existing env declare/report commands retain their original declaration-only meaning. See [ADR-0102](../decisions/0102-inert-environment-recipes-and-pinned-setup-origins.md), the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) and [V1 acceptance](../v1-acceptance.md). Stop here: no application readiness or behavioral acceptance has been observed.
 
 <!-- docnav -->
-[◀ Native delivery hosts](delivery-native.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docker application environments ▶](delivery-docker.md)
+[◀ Delivery recovery](delivery-recovery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docker application environments ▶](delivery-docker.md)

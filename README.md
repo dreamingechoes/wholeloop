@@ -244,6 +244,8 @@ The [documentation index](./docs/README.md) has the complete map.
 
 ## Contributing
 
+Questions and ideas go to [Discussions](https://github.com/dreamingechoes/wholeloop/discussions); bugs and provider requests go to [issues](https://github.com/dreamingechoes/wholeloop/issues/new/choose).
+
 Contributions are welcome. The [contributing guide](./CONTRIBUTING.md) covers how work is planned, committed and reviewed, and the [development guide](./docs/contributing/development.md) covers building from source, the gates, Docker and the commit hook.
 
 ## License
