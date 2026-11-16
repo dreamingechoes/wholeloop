@@ -42,6 +42,8 @@ export async function runnerGitFixture(
     decisions?: DecisionId[]
     /** Extra granted effects, for example publication; never part of the default grant. */
     effects?: DeliveryEffect[]
+    /** The grant's effect limit; an envelope continuation spends it across repairs (ADR-0248). */
+    effectLimit?: number
   } = {},
 ) {
   await fixture(
@@ -87,6 +89,7 @@ export async function runnerGitFixture(
             ? { basis: { kind: 'envelope' as const, digest: plan.envelope ?? '' } }
             : {}),
           decisions: options.decisions ?? [],
+          ...(options.effectLimit ? { effectLimit: options.effectLimit } : {}),
           ...(options.effects
             ? { effects: [...authorization(plan, prepared.digest).effects, ...options.effects] }
             : {}),

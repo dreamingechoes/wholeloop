@@ -20,7 +20,7 @@ export function continueCiDelivery(
   lifecycle: DeliveryLifecycle,
   run: string,
   input: { request: string; unit: string },
-  accept?: { operator: string; reason: string },
+  accept?: { operator: string; reason: string; authority?: 'envelope-grant' },
 ) {
   const { state, planning, revision, current, stage, reasons, budget, used } = continuationContext(
       lifecycle,
@@ -106,7 +106,12 @@ export function continueCiDelivery(
       operator: accept.operator,
       reason: accept.reason,
       impact: contractDigest(impact),
-      authority: admission.authority,
+      // ADR-0248: the controller itself continues a none run under its own envelope grant;
+      // DeliveryLifecycle.track admits that grant only with this mark.
+      authority:
+        accept.authority === 'envelope-grant'
+          ? ('envelope-grant-continuation' as const)
+          : admission.authority,
       execution: admission.execution,
     }
   safeSourceText(JSON.stringify(receipt), 65536)

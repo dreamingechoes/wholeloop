@@ -37,7 +37,13 @@ export async function runnerCiFailureFixture(
   }) => void | Promise<void>,
   overrides: Partial<CiObservation> = {},
   conclusion: CiCheck['conclusion'] | null = 'failure',
-  options: { integratedHead?: boolean } = {},
+  options: {
+    integratedHead?: boolean
+    /** A none run under its own envelope grant, for unattended continuation (ADR-0248). */
+    unattended?: boolean
+    /** The plan's CI push budget; the fixture's publication already spent one push. */
+    ciPushes?: number
+  } = {},
 ) {
   await runnerGitFixture(
     async ({ store, request, root, digest, dispatch, observe }) => {
@@ -204,9 +210,12 @@ export async function runnerCiFailureFixture(
     {
       singleUnit: true,
       effects: ['git.push', 'pr.create', 'pr.ready'],
+      ...(options.unattended ? { withinEnvelope: true } : {}),
       configure: (plan) => {
         plan.policy.endpoint = 'to-merge'
         plan.policy.merge = mergePolicy()
+        if (options.unattended) plan.policy.intervention = 'none'
+        if (options.ciPushes !== undefined) plan.budgets.ciPushes = options.ciPushes
         for (const repo of plan.repositories) {
           git(repo.root, ['remote', 'add', 'origin', 'https://github.com/fixture/app.git'])
           repo.remote = { name: 'origin', url: 'https://github.com/fixture/app' }

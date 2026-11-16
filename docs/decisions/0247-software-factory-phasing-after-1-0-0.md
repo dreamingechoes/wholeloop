@@ -1,7 +1,9 @@
 # 0247 — Software factory phasing after 1.0.0
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-08
+
+**Accepted on 2026-11-16** by the maintainer. 1.1.0 also carries the command-line help and readable output from the 1.0.1 milestone, whose `feat` commits already required a minor version; the capability below is still what completes it.
 
 ## Context
 
@@ -9,7 +11,7 @@ Autonomous delivery ships experimental in 1.0.0 ([0066](./0066-v1-compatibility-
 
 The goal follows the [philosophy](../philosophy.md#how-this-philosophy-has-evolved): a harness configurable from fully supervised to a factory that works around the clock, where people still own every decision, at the moment or in advance.
 
-## Decision (proposed)
+## Decision
 
 - **Phase by dependency, one coherent capability per minor release.** Autonomous delivery stays experimental through these releases, so each phase is additive and ships as a minor version under [0066](./0066-v1-compatibility-baseline-and-deprecation.md); fixes ship as patches. None needs a major version, because no frozen surface changes.
 

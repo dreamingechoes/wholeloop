@@ -20,6 +20,29 @@ import { checkPlanEnvelope } from './plan.js'
 const CONTROLLER: DeliveryActor = { kind: 'controller', name: 'wholeloop' }
 /** What an envelope grant must already allow to start a none continuation (ADR-0198). */
 export const ENVELOPE_CONTINUATION_EFFECTS = ['code.write', 'git.commit', 'test.run'] as const
+/** A CI correction also pushes the repaired head to the original pull request (ADR-0248). */
+export const ENVELOPE_CI_CONTINUATION_EFFECTS = [
+  ...ENVELOPE_CONTINUATION_EFFECTS,
+  'git.push',
+] as const
+/** The authority a recorded continuation receipt names, or undefined when there is none. */
+function continuationAuthority(
+  lifecycle: DeliveryLifecycle,
+  run: string,
+  revision: number,
+): string | undefined {
+  try {
+    const text = lifecycle.authority.planning.sources.files.read(
+      `delivery/continuations/${run}/${revision}.json`,
+    )
+    const value: unknown = text === undefined ? undefined : JSON.parse(text)
+    return typeof value === 'object' && value !== null && 'authority' in value
+      ? String(value.authority)
+      : undefined
+  } catch {
+    return undefined
+  }
+}
 export class DeliveryLifecycle {
   readonly journal: DeliveryJournal
   readonly authority: DeliveryAuthority
@@ -158,14 +181,26 @@ export class DeliveryLifecycle {
         )
           throw new DeliveryJournalError('grant-basis')
         // An envelope grant may start a continuation only if it already carries
-        // the repair effects (ADR-0198); the reducer checks the rest.
+        // the repair effects (ADR-0198); the reducer checks the rest. A CI
+        // correction also needs git.push and the controller's own continuation
+        // record, so an operator's CI proposal never runs under the envelope (ADR-0248).
+        const continuation = deliveryRunner(state).continuations?.at(-1)
         if (
+          continuation &&
           receipt.grant.basis.kind === 'envelope' &&
-          deliveryRunner(state).continuations?.at(-1)?.revision === state.basis.revision &&
-          state.grant?.id !== input.grant &&
-          !ENVELOPE_CONTINUATION_EFFECTS.every((effect) => receipt.grant.effects.includes(effect))
-        )
-          throw new DeliveryJournalError('continuation-requires-new-grant')
+          continuation.revision === state.basis.revision &&
+          state.grant?.id !== input.grant
+        ) {
+          const ci = continuation.stage === 'ci',
+            effects = ci ? ENVELOPE_CI_CONTINUATION_EFFECTS : ENVELOPE_CONTINUATION_EFFECTS
+          if (
+            !effects.every((effect) => receipt.grant.effects.includes(effect)) ||
+            (ci &&
+              continuationAuthority(this, input.run, continuation.revision) !==
+                'envelope-grant-continuation')
+          )
+            throw new DeliveryJournalError('continuation-requires-new-grant')
+        }
         const observation = {
           schema: 'wholeloop/delivery-grant-event@1' as const,
           id: input.grant,

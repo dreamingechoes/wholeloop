@@ -319,6 +319,15 @@ export class RunnerPublicHost implements DeliveryRunnerHost {
     if (!host.stop) throw new DeliveryRunnerError('public-host-unsupported-stage')
     return host.stop(...input)
   }
+  /** ADR-0248: the composed host stops its own environments; without one, nothing continues. */
+  async release(...input: Parameters<NonNullable<DeliveryRunnerHost['release']>>) {
+    try {
+      const host = this.host(input[0])
+      return host.release ? await host.release(...input) : true
+    } catch {
+      return false
+    }
+  }
   async endpoint(...input: Parameters<DeliveryRunnerHost['endpoint']>) {
     let host: DeliveryRunnerHost
     try {

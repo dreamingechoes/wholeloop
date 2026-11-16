@@ -3,7 +3,7 @@
 > **Outcome** — Autonomous delivery works unattended around the clock: an authorized run survives its own repairable failures, a supervisor keeps work moving without anyone starting runs, failures are explained with evidence and questions park one run instead of stopping the rest, and the capability graduates from experimental to stable.
 
 > [!NOTE]
-> **Status: ⬜ planned · added on 2026-11-08, after 1.0.0.** Every task waits for its decision record to be accepted; the records are proposals 0247–0254 in `docs/decisions/`, plus the accepted [ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md) and [ADR-0209](../docs/decisions/0209-controller-owned-native-credentials.md), whose tasks P6-41 and P6-35 belong to 1.1.0. None of this blocks 1.0.0, where autonomous delivery ships experimental.
+> **Status: ⬜ planned · added on 2026-11-08, after 1.0.0.** Every task waits for its decision record to be accepted. [ADR-0247](../docs/decisions/0247-software-factory-phasing-after-1-0-0.md) (the phasing) and [ADR-0248](../docs/decisions/0248-ci-correction-continuation-under-the-envelope-grant.md) (P8-01) were accepted on 2026-11-16; the rest are proposals 0249–0254 in `docs/decisions/`, plus the accepted [ADR-0198](../docs/decisions/0198-envelope-grant-continuation.md) and [ADR-0209](../docs/decisions/0209-controller-owned-native-credentials.md), whose tasks P6-41 and P6-35 belong to 1.1.0. None of this blocks 1.0.0, where autonomous delivery ships experimental.
 
 ## Releases
 
@@ -20,7 +20,7 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-01 · CI correction continuation
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P6-41 · **Release:** 1.1.0 · **Decision:** proposal 0248
+**Status:** 🔄 · **Size:** M · **Depends on:** P6-41 · **Release:** 1.1.0 · **Decision:** [ADR-0248](../docs/decisions/0248-ci-correction-continuation-under-the-envelope-grant.md)
 
 **Goal** — Let a run with no intervention repair a failed required check and continue under its envelope grant, within its push budget.
 

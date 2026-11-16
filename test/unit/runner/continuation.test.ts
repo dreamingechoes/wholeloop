@@ -456,6 +456,54 @@ describe('cross-invocation correction (ADR-0193, ADR-0197)', () => {
       },
     ))
 
+  it.each([
+    { released: false, revision: 1 },
+    { released: true, revision: 2 },
+  ])(
+    "releases the failed request's environments first and continues only when that succeeds (released $released)",
+    ({ released, revision }) =>
+      setup(
+        async ({ store, plan, request }) => {
+          const synthetic = syntheticHost(request.host),
+            prepared = store.prepare(request),
+            calls: string[] = []
+          delegateEverything(store, synthetic.host)
+          let failures = 1
+          const execute = synthetic.host.execute
+          synthetic.host.execute = async (context) => {
+            synthetic.state.failing = context.stage.kind === 'integration' && failures-- > 0
+            return execute(context)
+          }
+          // ADR-0248: the host stops the failed request's environments before the
+          // continuation is recorded; a failed stop leaves the run for an operator.
+          synthetic.host.release = async (value) => {
+            calls.push(contractDigest(value))
+            expect(store.files.read(`delivery/continuations/${plan.run}/2.json`)).toBeUndefined()
+            return released
+          }
+          await new DeliveryRunner(store).runWithRepairs(prepared.digest, synthetic.host)
+          const run = store.lifecycle.journal.get(plan.run)
+          expect(calls).toEqual([prepared.digest])
+          expect(run.basis.revision).toBe(revision)
+          if (!released) {
+            expect(run.state).toBe('failed')
+            expect(store.files.read(`delivery/continuations/${plan.run}/2.json`)).toBeUndefined()
+          }
+        },
+        {
+          unattended: [
+            'source.read',
+            'report.write',
+            'workspace.create',
+            'code.write',
+            'test.run',
+            'git.commit',
+          ],
+          repairs: 2,
+        },
+      ),
+  )
+
   it('keeps the new-grant rule when a condition is missing', () =>
     setup(
       async ({ store, plan, request }) => {

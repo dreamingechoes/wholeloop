@@ -1,7 +1,7 @@
 // Dispatches each stage to the domain adapter the installed controller registered.
 import { contractDigest } from '../contracts/compatibility.js'
 import type { DeliveryPlan } from '../delivery/plan.js'
-import type { DockerTransport } from '../environment/docker-command.js'
+import { DockerCli, type DockerTransport } from '../environment/docker-command.js'
 import type { IntegrationVerificationRequest } from '../integration/verification.js'
 import { RunnerAcceptanceDefinitionStages } from './acceptance-definition-stages.js'
 import { RunnerAcceptanceStages } from './acceptance-stages.js'
@@ -9,6 +9,7 @@ import { RunnerBuilderPlanningStages } from './builder-planning-stages.js'
 import { RunnerCorrectionStages } from './correction-stages.js'
 import { RunnerDefinitionStages } from './definition-stages.js'
 import type { DeliveryRunnerHost, RunnerStageContext } from './engine.js'
+import { stopRunEnvironments } from './environment-release.js'
 import type { RunnerStageRecord } from './events.js'
 import { RunnerGitStages } from './git-stages.js'
 import { RunnerHandoffStages } from './handoff-stages.js'
@@ -310,6 +311,15 @@ export class RunnerStageDispatcher implements DeliveryRunnerHost {
     if (adapter instanceof RunnerIntegrationStages && !signal.aborted)
       this.products?.stop(request, record)
     await adapter.stop(request, record, signal)
+  }
+  /**
+   * ADR-0248: stop the environments a failed request left running before its
+   * unattended continuation. The product environments' driver is the one that
+   * created them; a host composed without product environments uses the local daemon.
+   */
+  async release(request: Readonly<RunnerRequest>, signal?: AbortSignal) {
+    if (signal?.aborted) return false
+    return stopRunEnvironments(this.store, request, this.products?.driver ?? new DockerCli())
   }
   async endpoint(request: Readonly<RunnerRequest>, plan: DeliveryPlan, signal: AbortSignal) {
     if (contractDigest(request.host) !== contractDigest(this.identity))
