@@ -2,8 +2,8 @@
 
 > **TL;DR** — Prepare an initial request envelope and a revision-bound plan with explicit criteria, repositories, policy and finite budgets. Inspect dependency waves and the proposed route in another process. Planning starts no worker and grants no execution authority.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Plan and envelope validation, immutable revisions, Git basis observations and routing are tested. Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Plan and envelope validation, immutable revisions, Git basis observations and routing are tested. Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

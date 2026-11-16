@@ -2,8 +2,8 @@
 
 > **TL;DR** — Track a prepared plan, inspect it from independent processes, read its retained events and rebuild a missing projection. None of these operations starts a worker, grants authority or performs an external effect.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Metadata and cache recovery are tested; [checkpoint recovery](./delivery-checkpoints.md) covers ownership and stopped writers. Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Metadata and cache recovery are tested; [checkpoint recovery](./delivery-checkpoints.md) covers ownership and stopped writers. Autonomous delivery may change in a minor release.
 
 ## Before you start
 

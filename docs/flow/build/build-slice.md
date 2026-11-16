@@ -2,8 +2,7 @@
 
 > **TL;DR** — Builds each slice in its **own git worktree** on its own branch, so several builders work at once — even in the same repository — while your checkout stays exactly as you left it. Builders follow the skills and conventions your repository already has, and every slice runs [`verify-works`](./verify-works.md) then [`review-code`](./review-code.md) until both are green. Give it a scope, a slice, an issue URL or a one-line fix. It finishes at green: no push, no PR.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Worktrees, named bases, stacked branches, port reservations, repository-first preflights, builder plans and bounded verify and review repair are tested with real Git. Model behaviour inside a client is outside what tests can certify.
+Model behaviour inside a client is outside what tests can certify.
 
 ---
 

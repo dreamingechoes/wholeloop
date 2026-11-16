@@ -13,6 +13,6 @@
 - [ ] Commit messages explain why and what was verified, one concern each
 - [ ] `npm run check` ends in `CHECK PASS`
 - [ ] No tool attribution in commits, the title or this description
-- [ ] Docs and status banners updated in this change
+- [ ] Docs and any status notes updated in this change
 - [ ] Harness files within their size budgets
 - [ ] An amended or new ADR if a design decision changed

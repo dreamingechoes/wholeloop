@@ -2,8 +2,7 @@
 
 > **TL;DR** — Define shapes the problem, Build ships it right, Rollout releases it with care, Learn measures and decides. Each step is a skill you can run on its own; `next` chains them and stops wherever a person has to decide.
 
-> [!NOTE]
-> **Status: ✅ implemented.** All thirteen steps ship in 1.0 with their human decisions, recoverable handoffs and measured closure. Remote integrations are experimental; each step page states its own limits.
+Remote integrations are experimental; each step page states its own limits.
 
 ---
 

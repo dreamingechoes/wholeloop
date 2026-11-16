@@ -2,9 +2,6 @@
 
 > **TL;DR** — Ten ideas carry the whole design. Once they click, the rest of the docs are reference material: the **work tree**, **steps and blocks**, **standalone vs flow**, **decision points**, the **step contract**, **state and mailbox**, **repo-first slots**, **providers**, the **interaction profile**, and the **gates**.
 
-> [!NOTE]
-> **Status: ✅ implemented.** The work hierarchy, the thirteen step contracts, decision gates, the external journal and mailbox, slots, providers and profiles all ship in 1.0.
-
 ---
 
 ## At a glance

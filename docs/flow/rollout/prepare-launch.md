@@ -2,8 +2,7 @@
 
 > **TL;DR** — Turns a merged scope into a launch kit: a rollout plan, announcement drafts for every audience, dashboards built from the spec's measurement plan, and enablement material for the people who will answer questions about it. Everything is prepared; nothing is sent. A person reads, adjusts and sends.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Pinned measurement inputs, repository voice and templates, a read-only drafting host, complete kits, dashboard specs and the draft/create boundary are tested, and no launcher can send. Provider publication is experimental.
+No launcher can send a message. Provider publication is experimental.
 
 ---
 

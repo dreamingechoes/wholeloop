@@ -2,8 +2,8 @@
 
 > **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** The registry, manifests, local defaults and routing are tested. wholeloop never talks to a service itself: remote operations run through your client's MCP connection or a command-line client you installed ([ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md)), and they are experimental and not certified against each real service ([ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md)).
+> [!IMPORTANT]
+> **Experimental.** The registry, manifests, local defaults and routing are tested. wholeloop never talks to a service itself: remote operations run through your client's MCP connection or a command-line client you installed ([ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md)), and they are experimental and not certified against each real service ([ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md)).
 
 ---
 

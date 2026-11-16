@@ -2,9 +2,6 @@
 
 > **TL;DR** — Prepare offline package checks, native delivery previews, release-note drafts and a source consistency plan locally. A dispatched release pull request carries the version and changelog; merging it prepares the reviewed bundle, and publication waits only for the `release` environment approval, then is verified from the registry. Visibility, npm ownership and provenance stay the maintainer's setup.
 
-> [!NOTE]
-> **Status: ✅ implemented.** The release pull request, reviewed-bundle publication on merge and npm trusted publishing with provenance have run on GitHub. Post-publication verification passes against the published package in a clean container, and the optional release app has not opened a release pull request yet.
-
 ## Versions
 
 Every version is a full semantic version, `x.y.z`; write `1.0.0`, never `1.0`. A pre-release adds an identifier such as `1.0.0-rc.1` and is published on the npm `next` dist-tag; a final version goes to `latest`. The first public release is preceded by `1.0.0-rc.1`.

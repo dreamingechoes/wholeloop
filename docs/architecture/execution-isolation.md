@@ -3,7 +3,7 @@
 > **TL;DR** — Whenever `wholeloop` itself must run your project's code — its test suite, its services, its acceptance checks — it runs them in owned Docker containers, never on your machine. Docker is a deliberate, required dependency for those steps: it is what lets the runner trust observed results instead of a model's claims, without exposing your home directory, credentials or network. Steps that only read and write documents and the store do not need Docker.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Owned containers, volumes and networks, the refusals below and recovery are tested on macOS and Linux. Standalone headless gate workers still inherit the caller's environment; see [Known gaps](#known-gaps). Decision: [ADR-0245](../decisions/0245-require-docker-for-project-code-execution.md).
+> **Partial.** Owned containers, volumes and networks, the refusals below and recovery are tested on macOS and Linux. Standalone headless gate workers still inherit the caller's environment; see [Known gaps](#known-gaps). Decision: [ADR-0245](../decisions/0245-require-docker-for-project-code-execution.md).
 
 ---
 

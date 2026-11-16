@@ -45,7 +45,7 @@
     },
     {
       "path": ".agents/agents/maint-docs-auditor.md",
-      "sha256": "802ae8267b1dd1b456dd5fa7a85dd7cc307379e49a5dc42dc78c8f95db528bb2"
+      "sha256": "cc18f5efad003973b7aa9a1cacbf173e2801ad3f7d6ad37321e6ced3403f4223"
     },
     {
       "path": ".agents/agents/maint-release-manager.md",
@@ -65,7 +65,7 @@
     },
     {
       "path": ".agents/skills/maint-close-task/SKILL.md",
-      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+      "sha256": "18685798ea3ebe4ee840014fc384346cbfd837149946f7069707c873b93c4163"
     },
     {
       "path": ".agents/skills/maint-extend/SKILL.md",
@@ -93,7 +93,7 @@
     },
     {
       "path": ".claude/agents/maint-docs-auditor.md",
-      "sha256": "fc887a844ece6e1116561cb4c305e2b04147a4339bed25cbbe1b4fb7016980c1"
+      "sha256": "8083c14a7c8302f708dbe75cdbd76d83fa89350c6c90e2aae0e58c328859fadf"
     },
     {
       "path": ".claude/agents/maint-release-manager.md",
@@ -113,7 +113,7 @@
     },
     {
       "path": ".claude/skills/maint-close-task/SKILL.md",
-      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+      "sha256": "18685798ea3ebe4ee840014fc384346cbfd837149946f7069707c873b93c4163"
     },
     {
       "path": ".claude/skills/maint-extend/SKILL.md",
@@ -141,7 +141,7 @@
     },
     {
       "path": ".codex/agents/maint-docs-auditor.toml",
-      "sha256": "d3d0d0d6d984b38633bcc8ce13f150854d554394d75765751eef0ba57680cefb"
+      "sha256": "22f053fd13f0f377c441a739432d0b9bb6f281b8fb91ef38bb9ebdf8677110fa"
     },
     {
       "path": ".codex/agents/maint-release-manager.toml",
@@ -157,7 +157,7 @@
     },
     {
       "path": ".cursor/agents/maint-docs-auditor.md",
-      "sha256": "ccbd592d97a31a2a24a70aaf695e5ee844e5fdc90e4ccd0d582e144b7decd395"
+      "sha256": "2014e18812d822bbdfa789f2b3c0b414c42212febeee68871606741a9af2b713"
     },
     {
       "path": ".cursor/agents/maint-release-manager.md",
@@ -177,7 +177,7 @@
     },
     {
       "path": ".cursor/skills/maint-close-task/SKILL.md",
-      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+      "sha256": "18685798ea3ebe4ee840014fc384346cbfd837149946f7069707c873b93c4163"
     },
     {
       "path": ".cursor/skills/maint-extend/SKILL.md",
@@ -205,7 +205,7 @@
     },
     {
       "path": ".gemini/agents/maint-docs-auditor.md",
-      "sha256": "5ea0e8278140c88ed504297c625000a2f85bd50d06b49262fbb0ec3c958a7099"
+      "sha256": "b8e4fbae5b1fe2b93dbb53da5c47d202d0f64b0250fd7164a772e594b5aee8ce"
     },
     {
       "path": ".gemini/agents/maint-release-manager.md",
@@ -225,7 +225,7 @@
     },
     {
       "path": ".gemini/skills/maint-close-task/SKILL.md",
-      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+      "sha256": "18685798ea3ebe4ee840014fc384346cbfd837149946f7069707c873b93c4163"
     },
     {
       "path": ".gemini/skills/maint-extend/SKILL.md",
@@ -253,7 +253,7 @@
     },
     {
       "path": ".github/agents/maint-docs-auditor.agent.md",
-      "sha256": "80e3171e00d1233046f613be123d794971d67f3110da0a1ec19ab9625e842034"
+      "sha256": "f257abbacf2ba6cadd6d0d9475475b504ba3d79fd78c55fec51ddfbb2ae3aeeb"
     },
     {
       "path": ".github/agents/maint-release-manager.agent.md",
@@ -273,7 +273,7 @@
     },
     {
       "path": ".github/skills/maint-close-task/SKILL.md",
-      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+      "sha256": "18685798ea3ebe4ee840014fc384346cbfd837149946f7069707c873b93c4163"
     },
     {
       "path": ".github/skills/maint-extend/SKILL.md",
@@ -301,7 +301,7 @@
     },
     {
       "path": ".opencode/agents/maint-docs-auditor.md",
-      "sha256": "2c84be961f64d5a85bb03a3f5823781aa046a75b5f45277071ef3cf6ca29751b"
+      "sha256": "3bec11b180bb1a560de3b213fd9bc546b113c9475423ce6d090c7b3b591239c1"
     },
     {
       "path": ".opencode/agents/maint-release-manager.md",
@@ -321,7 +321,7 @@
     },
     {
       "path": ".opencode/skills/maint-close-task/SKILL.md",
-      "sha256": "f82034d8008ef71652a1042bc41015142d6675d60e8fbe77678571239f9a8768"
+      "sha256": "18685798ea3ebe4ee840014fc384346cbfd837149946f7069707c873b93c4163"
     },
     {
       "path": ".opencode/skills/maint-extend/SKILL.md",

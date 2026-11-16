@@ -2,8 +2,8 @@
 
 > **TL;DR** — The Docker backend executes an explicitly selected recipe under a current delivery grant, verifies actual resources and retains failure evidence. A separate model-free evaluation exercises real applications and boundary denials; no native client or service account is needed.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Provisioning, readiness, isolated networking, loopback publication, stop and retirement are tested, and the reference trial passed on macOS arm64 with a Linux daemon and on a Linux x86_64 host. Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Provisioning, readiness, isolated networking, loopback publication, stop and retirement are tested, and the reference trial passed on macOS arm64 with a Linux daemon and on a Linux x86_64 host. Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

@@ -2,8 +2,7 @@
 
 > **TL;DR** — The quality gate for craft. Six reviewers each look at the change through one fixed lens — correctness, design fit, performance, security, simplicity, change shape — using your repository's own review guidance where it has one. Every finding is challenged before it blocks, and what survives goes back to the builder. It never edits code.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Six lenses, pinned rubrics, incremental rounds, standalone review and gate-backed completion are tested, with explicit comment publication through GitHub and GitLab hosts tested against fixtures.
+Comment publication through GitHub and GitLab hosts is tested against fixtures.
 
 ---
 

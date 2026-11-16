@@ -2,8 +2,7 @@
 
 > **TL;DR** — The last step of Build, and the first time anything leaves your machine. You try the change in its slice's worktree; only then is the slice branch pushed and a draft PR opened per repository, written the way your repo writes PRs and linked to the work it delivers. It ends by handing back its PR and retained workspace; declared external writes and undo argv appear in its receipt. Merging stays with you.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Plans, human testing of the exact snapshot, draft-only publication and reconciliation, template checks and receipts are tested; publication through gh and glab is tested against fixtures. Remote tracker mirroring is experimental.
+Publication through `gh` and `glab` is tested against fixtures, and remote tracker mirroring is experimental.
 
 ---
 

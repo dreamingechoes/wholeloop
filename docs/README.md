@@ -2,8 +2,7 @@
 
 > **TL;DR** — Start with an executable tutorial, then use the configuration and step references when you need them. Try local state without a model, frame one idea in a coding client, or work through a small change. Architecture and maintainer release work have separate reading paths.
 
-> [!NOTE]
-> **Status: ✅ implemented.** The core, all thirteen steps and seven client adapters ship in 1.0. Remote integrations run through your client's MCP connection and are experimental, as is autonomous delivery. [What 1.0 covers](./v1-acceptance.md).
+Remote integrations through your client's MCP connection and autonomous delivery are experimental. [What 1.0 covers](./v1-acceptance.md).
 
 ## Contents
 

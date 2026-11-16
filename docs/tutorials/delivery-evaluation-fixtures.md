@@ -2,8 +2,8 @@
 
 > **TL;DR** — Start from a digest-bound original application, keep its expected outcomes in the controller store and compare known baseline/reference controls. Use separate actual browser and native-agent evaluations for their own evidence levels.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** The catalog, immutable materialization and original controls are tested on macOS and Linux. See [ADR-0111](../decisions/0111-original-delivery-fixtures-and-controller-owned-oracles.md). Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** The catalog, immutable materialization and original controls are tested on macOS and Linux. See [ADR-0111](../decisions/0111-original-delivery-fixtures-and-controller-owned-oracles.md). Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

@@ -3,7 +3,7 @@
 > **TL;DR** — Almost everything you or your team would want to customise is a **declarative manifest**, discovered from four places, validated by a schema and testable with one command: providers, review and verify lenses, artifact templates, profile presets and extra decision points. Code is the exception, reserved for new CLI adapters.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Providers, templates, profiles and lenses load and validate from all four layers. Spec templates and lens manifests are consumed by the core; templates for other workflows are planned. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md).
+> **Partial.** Providers, templates, profiles and lenses load and validate from all four layers. Spec templates and lens manifests are consumed by the core; templates for other workflows are planned. Decision: [ADR-0008](../decisions/0008-extensibility-through-manifests.md).
 
 ---
 

@@ -10,7 +10,7 @@ pages:
   - { path: concepts.md, title: Concepts }
 `)
 
-const BANNER = '# T\n\n> [!NOTE]\n> **Status: 📐 design.**\n\n'
+const HEADER = '# T\n\n> **TL;DR** — One line.\n\n'
 
 function tree(files: Record<string, string>, extra: string[] = []): Tree {
   const map = new Map(Object.entries(files))
@@ -18,7 +18,7 @@ function tree(files: Record<string, string>, extra: string[] = []): Tree {
 }
 
 function page(index: number, body = ''): string {
-  return `${BANNER}${body}\n${renderFooter(NAV, index)}`
+  return `${HEADER}${body}\n${renderFooter(NAV, index)}`
 }
 
 describe('checkNav', () => {
@@ -28,11 +28,11 @@ describe('checkNav', () => {
     )
   })
 
-  it('reports drift, missing banner, missing page and unlisted page', () => {
+  it('reports drift, missing page and unlisted page', () => {
     const problems = checkNav(
       NAV,
       tree({
-        'docs/README.md': `${BANNER}\n<!-- docnav -->\nstale\n`,
+        'docs/README.md': `${HEADER}\n<!-- docnav -->\nstale\n`,
         'docs/orphan.md': page(0),
         'docs/decisions/0001-x.md': 'adr',
       }),
@@ -42,14 +42,28 @@ describe('checkNav', () => {
       'nav:docs/nav.yml',
       'nav:docs/orphan.md',
     ])
-    const noBanner = checkNav(
+  })
+
+  it('accepts a page without a status note and refuses a retired status banner', () => {
+    const noted = (index: number, note: string) =>
+      `${HEADER}${note}\n\nBody.\n\n${renderFooter(NAV, index)}`
+    expect(
+      checkNav(
+        NAV,
+        tree({
+          'docs/README.md': noted(0, '> [!IMPORTANT]\n> **Experimental.** May change.'),
+          'docs/concepts.md': noted(1, '> [!NOTE]\n> **Partial.** Remote reads are missing.'),
+        }),
+      ),
+    ).toEqual([])
+    const retired = checkNav(
       NAV,
       tree({
-        'docs/README.md': page(0).replace('**Status', 'Status'),
+        'docs/README.md': noted(0, '> [!NOTE]\n> **Status: ✅ implemented.** Ships.'),
         'docs/concepts.md': page(1),
       }),
     )
-    expect(noBanner.map((p) => p.rule)).toEqual(['banner'])
+    expect(retired.map((p) => `${p.rule}:${p.file}:${p.line}`)).toEqual(['banner:docs/README.md:6'])
   })
 })
 

@@ -2,8 +2,7 @@
 
 > **TL;DR** — Find which part failed first: the `wl` command, the installed files, the client finding the skills, model access or your stored work. Fix that part before reinstalling or granting permissions. A command that exits with 0 does not prove that a whole step ran in the client.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Diagnostics, ownership checks, redacted conformance diagnosis and the recovery commands below ship in 1.0. They show you where to look; they cannot vouch for your account, a client's permissions or a service being up.
+These checks show you where to look; they cannot vouch for your account, a client's permissions or a service being up.
 
 ## Start with the symptom
 

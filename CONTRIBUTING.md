@@ -17,7 +17,7 @@ Questions and ideas are welcome in [Discussions](https://github.com/dreamingecho
 - **One task, end to end.** Code, tests and documentation land in the same change. Follow the pull-request workflow below.
 - **Determinism first.** Anything with one right answer goes into the core, with a test.
 - **Keep harness files short.** Size budgets are enforced ([ADR-0011](./docs/decisions/0011-size-budgets-and-enforcement.md)).
-- **Docs follow the style guide.** Status banner, TL;DR, templates, Mermaid palette, generated navigation ([docs-style](./docs/contributing/docs-style.md)).
+- **Docs follow the style guide.** TL;DR, a status note only for experimental, partial or design pages, templates, Mermaid palette, generated navigation ([docs-style](./docs/contributing/docs-style.md)).
 - **Decisions get an ADR.** A change of design is a new ADR in the same change ([decisions](./docs/decisions/README.md)).
 
 ## Commits and pull requests
@@ -58,7 +58,7 @@ The repository ships its own skills and agents for the work described here, rend
 | Skill | Use it to |
 | --- | --- |
 | `maint-start-task` | Pick and prepare the next roadmap task as AGENTS.md prescribes |
-| `maint-close-task` | Record evidence, journal, banners, counts and the final gate |
+| `maint-close-task` | Record evidence, journal, status notes, counts and the final gate |
 | `maint-amend-adr` | Amend the existing decision record instead of adding one per fix |
 | `maint-extend` | Add a provider, a client adapter or a shipped skill |
 | `maint-prepare-release` | Prepare a release locally and stop before publication |
@@ -69,7 +69,7 @@ The repository ships its own skills and agents for the work described here, rend
 | Agent | Reviews |
 | --- | --- |
 | `maint-convention-reviewer` | Docs style, no tool attribution, size budgets, Conventional Commits, English on disk |
-| `maint-docs-auditor` | Status banners, TL;DRs, claims against code, links and generated references |
+| `maint-docs-auditor` | Status notes, TL;DRs, claims against code, links and generated references |
 | `maint-security-auditor` | Secrets, network access, unsafe processes, dependency and workflow changes |
 | `maint-release-manager` | Version, notes, changelog, checklist and blocking manual checks |
 

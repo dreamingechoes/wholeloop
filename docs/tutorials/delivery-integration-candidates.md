@@ -2,8 +2,8 @@
 
 > **TL;DR** — Record the complete committed result and inputs of an approved milestone, then check whether that exact vector is still current. Preparation observes Git and protected inputs; actual controller assembly and whole-product execution follow separately.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Candidate preparation, immutable records, inspection and comparison are tested; they grant no execution or publication authority. See [ADR-0109](../decisions/0109-exact-read-only-integrated-milestone-candidates.md). Autonomous delivery may change in a minor release.
+> [!IMPORTANT]
+> **Experimental.** Candidate preparation, immutable records, inspection and comparison are tested; they grant no execution or publication authority. See [ADR-0109](../decisions/0109-exact-read-only-integrated-milestone-candidates.md). Autonomous delivery may change in a minor release.
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 

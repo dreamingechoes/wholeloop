@@ -24,7 +24,7 @@ Instructions for any coding agent (and any human) working **on this repository**
 2. Take the first ⬜ task whose dependencies are ✅; mark it 🔄.
 3. Do it end to end — code, tests and docs in the same change.
 4. Tick every acceptance criterion. Before each commit run `npm run check:fast`; run the full `npm run check` before any push and when a task closes. Trust only the final `CHECK PASS` or `CHECK FAIL (<step>)` line.
-5. Mark it ✅, add a journal entry, update status banners in the docs.
+5. Mark it ✅, add a journal entry, update the status notes of experimental, partial or design pages it changes.
 6. A design change gets a new ADR in the same change.
 7. When a task needs a choice that counts as an implementation refinement (an internal design choice, which task owns a piece of work, a conservative default, a narrower scope), choose the most conservative option that keeps every safety and authority guarantee. Record it in an ADR, or in the journal if it is minor, and keep going. Stop only for: (a) choices that widen authority, containment, credentials or who can approve; (b) publication to npm, real pushes to external services, or real PR, CI or merge trials against a hosted service; (c) work that needs installed, signed-in native clients or real model accounts. For (a), apply the most conservative choice and leave the wider option as a Proposed ADR plus a row in manual verification. For (b) and (c), finish everything that can be built and tested with fixtures and leave only the acceptance evidence open in manual verification; neither is a reason to leave a task's implementation undone.
 
@@ -37,7 +37,7 @@ Instructions for any coding agent (and any human) working **on this repository**
 - **Size budgets** for harness files (ADR-0011): skills ≤ 120 lines, agents ≤ 60, protocols ≤ 80, workflows ≤ 150.
 - **Every hard rule has an enforcer** — code, test or lint — listed in `enforcement.yml`.
 - **Determinism first.** If it has one right answer, it belongs in `src/`, with a test — not in a prompt.
-- **Docs are part of the change.** Follow `docs/contributing/docs-style.md`: status banner, TL;DR, template, Mermaid palette, generated docnav (`docs/nav.yml`).
+- **Docs are part of the change.** Follow `docs/contributing/docs-style.md`: TL;DR, status note only when behaviour is not settled, template, Mermaid palette, generated docnav (`docs/nav.yml`).
 - **Original work.** Design every behaviour for a generic, maximally capable harness. Do not port wording or behaviour from any other project.
 - **Never write runtime state into a repository**; state lives in the user's store (ADR-0004).
 

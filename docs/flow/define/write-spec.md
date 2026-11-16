@@ -2,8 +2,7 @@
 
 > **TL;DR** — Turns a framed problem into a spec a builder can work from and a person can sign off: user stories with testable acceptance criteria, success metrics, a rough rollout outline and a **measurement plan you can actually run** — for every metric, where the number comes from, where it is today, where it should go and over what window. A challenger stress-tests the criteria first. Ends at the **approve** decision point.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Standalone and initiative entry, repository-first templates, versioned spec metadata, shape and wording checks, local publication and revision-bound approval are tested. Remote publication is experimental.
+Remote publication is experimental.
 
 Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
 

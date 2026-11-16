@@ -3,7 +3,7 @@
 > **TL;DR** — The other four extension points follow the same pattern as providers: a small manifest in `.wholeloop/<kind>/`, validated by a schema, tested with `wl <kind> test`, overridable by `id`. Lenses add review or verify dimensions, templates reshape artifacts, profiles bundle dials, decision points add stops for a person.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Template, profile and lens catalogs, validation, inheritance and scaffolding are implemented, and custom profiles, spec templates and lens manifests are consumed. Template selection for other workflows is planned.
+> **Partial.** Template, profile and lens catalogs, validation, inheritance and scaffolding are implemented, and custom profiles, spec templates and lens manifests are consumed. Template selection for other workflows is planned.
 
 ---
 

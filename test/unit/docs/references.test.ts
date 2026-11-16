@@ -167,7 +167,7 @@ describe('generated reference ownership', () => {
         mkdirSync(dirname(path), { recursive: true })
         writeFileSync(
           path,
-          `# Reference\n\n> **Status: 🚧 partial.**\n\nOwner prose.\n\n<!-- ${section.kind}:start -->\nstale\n<!-- ${section.kind}:end -->\n\n${renderFooter(nav, index)}`,
+          `# Reference\n\n> [!NOTE]\n> **Partial.** Owner note.\n\nOwner prose.\n\n<!-- ${section.kind}:start -->\nstale\n<!-- ${section.kind}:end -->\n\n${renderFooter(nav, index)}`,
         )
       })
       writeFileSync(join(root, 'docs/nav.yml'), yaml)

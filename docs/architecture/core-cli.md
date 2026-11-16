@@ -2,8 +2,7 @@
 
 > **TL;DR** — `wl` is the single place where `wholeloop` makes decisions that have one right answer. Skills call it through the shell, pass `--json`, and get structured answers back. Humans can use it too: every command has a readable default output.
 
-> [!NOTE]
-> **Status: ✅ implemented.** The router, layered configuration, external state, mailbox, step engine, discovery, catalogs, gates, worktrees, hosts, adapters for seven clients, managed installation and `wl doctor` ship in 1.0 and are covered by the test suite. Provider operations through a client's MCP connection are experimental.
+Provider operations through a client's MCP connection are experimental.
 
 ---
 

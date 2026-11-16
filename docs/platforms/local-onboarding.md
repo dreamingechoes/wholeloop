@@ -2,8 +2,7 @@
 
 > **TL;DR** — Build once, choose a named target, inspect its dry run and install its owned components. Run doctor for that target, then restart the native client and verify discovery and permissions. File installation and native activation are separate observations.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Installation for all seven clients, packaged resources and diagnostics are tested, and installation from npm takes seconds per tier-A client on a fresh Linux machine. Discovery, trust and sign-in are verified only as far as [V1 acceptance](../v1-acceptance.md) records.
+Installation from npm takes seconds per tier-A client on a fresh Linux machine. Discovery, trust and sign-in are verified only as far as [V1 acceptance](../v1-acceptance.md) records.
 
 ## Before choosing a target
 

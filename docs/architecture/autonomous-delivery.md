@@ -2,8 +2,8 @@
 
 > **TL;DR** — The runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
 
-> [!NOTE]
-> **Status: ✅ implemented, experimental.** Autonomous delivery ships experimental: its commands and schemas may change in a minor release ([compatibility](../extending/compatibility.md#experimental-surfaces)). Every stage below is implemented and tested, and live trials passed with Codex; certification across signed-in clients continues after 1.0 (P6-27).
+> [!IMPORTANT]
+> **Experimental.** Autonomous delivery ships experimental: its commands and schemas may change in a minor release ([compatibility](../extending/compatibility.md#experimental-surfaces)). Every stage below is implemented and tested, and live trials passed with Codex; certification across signed-in clients continues after 1.0 (P6-27).
 
 ## Observed behavior hosts
 

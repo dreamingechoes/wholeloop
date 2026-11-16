@@ -2,8 +2,7 @@
 
 > **TL;DR** — Harness content is short by rule and specific by design. A skill orchestrates; the core decides; the reasoning lives in an ADR. Every file has a line budget, every hard rule has an enforcer, and every change to generated output is a reviewed golden-file diff.
 
-> [!NOTE]
-> **Status: ✅ implemented.** Budgets, front-matter checks and the enforcement lint run in `wl harness check`, part of `npm run check`.
+Budgets, front-matter checks and the enforcement lint run in `wl harness check`, part of `npm run check`.
 
 ---
 

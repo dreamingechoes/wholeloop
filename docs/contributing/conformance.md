@@ -3,7 +3,7 @@
 > **TL;DR** — The checked-in workflow resolves pinned/latest clients, runs fresh standalone framing scenarios, and produces a structural matrix, issue drafts and an owned documentation-page projection. It is disabled until the maintainer configures the activation variables and native credentials. Issue delivery has its own switch and permission boundary.
 
 > [!NOTE]
-> **Status: 🚧 partial.** Provisioning, collection, aggregation and issue delivery are implemented and tested with synthetic transports. The scheduled workflow is disabled until the maintainer adds client credentials.
+> **Partial.** Provisioning, collection, aggregation and issue delivery are implemented and tested with synthetic transports. The scheduled workflow is disabled until the maintainer adds client credentials.
 
 ---
 
