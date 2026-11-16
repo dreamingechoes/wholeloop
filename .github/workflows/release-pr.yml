@@ -43,9 +43,11 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          node-version: 24.22.0
           package-manager-cache: false
-      - run: npm install --global npm@11.8.0 --ignore-scripts --no-audit --no-fund
+      # Use the npm bundled with this exact Node (ADR-0069): a global npm install is not
+      # pinned by hash. Fail rather than run with a different npm.
+      - run: test "$(npm --version)" = 11.19.1
       - run: npm ci
       - run: npm run build
       - name: Set the version and regenerate the changelog

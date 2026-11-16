@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-16 · 1.0.1 · npm from an exact Node in release workflows
+
+- **Why:** four OpenSSF Scorecard `PinnedDependencies` alerts, all the same line: `npm install --global npm@11.8.0` in the release prepare and publish jobs, the release pull request job and the conformance job. A global install is not pinned by hash.
+- **Change:** those jobs set up Node 24.22.0 exactly and use its bundled npm 11.19.1, newer than 11.8.0 and enough for trusted publishing. A first step fails unless `npm --version` is exactly 11.19.1. ADR-0069 and the releasing guide are amended; a test fails if a workflow installs npm globally again or a checked job leaves Node unpinned.
+- **Evidence:** the package built with Node 24.22.0 and npm 11.19.1 on Linux arm64 already matched the macOS build byte for byte (manual verification). The first hosted run of this pair in publication is the 1.0.1 release.
+- **Trade-off:** Dependabot does not update `node-version`, so raising Node in these jobs is a deliberate change to them.
+- **Rejected:** a separate lockfile for npm 11.8.0 installed with `npm ci` (more to maintain for one binary) and dismissing the alerts (leaves an unpinned install in the publishing job).
+
+---
+
 ## 2026-11-16 · 1.0.1 · Files are checked and read through one descriptor
 
 - **Why (#34):** CodeQL reported 40 `js/file-system-race` alerts in `src/` and `scripts/`. Most checked a path (a regular file, not a link, within a size limit) and then read it by name, so the file read was not guaranteed to be the file checked.

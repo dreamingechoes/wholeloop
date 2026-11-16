@@ -484,4 +484,29 @@ describe('release workflows', () => {
         expect(step.with?.['persist-credentials']).toBe(false)
     }
   })
+
+  it('runs npm from an exact Node instead of installing one globally', () => {
+    // A global npm install is not pinned by hash (Scorecard PinnedDependencies); the npm bundled
+    // with an exact Node is, and each job checks that it got the version ADR-0069 names.
+    const conformance = parse(readFileSync('.github/workflows/conformance.yml', 'utf8'))
+    type Step = { run?: string; uses?: string; with?: Record<string, unknown> }
+    const jobs = [release, releasePr, conformance].flatMap(
+      (workflow) => Object.values(workflow.jobs) as { steps: Step[] }[],
+    )
+    const checked = jobs.filter((job) =>
+      job.steps.some((step) => step.run?.includes('npm --version')),
+    )
+    expect(checked).toHaveLength(4)
+    for (const job of jobs)
+      expect(job.steps.some((step) => /npm (install|i) (--global|-g)\b/.test(step.run ?? ''))).toBe(
+        false,
+      )
+    for (const job of checked) {
+      const node = job.steps.find((step) => step.uses?.startsWith('actions/setup-node@'))
+      expect(node?.with?.['node-version']).toBe('24.22.0')
+      expect(job.steps.find((step) => step.run?.includes('npm --version'))?.run).toBe(
+        'test "$(npm --version)" = 11.19.1',
+      )
+    }
+  })
 })
