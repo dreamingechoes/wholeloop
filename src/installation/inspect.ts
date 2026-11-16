@@ -57,11 +57,16 @@ export function inspectInstallation(input: InstallInput) {
         ),
       ),
     )
+    // A stale installation passed the ownership check above, so its files are untouched; naming
+    // the version that wrote them lets doctor say it is only out of date.
     return {
       ...base,
       status: current ? 'current' : 'stale',
       targets,
       receipt: control.path(receiptPath),
+      ...(current
+        ? {}
+        : { installed: [...new Set(selected.map((component) => component.version))].sort() }),
     }
   } catch {
     return { ...base, status: 'invalid', targets: [] }

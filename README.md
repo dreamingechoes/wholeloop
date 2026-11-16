@@ -115,9 +115,9 @@ The package installs two equivalent commands, `wl` and `wholeloop`, and has no r
 This example selects Claude Code; replace `claude` with your [client's target](#supported-clients).
 
 ```bash
-wl install --target claude --scope user --dry-run --json
-wl install --target claude --scope user --json
-wl doctor --target claude --json
+wl install --target claude --scope user --dry-run
+wl install --target claude --scope user
+wl doctor --target claude
 ```
 
 The dry run lists the files it would write. User scope installs the skills, roles and guards outside your projects; project scope, run from an application repository, installs them for that repository only. Installation does not install or sign in to the client, choose a model, change MCP settings or call any service. `doctor` checks versions, store access and the managed files; it does not prove that the client has activated them.
@@ -180,8 +180,8 @@ From a terminal you can inspect everything the client sees. `wl --help` starts w
 
 ```bash
 wl --help
-wl status --json
-wl status "$INITIATIVE_ID" --json
+wl status
+wl status "$INITIATIVE_ID"
 wl resume "$INITIATIVE_ID" --json
 ```
 

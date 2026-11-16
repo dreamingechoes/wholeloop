@@ -1,4 +1,4 @@
-// `wl doctor`: runs the installation diagnostics and prints their report.
+// `wl doctor`: runs the installation diagnostics and prints a summary, or the report with --json.
 import { readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { resolve } from 'node:path'
@@ -10,6 +10,7 @@ import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
+import { doctorSummary } from './summary.js'
 export function doctorCommand(
   { positional, options }: ReturnType<typeof parseArguments>,
   root: string,
@@ -50,6 +51,6 @@ export function doctorCommand(
         }
       : {}),
   })
-  io.out(JSON.stringify(report, null, json ? undefined : 2))
+  io.out(json ? JSON.stringify(report) : doctorSummary(report))
   return report.status === 'observed' ? 0 : 3
 }

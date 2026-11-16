@@ -12,6 +12,7 @@ import { VERSION } from '../version.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
+import { installationSummary } from './summary.js'
 export function installationCommand(
   action: 'install' | 'uninstall',
   { positional, options }: ReturnType<typeof parseArguments>,
@@ -44,7 +45,7 @@ export function installationCommand(
       version: VERSION,
       dryRun: options['--dry-run'] === true,
     })
-    io.out(JSON.stringify(result, null, json ? undefined : 2))
+    io.out(json ? JSON.stringify(result) : installationSummary(result))
     return 0
   } catch (error) {
     throw new CliError(error instanceof Error ? error.message : 'Native installation failed', 3)

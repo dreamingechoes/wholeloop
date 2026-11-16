@@ -41,7 +41,7 @@ Do not keep reinstalling to fix a discovery problem you cannot explain. An insta
 ## Doctor reports a failure or unknown
 
 ```bash
-wl doctor --target claude --json
+wl doctor --target claude
 ```
 
 Replace the target with your client. Each failed check names its cause and a next step. A missing executable, a failing version command, a store that cannot be written and stale files are different problems with different fixes. Doctor never repairs anything itself.
@@ -66,7 +66,7 @@ Use the same store as that run; conformance commands also accept `--store`. The 
 
 Install and uninstall only touch files wholeloop wrote and you have not changed ([owned files](./glossary.md#terms)). A file you edited, a file wholeloop did not write, an unsafe link or unexpected content in its private directories is left alone and reported. Look at the reported path, the install receipt and the backups in your store, then decide whether to keep your edits or install somewhere else. There is no option to force over them.
 
-After rebuilding from source, run the same target and scope's dry run first; unchanged output reports `already-correct`. If an install was interrupted, its pending receipt records what it meant to do and what it saw. Use the recovery path it reports instead of deleting its state. [Managed installation](./platforms/README.md#installing).
+After rebuilding from source, run the same target and scope's dry run first; unchanged output is reported as already installed (`already-correct` with `--json`). If an install was interrupted, its pending receipt records what it meant to do and what it saw. Use the recovery path it reports instead of deleting its state. [Managed installation](./platforms/README.md#installing).
 
 ## A new session cannot find my work
 
@@ -75,8 +75,8 @@ Check the ID, the store and the repository. A shell with different `XDG_*` setti
 After setting `INITIATIVE_ID` to the ID from your receipt:
 
 ```bash
-wl status --json
-wl status "$INITIATIVE_ID" --json
+wl status
+wl status "$INITIATIVE_ID"
 wl state get "$INITIATIVE_ID" --json
 wl resume "$INITIATIVE_ID" --json
 ```

@@ -45,8 +45,8 @@ The package installs two equivalent commands, `wl` and `wholeloop`, and has no r
 Pick the client you already use. This example uses Claude Code:
 
 ```bash
-wl install --target claude --scope user --dry-run --json
-wl install --target claude --scope user --json
+wl install --target claude --scope user --dry-run
+wl install --target claude --scope user
 ```
 
 The first command only lists the files it would write; the second writes them. Targets are `claude`, `codex`, `opencode`, `copilot`, `gemini`, `antigravity` and `cursor`. [Local client setup](./platforms/local-onboarding.md) covers each client's directories, skill names and version differences.
@@ -65,10 +65,24 @@ For project scope, change into the application first and replace `--scope user` 
 Use the same target:
 
 ```bash
-wl doctor --target claude --json
+wl doctor --target claude
 ```
 
-Doctor checks the Node, Git and client versions, that it can write to your store, and that the installed files still match what wholeloop wrote. It reports; it never repairs anything itself.
+Doctor checks the Node, Git and client versions, that it can write to your store, and that the installed files still match what wholeloop wrote. It reports; it never repairs anything itself. A healthy installation looks like this (abridged):
+
+```text
+Doctor: every required check passed.
+
+  pass     node                  22.12.0
+  pass     git                   2.49.0
+  pass     cli.claude            2.1.325
+  pass     store
+  pass     installation.user
+  unknown  installation.project
+           No owned receipt at this scope; existing unmanaged native components remain unverified.
+```
+
+A check that is not a pass explains what was seen and, when there is a fix, prints the command to run. Add `--json` for the full versioned report, which is what scripts should read.
 
 | What doctor says | What to do |
 | --- | --- |
@@ -111,7 +125,7 @@ You can read the same state from a terminal. Replace the example value with your
 
 ```bash
 export INITIATIVE_ID="paste-the-returned-init-ID"
-wl status "$INITIATIVE_ID" --json
+wl status "$INITIATIVE_ID"
 wl resume "$INITIATIVE_ID" --json
 ```
 
@@ -138,17 +152,17 @@ To update, upgrade the package and repeat the install for the same target and sc
 
 ```bash
 npm install --global wholeloop@latest
-wl install --target claude --scope user --dry-run --json
-wl install --target claude --scope user --json
+wl install --target claude --scope user --dry-run
+wl install --target claude --scope user
 ```
 
-Files that already match report `already-correct`. Files wholeloop wrote and you have not touched are replaced, with a backup in your store. A file you edited, or one wholeloop did not write, is left alone and reported; there is no option to force over it. If an earlier install was interrupted, read its pending receipt before running anything else.
+When nothing changed, install says the target is already installed. Files wholeloop wrote and you have not touched are replaced, with a backup in your store. A file you edited, or one wholeloop did not write, is left alone and reported; there is no option to force over it. If an earlier install was interrupted, read its pending receipt before running anything else.
 
 To remove an installation, use the same target and scope:
 
 ```bash
-wl uninstall --target claude --scope user --dry-run --json
-wl uninstall --target claude --scope user --json
+wl uninstall --target claude --scope user --dry-run
+wl uninstall --target claude --scope user
 ```
 
 Removal deletes only the unchanged files wholeloop wrote; your work history and backups stay in the store. A separately activated Git hook fallback has its own uninstall command. Restart the client to confirm the skills are gone. [Client-specific removal](./platforms/local-onboarding.md#verify-a-first-step-and-retire-the-same-installation).
