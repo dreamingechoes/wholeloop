@@ -74,4 +74,4 @@ A trusted controller must retain exact observed runtime identity and terminal ev
 You have queued local metadata without launching a native model, backend, test application or remote operation. [Checkpoint and conservative ownership/effect recovery](./delivery-checkpoints.md) are now available. [Budgets](./delivery-budgets.md), [environments](./delivery-environments.md) and the [runner](./delivery-runner.md) continue from here. [ADR-0097](../decisions/0097-durable-queue-reservations-and-current-attempt-fences.md) records the local coordination boundary. Retain the external tutorial directory for inspection; no manual or account acceptance is marked passed.
 
 <!-- docnav -->
-[◀ Delivery recovery](delivery-recovery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery checkpoints ▶](delivery-checkpoints.md)
+[◀ Delivery runner controls](delivery-runner.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery workers ▶](delivery-workers.md)

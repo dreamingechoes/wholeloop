@@ -232,4 +232,4 @@ Human decision, if any:
 The implementation side updates the narrow checked observation, fixes failures, records remaining limits and commits the evidence. It does not rewrite a failed trial as passed or ask the maintainer to repeat already verified checks without cause.
 
 <!-- docnav -->
-[◀ Troubleshooting](troubleshooting.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)
+[◀ Maintenance proposals](tutorials/maintenance-proposals.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)

@@ -4,6 +4,8 @@
 
 To use wholeloop rather than change it, start with the [README](./README.md) and [getting started](./docs/getting-started.md). The agreement below concerns implementation of this repository.
 
+Questions and ideas are welcome in [Discussions](https://github.com/dreamingechoes/wholeloop/discussions). Issues labelled [`good first issue`](https://github.com/dreamingechoes/wholeloop/labels/good%20first%20issue) are a good place to start; the `area:` and `client:` labels say which part of the project an issue touches.
+
 ## Before your first change
 
 1. Read [docs/philosophy.md](./docs/philosophy.md) and [docs/concepts.md](./docs/concepts.md).

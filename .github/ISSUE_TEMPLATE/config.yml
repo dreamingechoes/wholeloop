@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Questions and ideas
+    url: https://github.com/dreamingechoes/wholeloop/discussions
+    about: Ask how to use wholeloop or propose an idea before it becomes an issue.
   - name: Documentation
     url: https://github.com/dreamingechoes/wholeloop/tree/main/docs
     about: Concepts, every step, configuration and extension guides.

@@ -90,4 +90,4 @@ Merging, deployment, sending messages and changing flags remain external actions
 For direct shell inspection use [core commands](../architecture/core-cli.md), not the native skill names. For setup or missing state, use [troubleshooting](../troubleshooting.md).
 
 <!-- docnav -->
-[◀ Local core tour](local-core.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery request intake ▶](delivery-intake.md)
+[◀ Local core tour](local-core.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
