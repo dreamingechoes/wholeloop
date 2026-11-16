@@ -45,6 +45,8 @@ Delivery planning adds plan-schema, envelope, plan and inspect-plan. These comma
 
 Every command accepts `--json`. Machine-readable output contracts live in `src/cli/schemas/`. Errors use `wholeloop/error@1`; exit codes are 0 (success), 1 (unexpected), 2 (needs input), 3 (precondition), and 4 (invalid shape). Unknown options fail rather than silently changing behavior.
 
+`wl --help` lists the everyday commands and names every other command group by area; `wl <group> --help` lists a group, `wl <command> --help` prints one command's usage and options, and `wl --help --all` prints the whole table. With `--json`, help always returns the complete `wholeloop/help@1` table. A mistyped command fails as before, with exit 1, and names the closest known command when one is near enough.
+
 The normal test suite compares source and compiled-help commands with the general output schema, rejecting missing/duplicate/unversioned branches. It also inventories all source schema locations, including event maps, for unique version-one identities. Gate/suite event-map wrappers retain the prior payload rules and journal format; no event migration follows. Registration does not establish the complete v1 compatibility freeze or native execution. See [ADR-0065](../decisions/0065-public-output-schema-registration.md).
 
 The v1 candidate now adds per-declaration compatibility fingerprints, retained command/exit contracts and explicit delivery-manifest validation. This freezes declarations for review without publishing 1.0 or proving runtime semantics. New identities and optional command flags remain additive; read the [compatibility and deprecation policy](../extending/compatibility.md).

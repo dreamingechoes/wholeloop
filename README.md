@@ -176,7 +176,7 @@ Then ask for `wl-next` with that ID to continue. Reading status and authorizing 
 
 **Your coding client runs the skills:** it uses the model and tools you configured to ask questions, draft artifacts, edit code and coordinate reviewers. **The `wl` core enforces the deterministic rules:** it validates input, stores work and decisions, plans gates and returns the next available contract. Running `wl next` in a terminal does not start an AI conversation; ask for `wl-next` in the client for that.
 
-From a terminal you can inspect everything the client sees:
+From a terminal you can inspect everything the client sees. `wl --help` starts with the everyday commands, and `wl <command> --help` explains one of them:
 
 ```bash
 wl --help

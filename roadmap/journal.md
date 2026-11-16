@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-16 · 1.0.1 · Help that starts with the everyday commands
+
+- **Why:** `wl --help` printed 261 commands in table order, experimental delivery first; the commands a new user needs started at line 216. `wl <command> --help` printed the same page, and a typo only pointed back to it (#39, #40, #42).
+- **Default help:** the commands to get started, to follow your work and to set preferences, then every other group by area. A test fails when a new group has no area, so no command becomes unreachable. `wl --help --all` prints the whole table.
+- **Command and group help:** `wl <command> --help` prints its usage, options and the commands that share its group; `wl <group> --help` lists the group. An unknown command with `--help` now fails as unknown instead of printing the general page.
+- **Suggestions:** a mistyped command names the closest known one, within its group when the group is right: `instal` suggests `install`, `delivery runner-sttus` suggests `delivery runner-status`. Short words allow one edit and longer ones two, so unrelated short commands are not proposed. The exit code is unchanged.
+- **Kept:** `--help --json` still returns the complete `wholeloop/help@1` table wherever it appears, because scripts and the generated reference read it.
+
+---
+
 ## 2026-11-16 · Docs · First-use pass after 1.0.0
 
 - **Why:** a read-through as a new user found the first pages hard to follow. The docs index opened with autonomous delivery, 21 of the 25 tutorials are experimental delivery pages and most were listed among the everyday ones, and getting started and troubleshooting were dense with compressed phrasing and caveats.

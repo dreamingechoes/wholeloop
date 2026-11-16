@@ -37,6 +37,7 @@ import { generateCommand } from './generate.js'
 import { groundingCommand } from './grounding.js'
 import { guardCommand } from './guard.js'
 import { harnessCheck } from './harness.js'
+import { commandUsage, fullUsage, groupUsage, suggestCommands, usage } from './help.js'
 import { impactCommand } from './impact.js'
 import { installationCommand } from './install.js'
 import { EXIT, type Io } from './io.js'
@@ -70,18 +71,36 @@ import { worktreeCommand } from './worktree.js'
 
 export { EXIT, type Io } from './io.js'
 
-function usage(): string {
-  return `wholeloop ${VERSION} — a CLI-agnostic AI development harness
+const findCommand = (args: readonly string[]) =>
+  COMMANDS.find(
+    (candidate) => args.slice(0, candidate.path.split(' ').length).join(' ') === candidate.path,
+  )
 
-Usage: wl <command> [options]
+function unknownCommand(args: readonly string[]): string {
+  const words = args.filter((arg) => !arg.startsWith('-'))
+  const [first] = words
+  if (first && words.length === 1 && !args[0]?.startsWith('-') && groupUsage(first))
+    return `'${first}' needs a subcommand. Run 'wl ${first} --help'.`
+  const suggestions = suggestCommands(args)
+  const hint = suggestions.length
+    ? ` Did you mean ${suggestions.map((path) => `'wl ${path}'`).join(' or ')}?`
+    : ''
+  return `unknown command or option '${args.join(' ')}'.${hint} Run 'wl --help'.`
+}
 
-Options:
-  -v, --version   Print the version
-  -h, --help      Print this help
-  --json         Print a versioned JSON payload
-
-Commands:
-${COMMANDS.map((command) => `  ${`${command.path} ${command.arguments}`.trim().padEnd(30)} ${command.summary}`).join('\n')}`
+// Human help resolves what precedes --help: a command, a group, or nothing for the default page.
+// The JSON help keeps returning the whole table wherever --help appears, as its contract says.
+function help(args: readonly string[]): string {
+  const words = args.filter((arg) => !arg.startsWith('-'))
+  if (!words.length) return args.includes('--all') ? fullUsage() : usage()
+  const command = findCommand(args)
+  if (command) return commandUsage(command)
+  const group = words.length === 1 && words[0] ? groupUsage(words[0]) : undefined
+  if (group) return group
+  throw new CliError(
+    unknownCommand(args.filter((arg) => !['--help', '-h', '--all'].includes(arg))),
+    EXIT.unexpected,
+  )
 }
 
 export function run(argv: readonly string[], io: Io, root = process.cwd()): number {
@@ -96,18 +115,12 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       io.out(
         json
           ? JSON.stringify({ schema: 'wholeloop/help@1', version: VERSION, commands: COMMANDS })
-          : usage(),
+          : help(args),
       )
       return EXIT.ok
     }
-    const command = COMMANDS.find(
-      (candidate) => args.slice(0, candidate.path.split(' ').length).join(' ') === candidate.path,
-    )
-    if (!command)
-      throw new CliError(
-        `unknown command or option '${args.join(' ')}'. Run 'wl --help'.`,
-        EXIT.unexpected,
-      )
+    const command = findCommand(args)
+    if (!command) throw new CliError(unknownCommand(args), EXIT.unexpected)
     const rest = args.slice(command.path.split(' ').length)
     const parsed = parseArguments(
       rest,
