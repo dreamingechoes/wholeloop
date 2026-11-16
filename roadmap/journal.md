@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-16 · 1.0.1 · Install results that point at real things
+
+- **Backups (#32):** install and uninstall reserved a backup path before archiving anything and always reported it, so a first install named a directory that did not exist. The result now includes `backup` only when that directory was written; an upgrade and an uninstall, which keeps the removal core, still report theirs. The field was already optional in the contract.
+- **Git guard command (#33):** the activation and removal commands named the directory the install ran in as the repository to guard. For a user-scope installation that directory is arbitrary, and from inside the wholeloop checkout it pointed at a repository with its own hooks. User scope now shows `<repository>` for the person to replace; project scope still names its own repository. Getting started and local client setup say so.
+- **Rejected:** dropping the command at user scope. People still need to know how to add the guards, and the placeholder keeps the command copyable.
+
+---
+
 ## 2026-11-16 · 1.0.1 · Readable output for the first commands
 
 - **Why:** without `--json`, `doctor`, `status`, `install` and `uninstall` printed their JSON payload indented, so a first `wl doctor` was forty lines to read through (#41). Doctor also called an outdated but untouched installation "stale" and told the person to "preserve edits", which suggested a hand change (#31).

@@ -240,10 +240,15 @@ export function manageInstallation(action: 'install' | 'uninstall', input: Insta
       saveReceipt(control, `${backup}/receipt.json`, changing)
       unlinkSync(control.path(receiptPath))
     }
+    // Git guards belong to each application repository. A user-scope installation serves all of
+    // them, so the directory it ran in is not a meaningful default; project scope names its own.
+    const hookRepository = context.scope === 'project' ? context.root : '<repository>'
     return {
       ...base,
       status: action === 'install' ? 'installed' : 'uninstalled',
-      backup: control.path(backup),
+      // The backup path is reserved before anything is archived; a first install replaces nothing,
+      // so the directory is named only when it was written and can be inspected.
+      ...(exists(control.path(backup)) ? { backup: control.path(backup) } : {}),
       artifacts: plans.map((plan) => plan.artifact),
       ...(action === 'install'
         ? {
@@ -257,7 +262,7 @@ export function manageInstallation(action: 'install' | 'uninstall', input: Insta
                 'hooks',
                 'install',
                 '--repo',
-                context.root,
+                hookRepository,
                 '--store',
                 store.root,
                 '--json',
@@ -275,7 +280,7 @@ export function manageInstallation(action: 'install' | 'uninstall', input: Insta
                 'hooks',
                 'uninstall',
                 '--repo',
-                context.root,
+                hookRepository,
                 '--store',
                 store.root,
                 '--json',

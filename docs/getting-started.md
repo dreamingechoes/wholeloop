@@ -60,6 +60,8 @@ The [install scope](./glossary.md#terms) decides where the files go:
 
 For project scope, change into the application first and replace `--scope user` with `--scope project`. In both cases your work history, receipts and backups stay in your personal [store](./glossary.md#terms), never in the repository.
 
+The install result ends with the command that adds wholeloop's Git guards to a repository. Guards are set per repository and never by install itself. After a user-scope install the command shows `<repository>` in place of the path: run it from or for each application repository you want guarded, with that repository's path. A project-scope install names its own repository. A backup directory is reported only when the install replaced files.
+
 ## Check the installation
 
 Use the same target:

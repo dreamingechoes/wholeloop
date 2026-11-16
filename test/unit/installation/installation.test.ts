@@ -7,6 +7,7 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
+  realpathSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -313,6 +314,20 @@ describe('owned native installation and retained external history', () => {
       }),
     15000,
   )
+  it('names a backup only when one was written and a hook repository only at project scope', () =>
+    fixture(({ context, input }) => {
+      const first = installed(input(['codex']))
+      expect(first).not.toHaveProperty('backup')
+      expect(first.activation?.command).toContain('<repository>')
+      expect(first.activation?.command).not.toContain(realpathSync(context.root))
+      const removed = manageInstallation('uninstall', input(['codex']))
+      expect(typeof removed.backup === 'string' && existsSync(removed.backup)).toBe(true)
+      expect(removed.removal?.command).toContain('<repository>')
+      const project = installed(input(['codex'], 'project'))
+      // The installer reports the canonical path, which on macOS resolves /var to /private/var.
+      expect(project.activation?.command).toContain(realpathSync(context.root))
+      expect(project.activation?.command).not.toContain('<repository>')
+    }))
   it('preflights every requested target before writing and preserves unowned native files', () =>
     fixture(({ context, input }) => {
       const existing = join(context.home, '.copilot/agents/wl-builder.agent.md')
@@ -775,7 +790,10 @@ describe('owned native installation and retained external history', () => {
         expect(removed.status, removed.stdout || removed.stderr).toBe(0)
         expect(JSON.parse(removed.stdout).status).toBe('uninstalled')
         expect(tree(context.home)).toEqual([])
-        const handoff = JSON.parse(removed.stdout).removal.command as string[]
+        // A user-scope handoff names no repository; the person supplies the one to retire.
+        const handoff = (JSON.parse(removed.stdout).removal.command as string[]).map((word) =>
+          word === '<repository>' ? context.root : word,
+        )
         expect(handoff[0]).toBe('node')
         expect(handoff[1] && existsSync(handoff[1])).toBe(true)
         const retired = spawnSync(handoff[0] ?? '', handoff.slice(1), {
