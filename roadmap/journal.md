@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-16 · 1.0.1 · Readable output for the first commands
+
+- **Why:** without `--json`, `doctor`, `status`, `install` and `uninstall` printed their JSON payload indented, so a first `wl doctor` was forty lines to read through (#41). Doctor also called an outdated but untouched installation "stale" and told the person to "preserve edits", which suggested a hand change (#31).
+- **Summaries:** those four commands now print a short summary by default: doctor one line per check, with the reason and the repair command for anything that is not a pass; status one block per item with its next step and pending decisions; install and uninstall the outcome, what a dry run would change, backups, the receipt and the next step. Repair commands are shell-quoted so a store path with spaces can be copied. `--json` returns the payloads exactly as before, and every other command keeps its indented JSON.
+- **Stale installations:** the installation inspection now records the version that wrote a stale installation. Doctor says which version wrote it, or that it is a different build of the same version, that none of its files were edited and that the install command updates it, keeping the replaced files as backups. Edited installations keep their existing message and dry-run repair.
+- **Docs:** getting started, troubleshooting, local client setup and the README run these commands without `--json`, and getting started shows a doctor summary.
+
+---
+
 ## 2026-11-16 · 1.0.1 · Help that starts with the everyday commands
 
 - **Why:** `wl --help` printed 261 commands in table order, experimental delivery first; the commands a new user needs started at line 216. `wl <command> --help` printed the same page, and a typo only pointed back to it (#39, #40, #42).

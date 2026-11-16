@@ -34,9 +34,9 @@ Choose the section for your client. Select the same explicit target in doctor; i
 ## Claude Code
 
 ```bash
-wl install --target claude --scope user --dry-run --json
-wl install --target claude --scope user --json
-wl doctor --target claude --json
+wl install --target claude --scope user --dry-run
+wl install --target claude --scope user
+wl doctor --target claude
 ```
 
 Managed loose components use wl-prefixed names under .claude, or the absolute CLAUDE_CONFIG_DIR override. Restart Claude and request the wl-frame-problem skill in the intended project. Inspect role discovery and the scoped guard transport; read-only/native permission behavior remains an actual-client check.
@@ -50,9 +50,9 @@ Standalone generated plugins use the wholeloop namespace instead. For that deliv
 The [automatic native trial](../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22) passed standalone framing on Codex 0.163.0. That structural result does not replace the permission/hook spike, other steps or a different client's acceptance.
 
 ```bash
-wl install --target codex --scope user --dry-run --json
-wl install --target codex --scope user --json
-wl doctor --target codex --json
+wl install --target codex --scope user --dry-run
+wl install --target codex --scope user
+wl doctor --target codex
 ```
 
 Skills use .agents/skills; native roles use CODEX_HOME/agents or .codex/agents. Restart Codex and select $wl-frame-problem in the intended project. A portable plugin is skills-only and does not establish native TOML agent loading. Native roles inherit parent permissions; do not infer read-only isolation from a role name. The checked headless recipe is a separate execution boundary.
@@ -62,9 +62,9 @@ Inspect the returned per-repository Git fallback command before activating it. G
 ## OpenCode
 
 ```bash
-wl install --target opencode --scope user --dry-run --json
-wl install --target opencode --scope user --json
-wl doctor --target opencode --json
+wl install --target opencode --scope user --dry-run
+wl install --target opencode --scope user
+wl doctor --target opencode
 ```
 
 User components use the XDG opencode root or absolute OPENCODE_CONFIG_DIR. Project scope uses .opencode, including its dedicated wholeloop.js guard plugin. Restart OpenCode, request wl-frame-problem and verify skills/roles plus plugin activation. Existing unrelated native configuration is retained; actual permission and compatible-skill precedence remain manual checks.
@@ -76,9 +76,9 @@ The headless observer has its own deny-default permissions and fresh agent; it d
 ## Copilot
 
 ```bash
-wl install --target copilot --scope user --dry-run --json
-wl install --target copilot --scope user --json
-wl doctor --target copilot --json
+wl install --target copilot --scope user --dry-run
+wl install --target copilot --scope user
+wl doctor --target copilot
 ```
 
 User components use COPILOT_HOME or .copilot; project scope uses .github with native .agent.md roles and a dedicated hooks/wholeloop.json binding. Restart Copilot and request wl-frame-problem. Check native role/tool selection and actual hook activation instead of treating copied files as a native conformance pass.
@@ -88,9 +88,9 @@ MCP detection observes declarations only. Review rendered recipes and configure 
 ## Gemini
 
 ```bash
-wl install --target gemini --scope user --dry-run --json
-wl install --target gemini --scope user --json
-wl doctor --target gemini --json
+wl install --target gemini --scope user --dry-run
+wl install --target gemini --scope user
+wl doctor --target gemini
 ```
 
 GEMINI_CLI_HOME overrides the home containing .gemini, rather than the .gemini folder itself. Managed overlays provide .gemini/skills and agents. Native preview agent enablement, trust and authentication are explicit client setup. Restart, request wl-frame-problem and verify discovery/inheritance. Questions fall back to exact plain-text options when structured questions are unavailable.
@@ -106,9 +106,9 @@ Explicit native linking/installation activates that extension; merely writing it
 ## Antigravity
 
 ```bash
-wl install --target antigravity --scope user --dry-run --json
-wl install --target antigravity --scope user --json
-wl doctor --target antigravity --json
+wl install --target antigravity --scope user --dry-run
+wl install --target antigravity --scope user
+wl doctor --target antigravity
 ```
 
 User scope uses .gemini/antigravity-cli/plugins/wholeloop. Native skills/agents use wl-agy- to coexist with Codex. Restart agy, request wl-agy-frame-problem and verify the native plugin, inherited roles and named hooks. Listing/version probes do not establish discovery, tool isolation or authentication.
@@ -118,9 +118,9 @@ Project scope uses .agents and requires hooks.json to be absent or already owned
 ## Cursor
 
 ```bash
-wl install --target cursor --scope user --dry-run --json
-wl install --target cursor --scope user --json
-wl doctor --target cursor --json
+wl install --target cursor --scope user --dry-run
+wl install --target cursor --scope user
+wl doctor --target cursor
 ```
 
 Managed installation provides .cursor skills/agents, an opt-in rule and preToolUse hooks. Existing shared hooks.json is refused; unrelated rules remain untouched. Restart agent, request wl-frame-problem and verify inherited roles/readonly plus native hook activation. Pure hook validators and version probes are narrower evidence than a real model/permission check.
@@ -143,8 +143,8 @@ The disposable framing runner supports every target. Prepare with the exact obse
 For removal, use the same named target, scope and external store used to install:
 
 ```bash
-wl uninstall --target codex --scope user --dry-run --json
-wl uninstall --target codex --scope user --json
+wl uninstall --target codex --scope user --dry-run
+wl uninstall --target codex --scope user
 ```
 
 Replace codex with your selected target. Existing edits are preserved; unchanged owned native files are removed while external history/backups remain. Separately activated Git hooks have their own returned uninstall command. Restart the native client to verify removal. Actual native discovery/permissions/models on Linux and other client versions remain separate verification; executed core tests are recorded in [the platform checks](../../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).

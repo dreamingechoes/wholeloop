@@ -260,7 +260,7 @@ describe('owned native installation and retained external history', () => {
           core: selected.core,
           version: selected.version,
         }
-        const report = () =>
+        const report = (override: Partial<typeof managed> = {}) =>
           doctor({
             root: context.root,
             home: context.home,
@@ -272,15 +272,30 @@ describe('owned native installation and retained external history', () => {
               status: 'observed',
               version: binary === 'git' ? '2.49.0' : '1.2.3',
             }),
-            managed,
+            managed: { ...managed, ...override },
           })
         expect(report().checks.find((check) => check.id === 'installation.user')?.status).toBe(
           'pass',
         )
+        const future = `${selected.core}\n// Future runtime.\n`
+        expect(inspectInstallation({ ...selected, core: future })).toMatchObject({
+          status: 'stale',
+          installed: [selected.version],
+        })
+        // Untouched but outdated files are named as such, with the plain install as the repair.
+        const upgraded = report({ core: future, version: '9.9.9' }).checks.find(
+          (check) => check.id === 'installation.user',
+        )
+        expect(upgraded).toMatchObject({ status: 'fail', version: selected.version })
+        expect(upgraded?.summary).toBe(
+          `Owned installation was written by wholeloop ${selected.version}, and this is 9.9.9; none of its files were edited, so updating it is safe.`,
+        )
+        expect(upgraded?.repair?.command.slice(0, 2)).toEqual(['wl', 'install'])
+        expect(upgraded?.repair?.command).not.toContain('--dry-run')
         expect(
-          inspectInstallation({ ...selected, core: `${selected.core}\n// Future runtime.\n` })
-            .status,
-        ).toBe('stale')
+          report({ core: future }).checks.find((check) => check.id === 'installation.user')
+            ?.summary,
+        ).toContain(`a different build of wholeloop ${selected.version};`)
         const receipt = JSON.parse(readFileSync(result.receipt, 'utf8'))
         const file = receipt.components[0].files[0]
         writeFileSync(file.path, 'Edited generated file\n')

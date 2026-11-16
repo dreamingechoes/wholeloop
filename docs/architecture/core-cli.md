@@ -21,7 +21,7 @@ Person decisions support `--channel <name>` plus one optional `--rationale-stdin
 
 ## Design rules
 
-1. **Every command has `--json`**, with a versioned schema. Skills only ever consume JSON.
+1. **Every command has `--json`**, with a versioned schema. Skills only ever consume JSON. Without it, `install`, `uninstall`, `doctor` and `status` print a short summary for people, and the other commands print the same payload indented.
 2. **Deterministic.** Same inputs, same store, same config → same output. No model calls, no network unless the command is explicitly about a provider.
 3. **Single writer.** Only `wl` writes the store. Writes are validated, atomic (write-then-rename) and serialised with a lock.
 4. **Exit codes mean something.** `0` ok · `2` needs input (questions in the payload) · `3` precondition failed · `4` shape check failed · `1` unexpected error.
