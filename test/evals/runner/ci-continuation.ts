@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { chmodSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs'
+import {
+  chmodSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from 'node:fs'
 import { join } from 'node:path'
 import { contractDigest } from '../../../src/contracts/compatibility.js'
 import { sourceHash } from '../../../src/delivery/input.js'
@@ -69,6 +76,7 @@ const dir = realpathSync(destination),
     environments: [] as { id: string; retirement: string }[],
     reason: '',
     mode: 'operator' as 'operator' | 'unattended',
+    buildPlanCi: null as { failed: number; changed: number } | null,
     acceptance: 'not-established',
     publication: 'not-performed' as string,
   }
@@ -130,6 +138,25 @@ async function unattendedRun(
   assert.notEqual(successor, digest, 'The controller must have prepared a continuation')
   assert.equal(store.get(successor).grant, request.grant, 'The envelope grant must carry on')
   assert.equal(receipt.authority, 'envelope-grant-continuation')
+  // The correction's build plan is judged with the CI facts and the published
+  // candidate's changes; a live judge rejected it as of unknown scope without them.
+  const guidance = store.files.path('delivery/public-guidance'),
+    inputs = readdirSync(guidance, { recursive: true })
+      .map(String)
+      .filter((path) => /artifacts\/build-plan-[a-f0-9]{64}\.json$/.test(path))
+      .map((path) => JSON.parse(readFileSync(join(guidance, path), 'utf8')))
+      .find((value) => value.plan === store.get(successor).plan)
+  assert.equal(inputs?.ci?.failed?.[0]?.check, 'test', JSON.stringify(inputs?.ci ?? null))
+  assert.equal(
+    inputs.ci.published,
+    originalCiFailure(store, {
+      request: digest,
+      failure: first.stages.find((stage) => stage.id === 'ci')?.evidence ?? '',
+      repository: 'app',
+    }).target.head,
+  )
+  assert.ok(inputs.ci.changes.paths.length > 0 && inputs.ci.changes.complete === true)
+  report.buildPlanCi = { failed: inputs.ci.failed.length, changed: inputs.ci.changes.paths.length }
   assert.equal(receipt.operator, 'wholeloop controller')
   report.second = {
     state: last.state,

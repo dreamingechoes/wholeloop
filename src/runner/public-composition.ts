@@ -711,11 +711,15 @@ export function composeInstalledImplementation(
       identity: request.host,
       native: building.base,
       boundary: (process, workspace) => building.observer(process, workspace),
-      context: (_context, workspace) => ({
-        ...(workspace ? { workspace } : {}),
-        environment,
-        ...guidance.forRole('builder'),
-      }),
+      context: (current, workspace) => {
+        const shared = guidance.forRole('builder')
+        return {
+          ...(workspace ? { workspace } : {}),
+          environment,
+          ...shared,
+          context: [...shared.context, ...buildPlanInputs.correctionContext(current)],
+        }
+      },
       admit,
     },
     acceptance = new RunnerAcceptanceStages(store, new RunnerFeatureReadiness(store, integration), {

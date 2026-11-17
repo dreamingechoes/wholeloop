@@ -4,6 +4,19 @@
 
 ---
 
+## 2026-11-17 · P8-01 ✅ · Live CI correction attempts and the correction's inputs
+
+- **Live scenario:** `npm run eval:live-ci-correction` runs EVAL-09's task with Codex 0.166.0 and `gpt-6.1-sol` on the trial repository's `ci-trial` branch, whose required check also runs a CI-only `ci-check.cjs`. The trial repository is public since 2026-11-16, so its Actions runs are free. Seven attempts observed a real required-check failure on GitHub, the unattended continuation under the same envelope grant, an approved correction plan and a builder producing the right repair, but none reached a green check.
+- **Core gaps found live, fixed with tests:**
+  - A CI correction's build plan was judged without the failed checks or the published candidate's changes; Codex workers have no read tool. The build-plan inputs of a CI correction now carry the failed checks, published head and pull request, and every changed path with its bytes, with no check output (ADR-0213).
+  - The correction's builders patched stale lines from the original source; they now receive the same inputs.
+  - The run's builder restarts, like the grant's effect limit, are shared with the original attempt and must be sized for repairs (ADR-0248 amended).
+- **Scenario, not core:** later attempts were refused correctly. The correction's planner refused because the pinned acceptance allowed only `status.txt`; the acceptance producer refused because a release note naming the pull request, or a passing required check, cannot be verified before publication. Manual verification records each attempt and what a passing scenario needs.
+- **Closed as narrowed:** P8-01's criteria are met by the unit tests and the model-free rehearsal with real Git and Docker. The live scenario stays open in manual verification, as AGENTS.md prescribes for hosted acceptance. The rehearsal now also asserts the CI facts in the correction's build-plan inputs.
+- **P6-35:** Claude Code 2.1.326 takes a credential only from `ANTHROPIC_API_KEY` or an `apiKeyHelper`, so neither reference client has a per-launch stdin path. The calls that need the maintainer's Claude and OpenAI API credentials, the token lifetime and the live window exhaustion stay open.
+
+---
+
 ## 2026-11-17 · P8-01 🔄 · CI correction continuation under the envelope grant
 
 - **Decision:** the maintainer accepted ADR-0247 (factory phasing) and ADR-0248 (this continuation) on 2026-11-16. 1.1.0 carries this capability with the command-line work already on `main`.

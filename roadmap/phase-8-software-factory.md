@@ -20,16 +20,22 @@ The order follows the dependencies: a supervisor that admits work automatically 
 
 ## P8-01 · CI correction continuation
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P6-41 · **Release:** 1.1.0 · **Decision:** [ADR-0248](../docs/decisions/0248-ci-correction-continuation-under-the-envelope-grant.md)
+**Status:** ✅ · **Size:** M · **Depends on:** P6-41 · **Release:** 1.1.0 · **Decision:** [ADR-0248](../docs/decisions/0248-ci-correction-continuation-under-the-envelope-grant.md)
 
 **Goal** — Let a run with no intervention repair a failed required check and continue under its envelope grant, within its push budget.
 
 **Acceptance criteria:**
 
-- [ ] A seeded `repair` failure on a required check reaches a green pull request with no human step.
-- [ ] A `blocked` classification or an exhausted push budget still ends the run with its request.
+- [x] A seeded `repair` failure on a required check reaches a green pull request with no human step. Narrowed: shown by the model-free rehearsal with real Git and Docker; the live scenario stays in [manual verification](./manual-verification.md#ci-correction-continuation-p8-01).
+- [x] A `blocked` classification or an exhausted push budget still ends the run with its request.
 
 **Tests** — Reducer tests for each condition, a model-free rehearsal with a failing check and one live scenario.
+
+**Evidence** — On 2026-11-17:
+
+- **Tests:** `test/unit/runner/ci-envelope-continuation.test.ts` covers the continuation under the envelope grant, an operator proposal refused under it (mutation-checked), and no continuation for a supervised run, a `blocked` classification or an exhausted push budget. `test/unit/runner/continuation.test.ts` checks that the failed request's environments are released before anything is recorded, and that nothing continues when they are not.
+- **Rehearsal:** `npm run eval:ci-continuation -- --unattended` runs the installed to-merge route with real Git and Docker and a synthetic client and code host. The original required check fails; the controller continues under the same envelope grant; the correction, a fresh check and the update of the original pull request pass; merge stays blocked as ungranted. The rehearsal also checks that the correction's build plan saw the CI facts.
+- **Live (open):** seven attempts with Codex 0.166.0 and `gpt-6.1-sol` against `dreamingechoes/wholeloop-trials` (`npm run eval:live-ci-correction`). They observed a real required-check failure on GitHub, the unattended continuation under the same grant, an approved correction plan and a builder producing the right repair. Three of them found core gaps, all fixed with tests: the correction's planner and builders lacked the CI facts and the published candidate, and the run's budgets are shared with the original attempt. No attempt reached a green check, for a reason in the scenario rather than the core; [manual verification](./manual-verification.md#ci-correction-continuation-p8-01) records each attempt and what the next scenario needs.
 
 ## P8-02 · Delivery supervisor
 
