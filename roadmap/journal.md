@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-11-17 · Docs · Readability pass before announcing the package
+
+- **Why:** the style guide asked for "concise and dense" pages with reasons linked to ADRs, and the pages followed it: 138 prose paragraphs over 80 words, 552 ADR references outside the decision records, and 3 of 106 terminal examples with their output. ADR-0016 is amended with the new rules: short paragraphs, terms defined on first use, real output after every command, diagrams where an idea has moving parts, and no ADR links on pages read to use wholeloop.
+- **What changed:** the README tells one story (problem, how it works, the loop, a five-step quick start); the first-use, step, configuration, client setup and autonomous delivery pages are rewritten; the step pages put the core protocol after their usage; reference pages have their longest paragraphs split at sentence boundaries; `nav.yml` is grouped by purpose. Now 4 prose paragraphs exceed 80 words and the remaining 222 ADR references sit on architecture, contributing and reference pages.
+- **Real output:** every shown output was printed by wholeloop 1.1.0 in a disposable home, or by the tutorial scripts run in sequence after planning. The Docker evaluations quoted in the guides passed on macOS arm64 with Docker 29.9.3: `eval:environments`, `eval:behaviors`, `eval:browsers`, `eval:private` and `eval:assembly` with `--retire-success`, plus `eval:integration`, `eval:delivery-fixtures` and `eval:decisions`.
+- **Recordings:** VHS tapes under `docs/assets/terminal` render three real `wl` recordings and sixteen illustrative step sessions, which replay each page's example session and say *Illustrative* in the recording and its caption. Recording real client sessions was rejected: they take minutes, differ on every run and spend an account's quota. Three step pages (ramp-exposure, measure-impact, decide-next) gained an example session.
+- **Corrected claims:** `next` has no `--through` option; `setup` neither installs clients nor edits MCP settings; `profile show` does not report value origins; `mcp add` prints a snippet and never writes client configuration; unattended execution is no longer described as later work; a unit commits its candidate before verification and review and ends with reverification.
+- **Verified:** `CHECK PASS in 693s`, 4769 tests in 339 files, on macOS arm64; Linux was not run for this docs-only change.
+- **Not enforced yet:** paragraph length and the absence of ADR links on user pages are guidance; an enforcer in `wl docs check` is a separate change. markdownlint now allows `details` and `summary`.
+
+---
+
 ## 2026-11-17 · P8-01 ✅ · Live CI correction attempts and the correction's inputs
 
 - **Live scenario:** `npm run eval:live-ci-correction` runs EVAL-09's task with Codex 0.166.0 and `gpt-6.1-sol` on the trial repository's `ci-trial` branch, whose required check also runs a CI-only `ci-check.cjs`. The trial repository is public since 2026-11-16, so its Actions runs are free. Seven attempts observed a real required-check failure on GitHub, the unattended continuation under the same envelope grant, an approved correction plan and a builder producing the right repair, but none reached a green check.
