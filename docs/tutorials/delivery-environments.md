@@ -1,17 +1,34 @@
 # Plan an environment without executing setup
 
-> **TL;DR** — Discover setup candidates, explicitly select their exact bytes into an isolated environment recipe and detect later changes. Preparation starts no container, script, model or network request.
+> **TL;DR** — Before a run starts your application, you choose exactly **how** it starts: which image, which files, which command, which ports, how readiness is checked and which resources it may use. That choice is a **recipe**, pinned by the digests of the files it uses. Preparing a recipe runs no container, script, model or network request, and a file changed afterwards is detected.
 
 > [!IMPORTANT]
 > **Experimental.** Discovery, recipe validation and immutable selection are tested. [Docker provisioning](./delivery-docker.md) and [retirement](./delivery-lifecycle.md) have their own guides. Autonomous delivery may change in a minor release.
 
+**What you will have at the end:** a pinned recipe for a tiny web application, the same recipe again on a repeat, and a *changed* result once a selected file is edited.
+
+```mermaid
+flowchart LR
+  D[environment-discover<br/>lists candidates, runs nothing] --> R[recipe.json<br/>your explicit choice]
+  R --> P[environment-plan<br/>pins file digests]
+  P --> I[environment-inspect<br/>current or changed?]
+  P -. "used by" .-> S[Docker guide<br/>starts it]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class D,R,P,I,S core;
+```
+
 ## Prerequisites and stopping point
 
-Install the CLI as in [getting started](../getting-started.md#install-the-cli); Node 20 or later and Bash suffice; Docker and service accounts are unnecessary. All demo files and runtime state stay in the printed temporary directory for inspection.
+You need the `wl` CLI ([getting started](../getting-started.md#install-the-cli)), Node 20 or later and Bash. Docker and service accounts are not needed: nothing is started. Everything stays in the printed temporary directory.
 
-The example image digest is deliberately illustrative and is never resolved or pulled here. Before actual execution, select a real immutable image available to the chosen backend and prepare a new recipe. The architecture is a requested Linux arm64 environment, not an observation of your host.
+The image digest in the example is made up on purpose and is never pulled. For a real run, choose an immutable image your backend has, and prepare a new recipe. The architecture, Linux on arm64, is what the recipe requests, not an observation of your machine.
 
 ## Discover and select explicitly
+
+The script writes a two-file application, a recipe for it, then discovers, plans twice, inspects, edits a selected file and inspects again:
+
+<details>
+<summary>Recipe script: copy once</summary>
 
 ```bash
 set -euo pipefail
@@ -91,15 +108,50 @@ console.log(`Retained demo: ${process.env.ENVIRONMENT_DEMO}`)
 JS
 ```
 
+</details>
+
+```console
+1.1.0
+PASS: immutable recipe, unchanged repeat, no execution and stale source detected
+Retained demo: /tmp/wholeloop-environment.XXXXXX
+```
+
+What each command returned:
+
+| Command | Result |
+| --- | --- |
+| `environment-discover` | One candidate, `package.json` with its `test` script, its digest and size; `executed: false` |
+| `environment-plan` | The recipe's digest and both selected files with their digests; `executed: false`, `readiness: not-observed`, `authority: not-granted` |
+| `environment-plan` again | Exactly the same result |
+| `environment-inspect` | `inputs: current` |
+| `environment-inspect` after editing `app.cjs` | `inputs: changed-or-unavailable`; still `executed: false` |
+
+The recipe in the script, field by field:
+
+| Part | In this example |
+| --- | --- |
+| `backend` | Docker, Linux, arm64, no emulation |
+| `files` | `package.json` and `app.cjs`, each with its digest |
+| `services` | One service, `web`: an image by digest from the cache only, the app mounted read-only, a writable data mount, the start command, a TCP readiness check on port 3000, the port published on loopback, 128 MiB and one CPU, no secrets |
+| `commands` | `test`, the package's `test` script |
+| `network` | No network during setup or at runtime |
+| `limits` | Setup and readiness times, services, memory, CPUs and output bytes |
+| `retention` | Keep the environment after failure and after success, for review |
+
 ## What was established
 
-Selected files currently use bounded UTF-8 text (one MiB each, eight MiB in total); binary fixture delivery requires a separate supported input route. The recipe binds selected file SHA-256 values, immutable image identity, explicit argv origins, service ordering, logical mounts, ports, readiness procedure, network phases and finite resources. The external store retains selected bytes; changing live files creates a different recipe or a stale inspection result. Repeating the same input preserves identity.
+**What a recipe pins.** The digest of every selected file, the image identity, where each command comes from, service order, logical mounts, ports, the readiness check, network phases and finite resources. The store keeps the selected bytes, so editing a file afterwards gives a different recipe or a *changed* inspection. Selected files are UTF-8 text, up to 1 MiB each and 8 MiB in total.
 
-Discovery lists names and hashes; it never selects an executable route. A repository source root is a read origin, not a host mount. Actual workers require backend-allocated candidate workspaces. No home, controller store, credential directory, Docker socket or arbitrary host mount can be expressed by this contract.
+**What a recipe can never express:**
 
-Image acquisition, scoped egress and secret-reference providers are requested capabilities. A backend must establish actual support and authority or refuse; preparation cannot activate them. Secret values never belong in recipes, command arguments or generated files. Failed resources remain retained, and the review deadline authorizes no automatic deletion.
+- your home, the controller's store, a credential directory or the Docker socket;
+- any arbitrary host mount. The repository is a source to read from, not a mount: real workers get workspaces the backend allocates.
 
-Existing env declare/report commands retain their original declaration-only meaning. See [ADR-0102](../decisions/0102-inert-environment-recipes-and-pinned-setup-origins.md), the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) and [V1 acceptance](../v1-acceptance.md). Stop here: no application readiness or behavioral acceptance has been observed.
+**What preparation cannot turn on.** Pulling images, scoped network access and secret references are *requested* capabilities. The backend must show real support and authority for them, or refuse. Secret values never belong in recipes, command arguments or generated files.
+
+**What happens to failed resources.** They are kept. The review deadline in `retention` never authorizes automatic deletion.
+
+Discovery lists names and digests only; it never chooses how to run anything. The supervised `wl env declare` and `wl env report` commands keep their own meaning: recording effects and their undo. Stop here: no application has started and nothing was accepted. See the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md).
 
 <!-- docnav -->
-[◀ Delivery recovery](delivery-recovery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docker application environments ▶](delivery-docker.md)
+[◀ Native delivery hosts](delivery-native.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docker application environments ▶](delivery-docker.md)

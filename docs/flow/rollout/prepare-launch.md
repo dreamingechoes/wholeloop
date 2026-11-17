@@ -4,8 +4,6 @@
 
 No launcher can send a message. Provider publication is experimental.
 
----
-
 ## At a glance
 
 | | |
@@ -50,20 +48,15 @@ flowchart TD
 
 ## Standalone use
 
-Give it a description of what is shipping ("CSV export for the orders list, flag `orders_csv_export`, live next Tuesday") and it builds the same kit. Without a measurement plan it asks which two or three numbers tell you the launch went well, and where they live — it never picks metrics for you.
-
-The core commands are `wl launch begin --for <scope> --json`, `launch complete
---for <id> --file <kit.json>`, `launch report --for <id>` and `launch schema`. Standalone entry supplies a description, --owner and --measurement. The core asks for missing success criteria rather than inventing measurement numbers or merge history. The source is the scope's exact cut-scopes/spec revision, with owned metric selection; invocation flags cannot replace it.
-
-The launcher receives actual voice/template content and profile instructions, without publication methods. On Codex, whose custom agents inherit every user MCP server, there is no native launcher: `wl launch draft --for <id> --engine headless --adapter codex` drafts in one isolated read-only worker without user configuration or MCP servers and stores the kit through the same validation. Completion writes rollout/comms/enablement artifacts and dashboard specs outside the repository. Each dashboard carries an exact metricRef into its stored measurement.json, retaining query/unit/baseline/target/ window and original revision. No chart values are inferred during drafting.
-
-`dispatchLaunchArtifact` is an explicit conductor SDK boundary for the three allowed draft/create operations. Its intent precedes the host call, completed results are cached and ambiguous outcomes stay retained for inspection. A comms success needs an explicit unsent draft observation. Known sending routes and send=true/draft=false mappings are rejected; real client permissions and opaque server semantics still require conformance. Missing providers return the complete local artifact for manual use. See [ADR-0038](../../decisions/0038-pinned-launch-kits-and-separate-publication-capabilities.md).
-
-Remote dispatch prefers the native client’s observed MCP tool/schema and reviewed operation binding. Follow [client-owned transport setup](../../extending/providers.md#client-owned-mcp-transport); missing contracts retain pending handoffs and failed calls never switch to another transport. Native drafts remain unsent local artifacts.
-
-`wl launch dispatch --for <id> --key <dashboard-key> --mcp <inventory> --json` plans one completed dashboard: with a reviewed binding in the client's MCP inventory it prints the exact tool and arguments for the client to call, otherwise it returns the local pending handoff. It writes no state and reads no credential; the conductor's `dispatchLaunchArtifact` journals the intent around the client's write. wholeloop has no dashboard client of its own, so a created chart never proves valid queries, rendered values or traffic.
+Give it a description of what is shipping ("CSV export for the orders list, flag `orders_csv_export`, live next Tuesday") and it builds the same kit. Without a measurement plan it asks which two or three numbers tell you the launch went well, and where they live; it never picks metrics for you.
 
 ## Run it
+
+![prepare-launch: an illustrative example session in a coding client](../../assets/terminal/session-prepare-launch.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:prepare-launch scope-a9e0
@@ -87,13 +80,13 @@ Produced
 Next              ramp-exposure when you're ready to start the internal stage
 ```
 
-| CLI | Invoke |
+| Client | Invoke |
 | --- | --- |
-| Claude Code | `/wholeloop:prepare-launch …` |
+| Claude Code, installed skills | `/wl-prepare-launch …` |
+| Claude Code, generated plugin | `/wholeloop:prepare-launch …` |
 | Codex CLI | `$wl-prepare-launch …` |
-| OpenCode | `/wl-prepare-launch …` |
-| Copilot CLI | `/wl-prepare-launch …` |
-| Gemini CLI · Antigravity · Cursor | `/wl-prepare-launch …` |
+| OpenCode · Copilot · Gemini · Cursor | Ask for `wl-prepare-launch` |
+| Antigravity | Ask for `wl-agy-prepare-launch` |
 
 ## Before & after
 
@@ -108,7 +101,33 @@ Next              ramp-exposure when you're ready to start the internal stage
 
 **"I don't use feature flags."** Then the plan has a single stage, and [`ramp-exposure`](./ramp-exposure.md) records one go/no-go instead of a ramp.
 
----
+## Core commands
+
+The commands behind the skill, for scripts and skill authors:
+
+```text
+wl launch schema --json
+wl launch begin --for <scope> --json
+wl launch complete --for <id> --file <kit.json> --json
+wl launch report --for <id> --json
+wl launch dispatch --for <id> --key <dashboard-key> --mcp <inventory> --json
+```
+
+**Inputs.** The kit is drafted from the scope's exact `cut-scopes` and specification revision, and its metrics; flags on the command cannot replace them. Used on its own, `begin` needs a description, `--owner` and `--measurement`. Missing success criteria become questions; no number or merge history is invented.
+
+**Drafting.** The launcher role receives your voice and template guidance and your profile, and no way to publish anything.
+
+- On Codex, custom agents inherit every MCP server you configured, so there is no native launcher there. Instead, `wl launch draft --for <id> --engine headless --adapter codex` drafts in one isolated, read-only worker without your configuration or MCP servers, and stores the kit through the same validation.
+- Completion writes the rollout, communication and enablement drafts and the dashboard specifications, outside the repository.
+- Each dashboard points to its metric in the stored measurement plan, with its query, unit, baseline, target, window and revision. No chart value is invented while drafting.
+
+**Publishing drafts** is a separate, explicit SDK call, `dispatchLaunchArtifact`, limited to three operations that create drafts.
+
+- It records its intent before calling the provider, caches completed results and keeps ambiguous ones for inspection.
+- A communication counts as done only when the provider shows an **unsent** draft. Known sending routes, and mappings such as `send=true` or `draft=false`, are refused. What a real client permits and what a server does internally still need conformance checks.
+- Without a provider, you get the complete local artifact to use by hand.
+
+**Dashboards.** `wl launch dispatch` plans one completed dashboard. With a reviewed binding in your client's MCP inventory, it prints the exact tool and arguments for the client to call; otherwise it returns the local hand-off. It writes no state and reads no credential. wholeloop has no dashboard client of its own, so a created chart never proves that its queries are valid or its values right. Follow [client-owned transport setup](../../extending/providers.md#client-owned-mcp-transport); a failed call never switches to another transport.
 
 <!-- docnav -->
 [◀ open-pr](../build/open-pr.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [ramp-exposure ▶](ramp-exposure.md)

@@ -1,0 +1,20 @@
+> /wholeloop:cut-scopes init-41c2
+
+Scopes — "Users struggle to find their past orders"
+Candidates  search · filters · export
+
+Proposed cut (2)
+  scope-a9e0  Find an order       search + filters   feature   flag orders_search_v1   complex
+              metrics: time_to_find_order, orders_page_exit
+  scope-b113  Export orders       export             feature   flag orders_export_v1   simple
+              metrics: — (no metric) → asked you
+Tracker     Linear (remembered for this repo)
+
+▸ challenger: scope-b113 has no metric — add one or record why
+
+Decision: approve these scopes?   [approve] [change the cut]
+
+Produced
+  Scopes             scope-a9e0 · scope-b113     wl status init-41c2
+  Tracker items      2 (Linear)                  (links)
+Next                 /wholeloop:slice-work scope-a9e0

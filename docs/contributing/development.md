@@ -71,7 +71,9 @@ The verification, integration and acceptance paths build and run project code in
 npm run hooks:install
 ```
 
-The hook runs the built validator on every commit message: a lowercase Conventional Commit subject of at most 72 characters (a squash merge's `(#N)` suffix does not count), a body explaining why and what was verified, no tool attribution and no backticks or shell substitutions. It is idempotent and preserves an existing hooks path. Check a range with `npm run commits:check -- base..head`; pull request CI also checks the title. Rebuild after changing the validator.
+The hook runs the built validator on every commit message: a lowercase Conventional Commit subject of at most 72 characters (a squash merge's `(#N)` suffix does not count), a body explaining why and what was verified, no tool attribution and no backticks or shell substitutions.
+
+It is idempotent and preserves an existing hooks path. Check a range with `npm run commits:check -- base..head`; pull request CI also checks the title. Rebuild after changing the validator.
 
 ## Other scripts
 

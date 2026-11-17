@@ -1,15 +1,34 @@
 # Pin behavioral acceptance and retain its evidence
 
-> **TL;DR** — Pin the agreed cases before execution, preserve human/machine ownership and inspect coverage against the exact candidate. Artifact capture and sealed reports remain private, bounded and separate from publication permission.
+> **TL;DR** — **Acceptance cases** are written and pinned **before** any code exists: what to set up, what to do, what must be true and what counts as failure. Later, the run executes them against the exact candidate and keeps the evidence privately. A case owned by a person stays pending until that person records what they observed; no machine can fill it in.
 
 > [!IMPORTANT]
 > **Experimental.** Closed definitions, evidence validation, typed reports, human notes and budgeted artifacts are tested. Autonomous delivery may change in a minor release.
 
+```mermaid
+flowchart LR
+  D[acceptance-plan<br/>pin the cases] --> B[Builders start<br/>cases are now fixed]
+  B --> E[Cases run against<br/>the owned application]
+  E --> R[acceptance-report<br/>coverage for this candidate]
+  R --> S[acceptance-seal<br/>private, immutable]
+  H{Person-owned case} --> N[acceptance-human-note]
+  N --> R
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class H person;
+  class D,B,E,R,S,N core;
+```
+
 ## Before you start
 
-Install the CLI as in [getting started](../getting-started.md#install-the-cli). Complete the [delivery-planning tutorial](./delivery-plan.md) in the same Bash shell, retaining workspace_dir. This tour adds acceptance definitions to that disposable example. It needs Git and Node, with no Docker, model, grant or vendor account. The task application and proposed API below are fictional definition data, not discovered application behavior or an executed test.
+Complete the [planning guide](./delivery-plan.md) in the same Bash terminal, so `workspace_dir` is still set. You need Git and Node; no Docker, model, grant or account. The task API below is fictional definition data: nothing is discovered or executed.
 
 ## Inspect the contracts and pin a case
+
+The script reads the plan, writes one acceptance case for its `search` criterion and pins it:
+
+<details>
+<summary>Acceptance script: copy once</summary>
 
 ```bash
 set -euo pipefail
@@ -71,35 +90,79 @@ wl delivery acceptance-inspect \
 printf 'Retained acceptance definitions: %s\n' "$workspace_dir"
 ```
 
-Expect acceptance-plan-prepared@1 and acceptance-plan-inspection@1, the same digest and definitions, executed: false and acceptance: not-established. Preparing a case never calls its endpoint or runs its command. Required criteria need applicable cases with their inherited ownership. An inapplicable browser case cannot replace an applicable CLI/API criterion; changing the pinned definitions in place refuses. The first definition also refuses after the harness has admitted a builder on that delivery basis. A new accepted delivery revision is separate.
+</details>
+
+The case, in plain words:
+
+| Part | In this example |
+| --- | --- |
+| `criteria` and `owner` | Covers `search`; a machine can decide it |
+| `initial` | Two fixture tasks exist with distinct titles, pinned by the fixture's digest |
+| `actions` | Search the API for "Second task" |
+| `assertions` | The JSON at `/ids` equals `["task-2"]` |
+| `failureConditions` | Missing or extra task IDs fail the criterion |
+| `runner` | An API case: `GET /tasks?title=Second%20task`, 10 seconds at most |
+
+Pinning returns, without running anything:
+
+```console
+$ wl delivery acceptance-plan --file acceptance.json --root "$workspace_dir" --store "$workspace_dir/state" --json
+{"schema":"wholeloop/acceptance-plan-prepared@1","digest":"8844941b0a89f561cdbc0e18c1c877bea36c4f04aad7ee08b4846ff0be7009c1","plan":{…},"executed":false,"acceptance":"not-established"}
+```
+
+`acceptance-inspect` with that digest returns the same definitions. Pinning never calls an endpoint or runs a command.
+
+**What pinning enforces.**
+
+- Every required criterion needs an applicable case, with the same owner as the criterion.
+- An inapplicable browser case cannot stand in for an applicable API or CLI case.
+- The pinned definitions cannot be changed in place, and once a builder was admitted on this plan the first definition can no longer be replaced. A new accepted revision is separate.
 
 ## Current reports and execution evidence
 
-After an actual owned application exists, acceptance-report takes --digest, --environment and --store. It observes current application identity and candidate bytes, then evaluates retained controller-host receipts. Missing or changed evidence cannot yield acceptance. Exit 3 means incomplete/stale/unavailable coverage or an unavailable current application. There is deliberately no acceptance-result import command: a JSON object saying that a PID exited successfully is not a host observation.
+Once an owned application exists, `wl delivery acceptance-report --digest <digest> --environment <id> --store <store>` checks the current application and candidate, then evaluates the recorded host receipts.
 
-Fixed controller hosts use executeCase to capture actual observations under current private authority and finite deadlines. No arbitrary executable plugin is discovered from a definition. API/CLI and browser adapters supply their execution implementations in the subsequent roadmap tasks. A worker's proposed pass, a zero process exit or an old successful artifact cannot establish complete coverage. Fixtures stay fixture-only. Existing repository suites and semantic/adversarial gates retain their own budgets and once-per-round behavior.
+- Missing or changed evidence can never produce acceptance.
+- Exit code 3 means incomplete, stale or unavailable coverage, or no current application.
+- There is deliberately **no command to import a result**: a JSON object saying that a process exited successfully is not an observation.
 
-An interrupted case retains its intent and invocation observation. Persistence spends the original deadline; if it expires before dispatch, the host is not started. A dispatched invoker stays unknown until actual shutdown is established. Repeating that key cannot dispatch it again, and a second request cannot bypass unresolved work. Recovery must establish actual shutdown rather than infer it from age. Later failed attempts take precedence even if timestamps are equal.
+**Who runs cases.** Fixed controller hosts execute them with `executeCase`, under the current private authority and finite deadlines; the [API and CLI](./delivery-behaviors.md) and [browser](./delivery-browsers.md) guides cover them. A definition can never load an arbitrary plugin. A worker's proposed pass, a zero exit or an old successful artifact never counts as coverage. The repository's own suites and the review gates keep their own budgets.
 
-## Owned application operations inside a runner stage
+**Interruptions.** An interrupted case keeps its intent and what was observed of its process.
 
-The internal RunnerEnvironmentScope joins the existing behavioral hosts to an original verification/integration/acceptance invocation. It pins the private environment/grant and candidate vector, claims each effect once, and preserves the original wrapper's actual process identity. Inert Docker queries receive separate durable owners; a finished test client cannot hide another still-running query.
+- Saving it uses up the original deadline; if the deadline passes before dispatch, nothing starts.
+- A dispatched case stays *unknown* until its shutdown is observed, never inferred from age.
+- The same key never dispatches twice, and a second request cannot skip unresolved work.
+- A later failure wins over an earlier pass, even with the same timestamp.
 
-Pause/recovery observes original metadata without rerunning a test or resetting its allowance. Stop addresses only the original private nonce channels, even after revocation; unrelated environment operations remain untouched. Missing descriptors, damaged claims and unobserved clients stay unknown. Synthetic process controls test these boundaries without certifying a real daemon, application or account. Full domain-stage/public-route composition remains in progress. See [ADR-0124](../decisions/0124-owned-application-operation-stage-boundaries.md).
+**Inside a runner stage**, the application operations of a verification, integration or acceptance stage are bound to that stage's original environment, grant and candidate. Each effect is claimed once; each query gets its own owner, so a finished client cannot hide another still running. Pausing and recovering re-read the metadata without running a test again or resetting its allowance, and stopping reaches only that stage's own private channels, even after revocation.
 
 ## Private artifacts and sealed reports
 
-Artifact capture requires an active private grant with report.write and remaining artifact budget. Use acceptance-artifact with --run, --file, --root and --store; --media-type is optional and defaults to application/octet-stream. It reads bounded regular bytes without following a symlink escape, rejects recognizable credential text before storage, and verifies content-addressed chunks on reads. The per-object maximum is twenty MiB; the run retains its configured total budget, two hundred MiB by default. Empty bytes remain distinct from a missing artifact.
+**Capturing evidence.** `wl delivery acceptance-artifact --run <run> --file <file> --root <root> --store <store>` stores screenshots, traces or outputs. `--media-type` is optional (default `application/octet-stream`).
 
-Capture authorizes no sharing. Keep screenshots, traces, video and outputs private, and review/redact them before any separately authorized publication. Known credential text is refused across the complete object before splitting; this is not universal image/video redaction. Retention means keep, and review dates never delete evidence automatically. Partial omissions remain visible in the run budget instead of becoming successful captures.
+| Rule | Detail |
+| --- | --- |
+| Needs | An active grant with `report.write`, and artifact budget left |
+| Size | Up to 20 MiB per object; the run's total is 200 MiB by default |
+| Refused | Symlink escapes, and recognizable credential text anywhere in the object |
+| Stored as | Content-addressed chunks, verified when read; empty bytes differ from a missing artifact |
 
-Use acceptance-seal with the same report options to retain its current typed report as a budgeted immutable JSON artifact. This requires current execution/report authority, establishes no publication permission and does not run another suite. A fixture-only or incomplete report retains that status when sealed.
+Capturing authorizes no sharing. Keep evidence private, and review and redact it before any separately authorized publication: the credential check is not a general image or video redaction. Retention means *keep*; review dates never delete evidence, and partial omissions stay visible in the budget.
+
+**Sealing.** `wl delivery acceptance-seal`, with the same options as the report, stores the current typed report as an immutable artifact. It needs current authority, runs nothing again and grants no publication. A fixture-only or incomplete report stays that way when sealed.
 
 ## Human-only observations
 
-A human-only criterion remains pending-human until an explicit current operator note. Use acceptance-human-note with --digest, --case, --environment, --store and a --file/--root containing wholeloop/acceptance-human-request@1, by, note and passed/failed status. Record the actual person's observation of that exact candidate. An automated worker cannot convert its output into this note; the broker exposes no such method. Historical supervised PR-testing records remain unchanged and are not imported as observations for a different case or candidate.
+A case owned by a person stays `pending-human` until that person records a note:
 
-See [ADR-0105](../decisions/0105-pinned-acceptance-and-observed-evidence.md), the [behavioral QA specification](../../roadmap/specifications/autonomous-delivery/04-behavioral-qa.md) and [V1 acceptance](../v1-acceptance.md) for the remaining actual execution/native boundaries.
+```text
+wl delivery acceptance-human-note --digest <digest> --case <case> --environment <id> --store <store> --file <note.json> --root <root>
+```
+
+The note (`wholeloop/acceptance-human-request@1`) says who observed it, what they saw and whether it passed or failed, for that exact candidate. No worker can turn its output into such a note: the broker has no method for it. Earlier supervised PR-testing records are not imported as observations for another case or candidate.
+
+See the [behavioral QA specification](../../roadmap/specifications/autonomous-delivery/04-behavioral-qa.md).
 
 <!-- docnav -->
 [◀ Environment stop and retirement](delivery-lifecycle.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Execute API and CLI acceptance ▶](delivery-behaviors.md)

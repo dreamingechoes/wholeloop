@@ -1,15 +1,38 @@
 # Native delivery hosts — inspect support without granting execution
 
-> **TL;DR** — Dedicated delivery hosts keep builders separate from the existing read-only gate engine. A pinned recipe and an installed client still need actual runtime proof; metadata alone starts no worker.
+> **TL;DR** — The workers of an autonomous run are headless sessions of a real coding client, started by a **native host** that keeps them contained: a fresh home, no inherited credentials, only the role's tools, no interaction and bounded output. Today **Claude Code** and **Codex** have pinned reference recipes; the other clients are explicitly unverified as workers. Inspecting support starts nothing.
 
 > [!IMPORTANT]
-> **Experimental.** Reference recipes, capability negotiation, bounded execution and receipts are tested, and live trials passed with Codex. The command below inspects contracts only. Autonomous delivery may change in a minor release.
+> **Experimental.** Reference recipes, capability negotiation, bounded execution and receipts are tested, and live trials passed with Codex. Autonomous delivery may change in a minor release.
+
+```mermaid
+flowchart LR
+  A[Assignment<br/>from the queue] --> H[Native host]
+  K[(OS secret store<br/>worker credential)] --> H
+  H --> W[Client process<br/>fresh home, role tools,<br/>no interaction]
+  W --> O[Owned output<br/>bounded, checked]
+  O --> R[Receipt<br/>a worker claim]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class A,H,K,W,O,R core;
+```
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
+## Contents
+
+- [Inspect the available contracts](#inspect-the-available-contracts)
+- [Reference and unsupported targets](#reference-and-unsupported-targets)
+- [Give a worker its credential](#give-a-worker-its-credential)
+- [What a launch requires](#what-a-launch-requires)
+- [Repeat actual model-free Codex permission controls](#repeat-actual-model-free-codex-permission-controls)
+- [Repeat actual model-free Claude Code controls](#repeat-actual-model-free-claude-code-controls)
+- [Authentication and private data](#authentication-and-private-data)
+- [Read the outcome correctly](#read-the-outcome-correctly)
+- [Inside the controller](#inside-the-controller)
+
 ## Inspect the available contracts
 
-This command starts no client/model and reads no authentication store.
+This starts no client or model and reads no credential:
 
 ```bash
 set -euo pipefail
@@ -33,35 +56,71 @@ console.log("PASS: seven explicit targets, unsupported hard metering and no disp
 '
 ```
 
+```console
+1.1.0
+PASS: seven explicit targets, unsupported hard metering and no dispatch or acceptance
+```
+
+The schema lists all seven targets, says that hard token and cost limits are not supported, and that nothing is dispatched or accepted by inspecting it.
+
 ## Reference and unsupported targets
 
-| Target | Expanded delivery state |
-| --- | --- |
-| Claude | Pinned dedicated reference recipe; actual matching runtime proof is required |
-| Codex | Pinned dedicated reference recipe; actual matching runtime proof is required |
-| OpenCode, Copilot, Cursor, Gemini, Antigravity | Explicit expanded-target-unverified result; existing standalone/gate behavior retains its own evidence |
+| Target | As a delivery worker | Reference version |
+| --- | --- | --- |
+| Claude Code | Pinned reference recipe; needs matching runtime proof | 2.1.316 |
+| Codex | Pinned reference recipe; needs matching runtime proof | 0.166.0 |
+| OpenCode, Copilot, Cursor, Gemini, Antigravity | Explicitly *unverified* as workers. Their supervised use keeps its own evidence | — |
 
-The current reference versions come from the schema command. Unknown versions refuse rather than inherit an older pin's certification. A schema role is a protocol capability, not proof that an authenticated native session supports it. Current queue workers cover work-unit roles, including source-only research without an application workspace; complete delegated decision/research coordination is subsequent work.
+- The reference versions come from `native-schema`. An unknown version is refused; it never inherits an older version's certification.
+- A role in the schema is a protocol capability, not proof that a signed-in session supports it.
+- Queue workers cover the work-unit roles, including research that reads sources without an application workspace.
+
+## Give a worker its credential
+
+Workers sign in with a credential the controller supplies, kept in your OS secret store (the macOS Keychain or the Linux Secret Service), never in a file. Store it from standard input, then check that it resolves:
+
+```text
+wl delivery credential-store --target <claude|codex> --kind <api-key|oauth-token> --item <name> --store <macos-keychain|secret-service>
+wl delivery credential-check --target <claude|codex> --kind <api-key|oauth-token> --item <name> --store <macos-keychain|secret-service>
+```
+
+`credential-check` never prints the value. A host without a supported secret store, such as Linux without a desktop session, cannot hold one, and there is no file fallback. [Troubleshooting](../troubleshooting.md#a-public-run-stopped-before-dispatch) lists the related run errors.
 
 ## What a launch requires
 
-The controller prepares a fresh context from the current queue claim, immutable source/plan, pinned guidance/contracts and finite reservation. It then requires a trusted host observation bound to the exact assignment, recipe policy, target/version/role and selected model. That observation must establish authentication, containment, private-store/credential denial, restricted tools, disabled interaction, bounded cancellation, complete output and an owned-output reader. Default observation is unavailable.
+The controller builds a fresh context from the current queue claim, the immutable source and plan, the pinned guidance and contracts, and a finite reservation. Then it needs a **trusted host observation** for that exact assignment, recipe, client version, role and model, showing:
 
-No command accepts arbitrary JSON as such runtime proof. Named-version help and fixture records cannot activate an actual capability. Actual backend/tool controls are supplied and checked by their own host, with provenance retained. Managed native policy can refuse the recipe; the harness does not override it or choose a permissive alternative.
+- sign-in, and containment;
+- that the controller's private store and credentials are denied;
+- restricted tools and interaction switched off;
+- bounded cancellation, complete output and a reader for the owned output.
 
-Reference recipes disable external/personal MCP in the worker client. Existing controller/provider source hosts remain MCP-first and retain their scopes; disabling worker-side integrations does not introduce vendor HTTP implementations. Builders receive only their allocated implementation boundary, while evaluators retain read-only implementation access. Returned broker methods remain permission ceilings, not a promise that an unavailable native tool exists.
+The default is *unavailable*.
+
+- No command accepts JSON as that proof, and help output or fixture records cannot switch a capability on.
+- A managed client policy can refuse the recipe; the harness never overrides it or picks a more permissive one.
+- **Worker MCP is off.** Reference recipes disable external and personal MCP servers in the worker; the controller's own provider reads stay MCP-first with their scopes.
+- Builders get only their allocated workspace; evaluators get read-only access to the implementation. Broker methods are ceilings, not a promise that the client has the tool.
 
 ## Repeat actual model-free Codex permission controls
 
-Run npm run eval:native-boundary with Codex 0.166.0 installed ([ADR-0202](../decisions/0202-campaign-reference-client-versions.md)). This opt-in command uses an empty client home/credential reference, public controller-selected witnesses and an owned disposable Git worktree. It checks planner, builder and verifier with both file and inline-proposal output modes (six controls), including read/write restrictions, denied private/credential references, denied network access, recognized disabled feature flags and actual owned process cancellation. It preserves an external report and verifies unchanged project snapshots. It never invokes a model or queries an account; policy-only observations remain authenticated=false.
+With Codex 0.166.0 installed, from a source checkout:
 
-The internal CodexBoundaryHost can separately observe local client authentication through its explicit existing credential-store reference. Only status/hashes/ownership enter its private proof, and fixture authentication remains fixture-only. Async observation is finite under the original attempt; unknown or cancelled probes preserve their consumed reservations. Missing bindings cannot authorize replay. See [ADR-0120](../decisions/0120-observed-native-boundaries-and-asynchronous-admission.md).
+```bash
+npm run eval:native-boundary
+```
 
-The actual macOS controls cover the reference version's three selected roles and both output modes. Linux fixture/minimum-runtime checks do not establish actual Linux client containment. Accounts, model availability and complete native application execution remain separate acceptance work. Native stages join the public run only with trusted runtime proof.
+It uses an empty client home, public witnesses chosen by the controller and a disposable Git worktree, and checks **planner, builder and verifier** in both output modes, six controls in all:
+
+- read and write restrictions, and denied private and credential references;
+- denied network access, and recognized disabled feature flags;
+- real cancellation of the owned process, and unchanged project snapshots.
+
+It never calls a model or queries an account, so its observations stay `authenticated: false`. A separate internal check can observe the client's own sign-in through an explicit reference to its credential store; only a status, digests and ownership reach its private proof. These controls ran on macOS for the reference version; Linux checks with fixtures do not prove real containment on Linux.
 
 ## Repeat actual model-free Claude Code controls
 
-Claude Code runs inside a macOS `sandbox-exec` profile that denies every file the assignment does not need ([ADR-0203](../decisions/0203-contained-claude-code-boundary.md)). It authenticates through a dedicated client home that you sign in to once:
+On macOS, Claude Code runs inside a `sandbox-exec` profile that denies every file the assignment does not need. It signs in through a dedicated client home that you log in to **once**; the second command below is interactive:
 
 ```bash
 mkdir -p -m 700 ~/.local/state/wholeloop-native/claude
@@ -69,79 +128,35 @@ CLAUDE_CONFIG_DIR="$HOME/.local/state/wholeloop-native/claude" claude auth login
 WHOLELOOP_CLAUDE_CLIENT="$(readlink -f "$(command -v claude)")" npm run eval:claude-boundary
 ```
 
-The eval checks planner, builder and verifier with both output modes. Each case runs the client's version check, the controller's boundary program under the launch profile, owned cancellation and the client's own login status. No model is invoked. `WHOLELOOP_CLAUDE_STORE` selects another client home. Off macOS the observer returns no observation, so Claude stages stay unavailable there.
-
-## Artifact transport for controller authors
-
-The existing files mode remains the default. A fixed controller can explicitly select output: inline-proposal when calling NativeDeliveryHost.run. That versioned worker proposal returns artifact text through the owned structured stdout channel; a read-only worker can produce a new report without a Write tool or a writable output directory. Workers may continue citing their original pinned input evidence.
-
-The proposal echoes the supplied assignment digest. The core binds the original identity, computes actual UTF-8 hashes/sizes and validates the canonical worker claim with the same role/evidence/context rules as file mode. The complete proposal is capped at one MiB, with at most one hundred artifacts and 256 KiB of combined inline text under the original budget. Empty files, literal whitespace and Unicode stay exact. Invalid encoding, NUL, unsafe/duplicate/input references, forged metadata, stale echoes and recognizable credentials fail before capture. Native process output limits and current-grant checks remain mandatory.
-
-The normalized result and captured references remain worker claims. A complete proposal supplies neither an observed test result nor a human/machine approval. There is no protocol fallback: an old file result sent to the inline decoder, or a proposal sent to file mode, is invalid. Public v1 schema/receipt commands retain their existing declarations; this is an explicitly selected controller API transport, with full terminal routing still in progress. See [ADR-0115](../decisions/0115-bounded-inline-worker-artifact-proposals.md).
-
-## Controller planning and decision workers
-
-The internal NativePurposeAttempts host now runs planner/challenger roles independently of implementation units, including revision-zero original envelopes. It shares the native assignment transport with NativeDeliveryHost; existing queue behavior and default file mode remain intact. Purpose calls explicitly use the bounded inline proposal protocol, their original private named delegation, evaluator capacity and run deadline.
-
-Each purpose is claimed and consumed once before launch. An interrupted observer, unknown owner or missing semantic response retains the original reservation; calling again does not recover permission to launch. A known completed report remains current only while original authority, repository bases, selected input bytes, private receipt and captured output bytes agree. Existing private cancellation/process ownership still governs any actual native call.
-
-NativeDelegatedDecisionHost obtains two independent actual process receipts and validates purpose-specific JSON claims in artifacts/decision.json. The controller supplies runtime identity; evidence/prerequisites come separately from a trusted domain observer. Neither role can impersonate human approval or promote fixture output. This internal API is tested with actual synthetic client processes, while public complete-route wiring and live client acceptance remain open. See [ADR-0116](../decisions/0116-owned-native-decision-purpose-attempts.md).
-
-## Worker stages and original-result recovery
-
-The internal RunnerWorkerStages controller connects implementation and unit-research work to an exact original queue entry and private native assignment. Its trusted host supplies selected context and a boundary factory that uses the same registered native process runner. It does not accept a public executable host or worker-authored runtime proof. Targeted queue admission retains global reservations while leaving unrelated pending work untouched.
-
-The private root intent precedes claim; the original native assignment and random output directory are consumed before any probe or model input. A failed observer, missing reply or lost private binding cannot start that claim again. An observed admission refusal records that no process started. Existing retry fencing and original budgets remain mandatory.
-
-A fresh controller reads only the journal-selected immutable receipt and validates original runtime/provenance, selected and copied inputs, captured artifacts, current candidate and actual process closure. It can recover while paused without resuming. Stop uses original private nonce channels, including after revocation. A successful worker stage establishes production of a candidate or research claim; behavioral QA, review and acceptance still follow separately.
-
-The fixed stage dispatcher sends a unit's research stage to this same adapter. Report-level research and research claims inside milestones wait for the research host; fixed-dispatch preflight refuses those routes before dispatch ([ADR-0179](../decisions/0179-research-dispatch-boundary.md)). This composition is covered with actual synthetic native processes and fixture semantics. It does not certify authenticated client/model behavior. See [ADR-0121](../decisions/0121-owned-worker-stage-bindings-and-recovery.md).
-
-## Delegated stage decisions
-
-RunnerDecisionStages connects exact named route requirements to the existing private delegated-decision store. The trusted controller supplies original-plan artifact/evidence references and the native decision host; a worker or result-file option cannot provide authority. Requests are bound before invocation, checked for complete scope and refused if their metadata is oversized or credential-bearing. A separate consumed-invocation marker fences a lost descriptor, including before the first native group starts; it supplies no approval.
-
-Production workers, planner/challenger and their boundary controls now share RunnerNativeStage for actual registration, process scopes and deadline narrowing. An uncooperative judgment cannot extend the original root deadline. Repeating a lost call retains its original unknown request instead of launching new decision workers. Stages with no named decision requirement do not invoke a model or invent an approval.
-
-Paused inspection uses the exact original private key and published receipt. If the final key locator was lost, a published head is usable only for that same complete request. A newer unrelated judgment does not repair the old one. Decision heads keep their existing run/plan/decision scope: reuse an exact current global request where appropriate; do not silently substitute a unit judgment for a global approval.
-
-This API returns decision evidence, with fixture/stale/rejected/incomplete records still blocked or unknown. It does not produce missing definition/build/acceptance artifacts, perform behavioral QA or establish a delivery endpoint. Those domain hosts and public complete-route execution remain in progress. See [ADR-0122](../decisions/0122-owned-stage-decisions-without-semantic-promotion.md).
-
-## Owned definition and plan production
-
-Internal RunnerArtifactAttempts and RunnerArtifactStages produce definition/plan proposals, builder plans and complete acceptance definitions using original-budget read-only planners. They use source.read/report.write authority and the planner's unchanged no-workspace policy; they do not require permission to approve their own output or invent a unit in the approved work graph. Existing delegated-decision leases and behavior remain unchanged.
-
-The controller pins the source/plan, exact response schema, original native directory and journal-selected captured report. Delivery-plan proposals preserve the authorized scope, original endpoint policy and next-revision relationship. Builder plans bind the actual owned pre-build snapshot. Acceptance definitions preserve criterion ownership and are pinned before any builder admission. Wrong, uncertain, altered or incomplete output remains blocked or unknown; fixture output retains fixture provenance.
-
-The component returns artifact/preparation evidence with approvals: not-recorded and acceptance: not-established. Its caller must still run the required independent judgments and behavioral QA. A delivery-plan proposal does not reserve its next immutable revision before the required decisions, so rejection can still produce a corrected proposal; producing a builder plan does not create a legacy human approval. Fresh observation can repair a lost original acceptance metadata write while paused without selecting new inputs, running another model or resetting an allowance. Consumed missing locators stay unknown, and cancellation retains original private ownership after revocation.
-
-These are internal controller APIs, not a public command that imports worker JSON as completion. Research-report production, full-stage decision composition and complete public route/QA/repair/acceptance wiring remain in progress. See [ADR-0125](../decisions/0125-owned-artifact-production-before-delegated-decisions.md).
-
-## Owned code review and refutation
-
-The internal RunnerNativeGateHost binds each inspection/refutation to its original queue claim, pinned gate unit or recorded finding, current committed bytes/index/HEAD and original stage deadline. It uses the same registered process runner and bounded inline report transport as production. A read-only model cannot execute a suite or add a process-execution claim. Fixture-only observations remain unavailable to the legacy gate instead of becoming a passing review.
-
-The controller selects hash-pinned context after claim, binds any private audience to that actual attempt and validates the complete input pack before copying. The selected review patch/rubric must match the private round and accepted guidance. Each result is parsed only from the original journal-selected native receipt and actual captured report. Missing/corrupt descriptors and unknown owners stay held; retries do not silently buy another worker.
-
-RunnerReviewStages joins the existing round engine to the root stage with original machine-review subjects and budgets. Fresh read-only inspection validates the submitted results/votes, unchanged candidate and closed native scopes, then applies the existing strict-majority/fail-safe rules. It can seal an original lost final journal write while paused without running another model, suite, repair or round. Stop uses original private nonce channels even after revocation. Machine review never fabricates an owner approval or closes an existing product item.
-
-Complete-round model-free controls run separately from ordinary file-worker test budgets, with finite original allowances. Their actual synthetic processes and normalized host observations are controller tests, not live client/account or complete-route certification. Behavioral QA, local repair/integration/acceptance composition and public complete-route execution remain in progress. See [ADR-0123](../decisions/0123-owned-native-review-rounds-and-recovery.md).
+The evaluation checks planner, builder and verifier in both output modes. Each case runs the client's version check, the controller's boundary program under the launch profile, owned cancellation and the client's own login status. No model is called. `WHOLELOOP_CLAUDE_STORE` selects another client home. Off macOS there is no observation, so Claude stages are unavailable there.
 
 ## Authentication and private data
 
-Native clients use a fresh home/configuration environment without inherited controller tokens or runtime injection options. A real observed host may explicitly reference the client's own credential store outside repositories, the worker's roots and controller state. It never copies credentials into generated files, argv or model context, and the untrusted application environment receives none. Fixture runtime observations cannot enable this reference.
-
-Actual credential denial remains a native/backend acceptance obligation. A prompt, worktree, mode flag, successful login or schema assertion does not prove that denial. Native account/model trials are kept separate from deterministic source checks and service integration certification.
+- Clients start with a **fresh home and configuration**, without the controller's tokens or runtime injection options.
+- A real host may reference the client's own credential store, outside repositories, the worker's roots and the controller's state. Credentials are never copied into generated files, arguments or the model's context, and the application's environment receives none.
+- Fixture observations can never enable that reference.
+- Denying credentials is proven by the native host's checks, not by a prompt, a worktree, a mode flag, a successful login or a schema.
 
 ## Read the outcome correctly
 
-Before private input is sent over stdin, the host registers the actual process tuple in the queue. It bounds output and duration and rechecks current authority/fencing while running. It validates unchanged context and Git control bytes before later controller Git reads. A read-only workspace mutation, changed metadata, wrong response identity or unobserved output artifact fails the attempt.
+- **Before** any private input is sent over standard input, the host registers the real process in the queue. Output and duration are bounded, and authority and fencing are checked again while it runs.
+- Context and Git control files are checked unchanged before the controller reads Git. A change in a read-only workspace, changed metadata, a wrong response identity or an output that was not observed fails the attempt.
+- Claimed artifacts must match the real output bytes and fit the [artifact budget](./delivery-budgets.md). Captured references and their charges survive retries; a quota refusal never turns missing evidence into success.
+- Hard token and cost limits are not supported, and usage nobody measured stays *unknown*, never zero.
 
-Claimed artifacts must match actual owned output bytes and fit the existing [persistent artifact budget](./delivery-budgets.md). Captured canonical references and their charges survive retries; quota refusal never turns into missing evidence accepted as success. Raw owned runtime files are separate retained diagnostic resources, subject to subsequent backend lifecycle/retention controls.
+## Inside the controller
 
-A native-run receipt retains process exit/signal when observed, typed failure, output digests, candidate snapshot, worker claim and canonical artifact references. Complete transport plus a complete worker claim can settle scheduler work; it establishes no actual QA, human testing, delegated acceptance, PR readiness or merge eligibility. Blocked/failed claims cannot complete their unit. Permission/model/MCP/authentication failures, cancellation and output limits never switch models or broaden permissions.
+For contributors, the controller composes native workers through internal APIs. Each one is tested with real synthetic client processes; none is a public command that imports worker JSON as completion, and none certifies a signed-in client.
 
-Hard native token/currency caps remain unsupported. Usage without a trustworthy observation stays unknown rather than zero. See [ADR-0101](../decisions/0101-dedicated-native-delivery-hosts-and-runtime-proof.md), [runtime acceptance](../v1-acceptance.md) and the [durable runner specification](../../roadmap/specifications/autonomous-delivery/02-durable-runner.md).
+| Component | What it guarantees |
+| --- | --- |
+| **Inline artifact proposals** (`output: inline-proposal`) | A read-only worker can return a report through its structured output, without write access. The proposal echoes the assignment digest, is capped at 1 MiB, 100 artifacts and 256 KiB of text, and is refused on bad encoding, unsafe references, forged metadata or credentials. There is no fallback between file and inline modes |
+| **Purpose attempts** (planner and challenger) | Decision workers run independently of implementation units, are claimed and consumed once before launch, and a report stays current only while authority, bases, inputs and outputs are unchanged |
+| **Delegated decision host** | Two independent process receipts, purpose-specific claims, evidence from a separate trusted observer; neither role can pass as a person's approval |
+| **Worker stages** | Implementation and unit research bound to their exact queue entry and assignment. A lost reply cannot start the claim again; a fresh controller recovers from the recorded receipt, even while paused; stop works after revocation |
+| **Decision stages** | Route requirements bound before invoking; a lost call keeps its unknown request instead of launching new workers; a newer unrelated judgement never repairs an old one |
+| **Artifact stages** | Definition and plan proposals, builder plans and acceptance definitions produced by read-only planners, with `approvals: not-recorded` and `acceptance: not-established` until the independent judgements run |
+| **Native gate host and review stages** | Each inspection and refutation bound to its claim, finding and the committed bytes; results parsed only from the recorded receipt; the existing strict-majority rules applied; a lost final write sealed while paused without running another model |
 
 <!-- docnav -->
-[◀ Delivery workers](delivery-workers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery budgets ▶](delivery-budgets.md)
+[◀ Delivery workers](delivery-workers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment planning ▶](delivery-environments.md)

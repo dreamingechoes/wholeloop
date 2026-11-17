@@ -1,0 +1,19 @@
+> /wholeloop:slice-work scope-a9e0
+
+Slices — "Find an order"
+Repos      api (~/code/shop-api) · web (~/code/shop-web)
+Format     slice.conventions → default (no repo skill found)
+
+  slice-0d4e  User can search orders by number      api + web
+                part-1 api   contract: GET /orders?q=   (closes first)
+                part-2 web   search box on orders page
+  slice-77ab  User can filter orders by status/date api + web   (after slice-0d4e)
+  slice-c21f  Empty and error states are explicit   web          (after slice-77ab)
+
+▸ challenger: slice-77ab had "filter and sort" → split, sort moved to a later scope
+✓ shape check passed · 3 slices · 9 criteria · 14 test cases
+
+Produced
+  Slices             3 · parts 5          wl status scope-a9e0
+  Tracker items      5 + blocked-by links (Linear)
+Next                 /wholeloop:build-slice scope-a9e0

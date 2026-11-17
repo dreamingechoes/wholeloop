@@ -1,0 +1,18 @@
+> /wholeloop:review-code #142
+
+Review — PR #142 "Add CSV export to the orders list"
+Rubric    .claude/skills/backend-guidelines (repo) · CONTRIBUTING.md
+Lenses    correctness · design fit · performance · security · simplicity · change shape
+Round     1 of 3
+
+▸ 6 reviewers started
+✓ design fit · ✓ security · ✓ change shape
+✗ performance: one query per order row in ExportService#rows
+✗ simplicity: CsvBuilder duplicates the existing ReportWriter helpers
+✗ correctness: a comma in a customer name breaks the column layout
+▸ challenging 3 findings…
+  performance kept (0 of 3 against) · correctness kept (0 of 3 against)
+  simplicity dropped — 2 of 3 argued ReportWriter can't stream
+
+Verdict   FAIL — 2 blockers · 1 dropped (reasons linked)
+Next      builder, round 2 of 3 (only the new diff is reviewed)

@@ -4,8 +4,6 @@
 
 Remote tracker mirroring is experimental.
 
----
-
 ## At a glance
 
 | | |
@@ -60,17 +58,43 @@ flowchart TD
 
 ## Standalone use
 
-Use `wl step begin slice-work --input "Find past orders" --owner "Alex" --json` to create the minimal initiative/scope hierarchy. Earlier Define steps are not fabricated. An existing scope uses `--for <scope>`; an initiative ID must first select a child scope. To start from a shared document, adopt it first with `wl adopt <URL>` ([utilities](../utilities.md)).
+Used on its own, it creates the smallest initiative and scope it needs, without inventing the earlier Define steps. An existing scope is passed with `--for <scope>`; for an initiative, pick one of its scopes first. To start from a shared document, adopt it first with `wl adopt <URL>` ([utilities](../utilities.md)).
 
-`wl slices plan --for <scope> --json` returns inherited criteria, exact source pins and the current checkout as a candidate repository. Confirm actual roots before drafting; declaring a path does not prove it is a usable Git repository. Read the selected slice.conventions guidance and `wl slices schema --json`.
+The core commands behind the skill, for scripts and skill authors:
 
-The YAML metadata uses wholeloop/slice-plan@1, repository key/path entries and slices with stable key, title, objective, one outcome, an end-to-end demonstration, criteria, linked test cases and repository keys. Preserve sourceScope/sourceSpec pins and inherited criteria exactly. Multiple repositories require a contract repository, interface and examples. Slices default to a chain in plan order; blockedBy replaces that default, including an explicit empty array for independent work. Keys or existing slice IDs can name dependencies within the same scope.
+```text
+wl step begin slice-work --input "Find past orders" --owner "Alex" --json
+wl slices plan --for <scope> --json
+wl slices schema --json
+wl challenge plan slicing --file <file> --for <scope> --json
+wl slices check <file> --for <scope> --json
+wl step complete slice-work --for <scope> --artifact <file> --json
+```
 
-Call `wl challenge plan slicing --file <file> --for <scope> --json`, then `wl slices check <file> --for <scope> --json`. Complete through `wl step complete slice-work --for <scope> --artifact <file> --json`. Invalid criteria, missing demonstrations, multiple declared outcomes, cycles or stale source pins leave no partial child updates. Revisions reuse IDs; omissions do not delete earlier work, and closed children need explicit reopening.
+**1. Plan.** `slices plan` returns the inherited criteria, the pinned sources and your current checkout as a candidate repository. Confirm the real repository roots before drafting: declaring a path does not prove it is a usable Git repository. Read the selected `slice.conventions` guidance too.
 
-The contract repository's part includes its implementation, keeping the total at one part per participating repository. Single-repository slices need no child part. `next <scope>` selects ready work, then the contract part, or asks between independent choices. Recorded dependency completion is required before continuing blocked work. Local tracker IDs are stored references; remote publication remains pending until the host confirms real writes and records their links. See [ADR-0029](../../decisions/0029-vertical-slice-contracts-and-repository-parts.md).
+**2. Write the slice plan** with `wholeloop/slice-plan@1` front matter (`slices schema` prints it):
+
+- **repositories**, each with a key and a path;
+- **slices**, each with a stable key, a title, an objective, **one** outcome, an end-to-end demonstration, criteria, linked test cases and the repositories it touches;
+- the `sourceScope` and `sourceSpec` pins and the inherited criteria, **exactly** as returned;
+- for several repositories, a **contract** repository with its interface and examples.
+
+Slices run as a chain in plan order by default. `blockedBy` replaces that order; an explicit empty list marks a slice as independent. Dependencies can name keys or existing slice IDs within the same scope.
+
+**3. Challenge and check**, then **complete**. Invalid criteria, a missing demonstration, more than one outcome, a cycle or a stale source pin refuse the whole plan: no slice is half-updated. A revision reuses IDs; leaving a slice out does not delete it, and a closed slice needs explicit reopening.
+
+**Parts.** A slice that spans repositories gets one part per repository; the contract repository's part also holds its implementation. A single-repository slice needs no parts. `next <scope>` picks ready work, starting with the contract part, or asks you to choose between independent options. Blocked work continues only after its dependencies are recorded as complete.
+
+Local tracker IDs are stored references. Remote publication stays pending until the host confirms a real write and records its link.
 
 ## Run it
+
+![slice-work: an illustrative example session in a coding client](../../assets/terminal/session-slice-work.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:slice-work scope-a9e0
@@ -94,11 +118,13 @@ Produced
 Next                 /wholeloop:build-slice scope-a9e0
 ```
 
-| CLI | Invoke |
+| Client | Invoke |
 | --- | --- |
-| Claude Code | `/wholeloop:slice-work …` |
+| Claude Code, installed skills | `/wl-slice-work …` |
+| Claude Code, generated plugin | `/wholeloop:slice-work …` |
 | Codex CLI | `$wl-slice-work …` |
-| OpenCode · Copilot CLI · tier B | `/wl-slice-work …` |
+| OpenCode · Copilot · Gemini · Cursor | Ask for `wl-slice-work` |
+| Antigravity | Ask for `wl-agy-slice-work` |
 
 ## Before & after
 
@@ -114,8 +140,6 @@ Next                 /wholeloop:build-slice scope-a9e0
 **"Can independent slices in the same repository be built simultaneously?"** Yes. Each gets its own worktree and branch in [`build-slice`](./build-slice.md); only declared dependencies make one wait for another.
 
 **"The challenger flagged a slice I think is fine."** Reply with your reasoning — it's kept with the slice. If it keeps getting the same thing wrong, that example belongs in its test corpus.
-
----
 
 <!-- docnav -->
 [◀ cut-scopes](../define/cut-scopes.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [build-slice ▶](build-slice.md)

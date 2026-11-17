@@ -4,8 +4,6 @@
 
 The optional [declared API/CLI host](../../tutorials/delivery-behaviors.md) adds observed application behaviour.
 
----
-
 ## At a glance
 
 | | |
@@ -53,27 +51,6 @@ flowchart TD
 6. **Reads, never writes.** Verifiers have no edit tools wherever the CLI can enforce that, and the core checks the slice's worktree is untouched after each round — any change fails the round.
 7. **Bounded, and yours to tune.** Four rounds by default; change it per project (`gates.verify.rounds`) or per run (`--rounds verify=6`). Still red at the limit? The run stops, hands you every finding with its evidence, and asks whether to extend or stop.
 
-## Available verification commands
-
-```bash
-wl verify begin feature/orders --base main --owner Owner --by Owner --criteria criteria.json --json
-wl verify begin --for slice-0123abcd --json
-wl verify suite --for slice-0123abcd --run gate-0123456789abcdef --round 1 --json
-wl gate submit --for slice-0123abcd --file criterion-result.json --json
-wl gate verdict --for slice-0123abcd --gate verify --json
-wl verify complete --for slice-0123abcd --json
-```
-
-Criteria files use `wholeloop/criteria@1`. Missing criteria/ownership/base become questions (exit 2) before item creation. Recorded agreements cannot be overridden through flags. PR URLs also need a host-resolved local named `--branch`; no fetch or authentication occurs here. Raw step entry without agreement is rejected.
-
-Suite selection uses the resolved declared check/verify command, or the selected test plus that package's declared typecheck/lint. Instruction-file bindings need the host to read guidance and pass explicit declared refs, for example `--commands '["package.json#test","package.json#lint"]'`. No prose is executed. The runner uses argv/cwd, stops at the first failure, and defaults to 120000 ms per command (`--timeout` accepts 100–600000). More than 1 MiB of captured output or a timeout kills its POSIX process group. Linux execution remains unverified locally.
-
-The durable intent precedes execution. Concurrent/repeated callers share one receipt; an unfinished intent is ambiguous and cannot be retried in the same round. Seal the failed round and explicitly proceed within its budget after inspection. Raw stdout/stderr appear only in the current response; durable state keeps exit codes/signals and captured-byte digests. Cached calls return no old raw logs and expose `current: false` if code changed after the original execution.
-
-Changed test files add deterministic testability findings and a separate semantic changed-tests assignment. Lint recognizes constant passing expect(...).toBe/toEqual/ toStrictEqual and assert.ok(true), skipping quoted examples/comments. It does not prove a whole test can fail, perform mutation testing or cover all languages. Actual failed suite execution remains a blocker even if findings meet a refutation quorum. Completion requires a successful recorded suite and current verify PASS.
-
-`harness/workflows/verification.ts` shares the suite output with a typed read-only host and uses the same gate scheduler as builds. Stubbed workers do not prove model quality or real client isolation. See [ADR-0033](../../decisions/0033-once-per-round-suites-and-explicit-verification-inputs.md).
-
 ## Standalone use
 
 | You give it | It checks |
@@ -86,6 +63,12 @@ Changed test files add deterministic testability findings and a separate semanti
 No criteria anywhere? It **asks**. Without them the result is only a test run, and the verdict says exactly that.
 
 ## Run it
+
+![verify-works: an illustrative example session in a coding client](../../assets/terminal/session-verify-works.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:verify-works slice-0d4e
@@ -107,13 +90,14 @@ Verdict   FAIL — 2 blockers, recorded on slice-0d4e
 Next      builder, round 2 of 4
 ```
 
-| CLI | Invoke | Parallel verifiers |
+| Client | Invoke | Parallel verifiers run as |
 | --- | --- | --- |
-| Claude Code | `/wholeloop:verify-works …` | native subagents |
+| Claude Code | `/wl-verify-works …`, or `/wholeloop:verify-works …` with the plugin | native subagents |
 | Codex CLI | `$wl-verify-works …` | native subagents |
-| OpenCode | `/wl-verify-works …` | native subagents |
-| Copilot CLI | `/wl-verify-works …` | native subagents (`/fleet`) |
-| Gemini CLI · Antigravity · Cursor | `/wl-verify-works …` | native where available, otherwise headless or one by one ([orchestration](../../architecture/orchestration-and-gates.md)) |
+| OpenCode | Ask for `wl-verify-works` | native subagents |
+| Copilot CLI | Ask for `wl-verify-works` | native subagents (`/fleet`) |
+| Gemini CLI · Cursor | Ask for `wl-verify-works` | native where available, otherwise headless or one by one |
+| Antigravity | Ask for `wl-agy-verify-works` | native where available, otherwise headless or one by one |
 
 ## Before & after
 
@@ -126,11 +110,40 @@ Next      builder, round 2 of 4
 
 **"It picked the wrong test command."** Pin it once: `wl answer verify.suite="make check" --scope project`, or set it in `.wholeloop/config.yml`.
 
-**"Can I skip a verifier to save time?"** You can make it slower; you can't make it check less ([ADR-0010](../../decisions/0010-interaction-profile-never-changes-coverage.md)).
+**"Can I skip a verifier to save time?"** You can make it slower; you cannot make it check less. No setting reduces what a gate covers.
 
 **"Does it see the UI?"** Not from source alone. Until a rendering source is configured, the verdict states that visual behaviour was not checked.
 
----
+## Available verification commands
+
+```bash
+wl verify begin feature/orders --base main --owner Owner --by Owner --criteria criteria.json --json
+wl verify begin --for slice-0123abcd --json
+wl verify suite --for slice-0123abcd --run gate-0123456789abcdef --round 1 --json
+wl gate submit --for slice-0123abcd --file criterion-result.json --json
+wl gate verdict --for slice-0123abcd --gate verify --json
+wl verify complete --for slice-0123abcd --json
+```
+
+**Starting.** Criteria files use `wholeloop/criteria@1`. Missing criteria, owner or base become questions (exit 2) before anything is created, and an agreement already recorded cannot be overridden with flags. A PR URL also needs `--branch`, a local branch the host resolved; nothing is fetched or authenticated here.
+
+**Which commands run.** The suite is your repository's declared check or verify command, or the selected test plus that package's declared typecheck and lint.
+
+- When the guidance lives in an instruction file, the host reads it and passes explicit references, for example `--commands '["package.json#test","package.json#lint"]'`. Prose is never executed.
+- Commands run with their own arguments and working directory, and stop at the first failure.
+- Each command gets 120 000 ms by default (`--timeout` accepts 100 to 600 000). A timeout, or more than 1 MiB of output, stops its whole process group.
+
+**Once per round.** The suite runs once per round, and every verifier reads the same result.
+
+- The intent is recorded before the suite runs. Concurrent or repeated calls share one receipt.
+- An unfinished run cannot be retried in the same round: inspect it, close the round and carry on within the budget.
+- Raw output appears only in the current response. The store keeps exit codes, signals and digests of the output, and a cached answer says `current: false` if the code changed since.
+
+**Changed tests.** When the change touches test files, verification adds two checks: a deterministic lint for tests that cannot fail, such as `expect(true).toBe(true)` or `assert.ok(true)`, and a separate review of the changed tests by a verifier. The lint does not prove a whole test can fail, and it is not mutation testing.
+
+**Completion** needs a successful recorded suite and a current verify pass. A failed suite stays a blocker even if its findings were refuted.
+
+The host contract is `harness/workflows/verification.ts`, which shares the suite output with read-only verifiers and uses the same gate scheduler as builds. Tests with stubbed workers prove the plumbing, not the model's judgement or a client's isolation.
 
 <!-- docnav -->
 [◀ build-slice](build-slice.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [review-code ▶](review-code.md)

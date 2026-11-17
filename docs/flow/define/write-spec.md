@@ -1,35 +1,8 @@
 # write-spec — what we will build, how we will know it worked
 
-> **TL;DR** — Turns a framed problem into a spec a builder can work from and a person can sign off: user stories with testable acceptance criteria, success metrics, a rough rollout outline and a **measurement plan you can actually run** — for every metric, where the number comes from, where it is today, where it should go and over what window. A challenger stress-tests the criteria first. Ends at the **approve** decision point.
+> **TL;DR** — Turns a framed problem into a specification a builder can work from and a person can sign off: user stories with testable acceptance criteria, success metrics, a rough rollout outline and a **measurement plan you can actually run**. For every metric it records where the number comes from, where it is today, where it should go and over what window. A challenger stress-tests the criteria first. It ends at the **approve** decision point.
 
-Remote publication is experimental.
-
-Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
-
-The separate [delegated-decision controller](../../tutorials/delivery-decisions.md) records explicitly authorized exact-revision machine judgments with independent challenge. It never writes this step's legacy human approval fields. The commands on this page retain their supervised contract; complete native unattended orchestration remains under implementation.
-
----
-
-## Available core commands
-
-```text
-wl step begin write-spec --for init-0123abcd --json
-wl step begin write-spec --input "Find old orders" --owner Alex --impact "Reduce retrieval time" --json
-wl spec schema --json
-wl spec check /path/to/spec.md --json
-wl step complete write-spec --for init-0123abcd --artifact /path/to/spec.md --json
-wl answer decision.approve-spec=approved --for init-0123abcd --by Alex --json
-```
-
-The artifact uses YAML front matter with `schema: wholeloop/spec@1`. The public schema is `src/spec/schemas/spec-v1.json`; a complete, fictional fixture is `test/fixtures/spec/spec.md`. Each story has an ID, actor, desired behavior, benefit and uniquely identified criteria with falsifiable tests. The English wording lint currently rejects fast, quickly, intuitive, better, user-friendly, seamless, robust, scalable, easy and ASAP. It is a structural aid, not proof that the criteria are correct or complete.
-
-Each metric pins a source provider, query operation and stored query, unit, baseline, target comparator/value and days/timezone. A known baseline needs its value and evidence. An unknown baseline needs missing evidence, an answerer and an existing `trackingStory`. Without metrics, `measurementException` requires a reason and accountable person. Rollout stages record audience, increasing exposure, exit conditions and rollback; flagged rollout also needs its proposed flag name. No query or flag change is executed by validating this plan.
-
-The begin payload exposes `templateSource`: selected repository guidance takes priority; otherwise `templates.spec` selects a manifest (default `spec`). Custom required sections add to the core sections. The shared host workflow reads repo guidance before drafting, while completion validates both metadata and shape.
-
-Standalone entry asks for problem, owner and expected impact before creating work. An initiative can reuse its framing impact or an explicit remembered answer. After completion, approval is pending for that revision. Rejection permits another write-spec run; approval during an unfinished draft is refused. An earlier approval never applies to a later completion. See [ADR-0023](../../decisions/0023-structured-spec-plans-and-revision-approval.md).
-
-Local publication references the stored spec and initiative; external destinations remain pending handoffs. The broader examples below describe the target host UX.
+Publishing the specification to a remote service is experimental.
 
 ## At a glance
 
@@ -46,7 +19,7 @@ Local publication references the stored spec and initiative; external destinatio
 
 ## When to use it — and when not
 
-**Use it when** a framed problem has earned a commitment and the team needs one definition of done — including the numbers that will prove it — agreed before anyone writes code.
+**Use it when** a framed problem has earned a commitment and the team needs one definition of done, including the numbers that will prove it, agreed before anyone writes code.
 
 **Skip it when** the change is a small, well-understood fix: [`build-slice`](../build/build-slice.md) takes free text and agrees acceptance criteria with you directly.
 
@@ -80,6 +53,12 @@ On its own it takes a pasted idea, a document or an issue URL. With no initiativ
 
 ## Run it
 
+![write-spec: an illustrative example session in a coding client](../../assets/terminal/session-write-spec.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
+
 ```text
 > /wholeloop:write-spec init-41c2
 
@@ -104,11 +83,13 @@ Produced
 Next                 /wholeloop:cut-scopes init-41c2
 ```
 
-| CLI | Invoke |
+| Client | Invoke |
 | --- | --- |
-| Claude Code | `/wholeloop:write-spec …` |
+| Claude Code, installed skills | `/wl-write-spec …` |
+| Claude Code, generated plugin | `/wholeloop:write-spec …` |
 | Codex CLI | `$wl-write-spec …` |
-| OpenCode · Copilot CLI · tier B | `/wl-write-spec …` |
+| OpenCode · Copilot · Gemini · Cursor | Ask for `wl-write-spec` |
+| Antigravity | Ask for `wl-agy-write-spec` |
 
 Optional numeric criterion assertions allow deterministic contradictory-pair checks: name the exact subject, context, unit, operator and value. The shared lint rejects conflicting bounds before completion. Free-text consistency still needs a challenger; `wl challenge plan spec --file <file> --json` supplies fixed coverage and tone without calling a model.
 
@@ -119,15 +100,48 @@ Optional numeric criterion assertions allow deterministic contradictory-pair che
 
 ## Gotchas & FAQ
 
-**"Can I leave the metrics out?"** Not silently. Without them nobody can tell later whether it worked. If something truly can't be measured, say why in the spec — that counts as an answer.
+**"Can I leave the metrics out?"** Not silently. Without them nobody can tell later whether it worked. If something truly cannot be measured, say why in the spec: that counts as an answer.
 
 **"We already have our own spec format."** Then the `spec.template` slot picks it up, and the harness only layers its shape checks on top.
 
 **"The challenger is too loud for me."** Turning `challenge` down makes it gentler in how it says things; it still runs the same criteria checks ([profile](../../configuration/profile.md)). A check that keeps being wrong should become a test case for it.
 
-**"Do I have to publish the spec somewhere?"** No. The store is enough; a `docs` provider is optional.
+**"Do I have to publish the spec somewhere?"** No. The store is enough; a `docs` provider is optional. When you do publish, the specification joins the initiative's other Define artifacts ([shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts)), and links are recorded only after the write is confirmed.
 
----
+**"Can a machine approve the spec for me?"** Not in this step. [Autonomous delivery](../../tutorials/delivery-decisions.md) can apply a decision you delegated in advance, under a pinned rubric and with an independent challenge, but it records its judgements separately and never fills in this step's human approval.
+
+## Available core commands
+
+The commands the skill uses, for scripts and skill authors:
+
+```text
+wl step begin write-spec --for init-0123abcd --json
+wl step begin write-spec --input "Find old orders" --owner Alex --impact "Reduce retrieval time" --json
+wl spec schema --json
+wl spec check /path/to/spec.md --json
+wl step complete write-spec --for init-0123abcd --artifact /path/to/spec.md --json
+wl answer decision.approve-spec=approved --for init-0123abcd --by Alex --json
+```
+
+**The specification file** is Markdown with YAML front matter (`schema: wholeloop/spec@1`). The schema is `src/spec/schemas/spec-v1.json`, and `test/fixtures/spec/spec.md` is a complete fictional example.
+
+- **Stories.** Each has an ID, an actor, a behaviour, a benefit and uniquely identified criteria with tests that can fail.
+- **Wording lint.** Criteria may not use vague words: fast, quickly, intuitive, better, user-friendly, seamless, robust, scalable, easy and ASAP. It is a structural aid, not proof that the criteria are right.
+- **Metrics.** Each pins a source provider, a query operation and its stored query, a unit, a baseline, a target and a window in days with a time zone.
+  - A known baseline needs its value and evidence.
+  - An unknown baseline needs the missing evidence, who can answer it and a `trackingStory` that will start measuring it.
+  - With no metrics at all, `measurementException` needs a reason and an accountable person.
+- **Rollout.** Each stage records its audience, a growing exposure, exit conditions and rollback; a flagged rollout also proposes the flag name. Validating the plan runs no query and changes no flag.
+
+**The template.** `templateSource` in the begin payload says which template applies: your repository's guidance first, otherwise the manifest `templates.spec` selects (default `spec`). Required sections from a custom template add to the core ones.
+
+**Approval follows the revision.**
+
+- Used on its own, the step asks for the problem, the owner and the expected impact before creating work. Inside an initiative, it reuses the framing's impact.
+- After completion, approval is pending **for that revision**. Approving an unfinished draft is refused.
+- A rejection allows another `write-spec` run, and an earlier approval never carries over to a later completion.
+
+Local publication points to the stored specification; remote destinations stay pending hand-offs until a write is confirmed.
 
 <!-- docnav -->
 [◀ frame-problem](frame-problem.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [cut-scopes ▶](cut-scopes.md)

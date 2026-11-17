@@ -1,17 +1,42 @@
 # Prepare a delivery plan — review scope before execution
 
-> **TL;DR** — Prepare an initial request envelope and a revision-bound plan with explicit criteria, repositories, policy and finite budgets. Inspect dependency waves and the proposed route in another process. Planning starts no worker and grants no execution authority.
+> **TL;DR** — A **plan** says exactly what a run must deliver: acceptance criteria, repositories and their bases, the endpoint, how much the run may ask you and finite budgets. You can first pin an **envelope**, the outer bounds a later plan must fit. Preparing either one starts no worker and grants no authority; it gives you something exact to review and authorize.
 
 > [!IMPORTANT]
-> **Experimental.** Plan and envelope validation, immutable revisions, Git basis observations and routing are tested. Autonomous delivery may change in a minor release.
+> **Experimental.** Plan and envelope validation, immutable revisions, Git base observations and routing are tested. Autonomous delivery may change in a minor release.
+
+**What you will have at the end:** an envelope and a plan, stored and readable from any terminal, with the route the run would take and its dependency waves.
+
+```mermaid
+flowchart LR
+  S[Source<br/>from intake] --> E[Envelope<br/>outer bounds]
+  E --> P1[Plan revision 1]
+  P1 -. "source changed" .-> P2[Plan revision 2<br/>previous = digest of 1]
+  P1 -. "a run failed" .-> C[Correction revision<br/>continue]
+  P1 --> G{Authorization<br/>next guide}
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class G person;
+  class S,E,P1,P2,C core;
+```
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 ## Before you start
 
-Install the CLI as in [getting started](../getting-started.md#install-the-cli). You need Git and the CLI; no model or remote account is needed. Run these Bash commands from any directory. All Git changes below belong to a new disposable example repository. Proposal files, receipts and runtime state stay outside that repository.
+You need Git and the `wl` CLI ([getting started](../getting-started.md#install-the-cli)); no model or remote account. The commands create a disposable example repository and a separate store, so your own work is not touched.
 
 ## Capture the source and prepare proposals
+
+The script below does four things:
+
+1. creates a disposable Git repository with one commit, the **base** the plan builds on;
+2. captures an inline request as a [source](./delivery-intake.md);
+3. writes an envelope and a plan with a small Node script, filling in the source ID and the observed base commit;
+4. prepares the envelope, then the plan bound to it, and reads the plan back.
+
+<details>
+<summary>Setup script: copy once</summary>
 
 ```bash
 set -euo pipefail
@@ -124,7 +149,47 @@ wl delivery inspect-plan \
 printf 'Retained tutorial files: %s\n' "$workspace_dir"
 ```
 
-Both final commands return the exact same prepared plan/digest, route.next: build, one dependency wave containing search, authority: not-granted and workers: not-started. This is a source-defined build proposal, not a claim that Define was approved or implementation ran. The repository remains on its original commit. The envelope was prepared before the plan; neither preparation is operator authorization or semantic acceptance.
+</details>
+
+What the plan contains:
+
+| Field | In this example |
+| --- | --- |
+| `source`, `owner`, `scope` | The captured request, its owner, the outcome `locate` and what is excluded |
+| `repositories` | One repository, `app`, with its target branch and the exact base commit |
+| `policy` | Endpoint `local-handoff`, intervention `supervised`, unknowns `blocked`, no delegated decisions |
+| `budgets` | Finite limits: wall time, attempt time, builders, restarts, CI pushes, repairs, no-progress rounds, evidence bytes |
+| `criteria` | One criterion, `search`, with its test and machine acceptance |
+| `work` | One implementation unit, `search`, owning that criterion |
+| `milestones` | One milestone, `feature`, with the procedure to check it |
+
+The last two commands print the same prepared plan. Shortened, with the plan itself left out:
+
+```console
+$ wl delivery inspect-plan --run delivery-0123456789abcdef --revision 1 --store "$workspace_dir/state" --json
+{
+  "schema": "wholeloop/delivery-plan-prepared@1",
+  "digest": "abf9d65f3e4490b52440a5d60e71b2efa992fd55422807fc699d56b497082934",
+  "plan": { … },
+  "route": {
+    "next": "build",
+    "reason": "explicit-criteria"
+  },
+  "waves": [["search"]],
+  "authority": "not-granted",
+  "workers": "not-started"
+}
+```
+
+| Field | Means |
+| --- | --- |
+| `digest` | The plan's identity; a grant names exactly this digest |
+| `route.next: build` | With explicit criteria, the run would start at building |
+| `waves` | Work that can run together; here, one wave with `search` |
+| `authority: not-granted` | Nothing is authorized yet |
+| `workers: not-started` | Nothing ran; the repository is still on its original commit |
+
+This is a proposal built from the source. It does not claim that Define was approved or that anything was implemented, and preparing the envelope or the plan is neither an authorization nor an acceptance.
 
 ## Read the contracts and change a proposal
 
@@ -132,41 +197,120 @@ Both final commands return the exact same prepared plan/digest, route.next: buil
 wl delivery plan-schema --json
 ```
 
-A plan has at most 100 work units, 16 repositories and 1000 criteria. Every required outcome needs criterion coverage, each criterion has exactly one work owner and all work/criteria belong to milestones. Contract consumers explicitly depend on their producer, directly or transitively. Milestones also declare the dependencies needed by their work. Guidance/rubric digests and supplied capability descriptors are pinned planning inputs; execution-time hosts must verify their actual content and effective capabilities. Fill `guidance` with `wl delivery guidance --file <proposal.json> --json`: it proposes the pins a supervised step would resolve, read at each repository's pinned base, and returns questions for ambiguous slots ([repository guidance in autonomous runs](../configuration/repo-skills.md#in-autonomous-runs)).
+**Limits.** A plan has at most 100 work units, 16 repositories and 1000 criteria.
 
-Existing item IDs are optional work.subject references. The planner confirms they exist, are open and match a recorded repository where present. It does not create slices or human approval records. Local target refs and configured remote identities are observed without fetching. Research plans may omit repositories and use research-only work; research authority does not imply code writes.
+**Coverage rules.**
 
-Changing an existing run/revision in place is refused. For a new revision, increment revision, set previous to the exact old plan digest, retain its history, and satisfy current local bases. If bound to an envelope, keep its exact intent/repositories/policy/guidance/capabilities and stay within its finite limits. The current fit is deliberately conservative. Inspecting history remains possible after a branch or remote changes; new execution still needs fresh validation and a grant.
+- Every required outcome is covered by criteria, and every criterion has exactly **one** owning work unit.
+- All work and criteria belong to milestones.
+- A unit that consumes a contract depends on the unit that produces it, directly or through others; milestones declare the dependencies their work needs.
 
-For incomplete intent, definition.ready is false and definition.missing lists actual unknowns. Supervised/on-exception policies may return needs-input. A none policy with missing undelegated Define/research decisions returns blocked; explicitly named delegated decisions can propose the appropriate Define/research route. A retained human-only criterion blocks none. A route is not an execution capability or a successful decision. Unknown facts remain unknown.
+**Pinned inputs.** Guidance and rubric digests and capability descriptors are pinned in the plan; the run checks their real content and capabilities when it executes. Fill `guidance` with `wl delivery guidance --file <proposal.json> --json`, which proposes the pins a supervised step would resolve at each repository's base and asks about ambiguous slots ([repository guidance in autonomous runs](../configuration/repo-skills.md#in-autonomous-runs)).
+
+**Existing items.** `work.subject` can reference existing item IDs. The planner checks that they exist, are open and match a recorded repository; it creates no slices and no approvals. Local branches and remotes are observed without fetching. Research plans may have no repositories and only research work, and research authority never implies writing code.
+
+**Revisions.** Changing a stored revision in place is refused. To change a plan:
+
+1. increment `revision`;
+2. set `previous` to the exact digest of the old plan, and keep its history;
+3. make sure the local bases are current;
+4. when the plan is bound to an envelope, keep its intent, repositories, policy, guidance and capabilities, and stay within its limits.
+
+History stays readable after a branch or remote moves, but a new run needs fresh validation and a grant.
+
+**Unclear intent.** When the request is not clear enough, `definition.ready` is `false` and `definition.missing` lists what is unknown.
+
+- A `supervised` or `on-exception` plan may return *needs input*.
+- A `none` plan with undelegated Define or research decisions returns *blocked*; with those decisions delegated, it proposes the Define or research route.
+- A criterion that only a person can accept blocks a `none` plan.
+
+A route is not a capability or a successful decision, and unknown facts stay unknown.
 
 ## Stopping point
 
-You have a reviewable immutable envelope and plan, with an explicit route and dependency waves. The private records live under the external state/delivery directory; retain the temporary directory to inspect or replay them in another terminal. This increment cannot authorize or run workers. Continue with [authorization](./delivery-authorization.md) for grants and the [runner](./delivery-runner.md) for execution, or use the existing [small-change route](./small-change.md).
+You have a reviewable envelope and plan, with their route and dependency waves, stored under `state/delivery` in the temporary directory. Keep it to inspect the records from another terminal. Nothing is authorized or running yet: continue with [authorization](./delivery-authorization.md), then the [runner](./delivery-runner.md), or use the supervised [small-change route](./small-change.md).
 
 ## Preview and adopt a revision
 
-When the source changes, write the proposed next plan revision and preview it with `wl delivery revise --run <id> --file <plan.json>`. Nothing is written. The impact lists changed, added and removed criteria, removed outcomes, whether authority must be renewed, whether an envelope still covers it, which stages keep their evidence and why, and the workers and effects to fence or reconcile. Adopt it with `--accept --operator "Your Name" --reason "Why"`, adding `--approve-removals` when criteria or outcomes are dropped. Acceptance records only the immutable revision and its reason; the run keeps its approved basis until authority covering the new revision is tracked. A none-policy revision outside its envelope is refused. See [ADR-0192](../decisions/0192-revision-impact-and-explicit-adoption.md).
+When the source changes, write the next plan revision and preview it:
+
+```bash
+wl delivery revise --run <id> --file <plan.json> --json
+```
+
+Nothing is written. The preview lists:
+
+- criteria changed, added and removed, and outcomes removed;
+- whether authority must be renewed, and whether the envelope still covers the plan;
+- which stages keep their evidence, and why;
+- the workers and effects to stop or reconcile.
+
+Adopt it with `--accept --operator "Your Name" --reason "Why"`, adding `--approve-removals` when criteria or outcomes are dropped. Adopting records the revision and your reason, nothing more: the run keeps its approved basis until a grant covering the new revision is tracked. A `none` revision outside its envelope is refused.
 
 ## Continue after a failed integration or acceptance
 
-When a run ends `failed` or `blocked` at an integration or acceptance stage, `wl delivery report` lists `wl delivery continue` among its next actions. Preview a correction with `wl delivery continue --run <id> --request <runner-request> --stage <stage> --unit <work-id>`. The admission names the exact failure evidence, the repairs used against the run's limit, and every reason it would be refused: pending effects, unresolved stages, a controller still active or an exhausted budget. The impact shows which stages keep their evidence. Nothing is written.
+When a run ends `failed` or `blocked` at an integration or acceptance stage, `wl delivery report` lists `wl delivery continue` among its next actions.
 
-Adding `--accept --operator <name> --reason <text>` records the next revision with one more `corrections` entry. It does not reopen the run. Issue a new grant for that exact plan with `wl delivery authorize`, track the revision with it, then prepare and run a new runner request. The journal refuses the failed run's grant and any envelope grant here, with one exception. A `none` run that started under an envelope grant can continue under that same grant while it is still active and lists `code.write`, `git.commit` and `test.run`. The plan must also have exactly one code unit, so the owning unit is never guessed. The foreground controller then records the correction and continues in the same `wl delivery run`, within the repair budget, without a person ([ADR-0198](../decisions/0198-envelope-grant-continuation.md)). The registered seeded producer runs every unit's grant- and revision-bound chain again. Each new workspace starts at the predecessor's committed head; the corrected unit's builder receives the retained failure and commits its correction before independent QA. Existing decisions and commit receipts never become current under the new grant. Only independent units are supported for seeding ([ADR-0208](../decisions/0208-seeded-correction-producer.md)).
+```mermaid
+flowchart LR
+  F[Run failed at<br/>integration or acceptance] --> V[continue<br/>preview] --> A[continue --accept<br/>new revision]
+  A --> G{New grant for<br/>that exact plan} --> R[Prepare and run<br/>a new request]
+  F -. "none run under an<br/>envelope grant" .-> AUTO[The controller continues<br/>by itself, in the same run]
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class G person;
+  class F,V,A,R,AUTO core;
+```
 
-Retire the predecessor's exact owned environments explicitly when they still reserve backend capacity; continuation never retires them implicitly. A public integration case supplies only its pinned actions, assertion IDs/descriptions and failure conditions. A private case supplies its ID and status, with no objective, expected value, input or result artifact. Acceptance-origin feedback also carries explicitly historical delegated outcomes, challenger verdicts and explanations, or the rejected human subject and its note. Actor identities and input artifacts are omitted. These are untrusted repair inputs; they never become current approval or renew authority. A seeded correction can feed bounded verification/review repairs through its exact recorded builder and commit ([ADR-0211](../decisions/0211-seeded-correction-roots-for-qa-repairs.md)). Every changed head needs fresh independent QA; a commit never supplies it. Restarts are counted across revisions, so the default allowance may already be exhausted after the old build, rebuild and correction. Continuation never resets that allowance. CI-origin execution remains implementation work. Its fixed historical reader verifies exact original check/publication evidence and refuses non-code or ambiguous failures; that history certifies no current permission, PR feedback set or repair execution ([ADR-0212](../decisions/0212-retained-ci-correction-evidence.md)). The model-free public continuation does not certify a native client or hosted service.
+**1. Preview** the correction:
+
+```bash
+wl delivery continue --run <id> --request <runner-request> --stage <stage> --unit <work-id> --json
+```
+
+The preview names the exact failure evidence, the repairs used against the run's limit and every reason it would be refused: pending effects, unresolved stages, a controller still active or a spent budget. It shows which stages keep their evidence, and writes nothing.
+
+**2. Accept** with `--accept --operator <name> --reason <text>`. This records the next revision with one more `corrections` entry; it does not reopen the run.
+
+**3. Authorize and run again.** Issue a new grant for that exact plan with `wl delivery authorize`, track the revision with it, then prepare and run a new runner request. The failed run's grant, and any envelope grant, are refused here, with one exception:
+
+> A `none` run that started under an **envelope grant** can continue under that same grant while it is active and lists `code.write`, `git.commit` and `test.run`, and the plan has exactly one code unit, so the owning unit is never guessed. The controller then records the correction and carries on in the same `wl delivery run`, within the repair budget, without a person.
+
+**What the correction run does.**
+
+- Every unit's chain runs again under the new grant and revision. Each new workspace starts at the predecessor's committed head; the corrected unit's builder receives the recorded failure and commits its correction before independent QA. Only independent units are supported.
+- Earlier decisions and commit receipts never count under the new grant, and every changed head gets fresh verification and review.
+- The builder sees a public failing case's pinned actions, assertion IDs and descriptions, and failure conditions; a private case only as its ID and status. Acceptance feedback also carries past delegated outcomes, challenger verdicts and explanations, or a person's rejection and note, without identities or input files. All of it is untrusted repair input that never becomes approval or authority.
+- **Restarts are counted across revisions.** After the original build, a rebuild and a correction, the default allowance may already be spent; continuation never resets it.
+
+Retire the failed run's environments explicitly if they still hold backend capacity; continuation never retires them on its own.
 
 ## Preview a CI correction with an explicit plan version
 
-For a retained literal required code-test failure, use `wl delivery continue-ci --run <id> --request <original-runner-request> --unit <work-id>`. The command verifies original publication/CI receipts, closed predecessor ownership and the remaining original repair/push allowances. It previews without writes. Add `--accept --operator <name> --reason <text>` to record the next version-two plan; this records neither a grant nor execution. Every code unit must be independent, because the producer rebuilds all units from the published product root.
+When a required CI check failed on a published pull request because of the code, preview a correction:
 
-Planning commands keep version one as their default. Select `--schema-version 2` explicitly for `wl delivery plan-schema`, `wl delivery plan` and `wl delivery inspect-plan` when working with the new plan. Mixed planning-record/value versions and implicit version-two persistence or inspection refuse. Inherited correction history remains immutable; each new version-two entry identifies its producer revision, and only the current entry runs. An operator's proposal needs a new exact-plan grant; the previous grant and the envelope remain insufficient for it ([ADR-0214](../decisions/0214-versioned-ci-correction-production.md)). Only the controller itself may continue a `none` run under its own envelope grant, when that grant lists `git.push` and the failure is repairable within the push budget ([ADR-0248](../decisions/0248-ci-correction-continuation-under-the-envelope-grant.md)).
+```bash
+wl delivery continue-ci --run <id> --request <original-runner-request> --unit <work-id> --json
+```
 
-The public CLI can preview, record and inspect this proposal. Its output explicitly requires an installed SDK controller; it does not suggest public prepare/run actions. CI repair execution currently uses `composeInstalledImplementation` with fixed CI/merge hosts and the separately installed runtime allowance. The public composer still refuses `to-merge`, and the version-one native runtime document has no merge-installation flag. An installed allowance also grants no merge effect: an ungranted merge remains blocked.
+- It checks the original publication and CI receipts, that the predecessor closed, and the remaining repair and push allowances. It refuses non-code or ambiguous failures, and writes nothing.
+- `--accept --operator <name> --reason <text>` records the next **version-two** plan. It records neither a grant nor an execution.
+- Every code unit must be independent, because the correction rebuilds all units from the published product.
 
-The SDK producer admits builders only after complete stable reads of the original topics, ready owned PRs and current bodyless feedback. Current unadopted feedback, unreadable pages, changed heads, insufficient scope or a spent push budget block it. New workspaces start at the exact published product head, with original unit/base ancestry checked. The corrected head gets fresh verification, review, integration, acceptance and CI. Publication keeps the original topic and PR URL and uses a non-force push; the original PR body stays historical. A copied marker or another PR cannot replace that resource.
+**Plan versions.** Planning commands default to version one. Pass `--schema-version 2` to `wl delivery plan-schema`, `wl delivery plan` and `wl delivery inspect-plan` for a version-two plan; mixing versions is refused. Each new correction entry names the revision that produced it, and only the current one runs.
 
-`npm run eval:ci-continuation -- --retire-success` exercises the installed SDK composition with synthetic native/API/CI/protection facts, actual local bare Git and actual Docker QA. It grants no merge, writes nowhere hosted and retires exact owned environments. The development trials retained a producer-inspection failure and a reporter cache failure. The shared corrected verifier passes fresh API/bare-object readback of the latter's completed core execution without replay; the original failed command/report remain failed. Native/reference and hosted acceptance remain separate.
+**Who can continue.** An operator's proposal needs a new grant for that exact plan; the previous grant and the envelope are not enough. Only the controller itself may continue a `none` run under its own envelope grant, when that grant lists `git.push` and the failure is repairable within the push budget.
+
+**Where it runs.** The public CLI can preview, record and inspect the proposal, and says that executing it needs the installed SDK controller (`composeInstalledImplementation`, with fixed CI and merge hosts). The public composer still refuses `to-merge`, and an installed runtime allowance grants no merge: without a merge grant, merging stays blocked.
+
+**What the correction does.**
+
+1. It reads the original topics, the owned PRs and the current review feedback completely and consistently, and refuses on unadopted feedback, unreadable pages, a moved head, insufficient scope or a spent push budget.
+2. New workspaces start at the exact published head, after checking each unit's ancestry.
+3. The corrected head gets fresh verification, review, integration, acceptance and CI.
+4. Publication keeps the original branch and PR, with a normal (non-force) push. The PR body stays as it was, and no copied marker or other PR can stand in for it.
+
+`npm run eval:ci-continuation -- --retire-success` exercises this end to end with synthetic client, API, CI and protection facts, a real local bare Git repository and real Docker QA. It grants no merge, writes nothing hosted and retires the environments it owns. Signed-in clients and hosted services are verified separately.
 
 <!-- docnav -->
-[◀ Delivery request intake](delivery-intake.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery authorization ▶](delivery-authorization.md)
+[◀ Delivery request intake](delivery-intake.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Maintenance proposals ▶](maintenance-proposals.md)

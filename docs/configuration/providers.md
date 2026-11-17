@@ -1,25 +1,19 @@
 # Providers — bring your own tools
 
-> **TL;DR** — Steps ask for **capabilities** (write a document, track a work item, query product analytics); **providers** fulfil them through MCP servers, CLIs or the host's native tools. `wholeloop` ships with the most common providers in the industry, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest — no fork, no release needed.
+> **TL;DR** — Steps ask for **capabilities**, such as "write a document", "track a work item" or "query product analytics". **Providers** fulfil them through your client's MCP connection, a command-line client or the client's own tools. wholeloop ships with the most common providers, detects what you already have connected, asks where things should go the first time, and lets anyone add a provider with a small manifest: no fork, no release.
 
 > [!IMPORTANT]
-> **Experimental.** The registry, manifests, local defaults and routing are tested. wholeloop never talks to a service itself: remote operations run through your client's MCP connection or a command-line client you installed ([ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md)), and they are experimental and not certified against each real service ([ADR-0084](../decisions/0084-experimental-integrations-and-scoped-live-verification.md)).
+> **Experimental.** The registry, manifests, local defaults and routing are tested. wholeloop never talks to a service itself: remote operations run through your client's MCP connection or a command-line client you installed, and they are not certified against each real service.
 
----
+## Contents
 
-## Integration verification status
-
-All remote vendors in this catalogue currently carry the same release label: **experimental · fixture-tested · service-unverified**. This includes Metabase, PostHog, Mixpanel, Amplitude, Grafana, trackers, document services, code hosts and the other source/rollout integrations. Fixture success checks authored contracts; it does not establish account access, actual API compatibility or rendered results.
-
-You do not need accounts with every vendor to use the local harness or release 1.0. Real-service checks remain an optional, unchecked certification backlog. When you use a service, record the tested date/version, operations and permissions before promoting that specific scope to live-verified. No remote integration has that promotion yet. Missing operations remain explicitly unavailable even when the provider's other operations are fixture-tested.
-
-Claude Code, Codex and the other native clients have a separate conformance matrix; this integration policy does not waive their acceptance checks. Local-docs, local-tracker and contained repository-file behavior retain their local evidence.
-
-## Delivery source observations
-
-Delivery request intake reuses the existing tracker.read-item and docs.read provider operations through an explicitly supplied SourceProviderHost. Its client normalizer must return the repository/tenant scope observed in the response, complete content and pagination, a nonempty revision and relevant attachment digests. The core compares provider, canonical reference and scope with the explicit request before storing anything. It never infers tenant ownership from a URL or invokes a write operation.
-
-The terminal delivery source command imports an explicitly supplied observation and labels it import. It authenticates no account. Only a read performed in DeliverySources.captureFromHost records host provenance, which still does not certify that service or establish a containment boundary. Missing/partial/inconsistent observations return missing-input without starting work. See the [intake tutorial](../tutorials/delivery-intake.md) and [ADR-0093](../decisions/0093-immutable-delivery-source-intake.md). No vendor API or transport fallback is added.
+- [Capabilities, not vendors](#capabilities-not-vendors)
+- [Local by default, shared when you want](#local-by-default-shared-when-you-want)
+- [Detection and first use](#detection-and-first-use)
+- [The capability taxonomy](#the-capability-taxonomy)
+- [The built-in catalogue](#the-built-in-catalogue)
+- [How much is verified](#how-much-is-verified)
+- [Reference](#reference)
 
 ## Capabilities, not vendors
 
@@ -49,39 +43,68 @@ flowchart LR
 
 A step never names a vendor, so swapping Confluence for Notion, or adding Zendesk as a research source, never touches a skill.
 
-## Rollout implementation boundaries
+With nothing configured, `docs.create` resolves to the local provider:
 
-| Target | Implemented locally | Still pending |
-| --- | --- | --- |
-| Slack · Microsoft Teams · email | Destination-labelled unsent JSON drafts in the external store | A person reviews and posts; no sending operation exists |
-| LaunchDarkly · Unleash · GrowthBook · PostHog | Flag reads planned through a reviewed client MCP binding and stored unapplied proposals; without a binding the state is an open question | A client MCP tool returning normalized flag state; LaunchDarkly, Unleash and GrowthBook declare no MCP server yet |
-| Config-file flags | Contained explicit JSON reads and unapplied proposals | A person changes configuration through normal review |
-| PostHog · Mixpanel · Metabase · Grafana | Metric-linked dashboard handoffs; `wl launch dispatch` plans creation through a reviewed client MCP binding | A client MCP write contract and optional live certification |
-| Amplitude dashboards | Manifest and exact-metric pending handoff with source pointers | Known client MCP write contract and optional live certification |
-| Datadog · Grafana stack | Declared read-only query tool mappings and offline fixtures | Actual roster, site/datasource, auth and complete scalar normalization |
-| Figma | Official remote context-read mapping and offline fixture | Actual client access and referenced design observations |
-
-Run an explicit fixture after building:
-
-```bash
-wl provider test slack --fixtures test/fixtures/providers/rollout/slack.json --json
-wl provider test grafana --fixtures test/fixtures/providers/rollout/grafana.json --json
+```console
+$ wl provider resolve docs.create
+{
+  "schema": "wholeloop/provider-resolve@1",
+  "operation": "docs.create",
+  "manifest": {
+    "schema": 1,
+    "id": "local-docs",
+    "name": "Local documents",
+    "description": "Store documents locally without integrations.",
+    …
+}
 ```
 
-All fourteen fixture files live under test/fixtures/providers/rollout. Each covers every declared operation with exact tool/argument bindings and normalized results. Missing coverage, changed calls or malformed results fail. remoteProbed=false is mandatory: these synthetic fixtures establish no actual server schema, credentials or permissions. `wl provider test <id>` without a fixture only inspects metadata.
+## Local by default, shared when you want
 
-An explicit SDK conductor can wrap its actual ProviderHost with `rolloutHost` from src/providers/rollout.ts. It implements native unsent drafts, flag proposals, dashboard handoffs and config reads. Other calls require a reviewed client MCP binding; missing service access stays unknown. Providers are selected explicitly in config; adding a catalogue entry never selects it or authorizes remote execution.
+With nothing configured, everything lands in your local store as Markdown, and the whole flow works with **zero integrations**. Configure a `docs` and a `tracker` provider and each step also publishes there as it goes, which is what lets someone else pick the work up from a URL.
 
-Config flags default to wholeloop.flags.json under the repository. The versioned shape is `{ "schema": "wholeloop/config-flags@1", "flags": [{ "flag": "orders",
-"environment": "disposable", "enabled": false, "exposure": 0, "audience": "all" }] }`. Use a repository manifest override for another contained file. A boolean alone cannot establish audience or percentage. The reader changes no repository bytes.
+## Detection and first use
 
-Provider references checked 2026-10-19: [Figma](https://help.figma.com/hc/en-us/articles/39216419318551-Get-started-with-the-Figma-MCP-server), [Datadog setup](https://github.com/datadog-labs/mcp-server) and [tools](https://docs.datadoghq.com/mcp_server/tools/), [Grafana](https://github.com/grafana/mcp-grafana), [LaunchDarkly representation](https://launchdarkly.com/docs/fed-docs/api/feature-flags), [Unleash environment](https://docs.getunleash.io/api/get-feature-environment), [GrowthBook versioning](https://docs.growthbook.io/api/introduction) and [PostHog tool surface](https://github.com/PostHog/posthog/blob/master/services/mcp/README.md). These references describe upstream surfaces; their raw schemas are not replaced by our normalized fixtures. The Grafana recipe is a pinned read-only Prometheus/Loki container invocation; it was not pulled or run. Keep credentials in the host's credential store and pass environment names rather than secret values in recipes.
+The first time a step needs a capability you have not configured, it asks, offering what it detected:
 
-Provider selection is MCP-first and tested against fixtures ([ADR-0085](../decisions/0085-client-owned-mcp-first-provider-transport.md)). Per-vendor live certification remains optional under ADR-0084 and is not a 1.0 prerequisite. [ADR-0042](../decisions/0042-offline-provider-fixtures-and-explicit-rollout-handoffs.md) explains why local handoffs remain explicit instead of fabricated integrations.
+```mermaid
+sequenceDiagram
+  participant S as Step
+  participant TL as wl
+  participant P as Person
+  S->>TL: step begin (needs docs.create)
+  TL->>TL: config set? → use it
+  TL->>TL: else detect: MCP servers in this client's config, CLIs on PATH
+  TL-->>S: question with detected / not-connected options
+  S->>P: "Where should the spec live?"
+  P-->>S: Notion (not connected)
+  S->>TL: wl mcp add notion --target claude
+  TL-->>P: configuration snippet to add to the client
+  P-->>S: remember for: this repo
+  S->>TL: wl answer docs=notion --remember project
+```
+
+- **Detection is deterministic.** `wl` reads the client's MCP configuration files and checks executables on `PATH`; it never guesses. `available: true` means declared or configured; whether a server is *signed in* stays `authenticated: false` until the skill checks it with one cheap call. Configuration errors are reported without their contents, and no command from a manifest is run to detect anything.
+- **`wl mcp add <provider> --target <client>`** prints the snippet in the format that client expects. It never edits the client's configuration and never reads a token:
+
+  ```console
+  $ wl mcp add notion --target claude
+  Merge into .mcp.json:
+  {
+    "mcpServers": {
+      "notion": {
+        "type": "http",
+        "url": "https://mcp.notion.com/mcp"
+      }
+    }
+  }
+  ```
+
+- **Not available? Never a silent skip.** The step produces a hand-off instead, such as a ready-to-paste document, an issue list or a dashboard specification with its queries, and records the gap so it can be filled in later.
 
 ## The capability taxonomy
 
-The taxonomy is the **stable contract**. It versions slowly, and every verb in it is safe for a machine to perform.
+The taxonomy is the **stable contract**. It changes slowly, and every verb in it is safe for a machine to perform.
 
 ### Sources — read-only evidence
 
@@ -113,11 +136,11 @@ Every source has one verb: **`query`**.
 | `design` | `read-context` | write-spec, build-slice |
 
 > [!IMPORTANT]
-> There is **no verb** for sending a message, toggling a flag, merging a pull request or deleting a document. What must never happen is not expressible in the contract, so no provider — built-in or community — can be asked to do it.
+> There is **no verb** for sending a message, toggling a flag, merging a pull request or deleting a document. What must never happen is not expressible in the contract, so no provider, built-in or community, can be asked to do it.
 
 ## The built-in catalogue
 
-Defaults chosen for breadth of real-world use. **v1** ships with the phase that first needs it; **catalogue** entries are planned or welcome as community manifests.
+Defaults chosen for breadth of real-world use. **Built-ins** ship today; **catalogue** entries are planned or welcome as community manifests.
 
 | Capability | v1 built-ins | Catalogue |
 | --- | --- | --- |
@@ -137,9 +160,11 @@ Defaults chosen for breadth of real-world use. **v1** ships with the phase that 
 | `comms` | Slack · Microsoft Teams · email (draft) | Discord · Google Chat |
 | `design` | Figma | Penpot |
 
+One provider can serve several capabilities: PostHog covers product analytics, dashboards and flags; Confluence covers `docs` and `source.knowledge`.
+
 ### Generated declared mappings
 
-These rows come from the bundled manifests. They describe declarations, not live server support, authentication, operation semantics or a selected provider. Native bridges can remain pending handoffs; the verification limits below still apply.
+These rows come from the bundled manifests. They describe what each manifest declares, not live server support, sign-in, behaviour or which provider you selected.
 
 <!-- providers:start -->
 | ID | Capabilities | Declared operations | Access |
@@ -179,9 +204,52 @@ These rows come from the bundled manifests. They describe declarations, not live
 | `zendesk` | `source.support` | `source.support.query` | CLI: curl |
 <!-- providers:end -->
 
-One provider can serve several capabilities — PostHog covers product analytics, dashboards and flags; Confluence covers `docs` and `source.knowledge`.
+## How much is verified
 
-### Implemented destination mappings
+Every remote vendor in this catalogue carries the same label: **experimental · fixture-tested · service-unverified**. That covers the analytics, BI, observability, tracker, document, code-host and rollout integrations alike.
+
+- **Fixture tests** check the contracts wholeloop wrote: the exact tool, its arguments and how the result is normalized. They do not show that an account has access, that a vendor's API still matches or what a dashboard renders.
+- **You do not need an account with every vendor.** Real-service checks are optional. When you check one, record the date, version, operations and permissions before calling that use verified; no remote integration has that status yet.
+- **A missing operation stays unavailable**, even when the provider's other operations are tested.
+- **Local providers** (local documents, local tracker and repository files) have their own local evidence, and coding clients have their own [conformance matrix](../platforms/README.md).
+
+## Reference
+
+Detail for provider authors and for checking exactly what a mapping does.
+
+### Registry commands
+
+```text
+wl provider list --json
+wl provider show local-docs --json
+wl provider resolve docs.create --json
+wl provider test local-tracker --json
+wl provider scaffold acme-support --json
+wl mcp add acme-support --target codex --json
+```
+
+- With no configuration, `docs.create` resolves to `local-docs` and `tracker.create-item` to `local-tracker`. `native-web` and `native-code` declare the client's own search and file tools.
+- The registry resolves which operation to call; it never runs an external tool or claims a sign-in. Steps store their artifacts through the core.
+- `wl provider test <id>` without fixtures only inspects metadata, and no provider test makes a network call.
+
+### Client-owned MCP transport
+
+`wl mcp add` prints a snippet with `applied: false` for you to merge. OAuth is left to the client. Header authentication names an environment variable (`token_env`), never a value. Confirm sign-in in a real client session.
+
+| Client | Snippet target | Notes |
+| --- | --- | --- |
+| Claude Code | `.mcp.json` | HTTP or stdio |
+| Codex · OpenCode | their own MCP configuration | HTTP or stdio |
+| Copilot | its MCP configuration | Header recipes are refused: Copilot does not expand environment references in remote headers, so the only alternative would be embedding a credential |
+| Gemini CLI | the `mcpServers` map in `.gemini/settings.json` (under `GEMINI_CLI_HOME` when set) | HTTP uses `httpUrl`; requested OAuth is enabled explicitly, which Gemini 0.27.0 needs; header auth uses a bearer environment placeholder |
+| Antigravity | `.gemini/config/mcp_config.json`, or `.agents/mcp_config.json` merged by hand for a project | HTTP uses `serverUrl`; OAuth discovery stays native; header recipes are refused because safe expansion is unverified |
+| Cursor | `.cursor/mcp.json` under your home, or a project merge by hand | HTTP uses `url`; headers contain only an environment reference such as `${env:SUPPORT_AUTH}` |
+
+Rendering never applies a snippet, expands a credential or contacts the server; detection reads only server declarations and their enabled or allowed metadata. The renderers follow the official [Claude Code](https://code.claude.com/docs/en/mcp), [OpenAI](https://developers.openai.com/codex/mcp), [OpenCode](https://opencode.ai/docs/mcp-servers/), [Copilot](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference#mcp-server-configuration), [Antigravity](https://www.antigravity.google/docs/mcp) and [Cursor](https://cursor.com/docs/mcp) formats, checked on 2026-10-18. Golden files check the generated shape; they are not runs in a real client.
+
+Service execution stays in your client. `wl provider read-flags <id> --flag <key> --environment <key> --mcp <inventory>` and `wl launch dispatch --for <id> --key <key> --mcp <inventory>` name the exact MCP call the client should make, or fall back to an open question or a local hand-off. Neither reads a credential.
+
+### Destination mappings
 
 | ID | Mapping | Verification |
 | --- | --- | --- |
@@ -194,11 +262,9 @@ One provider can serve several capabilities — PostHog covers product analytics
 | `google-docs` | Optional gws documents create/get/batchUpdate | Synthetic host transcript; CLI/auth/format pending |
 | `repo-docs` | Native files with a core repository-docs host | Real temporary-file tests; no automatic commit/push |
 
-These mappings were checked against official documentation on 2026-10-18: [GitHub](https://github.com/github/github-mcp-server), [GitLab](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/), [Atlassian](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/), [Linear](https://linear.app/integrations/slack), [Notion](https://developers.notion.com/guides/mcp/mcp-supported-tools), and [Google Workspace CLI](https://github.com/googleworkspace/cli). The [Docs MCP reference](https://developers.google.com/workspace/docs/api/reference/mcp) currently exposes read/update, so document creation uses optional gws. No tool was installed and no authenticated operation was performed here. Discover the actual live schema before translating generic input into vendor arguments.
+These mappings were checked against official documentation on 2026-10-18: [GitHub](https://github.com/github/github-mcp-server), [GitLab](https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/), [Atlassian](https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/), [Linear](https://linear.app/integrations/slack), [Notion](https://developers.notion.com/guides/mcp/mcp-supported-tools), and [Google Workspace CLI](https://github.com/googleworkspace/cli). The [Docs MCP reference](https://developers.google.com/workspace/docs/api/reference/mcp) currently exposes read/update, so document creation uses optional gws. No tool was installed and no authenticated operation was performed here. Discover the actual live schema before translating generic input into vendor arguments. No tool was installed and no authenticated operation was performed for this table. Discover the live schema before translating generic input into vendor arguments.
 
-Canonical resources live under harness/providers. Run `npm run providers:catalog` after changing them, then `npm run docs:providers` and `npm run lint:fix`. The provider JSON catalog check enforces semantic source drift; docs check independently verifies the generated declared-mapping table against the built-in registry. The bundled registry returns guidanceText even without the source checkout. Repository/user resources also retain their file paths and inheritance precedence.
-
-### Implemented source mappings
+### Source mappings
 
 | ID | Capability | Mapping |
 | --- | --- | --- |
@@ -214,81 +280,89 @@ Canonical resources live under harness/providers. Run `npm run providers:catalog
 | `confluence` | knowledge | searchConfluence; fetch citations through the host |
 | `notion` | knowledge | notion-search; fetch citations through the host |
 
-Each mapping includes tool-specific guidance within thirty lines and open-question degradation. Fixtures are synthetic, never observed product data. Official references checked on 2026-10-18: [PostHog](https://github.com/PostHog/posthog/blob/master/services/mcp/schema/tool-definitions.json), [Mixpanel](https://docs.mixpanel.com/docs/mcp), [Amplitude](https://amplitude.com/docs/amplitude-ai/amplitude-mcp), [Metabase](https://www.metabase.com/docs/latest/ai/mcp), [BigQuery read-only tool](https://docs.cloud.google.com/bigquery/docs/reference/mcp/tools_list/execute_sql_readonly), [PostgreSQL](https://www.postgresql.org/docs/current/sql-set-transaction.html), [Sentry](https://mcp.sentry.dev/), [Zendesk](https://developer.zendesk.com/api-reference/ticketing/ticket-management/search/), and [Intercom](https://developers.intercom.com/docs/guides/mcp). Knowledge provider references are listed with their destination mappings above.
+Each mapping includes tool-specific guidance of at most thirty lines and says how it degrades into an open question. Fixtures are synthetic, never real product data. Official references checked on 2026-10-18: [PostHog](https://github.com/PostHog/posthog/blob/master/services/mcp/schema/tool-definitions.json), [Mixpanel](https://docs.mixpanel.com/docs/mcp), [Amplitude](https://amplitude.com/docs/amplitude-ai/amplitude-mcp), [Metabase](https://www.metabase.com/docs/latest/ai/mcp), [BigQuery read-only tool](https://docs.cloud.google.com/bigquery/docs/reference/mcp/tools_list/execute_sql_readonly), [PostgreSQL](https://www.postgresql.org/docs/current/sql-set-transaction.html), [Sentry](https://mcp.sentry.dev/), [Zendesk](https://developer.zendesk.com/api-reference/ticketing/ticket-management/search/), and [Intercom](https://developers.intercom.com/docs/guides/mcp). Knowledge provider references are listed with their destination mappings above.
 
-`querySource` pins the query, operation, owner and explicit timestamp/timezone window. A complete successful host result retains its observed content/ref; failed, pending or partial results become answerable open questions. It does not turn missing results into zero or infer claims from rows. The host translates vendor arguments without changing the pinned plan. Research offers exactly configured or detected sources, not every catalog entry. curl alone does not detect a Zendesk connection; configure the source and actual tenant in the host.
+How a source query behaves:
 
-PostgreSQL is reached through the psql client you installed, run by your coding client under the provider guidance: an explicit libpq service, a read-only role, BEGIN READ ONLY with a statement timeout and ROLLBACK. wholeloop does not run psql itself; the read-only role is what actually protects the database.
+- `querySource` pins the query, operation, owner and an explicit time window with its time zone.
+- A complete successful result keeps its observed content and reference. A failed, pending or partial result becomes an open question with someone to answer it; missing results never become zero, and no claim is inferred from raw rows.
+- The client translates vendor arguments without changing the pinned plan.
+- Research offers only the sources you configured or that were detected, not the whole catalogue. `curl` alone does not count as a Zendesk connection: configure the source and the real tenant.
 
-PostHog installation permits only mode=tools or mode=cli as one credential-free query parameter. Its built-in named tool uses tools mode; arbitrary parameters and credential values remain forbidden. Metabase's example host must be replaced with the real instance. See [ADR-0027](../decisions/0027-read-only-source-evidence-and-degradation.md).
+Some sources need extra care:
+
+- **PostgreSQL** is reached through the `psql` client you installed, run by your coding client: an explicit libpq service, a read-only role, `BEGIN READ ONLY` with a statement timeout, then `ROLLBACK`. wholeloop does not run `psql` itself, and the read-only role is what actually protects the database.
+- **PostHog** installation accepts only `mode=tools` or `mode=cli` as a query parameter without credentials; the built-in named tool uses tools mode.
+- **Metabase**'s example host must be replaced with your real instance.
+
+### Rollout targets
+
+| Target | Implemented locally | Still pending |
+| --- | --- | --- |
+| Slack · Microsoft Teams · email | Destination-labelled unsent JSON drafts in the external store | A person reviews and posts; no sending operation exists |
+| LaunchDarkly · Unleash · GrowthBook · PostHog | Flag reads planned through a reviewed client MCP binding and stored unapplied proposals; without a binding the state is an open question | A client MCP tool returning normalized flag state; LaunchDarkly, Unleash and GrowthBook declare no MCP server yet |
+| Config-file flags | Contained explicit JSON reads and unapplied proposals | A person changes configuration through normal review |
+| PostHog · Mixpanel · Metabase · Grafana | Metric-linked dashboard handoffs; `wl launch dispatch` plans creation through a reviewed client MCP binding | A client MCP write contract and optional live certification |
+| Amplitude dashboards | Manifest and exact-metric pending handoff with source pointers | Known client MCP write contract and optional live certification |
+| Datadog · Grafana stack | Declared read-only query tool mappings and offline fixtures | Actual roster, site/datasource, auth and complete scalar normalization |
+| Figma | Official remote context-read mapping and offline fixture | Actual client access and referenced design observations |
+
+Run an explicit fixture after building:
+
+```bash
+wl provider test slack --fixtures test/fixtures/providers/rollout/slack.json --json
+wl provider test grafana --fixtures test/fixtures/providers/rollout/grafana.json --json
+```
+
+- All fourteen rollout fixtures live in `test/fixtures/providers/rollout`. Each covers every declared operation with exact tool and argument bindings and normalized results; missing coverage, changed calls or malformed results fail.
+- `remoteProbed=false` is mandatory: synthetic fixtures establish no real server schema, credentials or permissions.
+- An SDK conductor can wrap its `ProviderHost` with `rolloutHost` from `src/providers/rollout.ts`, which implements unsent drafts, flag proposals, dashboard hand-offs and configuration reads. Anything else needs a reviewed client MCP binding.
+- Adding a catalogue entry never selects it or authorizes remote execution; providers are chosen explicitly in configuration.
+
+**Configuration-file flags** default to `wholeloop.flags.json` in the repository, with this shape:
+
+```json
+{ "schema": "wholeloop/config-flags@1", "flags": [{ "flag": "orders", "environment": "disposable", "enabled": false, "exposure": 0, "audience": "all" }] }
+```
+
+A repository manifest override can point at another contained file. A bare boolean cannot express an audience or a percentage, and the reader never changes repository files.
+
+Provider references checked 2026-10-19: [Figma](https://help.figma.com/hc/en-us/articles/39216419318551-Get-started-with-the-Figma-MCP-server), [Datadog setup](https://github.com/datadog-labs/mcp-server) and [tools](https://docs.datadoghq.com/mcp_server/tools/), [Grafana](https://github.com/grafana/mcp-grafana), [LaunchDarkly representation](https://launchdarkly.com/docs/fed-docs/api/feature-flags), [Unleash environment](https://docs.getunleash.io/api/get-feature-environment), [GrowthBook versioning](https://docs.growthbook.io/api/introduction) and [PostHog tool surface](https://github.com/PostHog/posthog/blob/master/services/mcp/README.md). These describe the vendors' own surfaces; the normalized fixtures do not replace their raw schemas. The Grafana recipe is a pinned read-only Prometheus and Loki container invocation that was not pulled or run. Keep credentials in your client's credential store and put environment variable names, never values, in recipes.
+
+### Code hosts
+
+`github` uses `gh api` and `gitlab` uses `glab api`.
+
+- Both resolve one explicit remote, push a pinned tested commit and check that a matching open draft PR came back.
+- Reads normalize the source commit and branch, target, repository, draft and merge state.
+- Bodies go through standard input, and credentials stay in each CLI's own store.
+- Optional comments look for a stable round marker before posting, so they are not duplicated.
+
+Local tests use synthetic API-shaped responses and a real push to a temporary local bare repository. Live sign-in, self-managed versions and network interruptions remain manual checks.
 
 ### Read-modify-write boundary
 
-`performOperation` accepts taxonomy mappings through an injected host that owns authentication, tool invocation and vendor-specific response normalization. Fixed manifest arguments take precedence over caller input. Exact placeholders preserve JSON types; argument values are never interpolated into shell commands by the core. This is an execution interface for workflows, not an automatic remote command.
+`performOperation` runs taxonomy operations through a host that owns sign-in, tool calls and response normalization. Fixed manifest arguments take precedence over caller input, placeholders keep their JSON types, and no value is ever interpolated into a shell command. It is an interface for workflows, not an automatic remote command.
 
-Generic invocation rejects docs.update. `updateDocument` reads the same reference inside that invocation, requires a complete body and revision, then gives the snapshot to the transform. It passes source digest/revision with the new body; no-op changes skip the write. Truncated, pending or mismatched reads fail before the transform. Hosts apply native revision preconditions and preserve rich formats. A queued write remains pending. See [ADR-0026](../decisions/0026-destination-host-contract-and-document-updates.md).
+Documents are never overwritten blindly:
 
-RepositoryDocuments publishes only explicit docs/*.md output, using exclusive creation, path containment, observed digest conflicts and atomic replacement. The writer lock stays external. Other editors do not share it, so this does not promise filesystem-wide compare-and-swap. Wholeloop runtime state never becomes tracked repository content. Record real links with `wl link <id> <URL> --json` after the host confirms success; Define completion still returns pending remote handoffs until a host performs that work.
+- Generic invocation refuses `docs.update`. `updateDocument` reads the same document first, requires its complete body and revision, applies the change to that snapshot and sends the new body with the source digest and revision. An unchanged result skips the write.
+- A truncated, pending or mismatched read fails before any change. Hosts apply their own revision checks and keep rich formats. A queued write stays pending.
+- `RepositoryDocuments` publishes only explicit `docs/*.md` output: exclusive creation, path containment, digest conflict checks and atomic replacement. Its lock is external, so other editors do not share it.
+- Record a real link with `wl link <id> <URL> --json` only after the client confirms the write. wholeloop's runtime state never becomes tracked repository content.
 
-## Available registry commands
+### Delivery source observations
 
-```text
-wl provider list --json
-wl provider show local-docs --json
-wl provider resolve docs.create --json
-wl provider test local-tracker --json
-wl provider scaffold acme-support --json
-wl mcp add acme-support --target codex --json
-```
+Autonomous delivery [intake](../tutorials/delivery-intake.md) reuses the `tracker.read-item` and `docs.read` operations through a `SourceProviderHost` you supply.
 
-With no configuration, `docs.create` resolves to `local-docs` and `tracker.create-item` to `local-tracker`. `native-web` and `native-code` declare host-native evidence tools. The registry resolves operation mappings; it does not execute external tools or claim authentication. Steps currently store their artifacts through the core.
+- The client must return the repository or tenant scope it observed, the complete content and pages, a non-empty revision and the digests of relevant attachments.
+- The core compares provider, reference and scope with the request before storing anything. It never infers ownership from a URL and never calls a write operation.
+- `wl delivery source` imports an observation you supply and labels it as an import; it signs in to nothing. Only a read made through `DeliverySources.captureFromHost` records host provenance, which still certifies neither the service nor containment.
+- Missing, partial or inconsistent observations return *missing input* and start nothing.
 
-Detection reads MCP declarations for all four tier-A clients plus Gemini/Antigravity/Cursor and executable availability on `PATH`; `available: true` means declared/configured, and `authenticated: false` remains explicit. Config parsing errors omit contents. No detection command from a manifest is executed. Provider tests do not make network probes.
+### Maintaining the catalogue
 
-`mcp add` prints a mergeable snippet with `applied: false`; it never overwrites client configuration or reads a token. OAuth is delegated to the client. Header authentication uses `token_env`, an environment variable name. Copilot remote headers do not expand environment references, so that recipe is explicitly rejected for Copilot and Antigravity instead of embedding credentials. Confirm authentication in a real client session.
-
-Gemini snippets merge into the native .gemini/settings.json mcpServers map (under GEMINI_CLI_HOME when set). HTTP recipes use httpUrl, with explicit OAuth enablement for requested OAuth and bearer environment placeholders for header auth; stdio uses command/args. Gemini 0.27.0 needs explicit OAuth enablement even where newer documentation permits discovery. Rendering never applies the snippet, expands a credential or contacts the server. Detection reads project/user declarations and allowed/excluded server metadata only. Actual auth/tool execution remains unverified.
-
-Antigravity snippets target .gemini/config/mcp_config.json (or a manual project merge into .agents/mcp_config.json). HTTP uses serverUrl; stdio uses command/args. OAuth discovery stays native. Header recipes are refused because safe environment expansion is unverified. Detection reads only declarations and disabled/enabled metadata. See the official [MCP format](https://www.antigravity.google/docs/mcp).
-
-Cursor snippets target .cursor/mcp.json under HOME (or a manual project merge). HTTP uses url, stdio uses type/command/args, and header recipes contain only a Bearer environment reference such as ${env:SUPPORT_AUTH}. OAuth stays native; rendering does not expand a value or authenticate. Detection reads declaration metadata only. See the official [MCP format](https://cursor.com/docs/mcp).
-
-The renderers follow the official [Claude Code MCP configuration](https://code.claude.com/docs/en/mcp), [OpenAI MCP configuration](https://developers.openai.com/codex/mcp), [OpenCode MCP configuration](https://opencode.ai/docs/mcp-servers/) and [Copilot MCP configuration](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference#mcp-server-configuration), checked on 2026-10-18. Golden files verify generated shape; they are not native-client conformance runs.
-
-## Detection and first use
-
-```mermaid
-sequenceDiagram
-  participant S as Step
-  participant TL as wl
-  participant P as Person
-  S->>TL: step begin (needs docs.create)
-  TL->>TL: config set? → use it
-  TL->>TL: else detect: MCP servers in this CLI's config, CLIs on PATH, env
-  TL-->>S: question with detected / not-connected options
-  S->>P: "Where should the spec live?"
-  P-->>S: Confluence (not connected)
-  S->>TL: wl mcp add confluence --target codex
-  TL-->>P: exact config written (or printed) for this CLI
-  P-->>S: remember for: this repo
-  S->>TL: wl answer docs=confluence --remember project
-```
-
-- **Detection is deterministic.** `wl` reads the host CLI's MCP configuration files and checks binaries on `PATH`; it never guesses whether something is connected. Whether a connected server is *authenticated* is checked by the skill with one cheap probe call.
-- **`wl mcp add <provider> --target <cli>`** writes the provider's MCP entry in the dialect that CLI expects (JSON, TOML, `serverUrl` vs `url`…), or prints it if you prefer to paste it yourself.
-- **Not available? Never a silent skip.** The step produces a hand-off artifact instead (a ready-to-paste document, an issue list, a dashboard spec with its queries) and records the gap so it can be backfilled later.
-
-## Local by default, shared when you want
-
-With nothing configured, everything lands in the local store as Markdown — the flow works with zero integrations. Configure a `docs` and `tracker` provider and each step also publishes there as it goes, which is what lets someone else pick the work up from a URL.
-
----
-
-### Tested code-host boundary
-
-`github` uses gh api; `gitlab` uses glab api. Both resolve one explicit remote, push a pinned tested commit and verify a matching open draft response. Read/status normalize source SHA/branch, target, repository, draft and merge state. Bodies use stdin and each CLI's credential store. Optional comments reconcile a stable round marker before posting. Local tests use synthetic API-shaped responses and a separate real push to a temporary local bare repository; live authentication, self-managed versions and network interruption remain manual verification.
-
-Service execution stays in your client: `wl provider read-flags <id> --flag <key> --environment <key> --mcp <inventory>` and `wl launch dispatch --for <id> --key <key> --mcp <inventory>` name the exact client MCP call or fall back to the open question or local handoff. Neither reads a credential, makes metadata-only provider tests authenticated health checks or turns a dashboard handoff into a remote chart.
+Canonical manifests live under `harness/providers`. After changing them, run `npm run providers:catalog`, then `npm run docs:providers` and `npm run lint:fix`. The catalogue check catches drift between sources; the docs check compares the generated table above with the built-in registry. The bundled registry returns each provider's guidance even without a source checkout, and repository or user manifests keep their file paths and precedence.
 
 <!-- docnav -->
 [◀ Interaction profile](profile.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Repo skills ▶](repo-skills.md)

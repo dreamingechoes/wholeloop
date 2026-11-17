@@ -2,13 +2,15 @@
 
 > **TL;DR** — There is nothing to configure before your first run: anything missing becomes a question, and the answer is remembered at the scope you choose. Settings come in two kinds. **Personal** settings (your interaction profile) follow you. **Team** settings (providers, slot bindings, lenses, templates) follow the repository.
 
-The key reference below is generated from the JSON Schema.
+## Contents
 
----
-
-## Persistent delivery limits
-
-Expanded delivery uses independent [run budgets](../tutorials/delivery-budgets.md), bound to its immutable plan and private grant. Original deadlines and counters survive recovery and stricter plan revisions; unknown usage remains unknown and unavailable hard metering refuses admission. Interaction profiles cannot expand these allowances or turn fixture evidence into actual execution. Existing gate rounds remain unchanged. The complete native unattended runner is subsequent Phase 6 work.
+- [Files](#files)
+- [Who wins](#who-wins)
+- [Example — project file](#example--project-file)
+- [Example — user file](#example--user-file)
+- [Inspect configuration](#inspect-configuration)
+- [Autonomous delivery limits](#autonomous-delivery-limits)
+- [Key reference](#key-reference)
 
 ## Files
 
@@ -20,7 +22,7 @@ Expanded delivery uses independent [run budgets](../tutorials/delivery-budgets.m
 | **Initiative** | in the store, on the initiative | — | Work mode and destinations chosen for that initiative |
 | **Run** | flags and your words in the session | — | `--pace guided`, "be more technical" |
 
-The project file is the **only** harness file a repository holds, and people write it on purpose. Runtime state never goes there ([ADR-0004](../decisions/0004-state-outside-the-repo.md)).
+The project file is the **only** harness file a repository holds, and people write it on purpose. Runtime state never goes there: your work history stays in your personal store, so a repository never fills up with run logs or private notes.
 
 ## Who wins
 
@@ -32,8 +34,8 @@ flowchart LR
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
-- **Personal keys** (`profile.*`) — your user file beats the project's default. A team can suggest a profile; it cannot impose one.
-- **Team keys** (`providers.*`, `slots.*`, `lenses.*`, `templates.*`, `gates.*`, `build.*`, `learn.*`, `flow.*`) — the project beats your user file, because the whole team must land artifacts in the same place and follow the same conventions. "Team" names the project scope: someone working alone sets these keys the same way, in the project they work on.
+- **Personal keys** (`profile.*`, `targets`): your user file beats the project's default. A team can suggest a profile; it cannot impose one.
+- **Team keys** (`providers.*`, `slots.*`, `lenses.*`, `templates.*`, `gates.*`, `build.*`, `learn.*`, `flow.*`): the project beats your user file, because everyone must land artifacts in the same place and follow the same conventions. "Team" just means the project scope; someone working alone sets these keys the same way.
 - A **run** override always wins, but only for that run.
 
 ## Example — project file
@@ -87,15 +89,69 @@ targets: [claude, codex, opencode]
 
 ## Inspect configuration
 
+`wl config show` prints the resolved values; it only reads.
+
+```console
+$ wl config show
+{
+  "schema": "wholeloop/config-show@1",
+  "values": {
+    "version": 1,
+    "profile": {
+      "preset": "pair",
+      …
+    },
+    "providers": {
+      "docs": "local-docs",
+      "tracker": "local-tracker"
+    },
+    "gates": {
+      "verify": {
+        "rounds": 4
+      },
+      …
+}
+```
+
+Add `--explain --json` to see where each value came from:
+
+```console
+$ wl config show --explain --json | jq '.sources["gates.verify.rounds"], .sources["profile.preset"]'
+{
+  "value": 4,
+  "scope": "built-in"
+}
+{
+  "value": "pair",
+  "scope": "user",
+  "file": "~/.config/wholeloop/config.yml"
+}
+```
+
+Other inspection commands:
+
 ```text
-wl config show --explain --json
 wl config show --initiative-config /path/to/initiative.yml --run-config /path/to/run.yml --json
 wl config schema --json
 ```
 
-Missing user/project files use built-in defaults. Explicit initiative/run files must exist. Every file requires `version: 1`; unknown keys, duplicate YAML keys and invalid values reject the entire load with a path and expected type. Inspection only reads configuration. Explicit `answer --remember user|project` and `profile set|preset` actions update configuration atomically; project configuration writes are intentional, never runtime state. `--explain` adds each value's scope and source file.
+How loading works:
 
-Maps such as slots merge per key; arrays replace rather than concatenate, so a higher scope can explicitly clear optional additions. `targets` is personal, like `profile.*`. Required decision points cannot be removed through the schema; `flow.decisions.add` only adds.
+- **Missing user or project files** fall back to the built-in defaults. Initiative and run files you name explicitly must exist.
+- **Every file needs `version: 1`.** An unknown key, a duplicated YAML key or an invalid value rejects the whole load, with the path and the expected type.
+- **Maps merge per key; lists replace.** `slots` merges key by key, while a list in a higher scope replaces the lower one, so it can clear optional additions.
+- **Decision points can only be added.** `flow.decisions.add` adds; nothing in the schema removes a required one.
+
+Configuration changes only when you ask: `wl answer … --remember user|project`, `wl profile set` and `wl profile preset` write it in one step.
+
+## Autonomous delivery limits
+
+[Autonomous delivery](../concepts.md#autonomous-delivery) has its own [run budgets](../tutorials/delivery-budgets.md), tied to the plan and the grant rather than to this file.
+
+- Deadlines and counters survive recovery and stricter plan revisions; nothing refills them.
+- Usage that cannot be measured stays unknown, and a hard limit that cannot be metered is refused instead of assumed.
+- No interaction profile can widen these limits. Gate rounds for the supervised flow stay as configured here.
+- Application environments for a run come from an explicit [recipe](../tutorials/delivery-environments.md), never from running your project's configuration automatically.
 
 ## Key reference
 
@@ -150,12 +206,6 @@ Source: `src/config/schema.json`. Regenerate with `npm run docs:config` or `wl d
 | [Interaction profile](./profile.md) | Every dial, presets, and what no dial can change |
 | [Providers](./providers.md) | Capabilities, the built-in catalogue, detection, installing MCP servers per CLI |
 | [Repo skills and slots](./repo-skills.md) | How each step finds and follows your repository's own skills |
-
----
-
-## Application environment recipes
-
-[Environment planning](../tutorials/delivery-environments.md) uses an explicit per-run recipe rather than auto-executing project configuration. Discovery is inert; image digests, selected bytes, command origins, network phases, logical mounts and finite limits are pinned separately from operator authority and actual backend observations. Existing environment undo declarations stay unexecuted.
 
 <!-- docnav -->
 [◀ Utilities](../flow/utilities.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Interaction profile ▶](profile.md)

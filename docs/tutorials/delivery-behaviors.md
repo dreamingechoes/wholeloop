@@ -1,33 +1,38 @@
 # Execute API and CLI acceptance against an owned application
 
-> **TL;DR** — Pin objective cases, start the declared Docker application and execute each case with a stable key. Wholeloop compares complete real responses or command output; unit suites and manual acceptance remain separate evidence.
+> **TL;DR** — An API or CLI **acceptance case** runs against the real application, in the Docker environment the run owns: it sends real requests or runs a declared command, and compares the complete response or output with what the case expects. A green unit suite cannot stand in for it, and a case that cannot finish never counts as a pass.
 
 > [!IMPORTANT]
-> **Experimental.** The fixed host, effect and candidate binding, output checks, restart and suite reuse are tested and were observed in Docker. No model or vendor account is needed. Autonomous delivery may change in a minor release.
+> **Experimental.** The fixed host, effect and candidate binding, output checks, restart and suite reuse are tested and were observed in Docker. No model or account is needed. Autonomous delivery may change in a minor release.
+
+```mermaid
+flowchart LR
+  C[Pinned case<br/>steps and assertions] --> R[acceptance-run<br/>with a stable key]
+  R --> A[Owned application<br/>in Docker]
+  A --> O[Full response<br/>or command output]
+  O --> V{Assertions}
+  V -- pass --> P[Case result: passed]
+  V -- fail or unfinished --> F[Case result: failed]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class C,R,A,O,V,P,F core;
+```
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 ## Inspect the contract without executing anything
 
-With the `wl` CLI ([getting started](../getting-started.md#install-the-cli)), this command is inert and needs no Docker daemon, account or execution grant.
-
-```bash
-set -euo pipefail
-npm run build
-wl delivery behavior-schema --json
+```console
+$ wl delivery behavior-schema --json
+{"schema":"wholeloop/behavior-schema@1", …}
 ```
 
-## Verify committed file scope in the public implementation route
-
-The installed public implementation controller also supports CLI capability repository.diff during integrated verification ([ADR-0218](../decisions/0218-controller-owned-repository-diff.md)). The producer receives its exact input schema and the selected repositoryDiffFixture. Set runner.input to a JSON string containing only schema wholeloop/repository-diff-input@1 and the declared repository ID; use that repository/base fixture instead of the recipe fixture. A JSON assertion at /changedPaths can compare the complete sorted path array, with its expected value encoded as JSON text. Other observable fields are base, head, baseAncestor and changes; every change includes path, status and before/after mode and oid.
-
-The controller chooses the owned candidate and both revisions. It refuses dirty/moved candidates and retains each bounded Git read under the original case/root owner. Existing source.read, test.run and report.write grants are required. This host is installed by the public integrated route; the standalone behavior command and SDK compositions without its reader cannot execute it. It establishes committed-tree facts only; PR/CI/merge evidence still comes from the hosted adapters.
+It needs no Docker daemon, account or grant.
 
 ## Define a case before the builder runs
 
-Follow [acceptance planning](./delivery-acceptance.md) and [Docker environment setup](./delivery-docker.md). The acceptance case's runner.input is a JSON string containing the behavior-input object. These fragments are definition data; replace the service, command, paths and expectations with the actual reviewed application's contract before pinning the plan.
+Follow [acceptance planning](./delivery-acceptance.md) and the [Docker guide](./delivery-docker.md) first. A case's `runner.input` is a JSON string holding a behaviour input. The examples below are definition data: replace the service, commands, paths and expectations with your reviewed application's contract.
 
-An API input can create a task, restart the same service and inspect persisted state:
+**An API case** can create a task, restart the service and check that the task survived:
 
 ```json
 {
@@ -51,9 +56,16 @@ An API input can create a task, restart the same service and inspect persisted s
 }
 ```
 
-Pair this with a json/equals assertion whose path is /ids and whose expected JSON literal is ["task-1"]. Assertions select the last request by default; targets chooses a named request for each assertion. JSON and header paths use JSON Pointer. Supported API subjects are status, header and json. Response headers are limited to content-type, content-length, location, etag and cache-control to exclude cookies and authentication material. Assertions must name one of these exact header paths. An excluded header is unobserved; it cannot satisfy an assertion that it is absent.
+Pair it with a `json` / `equals` assertion on path `/ids` expecting `["task-1"]`.
 
-A CLI input selects one exact phase-test command from the environment recipe:
+| Rule | Detail |
+| --- | --- |
+| Which response | The last request by default; `targets` names a request for each assertion |
+| Subjects | `status`, `header` and `json`; JSON and header paths use JSON Pointer |
+| Headers observed | Only `content-type`, `content-length`, `location`, `etag` and `cache-control`, so cookies and authentication material are never captured |
+| Unobserved headers | Cannot satisfy an assertion, not even that a header is absent |
+
+**A CLI case** runs one exact test-phase command from the environment recipe:
 
 ```json
 {
@@ -65,30 +77,71 @@ A CLI input selects one exact phase-test command from the environment recipe:
 }
 ```
 
-Supported CLI subjects are exit, stdout, stderr and json. An exit/equals expectation of 7 can deliberately verify rejected empty input. The recipe still owns the command's argv, working directory and provenance. The runner cannot supply a different executable. The process receipt identifies the actual controller-side Docker invoker; the artifact separately identifies the application container and daemon-observed exit. An unobserved application PID or signal is labelled accordingly. The private client close must match the application exit; the wrapper's normalized exit remains a separate process fact. Both output streams drain before wrapper exit.
+| Rule | Detail |
+| --- | --- |
+| Subjects | `exit`, `stdout`, `stderr` and `json` |
+| A failing command on purpose | `exit` / `equals` 7 can check that empty input is rejected |
+| Who decides the command | The recipe: its arguments, working directory and origin. A case cannot supply a different executable |
+| What is recorded | The controller-side Docker client that ran it, and separately the application container and the exit the daemon observed. Both output streams are read completely before the client exits |
+
+**Committed file scope.** The public implementation route can also check which files a change committed, with the CLI capability `repository.diff`. Set `runner.input` to `{"schema":"wholeloop/repository-diff-input@1","repository":"<id>"}` and assert on `/changedPaths`, the complete sorted list of changed paths, written as JSON text. Each change also reports its path, status and mode and object before and after, alongside `base`, `head` and `baseAncestor`. The controller picks the candidate and both revisions, refuses a dirty or moved candidate, and needs the `source.read`, `test.run` and `report.write` effects. It proves committed-tree facts only; PR, CI and merge evidence come from the code host.
 
 ## Run and inspect
 
-After pinning the plan and provisioning its current owned environment, use delivery acceptance-run with --digest, --case, --key, --environment and --store. The stable key binds exactly one invocation to those inputs. Repeating it reads the existing result; an unresolved intent refuses a blind rerun. Use a new key only for an explicitly new execution, retaining all earlier evidence. The command returns acceptance-case-result@1 and exits nonzero unless the case passes.
+Once the plan is pinned and its environment provisioned:
 
-Use delivery acceptance-report to assess current criterion coverage, and acceptance-seal to retain the report privately. A case result grants no publication permission and never records human testing. Changed candidate bytes, a different recipe/environment, a newer failure or unavailable required evidence prevent reusing an earlier success.
+```text
+wl delivery acceptance-run --digest <digest> --case <case> --key <key> --environment <id> --store <store> --json
+```
+
+- **The key** binds exactly one execution to those inputs. Repeating it returns the existing result; an unresolved run refuses a blind retry. Use a new key only for a deliberately new execution, and keep the old evidence.
+- It returns `acceptance-case-result@1` and exits non-zero unless the case passes.
+- `acceptance-report` gives the current coverage per criterion, and `acceptance-seal` keeps the report privately.
+- A case result grants no publication and never records a person's test. A changed candidate, another recipe or environment, a newer failure or missing evidence stops an earlier success from counting.
 
 ## Run the reproducible model-free evaluation
 
-This opt-in check needs a local Docker Linux daemon supporting the [reference backend](./delivery-docker.md), the cached immutable reference Node image and enough free daemon capacity. It creates disposable Git worktrees and backend-owned volumes outside this repository. There is no image pull, native model or vendor account. Successful teardown targets only its exact recorded resources; a failed evaluation retains its resources and external evidence directory for inspection.
+It needs a local Linux Docker daemon that supports the [reference backend](./delivery-docker.md), the cached reference Node image and free capacity. It pulls nothing and uses no model or account.
 
 ```bash
 set -euo pipefail
 npm run eval:behaviors -- --retire-success
 ```
 
-The evaluator starts with a memory-only task application and a deliberately green unit suite. Wholeloop must fail persistence after a real restart, preserve a wrong-exit failure and distinguish missing data from zero. It then repairs the candidate to use its owned data volume and requires a new successful restart observation. It also verifies a real exit seven, actual process metadata and once-per-round suite reuse through the existing gate journal. A failed case in this evaluator is an expected test observation; the final evaluation succeeds only if every expected failure and subsequent repair is observed correctly.
+```console
+$ npm run eval:behaviors -- --retire-success
+Retained evaluation: /tmp/wholeloop-behavior-evaluation-XXXXXX
+Observed: actual-restart-exposes-memory-only-storage
+Observed: actual-wrong-exit-fails
+Observed: missing-is-not-zero
+Observed: green-unit-suite-cannot-hide-failed-persistence
+Observed: candidate-repair-invalidates-old-evidence
+Observed: actual-repair-persists-across-restart
+Observed: actual-negative-cli-observes-process-and-exit-seven
+…
+{"schema":"wholeloop/behavior-evaluation@1","status":"passed","scope":"Actual model-free Docker API/CLI observations; independent Linux controller and native clients are not certified.","retirement":"observed-retired",…}
+```
 
-For application-specific suites, the trusted dockerSuiteExecutor function maps each declared command reference to a pinned CLI case. It checks exact argv/cwd, current candidate and an explicit zero-exit assertion before using runSuite's existing cache. The default supervised suite executor is unchanged. Neither path resets gate rounds after repairs.
+The story it tells:
+
+1. It starts a task application that keeps tasks **only in memory**, with a unit suite that is green on purpose.
+2. The API case **fails** after a real restart: the task is gone, and the green suite cannot hide it.
+3. It also fails a wrong exit code, and tells missing data apart from zero.
+4. It repairs the candidate to use its owned data volume, which **invalidates the old evidence**, and the case now passes across a real restart.
+5. It checks a real exit 7, the recorded process facts, and that the suite runs once per round through the existing gate journal.
+
+The failures in steps 2 and 3 are expected; the evaluation passes only if every expected failure and the repair are observed correctly. Successful environments are retired at the end; a failed evaluation keeps its resources and evidence directory.
+
+**Application suites.** The trusted `dockerSuiteExecutor` maps each declared command to a pinned CLI case, checks its exact arguments, working directory, the current candidate and an explicit zero exit, then uses `runSuite`'s existing cache. The supervised suite executor is unchanged, and neither resets gate rounds after a repair.
 
 ## When execution cannot finish
 
-Missing capabilities, changed identities, overflow, partial HTTP bodies, unsupported encodings, foreign redirects, revocation and deadlines cannot produce a pass. An uncertain HTTP action is not retried; its environment can be fenced and stopped while retaining data. Stopping a server does not prove whether an earlier request committed. Inspect the original effect and case records before choosing another environment or candidate. See [owned lifecycle recovery](./delivery-lifecycle.md) and [ADR-0106](../decisions/0106-observe-declared-api-and-cli-behavior.md).
+None of these can produce a pass: a missing capability, a changed identity, an overflow, a partial HTTP body, an unsupported encoding, a redirect to another host, a revocation or a deadline.
+
+- An uncertain HTTP action is never retried. Its environment can be fenced and stopped, keeping the data.
+- Stopping a server does not tell you whether an earlier request was committed. Inspect the original effect and case records before choosing another environment or candidate.
+
+[Lifecycle recovery](./delivery-lifecycle.md).
 
 <!-- docnav -->
 [◀ Behavioral acceptance and evidence](delivery-acceptance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Execute isolated browser acceptance ▶](delivery-browsers.md)

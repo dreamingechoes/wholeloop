@@ -1,51 +1,76 @@
 # Delegate a decision without impersonating a human
 
-> **TL;DR** — An original private grant can delegate a named decision under a pinned purpose-specific rubric. A trusted host records the exact evidence, a machine judgment and independent challenge. None-policy limitations block without a human prompt; fixture judgments grant no actual execution authority.
+> **TL;DR** — A grant can **delegate** a named decision, such as approving the specification or accepting the product, to a machine judge. The judge must apply a **rubric** you pinned in advance; an independent challenger tries to refute its judgement; both are recorded as machine decisions, never as yours. With intervention `none`, a decision that cannot be taken ends the run with a stated limitation instead of a prompt.
 
 > [!IMPORTANT]
-> **Experimental.** The decision policy, private rubric pins, records and no-prompt fallbacks are tested on macOS and Linux. See [ADR-0112](../decisions/0112-private-delegation-and-independent-machine-decisions.md). Autonomous delivery may change in a minor release.
+> **Experimental.** The decision policy, private rubric pins, records and no-prompt fallbacks are tested on macOS and Linux. Autonomous delivery may change in a minor release.
+
+```mermaid
+flowchart LR
+  R[Rubric<br/>pinned by you] --> P[Planner judge<br/>applies it to the exact evidence]
+  P --> C[Challenger<br/>tries to refute it]
+  C --> D[Machine decision<br/>recorded with both]
+  D -- "accepted" --> N[Next stage]
+  D -- "cannot decide" --> L[Run ends with<br/>a stated limitation]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class R,P,C,D,N,L core;
+```
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
-## Optional private attribution
+## Contents
 
-A person recording a supervised `delivery human-decide` or a `delivery pause`, `resume` or `stop` control can add `--channel terminal` and `--rationale-file <private-file>` (or `--rationale-stdin`). The rationale is bounded to 4096 UTF-8 bytes and omitted from the default report and diagnostics. It grants no authority. Human decision attribution refers to the immutable original record; an identical retry records no additional event. A delegated plan/build-plan/acceptance observation copies only its original retained judgment reason, without inventing an explanation. See [optional attribution](../architecture/state-and-messaging.md#optional-event-attribution).
+- [Independent choices](#independent-choices)
+- [Inspect the actual contracts](#inspect-the-actual-contracts)
+- [Run the complete model-free control](#run-the-complete-model-free-control)
+- [How a decision is taken](#how-a-decision-is-taken)
+- [Unknowns and current eligibility](#unknowns-and-current-eligibility)
+- [Optional private attribution](#optional-private-attribution)
 
 ## Independent choices
 
-Choose the endpoint, intervention policy, named decision delegations and observed runtime independently. A research-report endpoint grants no code edits; to-pr grants no merge; none grants no extra effect. Interaction profiles affect communication/concurrency and cannot select these permissions.
+Four things are chosen separately, and none implies another:
 
-| Decision ID | Supported outcomes |
-| --- | --- |
-| delivery-plan, research-plan, research-sources | accept, reject |
-| frame-outcome | go, on-hold, dropped |
-| approve-spec, approve-scopes, approve-build-plan, acceptance | accept, reject |
-| learning-outcome | keep, iterate, kill, unflag |
-| ramp-assessment | propose, on-hold |
+| Choice | Example | Does not imply |
+| --- | --- | --- |
+| **Endpoint** | `research-report`, `to-pr` | A research report allows no code edits; a PR allows no merge |
+| **Intervention** | `none` | No extra effect |
+| **Delegations** | `approve-spec`, `acceptance` | Any permission beyond taking that decision |
+| **Runtime** | The client hosts actually observed | Anything a profile says |
 
-Learning and ramp outcomes are assessments. They do not change flags, deploy, send messages or grant a separate external effect. Acceptance records do not satisfy human-only criteria, required code-host human review or failed gates.
+Interaction profiles change how the harness talks and how much runs at once; they cannot select any of these.
 
-## Native execution boundary
+**Decisions that can be delegated:**
 
-The internal NativeDelegatedDecisionHost can now execute independent planner/challenger processes through the shared contained native transport. It passes only pinned decision inputs, retains exact basis/judgment bindings and derives identity from actual completed private purpose attempts. A bounded report contains decision claims; a separate trusted observer supplies evidence status and human-only prerequisites. Unknown outer findings/uncertainties cannot be silently omitted from a successful report.
+| Decision ID | Outcomes | Taken at |
+| --- | --- | --- |
+| `delivery-plan` | accept, reject | The plan stage, for a plan made inside an envelope |
+| `research-plan`, `research-sources` | accept, reject | An unattended research run's plan, then its source work |
+| `frame-outcome` | go, on-hold, dropped | Definition |
+| `approve-spec`, `approve-scopes` | accept, reject | Definition |
+| `approve-build-plan` | accept, reject | Build plan |
+| `acceptance` | accept, reject | Acceptance of the whole product |
+| `learning-outcome` | keep, iterate, kill, unflag | A learning observation |
+| `ramp-assessment` | propose, on-hold | A ramp stage |
 
-Purpose attempts consume the original evaluator budget and deadline, including under an original envelope without an invented implementation unit. They are consumed once before launch; ambiguous process closure or pre-launch controller loss holds capacity instead of replaying the call. Fixture provenance stays fixture-only. Run npm run eval:runner for a disposable synthetic process control; it uses no model/account and proves no native-model containment or actual acceptance. See [ADR-0116](../decisions/0116-owned-native-decision-purpose-attempts.md).
+Learning and ramp outcomes are **assessments**: they change no flag, deploy nothing, send no message and grant no external effect. A machine acceptance never satisfies a criterion only a person can accept, a human review the code host requires, or a failed gate.
 
 ## Inspect the actual contracts
 
-With the `wl` CLI ([getting started](../getting-started.md#install-the-cli)):
-
-```bash
-set -euo pipefail
-npm run build
-wl delivery decision-schema --json
+```console
+$ wl delivery decision-schema --json
+{"schema":"wholeloop/delegated-decision-schema@1", …}
 ```
 
-This opens no store and starts no model. The closed rubric defines its decision, purpose, named rules, permitted outcomes, owned unknown IDs, explicit defaults and finite timeout. The existing plan/envelope delegation binds its ref/sha256, required evidence IDs and fallback policy. The operator's original grant must explicitly include that decision ID too.
+This opens no store and starts no model.
 
-Keep rubric/request files in the external controller workspace. Source documents, profiles and worker artifacts cannot authorize themselves. Create the plan/envelope and original private grant through [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md), selecting the intended delegations before authorization. No CLI command imports a machine judgment.
+- **The rubric** defines its decision, its purpose, named rules, the outcomes it allows, the unknowns it owns, explicit defaults and a finite timeout.
+- **The delegation** in the plan or envelope binds the rubric's reference and digest, the evidence it requires and what happens when the judge cannot decide.
+- **The grant** must list the same decision ID. Choose the delegations before you [authorize](./delivery-authorization.md).
 
-With actual selected identifiers, the control commands are:
+Keep rubric and request files in the controller's workspace, outside application repositories. A source document, a profile or a worker artifact can never authorize itself, and there is no command to import a machine judgement.
+
+With your real identifiers, the controls are:
 
 ```text
 wl delivery decision-pin --grant <authorization-id> --store <external-store> --json
@@ -53,34 +78,74 @@ wl delivery decision-preflight --run <delivery-id> --revision <n> --grant <autho
 wl delivery decision-inspect --digest <decision-sha256> --store <external-store> --json
 ```
 
-Pinning copies exact bounded rubric bytes into immutable controller inputs. Preflight opens no model: scope policy-only and runtime not-observed explicitly separate declared policy from actual host readiness. Ready means the inspected policy has no listed structural blocker; it supplies no runtime capability. For none, undelegated route decisions and mandatory human acceptance are blocked with interactive disabled. Non-ready preflight/inspection exits 3; inspect still returns the retained record.
+| Command | Does |
+| --- | --- |
+| `decision-pin` | Copies the exact rubric bytes into immutable controller inputs |
+| `decision-preflight` | Checks the declared policy without starting a model. `scope: policy-only` and `runtime: not-observed` say it checked the policy, not a host. With `none`, undelegated decisions and mandatory human acceptance show as blocked |
+| `decision-inspect` | Shows a recorded decision and whether it is still eligible |
 
-The runner attaches judgments to their actual stages. Initial unattended research definition requires research-plan; research-sources judges the subsequent source work. An implementation definition retains frame-outcome/go, approve-spec and approve-scopes. An envelope additionally requires its current delivery-plan judgment at the plan stage. These requirements select existing delegated authority; they do not add permissions, replace independent private judgments or record a human approval.
+A preflight or inspection that is not ready exits with code 3; inspect still returns the record.
 
 ## Run the complete model-free control
 
-This control runs from a source checkout ([development guide](../contributing/development.md#build-from-source)), with Git installed and no service account:
+From a source checkout, with Git and no account:
 
-```bash
-set -euo pipefail
-npm run eval:decisions
+```console
+$ npm run eval:decisions
+Retained evaluation: /tmp/wholeloop-decision-evaluation-XXXXXX
+{"status":"passed","provenance":"fixture","runtime":{"node":"v24.22.0","platform":"darwin","arch":"arm64"},"checks":["original envelope and private rubric pinned","independent fixture judgment cannot authorize native execution","completed stable key never replays judgments","hostile changed artifact invalidates eligibility without changing authority","revocation preserves historical machine provenance"],…,"nativeAcceptance":"not-established","publication":"not-performed"}
 ```
 
-The runner creates a disposable Git repository and external store, authorizes an initial envelope, pins its rubric, observes independent synthetic planner/challenger results and stores a visibly fixture-only record. It verifies stable-key reuse without another judgment, changed hostile input invalidation, unchanged authority and retained provenance after revocation. The printed retained directory contains runner.mjs and results/report.json. No model, hosted publication or application process executes.
+It creates a disposable repository and store, authorizes an envelope, pins its rubric and records a decision from synthetic planner and challenger results, labelled as a fixture. Each item in `checks` is one boundary it exercised. No model, hosted service or application runs.
 
-A passed control means these deterministic protocol/record boundaries were exercised. It does not mean a native agent completed a feature unattended. The separately selected actual native hosts must observe containment, noninteractive tools, completion, independent assignments and original budgets before their results are eligible.
+A pass means these protocol boundaries hold. It does not mean a real agent delivered a feature unattended: a real client host must still show containment, non-interactive tools, completion, independent assignments and the original budgets before its decisions count.
 
-## Trusted host lifecycle
+## How a decision is taken
 
-DelegatedDecisions.decide is a controller API, not a worker result-import endpoint. Its host observes prerequisites and evidence, runs a planner and then a distinct challenger, and verifies current completed identities. It receives only selected bounded source/plan/authorization and artifact/evidence context. The core binds both judgments to one exact basis and preserves their uncertainties. Missing native capability or mandatory human prerequisites are explicit refusals; the complete runner turns those into its terminal limitation.
+**The host.** `DelegatedDecisions.decide` is a controller API, not an endpoint for importing results.
 
-Original deadlines and artifact budgets apply. Unsupported hard token/currency metering refuses admission. Interrupted locator writes can recover an already published exact immutable decision without calling either host again. An unpublished/orphan result supplies no completion. A cancelled/crashed/late host leaves an unknown stable-key intent; it cannot become a successful refutation or be invoked again implicitly. Cancellation is a request to the trusted host, not proof of stopped processes. Use a new explicit attempt/key only after the controller resolves its original process/resource boundary.
+1. It checks the prerequisites and the evidence.
+2. It runs a **planner** judge, then a **distinct challenger**, each a separate client process that receives only the pinned decision inputs: the selected source, plan, authorization, artifacts and evidence.
+3. It verifies that both completed, under their real identities.
+4. The core binds both judgements to one exact basis and keeps their uncertainties. A report cannot silently drop a finding or an uncertainty.
+
+A missing client capability or a mandatory human prerequisite is an explicit refusal, which the runner turns into its final limitation.
+
+**Budgets.** Each judge attempt consumes the original evaluator budget and deadline, once, before it launches; this also holds under an envelope with no implementation unit. `npm run eval:runner` exercises this with synthetic processes.
+
+**Interruptions.**
+
+- An interrupted write can recover a decision that was already published, without calling either judge again.
+- An unpublished or orphaned result completes nothing.
+- A cancelled, crashed or late judge leaves an *unknown* intent. It never becomes a successful refutation and is never run again implicitly; cancelling is a request, not proof that the process stopped. Use a new attempt only after the controller has resolved the original one.
 
 ## Unknowns and current eligibility
 
-A numeric baseline remains unknown. None-policy can investigate within its finite remaining budget, use an explicitly pinned default while retaining the unknown fact, request independent least-scope evaluation, complete with owned unknowns or choose an authorized on-hold outcome. Missing required facts or non-delegable prerequisites block. These instructions never ask a person or create a hidden approval wait.
+**Unknown facts stay unknown.** With `none`, a run can:
 
-The original source, plan/envelope, rubric, artifacts, evidence, grant and named Git bases remain current inputs. Starting a replacement judgment immediately fences the old acceptance, even if the replacement crashes. Late older judgments cannot overwrite the newer intent. Changes/revocation/expiry invalidate eligibility while history stays readable. Machine records always say actorKind machine and humanApproval not-recorded; legacy supervised decisions retain their original human semantics.
+- investigate within its remaining budget;
+- use an explicitly pinned default, while recording that the fact is still unknown;
+- ask for an independent, least-scope evaluation;
+- complete with unknowns that have owners;
+- choose an authorized on-hold outcome.
+
+A missing required fact, or a prerequisite that cannot be delegated, blocks. None of this asks a person or creates a hidden wait for approval.
+
+**A decision is only valid while its inputs are.** The source, plan or envelope, rubric, artifacts, evidence, grant and Git bases stay bound to it.
+
+- Starting a replacement judgement immediately withdraws the old acceptance, even if the replacement crashes; a late older judgement cannot overwrite the newer one.
+- A change, a revocation or an expiry makes the decision ineligible, and its history stays readable.
+- Machine records always say `actorKind: machine` and `humanApproval: not-recorded`. Decisions in the supervised flow keep their human meaning.
+
+## Optional private attribution
+
+When a person records a supervised `wl delivery human-decide`, or a `pause`, `resume` or `stop`, they can add `--channel terminal` and a private rationale with `--rationale-file <file>` or `--rationale-stdin`.
+
+- The rationale is limited to 4096 UTF-8 bytes and left out of the default report and diagnostics.
+- It grants no authority, and repeating the same decision records nothing new.
+- A delegated decision copies only the reason its judge recorded; no explanation is invented.
+
+[Optional attribution](../architecture/state-and-messaging.md#optional-event-attribution).
 
 <!-- docnav -->
 [◀ Delivery authorization](delivery-authorization.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery runner controls ▶](delivery-runner.md)

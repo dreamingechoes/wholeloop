@@ -1,17 +1,26 @@
 # Delivery budgets — inspect limits and retain bounded evidence
 
-> **TL;DR** — Bind optional usage constraints before execution, inspect unknown consumption honestly and capture binary evidence under a persistent byte quota. Restarting a process or revising a plan does not reset allowances.
+> **TL;DR** — Every run has **finite budgets**: wall time, attempt time, concurrency, restarts, CI pushes, repairs, rounds without progress and bytes of evidence. They start with the run's first real work, survive restarts and plan revisions, and never refill. You can add token or cost ceilings; usage nobody measured stays *unknown*, never zero.
 
 > [!IMPORTANT]
 > **Experimental.** Admission, usage accounting, no-progress detection and bounded artifact capture are tested. Token and currency limits rely on what each client reports. Autonomous delivery may change in a minor release.
 
+**What you will have at the end:** an advisory token ceiling on the queued run, one piece of evidence captured twice but charged once, and a budget report showing the clock started.
+
 ## Before you start
 
-Complete the [checkpoint tutorial](./delivery-checkpoints.md) in the same Bash terminal. Keep workspace_dir set. That fictional run has an active grant and no admitted worker or issued effect. The commands below affect only its disposable external store.
+Complete the [checkpoint guide](./delivery-checkpoints.md) in the same Bash terminal, so `workspace_dir` is still set. Its run has an active grant, and no worker was admitted and no effect issued. Everything below changes only the disposable store.
 
 ## Configure advisory usage
 
-Constraints are optional, immutable and bound to the exact observed grant/plan before the run budget starts. The plan already contains finite wall, attempt, concurrency, restart, CI, repair, no-progress and artifact limits. Advisory token/currency ceilings retain missing usage honestly; a hard ceiling requires host-supported enforceable maxima before admission.
+The plan already holds the finite limits. On top of them you can add **constraints**: optional, immutable, bound to the exact grant and plan, and set before the budget starts.
+
+| Mode | Behaviour |
+| --- | --- |
+| `advisory` | Reported against observed usage; missing usage stays unknown |
+| `hard` | Enforced, so the host must support enforceable maximums before it admits any work; otherwise admission is refused |
+
+The script adds an advisory ceiling of 10 000 tokens:
 
 ```bash
 set -euo pipefail
@@ -35,11 +44,33 @@ wl delivery budget-configure \
   --store "$workspace_dir/state" --json > "$workspace_dir/budget-configured.json"
 ```
 
-No token observation has occurred: value is null and completeness is unknown. Configuring or inspecting does not start the budget, launch a model or grant authority. `delivery budget-schema --json` exposes the input contract.
+Configuring starts nothing. The status it returns, shortened:
+
+```console
+$ wl delivery budget-configure --file "$workspace_dir/constraints.json" --root "$workspace_dir" --store "$workspace_dir/state" --json
+{
+  "schema": "wholeloop/delivery-budget-status@1",
+  "run": "delivery-0123456789abcdef",
+  "state": "queued",
+  "started": false,
+  "limits": {
+    "wallTimeMs": 14400000, "attemptMs": 1800000,
+    "builders": 2, "buildersPerRepository": 1, "evaluators": 4,
+    "restarts": 2, "ciPushes": 2, "integrationRepairs": 3,
+    "noProgress": 3, "artifactBytes": 209715200
+  },
+  "deadline": null,
+  "requirements": { "tokens": { "limit": 10000, "mode": "advisory" } },
+  "usage": { "tokens": { "value": null, "completeness": "unknown" }, … },
+  …
+}
+```
+
+No tokens were observed, so the value is `null` and its completeness `unknown`. Configuring or inspecting a budget launches no model and grants nothing. `wl delivery budget-schema --json` prints the input contract.
 
 ## Capture and inspect evidence
 
-The first actual admission or artifact capture starts the run budget. Artifact capture requires the existing report.write permission. Bytes are reserved before file replacement, unique identical bytes are charged once, and interruption retains the reservation. Capturing evidence does not establish semantic QA, progress or acceptance.
+The **first real admission or artifact capture starts the budget**. Capturing an artifact needs the grant's `report.write` effect. The script captures the same file twice, then reads the budget and checks it:
 
 ```bash
 printf 'Observed local fixture evidence.\n' > "$workspace_dir/evidence.bin"
@@ -73,15 +104,35 @@ assert.equal(report.authority, 'not-granted')
 JS
 ```
 
-Quota or recognized credential omissions return exit 3 with metadata and no copied bytes; missing, oversized or aliased inputs refuse. The 8 MiB per-file bound is independent of the plan's total artifact quota. Existing observed files must remain byte-identical. Arbitrary sensitive content still needs appropriate source handling; the scanner only recognizes specific credential forms.
+Both captures return the same artifact, so identical bytes are charged once:
+
+```console
+$ wl delivery artifact --run delivery-0123456789abcdef --file "$workspace_dir/evidence.bin" --root "$workspace_dir" --store "$workspace_dir/state" --json
+{"schema":"wholeloop/delivery-artifact-capture@1","run":"delivery-0123456789abcdef","stored":true,"artifact":{"digest":"f846d280…","bytes":33,"ref":"delivery/artifacts/delivery-0123456789abcdef/f846d280…"},"reason":null,"authority":"not-granted"}
+```
+
+The budget has now started: `started: true`, a `startedAt` time, a `deadline` four hours later (the plan's `wallTimeMs`), and `artifactBytes: 33` in its counters. Tokens are still unknown.
+
+**How evidence is charged.**
+
+- Bytes are reserved **before** the file is written, and an interruption keeps the reservation.
+- Each file is limited to 8 MiB, independently of the plan's total quota. Missing, oversized or aliased inputs are refused.
+- Over quota, or with a recognized credential in the content, capture returns exit code 3 with metadata and copies nothing. The scanner only recognizes specific credential forms, so other sensitive content still needs care.
+- Capturing evidence proves nothing about quality, progress or acceptance.
 
 ## Interpret exhausted runs
 
-Read-only reports compute remaining time from the pinned original start, retained monotonic observations and current wall time. Smaller plan/grant limits apply; subsequent larger limits do not extend the run. Detected clock faults refuse continuation. Portable clocks do not prove every unobserved machine reboot or physical clock correction.
+**Time.** Remaining time is computed from the pinned start, the recorded observations and the current time. A smaller limit in a later plan or grant applies; a larger one never extends the run. A detected clock fault refuses to continue. Portable clocks cannot detect every unobserved reboot or clock correction.
 
-Usage reports keep delta/cumulative identities, finality and fixture/host provenance. Missing or partial usage is never treated as complete zero. Historical work without a usage reservation remains explicitly unmetered, keeps later totals partial and prevents configuring a retroactive hard cap. Hard metering charges guaranteed maxima for the run lifetime; lower partial usage does not refund reservations. Unsupported hard token/currency limits refuse host admission.
+**Usage.** Reports keep each reading's identity, whether it is final, and whether it came from a fixture or a host.
 
-Repeated failure signatures retain their candidate/findings and exhaust the no-progress allowance. Only a new typed validated result resets the streak; a heartbeat, narration or repeated identical artifact cannot. Exhaustion does not release live worker ownership, erase gate rounds or reopen an endpoint. See [ADR-0099](../decisions/0099-persistent-finite-delivery-budgets.md) and the [expanded controls contract](../../roadmap/specifications/autonomous-delivery/07-controls-and-observability.md).
+- Missing or partial usage is never treated as zero.
+- Work done before any usage reservation stays explicitly *unmetered*, which keeps later totals partial and prevents adding a hard cap after the fact.
+- Hard metering charges the guaranteed maximum for the run's lifetime; using less does not refund the reservation.
+
+**No progress.** Repeating the same failure uses up the no-progress allowance. Only a new, validated result resets it; a heartbeat, a status message or the same artifact again does not.
+
+Running out of budget does not release a live worker, erase gate rounds or reopen an endpoint. The [controls specification](../../roadmap/specifications/autonomous-delivery/07-controls-and-observability.md) has the full contract.
 
 <!-- docnav -->
-[◀ Native delivery hosts](delivery-native.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery checkpoints ▶](delivery-checkpoints.md)
+[◀ Owned assembly and combined verification](delivery-assembly.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery checkpoints ▶](delivery-checkpoints.md)

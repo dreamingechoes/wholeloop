@@ -2,9 +2,7 @@
 
 > **TL;DR** — Builds each slice in its **own git worktree** on its own branch, so several builders work at once — even in the same repository — while your checkout stays exactly as you left it. Builders follow the skills and conventions your repository already has, and every slice runs [`verify-works`](./verify-works.md) then [`review-code`](./review-code.md) until both are green. Give it a scope, a slice, an issue URL or a one-line fix. It finishes at green: no push, no PR.
 
-Model behaviour inside a client is outside what tests can certify.
-
----
+How well the model builds depends on your client and model; the tests cover everything around it.
 
 ## At a glance
 
@@ -22,7 +20,7 @@ Model behaviour inside a client is outside what tests can certify.
 
 ## When to use it — and when not
 
-**Use it when** you want code written against agreed criteria — a planned slice or a quick fix — and checked the same way no matter who started it.
+**Use it when** you want code written against agreed criteria, whether a planned slice or a quick fix, and checked the same way no matter who started it.
 
 **Skip it when** the code already exists and you only want an opinion on it: run [`verify-works`](./verify-works.md) or [`review-code`](./review-code.md) on their own.
 
@@ -62,7 +60,7 @@ flowchart TD
 7. **Pace sets concurrency, nothing else.** `guided` runs one builder at a time, `staged` runs builders together but gates one slice at a time, `parallel` runs everything at once. The checks are identical ([profile](../../configuration/profile.md)).
 8. **Anything outside the repository is announced first.** A database, a container stack, a seeded index: listed with how to undo it before it happens, and again in the receipt.
 
-The preflight, before any worktree exists:
+An example preflight, before any worktree exists:
 
 ```text
 Plan       3 slices → 3 builders · pace staged
@@ -87,55 +85,21 @@ wl worktree open slice-0d4e
   ports  5200–5209 (dev server suggestion: PORT=5200 npm run dev)
 ```
 
-Worktrees are removed by [`sync`](../utilities.md) once their PR is merged, or anytime with `wl worktree prune`. Rather have branches appear in the copy you already work in? Set `build.workspace: checkout` — slices of the same repository then take turns there instead of running side by side.
+Worktrees are removed by [`sync`](../utilities.md) once their PR is merged, or at any time with `wl worktree prune`.
 
-## Available workspace lifecycle
-
-```text
-wl worktree create slice-0123abcd --base main --json
-wl worktree create slice-89abcdef --after slice-0123abcd --json
-wl worktree open slice-0123abcd --json
-wl worktree list --json
-wl worktree stop slice-0123abcd --json
-wl worktree prune slice-0123abcd --dry-run --json
-wl worktree prune slice-0123abcd --json
-```
-
-Create requires an open slice or repository part. A multi-repository slice uses its individual part IDs. The repository comes from the recorded definition or an explicit --repo root. Supply a named local/remote base; a raw commit is not a cleanup target. --after stacks on a recorded predecessor while retaining the original integration target. No fetch, push or commit occurs during provisioning.
-
-Allocation intent precedes Git mutations. Repeating create reuses active identity or recovers a matching unfinished intent. The person's branch, index and working files stay unchanged in default worktree mode, including dirty staged/untracked work. Provisioning disables checkout hooks for that Git invocation only; later builder commits retain normal hooks. Stale locks require owner inspection.
-
-Ten-port blocks are reserved within this store from 5200 through 6199. These are reservations, not live port probes. Open reports actual HEAD, path, ports and detected quality commands without starting anything or recording test-it approval. Status and resume link the external workspace projection.
-
-Stop records the lease state and preserves files/branches; this manager does not control worker/dev-server processes. To reject work explicitly, use `worktree stop <id> --abandon --reason "<why>"`. Prune removes only recorded stopped, clean work merged into its integration target or explicitly abandoned. It honors Git locks, preserves unmerged/dirty/changed-identity work and every topic branch, and continues checking other records when one cannot be cleaned. It never runs a broad Git metadata sweep or force removal. Dry-run records no lifecycle change.
-
-The checkout opt-out requires a clean, exclusive repository, creates its topic branch there, and restores the original branch or detached commit on eligible cleanup. It never deletes the person's directory. See [ADR-0030](../../decisions/0030-worktree-intents-leases-and-conservative-pruning.md). These lifecycle commands are available independently of builder orchestration.
-
-## Available build contracts
-
-```bash
-wl build route "Reject empty requests" --json
-wl build agree "Reject empty requests" --owner Owner --by Owner --criteria criteria.json --json
-wl build preflight slice-0123abcd --json
-wl build prepare slice-0123abcd --base main --json
-wl build schema --json
-wl build plan slice-0123abcd --file plan.json --basis '<prepared-snapshot>' --json
-wl build complete slice-0123abcd --json
-```
-
-Criteria files use `wholeloop/criteria@1`. The builder plan uses `wholeloop/builder-plan@1` with steps, tests and assumptions (text, verified/unknown/ contradicted status, evidence). Plan recording checks the prepared snapshot before any code write. Unknown/contradicted assumptions require an explicit `wl answer decision.approve-build-plan=approved --for <id> --by <person> --json`. Changing the plan requires a fresh assumption decision when still unresolved.
-
-The shared `harness/workflows/build.ts` host contract supplies planning, implementation, unit inspection, independent refutations and stop state. The core loads selected build guidance into that context. `runBuild` resumes existing plans and partial rounds; `runBuildGroup` schedules ready dependency waves according to pace. Staged uses a whole-round gate lease. Host cancellation of already-running tools remains its responsibility. Gate results are observations supplied by that host; planning alone never runs project tests or proves semantic correctness.
-
-Every repair that changes code invalidates older passes. Completion requires verify and review PASS after the latest plan on identical current bytes, constructs the receipt and advances to open-pr without inventing separate standalone step runs. Stacking during a build refuses uncommitted predecessor files: commit them only when authorized and rerun gates after HEAD changes, because a Git branch cannot include another worktree's uncommitted changes. Scope routing preserves declared dependency order; choose a named base or explicit stacked predecessor per build. The item stays open for human testing and PR work; dependent work can use its green build. A later active rebuild blocks those dependencies again. Resume links the external builder-plan projection. [ADR-0032](../../decisions/0032-repository-first-build-plans-and-gate-backed-receipts.md) records the host and recovery boundaries.
-
-Issue routing asks for criteria. A host can read the selected tracker through `BuildWorkflow.readIssue`; it requires a complete same-reference body/revision. CLI agreement can record observed `--issue <url> --revision <revision>` but never claims it fetched/authenticated that source. Live normalized reads remain owner verification. No push or PR operation exists in this workflow.
+Rather have branches appear in the copy you already work in? Set `build.workspace: checkout`. Slices of the same repository then take turns there instead of running side by side.
 
 ## Standalone use
 
 This is the step people run on its own most. `build-slice "add CSV export to the orders list"` drafts the acceptance criteria, asks you to confirm them once, builds in a fresh worktree and runs both gates — no initiative, spec or scope needed.
 
 ## Run it
+
+![build-slice: an illustrative example session in a coding client](../../assets/terminal/session-build-slice.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:build-slice "add CSV export to the orders list"
@@ -162,12 +126,14 @@ Produced
 Next         test it, then /wholeloop:open-pr slice-5e1a
 ```
 
-| CLI | Invoke | Parallel builders |
+| Client | Invoke | Parallel builders run as |
 | --- | --- | --- |
-| Claude Code | `/wholeloop:build-slice …` | native subagents |
+| Claude Code | `/wl-build-slice …`, or `/wholeloop:build-slice …` with the plugin | native subagents |
 | Codex CLI | `$wl-build-slice …` | native subagents |
-| OpenCode · Copilot CLI | `/wl-build-slice …` | native subagents |
-| Tier B | `/wl-build-slice …` | native, headless or sequential |
+| OpenCode | Ask for `wl-build-slice` | native subagents |
+| Copilot CLI | Ask for `wl-build-slice` | native subagents (`/fleet`) |
+| Gemini CLI · Cursor | Ask for `wl-build-slice` | native where available, otherwise headless or one by one |
+| Antigravity | Ask for `wl-agy-build-slice` | native where available, otherwise headless or one by one |
 
 ## Before & after
 
@@ -176,24 +142,99 @@ Next         test it, then /wholeloop:open-pr slice-5e1a
 
 ## Gotchas & FAQ
 
-**"Is there a shortcut that skips the gates for tiny changes?"** No. A one-liner costs one or two rounds; that's cheap insurance and keeps everyone's work comparable.
+**"Is there a shortcut that skips the gates for tiny changes?"** No. A one-liner costs one or two rounds; that is cheap insurance, and it keeps everyone's work comparable.
 
 **"Do I need to commit or stash before running it?"** No. With worktrees your checkout is never read from or switched.
 
-**"Too many agents at once for my taste."** Set `pace: guided` — one builder at a time, identical checks.
+**"Too many agents at once for my taste."** Set `pace: guided`: one builder at a time, identical checks.
 
 **"It ran out of rounds."** The slice stops with its open findings attached. Grant more rounds (`--rounds verify=6`), fix them by hand in the worktree, or sharpen the criteria and run it again.
 
-**"Where did my disk space go?"** Worktrees share git objects, so they're light — but `wl worktree prune` clears every one whose branch is merged or abandoned.
+**"Where did my disk space go?"** Worktrees share Git objects, so they are light, but `wl worktree prune` clears every one whose branch is merged or abandoned.
 
----
+**"Can it start my application in a container?"** [Autonomous delivery](../../tutorials/delivery-environments.md) can plan and start isolated Docker environments for a run. In this supervised step, the builder runs your repository's own commands in the worktree, and anything it changes outside the repository is recorded with its undo, as described below.
 
-## External effects and undo
+## Core commands
 
-Record outside-repository effects with `wl env declare --for <id> --file
-<non-secret-declaration.json> --json`. The declaration contains a stable key, resource, effect, person and explicit undo working directory/argv. Relative cwd in the CLI file resolves at runtime. Never include credential values; use the tool's own credential store or a credential-aware wrapper.
+The commands behind the skill, for scripts and skill authors. Each group works on its own.
 
-`wl env report --for <id> --json` returns current effects and recipes, including this item's descendants and shared ancestor effects without unrelated siblings. Build and PR receipts include all declarations present at completion. Resume packs point to the current report, so later human-testing effects remain visible without rewriting a historical artifact. Undo is displayed in reverse declaration order; inspect actual dependencies first. The ledger executes nothing and does not claim that either the effect or cleanup succeeded. See [ADR-0036](../../decisions/0036-declarative-environment-undo-ledger.md).
+### Workspace lifecycle
+
+```text
+wl worktree create slice-0123abcd --base main --json
+wl worktree create slice-89abcdef --after slice-0123abcd --json
+wl worktree open slice-0123abcd --json
+wl worktree list --json
+wl worktree stop slice-0123abcd --json
+wl worktree prune slice-0123abcd --dry-run --json
+wl worktree prune slice-0123abcd --json
+```
+
+**Create** needs an open slice, or a repository part for a slice that spans repositories.
+
+- The repository comes from the recorded definition, or from an explicit `--repo`.
+- `--base` names a local or remote branch; a raw commit is never a cleanup target. `--after` stacks the work on a recorded predecessor and keeps the original integration target.
+- Nothing is fetched, pushed or committed while provisioning.
+- Your branch, index and working files stay untouched, even when they hold staged or untracked work. Checkout hooks are disabled for the provisioning command only; later commits run your hooks normally.
+- Running create again reuses the active workspace, or finishes an interrupted one. A stale lock needs its owner to inspect it.
+
+**Ports.** Each workspace reserves a block of ten ports between 5200 and 6199 in your store. These are reservations, not checks that the ports are free.
+
+**Open** reports the actual HEAD, path, ports and detected quality commands. It starts nothing and does not record your test.
+
+**Stop** records the state and keeps the files and the branch; it does not stop processes such as a dev server. To reject the work explicitly: `wl worktree stop <id> --abandon --reason "<why>"`.
+
+**Prune** removes only work that is recorded as stopped, clean, and merged into its target or explicitly abandoned. It:
+
+- respects Git locks;
+- keeps anything unmerged, dirty or with a changed identity, and every topic branch;
+- carries on with other records when one cannot be cleaned;
+- never sweeps Git metadata broadly or forces a removal.
+
+`--dry-run` changes nothing.
+
+**Checkout mode** (`build.workspace: checkout`) needs a clean repository nobody else is using. It creates the topic branch there and restores your original branch, or detached commit, when the work is cleaned up. It never deletes your directory.
+
+### Build contracts
+
+```bash
+wl build route "Reject empty requests" --json
+wl build agree "Reject empty requests" --owner Owner --by Owner --criteria criteria.json --json
+wl build preflight slice-0123abcd --json
+wl build prepare slice-0123abcd --base main --json
+wl build schema --json
+wl build plan slice-0123abcd --file plan.json --basis '<prepared-snapshot>' --json
+wl build complete slice-0123abcd --json
+```
+
+**Criteria and plan.** Criteria files use `wholeloop/criteria@1`. The builder plan uses `wholeloop/builder-plan@1`: steps, tests and assumptions, each assumption with its status (verified, unknown or contradicted) and evidence.
+
+- Recording a plan checks the prepared snapshot before any code is written.
+- An unknown or contradicted assumption needs explicit approval: `wl answer decision.approve-build-plan=approved --for <id> --by <person> --json`. Changing the plan while one is unresolved needs a new approval.
+
+**The host contract.** `harness/workflows/build.ts` drives planning, implementation, unit inspection, independent refutation and stopping; the core loads the selected build guidance into it.
+
+- `runBuild` resumes existing plans and partial rounds; `runBuildGroup` runs ready dependency waves at the pace you set.
+- Gate results are observations reported by that host. Planning alone runs no project test and proves nothing about correctness.
+
+**Completion.** Every repair that changes code invalidates older passes. `build complete` requires a verify **and** a review pass after the latest plan, on the same current bytes. It then writes the receipt and moves on to `open-pr`.
+
+- The item stays open for your test and the pull request; dependent work can build on it.
+- A later rebuild blocks those dependents again.
+- Stacking refuses a predecessor with uncommitted files, because a branch cannot include another worktree's uncommitted changes. Commit them only when authorized, then rerun the gates.
+
+**Issues.** Starting from an issue URL asks for criteria. A host can read the tracker through `BuildWorkflow.readIssue`, which needs the complete body at a known revision. `wl build agree --issue <url> --revision <revision>` records what you observed, without claiming that it fetched the issue.
+
+This workflow has no push or pull request operation; that is [`open-pr`](./open-pr.md).
+
+### External effects and undo
+
+When building changes something **outside the repository**, such as seeding a local database, record it with its undo:
+
+```bash
+wl env declare --for <id> --file <declaration.json> --json
+wl env report --for <id> --json
+```
 
 ```json
 {
@@ -208,11 +249,13 @@ Record outside-repository effects with `wl env declare --for <id> --file
 }
 ```
 
-This is a recipe example, not a command the harness ran. Owner verification must exercise actual undo on disposable resources before relying on it for cleanup.
+This is an example declaration, not a command wholeloop ran.
 
-## Planned application environments
-
-The [environment planning guide](../../tutorials/delivery-environments.md) prepares explicit setup/readiness/data/network contracts without running a script. It does not replace the existing environment ledger or prove an application is ready. Actual owned isolated backend execution follows in the expanded delivery roadmap.
+- **Never include a credential value.** Use the tool's own credential store or a wrapper that reads it.
+- A relative `cwd` resolves when the undo runs.
+- `env report` lists the item's effects, its descendants' and shared parent effects, without unrelated siblings. Build and PR receipts include every declaration present at completion, and the resume context points to the current report.
+- Undo steps are listed in reverse order; check their real dependencies first.
+- The ledger **executes nothing**, and never claims that an effect or its cleanup succeeded. Try an undo on disposable resources before relying on it.
 
 <!-- docnav -->
 [◀ slice-work](slice-work.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [verify-works ▶](verify-works.md)

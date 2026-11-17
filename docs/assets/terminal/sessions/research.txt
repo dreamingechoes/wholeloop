@@ -1,0 +1,30 @@
+> /wholeloop:research Do users struggle to find their past orders, and how do comparable products solve it?
+
+Research — "Do users struggle to find their past orders?"
+Mode      standalone · no initiative · brief stored outside the repo
+Profile   pair (standard · balanced challenge)
+Sources   not configured for this repo yet ↓
+
+Which sources can I use?                                 (multi-select)
+  [x] Web                    native
+  [x] This codebase          native
+  [ ] PostHog                ✓ MCP detected in your CLI config
+  [ ] Mixpanel               ✗ not connected — I can show you how to add it
+  [ ] Support tickets        ✗ no provider configured
+Remember this for:  ( ) just this time  (•) this repo  ( ) always
+
+Angles (3) — "go", "drop 2" or "add …"
+ 1  web       how comparable products expose order history, search and filters
+ 2  posthog   orders-page usage: searches, time to find, drop-off
+ 3  codebase  current orders list: filters, pagination, query limits
+ —  support   not available → open question
+
+▸ researcher:web started · researcher:posthog started · researcher:codebase started
+✓ codebase 3 claims · ✓ posthog 2 claims · ✓ web 4 claims
+▸ challenger cross-examining 4 load-bearing claims…
+✗ dropped 1 claim — 2 of 3 verifiers refuted it (single-week sample)
+
+Produced
+  Research brief   brief-7f3a    wl open brief-7f3a
+Open questions     2             support tickets unreachable · no baseline for "time to find"
+Next (optional)    /wholeloop:frame-problem --from brief-7f3a

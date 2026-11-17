@@ -1,0 +1,7 @@
+> /wholeloop:setup providers
+
+Docs       ( ) local markdown  (•) Notion ✓ detected  ( ) Confluence  ( ) Google Docs
+Tracker    ( ) local  ( ) GitHub Issues  (•) Linear ✓ detected  ( ) Jira
+Codehost   (•) GitHub ✓ gh signed in  ( ) GitLab
+Analytics  [x] PostHog ✓ detected  [ ] Mixpanel ✗ not connected → show install
+Remember   (•) this repo (shared via .wholeloop/config.yml)  ( ) only me

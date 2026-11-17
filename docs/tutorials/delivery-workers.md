@@ -1,13 +1,26 @@
 # Delivery workers — understand assignments and execution evidence
 
-> **TL;DR** — A worker receives one exact fresh assignment, explicit pinned context and role tools. Its response stays a claim; the controller records actual execution separately, and acceptance remains a later independent decision.
+> **TL;DR** — A **worker** is a fresh headless session of a coding client, started for one stage and one role. It receives one exact assignment, the pinned context for it and only its role's tools. Whatever it answers is a **claim**: the controller records what really happened separately, and acceptance is a later, independent decision.
 
 > [!IMPORTANT]
-> **Experimental.** Assignment and result codecs, lease-bound context and observation checks are tested. This guide starts no worker. Autonomous delivery may change in a minor release.
+> **Experimental.** Assignment and result formats, lease-bound context and observation checks are tested. This guide starts no worker. Autonomous delivery may change in a minor release.
+
+```mermaid
+flowchart LR
+  Q[Claimed queue attempt] --> A[Assignment<br/>identity, work, context, tools]
+  A --> W[Worker<br/>one role, fresh session]
+  W --> C[Result: worker claim]
+  W -. "observed by the controller" .-> X[Execution receipt<br/>exit, outputs, digests]
+  C & X --> J{Acceptance<br/>later, independent}
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class J person;
+  class Q,A,W,C,X core;
+```
 
 ## Inspect the contracts
 
-Use the `wl` CLI ([getting started](../getting-started.md#install-the-cli)). This command reads bundled schemas; it needs no store, account, model or execution permission.
+This reads the bundled schemas; it needs no store, account, model or permission:
 
 ```bash
 set -euo pipefail
@@ -30,6 +43,13 @@ console.log("PASS: exact worker claims, separate execution observations and no i
 '
 ```
 
+```console
+1.1.0
+PASS: exact worker claims, separate execution observations and no interactive worker tools
+```
+
+The check confirms that a result is always labelled `worker-claim`, that an execution is a separate `controller-observation` with `acceptance: not-established`, and that workers have neither an *ask the user* tool nor interactive tools. There are seven roles: `builder`, `verifier`, `reviewer`, `refuter`, `researcher`, `planner` and `challenger`.
+
 ## What enters a fresh assignment
 
 | Input | Binding |
@@ -42,23 +62,44 @@ console.log("PASS: exact worker claims, separate execution observations and no i
 | Resume pack | Explicit relative artifact paths, byte counts, hashes and audiences; at most 1 MiB total |
 | Limits | Current finite run/attempt reservation and original deadline |
 
-The controller assembles ordinary work only from a current claimed queue attempt. A builder receives a separate allocated topic worktree rather than the person's checkout. Consumed contract and guidance bytes must match the immutable plan. Initial-envelope work also needs independent derived-plan acceptance. Changed inputs, stale generations, missing guidance or expired authority refuse preparation. Preparation is read-only metadata work and starts no execution.
+Assembling an assignment is read-only:
+
+- Ordinary work comes only from a **current claimed queue attempt**.
+- A builder gets its own topic worktree, never your checkout.
+- Contract and guidance bytes must match the immutable plan; work under an envelope also needs its derived plan accepted.
+- Changed inputs, a stale generation, missing guidance or expired authority refuse the assignment.
 
 ## Tools and privacy
 
-Builders alone can write implementation, through an actually supported allocated-workspace boundary. Reviewers, verifiers, refuters and researchers receive read-only implementation tools; research reads still need their separate provider scopes. Planner/challenger contexts have no implementation workspace or generic broker methods. Each worker's output directory is separate from its context and other workers' files.
+| Role | Can |
+| --- | --- |
+| Builder | Write the implementation, only inside its allocated workspace |
+| Reviewer, verifier, refuter | Read the implementation |
+| Researcher | Read the implementation, and read providers within its separate read scopes |
+| Planner, challenger | Neither: they get no implementation workspace and no generic broker methods |
 
-Private acceptance is confined to its own verifier attempt. Shared context and builder/reviewer assignments cannot contain descriptors labeled hidden acceptance. The controller must classify and select the right inputs; schemas cannot detect hidden semantics in an arbitrarily mislabeled document. A hashed resume artifact never restores credentials, old conversation permissions or a previous fence.
+- Each worker writes to its own output directory, apart from its context and from other workers' files.
+- **Private acceptance cases** go only to their own verifier attempt. Shared context and builder or reviewer assignments cannot contain anything labelled as hidden acceptance. The controller must label inputs correctly: a schema cannot detect hidden meaning in a mislabelled document.
+- A resume artifact never restores credentials, an old conversation's permissions or a previous fence.
 
-Workers never ask the owner directly, including in supervised mode. They return blocked, unavailable or owned unknowns to the controller, which applies the chosen intervention/decision policy. None mode therefore needs no worker question tool; the complete decision router still has its own implementation task. These protocol rules require actual native/backend enforcement before the capability is advertised.
+**Workers never ask you anything**, even in supervised mode. They return *blocked*, *unavailable* or an unknown with an owner to the controller, which applies the run's intervention and decision policy. So a `none` run needs no question tool at all.
 
 ## Interpret a response honestly
 
-Complete responses include the exact assignment and full identity, status, summary, declared artifacts, criterion claims, findings and unknowns. Missing identity is never reconstructed. Truncated/non-UTF-8/oversized output, extra process/authority/human-testing fields, out-of-scope criteria and invented evidence references refuse. A complete worker result is still worker-claim; it cannot satisfy testing, gates, publication or merge.
+**A complete response** carries the exact assignment and its full identity, a status, a summary, the declared artifacts, the claims about each criterion, findings and unknowns.
 
-Only the trusted host records actual runtime identity, exit/cancellation, output hashes and fixture/host provenance in a separate execution receipt. Before successful execution is recorded, it validates every claimed artifact's actual owned output bytes and current lease/deadline. A zero process exit or successful model call does not establish semantic acceptance. Failed/cancelled observations retain their limits without inventing missing exits or parsed results.
+It is refused when:
 
-There is no CLI command to import a successful process receipt or mark a worker completed from arbitrary JSON. Native dispatch and backend isolation are subsequent tasks. See [ADR-0100](../decisions/0100-role-bound-worker-contexts-and-execution-observations.md), the [runner specification](../../roadmap/specifications/autonomous-delivery/02-durable-runner.md) and the [acceptance boundaries](../v1-acceptance.md).
+- the identity is missing; it is never reconstructed;
+- the output is truncated, not UTF-8 or too large;
+- it adds process, authority or human-testing fields;
+- it claims criteria outside its scope, or cites evidence that does not exist.
+
+Even a complete result is only a claim: it cannot satisfy testing, gates, publication or merge.
+
+**The execution receipt** is written only by the trusted host. It records the real runtime identity, the exit or cancellation, output digests and whether it was a fixture or a real host. Before recording success, the host checks every claimed artifact's real bytes and the current lease and deadline. A zero exit or a successful model call does not mean the work is accepted, and a failed or cancelled run keeps its limits without inventing a missing exit or result.
+
+There is no command to import a successful receipt, or to mark a worker complete from a JSON file. See the [runner specification](../../roadmap/specifications/autonomous-delivery/02-durable-runner.md) and the [acceptance boundaries](../v1-acceptance.md).
 
 <!-- docnav -->
 [◀ Delivery queue](delivery-queue.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Native delivery hosts ▶](delivery-native.md)

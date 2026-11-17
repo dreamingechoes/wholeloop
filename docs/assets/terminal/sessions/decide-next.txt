@@ -1,0 +1,18 @@
+> /wholeloop:decide-next scope-a9e0
+
+Decide — scope-a9e0 "Find an order"
+Promised   time to find ≤ 25 s · orders-page exits ≤ 20%
+Observed   18 s (met) · 27% (partly) · support tickets unknown
+Your lean  keep
+
+▸ challenger: "exits are still 7 points above target; iterate on the
+  empty-result page before removing the flag?"
+
+Decision: [keep] [iterate] [kill] [unflag]   > iterate
+Reason    > Search works; exits stay high when nothing matches.
+Unknowns  > acknowledge: support_tickets
+
+Recorded
+  scope-a9e0       closed · iterate · by Ana López
+  New idea         init-58d0 "Improve empty search results"   evidence linked
+Next               /wholeloop:frame-problem init-58d0

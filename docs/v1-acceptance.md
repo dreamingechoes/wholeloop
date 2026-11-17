@@ -17,7 +17,9 @@ Runtime performance no longer blocks release. On 2026-11-07 the maintainer withd
 | Remote integrations | Metabase, PostHog, Notion, Jira, flag services | Experimental, fixture-tested and service-unverified for 1.0; live certification is deferred |
 | Release | npm, GitHub delivery, version/tag, announcement | Maintainer choices plus actual reviewed publication evidence |
 
-The integration policy is accepted in [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md). Do not turn unexecuted service checks into passed checks. Later promotion names the actual service/version, operations, permissions, date and limitations; it is not a claim that every vendor feature has been tested. Missing implementation is still missing implementation. Under [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md), Amplitude's dashboard operation remains a pending handoff until a known MCP contract is supplied. wholeloop has no service client of its own: services are reached through the client's MCP connection or command-line clients the person installed.
+The integration policy is accepted in [ADR-0084](./decisions/0084-experimental-integrations-and-scoped-live-verification.md). Do not turn unexecuted service checks into passed checks. Later promotion names the actual service/version, operations, permissions, date and limitations; it is not a claim that every vendor feature has been tested. Missing implementation is still missing implementation.
+
+Under [ADR-0085](./decisions/0085-client-owned-mcp-first-provider-transport.md), Amplitude's dashboard operation remains a pending handoff until a known MCP contract is supplied. wholeloop has no service client of its own: services are reached through the client's MCP connection or command-line clients the person installed.
 
 The full roadmap includes all seven native clients. Accepting Claude alone would be a separate scope change, not a consequence of experimental service integrations.
 
@@ -62,13 +64,17 @@ The map records executable local coverage. Actual backend, platform, signed-in c
 
 ### 0. Review and implement expanded 1.0
 
-The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. Every new task was accepted on 2026-10-24, with authorization for sequential implementation without further signals. P6-01–P6-09, P6-11 and P6-13–P6-19 are complete at their stated local contract boundaries. P6-12 implements and actually exercises the reference Docker application backend on macOS and on an independent Linux host. Actual native client/model execution remains separate and no old native failure becomes a pass.
+The [specification index](../roadmap/specifications/autonomous-delivery/README.md) and [Phase 6](../roadmap/phase-6-autonomous-delivery.md) define new implementation work, including a selectable zero-human-intervention route and conditional merge. Every new task was accepted on 2026-10-24, with authorization for sequential implementation without further signals. P6-01–P6-09, P6-11 and P6-13–P6-19 are complete at their stated local contract boundaries.
+
+P6-12 implements and actually exercises the reference Docker application backend on macOS and on an independent Linux host. Actual native client/model execution remains separate and no old native failure becomes a pass.
 
 Independent local implementation is authorized to proceed before the remaining original manual/account checks. Use the [new validation plan](../roadmap/specifications/autonomous-delivery/09-validation-and-acceptance.md) for the additional actual backend, native research/implementation and disposable code-host evidence. Production effects and release remain separately authorized.
 
 ### 1. Finish implementation defects first
 
-The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external maintainer decisions. The [Phase 6 ledger](../roadmap/phase-6-autonomous-delivery.md) now records 33 completed tasks, four implemented tasks awaiting native or hosted acceptance, and two tasks with implementation or acceptance work remaining. P6-12 includes actual macOS and independent Linux-host backend acceptance; P6-36–P6-38 include attribution, the operator overview and a local read-only feed. Their model-free local and platform checks do not certify native clients, hosted services or the expanded release. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
+The original implementation defects listed below are fixed and tested. Fourteen original tasks retain native/workflow acceptance, runtime/platform trials or external maintainer decisions. The [Phase 6 ledger](../roadmap/phase-6-autonomous-delivery.md) now records 33 completed tasks, four implemented tasks awaiting native or hosted acceptance, and two tasks with implementation or acceptance work remaining.
+
+P6-12 includes actual macOS and independent Linux-host backend acceptance; P6-36–P6-38 include attribution, the operator overview and a local read-only feed. Their model-free local and platform checks do not certify native clients, hosted services or the expanded release. If a trial exposes another code defect, return it to implementation instead of waiving it as manual work.
 
 - [x] Render exact owner-approved stop/reopen conditions through frame draft; proposed rules are not silently adopted.
 - [x] Bind finalization to the exact owner-approved and semantically reviewed bytes; stale or incomplete reviews refuse completion. Repeat actual client acceptance with a new run.
@@ -156,7 +162,9 @@ Repeat with target codex, opencode, copilot, gemini, antigravity and cursor and 
 
 Accept a structural trial only when status is PASS, evidence is live-process-and-journal, the exact version matches and missing/problems are empty. FIXTURE_PASS is simulation. Process exit zero with missing events is a failure. This scenario deliberately uses go and a random installed-skill marker; the earlier manual on-hold exercise is useful separate evidence, not its substitute.
 
-The bundled Fixture Owner is a scripted fictional actor. Its declaration approves one exact final document hash and decision, supplied in the prepared prompt. The client must preserve those bytes, perform the final challenger review and use frame finalize. Changed bytes require a new declaration; an initial go does not approve later edits. No real human approval or customer validation is claimed. The judge checks review structure and byte identity; review quality and isolation still need observation. --fixture uses a visibly simulated reviewer and remains FIXTURE_PASS. See [ADR-0089](./decisions/0089-scripted-final-approval-in-framing-conformance.md).
+The bundled Fixture Owner is a scripted fictional actor. Its declaration approves one exact final document hash and decision, supplied in the prepared prompt. The client must preserve those bytes, perform the final challenger review and use frame finalize. Changed bytes require a new declaration; an initial go does not approve later edits.
+
+No real human approval or customer validation is claimed. The judge checks review structure and byte identity; review quality and isolation still need observation. --fixture uses a visibly simulated reviewer and remains FIXTURE_PASS. See [ADR-0089](./decisions/0089-scripted-final-approval-in-framing-conformance.md).
 
 ### 5. Verify permissions, hooks and engine behavior separately
 
@@ -191,7 +199,9 @@ Optional compiled binaries are not a new mandatory release requirement. The full
 
 ## Map of remaining roadmap tasks
 
-On 2026-11-15 the roadmap has 116 tasks, 101 complete and 15 open (see the [roadmap](../roadmap/README.md) for the current breakdown). 1.0.0 was published on 2026-11-15. P7-15 stays open only for its announcement, and P5-04 nightly conformance moved after 1.0.0. The breakdown below dates from the expansion and keeps its original wording; at that time Phases 6 and 7 brought the roadmap to 107 tasks, 73 complete and 34 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-27 native evaluations, P6-35 worker credentials and P6-40 repository guidance in autonomous runs remain pending; and the sixteen [Phase 7](../roadmap/phase-7-release-readiness.md) release-readiness tasks are planned, including P7-13 (formerly P6-32), P7-14 (formerly P5-05) and P7-15 (formerly P5-07). The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
+On 2026-11-15 the roadmap has 116 tasks, 101 complete and 15 open (see the [roadmap](../roadmap/README.md) for the current breakdown). 1.0.0 was published on 2026-11-15. P7-15 stays open only for its announcement, and P5-04 nightly conformance moved after 1.0.0. The breakdown below dates from the expansion and keeps its original wording; at that time Phases 6 and 7 brought the roadmap to 107 tasks, 73 complete and 34 open: P6-01–P6-21, P6-23, P6-25, P6-26, P6-28–P6-30, P6-31, P6-34 and P6-36–P6-39 are complete; P6-22, P6-24 and P6-33 are implemented and await native or hosted acceptance; P6-27 native evaluations, P6-35 worker credentials and P6-40 repository guidance in autonomous runs remain pending; and the sixteen [Phase 7](../roadmap/phase-7-release-readiness.md) release-readiness tasks are planned, including P7-13 (formerly P6-32), P7-14 (formerly P5-05) and P7-15 (formerly P5-07).
+
+The original rows below describe closure evidence, not fourteen tests the maintainer must run alone. P5-07 also waits for expanded Phase 6 closure.
 
 | Task | What closes it | Maintainer involvement |
 | --- | --- | --- |
@@ -231,4 +241,4 @@ Human decision, if any:
 The implementation side updates the narrow checked observation, fixes failures, records remaining limits and commits the evidence. It does not rewrite a failed trial as passed or ask the maintainer to repeat already verified checks without cause.
 
 <!-- docnav -->
-[◀ Maintenance proposals](tutorials/maintenance-proposals.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)
+[◀ Nightly conformance](contributing/conformance.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)

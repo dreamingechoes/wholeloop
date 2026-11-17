@@ -1,15 +1,29 @@
 # Inspect delivery history and rebuild its cache
 
-> **TL;DR** — Track a prepared plan, inspect it from independent processes, read its retained events and rebuild a missing projection. None of these operations starts a worker, grants authority or performs an external effect.
+> **TL;DR** — Everything a run does is written to an append-only **journal**; the readable status files are only a cache built from it. So a fresh process can always read a run's history, and a missing or damaged cache can be rebuilt exactly. Rebuilding never recreates a grant, renews a deadline, starts a worker or retries an effect.
 
 > [!IMPORTANT]
 > **Experimental.** Metadata and cache recovery are tested; [checkpoint recovery](./delivery-checkpoints.md) covers ownership and stopped writers. Autonomous delivery may change in a minor release.
 
+**What you will have at the end:** a tracked run read from another process, its cache moved aside and rebuilt byte for byte, and proof that rebuilding restored no authority.
+
+```mermaid
+flowchart LR
+  J[(Journal<br/>source of truth)] --> C[Status cache<br/>projection]
+  C -. "missing or damaged" .-> R[wl delivery rebuild]
+  J --> R --> C
+  J --> S[wl delivery status<br/>replays the journal]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class J,C,R,S core;
+```
+
 ## Before you start
 
-Complete the [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md) tutorials in the same Bash terminal. Keep workspace_dir set. Authorization's last step revokes the fictional grant; this example deliberately retains that truthful observation. All example inputs and runtime files stay in the disposable external directory.
+Complete the [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md) guides in the same Bash terminal, so `workspace_dir` is still set. Authorization ended by revoking its grant; this guide keeps that true observation on purpose. Everything stays in the disposable directory.
 
 ## Track and inspect the retained basis
+
+**Tracking** registers the plan and its grant as a run in the delivery journal:
 
 ```bash
 set -euo pipefail
@@ -26,13 +40,48 @@ wl delivery events \
   --store "$workspace_dir/state" --json > "$workspace_dir/events.json"
 ```
 
-Expect state planned, grant.status revoked, projectionCache current, authority not-implied and effects not-performed. An immutable plan and an authorization observation do not mean work ran. Repeating identical track adds no event. Initial-envelope tracking uses --envelope with its digest instead of --revision; a fitting first plan can later register its own revision without duplicating the run.
+These commands print nothing; their results are in the files. The status, shortened:
 
-Event sequence numbers are global within the delivery journal; --after is an exclusive sequence cursor. nextCursor is the last returned sequence when another page exists, otherwise null. --limit accepts 1–1000 (default 100). These queries never mark mailbox messages read. Use delivery state-schema --json for both envelopes and the exact registered payload/facet schemas; validating only an envelope omits required family validation.
+```console
+$ wl delivery status --run delivery-0123456789abcdef --store "$workspace_dir/state" --json
+{
+  "schema": "wholeloop/delivery-status@1",
+  "state": {
+    "state": "planned",
+    "digest": "6e1455b92e27b44873d083c958c7d670b3aaa8faab8d2ffcaad56c6264a252b1",
+    "grant": { "id": "authorization-0123456789abcdef", "status": "revoked", … },
+    …
+  },
+  "projectionCache": "current",
+  "authority": "not-implied",
+  "effects": "not-performed"
+}
+```
+
+| Field | Means |
+| --- | --- |
+| `state: planned` | A plan and a grant were observed; no work ran |
+| `grant.status: revoked` | The grant was revoked in the previous guide, and status says so |
+| `projectionCache: current` | The status cache matches the journal |
+| `authority: not-implied` | Being tracked authorizes nothing by itself |
+
+Tracking the same thing again adds no event. To track an envelope instead, pass `--envelope <digest>` in place of `--revision`; the first plan that fits it later registers its own revision in the same run.
+
+**Reading events.** `wl delivery events` pages through the journal:
+
+- sequence numbers are global in the delivery journal, and `--after <sequence>` starts after that one;
+- `nextCursor` is the last sequence returned when there is another page, otherwise `null`;
+- `--limit` accepts 1 to 1000, 100 by default;
+- reading never marks mailbox messages as read.
+
+`wl delivery state-schema --json` prints the event envelope and every registered payload schema; validating only the envelope skips the payload checks.
 
 ## Recover a missing projection
 
-The next snippet moves aside only this disposable run's projection, preserving the original cache for comparison. It does not touch journal segments or private authorization artifacts.
+The next script moves this run's cache aside, keeping it for comparison, reads the status without it, rebuilds it twice and compares the result with the original. It touches neither the journal nor the private authorization files.
+
+<details>
+<summary>Recovery script: copy once</summary>
 
 ```bash
 node --input-type=module - "$workspace_dir" <<'JS'
@@ -69,15 +118,37 @@ console.log('PASS: independent replay, exact cache repair and no authority recon
 JS
 ```
 
-Status still succeeds without a cache because it replays the journal. The first rebuild reports one written projection and the next zero. It never reconstructs a missing grant, renews expiry, starts a worker or retries a remote operation. Historical active observations must not be used as a live permission check.
+</details>
+
+```console
+PASS: independent replay, exact cache repair and no authority reconstruction
+```
+
+What the script checked:
+
+| Step | Result |
+| --- | --- |
+| Status without the cache | Succeeds, by replaying the journal, and reports `projectionCache: missing` |
+| First `rebuild` | `{"written": 1, "authority": "not-restored"}` |
+| Second `rebuild` | `{"written": 0, "authority": "not-restored"}`: nothing left to repair |
+| Rebuilt cache | Byte for byte the same as the one moved aside |
+
+Rebuilding never recreates a missing grant, renews a deadline, starts a worker or retries a remote operation. A grant that was active in the past is history, not a live permission.
 
 ## Interruption and version limits
 
-A delivery transaction commits one immutable, atomically replaced numbered journal segment before writing its projections. Interrupted projection writes can be rebuilt from that segment. An incomplete/corrupt segment, unknown event/facet version or mismatched identity refuses replay/writes; preserve those original files for inspection. Rebuild refuses recognizable future cache versions rather than overwriting a newer writer's state. Namespace aliases into other private files also refuse.
+**How writes are made safe.** Each delivery transaction first writes one immutable, numbered journal segment, replaced atomically, and only then its projections. If a projection write is interrupted, it can be rebuilt from that segment.
 
-A killed writer may retain a store lock. This increment does not guess whether its worker/resources are still alive or steal that lock; use the [checkpoint/ownership recovery guide](./delivery-checkpoints.md) for the implemented controller contracts and explicit non-destructive stopped-writer repair. Actual native/backend ownership remains separate acceptance. [ADR-0096](../decisions/0096-replayable-delivery-journal-without-authority-recovery.md) explains the commit boundary, version registry and compatibility decisions.
+**What is refused**, keeping the original files for inspection:
 
-Retain the external tutorial directory for inspection. Existing item-state commands and human/PR history remain separate and unchanged. No manual/native/service acceptance is marked passed by this local exercise.
+- an incomplete or corrupt segment;
+- an unknown event or facet version, or a mismatched identity;
+- a cache written by a newer version, which is never overwritten;
+- names that alias into other private files.
+
+**Locks.** A killed writer may leave a store lock. Recovery does not guess whether its worker or resources are still alive, and never steals the lock; the [checkpoint guide](./delivery-checkpoints.md) covers the explicit, non-destructive repair.
+
+Keep the directory for inspection. Item history and human or PR receipts from the supervised flow are separate and unchanged.
 
 <!-- docnav -->
-[◀ Delivery checkpoints](delivery-checkpoints.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment planning ▶](delivery-environments.md)
+[◀ Delivery checkpoints](delivery-checkpoints.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

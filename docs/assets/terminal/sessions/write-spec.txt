@@ -1,0 +1,21 @@
+> /wholeloop:write-spec init-41c2
+
+Spec — "Users struggle to find their past orders"
+Template  spec.template → product-spec (repo skill)
+Publish   docs → Notion (remembered for this repo)
+
+Stories   3 · criteria 9
+Metrics   time_to_find_order   posthog   baseline 48s → target 20s   window 30d
+          orders_page_exit     posthog   baseline 31% → target 20%  window 30d
+Appendix  also touches: orders API, export job · flag: orders_search_v1
+
+▸ challenger: criterion 2.3 ("results load fast") is untestable → rewritten as p95 < 400 ms
+▸ challenger: 1.1 and 3.2 cannot both hold for archived orders → asked you
+✓ shape check passed
+
+Decision: approve this spec?   [approve] [request changes]
+
+Produced
+  Spec               init-41c2/spec     wl open init-41c2 --spec
+  Document           Notion page        (link)
+Next                 /wholeloop:cut-scopes init-41c2

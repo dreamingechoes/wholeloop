@@ -1,14 +1,32 @@
 # Your first framing — from a hypothesis to a recoverable decision
 
-> **TL;DR** — Run one framing in your coding client, answer the fixed questions honestly, review the exact final draft and choose an outcome. A completed on-hold result is a successful exercise. Restart the client and verify that the same decision is still there.
+> **TL;DR** — Run one framing in your coding client, answer its questions honestly, review the exact final draft and choose an outcome. Ending *on hold* counts as success. Then restart the client and check that the same decision is still there.
 
-A practice procedure for a real client; the standalone framing scenario behind it passed live on all seven clients ([V1 acceptance](../v1-acceptance.md)).
+**What you will have at the end:** an initiative with your owner name, an explicit decision (go, on hold or dropped) and a final text you approved, stored outside your repository and readable from a new session.
+
+```mermaid
+flowchart LR
+  A[1. State the idea<br/>and the stopping point] --> B[2. Check<br/>the preflight] --> C[3. Answer<br/>the questions]
+  C --> D[4. Review the draft<br/>and the challenger] --> E{{5. Choose the outcome<br/>and approve the text}}
+  E --> F[6. Inspect<br/>the receipt] --> G[Recover in<br/>a new session]
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class E person;
+  class A,B,C,D,F,G core;
+```
+
+The client's wording changes with the model, so every conversation on this page is **an example**, not a transcript to match word for word. This standalone framing scenario passed live on all seven supported clients ([V1 acceptance](../v1-acceptance.md)).
 
 ## Before you start
 
-Complete [getting started](../getting-started.md) for your chosen client. Use a real application repository with a small idea, or create a disposable project for the explicitly fictional scenario below. Do not run the fictional task-app example from the wholeloop source checkout and expect it to find a product task list there.
+Complete [getting started](../getting-started.md) for your client. Then choose where to run the exercise:
 
-For a fresh exercise project, run in a terminal:
+- **A real application** with a small idea of your own; or
+- **A disposable project** for the fictional scenario below.
+
+Do not run the fictional example from the wholeloop source checkout: there is no task list there for it to find.
+
+To create the disposable project:
 
 ```bash
 demo_project="$(mktemp -d "${TMPDIR:-/tmp}/wholeloop-framing.XXXXXX")"
@@ -17,11 +35,11 @@ printf '# Fictional task application\n\nThis repository is a framing exercise, n
 cd "$demo_project"
 ```
 
-Start your chosen coding client here. Its account, model and project trust use its normal native setup. This exercise does not need a remote analytics/document/tracker account.
+None of these commands prints anything. Start your coding client in that directory, with its usual account, model and project trust. No analytics, document or tracker account is needed.
 
 ## 1. State the context and stopping point
 
-Select/request the managed `wl-frame-problem` skill. Use `wl-agy-frame-problem` on Antigravity. If you installed the separate Claude plugin rather than loose skills, its entrypoint is `/wholeloop:frame-problem`.
+Ask for the `wl-frame-problem` skill: `wl-agy-frame-problem` on Antigravity, or `/wholeloop:frame-problem` if you installed the Claude plugin instead of loose skills.
 
 ```text
 Use wl-frame-problem for a fictional task application used only to test
@@ -33,17 +51,25 @@ outcome and approval of the exact final reviewed draft, and stop before
 specification, code or remote publication.
 ```
 
-These lines are a request in the native conversation, not a shell command. For a real application, replace the fictional premise with its actual surface, users and evidence.
+This is a request in the client's conversation, not a shell command. For a real application, replace the fictional premise with its real users, surface and evidence.
 
 ## 2. Check the preflight
 
-Before drafting, expect the client to show the initiative/run, your owner identity, selected `frame.template`, local/remote destinations and the stopping point. The default template is valid when your repository has no specific framing guide. It should not treat another installed copy of wholeloop as product guidance.
+Before drafting anything, the client shows a **preflight**. Check that it names:
 
-If it cannot identify the application, give context rather than letting it invent one. If it asks to research first, decide whether that is useful for this exercise; unknowns can remain unknown, and the scope is still framing only.
+- the initiative and run;
+- you as the owner;
+- the selected framing template (`frame.template`);
+- where the result is stored: local or remote;
+- where it will stop.
+
+The default template is fine when your repository has no framing guide of its own. It must not treat another installed copy of wholeloop as guidance about your product.
+
+If the client cannot tell what the application is, give it context rather than letting it invent one. If it offers to research first, decide whether that helps; unknowns can stay unknown, and this exercise is framing only.
 
 ## 3. Answer the eight questions
 
-Use your actual answers for real work. For the fictional exercise, this answer set deliberately contains no invented validation:
+For real work, give your real answers. For the fictional exercise, this set deliberately contains **no invented validation**:
 
 | Question | Exercise answer |
 | --- | --- |
@@ -56,23 +82,31 @@ Use your actual answers for real work. For the fictional exercise, this answer s
 | Stop conditions | Propose conditions for me to approve; do not silently adopt the challenger's suggestions |
 | Scope hint | Consider title search only; matching behavior and implementation remain undecided |
 
-Provide your owner name separately. For missing evidence, the artifact should use `TBD: <missing evidence>; who: <person or role>`. Ask to review any new role assignment before treating it as an agreed owner. No numeric baseline, interview, ticket or validation should appear merely to complete a field.
+Give your owner name separately. Then check how gaps are written:
+
+- Missing evidence appears as `TBD: <missing evidence>; who: <person or role>`.
+- A newly suggested owner for a gap is a proposal; review it before treating it as agreed.
+- No baseline number, interview, ticket or validation appears just to fill a field.
 
 ## 4. Review the draft and the challenger's findings
 
-Read the problem, evidence/hypothesis separation, impact and decision rules. Check that every factual claim is supported or explicitly unknown. In particular, stop/reopen/drop conditions must reflect your decisions, not additional restrictions the client introduced while revising the document.
+Read the draft with three questions in mind:
 
-The challenger should inspect the final content, including problem, evidence, impact and decision fidelity. If a later edit resolves findings, that new revision needs review again. `problems: []` from a structural checker is not proof of semantic review, and a reviewer must not be fabricated.
+1. **Is every factual claim supported or marked unknown?** Evidence and hypothesis must stay separate.
+2. **Do the decision rules match yours?** Stop, reopen and drop conditions must be what you decided, not extra restrictions the client added while revising.
+3. **Was the final text reviewed?** The **challenger**, a reviewer role, should check the final content: problem, evidence, impact and decision rules.
+
+If a later edit resolves the challenger's findings, that new revision needs review again. A structural checker returning `problems: []` is not a semantic review, and no reviewer may be invented.
 
 ## 5. Choose the outcome and approve exact wording
 
-| Outcome | Supply | Expected continuation |
+| Outcome | You supply | What happens |
 | --- | --- | --- |
-| Go | Your reason and the exact approved stop conditions | Framing completes; a spec handoff is available, but this exercise still stops here |
-| On-hold | A reason and the exact condition for reopening | The initiative closes, retaining the condition; no next step runs |
-| Dropped | A reason | The initiative closes; no next step runs |
+| **Go** | Your reason and the exact stop conditions you approve | Framing completes, and a specification step is offered; this exercise still stops here |
+| **On hold** | A reason and the exact condition for reopening | The initiative closes and keeps the condition; no next step runs |
+| **Dropped** | A reason | The initiative closes; no next step runs |
 
-For the exercise, an honest on-hold decision can be:
+For the exercise, an honest on-hold decision could be:
 
 ```text
 Choose on-hold. Reason: there is no evidence that the retrieval problem
@@ -83,40 +117,57 @@ Do not add segment-size thresholds, extra prerequisites or automatic drop
 rules. Show the exact final text after review before completing it.
 ```
 
-Approve the exact final revision when it matches your intent. The canonical skill uses `frame draft` to render only approved decision data and `frame finalize` to bind completion to that draft's digest and review. The core checks matching metadata; it cannot authenticate a person or prove that the model's semantic judgment is true. [Framing reference](../flow/define/frame-problem.md#final-decision-and-review).
+Approve the final revision only when it matches your intent. Behind the scenes, the skill uses two core commands so your decision is tied to that exact text:
+
+- `wl frame draft` renders only the decision data you approved;
+- `wl frame finalize` completes the framing only for that draft, identified by its digest, and its review.
+
+The core checks that these match. It cannot authenticate who you are, or prove that the model's judgement is right. [Framing reference](../flow/define/frame-problem.md#final-decision-and-review).
 
 ## 6. Inspect the receipt
 
-Save the actual initiative ID and inspect:
+The run ends with a **receipt**. Save the initiative ID it gives you, then check:
 
-- The stored artifact is outside the repository and matches the final approved draft.
-- `frame-problem` is completed, with the correct owner and exact outcome/reason/reopening condition.
-- For on-hold/dropped, status is `closed`, with no active next step. The subtype may be visible in the completion receipt/record rather than the generic status field.
-- For go, the receipt may offer a spec handoff; the client still stops before starting it because you limited this exercise.
-- Local docs/tracker receipts reference local records. There is no fabricated remote URL or publication.
+- [ ] The stored text is outside the repository and matches the final draft you approved.
+- [ ] `frame-problem` is completed, with the right owner and your exact outcome, reason and reopening condition.
+- [ ] For **on hold** or **dropped**: the status is `closed`, with no next step. The outcome itself may appear in the completion receipt rather than in the status.
+- [ ] For **go**: the receipt may offer the specification step, but the client stops, as you asked.
+- [ ] Local document and tracker receipts point to local records, not to an invented remote URL.
 
-If the decision wording changed, ask for correction and another final review before completion. If it was already stored, preserve that evidence rather than rewriting history to make the original run look successful.
+If the decision wording changed, ask for a correction and another final review before completion. If it was already stored, keep that evidence; do not rewrite history to make the first run look successful.
 
 ## Recover in a new session
 
-Close the client, open it again in the same project and request `wl-status` for the actual initiative ID. Ask for read-only status first, not `wl-next`.
+Close the client, open it again in the same project and ask for `wl-status` with your initiative ID. Ask for **status first**, not `wl-next`: status only reads.
 
-For an independent terminal check, export the core path again from the wholeloop checkout, then paste your actual receipt ID:
+You can check the same record from a terminal, with the same store the client used:
 
-```bash
-export INITIATIVE_ID="paste-the-returned-init-ID"
-wl status "$INITIATIVE_ID" --json
-wl state get "$INITIATIVE_ID" --json
-wl resume "$INITIATIVE_ID" --json
+```console
+$ wl status init-3cf1140a
+init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
+  owner Demo Owner · updated 2026-11-17
+  next: frame-problem
+
+0 unread messages. Add --json for the full status.
 ```
 
-Use the same store environment as the original session. The recovered owner, completed framing and decision should agree. Reading status does not mark messages as read. A closed/on-hold result is not an implementation failure, and a fresh session must not reopen it automatically.
+That example is an initiative whose framing has not finished yet. After an on-hold or dropped decision, the same line shows `closed` and no `next:` step.
+
+| Command | Use it to see |
+| --- | --- |
+| `wl status <id> --json` | The full status, including pending decisions |
+| `wl state get <id> --json` | The stored record and its history |
+| `wl resume <id> --json` | The compact context a new conversation receives |
+
+The owner, the completed framing and the decision should agree across all three. Reading status does not mark messages as read, and a new session must not reopen a closed item on its own.
 
 ## What counts as finishing this tutorial
 
-You have exercised framing questions, an explicit decision, final review and recovery. That is narrower than validating every skill, independent role isolation, native hook denial, remote services or a complete go/spec/build flow. Record client/version, the observed result and limitations if you contribute acceptance evidence; use [V1 acceptance](../v1-acceptance.md#what-evidence-to-return).
+You have exercised the framing questions, an explicit decision, a final review and recovery in a new session.
+
+That is narrower than validating every skill, role isolation, a client's hook denial, remote services or a complete go-to-build flow. If you contribute acceptance evidence, record the client, its version, what you observed and the limits, as [V1 acceptance](../v1-acceptance.md#what-evidence-to-return) describes.
 
 Next: [a small change](./small-change.md), [the framing reference](../flow/define/frame-problem.md) or [troubleshooting](../troubleshooting.md).
 
 <!-- docnav -->
-[◀ Getting started](../getting-started.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Local core tour ▶](local-core.md)
+[◀ Local core tour](local-core.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Small change ▶](small-change.md)

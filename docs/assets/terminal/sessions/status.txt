@@ -1,0 +1,10 @@
+> /wholeloop:status
+
+Waiting on you
+  approve      init-41c2 spec "orders date filter"           since 2 days
+  test it      slice-0d4e (green)                             wl open slice-0d4e
+  ramp         scope-a9e0 at 10% · criteria met               re-check was due today
+Due checkpoints
+  D+30         scope-7c21 "CSV export"                        measure-impact scope-7c21
+In progress
+  build        slice-77ab · round 2 of 4 verify               started 14 min ago

@@ -3,37 +3,20 @@
 home: README.md
 concepts: concepts.md
 pages:
+  # Start
   - { path: README.md, title: Docs index }
-  - { path: philosophy.md, title: Philosophy }
   - { path: getting-started.md, title: Getting started }
-  - { path: tutorials/first-framing.md, title: First framing }
   - { path: tutorials/local-core.md, title: Local core tour }
+  - { path: tutorials/first-framing.md, title: First framing }
   - { path: tutorials/small-change.md, title: Small change }
+  - { path: platforms/local-onboarding.md, title: Local client setup }
   - { path: troubleshooting.md, title: Troubleshooting }
-  - { path: tutorials/delivery-intake.md, title: Delivery request intake }
-  - { path: tutorials/delivery-plan.md, title: Delivery planning }
-  - { path: tutorials/delivery-authorization.md, title: Delivery authorization }
-  - { path: tutorials/delivery-decisions.md, title: Delegated machine decisions }
-  - { path: tutorials/delivery-runner.md, title: Delivery runner controls }
-  - { path: tutorials/delivery-queue.md, title: Delivery queue }
-  - { path: tutorials/delivery-workers.md, title: Delivery workers }
-  - { path: tutorials/delivery-native.md, title: Native delivery hosts }
-  - { path: tutorials/delivery-budgets.md, title: Delivery budgets }
-  - { path: tutorials/delivery-checkpoints.md, title: Delivery checkpoints }
-  - { path: tutorials/delivery-recovery.md, title: Delivery recovery }
-  - { path: tutorials/delivery-environments.md, title: Environment planning }
-  - { path: tutorials/delivery-docker.md, title: Docker application environments }
-  - { path: tutorials/delivery-lifecycle.md, title: Environment stop and retirement }
-  - { path: tutorials/delivery-acceptance.md, title: Behavioral acceptance and evidence }
-  - { path: tutorials/delivery-behaviors.md, title: Execute API and CLI acceptance }
-  - { path: tutorials/delivery-browsers.md, title: Execute isolated browser acceptance }
-  - { path: tutorials/delivery-private-acceptance.md, title: Private acceptance and regression sensitivity }
-  - { path: tutorials/delivery-integration-candidates.md, title: Integrated milestone candidates }
-  - { path: tutorials/delivery-assembly.md, title: Owned assembly and combined verification }
-  - { path: tutorials/delivery-evaluation-fixtures.md, title: Original delivery evaluation fixtures }
-  - { path: tutorials/maintenance-proposals.md, title: Maintenance proposals }
-  - { path: v1-acceptance.md, title: V1 acceptance }
+  - { path: faq.md, title: FAQ }
+  # Understand
+  - { path: philosophy.md, title: Philosophy }
   - { path: concepts.md, title: Concepts }
+  - { path: glossary.md, title: Glossary }
+  # Use the loop
   - { path: flow/README.md, title: The flow }
   - { path: flow/define/research.md, title: research }
   - { path: flow/define/frame-problem.md, title: frame-problem }
@@ -49,19 +32,44 @@ pages:
   - { path: flow/learn/measure-impact.md, title: measure-impact }
   - { path: flow/learn/decide-next.md, title: decide-next }
   - { path: flow/utilities.md, title: Utilities }
+  # Configure
   - { path: configuration/README.md, title: Configuration }
   - { path: configuration/profile.md, title: Interaction profile }
   - { path: configuration/providers.md, title: Providers }
   - { path: configuration/repo-skills.md, title: Repo skills }
+  # Autonomous delivery (experimental)
+  - { path: architecture/autonomous-delivery.md, title: Autonomous delivery design }
+  - { path: tutorials/delivery-intake.md, title: Delivery request intake }
+  - { path: tutorials/delivery-plan.md, title: Delivery planning }
+  - { path: tutorials/maintenance-proposals.md, title: Maintenance proposals }
+  - { path: tutorials/delivery-authorization.md, title: Delivery authorization }
+  - { path: tutorials/delivery-decisions.md, title: Delegated machine decisions }
+  - { path: tutorials/delivery-runner.md, title: Delivery runner controls }
+  - { path: tutorials/delivery-queue.md, title: Delivery queue }
+  - { path: tutorials/delivery-workers.md, title: Delivery workers }
+  - { path: tutorials/delivery-native.md, title: Native delivery hosts }
+  - { path: tutorials/delivery-environments.md, title: Environment planning }
+  - { path: tutorials/delivery-docker.md, title: Docker application environments }
+  - { path: tutorials/delivery-lifecycle.md, title: Environment stop and retirement }
+  - { path: tutorials/delivery-acceptance.md, title: Behavioral acceptance and evidence }
+  - { path: tutorials/delivery-behaviors.md, title: Execute API and CLI acceptance }
+  - { path: tutorials/delivery-browsers.md, title: Execute isolated browser acceptance }
+  - { path: tutorials/delivery-private-acceptance.md, title: Private acceptance and regression sensitivity }
+  - { path: tutorials/delivery-integration-candidates.md, title: Integrated milestone candidates }
+  - { path: tutorials/delivery-assembly.md, title: Owned assembly and combined verification }
+  - { path: tutorials/delivery-budgets.md, title: Delivery budgets }
+  - { path: tutorials/delivery-checkpoints.md, title: Delivery checkpoints }
+  - { path: tutorials/delivery-recovery.md, title: Delivery recovery }
+  - { path: tutorials/delivery-evaluation-fixtures.md, title: Original delivery evaluation fixtures }
+  - { path: reference/delivery-acceptance.md, title: Expanded delivery acceptance }
+  # Platforms and extending
+  - { path: platforms/README.md, title: Platforms }
   - { path: extending/README.md, title: Extending }
   - { path: extending/providers.md, title: Writing a provider }
   - { path: extending/compatibility.md, title: Compatibility }
   - { path: extending/lenses-templates-profiles.md, title: "Lenses, templates, profiles" }
-  - { path: platforms/README.md, title: Platforms }
-  - { path: platforms/local-onboarding.md, title: Local client setup }
+  # Architecture
   - { path: architecture/README.md, title: Architecture }
-  - { path: architecture/autonomous-delivery.md, title: Autonomous delivery design }
-  - { path: reference/delivery-acceptance.md, title: Expanded delivery acceptance }
   - { path: architecture/core-cli.md, title: Core CLI }
   - { path: architecture/state-and-messaging.md, title: State and messaging }
   - { path: architecture/operator-overview.md, title: Operator overview }
@@ -69,10 +77,10 @@ pages:
   - { path: architecture/execution-isolation.md, title: Execution isolation }
   - { path: architecture/determinism-and-testing.md, title: Determinism and testing }
   - { path: decisions/README.md, title: Decisions }
+  # Contribute
   - { path: contributing/development.md, title: Development }
   - { path: contributing/authoring.md, title: Authoring }
+  - { path: contributing/docs-style.md, title: Docs style }
   - { path: contributing/releasing.md, title: Release preparation }
   - { path: contributing/conformance.md, title: Nightly conformance }
-  - { path: contributing/docs-style.md, title: Docs style }
-  - { path: glossary.md, title: Glossary }
-  - { path: faq.md, title: FAQ }
+  - { path: v1-acceptance.md, title: V1 acceptance }

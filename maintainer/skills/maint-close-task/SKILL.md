@@ -24,6 +24,8 @@ description: Close a finished roadmap task in this repository - criteria, eviden
 - `npm run docs:nav` after editing `docs/nav.yml`.
 - `npm run maintainer:render` after editing `maintainer/`.
 - `npm run providers:catalog` after editing `harness/providers/`.
+- `npm run docs:diagrams` after editing a README diagram source in `docs/assets/diagrams/`.
+- `vhs docs/assets/terminal/<name>.tape`, from the repository root with the released `wl` on the path, after a change to a recorded command or its output. For an illustrative step session, update `docs/assets/terminal/sessions/<step>.txt` together with the example session on the page, then render `session-<step>.tape`. No gate checks recordings, so say which ones you rendered (see `docs/contributing/docs-style.md`).
 
 ## Gate
 

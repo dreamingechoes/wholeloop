@@ -1,0 +1,19 @@
+> /wholeloop:prepare-launch scope-a9e0
+
+Prepare launch — scope-a9e0 "orders date filter"
+Flag      orders_date_filter (off everywhere)
+Plan      internal → 10% → 50% → 100% over 2 weeks (from the spec)
+Voice     docs/brand/voice.md (repo)
+
+▸ rollout plan written
+▸ drafted: internal announcement · release note · support heads-up
+▸ dashboard "Orders date filter" — 4 charts (PostHog)
+▸ support guide + runbook (Notion)
+
+Produced
+  Rollout plan       Notion · Launch / Orders date filter     wl open scope-a9e0 --plan
+  Slack draft        #product-updates (not sent)              open in Slack → Drafts
+  Release note       draft in docs provider
+  Dashboard          PostHog · Orders date filter
+  Support guide      Notion
+Next              ramp-exposure when you're ready to start the internal stage

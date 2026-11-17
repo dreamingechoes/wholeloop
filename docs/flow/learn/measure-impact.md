@@ -4,8 +4,6 @@
 
 Reading real sources through providers is experimental.
 
----
-
 ## At a glance
 
 | | |
@@ -50,42 +48,44 @@ flowchart TD
 
 ## Standalone use
 
-Give it a metric and a time range ("export success rate since 1 September, in Metabase") or a scope ID. Without a pinned plan it asks for the target and the source before reading anything — a verdict needs something to compare against.
+Give it a metric and a time range ("export success rate since 1 September, in Metabase") or a scope ID. Without a pinned plan it asks for the target and the source before reading anything: a verdict needs something to compare against.
 
 ## Run it
 
-```bash
-wl measure schema --json
-wl measure begin --for scope-a9e0 --checkpoint d30 --json
-wl measure requests --for scope-a9e0 --json
-# The host executes exact read requests and normalizes bounded source responses.
-wl measure observe --for scope-a9e0 --file observations.json --json
-wl measure report --for scope-a9e0 --json
-wl measure complete --for scope-a9e0 --json
-wl measure schedule --for scope-a9e0 --json
-wl measure digest --for scope-a9e0,scope-b1f2 --json
+![measure-impact: an illustrative example session in a coding client](../../assets/terminal/session-measure-impact.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
+
+```text
+> /wholeloop:measure-impact scope-a9e0 --checkpoint d30
+
+Measure — scope-a9e0 "Find an order" · checkpoint D+30
+Plan      pinned at spec approval · 3 metrics · window 30 days, Europe/Madrid
+Sources   PostHog ✓ · Metabase ✓ · Zendesk ✗ not connected
+
+▸ analysts started: product analytics · BI · what people say
+✓ time_to_find_order    41 s → 18 s     target ≤ 25 s     met
+~ orders_page_exit      34% → 27%       target ≤ 20%      partly
+? support_tickets       unknown         Zendesk unreachable → open question
+▸ challenger: every number traces to a stored query result ✓
+  "What people say": 4 feedback notes, kept apart from the metrics
+
+Produced
+  Checkpoint report   scope-a9e0 · D+30     wl open scope-a9e0
+Open questions        1                     support tickets · who: support lead
+Next                  /wholeloop:decide-next scope-a9e0
 ```
 
-Standalone begin supplies a description, --owner, --measurement (the same explicit contract used by launch) and an evidence-backed --launched-at timestamp. A final ramp confirmation may supply that anchor; prepared drafts cannot. The anchor stays pinned across checkpoints. --at fixes the historical window end; queries use the original metric's rolling days/timezone and exact unit. Not-yet-due checkpoints leave no synthetic history. learn.checkpoints defaults to launch/d7/d30; custom names require --after-days. Status exposes dates and next points at due work.
-
-The CLI plans/imports reads; it authenticates no service itself. Normalized results use wholeloop/impact-read-responses@1, the exact request run/at and one result or unavailable reason per fingerprint. Scalar JSON bodies are `{ "value": 18,
-"unit": "seconds" }`. The SDK can use ImpactWorkflow directly; runImpact gives one read-only analyst each source and a separate layout interface.
-
-Optional --qualitative takes agreed queries with id/provider/operation/query/days/ timezone. Supported sources are support, feedback, meetings and knowledge; bodies normalize to `{ "text": "sanitized source quote" }`. Quotes remain separate from metric assertions. Do not put credentials or private logs in response files.
-
-Actual learn.report instructions are loaded and pinned. A custom report uses `wl measure format --for <id> --file <layout.json>` before completion: each section has a plain title plus metric and qualitative ID arrays. The host chooses headings and order, while the core preserves every value and mandatory source metadata. Harness defaults have a built-in layout. New evidence invalidates old layouts. Partial progress requires a known unmet baseline and a result closer to the target; unknown baseline or regression from an already met baseline cannot imply progress.
-
-Every numeric row links to its exact stored query, raw-content hash, observation reference/window and metric contract. Missing observations retain reasons. Reports measure comparison, not causal attribution. Completion retains canonical artifacts, and repeated checkpoints keep immutable earlier histories with latest projections.
-
-Digest planning is local. Explicit SDK dispatchImpactDigest creates comms.draft only or appends a stable marker-bound note through fresh same-operation docs.update; it preserves unrelated content. It journals intent and retains ambiguity without retry. These notes are document-body comments, not native threaded comments. [ADR-0040](../../decisions/0040-pinned-impact-observations-and-report-layouts.md) records the grounding, layout and publication boundaries.
-
-| CLI | Invoke | Parallel analysts |
+| Client | Invoke | Parallel analysts run as |
 | --- | --- | --- |
-| Claude Code | `/wholeloop:measure-impact …` | native subagents |
+| Claude Code | `/wl-measure-impact …`, or `/wholeloop:measure-impact …` with the plugin | native subagents |
 | Codex CLI | `$wl-measure-impact …` | native subagents |
-| OpenCode | `/wl-measure-impact …` | native subagents |
-| Copilot CLI | `/wl-measure-impact …` | native subagents (`/fleet`) |
-| Gemini CLI · Antigravity · Cursor | `/wl-measure-impact …` | native where available, otherwise headless or one by one |
+| OpenCode | Ask for `wl-measure-impact` | native subagents |
+| Copilot CLI | Ask for `wl-measure-impact` | native subagents (`/fleet`) |
+| Gemini CLI · Cursor | Ask for `wl-measure-impact` | native where available, otherwise headless or one by one |
+| Antigravity | Ask for `wl-agy-measure-impact` | native where available, otherwise headless or one by one |
 
 ## Before & after
 
@@ -100,13 +100,67 @@ Digest planning is local. Explicit SDK dispatchImpactDigest creates comms.draft 
 
 **"Nobody remembers to run D+30."** [`status`](../utilities.md#status) lists every checkpoint that is due, and `next` brings you here when one is.
 
----
+## Core commands
 
-## Schedule due checkpoints unattended
+The commands behind the skill, for scripts and skill authors:
 
-An external scheduler such as cron can run `wl measure tick --for <scope-id,...>` as often as it likes. Each due checkpoint is scheduled once, identified by its scope, launch, measurement source and observation policy; a relaunch or a changed plan schedules new work, and nothing is read while scheduling. Readings still go through `measure requests` and `measure observe`. Unknown values stay unknown: an unattended run ends completed-with-unknowns only when its contract allows it, and is blocked otherwise. A machine learning recommendation names every unknown and counterargument and never changes flags, deploys, sends messages or closes work. See [ADR-0194](../../decisions/0194-scheduled-observations-and-learning-recommendations.md).
+```bash
+wl measure schema --json
+wl measure begin --for scope-a9e0 --checkpoint d30 --json
+wl measure requests --for scope-a9e0 --json
+# The host executes exact read requests and normalizes bounded source responses.
+wl measure observe --for scope-a9e0 --file observations.json --json
+wl measure report --for scope-a9e0 --json
+wl measure complete --for scope-a9e0 --json
+wl measure schedule --for scope-a9e0 --json
+wl measure digest --for scope-a9e0,scope-b1f2 --json
+```
 
-Each scheduled checkpoint can then run as its own read-only `learning-observation` delivery run under an exact-plan grant whose read rules name the scope. The run reads only through your client's MCP connection, settles the checkpoint once, and asks the delegated `learning-outcome` judges for a recommendation that changes nothing. Supervised runs are refused; use `measure` and `decide-next` yourself instead. See [ADR-0200](../../decisions/0200-learning-observation-runs.md) and [ADR-0201](../../decisions/0201-learning-observation-host.md).
+```mermaid
+flowchart LR
+  B[begin<br/>pin the checkpoint] --> R[requests<br/>exact reads to run]
+  R --> H[Your client runs them<br/>through MCP] --> O[observe<br/>import the results]
+  O --> P[report] --> C[complete]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class B,R,H,O,P,C core;
+```
+
+### The checkpoint and its window
+
+- **Launch anchor.** Used on its own, `begin` needs a description, `--owner`, `--measurement` (the same contract `prepare-launch` uses) and `--launched-at`, a launch time backed by evidence. A final ramp confirmation can supply that time; a prepared draft cannot. It stays pinned for every later checkpoint.
+- **Window.** `--at` fixes the end of a past window. Queries use the original metric's rolling days, time zone and exact unit.
+- **Schedule.** `learn.checkpoints` defaults to `launch`, `d7` and `d30`; a custom name needs `--after-days`. A checkpoint that is not due yet leaves no invented history, and `wl status` shows the dates and points `next` at due work.
+
+### Reading the sources
+
+The CLI plans the reads and imports their results; **it signs in to no service**.
+
+- Results use `wholeloop/impact-read-responses@1`: the exact request, run and time, and one result or a reason it was unavailable per request. A number looks like `{ "value": 18, "unit": "seconds" }`.
+- `--qualitative` adds agreed queries to support, feedback, meeting or knowledge sources, each with an ID, provider, operation, query, days and time zone. Their bodies become `{ "text": "sanitized source quote" }` and stay separate from the metrics.
+- Never put credentials or private logs in a response file.
+- From the SDK, `ImpactWorkflow` can be used directly; `runImpact` gives each source its own read-only analyst and a separate layout step.
+
+### The report
+
+- **Your report instructions are pinned.** A custom layout is set with `wl measure format --for <id> --file <layout.json>` before completion: each section has a plain title and lists metric and qualitative IDs. The host picks headings and order; the core keeps every value and its source. New evidence invalidates an old layout.
+- **Every number links** to its stored query, the hash of the raw content, the observation and its window, and the metric contract. A missing observation keeps its reason.
+- **Partial progress** needs a known baseline that was not yet met and a result closer to the target. An unknown baseline, or a regression from a baseline already met, never counts as progress.
+- **Comparison, not causation.** A report says what changed, not why.
+- Completion keeps the canonical artifacts; repeated checkpoints keep their earlier histories.
+
+### Digests
+
+`wl measure digest` plans locally. Publishing one is a separate, explicit SDK call (`dispatchImpactDigest`), which either creates an unsent communication draft or appends a note to each scope's document, marked so it can be found again. It keeps unrelated content, records its intent first and does not retry an ambiguous write. The notes are part of the document body, not threaded comments.
+
+### Scheduled checkpoints, unattended
+
+An external scheduler such as cron can run `wl measure tick --for <scope-id,...>` as often as it likes.
+
+- Each due checkpoint is scheduled **once**, identified by its scope, launch, source and observation policy. A relaunch or a changed plan schedules new work. Scheduling reads nothing.
+- Readings still go through `measure requests` and `measure observe`.
+- Unknown values stay unknown: an unattended run ends *completed with unknowns* only when its contract allows it, and is blocked otherwise.
+
+Each scheduled checkpoint can also run as its own read-only **`learning-observation`** autonomous delivery run, under a grant for that exact plan whose read rules name the scope. It reads only through your client's MCP connection, settles the checkpoint once and asks the delegated `learning-outcome` judges for a recommendation. That recommendation names every unknown and counterargument, and **changes nothing**: no flag, deploy, message or closed work. Supervised runs are refused here; use `measure-impact` and `decide-next` yourself instead.
 
 <!-- docnav -->
 [◀ ramp-exposure](../rollout/ramp-exposure.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [decide-next ▶](decide-next.md)

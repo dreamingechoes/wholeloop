@@ -4,8 +4,6 @@
 
 Comment publication through GitHub and GitLab hosts is tested against fixtures.
 
----
-
 ## At a glance
 
 | | |
@@ -74,12 +72,30 @@ flowchart TD
 | a PR URL | asks for a host-resolved local named `--branch`; no implicit remote fetch |
 | a branch name | that branch |
 
-The executable core uses `wl review begin <branch> --base <base> --owner <person>
---json`, `review input --for <id>` and `review complete --for <id>`. Existing slices use `review begin --for <id>`. A PR URL also needs `--branch <resolved-local-head>`. The host supplies semantic reviewers/refuters and enforces read-only tools.
+The core commands behind the skill:
 
-Private changed-file objects and scratch indexes stay in the external store; rounds include uncommitted edits, new/deleted files, modes and symlink targets. The repository index is never used as scratch space. Inputs are bounded and sensitive filenames/recognized credential shapes are refused. This is not an exhaustive secret detector: inspect other sensitive source paths before reviewing. Preserve these objects with the journal; rebuilding projections cannot recreate missing source blobs. Rubric changes within a run fail rather than weaken review. Prior kept findings remain in context for rechecking, even if absent from the new patch. See [ADR-0034](../../decisions/0034-private-incremental-review-inputs-and-pinned-rubrics.md).
+```text
+wl review begin <branch> --base <base> --owner <person> --json
+wl review begin --for <slice-id> --json
+wl review input --for <id> --json
+wl review complete --for <id> --json
+```
+
+A PR URL also needs `--branch <resolved-local-head>`. The client supplies the reviewers and refuters, and keeps their tools read-only.
+
+**What each round sees.** The changed files are copied into private objects in your store, never into the repository's index. A round includes uncommitted edits, new and deleted files, file modes and symlink targets. Earlier findings that were kept stay in context so they can be rechecked, even if the new patch no longer touches them.
+
+**What is refused.** Inputs are bounded, and files with sensitive names or recognized credential shapes are refused. This is not a complete secret detector, so check other sensitive paths before a review.
+
+**What stays fixed.** Changing the rubric during a run fails instead of weakening the review. Keep the private objects together with the journal: rebuilding projections cannot recreate missing source files.
 
 ## Run it
+
+![review-code: an illustrative example session in a coding client](../../assets/terminal/session-review-code.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:review-code #142
@@ -102,13 +118,14 @@ Verdict   FAIL — 2 blockers · 1 dropped (reasons linked)
 Next      builder, round 2 of 3 (only the new diff is reviewed)
 ```
 
-| CLI | Invoke | Parallel lenses |
+| Client | Invoke | Parallel lenses run as |
 | --- | --- | --- |
-| Claude Code | `/wholeloop:review-code …` | native subagents |
+| Claude Code | `/wl-review-code …`, or `/wholeloop:review-code …` with the plugin | native subagents |
 | Codex CLI | `$wl-review-code …` | native subagents |
-| OpenCode | `/wl-review-code …` | native subagents |
-| Copilot CLI | `/wl-review-code …` | native subagents (`/fleet`) |
-| Gemini CLI · Antigravity · Cursor | `/wl-review-code …` | native where available, otherwise headless or one by one ([orchestration](../../architecture/orchestration-and-gates.md)) |
+| OpenCode | Ask for `wl-review-code` | native subagents |
+| Copilot CLI | Ask for `wl-review-code` | native subagents (`/fleet`) |
+| Gemini CLI · Cursor | Ask for `wl-review-code` | native where available, otherwise headless or one by one |
+| Antigravity | Ask for `wl-agy-review-code` | native where available, otherwise headless or one by one |
 
 ## Before & after
 
@@ -122,8 +139,6 @@ Next      builder, round 2 of 3 (only the new diff is reviewed)
 **"Too many nitpicks."** Findings that can't survive a challenge are dropped. If noise still gets through, that is a calibration case for the eval corpus, not a reason to remove a lens.
 
 **"Can it post the review on the PR?"** Draft locally with `wl review comment-plan --for <id> --pr <url> --json`. A configured provider must support codehost.comment-pr. Only an explicitly requested typed host call publishes; the CLI draft does not. Reconcile ambiguous remote outcomes before retrying. No authenticated comments were posted by the local tests.
-
----
 
 <!-- docnav -->
 [◀ verify-works](verify-works.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [open-pr ▶](open-pr.md)

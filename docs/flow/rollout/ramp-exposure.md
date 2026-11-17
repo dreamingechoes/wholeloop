@@ -4,8 +4,6 @@
 
 Flag changes through providers are experimental.
 
----
-
 ## At a glance
 
 | | |
@@ -57,7 +55,56 @@ Give it a flag name and the criteria you care about ("`orders_csv_export`, watch
 
 ## Run it
 
-The CLI accepts explicit plans and host-normalized reads; it does not authenticate or query remote services itself. Use sanitized scalar/flag observations, never credentials or raw private logs in response files. Prefer the native client’s observed MCP tools through [client-owned transport planning](../../extending/providers.md#client-owned-mcp-transport). Missing or failed MCP reads remain unknown; wholeloop has no service client to fall back to. `wl provider read-flags <id> --flag <key> --environment <key> --mcp <inventory> --json` shows which call the client would make, or that the state stays an open question. Proposals stay native and unapplied.
+![ramp-exposure: an illustrative example session in a coding client](../../assets/terminal/session-ramp-exposure.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
+
+```text
+> /wholeloop:ramp-exposure scope-a9e0
+
+Ramp — scope-a9e0 "Find an order" · flag orders_search_v1 (LaunchDarkly)
+Stage     10% → next 50%
+Window    48 h since the 10% confirmation, ends today 14:00
+
+▸ reading signals: Sentry errors · Grafana p95 latency · PostHog search success
+✓ new error types         0           exit: 0
+✓ p95 latency             312 ms      exit: within 10% of 298 ms
+? search success rate     unknown     PostHog not connected in this client
+▸ challenger: success rate is a required check — go is not available
+
+Recommendation   HOLD — 1 required check unknown
+Decision: [hold] [roll back] [connect PostHog and re-check]
+
+Recorded   hold · by Ana López · reason "waiting for search success data"
+Next       re-check after PostHog is connected; the flag was not touched
+```
+
+| Client | Invoke |
+| --- | --- |
+| Claude Code, installed skills | `/wl-ramp-exposure …` |
+| Claude Code, generated plugin | `/wholeloop:ramp-exposure …` |
+| Codex CLI | `$wl-ramp-exposure …` |
+| OpenCode · Copilot · Gemini · Cursor | Ask for `wl-ramp-exposure` |
+| Antigravity | Ask for `wl-agy-ramp-exposure` |
+
+## Before & after
+
+- **Fed by:** [`prepare-launch`](./prepare-launch.md) (plan, stages, dashboards); comms drafted there go out at the stages they were written for.
+- **Feeds:** [`measure-impact`](../learn/measure-impact.md) — reaching 100% (or the final stage) starts the launch checkpoint.
+
+## Gotchas & FAQ
+
+**"Can I let it ramp automatically overnight?"** No. Each widening is a person's decision; that is the point of this step.
+
+**"We use LaunchDarkly / Unleash / GrowthBook."** The built-in `launchdarkly`, `unleash` and `growthbook` providers read flag state through your client's MCP connection; configure one as your `flags` provider. If yours isn't listed, a read-only provider manifest is enough ([extending](../../extending/providers.md)).
+
+**"Our flag is a config file, not a service."** Use an explicitly configured read/propose provider, or a manual control with evidence. The built-in `config-flags` provider reads it and stores unapplied proposals. You change the value by PR.
+
+## Core commands
+
+The commands behind the skill, for scripts and skill authors:
 
 ```bash
 wl ramp schema --json
@@ -73,35 +120,38 @@ wl ramp confirm --for scope-a9e0 --by Alex --file confirmation-responses.json --
 wl ramp report --for scope-a9e0 --json
 ```
 
-`ramp-plan.json` uses wholeloop/ramp-plan@1: environment, confirmedBy, optional flag/sourceDigest and stages. Every stage includes key, audience, enabled, exposure, exit and checks. A check specifies key, provider, source operation, exact query, unit, operator (lt/lte/eq/gte/gt), threshold, required, lookbackHours and timezone. Standalone plans require the same explicit facts.
+```mermaid
+flowchart LR
+  O[Observe the<br/>current stage] --> D{{You decide<br/>go, hold or rollback}}
+  D --> P[Proposal<br/>nothing applied] --> F{{You change<br/>the flag}}
+  F --> C[Confirm with<br/>fresh reads] --> O
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class D,F person;
+  class O,P,C core;
+```
 
-Read results use wholeloop/ramp-read-responses@1 with the exact request run, stage, at and mode plus results: each fingerprint carries either a normalized result or an unavailable reason. Numeric bodies are `{ "value": 0, "unit":
-"errors" }`; flag bodies preserve flag, environment, enabled, exposure and audience with a complete revision-bound read. A missing unit/value is unknown, never zero. The SDK can use RampWorkflow with an actual ProviderHost directly.
+**The plan** (`wholeloop/ramp-plan@1`) records the environment, who confirmed it, optionally the flag and the source digest, and its stages. Used on its own, the step needs the same facts.
 
-The local proposal applies nothing. An explicit conductor SDK invocation of `dispatchRampProposal` may create a provider proposal only; it journals intent, requires applied=false, caches receipts and refuses blind retries after ambiguity. A manual-control plan omits flag and supplies --evidence during confirmation. Unknown optional checks require --ack with their keys; required unknown/failing checks block go. Every confirmation starts a fresh full lookback for the next stage. Changed/unreadable controls hold the ramp; restoration resets that window. Replay/resume retain the cursor, exact evidence and who/when/basis of each decision. [ADR-0039](../../decisions/0039-evidence-bound-human-exposure-stages.md) explains why generic approvals, mixed windows and automatic flag changes were rejected.
+- **Each stage** has a key, an audience, whether it is enabled, its exposure, its exit condition and its checks.
+- **Each check** has a key, a provider and source operation, an exact query, a unit, an operator (`lt`, `lte`, `eq`, `gte`, `gt`), a threshold, whether it is required, a lookback in hours and a time zone.
 
-| CLI | Invoke |
-| --- | --- |
-| Claude Code | `/wholeloop:ramp-exposure …` |
-| Codex CLI | `$wl-ramp-exposure …` |
-| OpenCode | `/wl-ramp-exposure …` |
-| Copilot CLI | `/wl-ramp-exposure …` |
-| Gemini CLI · Antigravity · Cursor | `/wl-ramp-exposure …` |
+**Reads.** The CLI takes explicit plans and results your client already read; it never signs in to or queries a service itself.
 
-## Before & after
+- Prefer the client's MCP tools ([client-owned transport](../../extending/providers.md#client-owned-mcp-transport)). `wl provider read-flags <id> --flag <key> --environment <key> --mcp <inventory> --json` shows the exact call the client would make, or that the state stays an open question.
+- Results use `wholeloop/ramp-read-responses@1`: the exact request, run, stage, time and mode, and one result or a reason it was unavailable per request. A number looks like `{ "value": 0, "unit": "errors" }`; a flag read keeps its flag, environment, enabled state, exposure and audience at a known revision.
+- **A missing value is unknown, never zero.** A failed or missing read stays unknown; there is no other service client to fall back to.
+- Use sanitized values only: never credentials or raw private logs in a response file.
+- From the SDK, `RampWorkflow` can be used directly with a real `ProviderHost`.
 
-- **Fed by:** [`prepare-launch`](./prepare-launch.md) (plan, stages, dashboards); comms drafted there go out at the stages they were written for.
-- **Feeds:** [`measure-impact`](../learn/measure-impact.md) — reaching 100% (or the final stage) starts the launch checkpoint.
+**Decisions.**
 
-## Gotchas & FAQ
+- A required check that is unknown or failing blocks *go*. An unknown optional check needs `--ack` with its key.
+- Every confirmation starts a fresh, full lookback window for the next stage.
+- If the controls change or cannot be read, the ramp holds; restoring them restarts the window.
+- The position in the ramp, the evidence and who decided what, when and on what basis survive replay and resume.
 
-**"Can I let it ramp automatically overnight?"** No. Each widening is a person's decision; that is the point of this step.
-
-**"We use LaunchDarkly / Unleash / GrowthBook."** The built-in `launchdarkly`, `unleash` and `growthbook` providers read flag state through your client's MCP connection; configure one as your `flags` provider. If yours isn't listed, a read-only provider manifest is enough ([extending](../../extending/providers.md)).
-
-**"Our flag is a config file, not a service."** Use an explicitly configured read/propose provider, or a manual control with evidence. The built-in `config-flags` provider reads it and stores unapplied proposals. You change the value by PR.
-
----
+**Applying.** The local proposal applies nothing. An explicit SDK call, `dispatchRampProposal`, may create a **proposal** in the flag provider, and only that: it records its intent first, requires `applied=false`, caches receipts and refuses to retry blindly after an ambiguous result. With manual flag control, the plan omits the flag and you supply `--evidence` when confirming.
 
 <!-- docnav -->
 [◀ prepare-launch](prepare-launch.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [measure-impact ▶](../learn/measure-impact.md)
