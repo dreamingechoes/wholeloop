@@ -1,6 +1,6 @@
 {
   "name": "wholeloop",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A CLI-agnostic AI development harness that closes the whole loop: define, build, roll out, learn.",
   "keywords": [
     "ai-harness",
