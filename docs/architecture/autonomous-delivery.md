@@ -56,17 +56,17 @@ flowchart TD
   PL --> AD[acceptance-definition<br/>pin the cases first]
   AD --> W[workspace<br/>one worktree per unit]
   W --> BP[build-plan] --> I[implementation]
-  I --> V[verification] --> RV[review] --> CM[commit]
+  I --> CM[commit<br/>pin the candidate] --> V[verification] --> RV[review] --> RVV[reverification<br/>of the reviewed head]
   V -. findings .-> I
   RV -. findings .-> I
-  CM --> IN[integration<br/>assemble all parts]
+  RVV --> IN[integration<br/>assemble all parts]
   IN --> AC[acceptance<br/>test the whole product]
   AC --> PB[publication<br/>pull request]
   PB --> CI[ci<br/>required checks]
   CI --> M[merge<br/>only if granted]
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
   classDef opt stroke-dasharray:5 3;
-  class D,PL,AD,W,BP,I,V,RV,CM,IN,AC,PB,CI core;
+  class D,PL,AD,W,BP,I,V,RV,RVV,CM,IN,AC,PB,CI core;
   class M opt;
 ```
 
@@ -78,16 +78,17 @@ flowchart TD
 | **workspace** | Each unit of work gets its own Git worktree on a branch the run owns |
 | **build-plan** | The builder writes its plan from the repository's pinned guidance |
 | **implementation** | The builder writes the code in its worktree |
+| **commit** | The change is committed and pinned, so every check that follows looks at exactly that commit |
 | **verification** | The repository's own suite runs once per round in Docker, and verifiers check each criterion |
-| **review** | Reviewers inspect the change through fixed lenses; findings go back to the builder |
-| **commit** | The verified and reviewed state is committed and pinned |
+| **review** | Reviewers inspect the change through fixed lenses; findings go back to the builder, and a repair is a new commit |
+| **reverification** | The reviewed head is verified again, so review repairs never skip verification |
 | **integration** | All committed parts are assembled in a separate worktree and checked together, including their contracts |
 | **acceptance** | The pinned cases run against the whole product in Docker: API, CLI and browser journeys, plus private cases the builder never saw |
 | **publication** | A pull request is opened, or updated, for the exact accepted state |
 | **ci** | The run follows the required checks on that exact commit |
 | **merge** | Only with a separate merge grant, after every required check and review passed on the tested commit |
 
-**Research runs** are shorter: plan → research → hand-off of a stored brief. **Learning observations** read one measurement checkpoint and hand off a recommendation that changes nothing.
+**Research runs** are shorter: plan → research → hand-off of a stored brief. A `local-handoff` run ends after acceptance with a **handoff** stage. **Learning observations** read one measurement checkpoint and hand off a recommendation that changes nothing.
 
 ## Endpoint and intervention
 
