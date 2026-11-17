@@ -1,17 +1,29 @@
 # Checkpoint inputs and recover the same queued run
 
-> **TL;DR** — Pin exact input bytes, detect a changed input from a fresh process and resume the same run after restoring it. Inspect retained effects and writer locks separately. These commands start no worker or external operation.
+> **TL;DR** — A **checkpoint** pins the exact bytes a run depends on at a given moment, by their digests. If any of them changes, the run cannot resume until you restore them, so it never continues on inputs nobody reviewed. Checkpoints, effect records and lock inspection start no worker and repeat no external operation.
 
 > [!IMPORTANT]
 > **Experimental.** Checkpoint manifests, effect and worker recovery and stopped-writer lock retention are tested with real processes. Autonomous delivery may change in a minor release.
 
+**What you will have at the end:** a checkpoint over two inputs, a resume refused when one of them changed, the same run resumed once it was restored, and no effect or lock left behind.
+
+```mermaid
+flowchart LR
+  C[checkpoint<br/>digests of the inputs] --> X{An input changed?}
+  X -- yes --> P[recover --resume<br/>refused: run stays paused]
+  P -- "restore the bytes" --> X
+  X -- no --> Q[recover --resume<br/>same run, queued again]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class C,X,P,Q core;
+```
+
 ## Before you start
 
-Complete the [queue tutorial](./delivery-queue.md) in the same Bash terminal. Keep workspace_dir set. The example has a queued fictional run, a fresh active grant and no started attempt. All changes below affect only its external disposable store; no application source or personal configuration changes.
+Complete the [queue guide](./delivery-queue.md) in the same Bash terminal, so `workspace_dir` is still set. Its run is queued, has a fresh active grant and has started no attempt. Everything below changes only the disposable store.
 
 ## Capture a checkpoint
 
-Create one disposable input artifact alongside the already retained source. A checkpoint hashes referenced bytes, including binary files, without copying their content into its manifest. Allowed paths are bounded source/plan/envelope/artifact references; private authority paths and aliases refuse.
+The script writes one small input file next to the source captured earlier, and checkpoints both under the key `queued-inputs`:
 
 ```bash
 set -euo pipefail
@@ -37,9 +49,40 @@ wl delivery checkpoints \
   --store "$workspace_dir/state" --json > "$workspace_dir/checkpoints-current.json"
 ```
 
-Expect one current checkpoint with exact path/hash/size bindings and no execution authority implied. Repeating the same capture retains its identity. Changing the inputs under the same key refuses; a genuinely new checkpoint uses a new key. Stage labels describe controller metadata, not semantic approval, a passing test or human acceptance.
+A checkpoint stores each input's path, digest and size, never its content, so binary files work too. Only bounded source, plan, envelope and artifact paths are allowed; private authority paths and aliases are refused. Shortened:
+
+```console
+$ wl delivery checkpoints --run delivery-0123456789abcdef --store "$workspace_dir/state" --json
+{
+  "schema": "wholeloop/delivery-checkpoints-status@1",
+  "run": "delivery-0123456789abcdef",
+  "checkpoints": [
+    {
+      "key": "queued-inputs",
+      "digest": "80282af2863ec0af90d20980924f33741b8627c67fd4ed0c82205292e36636ad",
+      "status": "current",
+      "problems": [],
+      "manifest": {
+        "schema": "wholeloop/delivery-checkpoint-manifest@1",
+        "key": "queued-inputs",
+        "stage": "source-adopted",
+        "inputs": [
+          { "ref": "delivery/sources/d7daa725….json", "sha256": "702417d0…", "bytes": 604 },
+          { "ref": "delivery/artifacts/probe.txt", "sha256": "da85f759…", "bytes": 27 }
+        ]
+      },
+      …
+```
+
+- Capturing the same inputs again keeps the same checkpoint. Different inputs under the same key are refused; use a new key for a new checkpoint.
+- The **stage** label is controller metadata. It is not an approval, a passing test or a person's acceptance.
 
 ## Detect changed bytes and resume after restoring them
+
+The next script changes the input, tries to resume, restores the input and resumes again, then checks every result:
+
+<details>
+<summary>Stale-input script: copy once</summary>
 
 ```bash
 printf 'Changed checkpoint input.\n' > "$workspace_dir/state/delivery/artifacts/probe.txt"
@@ -83,15 +126,43 @@ console.log('PASS: exact checkpoint inputs, stale refusal and same-run metadata 
 JS
 ```
 
-Recover validates current checkpoint inputs, immutable plan/local bases, private authority and retained ownership. A fresh process does not reset gates or grant limits. It does not start a replacement worker or invoke/retry an effect. --resume changes metadata to queued only after those prerequisites are known. A none policy with unresolved ownership returns blocked instead of asking for human input; its active reservation remains retained.
+</details>
+
+```console
+PASS: exact checkpoint inputs, stale refusal and same-run metadata recovery
+```
+
+| Step | Result |
+| --- | --- |
+| Input changed | The checkpoint's status becomes `stale` |
+| `recover --resume` | Exit code 3: `ready: false`, the run stays `paused`, problem `stale-checkpoint-inputs` |
+| Input restored, `recover --resume` again | `ready: true`, the **same** run is `queued` again |
+| Throughout | `workers: not-started`, `effects: not-invoked`; no effect records; the writer lock is `clear` |
+
+**What recovery checks** before resuming: the current checkpoint inputs, the immutable plan and its local bases, the private authority and who owns what.
+
+- A fresh process does not reset gates or grant limits.
+- It never starts a replacement worker or retries an effect; `--resume` only puts the metadata back to `queued` once everything is known.
+- With intervention `none`, unresolved ownership returns *blocked* instead of asking a person, and the reservation is kept.
 
 ## Interrupted writers and ambiguous effects
 
-Ordinary commands never steal a lock. If lock-status reports stopped, inspect its exact owner/digest and run delivery repair-lock with --owner-digest and the same --store. Repair accepts only an observed absent PID for that unchanged record, rechecks directory identity and moves the original lock into delivery/recovered-locks with a receipt. It signals no process and restores no authority. A live/reused PID, missing/future owner data, inaccessible process or interrupted repair-control lock requires inspection. Never remove another writer's lock because it is old.
+**Locks.** Ordinary commands never take another writer's lock.
 
-Effect inspection shows retained local records, not a new remote read. The trusted host API persists a finite invocation before one conditional operation and observes the exact result separately. Pending/unknown actions cannot be executed again; conflicting writes and successful closure remain blocked. An absent resource read cannot establish not-applied until the original invocation is confirmed stopped. Only an unissued prepared intent can be abandoned. Actual provider/backend hosts and PR/merge-specific eligibility remain later increments.
+1. If `wl delivery lock-status` reports the writer as **stopped**, inspect its owner and digest.
+2. Run `wl delivery repair-lock --owner-digest <digest>` with the same `--store`.
+3. Repair accepts only a process confirmed absent for that unchanged record, checks the directory again and moves the original lock into `delivery/recovered-locks`, with a receipt. It signals no process and restores no authority.
 
-Use delivery recovery-schema --json for checkpoint request/manifest and effect-intent contracts; delivery state-schema also includes every registered event/facet family. [ADR-0098](../decisions/0098-checkpoint-recovery-and-observed-effect-reconciliation.md) explains finite read retries, process ownership, explicit lock repair and the remaining native acceptance boundary. Retain the external tutorial directory; this exercise marks no human/native/account acceptance passed.
+A live or reused process ID, missing or newer owner data, an unreadable process or an interrupted repair needs inspection. Never remove a lock because it looks old.
+
+**Effects.** `wl delivery effects` shows the local records, not a new remote read.
+
+- The host records each operation's intent **before** running it once, and observes its result separately.
+- A pending or unknown operation can never run again. Conflicting writes and a claimed success that was not observed stay blocked.
+- A read showing the resource absent does not prove the operation did not happen, until the original call is confirmed stopped.
+- Only an intent that was prepared but never issued can be abandoned.
+
+`wl delivery recovery-schema --json` prints the checkpoint and effect contracts; `wl delivery state-schema --json` adds every registered event family. Keep the directory for inspection.
 
 <!-- docnav -->
 [◀ Delivery budgets](delivery-budgets.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery recovery ▶](delivery-recovery.md)
