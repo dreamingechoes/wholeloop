@@ -4,8 +4,6 @@
 
 Follow-up in external services is experimental.
 
----
-
 ## At a glance
 
 | | |
@@ -60,36 +58,19 @@ flowchart TD
 
 ## Standalone use
 
-Point it at a scope, or describe what shipped and what you observed. Without checkpoint evidence it asks what you know and records the decision as based on that — clearly labelled, so nobody later mistakes it for a measured outcome.
+Point it at a scope, or describe what shipped and what you observed. Without checkpoint evidence it asks what you know and records the decision as based on that, clearly labelled, so nobody later mistakes it for a measured outcome.
 
 ## Run it
 
-```bash
-wl learn begin --for scope-a9e0 --leaning keep --json
-wl learn report --for scope-a9e0 --json
-# A challenger reads the actual plan, report and repository guidance.
-wl learn challenge --for scope-a9e0 --file counterargument.json --json
-wl learn decide iterate --for scope-a9e0 --basis <challenge-event> --by Alex --reason "The evidence supports refining the date selection" --ack '["checkpoint:d30"]' --iteration idea.json --json
-wl learn report --for scope-a9e0 --json
-```
+Ask your client for the skill:
 
-`wl learn schema` exposes the counterargument, self-report and iteration fields. Counterarguments use wholeloop/learning-challenge@1 with basis (the exact plan event), against, alternative, argument, limits and by. The alternative must differ from the leaning. Profile tone and additional question budget change; the four coverage areas stay fixed. Actual learn.decision instructions are loaded and pinned. A changed report/guidance/profile needs a new begin and counterargument.
-
-The person must supply a written reason and --ack containing every returned unknown/pending-checkpoint key, including an early decision before later checkpoints. A missing reason, absent challenge or stale basis cannot close work. Measured evidence cannot be replaced by an invocation's self-report. Standalone --reported supplies summary/promise/refs/by and optional flag, clearly labelled self-reported; it never creates numerical observations.
-
-Iteration input supplies title/problem/audience/impact. The core creates an open initiative with a full framing draft, evidence link and owner-labelled questions for validation, cost/priority and stop conditions. frame-problem starts and remains incomplete. Optional existing selects a closed pre-spec idea in the same repository; reopening a developed initiative or the current parent is rejected to preserve old scope approvals. No prior validation, spec or future Build is invented.
-
-Keep/unflag propose flag-removal work; kill proposes human disablement/code cleanup. Unflag needs a confirmed flag identity. These are unapplied proposals, not actual flag/code changes or automatically published tracker tasks. The decision workflow has no provider or mutation host. Explicit future work goes through normal Build.
-
-Canonical completion closes the scope, then its initiative only if every scope has a completed learning decision. A manually closed sibling does not count. Reopened scopes lose eligibility; reopen a closed parent before creating another scope. The scope/parent closure shares one atomic journal batch. If a decision is stored before interruption, `wl learn complete --for <id> --json` recovers completion without duplicating the decision or iteration. Projections and resume refs retain all evidence and proposals. [ADR-0041](../../decisions/0041-challenged-learning-decisions-and-scope-closure.md) records the human, iteration and closure boundaries.
-
-| CLI | Invoke |
+| Client | Invoke |
 | --- | --- |
-| Claude Code | `/wholeloop:decide-next …` |
+| Claude Code, installed skills | `/wl-decide-next …` |
+| Claude Code, generated plugin | `/wholeloop:decide-next …` |
 | Codex CLI | `$wl-decide-next …` |
-| OpenCode | `/wl-decide-next …` |
-| Copilot CLI | `/wl-decide-next …` |
-| Gemini CLI · Antigravity · Cursor | `/wl-decide-next …` |
+| OpenCode · Copilot · Gemini · Cursor | Ask for `wl-decide-next` |
+| Antigravity | Ask for `wl-agy-decide-next` |
 
 ## Before & after
 
@@ -104,7 +85,41 @@ Canonical completion closes the scope, then its initiative only if every scope h
 
 **"Will it remove the flag for me?"** It records a local cleanup proposal; publishing a tracker item or agreeing a Build slice is explicit future work. Removing the flag in code goes through [`build-slice`](../build/build-slice.md) like any other change.
 
----
+## Core commands
+
+The commands behind the skill, for scripts and skill authors:
+
+```bash
+wl learn begin --for scope-a9e0 --leaning keep --json
+wl learn report --for scope-a9e0 --json
+# A challenger reads the actual plan, report and repository guidance.
+wl learn challenge --for scope-a9e0 --file counterargument.json --json
+wl learn decide iterate --for scope-a9e0 --basis <challenge-event> --by Alex --reason "The evidence supports refining the date selection" --ack '["checkpoint:d30"]' --iteration idea.json --json
+wl learn report --for scope-a9e0 --json
+```
+
+`wl learn schema` prints every input contract.
+
+**The counterargument** (`wholeloop/learning-challenge@1`) names its basis (the exact plan event), what it argues against, an alternative that differs from your leaning, the argument, its limits and who made it. Your profile changes its tone and how many extra questions it asks; the four areas it covers stay fixed. A changed report, guidance or profile needs a new `begin` and a new counterargument.
+
+**The decision** needs:
+
+- a written reason;
+- `--ack` listing every unknown and pending checkpoint the report returned, including later checkpoints when you decide early;
+- a current challenge. A missing reason, an absent challenge or a stale basis cannot close work.
+
+Measured evidence can never be replaced by a self-report. Used on its own, `--reported` supplies a summary, the promise, references, who reported it and optionally the flag; it is labelled self-reported and creates no numbers.
+
+**Iterate** takes a title, problem, audience and impact. The core creates an open initiative with a full framing draft, a link to the evidence and questions, each with an owner, about validation, cost and stop conditions. `frame-problem` starts and stays unfinished until someone completes it. `existing` can reuse a closed idea from the same repository that never reached a specification; reopening a developed initiative, or the current parent, is refused so its old scope approvals stay valid.
+
+**Keep, unflag and kill** produce proposals, never changes:
+
+- keep and unflag propose removing the flag; unflag needs a confirmed flag identity;
+- kill proposes that a person disables it and cleans up the code.
+
+Nothing is applied and no tracker task is published: the decision has no provider or write access. Follow-up work goes through Build as usual.
+
+**Closing.** Completion closes the scope, then the initiative, but only when every scope has a completed learning decision; a sibling closed by hand does not count. Both closures are recorded together. If a run is interrupted after the decision was stored, `wl learn complete --for <id> --json` finishes it without duplicating the decision or the iteration. A reopened scope must be decided again, and a closed parent must be reopened before you add another scope.
 
 <!-- docnav -->
 [◀ measure-impact](measure-impact.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [Utilities ▶](../utilities.md)

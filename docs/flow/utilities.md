@@ -1,10 +1,8 @@
 # Utilities — next, status, setup, sync
 
-> **TL;DR** — The `next` skill orchestrates available steps until a decision; the terminal `wl next` returns the next core contract. `status` inspects stored work, `setup` selects scoped profile/destination preferences, and `sync` reconciles exact delivery evidence. None of these names implies automatic model calls or client authentication.
+> **TL;DR** — Four helpers move you around the flow. **`next`** continues whatever is open until a decision is due, **`status`** shows what is where and who it is waiting on, **`setup`** saves your profile and tool choices, and **`sync`** brings the store in line with merged pull requests. In a terminal, `wl next` only returns the next step's contract; the `wl-next` skill in your client does the work.
 
 `sync` against hosted services runs through the client and is experimental.
-
----
 
 ## At a glance
 
@@ -14,61 +12,6 @@
 | **status** | `/wholeloop:status` · `$wl-status` · `/wl-status` | the store | nothing | none |
 | **setup** | `/wholeloop:setup` · `$wl-setup` · `/wl-setup` | layered harness config and provider/profile catalogs | explicitly selected user/project settings, or transient run overrides | explicit choice of scope before saving |
 | **sync** | `/wholeloop:sync` · `$wl-sync` · `/wl-sync` | the store · `codehost` · `tracker` | the store · tracker items | none |
-
----
-
-## Available local commands
-
-Examples below use the `wl` command from the npm package; from a source build, run `node /absolute/path/to/dist/wl.mjs` in its place. In the native conversation select/request the installed `wl-...` skill; Antigravity uses `wl-agy-...`, and a separate Claude plugin uses `/wholeloop:...`. [Client setup](../platforms/local-onboarding.md) explains namespaces; the [core tour](../tutorials/local-core.md) demonstrates the terminal behavior.
-
-```text
-wl next "Find old orders faster" --owner Alex --json
-wl next init-0123abcd --json
-wl status --json
-wl status init-0123abcd --json
-wl setup --json
-wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
-```
-
-`next` begins framing from a sentence and reuses initiatives with an equivalent normalized title. Missing ownership becomes a question before creating an item; no input selects the sole open item or asks which one to continue. IDs reuse unfinished runs. After framing completion it can begin the spec and then stops at its required approval. Later unavailable steps remain explicit limits. Pending decisions become questions for a person, never automatic approvals. `--through` routing remains planned.
-
-`status` reports stored items, owners, step plans, pending decisions and unread message counts without consuming messages or writing the store. Recorded workspaces and impact schedules appear when present. It does not poll live integrations or infer deployment/service state from them.
-
-`setup` returns batched choices or applies an explicit subset of profile/docs/tracker choices. `--scope user|project|run` is required before applying choices. All selections validate before an atomic settings write. Run scope returns a transient override; project profile suggestions still yield to user preferences. Installation uses separate explicit commands; MCP edits and authentication remain client-owned setup. Canonical skills live in `harness/skills/`; compiled CLI workflow tests and scoped native observations are recorded separately in [acceptance](../v1-acceptance.md).
-
-The sections below describe skill/orchestrator behavior alongside core commands. A terminal call returns its contract or receipt; the coding client must perform any model-backed work and explicitly selected external handoffs. Setup does not install adapters, edit MCP configuration or authenticate services.
-
-## Adopt a URL and publish Define artifacts
-
-`wl next <HTTPS-URL> --json` matches stored adoption/document/tracker/PR links first. Fragments and known tracking parameters do not create new identities; semantic queries remain distinct. Multiple initiatives require an explicit ID. For an unknown URL, next asks for the source provider/kind and owner/title. It never invents an authenticated fetch or approvals from imported prose.
-
-A client reads the document/item and normalizes a complete result with its exact reference, body and revision. Save sanitized observations outside the repository:
-
-```json
-{"schema":"wholeloop/shared-read@1","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42","result":{"status":"succeeded","ref":"https://docs.example.com/work/42","body":"# Order search\n\nShared context.","revision":"observed-revision","complete":true}}
-```
-
-```text
-wl next https://docs.example.com/work/42 --provider notion --kind docs --file /tmp/shared-read.json --owner Alex --json
-wl adopt https://docs.example.com/work/42 --provider notion --kind docs --file /tmp/shared-read.json --owner Alex --json
-```
-
-`adopt` stops after import; `next` continues the stored initiative. A missing owner/title becomes batched questions before writing anything. Tracker bodies normalize to a JSON string containing title, body and optional owner. Imports are labelled observations; they do not prove that this process authenticated a tool.
-
-Each initiative defaults to local. To share, provide a destination array such as `[{"key":"team-docs","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42"}]`. Omit ref to create a separate resource per artifact; supply ref to append into an existing document/item. Explicit HTTPS destinations are pinned across mode changes.
-
-```text
-wl share mode --for init-0123abcd --mode shared --by Alex --file /tmp/targets.json --json
-wl share requests --for init-0123abcd --json
-wl share request --for init-0123abcd --key <outbox-key> --json
-wl share reconcile --for init-0123abcd --key <outbox-key> --ref <published-URL> --file /tmp/published-read.json --json
-wl share report --for init-0123abcd --json
-wl share mode --for init-0123abcd --mode local --by Alex --json
-```
-
-Shared mode queues all completed research, framing, specification and scope artifacts belonging to the initiative, including an unambiguously adopted research brief. Future completions queue in the same journal transaction. A standalone unadopted brief has no initiative destinations and stays local.
-
-The conductor consumes these requests through an explicit ProviderHost. The SDK SharingWorkflow.mode(..., host) publishes existing artifacts; complete(..., host) completes and flushes future work. The CLI queues and exposes a once-only intent: it does not authenticate or execute opaque MCP writers. After share request, the client performs the requested create or fresh read/append/conditional update, then supplies a separate complete read for reconciliation. Only exact artifact content earns a published receipt and stored link; the local CLI receipt alone means queued. A lost response remains ambiguous: find the resource and read it, never blindly repeat the write. Local mode pauses new requests, while a request already handed to a client remains that client's responsibility.
 
 ## next
 
@@ -89,11 +32,13 @@ flowchart TD
   classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
 ```
 
-- **States the plan before acting.** Which steps, in which order, and where it will stop — in a few lines. Say "only up to the spec" and it stops there.
-- **Never repeats finished work.** It starts from the first step whose output doesn't exist yet; a step skipped with a reason stays skipped.
+- **States the plan before acting.** Which steps, in which order and where it will stop, in a few lines. Say "only up to the spec" and it stops there.
+- **Never repeats finished work.** It starts from the first step whose output does not exist yet; a step skipped with a reason stays skipped.
 - **Picks up from a URL.** A tracker issue, a document or a PR is enough to rebuild the local state the next step needs, matching existing records instead of duplicating them.
-- **The whole front in one go.** `next "idea" --through build` runs Define and Build back to back, still stopping at **approve** and **test it**.
+- **Pending decisions become questions** for a person, never automatic approvals.
 - **Respects your `stops` setting.** With `stops: each-step` it pauses after every step even when no decision is due ([profile](../configuration/profile.md)).
+
+An example session; the layout depends on your client:
 
 ```text
 > /wholeloop:next https://linear.app/acme/issue/ENG-482
@@ -106,7 +51,18 @@ Go?       [ Go ]  [ Only slice-work ]  [ Change the plan ]
 
 ## status
 
-**What is where, and who is it waiting on.** Read-only, instant, safe anywhere.
+**What is where, and who is it waiting on.** It only reads, so it is safe anywhere. In a terminal:
+
+```console
+$ wl status
+init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
+  owner Demo Owner · updated 2026-11-17
+  next: frame-problem
+
+0 unread messages. Add --json for the full status.
+```
+
+In your client, the skill groups the same data by what is waiting on you. An example:
 
 ```text
 > /wholeloop:status
@@ -121,18 +77,49 @@ In progress
   build        slice-77ab · round 2 of 4 verify               started 14 min ago
 ```
 
-`status <id>` zooms into one item; `--json` prints the same data for scripts and dashboards.
+`status <id>` zooms into one item; `--json` prints the same data for scripts and dashboards. Status shows stored items, owners, step plans, pending decisions, unread message counts, and workspaces and measurement schedules when there are any. It never marks messages as read, and it never polls a live service to guess what was deployed.
 
 ## setup
 
-**Configure once, change any time.** Interactive, short, and it only asks about what you're about to use.
+**Configure once, change any time.** It is short, and it only asks about what you are about to use.
 
-| Area | What it sets | Where it's remembered |
+| Area | What it sets | Where it is remembered |
 | --- | --- | --- |
-| **Profile** | verbosity, depth, challenge, pace, stops, teaching, language — or a preset | your user config |
-| **Providers** | which tool fulfils each capability (docs, tracker, codehost, sources…) | project config (team) or user config (you) |
-| **CLIs** | which CLIs get adapters installed, user-wide or for this project | the CLIs' own config folders |
-| **MCP servers** | install recipes for the providers you picked, per CLI (`wl mcp add <provider> --target <cli>`) | each CLI's MCP config |
+| **Profile** | verbosity, depth, challenge, pace, stops, teaching, language, or a preset | the scope you choose |
+| **Providers** | which tool fulfils each capability: documents, tracker, code host, sources | the scope you choose |
+
+Two related tasks are **not** part of setup, on purpose:
+
+- **Installing into a client** is `wl install` ([getting started](../getting-started.md#install-for-one-client)).
+- **Connecting a service** happens in your client's own MCP settings. `wl mcp add <provider>` prints a configuration snippet without credentials for you to add there.
+
+In a terminal, `wl setup` with no choices returns the questions to answer, with exit code 2:
+
+```console
+$ wl setup
+{
+  "schema": "wholeloop/setup@1",
+  "applied": false,
+  "questions": [
+    {
+      "id": "profile",
+      "prompt": "Which interaction profile?",
+      …
+    {
+      "id": "scope",
+      "prompt": "Where should these choices be remembered?",
+      …
+```
+
+Every choice is validated before anything is written, and saving needs an explicit `--scope`:
+
+| Scope | Remembered for |
+| --- | --- |
+| `user` | you, in every repository |
+| `project` | everyone in this repository; your user profile still wins for personal style |
+| `run` | this run only; nothing is saved |
+
+In your client, the skill shows the same choices interactively. An example:
 
 ```text
 > /wholeloop:setup providers
@@ -148,7 +135,7 @@ Nothing has to be configured up front: every step asks for what it needs the fir
 
 ## sync
 
-**Make the store and your tools agree.** Read exact published PR merge observations, certify slice/part delivery and preserve unresolved sources. Explicit SDK tracker targets use revision-bound reads/transitions; flags and arbitrary issues are not inferred.
+**Make the store and your tools agree.** Sync reads the merged state of the pull requests wholeloop published, marks the delivered work as done, and moves tracker items only when you named them explicitly. It never guesses flags or unrelated issues.
 
 ```mermaid
 flowchart LR
@@ -157,11 +144,11 @@ flowchart LR
   classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
 ```
 
-- **Exact merges close delivery work.** Match the published PR URL/repository/head/base/commit and complete non-draft merged state. A closed-unmerged PR or changed head cannot close its item. Every repository part needs certified closure before its slice; manually closed work does not count.
-- **Scopes become delivery-ready.** Every current slice must have certified merge evidence. The scope remains open for rollout/learning and routes to prepare-launch; decide-next owns final outcome closure. Reopened work invalidates old readiness and needs a newly tested PR plan.
-- **Tracker targets are explicit.** An SDK conductor supplies provider/ref/exact target state and a tracker host. Read a complete matching current revision, journal intent, transition only certified work and observe final state. Missing bindings stay handoffs. Later external edits are reported without reapplying old targets.
-- **Uncertain writes are read-reconciled.** A lost transition response keeps its intent. A later read may confirm success; otherwise preserve ambiguity without a second write. Repeated unchanged work adds no journal events.
-- **Cleanup is conservative.** Reuse stopped/clean/owned/locally-merged worktree pruning outside the state lock. Retain active/dirty/locked/unmerged work, branches and processes. Squash/rebase merges may need local integration confirmation or explicit owner cleanup.
+- **Only exact merges close work.** The PR's URL, repository, head, base and commit must match what was published, and it must be merged, not just closed. A changed head cannot close its item. Every repository part must be closed this way before its slice; work closed by hand does not count.
+- **A scope becomes ready for rollout**, not closed, when every current slice has merge evidence. It moves on to `prepare-launch`; only `decide-next` closes it. Reopened work loses that readiness and needs a newly tested PR.
+- **Tracker moves are explicit.** The client names the provider, the item and the target state. Sync reads the item's current revision, records its intent, moves only certified work and reads the final state back. Without a binding, it stays a hand-off; later edits made in the tracker are reported, never overwritten.
+- **Uncertain writes are reconciled by reading.** A lost response keeps its intent; a later read may confirm it, otherwise the ambiguity stays visible and nothing is written twice. Running sync again on unchanged work records nothing new.
+- **Cleanup is conservative.** Only stopped, clean worktrees merged locally are pruned. Active, dirty, locked or unmerged work, branches and processes stay. After a squash or rebase merge, you may need to confirm or clean up by hand.
 
 ```bash
 wl sync --json
@@ -169,21 +156,83 @@ wl sync --for scope-a9e0b1c2 --prune off --json
 wl sync --for scope-a9e0b1c2 --file normalized-pr-observations.json --json
 ```
 
-Default code-host reads use gh/glab and their credential stores; the command does not push, merge or fetch. An imported wholeloop/sync-observations@1 file contains observations with exact published plan event/ref and a normalized complete result or explicit unavailable reason. Imports are labelled and prove no authentication. Unknown source reads preserve open work and return a precondition exit code.
+- **Reads** go through `gh` or `glab` and their own credential stores. Sync never pushes, merges or fetches.
+- **`--file`** imports observations your client made (`wholeloop/sync-observations@1`): each names the exact published plan event and either a complete result or the reason it was unavailable. Imports are labelled as such and prove no sign-in.
+- **When a source cannot be read**, the work stays open and the command exits with code 3.
+- **From the SDK**, `SyncWorkflow.run` takes a code-host factory, an optional tracker host and explicit targets per item. Targets are never guessed. The CLI itself has no signed-in tracker client.
 
-The SDK `SyncWorkflow.run` accepts a codehost factory and optional tracker host, plus explicit per-item provider/ref/state targets. Target references/state IDs are never guessed or derived from unresolved publication placeholders. The CLI has no authenticated tracker executor; that bridge remains the host's responsibility. Reports include changes, unknown observations, delivery readiness, tracker outcomes and retained/pruned worktrees. [ADR-0043](../decisions/0043-certified-delivery-sync-and-recoverable-tracker-status.md) explains the distinction between delivered code and a decided product outcome.
-
----
+The report lists what changed, what could not be observed, delivery readiness, tracker outcomes and which worktrees were kept or pruned. Delivered code and a decided product outcome stay separate: merging is not the end of the loop.
 
 ## Gotchas & FAQ
 
 **"Do I need `next` at all?"** No. Calling a step directly is just as valid; `next` saves you from remembering which one comes now.
 
-**"Can a teammate continue my work?"** Yes, if the work lives in a shared tool (tracker, docs, PRs). They run `next <URL>` and it rebuilds what's needed on their machine. Purely local work stays on yours.
+**"Can a teammate continue my work?"** Yes, if the work lives in a shared tool (tracker, docs, PRs). They ask for `wl-next` with the URL and it rebuilds what is needed on their machine. Purely local work stays on yours.
 
-**"Will `sync` overwrite edits made in the tracker?"** Content is never rewritten. Explicit SDK targets move status only after current reads; later external state edits are reported as drift and preserved. Unbound references remain handoffs.
+**"Will `sync` overwrite edits made in the tracker?"** No. Content is never rewritten, status moves only after a current read, and later edits in the tracker are reported as drift and kept.
 
----
+## Core commands
+
+The terminal commands behind the skills, for scripts and skill authors. In a conversation, ask for the installed `wl-...` skill instead (`wl-agy-...` on Antigravity, `/wholeloop:...` with the Claude plugin). The [core tour](../tutorials/local-core.md) shows them running.
+
+```text
+wl next "Find old orders faster" --owner Alex --json
+wl next init-0123abcd --json
+wl status --json
+wl status init-0123abcd --json
+wl setup --json
+wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
+```
+
+**`wl next`** begins framing from a sentence, and reuses an initiative whose title matches, ignoring case and spacing. A missing owner becomes a question before anything is created. With no input, it picks the only open item or asks which one to continue; with an ID, it reuses the unfinished run. After framing, it can begin the specification, and then stops at its approval. Running several steps in one request (`--through`) is planned, not available.
+
+A terminal call returns a contract or a receipt and stops; model-backed work, and any hand-off you selected, is the client's job.
+
+### Adopt a URL and publish Define artifacts
+
+**Adopting a URL.** `wl next <HTTPS-URL> --json` first looks for the URL among stored links: adopted sources, documents, tracker items and PRs. A fragment or a known tracking parameter does not make it a new URL; a different query does. If several initiatives match, you must give the ID. For an unknown URL, it asks for the provider, the kind, the owner and the title. It never pretends to have fetched anything, and imported text never counts as an approval.
+
+Your client reads the document or item and passes a complete result with its exact reference, body and revision. Save these sanitized observations outside the repository:
+
+```json
+{"schema":"wholeloop/shared-read@1","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42","result":{"status":"succeeded","ref":"https://docs.example.com/work/42","body":"# Order search\n\nShared context.","revision":"observed-revision","complete":true}}
+```
+
+```text
+wl next https://docs.example.com/work/42 --provider notion --kind docs --file /tmp/shared-read.json --owner Alex --json
+wl adopt https://docs.example.com/work/42 --provider notion --kind docs --file /tmp/shared-read.json --owner Alex --json
+```
+
+- `adopt` stops after importing; `next` continues with the stored initiative.
+- A missing owner or title becomes questions before anything is written.
+- A tracker item's body is a JSON string with its title, body and optional owner.
+- Imports are labelled as observations; they do not prove that wholeloop signed in to anything.
+
+**Publishing Define artifacts.** Each initiative is **local** by default. To share its artifacts, give a list of destinations, such as `[{"key":"team-docs","provider":"notion","kind":"docs","ref":"https://docs.example.com/work/42"}]`. Leave out `ref` to create one new resource per artifact, or give it to append to an existing document or item. HTTPS destinations you set stay pinned when you switch modes.
+
+```text
+wl share mode --for init-0123abcd --mode shared --by Alex --file /tmp/targets.json --json
+wl share requests --for init-0123abcd --json
+wl share request --for init-0123abcd --key <outbox-key> --json
+wl share reconcile --for init-0123abcd --key <outbox-key> --ref <published-URL> --file /tmp/published-read.json --json
+wl share report --for init-0123abcd --json
+wl share mode --for init-0123abcd --mode local --by Alex --json
+```
+
+```mermaid
+flowchart LR
+  Q[Shared mode queues<br/>completed artifacts] --> R[share request<br/>one write, once]
+  R --> W[Your client writes<br/>through its provider] --> C[share reconcile<br/>with a fresh read]
+  C --> P[Published receipt<br/>and stored link]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class Q,R,W,C,P core;
+```
+
+- **What is queued.** Shared mode queues every completed research brief, framing, specification and scope of the initiative, and every later one as it completes. A standalone brief that was never adopted has no destinations and stays local.
+- **Who writes.** The CLI only queues each write and hands it out once; it signs in to nothing and runs no MCP tool. Your client performs the write, then supplies a separate, complete read of the result. From the SDK, `SharingWorkflow.mode(..., host)` publishes existing artifacts and `complete(..., host)` publishes new ones as they complete.
+- **What counts as published.** Only a read showing the exact artifact content earns a published receipt and a stored link. Until then, the receipt says *queued*.
+- **Lost responses.** Find the resource and read it; never repeat the write blindly.
+- **Going back to local** pauses new requests. A request already handed to a client stays that client's responsibility.
 
 <!-- docnav -->
 [◀ decide-next](learn/decide-next.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Configuration ▶](../configuration/README.md)

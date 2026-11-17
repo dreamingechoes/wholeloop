@@ -4,8 +4,6 @@
 
 Publication through `gh` and `glab` is tested against fixtures, and remote tracker mirroring is experimental.
 
----
-
 ## At a glance
 
 | | |
@@ -58,9 +56,9 @@ flowchart TD
 | `slice-0d4e` | the PR(s) for that slice, with its verdicts in the body |
 | `--repo api,web` | PRs only for those parts of a multi-repo slice |
 
-Without a slice there are no verdicts to report, and the PR body says the gates were not run — never that they passed.
+Without a slice there are no verdicts to report, and the PR body says the gates were not run, never that they passed.
 
-The executable commands are:
+The core commands behind the skill, in order:
 
 ```bash
 wl pr prepare --for <part-or-slice> --body-file <external-draft.md> --json
@@ -72,13 +70,28 @@ wl pr open --for <id> --json
 wl pr reconcile --for <id> --url <observed-pr-url> --json
 ```
 
-Prepare never publishes. Configure providers.codehost as github or gitlab, or pass `--provider` while preparing. Standalone use supplies `--base`, `--owner`, `--title` and `--body-file` for the currently checked-out branch. Missing facts are questions; there is no implicit checkout, commit, fork or fabricated gate result. Branches must be clean and contain commits beyond their named target. Finish authorized commits before final gates and human testing: a commit changes the gate snapshot.
+**1. Prepare** writes a plan and never publishes.
 
-The plan pins its body and repository convention. Human testing includes who and what they tried; a generic decision alone cannot publish. Any new plan or code requires fresh testing. A durable request prevents duplicate push/create attempts on resume. Only a matching open draft can complete. API hosts use CLI credential stores and JSON stdin; no credential or temporary body file is written by them. See [ADR-0035](../../decisions/0035-tested-draft-plans-and-once-only-publication.md).
+- Set `providers.codehost` to `github` or `gitlab`, or pass `--provider`.
+- Used on its own, it needs `--base`, `--owner`, `--title` and `--body-file` for the branch you have checked out. Missing facts become questions.
+- It never checks out, commits or forks, and never invents a gate result.
+- The branch must be clean and have commits beyond its target. Finish any authorized commits first: a commit changes what the gates checked.
+- The plan pins the body and your repository's PR convention. Stored tracker and related item references go into the body.
 
-Stored tracker and known sibling references go into the body. Local links and a part's parent slice are updated; unavailable remote tracker mirroring and earlier PR back-links remain explicit handoffs. No authenticated publication was exercised.
+**2. Your test** is recorded with who tested and what they tried; a bare "approved" cannot publish. Any new plan or code change needs a new test.
+
+**3. Open** publishes once.
+
+- A durable request prevents a duplicate push or PR when a run resumes; only a matching open draft completes it.
+- GitHub and GitLab are reached through their own CLIs (`gh`, `glab`) and their credential stores, with data passed on standard input. No credential or temporary body file is written.
+
+**4. Reconcile** finishes an interrupted request from the URL you observed on the remote, instead of trying again blindly.
+
+After publication, local links and a part's parent slice are updated. Mirroring to a remote tracker and back-links from earlier PRs stay explicit hand-offs.
 
 ## Run it
+
+An example session. The layout and wording depend on your client and model:
 
 ```text
 > /wholeloop:open-pr slice-0d4e
@@ -107,13 +120,13 @@ Outside the repo
 Next              your review · merge when ready · sync cleans up afterwards
 ```
 
-| CLI | Invoke |
+| Client | Invoke |
 | --- | --- |
-| Claude Code | `/wholeloop:open-pr …` |
+| Claude Code, installed skills | `/wl-open-pr …` |
+| Claude Code, generated plugin | `/wholeloop:open-pr …` |
 | Codex CLI | `$wl-open-pr …` |
-| OpenCode | `/wl-open-pr …` |
-| Copilot CLI | `/wl-open-pr …` |
-| Gemini CLI · Antigravity · Cursor | `/wl-open-pr …` |
+| OpenCode · Copilot · Gemini · Cursor | Ask for `wl-open-pr` |
+| Antigravity | Ask for `wl-agy-open-pr` |
 
 ## Before & after
 
@@ -131,8 +144,6 @@ The environment section includes every declared write, its undo argv and working
 **"I'd rather test in my usual checkout."** Check out the slice branch there (`git switch wl/slice-0d4e-…`); the step only needs your answer, not where you ran it.
 
 **"I want to try it later."** Stop here; the slice waits at **test it**, its worktree stays put, and `next` brings you back to it.
-
----
 
 <!-- docnav -->
 [◀ review-code](review-code.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [prepare-launch ▶](../rollout/prepare-launch.md)

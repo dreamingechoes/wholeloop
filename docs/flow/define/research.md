@@ -1,30 +1,8 @@
 # research — an evidence-first brief on any hard question
 
-> **TL;DR** — Splits a question into angles, investigates each one against a real source in parallel, lets a challenger try to refute the claims the conclusion rests on, and hands back a brief: claims with evidence and confidence, plus the open questions nothing could answer. Optional in the flow; useful on its own any day.
+> **TL;DR** — Splits a question into **angles**, investigates each one against a real source in parallel, lets a challenger try to refute the claims the conclusion rests on, and hands back a **brief**: claims with evidence and confidence, plus the open questions nothing could answer. Optional in the flow; useful on its own any day.
 
-Live fan-out depends on the client, and authenticated sources are experimental.
-
-Completed artifacts can join the initiative's explicit shared outbox, including a research brief adopted into that initiative. The conductor publishes through the selected host and records links only after verifying the complete exact chunk. The CLI persists requests and labelled read imports; authenticated tool execution remains a client responsibility. See [shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
-
----
-
-## Available core workflow
-
-```text
-wl step begin research --input "How do people find old orders?" --owner Alex --json
-wl research plan --for brief-0123abcd --json
-wl research submit --for brief-0123abcd --file /path/to/source-result.json --json
-wl research examine --for brief-0123abcd --file /path/to/examination.json --json
-wl research complete --for brief-0123abcd --json
-```
-
-Use `step begin research --parent <initiative-or-scope>` to attach a new brief; its stored owner is available as a fact. Resume an existing brief with `--for`. The versioned schemas in `src/research/schemas/` define source results and votes. Each claim includes evidence references with excerpts, confidence and whether it is load-bearing. A verifier slot submits a reasoned `refute`, `confirm` or `uncertain` result; an active refutation needs evidence.
-
-Plans are pinned to a run, including `research.verifiers` (3, 5, 7 or 9; default 3) and its strict-majority threshold. Replanning is idempotent even if settings change. Source results and examinations are append-only and cannot be replaced within that run. Start a new run to revise them. The complete command aggregates recorded evidence; generic completion rejects a different final artifact.
-
-Missing source results become open questions with a named owner. Missing or uncertain examinations retain the claim at low confidence; duplicate verifier slots do not count twice. The host remains responsible for assigning independent sessions. [ADR-0021](../../decisions/0021-journaled-research-plans-and-refutations.md) explains this boundary and the rejected alternatives.
-
-The examples below show the full target experience, including integrations that still need live conformance and later provider work.
+Running the angles in parallel depends on your client, and authenticated sources are experimental.
 
 ## At a glance
 
@@ -66,7 +44,7 @@ flowchart TD
   classDef opt stroke-dasharray:5 3;
 ```
 
-1. **Sources are providers.** The angles on offer are exactly the `source.*` providers you have configured or that `wl` detects — add a provider and it shows up here, with no change to the step ([extending/providers](../../extending/providers.md)).
+1. **Sources are providers.** The angles on offer are exactly the `source.*` providers you have configured or that `wl` detects. Add a provider and it shows up here, with no change to the step ([extending/providers](../../extending/providers.md)).
 2. **Confirming angles is cheap and optional.** It is a lightweight check, not one of the six decision points: say "go", "drop 2" or "add competitors' mobile apps".
 3. **Never fabricated.** A source that is not configured, not authenticated or returns nothing becomes an **open question** with what is missing and who might have it.
 4. **Cross-examination is bounded.** Only the claims each angle's conclusion rests on are challenged; a claim falls only on **two active refutations**, so a silent verifier cannot delete a real finding.
@@ -77,6 +55,8 @@ flowchart TD
 Alone, `research` needs only a question. It creates a **loose brief** that you can later feed into [`frame-problem`](./frame-problem.md) (`--from brief-7f3a`) or simply keep. Inside an initiative, the brief attaches to it and its open questions become inputs to the next step.
 
 ## Run it
+
+An example session. The layout and wording depend on your client and model, and remote sources such as PostHog need a provider you configured:
 
 ```text
 > /wholeloop:research Do users struggle to find their past orders, and how do comparable products solve it?
@@ -111,28 +91,48 @@ Open questions     2             support tickets unreachable · no baseline for 
 Next (optional)    /wholeloop:frame-problem --from brief-7f3a
 ```
 
-| CLI | Invoke | Parallel angles |
+| Client | Invoke | Parallel angles run as |
 | --- | --- | --- |
-| Claude Code | `/wholeloop:research …` | native subagents |
+| Claude Code | `/wl-research …`, or `/wholeloop:research …` with the plugin | native subagents |
 | Codex CLI | `$wl-research …` | native subagents |
-| OpenCode | `/wl-research …` | native subagents |
-| Copilot CLI | `/wl-research …` | native subagents (`/fleet`) |
-| Gemini CLI · Antigravity · Cursor | `/wl-research …` | native where supported, else headless or sequential ([orchestration](../../architecture/orchestration-and-gates.md)) |
+| OpenCode | Ask for `wl-research` | native subagents |
+| Copilot CLI | Ask for `wl-research` | native subagents (`/fleet`) |
+| Gemini CLI · Cursor | Ask for `wl-research` | native where available, otherwise headless or one by one |
+| Antigravity | Ask for `wl-agy-research` | native where available, otherwise headless or one by one |
 
 ## Before & after
 
-- **Fed by:** anything — a question, a pasted thread, a file, an existing initiative or scope.
+- **Fed by:** anything: a question, a pasted thread, a file, an existing initiative or scope.
 - **Feeds:** [`frame-problem`](./frame-problem.md) and [`write-spec`](./write-spec.md) (evidence, baselines, open questions); any later step that needs evidence.
 
 ## Gotchas & FAQ
 
 **"It asked me which sources to use — every time?"** Only until you answer with *this repo* or *always*; then it is remembered at that scope.
 
-**"A source I need is not in the list."** Write a provider manifest for it — usually a few lines pointing at an MCP server ([how](../../extending/providers.md)).
+**"A source I need is not in the list."** Write a provider manifest for it, usually a few lines pointing at an MCP server ([how](../../extending/providers.md)).
 
 **"Why was a claim dropped that looked right to me?"** The receipt links each dropped claim with the verifiers' reasons. If they were wrong, that is a calibration case worth adding to the eval corpus.
 
----
+## Available core workflow
+
+The commands the skill uses, for scripts and skill authors:
+
+```text
+wl step begin research --input "How do people find old orders?" --owner Alex --json
+wl research plan --for brief-0123abcd --json
+wl research submit --for brief-0123abcd --file /path/to/source-result.json --json
+wl research examine --for brief-0123abcd --file /path/to/examination.json --json
+wl research complete --for brief-0123abcd --json
+```
+
+- **Attach or resume.** `step begin research --parent <initiative-or-scope>` attaches a new brief, and its owner becomes a known fact. `--for` resumes an existing brief.
+- **Claims.** Each claim carries evidence references with excerpts, a confidence and whether the conclusion rests on it (*load-bearing*). The versioned schemas in `src/research/schemas/` define source results and votes.
+- **Verifiers.** Each verifier returns a reasoned `refute`, `confirm` or `uncertain`; a refutation needs evidence. The plan pins the number of verifiers (`research.verifiers`: 3, 5, 7 or 9; default 3) and its strict-majority threshold, so changing the setting later does not change a run.
+- **Append-only.** Source results and examinations cannot be replaced within a run; start a new run to revise them. `research complete` builds the brief from what was recorded, and a different final artifact is refused.
+- **Gaps stay visible.** A missing source result becomes an open question with an owner. A missing or uncertain examination keeps the claim, at low confidence, and a duplicated verifier counts once.
+- **Independence is the client's job.** The core cannot check that verifiers ran in separate sessions; the client assigns them.
+
+A completed brief adopted into an initiative can also be published with the initiative's other Define artifacts. [Shared publication](../utilities.md#adopt-a-url-and-publish-define-artifacts).
 
 <!-- docnav -->
 [◀ The flow](../README.md)  ·  [📖 Docs index](../../README.md)  ·  [🧭 Concepts](../../concepts.md)  ·  [frame-problem ▶](frame-problem.md)
