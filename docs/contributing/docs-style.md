@@ -43,6 +43,7 @@ A wall of text loses the reader even when every sentence is right.
 A command without its output asks the reader to trust it blindly.
 
 - **Show the output after every command** in a `console` block, with the prompt `$` before the command. A reader sees what success looks like before running it.
+- **Commands that print nothing** go in a `bash` block without `$`, followed by a sentence saying so; markdownlint refuses a `console` block with no output.
 - **Use real output.** Run the command with the released CLI in a disposable home, then paste what it printed. Shorten personal or temporary paths to `~` and long identifiers to their first characters followed by `…`; mark removed lines with a single `…` line.
 - **Explain the flags** of a long command in a short table under it: flag, what it does, when to change it.
 - **Long setup goes in a `<details>` block** with a summary such as "Setup: copy once". The reader sees the steps that teach something, not the boilerplate around them.

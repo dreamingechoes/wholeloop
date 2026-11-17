@@ -1,8 +1,6 @@
 # Getting started — install once, run a first skill
 
-> **TL;DR** — Install the `wl` CLI from npm, install wholeloop into one coding client, restart that client in your application repository and ask for the framing skill. Everything is stored locally to start with; no service account is needed. The local core tour works without a model account.
-
-How far each client's discovery, sign-in and permissions were checked is recorded in [V1 acceptance](./v1-acceptance.md).
+> **TL;DR** — Install the `wl` CLI from npm, install wholeloop into one coding client, restart that client in your application repository and ask for the framing skill. Everything is stored on your machine to start with; no service account is needed. If you have no client or model account yet, the local core tour works without either.
 
 ## Contents
 
@@ -26,78 +24,119 @@ How far each client's discovery, sign-in and permissions were checked is recorde
 | A working installation and a small change to make | [Small-change walkthrough](./tutorials/small-change.md) | The change is built, verified and reviewed, and waiting for you to test it |
 | A failed command or a missing skill | [Troubleshooting](./troubleshooting.md) | You know which part failed, before reinstalling anything |
 
-Two pieces work together. Skills run inside your coding client and do the model-backed work: asking questions, drafting, editing code. The `wl` core is a plain command-line program that stores your work and enforces the rules. A command that succeeds in the terminal does not mean the client has run a skill.
+Keep in mind that wholeloop has **two parts**:
+
+- **Skills** run inside your coding client and do the model-backed work: asking questions, drafting, editing code.
+- **The `wl` core** is a plain command-line program that stores your work and enforces the rules.
+
+A command that succeeds in the terminal does not mean the client has run a skill. The two are checked separately below.
 
 ## Install the CLI
 
-You need Node 20 or newer and Git 2.36 or newer; that Git version is the first that lists worktrees unambiguously ([ADR-0138](decisions/0138-unambiguous-git-worktree-runtime.md)). Steps that run your project's code also need a local Docker daemon ([execution isolation](./architecture/execution-isolation.md)). Your coding client has its own requirements.
+| You need | Why |
+| --- | --- |
+| **Node.js 20** or newer | Runs the `wl` core |
+| **Git 2.36** or newer | Isolated worktrees; 2.36 is the first version that lists them unambiguously |
+| **Docker 28** or newer, with a local daemon | Only for steps that run your project's code, which never runs directly on your machine ([execution isolation](./architecture/execution-isolation.md)) |
 
-```bash
-npm install --global wholeloop
-wl --version
+Your coding client has its own requirements.
+
+```console
+$ npm install --global wholeloop
+added 1 package in 597ms
+$ wl --version
+1.1.0
 ```
 
-The package installs two equivalent commands, `wl` and `wholeloop`, and has no runtime dependencies. To work from a source checkout instead, follow the [development guide](./contributing/development.md).
+The package has no runtime dependencies and installs two equivalent commands, `wl` and `wholeloop`. To work from a source checkout instead, follow the [development guide](./contributing/development.md).
 
 ## Install for one client
 
-Pick the client you already use. This example uses Claude Code:
+Pick the client you already use. This example uses Claude Code; the other targets are `codex`, `opencode`, `copilot`, `gemini`, `antigravity` and `cursor`.
 
-```bash
-wl install --target claude --scope user --dry-run
-wl install --target claude --scope user
+**1. Preview.** `--dry-run` writes nothing:
+
+```console
+$ wl install --target claude --scope user --dry-run
+Dry run for claude at user scope: nothing was written.
+  188 files to write
+Run the same command without --dry-run to apply it.
+…
 ```
 
-The first command only lists the files it would write; the second writes them. Targets are `claude`, `codex`, `opencode`, `copilot`, `gemini`, `antigravity` and `cursor`. [Local client setup](./platforms/local-onboarding.md) covers each client's directories, skill names and version differences.
+**2. Install:**
 
-The [install scope](./glossary.md#terms) decides where the files go:
+```console
+$ wl install --target claude --scope user
+Installed claude at user scope.
+Receipt: ~/.local/state/wholeloop/installations/22d5c1ca…/receipt.json
+Restart the client and check that the skills appear.
+Git guards are installed per repository: node ~/.local/state/wholeloop/distributions/22d5c1ca…/claude/bin/wl.mjs guard hooks install --repo '<repository>' --store ~/.local/state/wholeloop --json
+Add --json for the full result.
+```
+
+| Flag | What it does |
+| --- | --- |
+| `--target claude` | The client to install for |
+| `--scope user` | Where the skills go; see the table below |
+| `--dry-run` | Shows what would change, without writing |
+
+The **install scope** decides where the files go:
 
 | Scope | Run it from | What it writes |
 | --- | --- | --- |
 | `user` | Any directory | The client's user-level directories, so every project sees the skills |
 | `project` | The application repository that should get them | That repository's client directories and `.wholeloop/distribution/<target>` |
 
-For project scope, change into the application first and replace `--scope user` with `--scope project`. In both cases your work history, receipts and backups stay in your personal [store](./glossary.md#terms), never in the repository.
+For project scope, change into the application first and use `--scope project`. Either way, your work history, receipts and backups stay in your personal [store](./glossary.md#terms), never in the repository.
 
-The install result ends with the command that adds wholeloop's Git guards to a repository. Guards are set per repository and never by install itself. After a user-scope install the command shows `<repository>` in place of the path: run it from or for each application repository you want guarded, with that repository's path. A project-scope install names its own repository. A backup directory is reported only when the install replaced files.
+**About the last line: Git guards.** Guards are Git hooks that check commits and pushes made during a step: for example, that no runtime state is committed and that only a tested change is pushed. Install never adds them by itself, because they belong to one repository:
+
+- After a **user-scope** install, the command shows `<repository>`. Run it once for each application repository you want guarded, with that repository's path.
+- After a **project-scope** install, the command already names the repository.
+
+[Client setup](./platforms/local-onboarding.md) covers each client's directories, skill names and version differences.
 
 ## Check the installation
 
-Use the same target:
-
-```bash
-wl doctor --target claude
-```
-
-Doctor checks the Node, Git and client versions, that it can write to your store, and that the installed files still match what wholeloop wrote. It reports; it never repairs anything itself. A healthy installation looks like this (abridged):
-
-```text
+```console
+$ wl doctor --target claude
 Doctor: every required check passed.
 
-  pass     node                  22.12.0
+  pass     node                  24.22.0
   pass     git                   2.49.0
-  pass     cli.claude            2.1.325
+  pass     cli.claude            2.1.326
   pass     store
+  pass     providers
+  unknown  artifacts
+           No explicit standalone artifact directory was checked; see managed scope checks when available. Native discovery remains unverified.
+           …
   pass     installation.user
   unknown  installation.project
            No owned receipt at this scope; existing unmanaged native components remain unverified.
+
+Doctor cannot see whether the client loads the skills, is signed in or grants permissions.
+Add --json for the full report.
 ```
 
-A check that is not a pass explains what was seen and, when there is a fix, prints the command to run. Add `--json` for the full versioned report, which is what scripts should read.
+**Doctor** checks the Node, Git and client versions, that it can write to your store, and that the installed files still match what wholeloop wrote. It reports; it never repairs anything.
+
+> [!TIP]
+> `unknown` is not a failure. Here it means doctor was not given a generated artifact directory to compare, and that there is no project-scope install, which is expected after a user-scope one. Only `fail` needs action.
 
 | What doctor says | What to do |
 | --- | --- |
 | Every required check passes | Restart the client and check that the skills appear |
 | The client's executable is missing | Install the client through its own setup, then run doctor again |
 | Installed files are changed, stale or pending | Read [installation problems](./troubleshooting.md#installation-reports-changed-unowned-or-pending-files) before reinstalling |
-| A provider or an optional file is `unknown` | Nothing, unless you need that provider; unknown is not an error |
+| A provider or an optional file is `unknown` | Nothing, unless you need it |
 | It exits with code 3 | A required check failed; its message names the cause and the next step |
 
-A passing doctor has not run a model, and it cannot see whether the client trusts and loads the skills. Only the client can show that. [Troubleshooting](./troubleshooting.md) has a fix for each failure.
+Add `--json` for the full versioned report, which is what scripts should read. A passing doctor has not run a model and cannot see whether the client trusts and loads the skills; only the client can show that.
 
 ## Run framing in your project
 
-Open or restart your coding client in the application repository you want to work on, and ask for `wl-frame-problem` (on Antigravity, `wl-agy-frame-problem`):
+Open or restart your coding client **in the application repository** you want to work on, and ask for `wl-frame-problem` (on Antigravity, `wl-agy-frame-problem`). This is a request to the client, not a shell command:
 
 ```text
 Use wl-frame-problem for this idea: "Find tasks by title."
@@ -105,72 +144,141 @@ I am the owner. This hypothesis is not validated yet.
 Frame the problem only, preserve unknowns and stop before specification.
 ```
 
+How you call a skill depends on the client:
+
+| Client | How to call it |
+| --- | --- |
+| Claude Code | `/wl-frame-problem`, or `/wholeloop:frame-problem` with the plugin |
+| Codex | `$wl-frame-problem` from the skill picker |
+| Other clients | Ask for `wl-frame-problem` by name |
+
 Give your real name as the owner and your application's context when asked. Expect:
 
 1. A [preflight](./glossary.md#terms): what the run will do and what it will never do, before it drafts anything.
 2. Eight framing questions, plus who owns the problem.
 3. Gaps written as `TBD: ...; who: ...` instead of invented answers.
-4. Feedback from a challenger role, then a request for your outcome.
+4. Feedback from a **challenger**, a reviewer role that questions the draft, then a request for your outcome.
 5. The final draft for your approval. If you edit it after that review, it is reviewed again.
 
-How you call a skill depends on the client. Claude Code's installed skills answer to `/wl-frame-problem`, its generated plugin to `/wholeloop:frame-problem`, and Codex's skill picker uses `$wl-frame-problem`. These are requests to the client, not shell commands. For a complete practice run with a fictional application, follow [your first framing](./tutorials/first-framing.md).
+The wording varies with the model. For a complete practice run with a fictional application, follow [your first framing](./tutorials/first-framing.md).
 
 ## Verify the receipt and recover
 
-The run ends with a [receipt](./glossary.md#terms) that includes an initiative ID. Save it, then:
+The run ends with a [receipt](./glossary.md#terms) that includes an **initiative ID**, such as `init-3cf1140a`. Save it, then:
 
 1. Ask the client for `wl-status` with that ID. Status only reads; it does not move the work forward.
-2. Close the client, open a new session in the same project and ask for status again. The work is still there.
+2. Close the client, open a new session in the same project and ask again. The work is still there.
 
-You can read the same state from a terminal. Replace the example value with your ID:
+You can read the same state from a terminal:
 
-```bash
-export INITIATIVE_ID="paste-the-returned-init-ID"
-wl status "$INITIATIVE_ID"
-wl resume "$INITIATIVE_ID" --json
+```console
+$ wl status init-3cf1140a
+init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
+  owner Demo Owner · updated 2026-11-17
+  next: frame-problem
+
+0 unread messages. Add --json for the full status.
 ```
 
-State lives under `$XDG_STATE_HOME/wholeloop`, or `$HOME/.local/state/wholeloop` when that variable is unset. Every session must see the same store to find the same work. `status` and `resume` only read; `next` can start the next step, so do not use it just to look around.
+| Command | What it does |
+| --- | --- |
+| `wl status <id>` | Shows the item, its owner and the next step. Only reads |
+| `wl resume <id>` | Prints the compact context a new conversation needs. Only reads |
+| `wl next <id>` | Begins the next step. It changes state, so do not use it just to look around |
 
-If you decided to put the idea on hold or drop it, status shows `closed` with no next step. The outcome, the reason and what would reopen it are kept in the receipt and the stored record; a new session does not reopen it. [Recovery checks](./tutorials/first-framing.md#recover-in-a-new-session).
+State lives under `~/.local/state/wholeloop`, or `$XDG_STATE_HOME/wholeloop` when that variable is set. Every session must see **the same store** to find the same work.
+
+If you put the idea on hold or dropped it, status shows `closed` with no next step. The outcome, the reason and what would reopen it are kept; a new session does not reopen it on its own. [Recovery checks](./tutorials/first-framing.md#recover-in-a-new-session).
 
 ## Optional configuration
 
 You do not need a Jira, Notion, analytics or feature-flag account for local work. To save local destinations and a conversation style:
 
-```bash
-wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
-wl profile show --json
+```console
+$ wl setup --profile pair --docs local-docs --tracker local-tracker --scope user
+{
+  "schema": "wholeloop/setup@1",
+  "scope": "user",
+  "applied": true,
+  …
+}
+$ wl profile show
+{
+  "preset": "pair",
+  "verbosity": "standard",
+  …
+}
+
+Style for this run:
+- Give enough reasoning and context to assess each action.
+…
 ```
 
-Pick `mentor` for more explanation, `pair` for ordinary work, `sparring` for stronger pushback or `autopilot` for terse, parallel work. A preset changes how the harness talks to you, never which approvals it needs. [Profiles](./configuration/profile.md).
+The **profile** changes how the harness talks to you, never which approvals it needs:
+
+| Preset | For |
+| --- | --- |
+| `mentor` | More explanation, for learning |
+| `pair` | Ordinary work |
+| `sparring` | Stronger pushback on your assumptions |
+| `autopilot` | Terse output and parallel work |
+
+[Profiles](./configuration/profile.md) lists every dial.
 
 When a workflow needs an external service, connect it in your client's own MCP settings and choose the matching provider; wholeloop uses the connection you already have. Remote integrations are **experimental**: tested against fixtures, not certified against every service. [Providers](./configuration/providers.md) · [MCP transport](./extending/providers.md#client-owned-mcp-transport).
 
 ## Update or uninstall
 
-To update, upgrade the package and repeat the install for the same target and scope, starting with the dry run:
+**To update**, upgrade the package and repeat the install for the same target and scope, starting with the dry run:
 
-```bash
-npm install --global wholeloop@latest
-wl install --target claude --scope user --dry-run
-wl install --target claude --scope user
+```console
+$ npm install --global wholeloop@latest
+changed 1 package in 870ms
+$ wl install --target claude --scope user --dry-run
+…
+$ wl install --target claude --scope user
+…
 ```
 
-When nothing changed, install says the target is already installed. Files wholeloop wrote and you have not touched are replaced, with a backup in your store. A file you edited, or one wholeloop did not write, is left alone and reported; there is no option to force over it. If an earlier install was interrupted, read its pending receipt before running anything else.
+The output is the same as a first install. When the installed files already match the new version, install says so instead:
 
-To remove an installation, use the same target and scope:
-
-```bash
-wl uninstall --target claude --scope user --dry-run
-wl uninstall --target claude --scope user
+```console
+$ wl install --target claude --scope user
+Already installed: claude at user scope matches this version.
+…
 ```
 
-Removal deletes only the unchanged files wholeloop wrote; your work history and backups stay in the store. A separately activated Git hook fallback has its own uninstall command. Restart the client to confirm the skills are gone. [Client-specific removal](./platforms/local-onboarding.md#verify-a-first-step-and-retire-the-same-installation).
+- Files wholeloop wrote and you have not touched are replaced, with a backup in your store.
+- A file you edited, or one wholeloop did not write, is left alone and reported. There is no option to force over it.
+- If an earlier install was interrupted, read its pending receipt before running anything else.
+
+**To remove** an installation, use the same target and scope:
+
+```console
+$ wl uninstall --target claude --scope user --dry-run
+Dry run for claude at user scope: nothing was written.
+  188 files to remove
+…
+$ wl uninstall --target claude --scope user
+Removed claude at user scope.
+Backups: ~/.local/state/wholeloop/installations/22d5c1ca…/backups/57cc2413…
+…
+Restart the client to confirm the skills are gone.
+Git guards are removed per repository: …
+```
+
+Removal deletes only the unchanged files wholeloop wrote; your work history and backups stay in the store. Git guards you added to a repository have their own uninstall command, printed on the last line. [Client-specific removal](./platforms/local-onboarding.md#verify-a-first-step-and-retire-the-same-installation).
 
 ## What installation does not do
 
-Installing wholeloop does not install or sign in to your client, choose a model, edit its general or MCP settings, or call any service. It writes its own files and leaves whether the client loads them, trusts them and grants their permissions to the client's own setup. [Installation boundaries](./platforms/README.md#installing).
+Installing wholeloop **does not**:
+
+- install your client or sign you in;
+- choose a model;
+- edit the client's general or MCP settings;
+- call any service.
+
+It writes its own files and leaves loading, trusting and granting permissions to the client's own setup. [Installation boundaries](./platforms/README.md#installing).
 
 ## Where to go next
 

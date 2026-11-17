@@ -13,7 +13,9 @@
     // A TL;DR quote followed by a GitHub alert ([!NOTE]) must be two separate blockquotes.
     "MD028": false,
     // Repeated headings are fine in different sections (e.g. per-task "Docs").
-    "MD024": { "siblings_only": true }
+    "MD024": { "siblings_only": true },
+    // Long setup in tutorials folds into <details> so the steps that teach stay visible.
+    "MD033": { "allowed_elements": ["details", "summary"] }
   },
   "ignores": [
     "node_modules/**",

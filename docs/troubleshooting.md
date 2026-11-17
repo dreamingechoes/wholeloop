@@ -92,7 +92,7 @@ Do not run the same idea again to get around the decision; that creates a duplic
 
 The terminal core never drafts anything or calls a model. `wl next` starts or resumes a [step contract](./glossary.md#terms), returns its preflight and questions, and stops. To have the work done, ask your coding client for the installed `wl-next` skill; it continues until a decision needs you.
 
-In the same way, `questions: []` in a framing preflight means the core has the inputs it needs to start. It does not mean the eight framing questions have been answered. [Core tour](./tutorials/local-core.md#what-to-look-for) · [Utilities](./flow/utilities.md).
+In the same way, `questions: []` in a framing preflight means the core has the inputs it needs to start. It does not mean the eight framing questions have been answered. [Core tour](./tutorials/local-core.md#4-start-again-with-an-owner) · [Utilities](./flow/utilities.md).
 
 ## Understand exit codes
 
