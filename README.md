@@ -4,100 +4,167 @@
 
 **A portable development harness for your AI coding client: take an idea from its first question to tested code, a deliberate rollout and a measured result.**
 
-wholeloop supplies the process around the model: what context to load, which questions and checks to run, where a person decides and what to remember between conversations. It installs into the coding client you already use, and you can take one step for a small job or the whole loop for a feature.
+Your coding client already has a capable model. wholeloop adds **the process around it**: which questions to ask before building, what counts as evidence, where you decide and what is remembered between conversations. It installs into the client you already use, Claude Code, Codex, Copilot, Gemini and others, and you can use one step for a small job or the whole loop for a feature.
 
-Autonomous delivery (`wl delivery`) is experimental and may change in a minor release; [platforms](./docs/platforms/README.md) lists the client versions each adapter was checked against.
+![Installing wholeloop into Claude Code: a dry run lists 188 files, the install writes them, and doctor reports every required check as passed](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/install.gif)
 
 ## Contents
 
 - [Why wholeloop](#why-wholeloop)
+- [How it works](#how-it-works)
 - [The loop](#the-loop)
-- [What you can do](#what-you-can-do)
-- [Install](#install)
-- [Run your first skill](#run-your-first-skill)
+- [Quick start](#quick-start)
 - [Practical examples](#practical-examples)
-- [The client and the core](#the-client-and-the-core)
+- [What every step does](#what-every-step-does)
 - [Principles](#principles)
 - [Supported clients](#supported-clients)
 - [Local first, integrations when needed](#local-first-integrations-when-needed)
+- [Autonomous delivery (experimental)](#autonomous-delivery-experimental)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Why wholeloop
 
-Follow two engineers through the life of one feature. One looks at the data first, the other opens the editor. One argues with the model's first answer, the other accepts it. Every review asks different questions, every rollout re-decides the same things from scratch, and a month after launch nobody checks whether the numbers moved. **The model is identical in every one of those moments. The process around it is not**, and a faster tool amplifies whatever process you already have, including the absence of one. You do not need a team for this: the same person on a calm Monday and a rushed Friday makes the same two choices.
+Follow two engineers through the life of one feature. One looks at the data first; the other opens the editor. One argues with the model's first answer; the other accepts it. Every review asks different questions, and a month after launch nobody checks whether the numbers moved.
 
-Ad hoc prompting leaves that process in each person's head. The prompt that worked last week is in someone's history, the review checklist depends on who remembers it, and a long conversation forgets its own decisions. wholeloop makes the process explicit, executable and the same for everyone, without turning a team into a template: it fixes the *questions* (what to ask before building, what counts as evidence, where a person decides, what *done* means) and leaves the *answers* to you and your repository.
+**The model is identical in every one of those moments. The process around it is not.** A faster tool amplifies whatever process you already have, including the absence of one. You do not need a team for this to happen: the same person on a calm Monday and a rushed Friday makes both choices.
 
-What changes in practice:
+With ad hoc prompting, the process lives in people's heads. The prompt that worked last week is in someone's history, the review checklist depends on who remembers it, and a long conversation forgets its own decisions.
 
-- **Missing facts become questions.** A step that lacks an owner, a metric or an acceptance criterion asks for it instead of inventing a plausible one, and unknowns stay visible.
-- **Rules are code, not reminders.** Order, gates, approvals and bookkeeping live in a tested core (`wl`), so they hold on the hundredth run as on the first.
-- **Work survives the conversation.** Decisions, artifacts and receipts are stored outside your repository, so a new conversation, a different client or a teammate can resume exactly where the work stopped.
-- **Your repository leads.** Each step looks for the skills, agents, rules and conventions your repository already has and follows them.
-- **Done means measured.** The loop continues after the merge, to the rollout and to whether the change moved the numbers it promised.
+wholeloop writes that process down and runs it the same way every time. It fixes **the questions**, such as what to ask before building, what counts as evidence and what *done* means, and leaves **the answers** to you and your repository.
+
+## How it works
+
+wholeloop has two parts that work together:
+
+- **Skills in your coding client.** Short instructions your client loads, like `wl-frame-problem` or `wl-build-slice`. They use your model and your tools to ask questions, draft documents, edit code and coordinate reviewers.
+- **The `wl` core.** A plain command-line program, with no model inside. It checks inputs, stores your work and decisions, and enforces the rules: order, gates and approvals. Because the rules are code with tests, they hold on the hundredth run as on the first.
+
+![How it fits together: you work with the wholeloop skills inside your coding client, which use your model and tools; the skills talk to the wl core, which keeps your work in a store outside every repository; changes happen in your repository's worktrees, project code runs in Docker, and optional services are reached through your client's MCP connection](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/diagrams/architecture.svg)
+
+Three things follow from that split:
+
+- **Your work survives the conversation.** Decisions and results are stored outside your repository, so a new conversation, another client or a teammate can continue where the work stopped.
+- **Your repository leads.** Each step looks for the skills, agents, rules and conventions your repository already has, and follows them.
+- **Project code never runs on your machine.** Steps that execute it, such as verification, do so in Docker containers that see no host environment and no credential.
 
 ## The loop
 
-Four blocks, thirteen steps, one line.
+The full process is **thirteen steps in four blocks**: *Define* what to build, *Build* it, *Rollout* it deliberately and *Learn* whether it worked.
 
 ![The loop: Define, Build, Rollout and Learn, thirteen steps in four blocks, with an approval, a human test, a ramp decision and a final decision as the person's decision points](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/diagrams/loop.svg)
 
-The orange hexagons are the main human decision points. Framing also needs the owner's explicit outcome and approval of its final revision, so the specification is not the first time your judgement matters. In this supervised flow, merging is a person's decision: the harness never sends a message to a user, never changes a feature flag and never merges, unless you separately authorize an autonomous run to merge.
+The orange hexagons are where **you decide**: approving the specification, testing the change yourself, choosing whether to widen a rollout and deciding what happens next. Framing also asks for your outcome and your approval of its final draft, so the specification is not the first time your judgement counts.
 
-**Use all of it, or just one step.** Every step is a complete entry point: `research` a topic, `build-slice` a small fix or `review-code` a pull request without running anything before it. The full loop is what you get when you chain them with `next`, and an approved scope can also be handed to an autonomous run that builds, verifies and reviews it in isolated worktrees and containers up to a pull request ([autonomous delivery](./docs/architecture/autonomous-delivery.md)). That part is **experimental** in 1.0.0: its commands may still change in a minor release, and unattended runs are still being certified with native clients.
+What the harness never does on its own:
 
-| Block | Steps | Main handoff |
+- send a message to your users;
+- change a feature flag;
+- merge a pull request, unless you separately authorize an autonomous run to merge.
+
+**Use all of it, or just one step.** Every step is a complete entry point. You can `research` a question, `build-slice` a small fix or `review-code` a pull request without running anything before it. The full loop is what you get when you chain the steps with `next`.
+
+| Block | Steps | What you get |
 | --- | --- | --- |
-| Define | [research](./docs/flow/define/research.md) · [frame-problem](./docs/flow/define/frame-problem.md) · [write-spec](./docs/flow/define/write-spec.md) · [cut-scopes](./docs/flow/define/cut-scopes.md) | Evidence, owner outcome, approved spec and scopes |
-| Build | [slice-work](./docs/flow/build/slice-work.md) · [build-slice](./docs/flow/build/build-slice.md) · [verify-works](./docs/flow/build/verify-works.md) · [review-code](./docs/flow/build/review-code.md) · [open-pr](./docs/flow/build/open-pr.md) | Checked work, human testing, deliberate draft publication |
-| Rollout | [prepare-launch](./docs/flow/rollout/prepare-launch.md) · [ramp-exposure](./docs/flow/rollout/ramp-exposure.md) | Drafts, measurement readiness and exposure decisions |
-| Learn | [measure-impact](./docs/flow/learn/measure-impact.md) · [decide-next](./docs/flow/learn/decide-next.md) | Observed results and an explicit human decision |
+| Define | [research](./docs/flow/define/research.md) · [frame-problem](./docs/flow/define/frame-problem.md) · [write-spec](./docs/flow/define/write-spec.md) · [cut-scopes](./docs/flow/define/cut-scopes.md) | Evidence, an owned problem, an approved specification and its scopes |
+| Build | [slice-work](./docs/flow/build/slice-work.md) · [build-slice](./docs/flow/build/build-slice.md) · [verify-works](./docs/flow/build/verify-works.md) · [review-code](./docs/flow/build/review-code.md) · [open-pr](./docs/flow/build/open-pr.md) | Verified and reviewed code, your own test, a pull request when you decide |
+| Rollout | [prepare-launch](./docs/flow/rollout/prepare-launch.md) · [ramp-exposure](./docs/flow/rollout/ramp-exposure.md) | Launch drafts, measurement readiness and exposure decisions |
+| Learn | [measure-impact](./docs/flow/learn/measure-impact.md) · [decide-next](./docs/flow/learn/decide-next.md) | Observed results and your decision on what comes next |
 
 Utilities: [next, status, setup and sync](./docs/flow/utilities.md).
 
-## What you can do
+### Where to start
 
-| Start with | Use | Result |
+| You have | Ask for | You get |
 | --- | --- | --- |
-| An unvalidated hypothesis | `frame-problem` | An owned problem statement, explicit unknowns and an approved go, on-hold or dropped outcome |
-| A question needing evidence | `research` | A source-linked brief, examined claims and open questions |
-| A confirmed problem | `write-spec` and `cut-scopes` | Acceptance criteria, measurement plans and approved deliverables |
-| A small fix or a ready slice | `build-slice` | Work in an isolated Git worktree, with verification and review evidence |
-| Existing code to inspect | `review-code` | Findings against the actual change and the repository's rubric |
-| Something already delivered | `measure-impact` and `decide-next` | Observed outcomes or explicit unknowns, followed by a human decision |
+| An idea nobody has validated | `frame-problem` | An owned problem statement, explicit unknowns and your go, on-hold or drop decision |
+| A question that needs evidence | `research` | A brief with linked sources, challenged claims and open questions |
+| A confirmed problem | `write-spec`, then `cut-scopes` | Acceptance criteria, a measurement plan and approved pieces of work |
+| A small fix | `build-slice` | The change in an isolated Git worktree, verified and reviewed |
+| Code to inspect | `review-code` | Findings with evidence, against your repository's rubric |
+| Something already shipped | `measure-impact`, then `decide-next` | What actually changed, and your decision |
 
-You do not have to frame an initiative before reviewing code. Standalone steps keep their own prerequisites and approvals; missing information becomes a question. [Small-change walkthrough](./docs/tutorials/small-change.md).
+A step used on its own still asks for what it needs: a missing fact becomes a question, never an invention.
 
-## Install
+## Quick start
 
-You need **Node.js 20 or newer**, **Git 2.36 or newer** and a coding client you can already use with a model. Steps that execute your project's code (verification, integration and acceptance) also need **Docker**: a local daemon, version 28 or newer, reached through a Unix socket. That is deliberate: project code never runs on your machine, and no host environment or credential reaches it ([execution isolation](./docs/architecture/execution-isolation.md)).
+### 1. Check the requirements
 
-```bash
-npm install --global wholeloop
-wl --version
+| You need | Why |
+| --- | --- |
+| **Node.js 20** or newer | Runs the `wl` core |
+| **Git 2.36** or newer | Isolated worktrees for each change |
+| A **coding client** that already works with a model | Runs the skills; see [supported clients](#supported-clients) |
+| **Docker 28** or newer, local daemon | Only for steps that run your project's code, such as verification |
+
+### 2. Install the CLI
+
+```console
+$ npm install --global wholeloop
+added 1 package in 597ms
+$ wl --version
+1.1.0
 ```
 
-The package installs two equivalent commands, `wl` and `wholeloop`, and has no runtime dependencies.
+The package has no runtime dependencies and installs two equivalent commands, `wl` and `wholeloop`.
 
-### Install into your coding client
+### 3. Install into your coding client
 
-This example selects Claude Code; replace `claude` with your [client's target](#supported-clients).
+This example uses Claude Code. For another client, change `claude` to its [install target](#supported-clients).
 
-```bash
-wl install --target claude --scope user --dry-run
-wl install --target claude --scope user
-wl doctor --target claude
+First, **preview**. `--dry-run` writes nothing and tells you what would change:
+
+```console
+$ wl install --target claude --scope user --dry-run
+Dry run for claude at user scope: nothing was written.
+  188 files to write
+Run the same command without --dry-run to apply it.
+…
 ```
 
-The dry run lists the files it would write. User scope installs the skills, roles and guards outside your projects; project scope, run from an application repository, installs them for that repository only. Installation does not install or sign in to the client, choose a model, change MCP settings or call any service. `doctor` checks versions, store access and the managed files; it does not prove that the client has activated them.
+Then **install**. The *scope* decides where the skills are available:
 
-Restart the client in the repository you want to work on. For project scope, updates and removal, follow [getting started](./docs/getting-started.md) and [local client setup](./docs/platforms/local-onboarding.md); if a check fails or a skill is missing, start with [troubleshooting](./docs/troubleshooting.md). No client or model account yet? The [local core tour](./docs/tutorials/local-core.md) exercises configuration, questions and recoverable state without either.
+| Scope | Run it from | Skills available in |
+| --- | --- | --- |
+| `user` | anywhere | every repository you open |
+| `project` | inside one repository | that repository only |
 
-## Run your first skill
+```console
+$ wl install --target claude --scope user
+Installed claude at user scope.
+Receipt: ~/.local/state/wholeloop/installations/22d5c1ca…/receipt.json
+Restart the client and check that the skills appear.
+…
+```
 
-In your coding client's conversation, ask for the installed `wl-frame-problem` skill (Antigravity names it `wl-agy-frame-problem`) and give it a real idea from an application you work on:
+The **receipt** records exactly what was written, so updating or uninstalling later touches only those files. Install also prints a command to add wholeloop's Git guards to a repository; [getting started](./docs/getting-started.md#install-for-one-client) explains it.
+
+Finally, **check**:
+
+```console
+$ wl doctor --target claude
+Doctor: every required check passed.
+
+  pass     node                  24.22.0
+  pass     git                   2.49.0
+  pass     cli.claude            2.1.326
+  pass     store
+  pass     providers
+  unknown  artifacts
+  …
+  pass     installation.user
+  unknown  installation.project
+  …
+```
+
+> [!TIP]
+> `unknown` is not a failure. It marks something doctor cannot see from outside, such as a project-scope install you have not made. Only `fail` needs action.
+
+Installation **does not** install or sign in to your client, choose a model, change the client's MCP settings or call any service.
+
+### 4. Run your first skill
+
+Restart your client in an application repository and ask for `wl-frame-problem` with a real idea. This is a request to the client, not a shell command:
 
 ```text
 Use wl-frame-problem for this idea:
@@ -107,15 +174,40 @@ Frame it only: ask for missing facts, preserve unknowns and stop for my
 outcome and final-draft approval before specification or code.
 ```
 
-Expect a preflight, eight framing questions, explicit `TBD: ...; who: ...` gaps, challenger feedback and a request for your outcome; then the final draft for your review and approval. On hold is a valid result: no evidence needs to be invented to keep the flow moving. Without an application at hand, use the fictional scenario in [your first framing](./docs/tutorials/first-framing.md).
+What happens next, in order:
 
-Save the returned initiative ID. Ask for `wl-status` with it, restart the client and ask again: the work is still there.
+1. A **preflight**: what the run will do, and what it will never do, before it drafts anything.
+2. **Eight framing questions**, plus who owns the problem.
+3. Gaps written as `TBD: ...; who: ...` instead of invented answers.
+4. Feedback from a **challenger**, a reviewer role that questions the draft.
+5. Your outcome, then the final draft for your approval.
+
+*On hold* is a valid result: nothing needs to be invented to keep the flow moving. No application at hand? [Your first framing](./docs/tutorials/first-framing.md) has a fictional one.
+
+### 5. Check that the work was kept
+
+Save the initiative ID the run returns. Restart the client and ask for `wl-status` with it, or look from a terminal:
+
+```console
+$ wl status
+init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
+  owner Demo Owner · updated 2026-11-17
+  next: frame-problem
+
+0 unread messages. Add --json for the full status.
+```
+
+No client or model account yet? The [local core tour](./docs/tutorials/local-core.md) shows the core on its own:
+
+![The local core tour: status finds no work, a first next call asks who owns the work, a second one with an owner returns the preflight, and status then shows the stored initiative](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/core-tour.gif)
+
+Something failed or a skill is missing? Start with [troubleshooting](./docs/troubleshooting.md).
 
 ## Practical examples
 
-These are **requests to the coding client**, not shell commands.
+These are **requests to your coding client**, not shell commands. The wording is an example; say it your way.
 
-### Fix a small, agreed bug
+**Fix a small, agreed bug.** The [small-change walkthrough](./docs/tutorials/small-change.md) shows how to inspect the worktree, read the gate results and decide when to publish.
 
 ```text
 Use wl-build-slice to reject an empty task title.
@@ -124,9 +216,7 @@ Follow this repository's conventions and use the allocated worktree.
 Run verification and review, then stop for my local testing before any PR.
 ```
 
-The [small-change walkthrough](./docs/tutorials/small-change.md) shows how to inspect the worktree, read gate results and decide when to publish.
-
-### Review without requesting a repair
+**Review without asking for a repair.**
 
 ```text
 Use wl-review-code on this branch against its agreed base; ask if unclear.
@@ -134,75 +224,88 @@ Follow the repository's review rubric. Report findings with evidence;
 do not edit the implementation or publish comments.
 ```
 
-### Pick up where the work stopped
+**Pick up where the work stopped.** Reading the status and moving the work forward are separate requests: after this one, ask for `wl-next` with the same ID to continue.
 
 ```text
 Use wl-status for the initiative ID I saved.
 Show its current state and pending decisions. Do not advance the flow yet.
 ```
 
-Then ask for `wl-next` with that ID to continue. Reading status and authorizing the next step are separate actions.
+## What every step does
 
-## The client and the core
-
-**Your coding client runs the skills:** it uses the model and tools you configured to ask questions, draft artifacts, edit code and coordinate reviewers. **The `wl` core enforces the deterministic rules:** it validates input, stores work and decisions, plans gates and returns the next available contract. Running `wl next` in a terminal does not start an AI conversation; ask for `wl-next` in the client for that.
-
-![How it fits together: you work with the wholeloop skills inside your coding client, which use your model and tools; the skills talk to the wl core, which keeps your work in a store outside every repository; changes happen in your repository's worktrees, project code runs in Docker, and optional services are reached through your client's MCP connection](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/diagrams/architecture.svg)
-
-Every step, in every client, follows the same exchange with the core, so you always see the plan before any work and decide at the same points:
+Every step, in every client, follows the same exchange with the core. You always see the plan before any work, and you decide at the same points.
 
 ![What every step does: the skill begins the step with the core, which returns what exists, the open questions and your repository's guidance; the skill shows you a preflight and asks its questions; it does the work; it completes the step with its artifact, which the core checks and records; and you get a receipt and any decision that is due](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/diagrams/step.svg)
 
-From a terminal you can inspect everything the client sees. `wl --help` starts with the everyday commands, and `wl <command> --help` explains one of them:
+From a terminal you can see everything the client sees. `wl --help` lists the everyday commands first, `wl <command> --help` explains one, and a typo gets a suggestion:
 
-```bash
-wl --help
-wl status
-wl status "$INITIATIVE_ID"
-wl resume "$INITIATIVE_ID" --json
-```
+![wl --help shows commands grouped by purpose; wl status --help shows the options of one command; and the typo wl stauts suggests wl status](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/help.gif)
 
-`status` and `resume` only read; `next` can begin the next contract. Work and decisions live outside your repositories, normally under `$XDG_STATE_HOME/wholeloop` or `$HOME/.local/state/wholeloop`, and settings under `$XDG_CONFIG_HOME/wholeloop` or `$HOME/.config/wholeloop`. [Core command reference](./docs/architecture/core-cli.md#implemented-commands) · [State and recovery](./docs/architecture/state-and-messaging.md).
+| Command | What it does |
+| --- | --- |
+| `wl status [<id>]` | Shows your work and pending decisions. Only reads |
+| `wl resume <id>` | Prints the context a new conversation needs to continue. Only reads |
+| `wl next [<id>]` | Begins the next step. This one can change state |
+
+Your work lives **outside your repositories**, in `~/.local/state/wholeloop` (or `$XDG_STATE_HOME/wholeloop`), and your settings in `~/.config/wholeloop`. [Core command reference](./docs/architecture/core-cli.md#implemented-commands) · [State and recovery](./docs/architecture/state-and-messaging.md).
 
 ## Principles
 
-1. **Agent = Model + Harness.** The model is rented; the harness is the edge.
-2. **Ask, never guess.** A fact the harness lacks becomes a question, batched, never a plausible invention. Whatever a source cannot reach stays an open question.
-3. **Deterministic process, adaptive content.** Steps, order, gates and bookkeeping are code with tests. What each step *writes* adapts to your problem.
-4. **Your repository first.** Before acting, each step looks for the skills, agents, rules and conventions your repository already has, and follows them. The harness is the layer above, not a replacement.
-5. **Bring your own tools.** Where documents live, where work is tracked, which data answers a question: every integration is a provider you choose, and adding one is a manifest, not a fork.
-6. **People own every decision, at the moment or in advance.** By default the flow stops for a person at the same few decision points, every time, in every mode. Autonomous delivery lets you decide in advance instead: what is authorized, which rubrics judge and within which limits. That takes an explicit authorization, never a style setting.
-7. **Always legible.** Every run states its plan first, narrates as it goes, stops when told, and ends with a table of what it produced and how to undo it.
-8. **Done means measured, not merged.** The flow continues after the merge, because that is where you find out whether any of it mattered.
-9. **Small, correctable, alive.** Skills are short, every hard rule has something that executes it, and a harness that stops changing has stopped describing how you work.
+1. **Agent = model + harness.** The model is rented and changes every few months. The harness is yours, and it is what keeps your results consistent.
+2. **Ask, never guess.** A fact the harness lacks becomes a question, never a plausible invention. What a source cannot answer stays an open question.
+3. **Deterministic process, adaptive content.** Order, gates and bookkeeping are code with tests. What each step *writes* adapts to your problem.
+4. **Your repository first.** Each step follows the skills, rules and conventions your repository already has. The harness is the layer above them, not a replacement.
+5. **Bring your own tools.** Where documents live, where work is tracked and which data answers a question are providers you choose. Adding one is a manifest, not a fork.
+6. **People own every decision, at the moment or in advance.** By default the flow stops for you at the same few points, every time. Autonomous delivery lets you decide in advance instead, through an explicit authorization, never a style setting.
+7. **Always legible.** Every run states its plan first, reports as it goes, stops when told and ends with what it produced and how to undo it.
+8. **Done means measured, not merged.** The loop continues after the merge, because that is where you find out whether the change mattered.
+9. **Small, correctable, alive.** Skills are short, every hard rule has something that enforces it, and the harness keeps changing as the way you work does.
 
-The reasoning behind each one: [philosophy](./docs/philosophy.md).
+The reasoning behind each one is in the [philosophy](./docs/philosophy.md).
 
 ## Supported clients
 
-| Client | Install target | Skill to ask for |
+| Client | Install target | How to ask for a skill |
 | --- | --- | --- |
-| Claude Code | `claude` | `wl-frame-problem` |
-| OpenAI Codex CLI | `codex` | `wl-frame-problem` |
-| OpenCode | `opencode` | `wl-frame-problem` |
-| GitHub Copilot CLI | `copilot` | `wl-frame-problem` |
-| Gemini CLI | `gemini` | `wl-frame-problem` |
-| Google Antigravity CLI | `antigravity` | `wl-agy-frame-problem` |
-| Cursor CLI | `cursor` | `wl-frame-problem` |
+| Claude Code | `claude` | `/wl-frame-problem`, or `/wholeloop:frame-problem` with the plugin |
+| OpenAI Codex CLI | `codex` | `$wl-frame-problem` |
+| OpenCode | `opencode` | Ask for `wl-frame-problem` |
+| GitHub Copilot CLI | `copilot` | Ask for `wl-frame-problem` |
+| Gemini CLI | `gemini` | Ask for `wl-frame-problem` |
+| Google Antigravity CLI | `antigravity` | Ask for `wl-agy-frame-problem` |
+| Cursor CLI | `cursor` | Ask for `wl-frame-problem` |
 
-Claude Code loose skills answer to `/wl-frame-problem`, and the generated Claude plugin to `/wholeloop:frame-problem`; Codex's skill picker uses `$wl-frame-problem`. Other clients can be asked for the exact installed name. [Client setup](./docs/platforms/local-onboarding.md) explains each delivery route, and [platforms](./docs/platforms/README.md) records what has been checked on each client.
-
-Every client runs the harness inside your own session. Autonomous delivery also launches its own headless workers, which need a credential the controller can inject; Antigravity has no such path yet, so it cannot be a delivery worker, while its in-session use is unaffected ([ADR-0209](./docs/decisions/0209-controller-owned-native-credentials.md)).
+[Client setup](./docs/platforms/local-onboarding.md) explains how each client loads the skills, and [platforms](./docs/platforms/README.md) records what was checked on each one and with which version.
 
 ## Local first, integrations when needed
 
-No Jira, Notion, analytics or feature-flag account is needed to start: local document and tracker providers store everything on your machine.
+You can start **without any Jira, Notion, analytics or feature-flag account**. The local providers keep documents and tasks on your machine:
 
-```bash
-wl setup --profile pair --docs local-docs --tracker local-tracker --scope user --json
+```console
+$ wl setup --profile pair --docs local-docs --tracker local-tracker --scope user
+{
+  "schema": "wholeloop/setup@1",
+  "scope": "user",
+  "applied": true,
+  …
 ```
 
-Add remote providers when your workflow needs them. wholeloop never talks to a service itself: operations run through your coding client's existing MCP connection, using the exact tools it discovers, or through command-line clients you installed such as `gh` and `glab`. Setup does not authenticate services or rewrite client MCP settings. Remote integrations are **experimental**: tested against fixtures, not certified against every service. [Provider configuration](./docs/configuration/providers.md).
+Add a remote provider when your workflow needs one. wholeloop never talks to a service itself:
+
+- operations go through **your client's existing MCP connection**, using the tools it discovers;
+- or through command-line clients you already installed, such as `gh` and `glab`;
+- setup never signs in to a service or rewrites your client's MCP settings.
+
+Remote integrations are **experimental**: tested against fixtures, not certified against every service. [Provider configuration](./docs/configuration/providers.md).
+
+## Autonomous delivery (experimental)
+
+Once a scope is approved, you can hand it to an **autonomous run** (`wl delivery`). It builds, verifies and reviews the work in isolated worktrees and containers, up to a pull request, within limits you authorize in advance: what it may do, which rubrics judge the result and how many attempts it gets.
+
+- It is **experimental**: tested end to end with fixtures and real Git and Docker, but its commands may still change in a minor release.
+- Its workers are headless sessions of your coding client, launched with a credential the controller supplies. Antigravity has no such path yet, so it cannot be a delivery worker; using it in your own session is unaffected.
+
+Start with the [autonomous delivery overview](./docs/architecture/autonomous-delivery.md).
 
 ## Documentation
 
