@@ -1,17 +1,36 @@
 # Maintenance proposals — from a pinned finding to a delivery request
 
-> **TL;DR** — Pin a local inspection, turn its finding into a reviewable proposal, and admit current proposals within an operator envelope. Admission captures each one as its own delivery request. It never changes code, writes a tracker, plans a run or issues a grant.
+> **TL;DR** — Pin a local **inspection**, such as "find TODO notes in the docs", turn what it finds into a reviewable **proposal**, then **admit** current proposals within limits you set. Each admitted proposal becomes its own delivery request. Nothing changes code, writes to a tracker, plans a run or issues a grant.
 
 > [!IMPORTANT]
-> **Experimental.** `wl maintenance`, deduplicated proposals, retained dismissals and once-only admission are tested ([ADR-0195](../decisions/0195-maintenance-proposals-and-recurring-admission.md), [ADR-0196](../decisions/0196-maintenance-commands-and-recurring-delivery-intake.md)). Planning and authorizing an admitted run are the [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md) steps.
+> **Experimental.** `wl maintenance`, deduplicated proposals, kept dismissals and once-only admission are tested. Planning and authorizing an admitted run are the [planning](./delivery-plan.md) and [authorization](./delivery-authorization.md) steps.
+
+```mermaid
+flowchart LR
+  I[Inspection<br/>a pinned local command] --> F[Finding]
+  F --> P[propose<br/>recorded once]
+  P --> A{admit<br/>within your envelope}
+  A --> S[Delivery source<br/>one per proposal]
+  S --> PL[Plan and grant<br/>separately]
+  P -. "dismiss" .-> D[Dismissed<br/>stays dismissed]
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class A person;
+  class I,F,P,S,PL,D core;
+```
 
 ## Before you start
 
-Install the CLI as in [getting started](../getting-started.md#install-the-cli). The Bash commands below create a disposable Git repository and a separate external store. They do not change your project or personal store.
+Install the CLI as in [getting started](../getting-started.md#install-the-cli). The commands below create a disposable Git repository and a separate store; your project and your own store are not touched.
 
 ## Inspect and propose
 
-An inspection is one local command, run without a shell, that you pin: its id, category, repository name, absolute root, command and rule. Output lines are the finding.
+An **inspection** is one local command you pin, run without a shell: its ID, category, repository name, absolute root, the command and the rule it checks. Each line it prints is part of the finding. The **proposal** says what behaviour should change, its scope, criteria, how to validate it and the risks.
+
+The script creates a repository with one stale note, writes both files, inspects, proposes twice and lists the proposals:
+
+<details>
+<summary>Inspection script: copy once</summary>
 
 ```bash
 set -euo pipefail
@@ -58,11 +77,28 @@ wl maintenance proposals --store state --json
 printf 'Retained tutorial files: %s\n' "$workspace_dir"
 ```
 
-Expect one finding line, `search.md:2:TODO: describe archived tasks.`, then status `recorded` with a key, then `duplicate` with the same key. The proposal file holds no finding: `propose` runs the inspection itself, so evidence can never be supplied by a caller. A scope path under policy, agent instructions, harness guidance, CI configuration, rubrics, budgets or evaluations appears in `protected`, and admission refuses it.
+</details>
+
+The output, one line per command, shortened:
+
+```console
+$ wl maintenance inspect --file inspection.json --json
+{"schema":"wholeloop/maintenance-inspection@1","inspection":"stale-search-docs","finding":{"category":"stale-docs","repository":"app","base":"9886f074…","evidence":"a78344be…","lines":["search.md:2:TODO: describe archived tasks."]},"effects":{"code":"not-changed","tracker":"not-written"}}
+$ wl maintenance propose --inspection inspection.json --file proposal.json --store state --json
+{"schema":"wholeloop/maintenance-propose@1","status":"recorded","key":"fe519ef1…","protected":[],"effects":{"code":"not-changed","tracker":"not-written"}}
+$ wl maintenance propose --inspection inspection.json --file proposal.json --store state --json
+{"schema":"wholeloop/maintenance-propose@1","status":"duplicate","key":"fe519ef1…","protected":[],…}
+$ wl maintenance proposals --store state --json
+{"schema":"wholeloop/maintenance-proposals@1","proposals":[{"key":"fe519ef1…","inspection":"stale-search-docs","behavior":"Search documentation describes archived tasks.","status":"open",…}],"currency":"not-inspected"}
+```
+
+- The first `propose` records the proposal; the second finds the same one and returns `duplicate` with the same key.
+- **The proposal file holds no finding.** `propose` runs the inspection itself, so nobody can supply evidence by hand.
+- **Protected paths.** A scope path under policy, agent instructions, harness guidance, CI configuration, rubrics, budgets or evaluations is listed in `protected`, and admission refuses it.
 
 ## Admit within an envelope
 
-The envelope is yours: the operator, allowed categories and repositories, extra protected paths, per-run and aggregate limits, and a `local-handoff` or `to-pr` endpoint. `to-merge` is invalid input. Pass the inspections you pin for this admission; a proposal whose inspection is not among them is not admitted.
+The **envelope** is yours: the operator, the categories and repositories allowed, extra protected paths, limits per run and in total, and the endpoint, `local-handoff` or `to-pr`. `to-merge` is invalid here. Pass the inspections you pin for this admission; a proposal whose inspection is not among them is not admitted.
 
 ```bash
 cd "$workspace_dir"
@@ -84,9 +120,21 @@ wl maintenance admit \
   --envelope envelope.json --inspections inspections.json --store state --json
 ```
 
-The first admission re-runs the inspection, finds the same evidence and reports `admitted: true` with a `run` identity and a `source` id. The second reports `already-admitted` with the same run and source. A key is never admitted twice. Look at `state/delivery/sources/<source>.json`: the body lists the behavior, evidence, scope, criteria and finding, and each criterion line is mapped with role `criterion`.
+```console
+$ wl maintenance admit --envelope envelope.json --inspections inspections.json --store state --json
+{"schema":"wholeloop/maintenance-admit@1","envelope":"453faf7a…","results":[{"key":"fe519ef1…","admitted":true,"reasons":[],"run":"delivery-d0b8bce41b7a6f7f","source":"214efcbf…"}],"grant":"separate-exact-plan-grant-required","execution":"not-started","next":["wl delivery plan --file <plan-proposal.json>","wl delivery authorize --file <operator-request.json>"]}
+$ wl maintenance admit --envelope envelope.json --inspections inspections.json --store state --json
+{"schema":"wholeloop/maintenance-admit@1",…,"results":[{"key":"fe519ef1…","admitted":false,"reasons":["already-admitted"],"run":"delivery-d0b8bce41b7a6f7f",…}],…,"next":[]}
+```
 
-`grant` is `separate-exact-plan-grant-required` and `execution` is `not-started`. No plan, journal entry, queue entry or grant exists yet. To continue, write a plan for that `run` from that `source` with `wl delivery plan`, then issue its own grant with `wl delivery authorize`.
+| Admission | Result |
+| --- | --- |
+| First | Runs the inspection again, finds the same evidence, `admitted: true`, with a `run` identity and a `source` ID |
+| Second | `already-admitted`, with the same run and source: a key is never admitted twice |
+
+The source, in `state/delivery/sources/<source>.json`, lists the behaviour, evidence, scope, criteria and finding, and maps each criterion line with the role `criterion`.
+
+`grant: separate-exact-plan-grant-required` and `execution: not-started` mean exactly that: no plan, journal entry, queue entry or grant exists yet. To continue, write a plan for that `run` from that `source` with `wl delivery plan`, then issue its own grant with `wl delivery authorize`; the `next` list says so.
 
 ## Dismiss, expire and refuse
 
@@ -95,7 +143,7 @@ The first admission re-runs the inspection, finds the same evidence and reports 
 - An invalid inspection, proposal or envelope exits 3 with a fixed message that does not echo the input.
 - If another admission is recorded while inspections run, nothing is written and the command asks you to rerun it, because run identities and the aggregate count depend on the admissions it read first.
 
-You have reached the stopping point when one admission exists per proposal and the delivery source carries its mapped criteria. Planning and authorization stay explicit; see [delivery planning](./delivery-plan.md).
+You have reached the stopping point when there is one admission per proposal and the delivery source carries its mapped criteria. Planning and authorization stay explicit; see [delivery planning](./delivery-plan.md).
 
 <!-- docnav -->
 [◀ Delivery planning](delivery-plan.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery authorization ▶](delivery-authorization.md)
