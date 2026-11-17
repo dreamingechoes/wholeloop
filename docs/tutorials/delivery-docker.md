@@ -1,19 +1,38 @@
 # Run owned Docker application environments
 
-> **TL;DR** — The Docker backend executes an explicitly selected recipe under a current delivery grant, verifies actual resources and retains failure evidence. A separate model-free evaluation exercises real applications and boundary denials; no native client or service account is needed.
+> **TL;DR** — The **Docker backend** starts your application from a pinned [recipe](./delivery-environments.md), under a current grant, in containers the run owns. It checks the real resources and readiness, keeps project code away from your machine's files, network and credentials, and keeps the evidence when something fails. A model-free evaluation exercises all of it with real applications; no client or account is needed.
 
 > [!IMPORTANT]
 > **Experimental.** Provisioning, readiness, isolated networking, loopback publication, stop and retirement are tested, and the reference trial passed on macOS arm64 with a Linux daemon and on a Linux x86_64 host. Autonomous delivery may change in a minor release.
+
+```mermaid
+flowchart LR
+  R[Pinned recipe] --> B[environment-backend<br/>capacity and images]
+  B --> S[environment-start<br/>under the grant]
+  S --> H[Helper copies<br/>the selected files]
+  H --> A[Application containers<br/>no network or internal bridge]
+  A --> P[Loopback proxy<br/>only the intended port]
+  A --> T[environment-status<br/>ready, failed or unknown]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class R,B,S,H,A,P,T core;
+```
 
 Commands that start with `npm run eval` are model-free controls that run from a source checkout ([development guide](../contributing/development.md#build-from-source)); every `wl` command uses the installed CLI.
 
 ## Requirements and costs
 
-Use a source checkout with development dependencies installed to run the evaluation. The bundled CLI supports the runtime commands separately. Docker must be available through a local Unix socket with permission to create disposable containers, local volumes and bridge networks. The reference daemon is Docker 29.9.2; required platform-manifest inspection and isolation controls must be observed on your engine. A version string alone is insufficient.
+| You need | Details |
+| --- | --- |
+| A source checkout | With development dependencies, to run the evaluation. The installed CLI runs the runtime commands |
+| Docker on a local Unix socket | Permission to create disposable containers, volumes and bridge networks. The reference daemon is 29.9.2. Platform-manifest inspection and the isolation controls must work on your engine; a version number alone is not enough |
+| The pinned helper image, cached | `node@sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5`. Pull it yourself: the backend never downloads it silently |
+| Capacity | The two-environment evaluation reserves 4 CPUs and 1 GiB in total |
 
-The trusted Node helper is pinned to node@sha256:925de64a85319052d6971ae81ef2417da956e8a3a2c4a0fac732327970f017f5. Prepare that exact image in the native Docker cache explicitly. The backend does not silently download it. Application images are also immutable; cache-only and explicitly authorized acquisition are separate choices. Docker uses its own credential store, and credentials never enter generated config, argv or application environment.
+**Overhead per environment.** The helper uses 256 MiB and a quarter of a CPU, and each published port adds a proxy of 128 MiB and a quarter of a CPU. Less capacity than requested is an explicit refusal.
 
-The two-environment evaluation requests four aggregate CPUs and one GiB across its retained environment reservations. Each environment includes fixed helper/proxy overhead: helpers use 256 MiB and a quarter CPU, and each published port adds a 128 MiB, quarter-CPU proxy. Smaller capacity returns an explicit refusal. Application images must support UID/GID 65532 and the selected commands; setup dependencies must already be available for offline operation. Scoped egress, secret delivery, legacy direct input-file mounts and unavailable image/engine controls refuse execution.
+**Images.** Application images are immutable too; using only the cache and explicitly authorized pulls are separate choices. Docker keeps its own credentials, which never enter generated configuration, arguments or the application's environment. Images must work as UID and GID 65532 and run the selected commands, and setup dependencies must already be available offline.
+
+**Refused outright:** scoped network egress, secret delivery, direct file mounts from older recipes, and any image or engine control the daemon cannot provide.
 
 ## Run the actual disposable evaluation
 
@@ -24,21 +43,56 @@ set -euo pipefail
 npm run eval:environments -- --retire-success
 ```
 
-The command prints an external retained evaluation directory and a versioned report. It creates its own disposable Git source/worktree, private fixture grants, recipes and Docker resources. It never uses the person's checkout as an application mount or contacts a native model. Fixture owner/grant records are evaluation data, not human acceptance of a product change.
+The output, shortened:
 
-Expected successful observations:
+```console
+$ npm run eval:environments -- --retire-success
+Retained evaluation: /tmp/wholeloop-docker-evaluation-XXXXXX
+{
+  "schema": "wholeloop/environment-evaluation@1",
+  "status": "pass",
+  "controller": { "os": "darwin", "architecture": "arm64", "node": "v24.22.0" },
+  "checks": [
+    { "id": "owned-input-readonly", "status": "pass", "evidence": "…" },
+    { "id": "network-denied-setup", "status": "pass", "evidence": "…" },
+    { "id": "disjoint-ports-and-data", "status": "pass", "evidence": "…" },
+    { "id": "filesystem-and-environment-denial", "status": "pass", "evidence": "…" },
+    { "id": "application-egress-denied", "status": "pass", "evidence": "…" },
+    { "id": "current-ownership-and-no-reissue", "status": "pass", "evidence": "…" },
+    { "id": "changed-candidate-invalidates-readiness", "status": "pass", "evidence": "…" },
+    { "id": "observed-stop-retains-owned-volumes", "status": "pass", "evidence": "…" },
+    { "id": "same-name-foreign-volume-is-not-retired", "status": "pass", "evidence": "…" },
+    { "id": "killed-retirement-controller-recovers-exact-owned-absence", "status": "pass", "evidence": "…" },
+    { "id": "setup-failure-refuses-readiness", "status": "pass", "evidence": "…" },
+    …
+  ],
+  "environments": [
+    { "id": "environment-c16080c1…", "daemon": { "os": "linux", "architecture": "aarch64", "cpus": 4, "version": "29.9.3", … } },
+    { "id": "environment-022e9d72…", "daemon": { … } }
+  ],
+  "retirement": "exact-owned-absence-observed",
+  …
+}
+```
 
-- Two applications receive distinct actual loopback ports and owned data volumes; a write in one does not appear in the other.
-- Application commands cannot read the benign controller/home/credential/sibling marker fixtures, Git control or Docker socket, modify read-only implementation/input files, or inherit the controller's marker environment variable.
-- Setup and application execution observe denied external routes. Setup that exits 7 never becomes ready or starts its service.
-- Repeating a successful key reinspects the same environment without reissuing the effect. A changed candidate makes its previous readiness stale.
-- The explicit successful-evaluation teardown observes stop with retained volumes, refuses a same-name foreign volume and recovers a deliberately killed retirement controller through a fresh compiled CLI. It verifies every exact identity and observes absence. This includes expected failure cases after their assertions pass. An unexpected failure keeps resources and their external history for inspection.
+It creates its own disposable Git source and worktree, fixture grants, recipes and Docker resources. It never mounts your checkout and never calls a model. The fixture owner and grant records are test data, not anyone's acceptance of a change.
 
-Omit --retire-success to retain successful fixture environments deliberately. The retained report is the actual observation; do not mark a missing/unavailable Docker run as passed. It identifies the controller runtime and daemon separately and launches no model. Running the suite on another host creates new evidence for that host, not certification of all platforms or clients.
+| Check | What it shows |
+| --- | --- |
+| `disjoint-ports-and-data` | Two applications get different loopback ports and their own data volumes; a write in one does not appear in the other |
+| `filesystem-and-environment-denial` | Application commands cannot read the controller's files, home, credentials, sibling data, Git internals or the Docker socket, and do not inherit the controller's environment |
+| `owned-input-readonly` | Implementation and input files cannot be modified |
+| `network-denied-setup`, `application-egress-denied` | Setup and the application cannot reach outside routes |
+| `setup-failure-refuses-readiness` | A setup that fails (exit 7) never becomes ready or starts its service |
+| `current-ownership-and-no-reissue` | Repeating a successful request re-inspects the same environment without running the effect again |
+| `changed-candidate-invalidates-readiness` | A changed candidate makes earlier readiness stale |
+| `observed-stop-retains-owned-volumes` | Stopping keeps the volumes |
+| `same-name-foreign-volume-is-not-retired` | A volume with the same name that the run does not own is left alone |
+| `killed-retirement-controller-recovers-exact-owned-absence` | After its controller is killed, retirement is finished by a freshly built CLI, which observes every owned resource gone |
+
+With `--retire-success`, everything is retired at the end; without it, successful environments are kept on purpose. An unexpected failure keeps its resources and history for inspection. The report is the real observation: never record a run where Docker was missing as passed. It reports the controller and the daemon separately, and running it on another host is new evidence for that host only.
 
 ## Inspect contracts without Docker
-
-Use the `wl` CLI, as in the [planning guide](./delivery-environments.md).
 
 ```bash
 set -euo pipefail
@@ -60,71 +114,61 @@ console.log("PASS: closed owned-runtime contracts; no execution, acceptance or p
 '
 ```
 
+```console
+1.1.0
+PASS: closed owned-runtime contracts; no execution, acceptance or publication
+```
+
 ## Provision an existing authorized run
 
-These are command forms, not a substitute for preparing their inputs:
-
-| Command | Meaning |
+| Command | What it does |
 | --- | --- |
-| delivery environment-backend --digest RECIPE --store STORE --json | Read local daemon capacity and exact cached image/platform descriptors; start nothing |
-| delivery environment-start --file REQUEST --root INPUT_ROOT --store STORE --json | Execute the exact closed provision request under the current private delivery grant |
-| delivery environment-status --environment ID --store STORE --json | Reinspect exact owned resources, selected inputs and candidate bytes; grant nothing |
+| `wl delivery environment-backend --digest RECIPE --store STORE --json` | Reads the daemon's capacity and the cached images and platforms; starts nothing |
+| `wl delivery environment-start --file REQUEST --root INPUT_ROOT --store STORE --json` | Starts the environment for the exact request, under the current grant |
+| `wl delivery environment-status --environment ID --store STORE --json` | Re-inspects the owned resources, the selected inputs and the candidate; grants nothing |
 
-The request schema contains run, recipe digest, stable key, trusted helper image and exact repository/path/HEAD/snapshot candidate bindings. Prepare the plan, grant and queue state through the [delivery guides](./delivery-authorization.md). Native/envelope delegation still requires independently accepted planning evidence through the controller; importing raw worker JSON cannot supply it. The complete terminal runner is a later increment.
+**The start request** names the run, the recipe digest, a stable key, the helper image and, for each repository, the exact path, HEAD and snapshot of the candidate. Prepare the plan, grant and queue through the earlier [delivery guides](./delivery-authorization.md); a worker's JSON can never stand in for them.
 
-Start requires workspace.create and test.run, the current plan/grant digest and an allowed separately allocated topic worktree for every selected repository. The helper receives only bounded copied regular files and its owned volumes. It never mounts the source root or runtime store. The backend rechecks authority around mutations, retains the issued effect and cannot invoke the same key again after an ambiguous response.
+**What start requires and does:**
 
-An input mount is a read-only directory: /inputs/ID/basename contains the exact selected file. Recipe-v1's older direct-file planning form remains readable, but this backend reports that direct mount capability unavailable; it never rewrites the stored command silently. Recipe inspection and actual environment status remain different observations.
+- the grant's `workspace.create` and `test.run` effects, the current plan and grant digests, and a separately allocated topic worktree for every selected repository;
+- the helper receives only bounded copies of regular files and its own volumes; it never mounts the source or the store;
+- authority is checked again around every change, the issued effect is recorded, and the same key is never run again after an ambiguous response.
+
+**Inputs** are mounted read-only as a directory: `/inputs/<id>/<file name>` holds the exact selected file. Older recipes that mounted a file directly can still be read, but this backend reports that capability unavailable rather than rewriting the command.
 
 ## Read outcomes and failures
 
-| Result | Interpretation |
+| Result | Means |
 | --- | --- |
-| ready | Actual owned resources and readiness were observed for this exact candidate/recipe; semantic acceptance is not established |
-| unavailable | Required backend/capacity/image/network/secret capability is absent; no fallback is selected |
-| failed | Observed setup/execution failed; partial resources and evidence remain retained |
-| unknown | An action, identity or observation is unresolved; inspect/reconcile it before attempting another write |
-| stale or expired status | The old environment cannot establish current readiness for the changed candidate or elapsed lifetime |
+| `ready` | The owned resources and readiness were observed for this exact candidate and recipe. Nothing is accepted yet |
+| `unavailable` | A required backend, capacity, image, network or secret capability is missing. No fallback is chosen |
+| `failed` | Setup or execution failed. Partial resources and evidence are kept |
+| `unknown` | An action, identity or observation is unresolved. Inspect or reconcile before any new write |
+| stale or expired | The environment cannot show readiness for a changed candidate, or its lifetime ran out |
 
-Runtime history records immutable resource intents, IDs/labels/creation fingerprints, actual image/index and platform-manifest bindings, process outcomes, copy hashes and observations outside Git. Raw image configuration and diagnostics do not enter receipts. Docker client cancellation alone proves no daemon-side shutdown; bounded jobs stop and reinspect their exact container. Existing env declare/report undo recipes remain unexecuted.
+**What is recorded**, outside Git: each resource's intent, IDs, labels and creation fingerprint, the real image and platform, process outcomes, copy digests and observations. Raw image configuration and diagnostics stay out of receipts.
 
-Application networking stays on no network or an isolated internal bridge. A separate fixed controller proxy exposes only the intended owned service through loopback; it has no application mounts and cannot select a destination from incoming bytes. Each connection is limited to four MiB, thirty seconds and eight concurrent connections, and its lifetime is finite. This is application infrastructure, not a native model permission proof.
+**Cancelling** the Docker client does not prove the daemon stopped anything: bounded jobs stop and re-inspect their exact container. The supervised `wl env` undo recipes are never run.
 
-Keep the printed external history when reporting failures. Do not remove guessed names or run ledger undo commands automatically. Use the [lifecycle guide](./delivery-lifecycle.md) for public stop, reconciliation and explicit retirement. These commands fence provisioning, preserve failure data by default and recover only through exact ownership/absence observations. See [ADR-0103](../decisions/0103-owned-docker-environments-and-isolated-publication.md), the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) and [V1 acceptance](../v1-acceptance.md) for remaining host/native obligations.
+**Networking.** The application has no network, or an isolated internal bridge. A separate fixed proxy exposes only the intended service, on loopback. It has no application mounts and cannot pick a destination from incoming data, and each connection is limited to 4 MiB, 30 seconds and 8 at a time, for a finite lifetime. This isolates application infrastructure; it says nothing about a client's model permissions.
 
-## Preserve the provisioning parent's original bounds
+When something fails, keep the printed history. Do not remove resources by guessing names or run undo recipes automatically: stop, reconcile and retire them with the [lifecycle guide](./delivery-lifecycle.md). See the [environment specification](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md).
 
-The backend captures the complete original request before validation and preflight. A caller changing its request during a backend observation cannot replace the resource key, run, recipe, helper or selected workspaces used for later admission. The parent-control evaluation also checks this with an actual Docker observation; see [ADR-0170](../decisions/0170-original-provisioning-request-capture.md).
+## Inside the runner
 
-The internal provisioning API can capture an enclosing controller's original deadline, cancellation signal and live ownership predicate. It refuses late or fenced preflight results before effect/resource admission, bounds each backend call and the setup deadline, and rechecks before returning a result. Replacing the caller's signal or predicate does not replace the original controller. Existing native registration and process callbacks remain attached to their actual calls; cancellation stops that live invoker rather than signalling a stored PID.
+When a run prepares environments itself, the controller adds more guarantees. Each one has its own evaluation, which keeps every check above and adds its own:
 
-Run npm run eval:environments -- --parent-control --retire-success to add original-parent controls to both actual application environments. The mode retains every ordinary isolation, setup-failure, reinspection, collision and crash-recovery check, adds cancelled/fenced/late-preflight refusals without effects and verifies that both setup deadlines stay within their original parent windows. Service lifetime remains independently bounded so later authorized QA can still use a prepared environment. The ordinary command and public schemas remain unchanged.
+| Guarantee | Evaluation |
+| --- | --- |
+| **The original request is captured first.** A caller changing its request during preflight cannot replace the key, run, recipe, helper or workspaces used later | `npm run eval:environments -- --parent-control --retire-success` |
+| **The parent's limits hold.** Provisioning keeps the enclosing controller's deadline, cancellation and ownership. Late or fenced preflights are refused before any effect, and both setups finish inside their parent's window. Repeating a call never renews an expired parent | same command |
+| **Each environment is prepared once, in its own phase**, with every read and owner recorded. A failed preflight can be inspected even before a resource exists; an existing environment or a used phase is refused | `npm run eval:runner-assembly-readiness -- --provision-owner --retire-success` |
+| **A prepared input can be recovered** by a fresh controller from its recorded artifact, without provisioning again. Missing pieces return *unknown*; a recorded *ready* stays history once QA moves on | `npm run eval:runner-assembly-readiness -- --producer-result --retire-success` |
+| **The product environment is selected inside dispatch**, from current unit QA, the owned assembly and the pinned candidate. Changed selections and caller overrides are refused | `npm run eval:runner-assembly-readiness -- --product-environment --retire-success` |
+| **The milestone assembly is produced inside dispatch**: assembled through owned Git effects, the template recipe re-rooted at the assembled worktree, never assembled twice, and cancellable after revocation | `npm run eval:runner-assembly-readiness -- --product-production --retire-success` |
 
-This is a prerequisite for complete runner environment composition. It supplies neither root producer ownership nor semantic acceptance; those remain separate checks. An expired parent cannot be renewed by repeating a provision call. Use ordinary historical inspection and explicit lifecycle commands for retained resources. See [ADR-0169](../decisions/0169-original-parent-controls-for-provisioning.md).
-
-## Inspect original runner preparation owners
-
-The internal runner environment scope can prepare a selected environment in its own original phase. It captures request and candidate identity before actual preflight, retains every preflight read and registered mutation owner, and preserves the original parent window. Failed preflight remains inspectable even before any environment resource exists. It refuses an already existing environment, checks the fresh resource token again at actual admission after preflight and refuses a second preparation through a consumed phase. The parent-control Docker mode also requires fresh admission for its two original successful environments; ordinary standalone reinspection remains unchanged.
-
-Run npm run eval:runner-assembly-readiness -- --provision-owner --retire-success for the disposable fixed-dispatch composition: original unit QA, owned assembly, original product preparation, product QA, independent synthetic acceptance and local handoff. It retains the existing adversarial recovery and exact retirement controls. Models remain synthetic; this is an internal integration evaluation, not the public complete-route command or independent Linux application-host acceptance. See [ADR-0171](../decisions/0171-original-runner-provisioning-owners.md).
-
-## Recover the original prepared input
-
-The internal environment producer records the original applied ready revision as a budgeted artifact only after reopening its successful native mutation outcomes, finished reads and preflight. Its consumed result and private artifact locator allow a fresh controller to recover the same input without another provision call. Missing locators, consumption, artifact bytes or native outcomes return unknown; exact restoration recovers the original proof without changing the journal.
-
-Run npm run eval:runner-assembly-readiness -- --producer-result --retire-success to exercise these controls inside the existing fixed-dispatch composition. It retains every original QA, acceptance, handoff and recovery assertion. A recorded-ready result remains historical-only after subsequent QA and exact retirement; current environment readiness, execution authority and semantic acceptance need their own observations. See [ADR-0172](../decisions/0172-recorded-original-environment-inputs.md).
-
-## Select product preparation inside dispatch
-
-The internal dispatcher can use a fixed product-environment selector with copied candidate/assembly/helper inputs per milestone and the integration adapter's exact assembly reader. It validates current complete unit QA, the owned assembly, the pinned candidate and supported machine coverage before consuming an original selection and provisioning its single complete recipe. It then executes root QA through the existing adapter without a caller-supplied environment. Caller overrides and changed original selections refuse. Existing explicit-selection callers keep their current behavior.
-
-Run npm run eval:runner-assembly-readiness -- --product-environment --retire-success for the composed control. It retains every producer-result assertion and also checks paused product selection recovery with no configured selector or backend, lost binding/consumption refusal and identical restoration. This configuration requires prepared candidate/assembly inputs. See [ADR-0173](../decisions/0173-fixed-product-environment-selection.md).
-
-## Produce the milestone assembly inside dispatch
-
-A milestone can instead configure a helper image, a prepared template recipe, its static acceptance, data and gate-policy inputs, and repair owners. Dispatch then reads current unit QA, consumes an original production binding, assembles the exact vector through owned Git effects under the stage's original deadline and registration, re-roots the template at the assembled worktree and prepares the candidate before the selection above. Malformed coverage or inputs refuse before the first Git effect, a retained binding never assembles again, and stop can cancel in-flight assembly from the original locator after revocation.
-
-Run npm run eval:runner-assembly-readiness -- --product-production --retire-success for the composed control. It adds the dispatcher's own assembly, single registration and re-rooted recipe to every product-environment assertion. See [ADR-0175](../decisions/0175-original-milestone-product-production.md).
+These are internal compositions with synthetic models, not the public complete-route command or a Linux host acceptance. None of them establishes semantic acceptance.
 
 <!-- docnav -->
 [◀ Environment planning](delivery-environments.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment stop and retirement ▶](delivery-lifecycle.md)
