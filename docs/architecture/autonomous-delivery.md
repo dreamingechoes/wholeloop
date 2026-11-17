@@ -1,80 +1,197 @@
-# Autonomous delivery — expanded V1 design
+# Autonomous delivery — hand an approved piece of work to a run
 
-> **TL;DR** — The runner coordinates existing wholeloop steps from an issue/document through implementation, actual QA, adversarial review and integrated validation to a PR. A complete research or implementation flow can use one initial authorization with zero later human intervention. Conditional merge is a separate opt-in capability.
+> **TL;DR** — **Autonomous delivery** (`wl delivery`) takes a request, a plan and your authorization, and runs the existing wholeloop steps without asking you again: it defines acceptance, builds, verifies, reviews, tests the integrated product and, if you allowed it, opens a pull request, follows CI and merges. Every action is limited by a **grant** you record in advance, every limit is finite, and every machine decision follows a rubric you pinned.
 
 > [!IMPORTANT]
-> **Experimental.** Autonomous delivery ships experimental: its commands and schemas may change in a minor release ([compatibility](../extending/compatibility.md#experimental-surfaces)). Every stage below is implemented and tested, and live trials passed with Codex; certification across signed-in clients continues after 1.0 (P6-27).
+> **Experimental.** Autonomous delivery's commands and schemas may change in a minor release ([compatibility](../extending/compatibility.md#experimental-surfaces)). Every stage on this page is implemented and tested with fixtures and real Git and Docker, and live trials passed with Codex; certification across signed-in clients continues.
 
-## Observed behavior hosts
+## Contents
 
-Pinned acceptance cases execute objective [API/CLI](../tutorials/delivery-behaviors.md) and [browser](../tutorials/delivery-browsers.md) behavior in exact owned environments. The browser uses the official MCP SDK, fixed native tool constraints and a private registered Docker exec pipe. Fresh observed references, exact page/tab context, complete bounded PNGs and separate backend roundtrips prevent screenshots or cosmetic state from establishing persistence. Original grants, effect budgets, candidate binding and unknown-action refusal apply to every host. [Private HTTP evaluation](../tutorials/delivery-private-acceptance.md) mounts pinned inputs only into the owned verifier and requires relevant observed red/green sensitivity for applicable regression acceptance. A candidate-only pass leaves aggregate/sealed acceptance unestablished; native/model and independent host certification retain their separate scope.
+- [When to use it](#when-to-use-it)
+- [The life of a run](#the-life-of-a-run)
+- [What a run does, stage by stage](#what-a-run-does-stage-by-stage)
+- [Endpoint and intervention](#endpoint-and-intervention)
+- [Who decides what](#who-decides-what)
+- [What keeps a run safe](#what-keeps-a-run-safe)
+- [When something fails](#when-something-fails)
+- [What you need](#what-you-need)
+- [Guides](#guides)
+- [Design references](#design-references)
 
-[Integrated milestone preparation](../tutorials/delivery-integration-candidates.md) observes the complete required committed Git vector, contracts, recipes, acceptance/data/gate-policy inputs and repair ownership. Immutable records recheck current inputs and block moving bases. Preparation performs no assembly, execution or publication and grants no reuse authority. [Owned assembly](../tutorials/delivery-assembly.md) supplies separate original-grant/per-step Git effects, global dependency order, retained conflicts, finite repair counters and current complete application/contract verification. Existing fixed hosts execute cases; milestone reports retain exact failed/passed artifacts and grant no whole-feature completion, publication or rollback authority.
+## When to use it
 
-## Delegated decisions
+**Use it when** the work is agreed and you would rather decide once than at every step: a well-specified change, a research question you want answered in a brief, or a maintenance finding you have already reviewed.
 
-The [decision controller](../tutorials/delivery-decisions.md) pins original private rubrics, exact artifacts/evidence and independent planner/challenger observations. It preserves machine provenance and current eligibility separately from legacy human approvals. Fixture judgments cannot enable actual envelope execution. Policy-only preflight and no-prompt fallbacks preserve missing facts, mandatory gates, original budgets and runtime limitations; public none-policy research-report/to-PR composition is implemented, while actual native delivery/research acceptance remains pending.
+**Stay with the supervised flow when** the problem or the solution is still open, or when you want to test each change yourself before it moves on. The [supervised steps](../flow/README.md) keep their own approvals; autonomous delivery never fills them in.
 
-## Versioned CI correction production
+## The life of a run
 
-The explicit version-two plan and matching planning record support original CI corrections ([ADR-0214](../decisions/0214-versioned-ci-correction-production.md)). The public proposal command requires a new exact-plan grant and reports the separate installed-SDK requirement. The SDK composition binds complete stable current feedback, original-topic scope and retained budgets before builders; it seeds the exact published product root, reruns current QA and uses non-force publication to the original PR. Readback also binds the original URL, so another matching marker cannot substitute. No public runtime flag or credential authority is added. Since [ADR-0248](../decisions/0248-ci-correction-continuation-under-the-envelope-grant.md), the controller continues a `none` run after a repairable required-check failure under its own envelope grant, within the push budget, in the same invocation; an operator's proposal still needs a new grant. Local fixtures and real Git/Docker execution supply no native/model or hosted certification.
+```mermaid
+flowchart LR
+  S[Source<br/>wl delivery source] --> P[Plan<br/>wl delivery plan]
+  P --> G{{Grant<br/>wl delivery authorize}}
+  G --> Q[Prepare<br/>wl delivery runner-prepare]
+  Q --> R[Run<br/>wl delivery run]
+  R --> E[Endpoint<br/>report, hand-off, PR or merge]
+  R -. "a fixable failure" .-> C[Continuation<br/>new plan revision] -.-> R
+  classDef person fill:#ffd9cc,stroke:#c2410c,color:#3b1205;
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  class G person;
+  class S,P,Q,R,E,C core;
+```
 
-## Current CI feedback reads
+1. **Source.** The request is captured once and never changes: a local file, a sentence, an existing item or a complete observation of a remote document. Intake starts nothing and authorizes nothing.
+2. **Plan.** What to deliver: acceptance criteria, the repositories and their bases, the endpoint, the intervention level and finite budgets. A plan can also start as an **envelope**, the outer bounds within which the run plans the details itself. Every change makes a new numbered revision.
+3. **Grant.** Your authorization for that exact plan or envelope: which **effects** are allowed (such as writing code, committing, pushing), which decisions the machine may take, which repositories it may touch and until when. You can revoke it at any time.
+4. **Prepare and run.** `runner-prepare` fixes the route and its owner without starting anything; `wl delivery run` executes it in a controller you keep in the foreground. You can pause, resume and stop it.
+5. **Endpoint.** The run ends where the plan said: a research report, a local hand-off, a pull request, or a merge.
 
-The optional GitHub code-host feedback reader returns a complete bounded, bodyless observation of issue comments, inline comments and reviews for an exact open PR/head/base ([ADR-0213](../decisions/0213-complete-bodyless-ci-feedback.md)). Missing permissions, malformed or truncated pages and moved heads refuse completeness. Raw bodies and author identities stay inside the adapter; every projected item remains unadopted. This read capability supplies no correction, approval or publication authority. CI-origin execution is implemented in the separately installed SDK composition; local task verification passes; native/hosted acceptance remains separate.
+## What a run does, stage by stage
 
-## Read the proposal
+An implementation run goes through these stages. Each stage is a separate, recorded step with its own evidence; a stage that fails stops the run or loops back within its budget.
 
-The [specification index](../../roadmap/specifications/autonomous-delivery/README.md) links ten detailed chapters.
+```mermaid
+flowchart TD
+  D[definition<br/>frame, spec and scopes] --> PL[plan]
+  PL --> AD[acceptance-definition<br/>pin the cases first]
+  AD --> W[workspace<br/>one worktree per unit]
+  W --> BP[build-plan] --> I[implementation]
+  I --> V[verification] --> RV[review] --> CM[commit]
+  V -. findings .-> I
+  RV -. findings .-> I
+  CM --> IN[integration<br/>assemble all parts]
+  IN --> AC[acceptance<br/>test the whole product]
+  AC --> PB[publication<br/>pull request]
+  PB --> CI[ci<br/>required checks]
+  CI --> M[merge<br/>only if granted]
+  classDef core fill:#eceff3,stroke:#5b6573,color:#111827;
+  classDef opt stroke-dasharray:5 3;
+  class D,PL,AD,W,BP,I,V,RV,CM,IN,AC,PB,CI core;
+  class M opt;
+```
 
-## Available now: request intake
+| Stage | What happens |
+| --- | --- |
+| **definition** | When the plan is not ready, the run frames the problem, writes the specification and cuts scopes, and adopts a new plan revision |
+| **plan** | The plan, or the plan made inside an envelope, is accepted |
+| **acceptance-definition** | The acceptance cases are pinned **before** any code is written, so the builder cannot shape the test to its code |
+| **workspace** | Each unit of work gets its own Git worktree on a branch the run owns |
+| **build-plan** | The builder writes its plan from the repository's pinned guidance |
+| **implementation** | The builder writes the code in its worktree |
+| **verification** | The repository's own suite runs once per round in Docker, and verifiers check each criterion |
+| **review** | Reviewers inspect the change through fixed lenses; findings go back to the builder |
+| **commit** | The verified and reviewed state is committed and pinned |
+| **integration** | All committed parts are assembled in a separate worktree and checked together, including their contracts |
+| **acceptance** | The pinned cases run against the whole product in Docker: API, CLI and browser journeys, plus private cases the builder never saw |
+| **publication** | A pull request is opened, or updated, for the exact accepted state |
+| **ci** | The run follows the required checks on that exact commit |
+| **merge** | Only with a separate merge grant, after every required check and review passed on the tested commit |
 
-Use [delivery source](../tutorials/delivery-intake.md) to capture bounded local files, inline requests, existing items or complete explicitly scoped remote observations. Immutable external snapshots bind content/revision, reference, provider, repository/tenant scope, attachment digests and extraction maps. Repeating identical intake preserves identity; changed inputs retain their own snapshots. Imported observations remain distinct from reads actually performed through the existing provider host path. Intake starts no worker and grants no execution or publication authority. [ADR-0093](../decisions/0093-immutable-delivery-source-intake.md) defines this implemented boundary.
+**Research runs** are shorter: plan → research → hand-off of a stored brief. **Learning observations** read one measurement checkpoint and hand off a recommendation that changes nothing.
 
-| Concern | Detailed contract |
+## Endpoint and intervention
+
+Two independent settings in the plan decide how far a run goes and how much it asks you:
+
+| Endpoint | The run stops after |
+| --- | --- |
+| `research-report` | Storing a research brief |
+| `learning-observation` | Settling one measurement checkpoint and recommending, without changing anything |
+| `local-handoff` | Accepted work, left in local worktrees for you |
+| `to-pr` | A pull request for the accepted work, followed through CI |
+| `to-merge` | A merge, under a separate merge grant |
+
+| Intervention | Means |
+| --- | --- |
+| `supervised` | The run waits for a person at each decision |
+| `on-exception` | The run decides what it was delegated and comes back to you when something falls outside that |
+| `none` | The run never waits for a person. A decision it cannot take ends the run with a stated limitation instead of a prompt |
+
+They are independent on purpose: a research-only grant does not allow code changes, and a run allowed to open a pull request is not allowed to merge it.
+
+## Who decides what
+
+With intervention `none`, each decision the supervised flow would ask you becomes a **delegated decision**:
+
+| Stage | Decision |
+| --- | --- |
+| definition | Framing outcome (go), specification and scopes approved |
+| build-plan | Build plan approved |
+| acceptance | Acceptance of the whole product |
+| research plan and sources | Research plan and its sources accepted |
+| observation | Learning outcome recommended |
+
+For each one, the grant pins a **rubric**: the written criteria the decision must apply. A machine judge applies it to the exact evidence, an independent challenger tries to refute the judgement, and both are recorded. Three things are never delegated: widening the machine's own authority, changing what counts as accepted, and supplying a fact only a person knows. [Delegated machine decisions](../tutorials/delivery-decisions.md) shows the whole mechanism.
+
+## What keeps a run safe
+
+- **Nothing outside the grant.** Every effect is checked against the grant before it happens; anything not listed is refused. Branches the run may push are limited to the ones it owns, under the topic prefix in the grant.
+- **Finite budgets that never refill.** Deadlines, attempts, repairs, pushes and evidence bytes are counted across restarts and plan revisions. Usage that cannot be measured stays unknown; a hard limit that cannot be metered is refused.
+- **Project code runs only in Docker**, in environments the run starts from an explicit recipe and owns. No host environment variable or credential reaches it ([execution isolation](./execution-isolation.md)).
+- **Workers get only what their role needs.** Each worker is a fresh headless session of a coding client, with the role's tools, the pinned repository guidance and the exact context for its stage. Its client's own skill and instruction loading is switched off.
+- **A worker's answer is a claim.** The controller observes the real result, such as the files, the commit or the test output, before anything counts.
+- **Acceptance is defined before the code.** Cases are pinned first, private cases are hidden from the builder, and a regression check counts only when it was seen failing on the base and passing on the change.
+- **Every write is recorded first.** Each external effect is journalled before it runs and observed afterwards. An effect with an unknown result is never repeated blindly.
+- **Merge needs its own grant**, the exact tested commit, every required check and review passing, and a code host that enforces branch protection.
+
+## When something fails
+
+A run does not give up at the first failure, and it does not loop forever:
+
+- **Verification and review findings** go back to the builder within the round budget.
+- **A failed integration or acceptance case**, or **a failed required CI check**, can become a **continuation**: a new plan revision that records the failure, corrects the owning unit and carries the run on. A run with intervention `none` can continue under its own envelope grant, within its repair and push budgets, without a person.
+- **Anything else** ends with a report: what happened, what was kept, which effects ran and the exact next permitted actions (`wl delivery report`).
+
+Stopped or interrupted runs keep their worktrees, environments and evidence. [Checkpoints](../tutorials/delivery-checkpoints.md) and [recovery](../tutorials/delivery-recovery.md) explain how a run resumes without repeating an effect.
+
+## What you need
+
+| You need | For |
+| --- | --- |
+| The `wl` CLI and Git | Every stage |
+| A local Docker daemon, version 28 or newer | Verification, integration and acceptance |
+| A coding client that can run headless, with a worker credential in your OS secret store | Model-backed stages. Antigravity cannot be a worker yet |
+| A Git remote, with `gh` or `glab` signed in | Publication, CI and merge |
+
+Store a worker credential with `wl delivery credential-store`, which reads it from standard input and never writes it to a file, and check it with `wl delivery credential-check`. [Native delivery hosts](../tutorials/delivery-native.md) lists which clients can be workers.
+
+## Guides
+
+The [documentation index](../README.md#autonomous-delivery-experimental) groups the guides in the order of a run. Good starting points:
+
+- [Delivery intake](../tutorials/delivery-intake.md) and [planning](../tutorials/delivery-plan.md): from a request to a plan, with nothing running.
+- [Authorization](../tutorials/delivery-authorization.md): recording and revoking a grant.
+- [Runner controls](../tutorials/delivery-runner.md): preparing, running and controlling a run.
+- [Owned assembly and combined verification](../tutorials/delivery-assembly.md): integration, acceptance, publication and CI.
+
+## Design references
+
+For contributors and anyone checking why a boundary is where it is:
+
+| Topic | Decision |
+| --- | --- |
+| Why autonomous delivery was planned this way | [ADR-0092](../decisions/0092-expanded-v1-autonomous-delivery-planning.md) |
+| Immutable source intake | [ADR-0093](../decisions/0093-immutable-delivery-source-intake.md) |
+| Plan revisions and envelopes | [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) |
+| Grants and worker claims | [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md) |
+| Repository guidance in workers | [ADR-0207](../decisions/0207-public-implementation-route-composition.md#repository-guidance-in-workers-p6-40) |
+| Continuing under the envelope grant | [ADR-0198](../decisions/0198-envelope-grant-continuation.md) |
+| CI correction under the envelope grant | [ADR-0248](../decisions/0248-ci-correction-continuation-under-the-envelope-grant.md) |
+
+The full proposal is in ten chapters, from the [specification index](../../roadmap/specifications/autonomous-delivery/README.md):
+
+| Concern | Chapter |
 | --- | --- |
 | Inputs, source revisions and operator authority | [Contract and authorization](../../roadmap/specifications/autonomous-delivery/01-contract-and-authorization.md) |
 | Durable scheduling, worker claims and recovery | [Runner](../../roadmap/specifications/autonomous-delivery/02-durable-runner.md) |
-| Actual application/services/data isolation | [Environments](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) |
+| Application, services and data isolation | [Environments](../../roadmap/specifications/autonomous-delivery/03-execution-environments.md) |
 | Executable criteria and independent evidence | [Behavioral QA](../../roadmap/specifications/autonomous-delivery/04-behavioral-qa.md) |
 | Combined work and requirement changes | [Integration](../../roadmap/specifications/autonomous-delivery/05-integration-and-change-impact.md) |
 | PR publication, CI repair and conditional merge | [Publication](../../roadmap/specifications/autonomous-delivery/06-publication-ci-and-merge.md) |
 | Limits, timeline and diagnosis | [Controls](../../roadmap/specifications/autonomous-delivery/07-controls-and-observability.md) |
 | Scheduled observation and follow-up proposals | [Learning](../../roadmap/specifications/autonomous-delivery/08-learning-and-maintenance.md) |
-| Full-flow evaluation and actual acceptance | [Validation](../../roadmap/specifications/autonomous-delivery/09-validation-and-acceptance.md) |
-| Complete no-intervention research/implementation | [Delegated decisions](../../roadmap/specifications/autonomous-delivery/10-unattended-decisions-and-research.md) |
-
-## Design boundaries
-
-[Delivery workers](../tutorials/delivery-workers.md) bind fresh role tools, context audiences, current queue attempts and private grants. Closed worker output stays a claim; separate controller observations require actual artifact bytes and current runtime ownership and still establish no acceptance. Actual native/backend enforcement remains subsequent work under ADR-0100.
-
-[Delivery budgets](../tutorials/delivery-budgets.md) retain original deadlines, usage provenance, lifetime reservations, CI/repair counters, artifact bytes and no-progress signatures across controllers and plan revisions. Unsupported hard metering refuses; historical unmetered work stays unknown and cannot receive retroactive hard caps. ADR-0099 separates validated progress from heartbeats and preserves old gate budgets.
-
-[Checkpoint recovery](../tutorials/delivery-checkpoints.md) pins exact input manifests, retains finite single effect invocations and observes outcomes separately. Unknown ownership or response never starts a replacement or repeats a possible write. Actual child/crash fixtures verify local recovery while native/backend and operation-specific hosts remain pending. ADR-0098 preserves legacy exhausted gates and adds explicit non-destructive stopped-writer lock retention.
-
-[Delivery recovery](../tutorials/delivery-recovery.md) tracks prepared plans/envelopes, replays immutable delivery events and reconstructs disposable caches without recreating private authority or changing legacy human/PR receipts. Unknown versions and mismatched identities refuse. Durable queue ordering/reservations and scoped claim/fencing are also implemented; actual workers and endpoint evidence remain later increments. The [queue guide](../tutorials/delivery-queue.md) exposes metadata without dispatch, and ADR-0097 defines its trusted host admission boundary.
-
-[Delivery authorization](../tutorials/delivery-authorization.md) records exact operator grants and durable revocations without starting workers or executing external effects. Endpoints are permission ceilings; effect/decision/repository/read scopes remain explicit. Broker admission and messages require current private controller context and an isolated runtime observation; worker output stays a claim and cannot forge human testing. Fixture runtime evidence does not establish actual containment. [ADR-0095](../decisions/0095-operator-grants-and-scoped-worker-claims.md) records this implemented boundary and the later backend/runner obligations.
-
-Repository guidance reaches workers only through plan pins: `wl delivery guidance` proposes them from each pinned base with supervised slot precedence, skill directories are pinned whole, and each role receives only its slots ([ADR-0207](../decisions/0207-public-implementation-route-composition.md#repository-guidance-in-workers-p6-40)).
-
-[Delivery planning](../tutorials/delivery-plan.md) adds immutable plan revisions and initial request envelopes. It checks exact source criteria, unique ownership, complete outcome/milestone coverage, contract-first dependencies and local repository bases. Receipts expose dependency waves and a policy-selected proposed route while retaining not-granted/not-started. Existing item references and historical human records remain unchanged. [ADR-0094](../decisions/0094-revision-bound-delivery-plans-and-envelopes.md) separates structural fit from independent semantic acceptance and actual execution authority.
-
-Endpoint and intervention are independent. A research-only grant does not permit code changes, and an unattended PR run does not permit merge. The owner can delegate the supported decisions once under an exact plan or bounded request envelope; each machine decision retains its policy and evidence basis.
-
-The [runner controls](../tutorials/delivery-runner.md) now expose immutable preparation, current route/ownership inspection and explicit pause/resume/stop. The internal engine retains stage intents, private native cancellation and checkpoint recovery, and the public run and reconcile commands wire them to a fixed host; native stages join it only with trusted runtime proof. These controls alone execute no model and certify no endpoint.
-
-Zero intervention means no later ask-user tool, human decision wait or interactive approval prompt. The runner resolves an authorized ambiguity or returns a terminal limitation when a prerequisite cannot be met. It does not bypass native permissions or repository protections.
-
-Keep the core deterministic and the model/tool host explicit. Reuse existing hierarchy, criteria, gates, adapters and MCP-first connections. New worker containment and effect authority remain distinct from worktree separation and prompt instructions.
-
-Conditional merge requires a separate current grant, exact tested candidate, complete successful required checks/reviews and a code host that enforces the relevant revision/protection contract. Default supervised use retains its current human testing and non-merging behavior.
-
-The accepted [planning decision](../decisions/0092-expanded-v1-autonomous-delivery-planning.md) records why the direction is documented now without superseding existing runtime contracts. The implementation will need explicit technical decisions when those contracts change.
-
-## Accepted implementation scope
-
-This scope is accepted, with authorization for pragmatic implementation decisions, passing tests, docs and incremental commits without waiting for manual checks or further signals. Native capability acceptance remains pending. No cloud platform, marketplace, vendor API expansion or actual production operation is included.
+| Full-flow evaluation and acceptance | [Validation](../../roadmap/specifications/autonomous-delivery/09-validation-and-acceptance.md) |
+| Complete no-intervention research and implementation | [Delegated decisions](../../roadmap/specifications/autonomous-delivery/10-unattended-decisions-and-research.md) |
 
 <!-- docnav -->
 [◀ Repo skills](../configuration/repo-skills.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery request intake ▶](../tutorials/delivery-intake.md)
