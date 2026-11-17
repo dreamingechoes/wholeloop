@@ -154,4 +154,4 @@ The earlier wording stays visible above where it changed, because the reasoning 
 ---
 
 <!-- docnav -->
-[◀ Docs index](README.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [Getting started ▶](getting-started.md)
+[◀ FAQ](faq.md)  ·  [📖 Docs index](README.md)  ·  [Concepts ▶](concepts.md)

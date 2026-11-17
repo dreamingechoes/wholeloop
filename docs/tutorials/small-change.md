@@ -127,4 +127,4 @@ Merging, deploying, sending messages and changing flags stay **outside** the har
 To look from a terminal, use the [core commands](../architecture/core-cli.md), not the skill names. For setup problems or missing state, see [troubleshooting](../troubleshooting.md).
 
 <!-- docnav -->
-[◀ Local core tour](local-core.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)
+[◀ First framing](first-framing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Local client setup ▶](../platforms/local-onboarding.md)

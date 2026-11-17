@@ -1,15 +1,13 @@
 # Repo skills and slots — follow what your repository already knows
 
-> **TL;DR** — Each step declares named **slots** (`build.frontend`, `verify.suite`, `review.rubric`…). Before acting, `wl discover` scans your repository for the skills, agents, rules and commands it already has — for every major CLI, not just the one you are using — and binds each slot to the most specific match. The harness's own defaults are the last resort, never the first.
+> **TL;DR** — Each step declares named **slots**: places where your repository's own guidance should take over, such as `build.frontend`, `verify.suite` or `review.rubric`. Before acting, `wl discover` scans your repository for the skills, agents, rules and commands it already has, for every major client and not just the one you are using, and binds each slot to the most specific match. The harness's own defaults are the last resort, never the first.
 
 > [!NOTE]
-> **Partial.** Discovery, cached capability maps, slot resolution, explicit choices and step bindings are implemented. Design-system MCP discovery and richer language-specific rules are planned. Decision: [ADR-0009](../decisions/0009-repo-first-capability-resolution.md).
-
----
+> **Partial.** Discovery, cached capability maps, slot resolution, explicit choices and step bindings work. Discovering a design system's MCP server and richer language-specific rules are planned.
 
 ## Why
 
-A generic harness that ignores your repository writes generic code. Your repo may already have a skill for its backend architecture, a design-system guide, a migration checklist, a PR template, a `make check` that is the real test suite. Those are the team's agreements in executable form; `wholeloop` is the layer that **sequences** them, not the one that replaces them.
+A generic harness that ignores your repository writes generic code. Your repository may already have a skill for its backend architecture, a design-system guide, a migration checklist, a PR template, or a `make check` that is the real test suite. Those are the team's agreements in executable form. wholeloop is the layer that **sequences** them, not the one that replaces them.
 
 ## What `wl discover` looks at
 
@@ -23,11 +21,19 @@ A generic harness that ignores your repository writes generic code. Your repo ma
 | **Quality tools** | linters, formatters, type checkers, architecture checkers — from their config files |
 | **Design system** | UI kit packages, token files, Storybook, an MCP server for the design system |
 
-The result is a **capability map**, cached in the external store and refreshed when selected file contents change. `wl discover --json` returns declarations and parse problems; it never executes scripts. Package scripts carry structured `argv` plus `cwd`, and nested packages inherit a declared workspace package manager. Go, Rust, pytest, RSpec, Make, just and Taskfile runners are detected from their declarations; detection does not prove that a runner is installed or that its tests pass.
+The result is a **capability map**, cached in your store and refreshed when the files it read change. `wl discover --json` returns what it found and any parse problems; **it never runs a script**.
 
-Discovery excludes .wholeloop/distribution and internal aliases into it: packaged native copies must not compete with installed overlays for the same slot. It skips dependency/build directories, files over 1 MiB and external or broken repository symlinks, reporting warnings. Internal symlinks are followed once. User discovery scans only skill directories, with lower precedence than repository assets. Codex TOML agents are inventoried by path; format and read-only conformance still need verification against the native clients. Invalid metadata or runner configuration blocks resolution instead of silently choosing from a partial map.
+- **Commands** carry their exact arguments and working directory. Nested packages inherit the workspace's declared package manager. Go, Rust, pytest, RSpec, Make, just and Taskfile runners are found from their declarations, which does not prove they are installed or that their tests pass.
+- **Skipped:** dependency and build directories, files over 1 MiB, and symlinks that leave the repository or are broken, each with a warning. Symlinks inside the repository are followed once.
+- **Your own skills**, outside the repository, are scanned only in skill directories and rank below the repository's.
+- **Invalid metadata or runner configuration stops resolution** instead of choosing from a partial map.
 
-Packaged wholeloop skills/roles carry a terminal entrypoint routing marker (valid Markdown or TOML comments). They remain visible in discovery with entrypoint: true, but do not compete as heuristic repository/user guidance. Resolve reports their exclusions; explicit slot tags and configured bindings still win, including an intentional binding to an entrypoint. Genuine team-guide conflicts still ask. This avoids self-selection and false ambiguities when several clients are installed. The marker is not ownership, authentication or native-permission proof. Upgrade unchanged owned older output to receive it; remembered explicit bindings remain user choices. See [ADR-0054](../decisions/0054-entrypoints-are-not-heuristic-repository-guidance.md).
+Two kinds of files never compete for a slot:
+
+- **wholeloop's own installed copies** under `.wholeloop/distribution`, so a project install does not compete with itself.
+- **wholeloop's own skills and roles.** They carry an entrypoint marker, appear in discovery as `entrypoint: true`, and are left out of the heuristic matching, so that installing several clients does not create false ties. An explicit tag or binding to one of them still works.
+
+Codex TOML agents are listed by path; their format and read-only behaviour still need checking in the real client.
 
 ## Slots
 
@@ -61,7 +67,7 @@ flowchart LR
 ```
 
 1. **Explicit binding** wins, always.
-2. **Tagged skill** — a repo skill can declare the slot it serves in its standard `metadata`:
+2. **Tagged skill**: a repository skill can declare the slot it serves in its standard `metadata`:
 
    ```yaml
    ---
@@ -72,15 +78,15 @@ flowchart LR
    ---
    ```
 
-3. **Rule match** — deterministic keyword and path rules over names, descriptions and file types. Rules are data, versioned and tested against fixture repositories.
-4. **User skill** — something you installed for yourself.
-5. **Harness default** — `wholeloop`'s own minimal guidance.
+3. **Rule match**: deterministic keyword and path rules over names, descriptions and file types. Rules are data, versioned and tested against fixture repositories.
+4. **User skill**: something you installed for yourself.
+5. **Harness default**: wholeloop's own minimal guidance.
 
 **Ambiguity is a question, not a coin toss.** Two equally good matches, or a match with low confidence, produce one question; the answer is remembered as an explicit binding.
 
 ## Transparency
 
-Every preflight lists the bindings in force:
+Every preflight lists the bindings in force. An example:
 
 ```text
 Bindings  build.backend   → .agents/skills/api-architecture   (repo, tagged)
@@ -89,13 +95,59 @@ Bindings  build.backend   → .agents/skills/api-architecture   (repo, tagged)
           review.rubric   → harness default                     (nothing found)
 ```
 
-`wl resolve <slot> --json` shows the same for one slot, with every candidate and why it won or lost. Ambiguity or a description-only match returns a structured question and exit 2. No match returns the harness default. An explicit `default` binding opts out of repository guidance for that slot.
+`wl resolve <slot>` shows the same for one slot, with every candidate and why it won or lost. In a repository with the tagged `ui-kit` skill above and three `package.json` scripts:
 
-Remember a choice with `wl answer slot:build.frontend=.agents/skills/ui-kit/SKILL.md --remember project --json`. User scope is also available. Step begin payloads expose their slot resolutions and include unresolved choices in their missing-input questions.
+```console
+$ wl resolve build.frontend
+{
+  "schema": "wholeloop/resolve@1",
+  "slot": "build.frontend",
+  "selected": {
+    "ref": ".agents/skills/ui-kit/SKILL.md",
+    "origin": "repo",
+    "reason": "Explicit metadata.wholeloop.slot tag for build.frontend"
+  },
+  …
+  "questions": []
+}
+$ wl resolve verify.suite
+{
+  "schema": "wholeloop/resolve@1",
+  "slot": "verify.suite",
+  "selected": {
+    "ref": "package.json#test",
+    "origin": "repo",
+    "reason": "Declared npm script test"
+  },
+  "candidates": [
+    …
+    {
+      "ref": "package.json#typecheck",
+      "origin": "repo",
+      "score": 216,
+      "confident": true,
+      "reason": "Declared npm script typecheck",
+      "selected": false,
+      "outcome": "Lost to a higher-precedence or stronger candidate"
+    },
+    …
+```
+
+- **A tie, or a match on the description only**, returns a question and exit code 2.
+- **No match** returns the harness default. Binding a slot to `default` explicitly opts out of repository guidance for it.
+- **Remember a choice** with `wl answer slot:build.frontend=.agents/skills/ui-kit/SKILL.md --remember project --json`, or `--remember user` for yourself.
+
+Every `wl step begin` payload includes its slot resolutions, and unresolved choices appear among its questions.
 
 ## In autonomous runs
 
-Autonomous workers cannot load your skills or instruction files themselves: native loading is disabled so every input stays inside the authorized plan. Before preparing a plan, run `wl delivery guidance --file <proposal.json> --json`. It resolves the same slots at each repository's pinned base commit and prints pins to copy into the plan's `guidance`: one per resolved slot (a skill directory as a whole, with a digest per file) and `repo.instructions` for AGENTS.md and its peers. Tied candidates come back as questions; answer them in a `wholeloop/delivery-guidance-answers@1` file passed with `--answers`, or choose `default` for harness guidance. Each worker then receives only its role's guidance: builders get build slots and conventions, reviewers the rubric, and everyone the instructions. User-level skills are not used in autonomous runs.
+Workers in [autonomous delivery](../concepts.md#autonomous-delivery) cannot load your skills or instruction files themselves. Their client's own loading is switched off, so every input stays inside the authorized plan. Instead, the guidance is **pinned into the plan**:
+
+1. Before preparing a plan, run `wl delivery guidance --file <proposal.json> --json`. It resolves the same slots at each repository's pinned base commit.
+2. It prints pins to copy into the plan's `guidance`: one per resolved slot (a skill directory as a whole, with a digest per file) and `repo.instructions` for `AGENTS.md` and its peers.
+3. Ties come back as questions. Answer them in a `wholeloop/delivery-guidance-answers@1` file passed with `--answers`, or choose `default`.
+
+Each worker then receives only its role's guidance: builders get the build slots and conventions, reviewers the rubric, and everyone the instructions. Your user-level skills are not used in autonomous runs.
 
 ## Gotchas & FAQ
 
@@ -103,9 +155,7 @@ Autonomous workers cannot load your skills or instruction files themselves: nati
 
 **"A repo skill contradicts the harness."** The repo wins inside its slot. The harness only keeps what no slot can override: decision points, coverage, the output contract and *ask, never guess*.
 
-**"I don't want a repo skill used."** Bind the slot explicitly — to another skill, or to `default`.
-
----
+**"I don't want a repo skill used."** Bind the slot explicitly, to another skill or to `default`.
 
 <!-- docnav -->
-[◀ Providers](providers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Extending ▶](../extending/README.md)
+[◀ Providers](providers.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Autonomous delivery design ▶](../architecture/autonomous-delivery.md)

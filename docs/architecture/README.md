@@ -127,4 +127,4 @@ The skill never computes a verdict, a precedence or a next step. It asks the cor
 ---
 
 <!-- docnav -->
-[◀ Local client setup](../platforms/local-onboarding.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Autonomous delivery design ▶](autonomous-delivery.md)
+[◀ Lenses, templates, profiles](../extending/lenses-templates-profiles.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Core CLI ▶](core-cli.md)

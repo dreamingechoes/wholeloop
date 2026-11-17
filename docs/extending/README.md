@@ -56,4 +56,4 @@ Built-in status is earned by breadth of use. Open a pull request with the manife
 ---
 
 <!-- docnav -->
-[◀ Repo skills](../configuration/repo-skills.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Writing a provider ▶](providers.md)
+[◀ Platforms](../platforms/README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Writing a provider ▶](providers.md)

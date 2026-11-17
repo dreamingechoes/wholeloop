@@ -88,4 +88,4 @@ Terms used by `wl delivery`, which is [experimental](./extending/compatibility.m
 ---
 
 <!-- docnav -->
-[◀ Docs style](contributing/docs-style.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [FAQ ▶](faq.md)
+[◀ Concepts](concepts.md)  ·  [📖 Docs index](README.md)  ·  [The flow ▶](flow/README.md)

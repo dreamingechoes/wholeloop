@@ -357,4 +357,4 @@ The second command can use authenticated native models and requires maintainer s
 Reviewed pins live in test/conformance/pins.json. Antigravity's initial acquisition pin is 1.4.3 with four official updater checksums; previous local 1.4.2 availability evidence does not cover it. Only macOS/glibc Linux arm64/x64 are planned. The full core/fixture/package check passes on macOS and Debian Linux arm64/Node 24; actual Linux native acquisition/installation/model runs remain unverified. The pure conformance acquisition command accepts explicit bounded metadata without any network/install operation. See [ADR-0074](../decisions/0074-exact-native-acquisition-and-private-prefixes.md).
 
 <!-- docnav -->
-[◀ Lenses, templates, profiles](../extending/lenses-templates-profiles.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Local client setup ▶](local-onboarding.md)
+[◀ Expanded delivery acceptance](../reference/delivery-acceptance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Extending ▶](../extending/README.md)

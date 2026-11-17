@@ -77,4 +77,4 @@ The accepted [planning decision](../decisions/0092-expanded-v1-autonomous-delive
 This scope is accepted, with authorization for pragmatic implementation decisions, passing tests, docs and incremental commits without waiting for manual checks or further signals. Native capability acceptance remains pending. No cloud platform, marketplace, vendor API expansion or actual production operation is included.
 
 <!-- docnav -->
-[◀ Architecture](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Expanded delivery acceptance ▶](../reference/delivery-acceptance.md)
+[◀ Repo skills](../configuration/repo-skills.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery request intake ▶](../tutorials/delivery-intake.md)

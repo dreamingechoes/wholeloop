@@ -80,4 +80,4 @@ A killed writer may retain a store lock. This increment does not guess whether i
 Retain the external tutorial directory for inspection. Existing item-state commands and human/PR history remain separate and unchanged. No manual/native/service acceptance is marked passed by this local exercise.
 
 <!-- docnav -->
-[◀ Delivery checkpoints](delivery-checkpoints.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Environment planning ▶](delivery-environments.md)
+[◀ Delivery checkpoints](delivery-checkpoints.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Original delivery evaluation fixtures ▶](delivery-evaluation-fixtures.md)

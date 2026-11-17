@@ -86,4 +86,4 @@ Step pages show the invocation for each client. They are requests in the convers
 [Client setup](../platforms/local-onboarding.md) lists the installed names.
 
 <!-- docnav -->
-[◀ Concepts](../concepts.md)  ·  [📖 Docs index](../README.md)  ·  [research ▶](define/research.md)
+[◀ Glossary](../glossary.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [research ▶](define/research.md)

@@ -148,4 +148,4 @@ A published npm version is never unpublished or overwritten: unpublishing breaks
 The native tar is a hosted release asset after successful activation. Download and extract that trusted release into a new local directory before registering its relative Claude marketplace or loading another native tree. The source repository root itself is not the generated marketplace. Remote Git marketplace registration and optional compiled binaries are not supplied by this workflow. Native installation from a downloaded release tree remains a manual check.
 
 <!-- docnav -->
-[◀ Authoring](authoring.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Nightly conformance ▶](conformance.md)
+[◀ Docs style](docs-style.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Nightly conformance ▶](conformance.md)

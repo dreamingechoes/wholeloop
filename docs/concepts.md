@@ -263,4 +263,4 @@ Start with the [autonomous delivery overview](./architecture/autonomous-delivery
 **"Does the harness replace my repository's skills?"** The opposite: it looks for them first and follows them.
 
 <!-- docnav -->
-[◀ V1 acceptance](v1-acceptance.md)  ·  [📖 Docs index](README.md)  ·  [The flow ▶](flow/README.md)
+[◀ Philosophy](philosophy.md)  ·  [📖 Docs index](README.md)  ·  [Glossary ▶](glossary.md)

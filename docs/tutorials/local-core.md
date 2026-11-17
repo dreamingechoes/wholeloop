@@ -193,4 +193,4 @@ Leave the initiative open, or try the real thing in your client with [first fram
 For everyday work, use your normal store and ask your coding client for the skill you need. For every command and exit code, see [the core reference](../architecture/core-cli.md) and [troubleshooting](../troubleshooting.md#understand-exit-codes).
 
 <!-- docnav -->
-[◀ First framing](first-framing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Small change ▶](small-change.md)
+[◀ Getting started](../getting-started.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [First framing ▶](first-framing.md)

@@ -69,4 +69,4 @@ Successful metadata mentioning permissions and ordinary stdout prose do not coun
 OpenCode 2 conformance uses a private standalone server; pinned V1 keeps its existing invocation. Antigravity receives a JSONL user event in stream-only mode. Copilot keeps its prompt on stdin: its documented explicit prompt flag would ignore piped data. Native configuration, trust and credentials stay owned by the client. See [ADR-0087](../decisions/0087-redacted-native-diagnostics-and-explicit-invocations.md).
 
 <!-- docnav -->
-[◀ Release preparation](releasing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docs style ▶](docs-style.md)
+[◀ Release preparation](releasing.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [V1 acceptance ▶](../v1-acceptance.md)

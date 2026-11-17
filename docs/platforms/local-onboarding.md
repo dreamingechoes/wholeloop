@@ -1,34 +1,57 @@
 # Local client setup — choose your CLI
 
-> **TL;DR** — Build once, choose a named target, inspect its dry run and install its owned components. Run doctor for that target, then restart the native client and verify discovery and permissions. File installation and native activation are separate observations.
+> **TL;DR** — Pick your client's install target, preview the install, install it and run doctor for that target. Then restart the client and check that it finds the skills and asks for the right permissions. Writing the files and the client actually loading them are two separate things, and this page shows how to check each one for every client.
 
-Installation from npm takes seconds per tier-A client on a fresh Linux machine. Discovery, trust and sign-in are verified only as far as [V1 acceptance](../v1-acceptance.md) records.
+Installing from npm takes a few seconds per client. How far each client's discovery, trust and sign-in were verified is recorded in [V1 acceptance](../v1-acceptance.md).
+
+## Contents
+
+- [Before choosing a target](#before-choosing-a-target)
+- [Claude Code](#claude-code)
+- [Codex](#codex)
+- [OpenCode](#opencode)
+- [Copilot](#copilot)
+- [Gemini](#gemini)
+- [Antigravity](#antigravity)
+- [Cursor](#cursor)
+- [Verify a first step and retire the same installation](#verify-a-first-step-and-retire-the-same-installation)
 
 ## Before choosing a target
 
-For the shortest complete route, start with [getting started](../getting-started.md), then [your first framing](../tutorials/first-framing.md). This page is the target-specific reference. Use [troubleshooting](../troubleshooting.md) for a missing executable/skill, ownership conflict or native permission failure.
+For the shortest complete route, start with [getting started](../getting-started.md), then [your first framing](../tutorials/first-framing.md). This page is the per-client reference; [troubleshooting](../troubleshooting.md) covers a missing executable or skill, an ownership conflict or a denied permission.
 
 Install the CLI first ([getting started](../getting-started.md#install-the-cli)) and check it:
 
-```bash
-wl --version
+```console
+$ wl --version
+1.1.0
 ```
 
-The examples below use user scope; project scope writes native components inside the current project, so run that variant from the intended disposable project. All runtime state/ownership/backups stay in the external store.
-
-Run npm run check for the complete local suite, including offline package installation. The bundled CLI supports runtime Node 20 or newer; individual native clients have their own requirements. Installation does not install the native CLI, change general settings/MCP credentials or start a model.
-
-| Client | Target | Native executable | Managed framing skill |
+| Client | Target | Client executable | Framing skill |
 | --- | --- | --- | --- |
-| [Claude Code](#claude-code) | claude | claude | wl-frame-problem |
-| [Codex](#codex) | codex | codex | wl-frame-problem |
-| [OpenCode](#opencode) | opencode | opencode | wl-frame-problem |
-| [Copilot](#copilot) | copilot | copilot | wl-frame-problem |
-| [Gemini](#gemini) | gemini | gemini | wl-frame-problem |
-| [Antigravity](#antigravity) | antigravity | agy | wl-agy-frame-problem |
-| [Cursor](#cursor) | cursor | agent | wl-frame-problem |
+| [Claude Code](#claude-code) | `claude` | `claude` | `wl-frame-problem` |
+| [Codex](#codex) | `codex` | `codex` | `wl-frame-problem` |
+| [OpenCode](#opencode) | `opencode` | `opencode` | `wl-frame-problem` |
+| [Copilot](#copilot) | `copilot` | `copilot` | `wl-frame-problem` |
+| [Gemini](#gemini) | `gemini` | `gemini` | `wl-frame-problem` |
+| [Antigravity](#antigravity) | `antigravity` | `agy` | `wl-agy-frame-problem` |
+| [Cursor](#cursor) | `cursor` | `agent` | `wl-frame-problem` |
 
-Choose the section for your client. Select the same explicit target in doctor; its version/file diagnostics are not proof of native activation or a model run. Edited/unowned output is preserved and refused. Inspect a reported conflict and its retained backups before choosing a fresh output/scope. The returned Git guard command is per repository: after a user-scope install it shows `<repository>` in place of the path, to be replaced with each application repository you want guarded; a project-scope install names its own repository.
+Every section uses the same three commands, with that client's target. Their output looks like the [getting started example](../getting-started.md#install-for-one-client):
+
+```bash
+wl install --target <target> --scope user --dry-run
+wl install --target <target> --scope user
+wl doctor --target <target>
+```
+
+Things that apply to every client:
+
+- **User scope** installs for every project; **project scope** writes into the repository you run it from, so try it in a disposable project first. Your work history, ownership records and backups always stay in your store.
+- **Install never** installs the client, changes its general settings or MCP credentials, or starts a model.
+- **Doctor checks versions and files**, which is not proof that the client loads the skills or that a model ran.
+- **Edited or foreign files are kept and reported**, never overwritten. Inspect a reported conflict and its backups before choosing another scope or output.
+- **Git guards are per repository.** After a user-scope install, the guard command shows `<repository>`: run it with each application repository you want guarded. A project-scope install names its own repository.
 
 ## Claude Code
 
@@ -38,15 +61,17 @@ wl install --target claude --scope user
 wl doctor --target claude
 ```
 
-Managed loose components use wl-prefixed names under .claude, or the absolute CLAUDE_CONFIG_DIR override. Restart Claude and request the wl-frame-problem skill in the intended project. Inspect role discovery and the scoped guard transport; read-only/native permission behavior remains an actual-client check.
+| | |
+| --- | --- |
+| **Files go to** | `wl-`-prefixed skills and agents under `.claude`, or under `CLAUDE_CONFIG_DIR` when set |
+| **Call it with** | `/wl-frame-problem` |
+| **After restarting, check** | The skill appears; roles are discovered; the guard hooks are active. Read-only behaviour and permissions are only proven in the real client |
 
-The [2026-10-22 manual observation](../../roadmap/manual-verification.md#manually-observed-claude-framing-and-session-recovery-2026-10-22) confirms interactive loose-skill framing, an on-hold closure and status recovery after restarting Claude. It also records unapproved narrative conditions and an unreviewed final revision; this is narrower than full native conformance.
+A [manual observation on 2026-10-22](../../roadmap/manual-verification.md#manually-observed-claude-framing-and-session-recovery-2026-10-22) confirmed interactive framing, an on-hold closure and recovering the status after restarting Claude. It also recorded stop conditions nobody approved and a final revision nobody reviewed, so it is narrower than full conformance.
 
-Standalone generated plugins use the wholeloop namespace instead. For that delivery route, follow the [local marketplace preview](../contributing/releasing.md#review-a-local-delivery-preview) and explicitly register/install it in a disposable client configuration. The plugin invocation is /wholeloop:frame-problem; it is distinct from the loose wl-frame-problem entrypoint. Static plugin validation does not activate it.
+**The plugin route.** A generated Claude plugin uses the `wholeloop` namespace instead: `/wholeloop:frame-problem`, separate from the installed `wl-frame-problem`. To try it, follow the [local marketplace preview](../contributing/releasing.md#review-a-local-delivery-preview) and register it explicitly in a disposable client configuration. Validating the plugin's files does not activate it.
 
 ## Codex
-
-The [automatic native trial](../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22) passed standalone framing on Codex 0.163.0. That structural result does not replace the permission/hook spike, other steps or a different client's acceptance.
 
 ```bash
 wl install --target codex --scope user --dry-run
@@ -54,9 +79,16 @@ wl install --target codex --scope user
 wl doctor --target codex
 ```
 
-Skills use .agents/skills; native roles use CODEX_HOME/agents or .codex/agents. Restart Codex and select $wl-frame-problem in the intended project. A portable plugin is skills-only and does not establish native TOML agent loading. Native roles inherit parent permissions; do not infer read-only isolation from a role name. The checked headless recipe is a separate execution boundary.
+| | |
+| --- | --- |
+| **Files go to** | Skills in `.agents/skills`; roles in `CODEX_HOME/agents` or `.codex/agents` |
+| **Call it with** | `$wl-frame-problem` from the skill picker |
+| **After restarting, check** | The skill appears in the picker; the per-repository Git guard command, before you activate it |
 
-Inspect the returned per-repository Git fallback command before activating it. General install does not rewrite shared Codex settings or its credential store. See [target layouts and boundaries](./README.md#installing).
+- An [automatic trial](../../roadmap/manual-verification.md#automatic-native-client-trials-2026-10-22) passed standalone framing on Codex 0.163.0. It does not cover permissions, hooks or other steps.
+- **Roles inherit the parent session's permissions.** Do not assume a role is read-only because of its name; the headless worker recipe is a separate, checked boundary.
+- A portable plugin carries skills only, so it does not prove that Codex loads the TOML roles.
+- Install does not rewrite Codex's shared settings or its credential store. See [target layouts and boundaries](./README.md#installing).
 
 ## OpenCode
 
@@ -66,11 +98,21 @@ wl install --target opencode --scope user
 wl doctor --target opencode
 ```
 
-User components use the XDG opencode root or absolute OPENCODE_CONFIG_DIR. Project scope uses .opencode, including its dedicated wholeloop.js guard plugin. Restart OpenCode, request wl-frame-problem and verify skills/roles plus plugin activation. Existing unrelated native configuration is retained; actual permission and compatible-skill precedence remain manual checks.
+| | |
+| --- | --- |
+| **Files go to** | The XDG `opencode` directory, or `OPENCODE_CONFIG_DIR`; project scope uses `.opencode`, including a `wholeloop.js` guard plugin |
+| **Call it with** | Ask for `wl-frame-problem` |
+| **After restarting, check** | Skills, roles and the guard plugin are active. Your other OpenCode configuration is kept |
 
-Install selects V1/V2 from an isolated native version probe; even dry-run leaves the real home untouched. If the binary cannot report a version, legacy rendering is retained. Install the intended client first, or export an explicit dialect with adapter build-native --target opencode --pin 2.1.1 --out path --json. V2's hook obtains the current session directory and refuses missing context. An actual isolated user-scope 2.1.1 trial allowed a README read and denied a reserved runtime write. Project-scope activation/trust and other versions remain separate checks. Neither install nor doctor certifies native model/permission use.
+**Two OpenCode formats.** Install asks the installed OpenCode for its version, in isolation, and renders the matching format; even a dry run leaves your real home untouched. If the binary reports no version, the older format is used. Install the client first, or export a format explicitly:
 
-The headless observer has its own deny-default permissions and fresh agent; it does not prove the interactive client's policy. See [additional tier-A artifacts](./README.md#additional-tier-a-targets).
+```bash
+wl adapter build-native --target opencode --pin 2.1.1 --out <directory> --json
+```
+
+- In the newer format, the hook reads the current session directory and refuses to act without it.
+- A real user-scope trial on OpenCode 2.1.1 allowed reading a README and denied a write to a reserved runtime path. Project-scope trust and other versions are separate checks.
+- The headless worker has its own deny-by-default permissions, which say nothing about the interactive client's policy. See [additional tier-A artifacts](./README.md#additional-tier-a-targets).
 
 ## Copilot
 
@@ -80,9 +122,14 @@ wl install --target copilot --scope user
 wl doctor --target copilot
 ```
 
-User components use COPILOT_HOME or .copilot; project scope uses .github with native .agent.md roles and a dedicated hooks/wholeloop.json binding. Restart Copilot and request wl-frame-problem. Check native role/tool selection and actual hook activation instead of treating copied files as a native conformance pass.
+| | |
+| --- | --- |
+| **Files go to** | `COPILOT_HOME` or `.copilot`; project scope uses `.github`, with `.agent.md` roles and a `hooks/wholeloop.json` binding |
+| **Call it with** | Ask for `wl-frame-problem` |
+| **After restarting, check** | Copilot selects the roles and their tools, and the hook is active. Copied files alone are not a pass |
 
-MCP detection observes declarations only. Review rendered recipes and configure authentication through Copilot's own setup. The separate headless recipe limits workers to view/glob/grep; custom native startup policy still needs manual checks.
+- MCP detection only reads declarations. Review the rendered recipes and sign in through Copilot's own setup.
+- The headless worker recipe limits workers to `view`, `glob` and `grep`; Copilot's own startup policy still needs a manual check.
 
 ## Gemini
 
@@ -92,15 +139,23 @@ wl install --target gemini --scope user
 wl doctor --target gemini
 ```
 
-GEMINI_CLI_HOME overrides the home containing .gemini, rather than the .gemini folder itself. Managed overlays provide .gemini/skills and agents. Native preview agent enablement, trust and authentication are explicit client setup. Restart, request wl-frame-problem and verify discovery/inheritance. Questions fall back to exact plain-text options when structured questions are unavailable.
+| | |
+| --- | --- |
+| **Files go to** | `.gemini/skills` and `.gemini/agents`. `GEMINI_CLI_HOME` moves the home that contains `.gemini`, not the `.gemini` folder itself |
+| **Call it with** | Ask for `wl-frame-problem` |
+| **After restarting, check** | Skills and roles are discovered. Enabling preview agents, trusting the folder and signing in are Gemini's own setup |
 
-For the separate extension delivery route:
+When structured questions are not available, the skills ask with exact plain-text options instead.
+
+**The extension route.** Gemini can also load wholeloop as an extension:
 
 ```bash
 wl build --target gemini --out /tmp/wholeloop-gemini --json
 ```
 
-Explicit native linking/installation activates that extension; merely writing it does not. Generated extensions bind their BeforeTool root through native environment data. Loose overlays use the returned Git fallback command. Actual model, permission and MCP checks remain open. The headless observer uses a private positive core-tool registry and refuses existing managed system settings; it preserves native trust/authentication. See [Gemini boundaries](./README.md#gemini-extension-and-native-overlays).
+- Writing the extension does not activate it; link or install it explicitly in Gemini.
+- Extensions bind their `BeforeTool` hook through Gemini's environment data; installed skills use the Git guard command instead.
+- The headless worker uses a private allow-list of core tools, refuses existing managed system settings and keeps Gemini's own trust and sign-in. Real model, permission and MCP checks remain open. See [Gemini boundaries](./README.md#gemini-extension-and-native-overlays).
 
 ## Antigravity
 
@@ -110,9 +165,16 @@ wl install --target antigravity --scope user
 wl doctor --target antigravity
 ```
 
-User scope uses .gemini/antigravity-cli/plugins/wholeloop. Native skills/agents use wl-agy- to coexist with Codex. Restart agy, request wl-agy-frame-problem and verify the native plugin, inherited roles and named hooks. Listing/version probes do not establish discovery, tool isolation or authentication.
+| | |
+| --- | --- |
+| **Files go to** | `.gemini/antigravity-cli/plugins/wholeloop`; project scope uses `.agents` |
+| **Call it with** | Ask for `wl-agy-frame-problem` |
+| **After restarting, check** | The plugin, its inherited roles and its named hooks are active. Listing plugins or the version does not prove discovery, tool isolation or sign-in |
 
-Project scope uses .agents and requires hooks.json to be absent or already owned unchanged; personal policy is preserved and refused. Standalone output is available through build --target antigravity. The private headless observer recipe is implemented with initialization before assignment; actual client initialization/settings/permissions remain unverified. Sequential role handoff is also available. See [native boundaries](./README.md#antigravity-plugin-and-native-overlays).
+- Skills and agents use the `wl-agy-` prefix so they can coexist with Codex's.
+- **Project scope** needs `hooks.json` to be absent, or to be wholeloop's own unchanged file; a personal policy is kept and the install refused.
+- `wl build --target antigravity` produces a standalone copy. A headless worker recipe and a sequential role hand-off exist, but Antigravity's real initialization, settings and permissions remain unverified. See [native boundaries](./README.md#antigravity-plugin-and-native-overlays).
+- Antigravity cannot be an [autonomous delivery](../concepts.md#autonomous-delivery) worker yet, because there is no way to give it a credential from the controller. Using it in your own session is unaffected.
 
 ## Cursor
 
@@ -122,31 +184,48 @@ wl install --target cursor --scope user
 wl doctor --target cursor
 ```
 
-Managed installation provides .cursor skills/agents, an opt-in rule and preToolUse hooks. Existing shared hooks.json is refused; unrelated rules remain untouched. Restart agent, request wl-frame-problem and verify inherited roles/readonly plus native hook activation. Pure hook validators and version probes are narrower evidence than a real model/permission check.
+| | |
+| --- | --- |
+| **Files go to** | `.cursor` skills and agents, an opt-in rule and `preToolUse` hooks |
+| **Call it with** | Restart `agent` and ask for `wl-frame-problem` |
+| **After restarting, check** | Roles and their read-only setting are inherited, and the hook is active |
 
-Optional standalone native plugin launch requires explicit root environment data:
+- An existing shared `hooks.json` is refused rather than merged; your other rules stay untouched.
+- Hook validators and version checks are narrower evidence than a real model and permission check.
+
+**The plugin route.** A standalone Cursor plugin needs its root passed explicitly:
 
 ```bash
 wl build --target cursor --out /tmp/wholeloop-cursor --json
 CURSOR_PLUGIN_ROOT=/tmp/wholeloop-cursor agent --plugin-dir /tmp/wholeloop-cursor
 ```
 
-The second command starts the native client; arrange its own trust/auth/model setup. Managed overlays bind roots automatically. Missing root context denies; export does not install or publish a marketplace package. See [Cursor boundaries](./README.md#cursor-plugin-and-native-overlays).
+The second command starts Cursor itself, with its own trust, sign-in and model. Without the root, the hook denies; installed overlays set it automatically. Exporting the plugin does not install or publish it. See [Cursor boundaries](./README.md#cursor-plugin-and-native-overlays).
 
 ## Verify a first step and retire the same installation
 
-In the selected native client, ask it to use the exact framing skill from the table for a small idea. Confirm that missing input produces real questions, that completion records an owned initiative/artifact in the external store, and that the client stops for the next required decision. Follow the [manual checklist](../../roadmap/manual-verification.md) for actual permissions, MCP, hooks and model evidence; a filesystem receipt proves none of these.
+In your client, ask for the framing skill from the table with a small idea. Check that:
 
-The disposable framing runner supports every target. Prepare with the exact observed version before choosing fixture or live execution; see [standalone conformance](./README.md#standalone-conformance). Simulation remains FIXTURE_PASS. Live execution is an explicit authenticated model operation.
+- [ ] missing facts produce real questions;
+- [ ] completion records an initiative and its artifact in your store;
+- [ ] the client stops at the next required decision.
 
-For removal, use the same named target, scope and external store used to install:
+A file receipt proves none of the client's permissions, MCP, hooks or model behaviour; the [manual checklist](../../roadmap/manual-verification.md) covers those.
 
-```bash
-wl uninstall --target codex --scope user --dry-run
-wl uninstall --target codex --scope user
+The disposable framing scenario used for conformance supports every target. Prepare it with the exact client version you observed, then choose a fixture run or a live run; see [standalone conformance](./README.md#standalone-conformance). A simulated run reports `FIXTURE_PASS`; a live run is a real, signed-in model call.
+
+**To remove** an installation, use the same target, scope and store you installed with:
+
+```console
+$ wl uninstall --target codex --scope user --dry-run
+Dry run for codex at user scope: nothing was written.
+…
+$ wl uninstall --target codex --scope user
+Removed codex at user scope.
+…
 ```
 
-Replace codex with your selected target. Existing edits are preserved; unchanged owned native files are removed while external history/backups remain. Separately activated Git hooks have their own returned uninstall command. Restart the native client to verify removal. Actual native discovery/permissions/models on Linux and other client versions remain separate verification; executed core tests are recorded in [the platform checks](../../roadmap/manual-verification.md#automated-platform-checks-2026-10-22).
+Replace `codex` with your target. Files you edited are kept; unchanged files wholeloop wrote are removed, and your history and backups stay in the store. Git guards you activated have their own uninstall command, printed by uninstall. Restart the client to confirm the skills are gone.
 
 <!-- docnav -->
-[◀ Platforms](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Architecture ▶](../architecture/README.md)
+[◀ Small change](../tutorials/small-change.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Troubleshooting ▶](../troubleshooting.md)

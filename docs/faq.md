@@ -82,4 +82,4 @@
 **Can I contribute?** Yes. Read [CONTRIBUTING.md](../CONTRIBUTING.md) and pick a task from the roadmap.
 
 <!-- docnav -->
-[◀ Glossary](glossary.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)
+[◀ Troubleshooting](troubleshooting.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [Philosophy ▶](philosophy.md)

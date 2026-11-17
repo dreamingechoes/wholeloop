@@ -185,4 +185,4 @@ Claude Code and Codex remain the 1.0 autonomous reference clients. Their require
 P7-13 (formerly P6-32) cannot close the 1.0.0 release (P7-15, formerly P5-07) or erase its original prerequisites. Publishing to npm, pushing this source or changing release authority requires its own existing authorization and accepted evidence.
 
 <!-- docnav -->
-[◀ Autonomous delivery design](../architecture/autonomous-delivery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Core CLI ▶](../architecture/core-cli.md)
+[◀ Original delivery evaluation fixtures](../tutorials/delivery-evaluation-fixtures.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Platforms ▶](../platforms/README.md)

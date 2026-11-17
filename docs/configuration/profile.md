@@ -2,19 +2,14 @@
 
 > **TL;DR** — A handful of personal dials shape the conversation: how much it explains, how technical it gets, how hard it pushes back, how much happens at once, how often it pauses, and in which language. Pick a preset or tune single dials. No dial can lower coverage, skip a decision point or let the harness guess instead of ask.
 
-Decision: [ADR-0010](../decisions/0010-interaction-profile-never-changes-coverage.md).
+## Contents
 
-Custom presets use the same layered manifest catalog as templates and lenses. Select any validated ID with `wl profile preset <id>`; `wl profile list|test|scaffold` helps inspect and author it. See [custom profiles](../extending/lenses-templates-profiles.md#profiles).
-
----
-
-## Delegation is separate from a profile
-
-The [delegated-decision controller](../tutorials/delivery-decisions.md) reads original private plan/envelope grants and purpose-specific rubrics. Selecting autopilot or changing stops cannot delegate a decision, impersonate the owner or bypass a gate. Explicit none-policy limitations never become hidden human waits; the complete native runner remains under implementation.
-
-## Persistent delivery limits
-
-Expanded delivery uses independent [run budgets](../tutorials/delivery-budgets.md), bound to its immutable plan and private grant. Original deadlines and counters survive recovery and stricter plan revisions; unknown usage remains unknown and unavailable hard metering refuses admission. Interaction profiles cannot expand these allowances or turn fixture evidence into actual execution. Existing gate rounds remain unchanged. The complete native unattended runner is subsequent Phase 6 work.
+- [The dials](#the-dials)
+- [Presets](#presets)
+- [Changing it](#changing-it)
+- [What no dial can change](#what-no-dial-can-change)
+- [How it reaches the model](#how-it-reaches-the-model)
+- [A profile is not a delegation](#a-profile-is-not-a-delegation)
 
 ## The dials
 
@@ -38,44 +33,94 @@ Expanded delivery uses independent [run budgets](../tutorials/delivery-budgets.m
 | `sparring` | standard | technical | adversarial | staged | decisions | off | Stress-testing an idea or a design |
 | `autopilot` | brief | balanced | balanced | parallel | decisions | off | Experienced users on well-defined work |
 
-Presets are just bundles; any dial can be overridden on top. Teams can ship their own presets as manifests ([extending](../extending/lenses-templates-profiles.md#profiles)).
+Presets are just bundles; any dial can be overridden on top. Teams can ship their own presets as manifests, in the same catalogue as templates and lenses: `wl profile list`, `wl profile test` and `wl profile scaffold` help you inspect and write one ([custom profiles](../extending/lenses-templates-profiles.md#profiles)).
 
 ## Changing it
 
-```text
-wl profile preset sparring          # pick a preset
-wl profile set depth=technical      # tune one dial
-wl profile show                     # what is in force and where each value came from
+Pick a preset, then tune a dial. Each command prints the resulting profile and the style block the model will receive:
+
+```console
+$ wl profile preset sparring
+{
+  "preset": "sparring",
+  "verbosity": "standard",
+  "depth": "technical",
+  "challenge": "adversarial",
+  "pace": "staged",
+  …
+}
+
+Style for this run:
+- Give enough reasoning and context to assess each action.
+- Use technical vocabulary; name files, functions and queries.
+- Challenge assumptions and argue the opposite case at decisions.
+…
+$ wl profile set language=es
+{
+  "preset": "sparring",
+  …
+  "language": "es",
+  "artifact_language": "en"
+}
+
+Style for this run:
+…
+- Speak in language code es.
+- Write artifacts in language code en.
+…
 ```
 
-`--scope user` is the default; `--scope project` changes the team's suggested profile. Selecting a preset resets its six interaction dials and preserves the active language codes. An explicit dial overrides the preset at its own layer. User preferences still beat project suggestions.
+`wl profile show` prints the same for the profile in force. To see which file each value came from, use `wl config show --explain`.
 
-`wl profile set depth=technical --scope run --json` emits a transient `override.profile` object without writing a file. A skill passes that object to `wl step begin ... --profile '{"depth":"technical"}' --json`. The override applies to that invocation; the skill carries it through subsequent calls in the session. It is not persisted across a fresh session.
+| Scope | Effect |
+| --- | --- |
+| `--scope user` (default) | Your own profile, in every repository |
+| `--scope project` | The team's suggested profile; your user profile still wins |
+| `--scope run` | This run only; nothing is written |
 
-Or simply say it mid-session — "más técnico", "challenge me harder", "slow down" — and a skill can translate that request into a validated run override, offering to remember it. No natural-language parser is embedded in the deterministic CLI.
+- **A preset resets its six interaction dials** and keeps your language settings. A dial you set explicitly overrides the preset at its own layer.
+- **Run scope** prints a temporary override instead of writing a file:
+
+  ```console
+  $ wl profile set depth=technical --scope run --json
+  {"schema":"wholeloop/profile-set@1","profile":{…,"depth":"technical",…},"style":"Style for this run:\n…","override":{"profile":{"depth":"technical"}}}
+  ```
+
+  A skill passes `override.profile` to `wl step begin … --profile '{"depth":"technical"}'` and carries it through the rest of the session. A new session starts without it.
+
+Or simply say it in the conversation: "más técnico", "challenge me harder", "slow down". The skill turns the request into a validated run override and offers to remember it. The CLI itself parses no natural language.
 
 ## What no dial can change
 
 | Invariant | Why |
 | --- | --- |
-| **The output contract** — preflight, one-line narration, stop on request, receipt | A run must always be legible, whatever the verbosity |
-| **Coverage** — every lens, every verification, every cap | Slowing a check down is a preference; narrowing it is a conversation, not a setting |
+| **The output contract**: preflight, one-line narration, stop on request, receipt | A run must always be legible, whatever the verbosity |
+| **Coverage**: every lens, every verification, every cap | Slowing a check down is a preference; narrowing it is a conversation, not a setting |
 | **Decision points** | Accountability stays with a person; only an explicit autonomous-delivery authorization, never a profile, lets a person decide in advance |
 | **Ask, never guess** | A `brief` or `autopilot` profile asks fewer *optional* questions, never fewer *necessary* ones |
 
 ## How it reaches the model
 
-The core renders the active profile into a **style block of at most ten lines** and includes it in every `wl step begin` payload. Skills do not interpret dials themselves, so the same profile produces the same instructions in every CLI — and the rendering is snapshot-tested.
+The core renders the active profile into a **style block of at most ten lines** and includes it in every `wl step begin` payload. Skills do not interpret the dials themselves, so the same profile produces the same instructions in every client, and the rendering is snapshot-tested. This is the block for `sparring` with `language=es`:
 
 ```text
 Style for this run:
-- Explain briefly; one line per action unless asked for more.
+- Give enough reasoning and context to assess each action.
 - Use technical vocabulary; name files, functions and queries.
-- Challenge assumptions firmly and argue the opposite case once per decision.
-- Talk in Spanish; write every artifact in English.
+- Challenge assumptions and argue the opposite case at decisions.
+- Run independent workers in bounded stages.
+- Pause at every required decision.
+- Keep process explanations short unless requested.
+- Speak in language code es.
+- Write artifacts in language code en.
+- Preserve all checks, lenses, caps, required questions, preflight and receipt; stop on request.
 ```
 
----
+The last line is always there: no profile can remove it.
+
+## A profile is not a delegation
+
+Choosing `autopilot`, or pausing less often, never delegates a decision, speaks for the owner or skips a gate. Taking a decision in advance needs an explicit grant in [autonomous delivery](../concepts.md#autonomous-delivery), with a pinned rubric for each delegated decision. A profile also cannot widen an autonomous run's [budgets](../tutorials/delivery-budgets.md).
 
 <!-- docnav -->
 [◀ Configuration](README.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Providers ▶](providers.md)

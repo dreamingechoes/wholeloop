@@ -290,4 +290,4 @@ It writes its own files and leaves loading, trusting and granting permissions to
 - [Discussions](https://github.com/dreamingechoes/wholeloop/discussions): questions and ideas; bugs go to [issues](https://github.com/dreamingechoes/wholeloop/issues).
 
 <!-- docnav -->
-[◀ Philosophy](philosophy.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [First framing ▶](tutorials/first-framing.md)
+[◀ Docs index](README.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [Local core tour ▶](tutorials/local-core.md)

@@ -87,4 +87,4 @@ The reviewed baseline.json fixes exact fixture, oracle and catalog bytes. Tests 
 The [expanded validation specification](../../roadmap/specifications/autonomous-delivery/09-validation-and-acceptance.md) defines the later three-run native reference, interruption and hosted trials. Those retain their own actual evidence and authorization requirements.
 
 <!-- docnav -->
-[◀ Owned assembly and combined verification](delivery-assembly.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Maintenance proposals ▶](maintenance-proposals.md)
+[◀ Delivery recovery](delivery-recovery.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Expanded delivery acceptance ▶](../reference/delivery-acceptance.md)

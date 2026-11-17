@@ -169,4 +169,4 @@ The SDK producer admits builders only after complete stable reads of the origina
 `npm run eval:ci-continuation -- --retire-success` exercises the installed SDK composition with synthetic native/API/CI/protection facts, actual local bare Git and actual Docker QA. It grants no merge, writes nowhere hosted and retires exact owned environments. The development trials retained a producer-inspection failure and a reporter cache failure. The shared corrected verifier passes fresh API/bare-object readback of the latter's completed core execution without replay; the original failed command/report remain failed. Native/reference and hosted acceptance remain separate.
 
 <!-- docnav -->
-[◀ Delivery request intake](delivery-intake.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delivery authorization ▶](delivery-authorization.md)
+[◀ Delivery request intake](delivery-intake.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Maintenance proposals ▶](maintenance-proposals.md)

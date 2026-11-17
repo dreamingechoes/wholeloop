@@ -210,4 +210,4 @@ Also:
 Good models: the [local core tour](../tutorials/local-core.md) for a terminal-only route, and [first framing](../tutorials/first-framing.md) for a route through a coding client.
 
 <!-- docnav -->
-[◀ Nightly conformance](conformance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Glossary ▶](../glossary.md)
+[◀ Authoring](authoring.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Release preparation ▶](releasing.md)

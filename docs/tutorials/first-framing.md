@@ -170,4 +170,4 @@ That is narrower than validating every skill, role isolation, a client's hook de
 Next: [a small change](./small-change.md), [the framing reference](../flow/define/frame-problem.md) or [troubleshooting](../troubleshooting.md).
 
 <!-- docnav -->
-[◀ Getting started](../getting-started.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Local core tour ▶](local-core.md)
+[◀ Local core tour](local-core.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Small change ▶](small-change.md)

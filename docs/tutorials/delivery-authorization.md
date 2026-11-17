@@ -90,4 +90,4 @@ Workers get no operator endpoint; the runner launches them only through bound na
 You have exercised explicit authorization, independent-process inspection and durable revocation in a disposable external store. Retain the tutorial directory for inspection. Continue with the [queue](./delivery-queue.md) and [runner](./delivery-runner.md) tutorials for queued work, environments and execution. No native/service acceptance is marked passed by these metadata operations.
 
 <!-- docnav -->
-[◀ Delivery planning](delivery-plan.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delegated machine decisions ▶](delivery-decisions.md)
+[◀ Maintenance proposals](maintenance-proposals.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Delegated machine decisions ▶](delivery-decisions.md)

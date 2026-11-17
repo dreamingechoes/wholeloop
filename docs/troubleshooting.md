@@ -210,4 +210,4 @@ Scoped network egress and secret delivery into an environment are not available.
 Never retry an ambiguous creation by name, and never run an undo declaration automatically. Stop, reconcile and retire explicitly with the [lifecycle guide](./tutorials/delivery-lifecycle.md). When the invoker or a resource identity is unknown, data is kept, and no stored process ID is ever signalled.
 
 <!-- docnav -->
-[◀ Small change](tutorials/small-change.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [Delivery request intake ▶](tutorials/delivery-intake.md)
+[◀ Local client setup](platforms/local-onboarding.md)  ·  [📖 Docs index](README.md)  ·  [🧭 Concepts](concepts.md)  ·  [FAQ ▶](faq.md)

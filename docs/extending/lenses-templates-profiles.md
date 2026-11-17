@@ -100,4 +100,4 @@ Current additions apply before `open-pr`; structured custom prompts and record f
 ---
 
 <!-- docnav -->
-[◀ Compatibility](compatibility.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Platforms ▶](../platforms/README.md)
+[◀ Compatibility](compatibility.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Architecture ▶](../architecture/README.md)

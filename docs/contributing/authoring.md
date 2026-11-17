@@ -123,4 +123,4 @@ Conventional commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`),
 ---
 
 <!-- docnav -->
-[◀ Development](development.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Release preparation ▶](releasing.md)
+[◀ Development](development.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Docs style ▶](docs-style.md)
