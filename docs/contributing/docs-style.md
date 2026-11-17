@@ -101,7 +101,7 @@ The root README is also the package page on npm, which shows Mermaid as code. It
 
 **Say why.** A rule without its reason invites someone to delete it. Give the reason in a sentence, where the rule is.
 
-**Pages people read to use wholeloop do not link ADRs.** That covers the README, getting started, tutorials, step pages, configuration, platforms, troubleshooting, the FAQ, the glossary, concepts and philosophy. The [decision records](../decisions/README.md) are the history of how the design got here; they change as features are added, and a reader who wants to get something done does not need them. Architecture, contributing and reference pages link them, because their readers change the design.
+**Pages people read to use wholeloop do not link ADRs.** That covers the README, getting started, tutorials, step pages, configuration, client setup, troubleshooting, the FAQ, the glossary, concepts and philosophy. The [decision records](../decisions/README.md) are the history of how the design got here; they change as features are added, and a reader who wants to get something done does not need them. Architecture, contributing and reference pages, including the platforms reference, link them, because their readers change the design or integrate with it.
 
 **Every referenced ADR must have a settled status.** `wl docs check` reads the first fifteen lines of each linked ADR, and of each plain `ADR-NNNN` mention, and requires exactly one status:
 

@@ -12,7 +12,9 @@ Every version is a full semantic version, `x.y.z`; write `1.0.0`, never `1.0`. A
 | A new feature (`feat`) | At least minor |
 | Fixes, performance, reverts | At least patch |
 
-What counts as breaking is the [compatibility policy](../extending/compatibility.md): version-one schemas are frozen, and removals follow the deprecation rules there. `wl release notes --from v<previous> --version <next>` computes the range's impact and refuses, with `needs-review` and exit 3, a version change smaller than it requires; release preparation refuses that draft. Before `1.0.0`, a breaking change needs a new minor version. A pre-release cycle (`1.0.0-rc.1` to `1.0.0-rc.2` or `1.0.0`) may carry any change, since the release is not final yet. A final version's notes start at the previous final version, so `1.0.0` covers the whole history and `1.1.0` everything since `1.0.0`, including what its candidates already listed. A pre-release starts at the version just before it.
+What counts as breaking is the [compatibility policy](../extending/compatibility.md): version-one schemas are frozen, and removals follow the deprecation rules there. `wl release notes --from v<previous> --version <next>` computes the range's impact and refuses, with `needs-review` and exit 3, a version change smaller than it requires; release preparation refuses that draft.
+
+Before `1.0.0`, a breaking change needs a new minor version. A pre-release cycle (`1.0.0-rc.1` to `1.0.0-rc.2` or `1.0.0`) may carry any change, since the release is not final yet. A final version's notes start at the previous final version, so `1.0.0` covers the whole history and `1.1.0` everything since `1.0.0`, including what its candidates already listed. A pre-release starts at the version just before it.
 
 `CHANGELOG.md` is generated from the same release notes by `npm run changelog` and checked by `npm run check`; never edit it by hand. A release pull request regenerates it with `npm run changelog -- --next`, which adds the untagged package version.
 
@@ -36,7 +38,9 @@ npm run package:check
 
 This builds, checks npm's file list, packs offline and installs the actual archive under a disposable prefix/HOME/cache with empty npm configs and lifecycle scripts disabled. It verifies both bin links, versions, installed metadata/core bytes and a managed Codex install/repeat/uninstall using embedded resources. The normal check includes the same verification after its build/tests/smoke.
 
-Successful fixtures are removed; a failure retains its path for inspection. Only the four intended package files are allowed. Source bytes, package privacy/version and personal setup stay unchanged. This is not native discovery, authentication, model evidence, fresh-machine timing or publication. Current execution is macOS arm64/Node 24/npm 11.8; repeat supported environments before claiming portability. To keep an archive for your own local trial, create an external output directory and run npm pack --ignore-scripts --pack-destination with that directory. See [ADR-0067](../decisions/0067-isolated-offline-npm-package-verification.md).
+Successful fixtures are removed; a failure retains its path for inspection. Only the four intended package files are allowed. Source bytes, package privacy/version and personal setup stay unchanged. This is not native discovery, authentication, model evidence, fresh-machine timing or publication. Current execution is macOS arm64/Node 24/npm 11.8; repeat supported environments before claiming portability.
+
+To keep an archive for your own local trial, create an external output directory and run npm pack --ignore-scripts --pack-destination with that directory. See [ADR-0067](../decisions/0067-isolated-offline-npm-package-verification.md).
 
 ## Review a local delivery preview
 
@@ -50,7 +54,9 @@ The export contains all seven independent native trees plus a relative Claude ma
 
 Dry runs render and preflight ownership without writing. Existing unowned, changed, missing or extra entries are refused before idempotency/replacement. Unchanged owned output reports already-correct; an owned upgrade retains its prior tree in the returned backup. Interrupted filesystem replacement is not claimed crash-atomic. Preserve unexpected output and choose a fresh directory.
 
-To test registration yourself in an isolated real client configuration, use claude plugin marketplace add /tmp/wholeloop-delivery and then claude plugin install wholeloop@wholeloop. These commands change that client's settings; export and validation do not register it. Remote installation requires a hosted copy of the complete delivery tree and an explicit maintainer publication choice. The explicit workflow below prepares npm/native assets for public delivery; actual activation/provenance and optional compiled binaries remain separate. See [ADR-0062](../decisions/0062-owned-seven-client-distribution-previews.md).
+To test registration yourself in an isolated real client configuration, use claude plugin marketplace add /tmp/wholeloop-delivery and then claude plugin install wholeloop@wholeloop. These commands change that client's settings; export and validation do not register it. Remote installation requires a hosted copy of the complete delivery tree and an explicit maintainer publication choice.
+
+The explicit workflow below prepares npm/native assets for public delivery; actual activation/provenance and optional compiled binaries remain separate. See [ADR-0062](../decisions/0062-owned-seven-client-distribution-previews.md).
 
 ## Review release-note drafts
 
@@ -109,7 +115,9 @@ This verifies bytes/source, not authorization or archive extraction safety for a
 
 ## Audit the history before it becomes public
 
-`npm run scan:history` scans every commit of `main` with gitleaks, from a digest-pinned image in Docker with no network and the repository mounted read-only, so it adds no project dependency and cannot change the repository. It prints only rule, file, commit and line, never a match. Reviewed false positives are listed by fingerprint in `.gitleaksignore`, each with its reason; a fingerprint names a commit, so a history rewrite needs a new scan and review.
+`npm run scan:history` scans every commit of `main` with gitleaks, from a digest-pinned image in Docker with no network and the repository mounted read-only, so it adds no project dependency and cannot change the repository. It prints only rule, file, commit and line, never a match.
+
+Reviewed false positives are listed by fingerprint in `.gitleaksignore`, each with its reason; a fingerprint names a commit, so a history rewrite needs a new scan and review.
 
 Run it before the repository becomes public and again on the final history immediately before the visibility switch. A real finding is resolved before publication: rotate the credential first, then decide with the maintainer whether to rewrite history. The same review covers personal data, local absolute paths, files over 1 MiB, fixture licences and neutral wording (no mention of the tools or work sessions behind the repository).
 
@@ -133,7 +141,9 @@ The maintainer completed these setup steps before `1.0.0-rc.1`; repeat them only
 4. Allow GitHub Actions to create pull requests in the repository settings, which the release pull request workflow needs.
 5. Optional, to avoid approving the release pull request's checks each time: create a GitHub App owned by the maintainer, with no webhook and only the repository permissions Contents (read and write) and Pull requests (read and write). Install it on this repository alone. Create the `release-pull-request` environment, limited to the default branch. Set its `RELEASE_APP_CLIENT_ID` variable to the app's client ID and its `RELEASE_APP_PRIVATE_KEY` secret to a generated private key, read from standard input: `gh secret set RELEASE_APP_PRIVATE_KEY --env release-pull-request < key.pem`. Then delete the downloaded key file. Removing the variable returns the workflow to the workflow token.
 
-Activation creates a non-overwriting tag for the reviewed SHA, creates a draft GitHub release with the exact notes/assets, publishes the reviewed npm archive and then finalizes the GitHub release. Stable versions use latest; prereleases use next and a prerelease GitHub entry. An existing tag stops the run even if its SHA matches. Publication across npm and GitHub is not atomic: failure may leave a tag, draft release or published npm version. Inspect those actual outcomes and reconcile manually before any retry; do not delete evidence or blindly rerun the workflow.
+Activation creates a non-overwriting tag for the reviewed SHA, creates a draft GitHub release with the exact notes/assets, publishes the reviewed npm archive and then finalizes the GitHub release. Stable versions use latest; prereleases use next and a prerelease GitHub entry. An existing tag stops the run even if its SHA matches.
+
+Publication across npm and GitHub is not atomic: failure may leave a tag, draft release or published npm version. Inspect those actual outcomes and reconcile manually before any retry; do not delete evidence or blindly rerun the workflow.
 
 ## Recover from a bad release
 

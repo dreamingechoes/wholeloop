@@ -111,13 +111,21 @@ wl provider plan posthog source.product-analytics.query \
 wl provider plan amplitude dashboards.create --json
 ```
 
-The first plan selects MCP with `effects: not-performed`. The second selects the native pending dashboard handoff. Only `mcp` and `native` transports exist: wholeloop has no service client of its own. The inventory must be a regular file under 64 KiB, with at most 256 unique tools. It contains no token, headers or credential fields; never write runtime metadata inside a repository. Wholeloop checks bounded metadata and operation identity; the client validates the actual arguments against the observed tool schema.
+The first plan selects MCP with `effects: not-performed`. The second selects the native pending dashboard handoff. Only `mcp` and `native` transports exist: wholeloop has no service client of its own. The inventory must be a regular file under 64 KiB, with at most 256 unique tools.
+
+It contains no token, headers or credential fields; never write runtime metadata inside a repository. Wholeloop checks bounded metadata and operation identity; the client validates the actual arguments against the observed tool schema.
 
 For virtual operations such as `wholeloop.dashboard.handoff`, discovery of an arbitrary create-like tool is insufficient. Supply an explicit `bindings` object mapping `dashboards.create` to the exact reviewed tool name, and include that tool's actual input schema in `tools`. Do not guess a vendor write contract. `comms.draft` and `flags.propose-change` cannot receive remote MCP bindings: they retain their native unsent/unapplied boundary.
 
-In an embedded TypeScript conductor, load a provider and build `clientProviderHost(provider, { mcp: { inventory, invoke } })` from src/providers/transport.ts. The `invoke` callback receives an OperationCall with the selected tool and original operation identity; its client-owned adapter must translate arguments and return the existing normalized OperationResult. Wrap it with `rolloutHost(files, root, host)` for native handoffs. Its eligibility hook lets reviewed MCP dashboard bindings run before the handoff. Keep dispatch inside `dispatchLaunchArtifact` so once-only receipts and ambiguous intents are preserved. There is no standalone CLI MCP invocation command.
+In an embedded TypeScript conductor, load a provider and build `clientProviderHost(provider, { mcp: { inventory, invoke } })` from src/providers/transport.ts. The `invoke` callback receives an OperationCall with the selected tool and original operation identity; its client-owned adapter must translate arguments and return the existing normalized OperationResult.
 
-The same inventory drives two planning commands: `wl provider read-flags <id> --flag <key> --environment <key> --mcp <file>` and `wl launch dispatch --for <id> --key <key> --mcp <file>` print the exact call for the client to make, and without a matching binding they return the open question or the local handoff. A provider whose manifest declares no `access.mcp` server, such as LaunchDarkly today, cannot bind a remote tool; add the server in a repository or user manifest override after checking its install recipe. No module in `src/` may open a network connection to a service; `test/unit/providers/network-boundary.test.ts` fails on a new one. All remote integrations remain **experimental · fixture-tested · service-unverified** until the maintainer records actual service/operation/version evidence.
+Wrap it with `rolloutHost(files, root, host)` for native handoffs. Its eligibility hook lets reviewed MCP dashboard bindings run before the handoff. Keep dispatch inside `dispatchLaunchArtifact` so once-only receipts and ambiguous intents are preserved. There is no standalone CLI MCP invocation command.
+
+The same inventory drives two planning commands: `wl provider read-flags <id> --flag <key> --environment <key> --mcp <file>` and `wl launch dispatch --for <id> --key <key> --mcp <file>` print the exact call for the client to make, and without a matching binding they return the open question or the local handoff.
+
+A provider whose manifest declares no `access.mcp` server, such as LaunchDarkly today, cannot bind a remote tool; add the server in a repository or user manifest override after checking its install recipe. No module in `src/` may open a network connection to a service; `test/unit/providers/network-boundary.test.ts` fails on a new one.
+
+All remote integrations remain **experimental · fixture-tested · service-unverified** until the maintainer records actual service/operation/version evidence.
 
 ## Target live inspection
 

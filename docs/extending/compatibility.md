@@ -34,7 +34,9 @@ The normal unit suite compares source declarations with test/fixtures/contracts/
 
 Every current declaration must have a recorded baseline entry; old entries cannot disappear or change silently. New identities are appended with their tests, not used to overwrite old definitions. Existing commands keep their positional and output contracts and all prior flags. Run npm run check after changing a contract; its source/compiled inventory check also catches missing general-schema branches.
 
-A fingerprint change flags review; it is not a semantic compatibility proof. An annotation-only or equivalent edit may update its fixture after the reason and domain regression checks are recorded. Never refresh fixtures to hide changed constraints or meanings under an old identity. Parser, replay, workflow and native conformance evidence remain necessary for the behavior they exercise. The original compatibility increment ran on macOS and Debian Linux arm64/Node 24, including its 1925 tests, compiled fixtures and offline packaging. Later gates retain their exact candidate scope in the [journal](../../roadmap/journal.md). Other supported Node/platform combinations, real native clients and physical upgrade acceptance remain in the manual list.
+A fingerprint change flags review; it is not a semantic compatibility proof. An annotation-only or equivalent edit may update its fixture after the reason and domain regression checks are recorded. Never refresh fixtures to hide changed constraints or meanings under an old identity. Parser, replay, workflow and native conformance evidence remain necessary for the behavior they exercise.
+
+The original compatibility increment ran on macOS and Debian Linux arm64/Node 24, including its 1925 tests, compiled fixtures and offline packaging. Later gates retain their exact candidate scope in the [journal](../../roadmap/journal.md). Other supported Node/platform combinations, real native clients and physical upgrade acceptance remain in the manual list.
 
 ## Delivery event extensions
 

@@ -23,7 +23,9 @@ Create the conformance environment with your intended access/protection policy. 
 | Antigravity | WL_CONFORMANCE_ANTIGRAVITY_KEY | GEMINI_API_KEY |
 | Cursor | WL_CONFORMANCE_CURSOR_KEY | CURSOR_API_KEY |
 
-For OpenCode, explicitly select an available openai/model identifier through the WHOLELOOP_CONFORMANCE_OPENCODE_MODEL variable. The host carries only that non-secret identifier in WL_CONFORMANCE_OPENCODE_MODEL; the collector validates it before native startup and supplies the documented --model flag for both V1 and V2. No configuration file or legacy config injection is needed. The API key stays only in the selected child's environment. Other clients retain their native model selection. Check account access, model choice and costs before activation. Missing keys, or the missing OpenCode model, produce an unconfigured receipt and UNRUN rows without launching a native scenario.
+For OpenCode, explicitly select an available openai/model identifier through the WHOLELOOP_CONFORMANCE_OPENCODE_MODEL variable. The host carries only that non-secret identifier in WL_CONFORMANCE_OPENCODE_MODEL; the collector validates it before native startup and supplies the documented --model flag for both V1 and V2. No configuration file or legacy config injection is needed.
+
+The API key stays only in the selected child's environment. Other clients retain their native model selection. Check account access, model choice and costs before activation. Missing keys, or the missing OpenCode model, produce an unconfigured receipt and UNRUN rows without launching a native scenario.
 
 An ordinary local trial without this explicit nightly host value keeps its existing account/model selection. This is not automatic model substitution; see [ADR-0090](../decisions/0090-explicit-nightly-native-model-selection.md).
 
@@ -35,7 +37,9 @@ Enable collection, then dispatch the exact reviewed default-branch version. Nati
 
 The core job runs the complete local checks and exports one exact bundled core with an independently passed SHA-256. Every later job uses that immutable artifact ID, checks transfer integrity and verifies the same core bytes. Native jobs do not install source dependencies or rebuild the core after receiving credentials.
 
-Seven client jobs run at most two at once. Each resolves/installs only its selected pinned/latest pair into separate external private prefixes, before the secret-bearing step. Acquisition refuses a changed transferred core before network/installation. Each channel then gets a fresh HOME/config/state/data/cache/temp environment and only its selected native key. No GitHub token or another client's key is forwarded. These are configuration/process boundaries, not an OS sandbox against vendor code. Native/transitive postinstall downloads and self-updates are not fully frozen.
+Seven client jobs run at most two at once. Each resolves/installs only its selected pinned/latest pair into separate external private prefixes, before the secret-bearing step. Acquisition refuses a changed transferred core before network/installation. Each channel then gets a fresh HOME/config/state/data/cache/temp environment and only its selected native key.
+
+No GitHub token or another client's key is forwarded. These are configuration/process boundaries, not an OS sandbox against vendor code. Native/transitive postinstall downloads and self-updates are not fully frozen.
 
 Each collector writes only results.json and receipt.json to its upload directory. Native homes, downloads, stores, journals, drafts and raw logs stay outside it and are never uploaded. Authentication/launch failures cannot become comparable version regressions. Acquisition or malformed pipeline failures stop aggregation/delivery; inspect the failed job rather than presenting missing artifacts as passes.
 

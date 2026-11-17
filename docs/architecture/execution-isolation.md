@@ -9,7 +9,9 @@
 
 ## Why Docker is required
 
-The point of the runner is that you can trust its verdicts. A verdict such as "the suite passes" or "the endpoint returns 200" is only worth something if the runner observed it itself, so it has to execute code a model has just written. Running that code directly on your machine would give it your home directory, your shell environment, your SSH and cloud credentials and your network. Docker gives the runner what it needs instead:
+The point of the runner is that you can trust its verdicts. A verdict such as "the suite passes" or "the endpoint returns 200" is only worth something if the runner observed it itself, so it has to execute code a model has just written.
+
+Running that code directly on your machine would give it your home directory, your shell environment, your SSH and cloud credentials and your network. Docker gives the runner what it needs instead:
 
 | Need | What the container provides |
 | --- | --- |

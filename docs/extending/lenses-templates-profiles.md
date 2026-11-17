@@ -29,7 +29,9 @@ prompt: prompt.md              # ≤ 40 lines: what to look for, what is out of 
 | `applies-when` | Deterministic filter (paths, languages, slots bound). A lens that does not apply is reported as *not applicable*, never silently absent. |
 | `fail-safe` | Reserve for lenses where a miss is far worse than a false alarm (`security`, `correctness` are fail-safe by default). |
 
-Declare it in project config: `lenses: { add: [accessibility] }`. The loader validates applicability fields and a prompt of at most 40 lines, including inherited resource origins and symlink boundaries. The gate engine evaluates applicability and reports excluded lenses. `lenses.disable: { performance: "No runtime surface in this migration" }` records an explicit reason; empty/blank reasons fail validation. Built-in applicability cannot be narrowed through a manifest, and overrides cannot weaken correctness/security fail-safe defaults. Custom path patterns accept `*`, `**` and `?`; dimensions combine with AND and values within a dimension with OR. Language matching currently recognizes TypeScript, JavaScript, Python, Go, Rust, Ruby, Java, Swift, HTML, CSS and shell by extension.
+Declare it in project config: `lenses: { add: [accessibility] }`. The loader validates applicability fields and a prompt of at most 40 lines, including inherited resource origins and symlink boundaries. The gate engine evaluates applicability and reports excluded lenses. `lenses.disable: { performance: "No runtime surface in this migration" }` records an explicit reason; empty/blank reasons fail validation.
+
+Built-in applicability cannot be narrowed through a manifest, and overrides cannot weaken correctness/security fail-safe defaults. Custom path patterns accept `*`, `**` and `?`; dimensions combine with AND and values within a dimension with OR. Language matching currently recognizes TypeScript, JavaScript, Python, Go, Rust, Ruby, Java, Swift, HTML, CSS and shell by extension.
 
 ## Templates
 
@@ -50,7 +52,9 @@ sections:
 …
 ```
 
-The loader checks that every **required section** has a non-empty heading body. The spec workflow consumes `templates.spec` unless repository guidance wins; other selections arrive with their workflows; the framing engine always checks its eight core questions plus `Owner`, including explicit unknown markers. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation naming the section and its dependent step. A repo skill bound to `spec.template` takes precedence over a template file in the spec workflow, because it carries more than shape.
+The loader checks that every **required section** has a non-empty heading body. The spec workflow consumes `templates.spec` unless repository guidance wins; other selections arrive with their workflows; the framing engine always checks its eight core questions plus `Owner`, including explicit unknown markers. A template may add or reorder sections; removing one the flow depends on (for example `metrics`, which the measurement plan reads) fails validation naming the section and its dependent step.
+
+A repo skill bound to `spec.template` takes precedence over a template file in the spec workflow, because it carries more than shape.
 
 ## Profiles
 
@@ -81,7 +85,9 @@ wl lens test accessibility --json
 
 Each kind supports `list`, `test <id>` and `scaffold <id>`. Scaffold prints a kit by default; `--output <directory>` explicitly creates a new directory and refuses to overwrite an existing one. Lens kits include `prompt.md`. Template kits contain `template.md`; profiles contain `profile.yml`. A flat `templates/<id>.md` also loads.
 
-Catalog precedence is repository, user, installed packages, then built-in. A same-id manifest replaces its predecessor unless it declares `extends`. Maps merge recursively and arrays replace. `extends: builtin:pair` names a built-in explicitly; `extends: pair` on a same-id override selects the next lower layer. Cycles, duplicate IDs within one layer, malformed schemas and unsafe resource paths are reported as problems; list/test exits 4 when any problem exists. Configuration loading rejects a broken profile catalog rather than silently using a different communication profile.
+Catalog precedence is repository, user, installed packages, then built-in. A same-id manifest replaces its predecessor unless it declares `extends`. Maps merge recursively and arrays replace. `extends: builtin:pair` names a built-in explicitly; `extends: pair` on a same-id override selects the next lower layer. Cycles, duplicate IDs within one layer, malformed schemas and unsafe resource paths are reported as problems; list/test exits 4 when any problem exists.
+
+Configuration loading rejects a broken profile catalog rather than silently using a different communication profile.
 
 The schemas in `src/extensions/schemas/` describe decoded manifests. Template front matter supplies metadata and the Markdown body supplies `content`. Profile manifests contain dials only; they cannot alter checks or decisions. `profile set` still overrides one dial, while `profile preset <id>` selects any validated catalog profile. User preferences keep their normal precedence.
 

@@ -9,7 +9,9 @@
 
 `wl overview --json` emits `wholeloop/overview@1`. Its readable default is the same document indented. `wl overview schema --json` returns the overview and feed JSON Schemas without opening a store, with explicit runtime availability. The overview reads the configured external store and local flow/checkpoint configuration; it acquires no writer lock, repairs no cache, starts no worker and opens no listener.
 
-The reader checks the writer lock and observes the canonical journals and required auxiliary facts twice on one attempt clock, sampled after capturing its journals. This prevents a new legitimate commit from looking like a clock rollback. Explicit as-of replay clocks stay fixed. Interrupted validation retries within the same three-attempt bound; persistently invalid bytes still fail closed. It retries a changed snapshot three times, then reports `store-busy` rather than mixing facts from different reads. Held locks produce that same conservative result. Invalid inputs produce fixed, redacted problems and exit 3. An unavailable view has unknown totals and cursor, not fabricated empty or complete results.
+The reader checks the writer lock and observes the canonical journals and required auxiliary facts twice on one attempt clock, sampled after capturing its journals. This prevents a new legitimate commit from looking like a clock rollback. Explicit as-of replay clocks stay fixed. Interrupted validation retries within the same three-attempt bound; persistently invalid bytes still fail closed.
+
+It retries a changed snapshot three times, then reports `store-busy` rather than mixing facts from different reads. Held locks produce that same conservative result. Invalid inputs produce fixed, redacted problems and exit 3. An unavailable view has unknown totals and cursor, not fabricated empty or complete results.
 
 Item flow reuses the execution engine's inherited decisions and dependency rules. Delivery actions and outcomes share the delivery report projector; runner facts and budget boundaries use their existing inspectors. A journaled active grant and a currently active authority observation are distinct facts. Missing or changed basis, expired authority and budget boundaries suppress new work. Uncertain controller ownership suppresses a second run or resume and retains reconciliation.
 
@@ -25,7 +27,9 @@ The semantic digest excludes only `asOf`. Auxiliary observations can change the 
 
 Attention is ordered by store problems, ambiguous effects, unknown worker ownership, human decisions, item decisions, inactive grants, unavailable basis, budget boundaries, failed runs, exhausted runs, blocked runs, paused runs, blocked dependencies, due checkpoints and unread mail. Typed target kind/ID and entry ID break ties. Ordering happens across the full input before truncation, so a visible prefix cannot hide a more urgent entry.
 
-The headline chooses unavailable, attention, blocked, running, waiting, ready, complete, empty or idle from factual counts and categories. Renderers do not rerank it. Inherited parent approvals appear once. Next commands are argv arrays with bound IDs and explicit person/outcome input descriptors; a consumer must collect those inputs. It must never substitute an approval or infer a person's identity. Generic item approvals include `--basis`; the actual writer transaction rejects a stale displayed basis. Specialized artifact decisions keep their own validators and offer inspection here.
+The headline chooses unavailable, attention, blocked, running, waiting, ready, complete, empty or idle from factual counts and categories. Renderers do not rerank it. Inherited parent approvals appear once. Next commands are argv arrays with bound IDs and explicit person/outcome input descriptors; a consumer must collect those inputs.
+
+It must never substitute an approval or infer a person's identity. Generic item approvals include `--basis`; the actual writer transaction rejects a stale displayed basis. Specialized artifact decisions keep their own validators and offer inspection here.
 
 ## Bounds, provenance and privacy
 
@@ -37,13 +41,17 @@ The view excludes item text, source payloads, prompts, conversations, person nam
 
 ## Consumer contract kit
 
-Schemas live in `src/overview/schemas/`; `wl overview schema` exposes the installed versions. `test/fixtures/overview/` includes static archives and expected output for every headline and attention kind. Each archive contains canonical journals plus explicitly synthetic auxiliary observations. Tests replay the journals and compare the frozen output through the actual projector and JSON Schema. These archives are inert consumer examples, never runtime state or imported authority. Separate real-store differential tests exercise the reader, existing inspectors, rebuilds and private canaries.
+Schemas live in `src/overview/schemas/`; `wl overview schema` exposes the installed versions. `test/fixtures/overview/` includes static archives and expected output for every headline and attention kind. Each archive contains canonical journals plus explicitly synthetic auxiliary observations. Tests replay the journals and compare the frozen output through the actual projector and JSON Schema.
+
+These archives are inert consumer examples, never runtime state or imported authority. Separate real-store differential tests exercise the reader, existing inspectors, rebuilds and private canaries.
 
 ## Following local changes
 
 `wl watch [--since <cursor>] [--poll]` emits compact newline-delimited `wholeloop/watch-frame@1` documents, including when `--json` is omitted. `--poll` disables filesystem watchers; otherwise nonrecursive file events are hints and a one-second poll is the correctness fallback. The default idle liveness interval is fifteen seconds. The reader serializes snapshots and output, awaits backpressure and cleans up watchers and timers on interruption. There are no store writes or network listeners.
 
-The four frame kinds are complete overviews, activity batches of at most 128 events, liveness and problems. Process-local sequence numbers start at one. Each activity identifies its journal and ordinal/global sequence, typed event ID, digest, category, actor kind and provenance. It copies no payload, names, reason, source contents or prompt. Independent journals have no invented total time ordering: each batch consumes the next state prefix, then the next delivery prefix. Rapid commits may coalesce into one observed stable view; activity retains every event. The feed does not fabricate historical auxiliary observations at skipped intermediate positions.
+The four frame kinds are complete overviews, activity batches of at most 128 events, liveness and problems. Process-local sequence numbers start at one. Each activity identifies its journal and ordinal/global sequence, typed event ID, digest, category, actor kind and provenance. It copies no payload, names, reason, source contents or prompt.
+
+Independent journals have no invented total time ordering: each batch consumes the next state prefix, then the next delivery prefix. Rapid commits may coalesce into one observed stable view; activity retains every event. The feed does not fabricate historical auxiliary observations at skipped intermediate positions.
 
 Initial views, observation-only refreshes, journal views and liveness all carry `progress: false`. Only activity records can establish progress: a completed state step, a committed delivery budget-progress record or a completed delivery control transition. Fixture evidence stays fixture evidence, and a process observation establishes neither model execution nor native acceptance. Heartbeats never count as work.
 

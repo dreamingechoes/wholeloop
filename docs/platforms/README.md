@@ -4,20 +4,6 @@
 
 The tier-A columns were verified against the native clients on macOS arm64 ([conformance notes](../../test/conformance/notes/README.md)), and the standalone framing scenario passed live on all seven clients. Items marked ❓ are not verified against the client, and native clients have not been run on Linux. Nightly conformance is built but not yet enabled.
 
----
-
-[Owned Docker environments](../tutorials/delivery-docker.md) have a separate actual application/backend evaluation. It passes with a macOS arm64 controller and Linux aarch64 daemon and on an independent Linux x86_64 host; this does not certify native models/tools. Existing client/service evidence retains its original scope.
-
-## Browser acceptance boundary
-
-[Browser acceptance](../tutorials/delivery-browsers.md) reuses digest-pinned Playwright MCP in an owned isolated container through a private registered stdio pipe. This is separate from a coding client's MCP configuration or a person's browser. Actual Chromium/form/restart/backend observations are scoped to this controller/daemon pair; unsupported versions, devices or capabilities remain unavailable. The private Docker container boundary is required even though the reference Chromium command disables its internal sandbox. See [ADR-0107](../decisions/0107-private-stdio-browser-acceptance.md).
-
-[Private HTTP evaluation](../tutorials/delivery-private-acceptance.md) uses a separate owned read-only verifier mount and actual clean-base/current-candidate observations. Application-container read/write denials establish that Docker boundary only. Native worker admission still requires observed containment and controller-store denial; a same-user shared filesystem is not private evaluation. Reported mutation counters and native-client/model certification remain separate.
-
-## Expanded delivery protocol boundary
-
-[Delivery workers](../tutorials/delivery-workers.md) now have exact fresh assignments, bounded role contexts and separate controller execution observations. This is a tested local protocol boundary, not a new native capability certification. Dedicated pinned Claude/Codex reference transports add actual synthetic-process execution and seven-target capability/denial handling. It requires separate observed runtime proof; other expanded targets remain unverified. Actual native/tool/filesystem conformance still needs signed-in native clients. Existing native successes, failures and service-unverified integrations below retain their original scope.
-
 ## Tiers
 
 | Tier | CLIs | Why |
@@ -41,9 +27,13 @@ Antigravity CLI replaced Gemini CLI for free and personal accounts in June 2026,
 | Headless mode | `claude -p` | `codex exec` | `opencode run` | `copilot -p` | `gemini -p` | `agy -p` | `agent -p` |
 | Plugin packaging | Claude plugins | Agent Plugins, Claude marketplace | npm/JS | Agent Plugins, Claude marketplace | extensions | plugins | Agent Plugins |
 
-The four tier-A columns were verified on 2026-11-08, macOS arm64, by the [conformance spike](../../test/conformance/notes/README.md): Claude Code 2.1.319, Codex 0.166.0, OpenCode 2.2.5 and Copilot CLI 1.0.83. No client answers a structured question in headless mode, so a headless step that needs a person stops and asks in plain text. Codex's interactive question was not exercised. The Gemini, Antigravity and Cursor columns come from their own adapter tasks; their remaining ❓ marks belong to those tasks, not to this spike.
+The four tier-A columns were verified on 2026-11-08, macOS arm64, by the [conformance spike](../../test/conformance/notes/README.md): Claude Code 2.1.319, Codex 0.166.0, OpenCode 2.2.5 and Copilot CLI 1.0.83. No client answers a structured question in headless mode, so a headless step that needs a person stops and asks in plain text.
 
-Also observed on 2026-11-08, macOS arm64: the generated Claude plugin installs in an isolated config and lists all seventeen skills. With the client's broadest approval switched on, the generated reviewer role had no write or shell tool on OpenCode 2.2.5 or Copilot 1.0.83. OpenCode roles deny `.env` reads. Copilot loads plugin agents as `wholeloop:wl-<name>` and always adds its `skill` and session `sql` tools. Codex custom agents cannot lower the parent's sandbox, so read-only work there runs in the read-only parent or the headless recipe ([ADR-0048](../decisions/0048-native-target-layouts-and-checked-launcher-roots.md)).
+Codex's interactive question was not exercised. The Gemini, Antigravity and Cursor columns come from their own adapter tasks; their remaining ❓ marks belong to those tasks, not to this spike.
+
+Also observed on 2026-11-08, macOS arm64: the generated Claude plugin installs in an isolated config and lists all seventeen skills. With the client's broadest approval switched on, the generated reviewer role had no write or shell tool on OpenCode 2.2.5 or Copilot 1.0.83. OpenCode roles deny `.env` reads.
+
+Copilot loads plugin agents as `wholeloop:wl-<name>` and always adds its `skill` and session `sql` tools. Codex custom agents cannot lower the parent's sandbox, so read-only work there runs in the read-only parent or the headless recipe ([ADR-0048](../decisions/0048-native-target-layouts-and-checked-launcher-roots.md)).
 
 ## Local adapter declarations
 
@@ -124,7 +114,9 @@ The collector neither resolves moving versions nor installs/updates clients. Sch
 wl conformance issues /tmp/wholeloop-results.json --at 2026-10-20T12:00:00.000Z --json
 ```
 
-This read-only projection shares the matrix's freshness/comparability rules. Explicit time is required. Exit 4 identifies draft candidates; zero means none, including unrun/simulated evidence. The versioned output contains stable keys, exact versions/assertions/hashes and original observation dates, with no journal paths, draft contents or raw native output. It sends no message and authenticates no imported report. The body marker identifies the same regression across repeated observations without changing its date or claiming wider native support.
+This read-only projection shares the matrix's freshness/comparability rules. Explicit time is required. Exit 4 identifies draft candidates; zero means none, including unrun/simulated evidence. The versioned output contains stable keys, exact versions/assertions/hashes and original observation dates, with no journal paths, draft contents or raw native output.
+
+It sends no message and authenticates no imported report. The body marker identifies the same regression across repeated observations without changing its date or claiming wider native support.
 
 The maintainer delivery host is preview-only unless explicitly activated:
 
@@ -135,7 +127,9 @@ node scripts/conformance-issues.mjs /tmp/wholeloop-results.json --write
 
 A non-empty preview needs the intended GITHUB_REPOSITORY and native gh access to read its issue inventory. Empty/unrun batches require no GitHub service call. Delivery requires the actual selected default-branch GitHub.com schedule/manual CI context and existing issue-write permission. Setting environment fields alone is not authentication or authorization. The disabled [nightly workflow](../contributing/conformance.md) wires collection and separate issue authority; maintainer activation and actual service checks remain open. No actual issue has been sent.
 
-The host requires observations for the exact current built core and refuses input changes. It scans open/closed issues in creation order, projects only matching marker keys/numbers, and excludes pull requests. A complete scan must finish within one hundred pages of one hundred entries; incomplete/failed/unsafe inventory causes no writes. It does not add labels or change configuration. Before each delivery it rechecks freshness against actual time, preserving the original observed dates. Bodies travel through stdin, with no credentials in files or argv.
+The host requires observations for the exact current built core and refuses input changes. It scans open/closed issues in creation order, projects only matching marker keys/numbers, and excludes pull requests. A complete scan must finish within one hundred pages of one hundred entries; incomplete/failed/unsafe inventory causes no writes.
+
+It does not add labels or change configuration. Before each delivery it rechecks freshness against actual time, preserving the original observed dates. Bodies travel through stdin, with no credentials in files or argv.
 
 An intact matching marker suppresses repeat delivery even when the existing issue is closed. Serialize writers; marker-based creation is not atomic across independent callers or unrelated concurrent issue edits/deletions. Failed runs retain completed outcomes and require inspection before retrying; they never automatically delete, close or retry an external effect. Local tests use synthetic GitHub executables, not actual authenticated requests. See [ADR-0073](../decisions/0073-structural-regression-drafts-and-explicit-issue-delivery.md).
 
@@ -222,7 +216,9 @@ Golden/compiled CLI fixtures passed, including executing the copied core outside
 
 ### Additional tier-A targets
 
-Headless Codex receives a per-assignment --output-schema file binding the complete response envelope and exact unit/finding/verifier. The core still validates the returned identity and public gate semantics. The native schema contains only non-secret constraints, not prompt bodies or credentials. Earlier actual rounds with unbound JSON replies remain failed. A new compiled-CLI six-lens review passes on Codex 0.163.0/core 9ea3a298 with all workers accepted and the repository unchanged; this is one concrete review, not every-client or adversarial-isolation certification. See [ADR-0091](../decisions/0091-native-exact-headless-response-schemas.md).
+Headless Codex receives a per-assignment --output-schema file binding the complete response envelope and exact unit/finding/verifier. The core still validates the returned identity and public gate semantics. The native schema contains only non-secret constraints, not prompt bodies or credentials. Earlier actual rounds with unbound JSON replies remain failed.
+
+A new compiled-CLI six-lens review passes on Codex 0.163.0/core 9ea3a298 with all workers accepted and the repository unchanged; this is one concrete review, not every-client or adversarial-isolation certification. See [ADR-0091](../decisions/0091-native-exact-headless-response-schemas.md).
 
 OpenCode's default build retains the V1 dialect and its existing pin. For V2, render explicitly; managed install selects the installed observed version:
 
@@ -230,7 +226,9 @@ OpenCode's default build retains the V1 dialect and its existing pin. For V2, re
 wl adapter build-native --target opencode --pin 2.1.1 --out /tmp/wholeloop-opencode-v2 --json
 ```
 
-V2 uses its id/setup hook API and current-session location. Its headless inspector uses a private global config with only the path-checked reader; search, shell, edit, delegation and MCP are denied. Actual 2.1.1 required that global config to discover the inspector. Its final ended text is bound to the final step after clean exit, decoding at most one exact JSON fence; V1 still requires its stop event. The core still checks the exact assignment and result schema. A no-tool V2 response and a native user-scope read/deny guard trial are observed, not a complete framing/parity pass. See [ADR-0088](../decisions/0088-version-specific-opencode-native-transports.md).
+V2 uses its id/setup hook API and current-session location. Its headless inspector uses a private global config with only the path-checked reader; search, shell, edit, delegation and MCP are denied. Actual 2.1.1 required that global config to discover the inspector. Its final ended text is bound to the final step after clean exit, decoding at most one exact JSON fence; V1 still requires its stop event.
+
+The core still checks the exact assignment and result schema. A no-tool V2 response and a native user-scope read/deny guard trial are observed, not a complete framing/parity pass. See [ADR-0088](../decisions/0088-version-specific-opencode-native-transports.md).
 
 ```text
 wl build --target codex --out /tmp/wholeloop-codex --json
@@ -246,7 +244,9 @@ wl build --target copilot --out /tmp/wholeloop-copilot --json
 
 Every non-Claude skill includes a tiny scripts/wl.mjs launcher importing the one packaged core. Use the exact loaded skill directory reported by the client; if it is absent, ask rather than invent a path. Call that launcher with adapter root --json for the verified artifact root and pass the result to agents. Root validation checks layout/version/executable hash and refuses source-checkout/corrupted claims. Launchers work through directory symlinks without duplicating the executable.
 
-OpenCode/Copilot observers receive no shell/write channel; command/provider evidence comes from the conductor. OpenCode read roles can read shared resources outside the checkout; writer roles retain native external-directory asks. Copilot agents explicitly inherit repository instructions and do not opt into automatic inferred delegation. Codex agent files cannot lower the parent's sandbox/approval policy: supported feature reductions are rendered, while checked read-only parent/headless execution and the core snapshot checks remain necessary. Do not interpret instructions as a new sandbox. Additional targets inherit the selected model and retain tier hints.
+OpenCode/Copilot observers receive no shell/write channel; command/provider evidence comes from the conductor. OpenCode read roles can read shared resources outside the checkout; writer roles retain native external-directory asks. Copilot agents explicitly inherit repository instructions and do not opt into automatic inferred delegation. Codex agent files cannot lower the parent's sandbox/approval policy: supported feature reductions are rendered, while checked read-only parent/headless execution and the core snapshot checks remain necessary.
+
+Do not interpret instructions as a new sandbox. Additional targets inherit the selected model and retain tier hints.
 
 Codex agent files are installation overlays: loading a portable skill package alone does not prove native agent discovery. All target manifests retain conformance unverified; OpenCode/Copilot native guard bindings and the Codex Git fallback are implemented. Static/native listings do not establish a live model run or permission enforcement. See [ADR-0048](../decisions/0048-native-target-layouts-and-checked-launcher-roots.md) and the [manual checklist](../../roadmap/manual-verification.md).
 
@@ -292,11 +292,19 @@ Claude Code takes an API key or a `claude setup-token` token, and Codex an API k
 
 ## Antigravity plugin and native overlays
 
-Build with `wl build --target antigravity --out /tmp/wholeloop-agy --json`. The closed plugin.json, seventeen wl-agy- skills, nine strict agents, named hooks.json map and bundled core/resources form independent native output. User installation uses the documented CLI plugin root; project installation uses .agents. Existing unowned project hooks.json is refused before any target writes; use standalone native plugin delivery or preserve/resolve the shared file manually. Install/uninstall all includes six targets. Doctor requires explicit --target antigravity and probes agy, while its default remains tier A.
+Build with `wl build --target antigravity --out /tmp/wholeloop-agy --json`. The closed plugin.json, seventeen wl-agy- skills, nine strict agents, named hooks.json map and bundled core/resources form independent native output. User installation uses the documented CLI plugin root; project installation uses .agents. Existing unowned project hooks.json is refused before any target writes; use standalone native plugin delivery or preserve/resolve the shared file manually.
 
-The hook accepts toolCall/workspacePaths, resolves an exact hash-pinned core and calls the deterministic guard. Native allow delegates to the next/default policy; no permissionOverrides are emitted. User overlays bind external artifacts, project hooks use workspace-local distribution and standalone user plugins use the native CLI root. Missing/ambiguous roots or modified core deny without logging payloads. Observers receive explicit reads/declared web tools, no shell/write/MCP/memory or delegation; models inherit and role handoffs remain sequential. Plain-text options wait for explicit human answers when structured questions are unavailable.
+Install/uninstall all includes six targets. Doctor requires explicit --target antigravity and probes agy, while its default remains tier A.
 
-MCP recipes use serverUrl and command/args; header recipes are refused because safe native environment references are unverified. Native OAuth/authentication and activation remain separate manual actions. The framing runner uses one fresh JSONL user event with stream-json input/output; FIXTURE_PASS remains simulation. Actual agy 1.4.2 version/help ran. Agent listing failed to bind a local port in the execution sandbox, so native loading, policy and model execution remain unverified. Gate fanout has a separate conditional AGY observer: private read-only primary agent/hook policy, native sandbox and JSONL input/output. It sends no assignment until a bounded init reports the exact worker and only read tools under strict permissions. Actual pre-input init ordering and native activation remain unverified; clients waiting for a prompt first time out without receiving one. This recipe does not establish a native model pass or replace the writable framing scenario. See [ADR-0072](../decisions/0072-antigravity-startup-gated-observer-workers.md).
+The hook accepts toolCall/workspacePaths, resolves an exact hash-pinned core and calls the deterministic guard. Native allow delegates to the next/default policy; no permissionOverrides are emitted. User overlays bind external artifacts, project hooks use workspace-local distribution and standalone user plugins use the native CLI root. Missing/ambiguous roots or modified core deny without logging payloads.
+
+Observers receive explicit reads/declared web tools, no shell/write/MCP/memory or delegation; models inherit and role handoffs remain sequential. Plain-text options wait for explicit human answers when structured questions are unavailable.
+
+MCP recipes use serverUrl and command/args; header recipes are refused because safe native environment references are unverified. Native OAuth/authentication and activation remain separate manual actions. The framing runner uses one fresh JSONL user event with stream-json input/output; FIXTURE_PASS remains simulation. Actual agy 1.4.2 version/help ran.
+
+Agent listing failed to bind a local port in the execution sandbox, so native loading, policy and model execution remain unverified. Gate fanout has a separate conditional AGY observer: private read-only primary agent/hook policy, native sandbox and JSONL input/output. It sends no assignment until a bounded init reports the exact worker and only read tools under strict permissions.
+
+Actual pre-input init ordering and native activation remain unverified; clients waiting for a prompt first time out without receiving one. This recipe does not establish a native model pass or replace the writable framing scenario. See [ADR-0072](../decisions/0072-antigravity-startup-gated-observer-workers.md).
 
 See [ADR-0055](../decisions/0055-antigravity-native-overlays-and-pinned-hook-transport.md) and the [manual checklist](../../roadmap/manual-verification.md).
 
@@ -307,9 +315,13 @@ user|project` uses owned .gemini/skills and agents overlays; uninstall retains t
 
 Agent definitions use explicit native tool lists and inherit the session model. Observers receive no shell, write, memory, wildcard MCP or delegation tool; the main session supplies command/provider observations. Preview subagent enablement remains native setup. Subagents cannot nest delegation; additional role work returns to the main session for sequential handoff. If structured questions are unavailable, the instructions return exact plain-text options and wait for explicit answers.
 
-Gemini 0.27.0's actual static loaders accepted the earlier eight generated agents and seventeen skills under an isolated native home. Its installed registry uses search_file_content; newer documentation also uses grep_search. These observations do not prove a model session, runtime tool restrictions, native trust, hook activation or actual MCP access. No model/authenticated operation ran. The shared framing runner accepts --target gemini with explicit simulation/live evidence separation. The later planner addition has automated renderer coverage; that earlier native-loader observation does not certify the nine-agent catalog.
+Gemini 0.27.0's actual static loaders accepted the earlier eight generated agents and seventeen skills under an isolated native home. Its installed registry uses search_file_content; newer documentation also uses grep_search. These observations do not prove a model session, runtime tool restrictions, native trust, hook activation or actual MCP access.
 
-Generated extensions bind extensionPath only into WL_GEMINI_EXTENSION_ROOT in the native hook environment. The static command verifies the exact target/core before guard execution. Actual 0.27.0 loader/runner APIs passed read/deny probes at a shell-special relocated path without models. Loose overlays retain the explicit Git fallback; shared settings are never rewritten to infer activation. Native model permissions and full activation remain manual checks. See [ADR-0056](../decisions/0056-gemini-hook-roots-through-native-environment.md). MCP recipes never apply or expand credentials; declaration detection respects Gemini allowed/excluded server metadata. Doctor supports --target gemini; its default selection stays on tier A.
+No model/authenticated operation ran. The shared framing runner accepts --target gemini with explicit simulation/live evidence separation. The later planner addition has automated renderer coverage; that earlier native-loader observation does not certify the nine-agent catalog.
+
+Generated extensions bind extensionPath only into WL_GEMINI_EXTENSION_ROOT in the native hook environment. The static command verifies the exact target/core before guard execution. Actual 0.27.0 loader/runner APIs passed read/deny probes at a shell-special relocated path without models. Loose overlays retain the explicit Git fallback; shared settings are never rewritten to infer activation.
+
+Native model permissions and full activation remain manual checks. See [ADR-0056](../decisions/0056-gemini-hook-roots-through-native-environment.md). MCP recipes never apply or expand credentials; declaration detection respects Gemini allowed/excluded server metadata. Doctor supports --target gemini; its default selection stays on tier A.
 
 Read-only gate fanout also supports --adapter gemini through a private positive core registry, with alternate tool surfaces disabled. Existing managed system settings block launch; original defaults and native trust/auth/model remain in place. This observer is separate from the framing recipe that needs native skill loading and explicit state writes. Actual 0.27.0 registry/argument metadata checks are model-free; native model acceptance remains open. See [the headless boundary](../architecture/orchestration-and-gates.md#local-headless-process-transport) and [ADR-0071](../decisions/0071-gemini-observer-registry-and-private-policy.md).
 
@@ -317,7 +329,9 @@ Formats: [Gemini extension reference](https://geminicli.com/docs/extensions/refe
 
 ## Cursor plugin and native overlays
 
-`wl build --target cursor --out /tmp/wholeloop-cursor --json` emits a full native .cursor-plugin/plugin.json and a separate portable root plugin.json with the canonical Agent Plugins schema. The native manifest provides seventeen skills, nine agents, the opt-in invocation rule and preToolUse hooks. Portable discovery covers skills/MCP only. Observer roles set readonly true; all roles inherit the selected model and run in the foreground. Wholeloop handoffs remain sequential. Native readonly is not proof of actual provider or MCP restrictions.
+`wl build --target cursor --out /tmp/wholeloop-cursor --json` emits a full native .cursor-plugin/plugin.json and a separate portable root plugin.json with the canonical Agent Plugins schema. The native manifest provides seventeen skills, nine agents, the opt-in invocation rule and preToolUse hooks. Portable discovery covers skills/MCP only. Observer roles set readonly true; all roles inherit the selected model and run in the foreground.
+
+Wholeloop handoffs remain sequential. Native readonly is not proof of actual provider or MCP restrictions.
 
 Owned user/project installation uses .cursor/skills, agents, rules and hooks.json. The one prefixed rule coexists with unrelated rules. Existing unowned/edited hooks.json is refused before any selected client writes. User artifacts/ownership stay external; project distribution relocates through CURSOR_PROJECT_DIR binding. No shared settings/authentication or native MCP configuration is rewritten. Ownership receipts retain complete recovery catalogs within a 4 MiB read/write budget; oversized metadata is refused before replacing the current receipt.
 
@@ -352,9 +366,27 @@ node dist/wl.mjs conformance collect "$NATIVE_ROOT/collection.json" --live \
   --bin-root "$NATIVE_ROOT" --store "$EXTERNAL_STORE" --json
 ```
 
-The second command can use authenticated native models and requires maintainer setup. The host resolves both channels before installation, validates exact official paths/integrity, and uses separate private prefixes/HOME/cache/empty npm configs. Vendor npm lifecycle scripts execute during installation with no forwarded model or GitHub credentials. Cursor has no expected archive checksum in its installer; its observed digest is recorded with that limitation. Failed/partial receipts stay in the chosen directory; inspect them and choose a new destination rather than retrying over them. Provisioning checks files/package identity, not native support.
+The second command can use authenticated native models and requires maintainer setup. The host resolves both channels before installation, validates exact official paths/integrity, and uses separate private prefixes/HOME/cache/empty npm configs. Vendor npm lifecycle scripts execute during installation with no forwarded model or GitHub credentials. Cursor has no expected archive checksum in its installer; its observed digest is recorded with that limitation.
+
+Failed/partial receipts stay in the chosen directory; inspect them and choose a new destination rather than retrying over them. Provisioning checks files/package identity, not native support.
 
 Reviewed pins live in test/conformance/pins.json. Antigravity's initial acquisition pin is 1.4.3 with four official updater checksums; previous local 1.4.2 availability evidence does not cover it. Only macOS/glibc Linux arm64/x64 are planned. The full core/fixture/package check passes on macOS and Debian Linux arm64/Node 24; actual Linux native acquisition/installation/model runs remain unverified. The pure conformance acquisition command accepts explicit bounded metadata without any network/install operation. See [ADR-0074](../decisions/0074-exact-native-acquisition-and-private-prefixes.md).
+
+## Autonomous delivery boundaries
+
+[Owned Docker environments](../tutorials/delivery-docker.md) have a separate actual application/backend evaluation. It passes with a macOS arm64 controller and Linux aarch64 daemon and on an independent Linux x86_64 host; this does not certify native models/tools. Existing client/service evidence retains its original scope.
+
+### Browser acceptance boundary
+
+[Browser acceptance](../tutorials/delivery-browsers.md) reuses digest-pinned Playwright MCP in an owned isolated container through a private registered stdio pipe. This is separate from a coding client's MCP configuration or a person's browser. Actual Chromium/form/restart/backend observations are scoped to this controller/daemon pair; unsupported versions, devices or capabilities remain unavailable. The private Docker container boundary is required even though the reference Chromium command disables its internal sandbox. See [ADR-0107](../decisions/0107-private-stdio-browser-acceptance.md).
+
+[Private HTTP evaluation](../tutorials/delivery-private-acceptance.md) uses a separate owned read-only verifier mount and actual clean-base/current-candidate observations. Application-container read/write denials establish that Docker boundary only. Native worker admission still requires observed containment and controller-store denial; a same-user shared filesystem is not private evaluation. Reported mutation counters and native-client/model certification remain separate.
+
+### Expanded delivery protocol boundary
+
+[Delivery workers](../tutorials/delivery-workers.md) now have exact fresh assignments, bounded role contexts and separate controller execution observations. This is a tested local protocol boundary, not a new native capability certification. Dedicated pinned Claude/Codex reference transports add actual synthetic-process execution and seven-target capability/denial handling. It requires separate observed runtime proof; other expanded targets remain unverified.
+
+Actual native/tool/filesystem conformance still needs signed-in native clients. Existing native successes, failures and service-unverified integrations below retain their original scope.
 
 <!-- docnav -->
 [◀ Expanded delivery acceptance](../reference/delivery-acceptance.md)  ·  [📖 Docs index](../README.md)  ·  [🧭 Concepts](../concepts.md)  ·  [Extending ▶](../extending/README.md)
