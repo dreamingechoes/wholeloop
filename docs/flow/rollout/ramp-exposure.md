@@ -55,7 +55,31 @@ Give it a flag name and the criteria you care about ("`orders_csv_export`, watch
 
 ## Run it
 
-Ask your client for the skill:
+![ramp-exposure: an illustrative example session in a coding client](../../assets/terminal/session-ramp-exposure.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
+
+```text
+> /wholeloop:ramp-exposure scope-a9e0
+
+Ramp — scope-a9e0 "Find an order" · flag orders_search_v1 (LaunchDarkly)
+Stage     10% → next 50%
+Window    48 h since the 10% confirmation, ends today 14:00
+
+▸ reading signals: Sentry errors · Grafana p95 latency · PostHog search success
+✓ new error types         0           exit: 0
+✓ p95 latency             312 ms      exit: within 10% of 298 ms
+? search success rate     unknown     PostHog not connected in this client
+▸ challenger: success rate is a required check — go is not available
+
+Recommendation   HOLD — 1 required check unknown
+Decision: [hold] [roll back] [connect PostHog and re-check]
+
+Recorded   hold · by Ana López · reason "waiting for search success data"
+Next       re-check after PostHog is connected; the flag was not touched
+```
 
 | Client | Invoke |
 | --- | --- |

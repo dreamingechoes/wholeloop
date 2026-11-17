@@ -1,0 +1,22 @@
+> /wholeloop:build-slice "add CSV export to the orders list"
+
+Ad-hoc slice — "add CSV export to the orders list"
+Criteria (confirm or edit)
+  1. An "Export CSV" action on the orders list downloads the visible rows
+  2. Columns: number, date, status, total
+  3. Exports above 10k rows are refused with a clear message
+[confirm] [edit]
+
+(preflight…)
+
+▸ builder:slice-5e1a plan written · assumptions hold in the code
+▸ builder: src/orders/export.ts · src/orders/OrdersList.tsx · 2 tests
+▸ verify round 1 · suite ✓ · criterion 3 ✗ (no message shown) → back to builder
+▸ verify round 2 · green
+▸ review round 1 · green
+
+Produced
+  Worktree   slice-5e1a                  wl worktree open slice-5e1a
+  Branch     wl/slice-5e1a               (local only)
+  Slice      slice-5e1a · green          wl open slice-5e1a
+Next         test it, then /wholeloop:open-pr slice-5e1a

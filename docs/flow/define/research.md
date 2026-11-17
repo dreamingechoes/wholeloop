@@ -56,7 +56,11 @@ Alone, `research` needs only a question. It creates a **loose brief** that you c
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model, and remote sources such as PostHog need a provider you configured:
+![research: an illustrative example session in a coding client](../../assets/terminal/session-research.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model, and remote sources such as PostHog need a provider you configured.*
+
+The same session as text:
 
 ```text
 > /wholeloop:research Do users struggle to find their past orders, and how do comparable products solve it?

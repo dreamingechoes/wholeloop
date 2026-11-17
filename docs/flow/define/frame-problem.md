@@ -72,7 +72,11 @@ On its own it needs nothing but the idea: it creates the initiative and stops th
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![frame-problem: an illustrative example session in a coding client](../../assets/terminal/session-frame-problem.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:frame-problem --from brief-7f3a

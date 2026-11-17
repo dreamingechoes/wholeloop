@@ -1,0 +1,24 @@
+> /wholeloop:frame-problem --from brief-7f3a
+
+Frame — "Users struggle to find their past orders"
+Mode      new initiative · evidence from brief-7f3a
+Profile   pair (standard · balanced challenge)
+Publish   docs → not configured ↓
+
+Where should the framing live?
+  (•) Only in the store for now   ( ) Notion  ✓ detected   ( ) Confluence  ✗ not connected
+Who owns this initiative?   > Ana López
+
+Problem            Users with >20 orders abandon the orders page before finding one
+Who it is for      Repeat buyers on web
+Evidence           brief-7f3a: 2 claims (high), 1 (medium)
+Expected impact    Time-to-find ↓ · orders-page exits ↓
+Who validated it   TBD: ticket volume · support lead
+Stop if            fewer than 5% of active users have >20 orders
+
+▸ challenger: "is this a search problem or a pagination problem?" → added as open question
+
+Produced
+  Initiative        init-41c2   wl open init-41c2
+Open questions      2
+Next                /wholeloop:write-spec init-41c2

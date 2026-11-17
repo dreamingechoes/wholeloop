@@ -52,7 +52,31 @@ Give it a metric and a time range ("export success rate since 1 September, in Me
 
 ## Run it
 
-Ask your client for the skill:
+![measure-impact: an illustrative example session in a coding client](../../assets/terminal/session-measure-impact.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
+
+```text
+> /wholeloop:measure-impact scope-a9e0 --checkpoint d30
+
+Measure — scope-a9e0 "Find an order" · checkpoint D+30
+Plan      pinned at spec approval · 3 metrics · window 30 days, Europe/Madrid
+Sources   PostHog ✓ · Metabase ✓ · Zendesk ✗ not connected
+
+▸ analysts started: product analytics · BI · what people say
+✓ time_to_find_order    41 s → 18 s     target ≤ 25 s     met
+~ orders_page_exit      34% → 27%       target ≤ 20%      partly
+? support_tickets       unknown         Zendesk unreachable → open question
+▸ challenger: every number traces to a stored query result ✓
+  "What people say": 4 feedback notes, kept apart from the metrics
+
+Produced
+  Checkpoint report   scope-a9e0 · D+30     wl open scope-a9e0
+Open questions        1                     support tickets · who: support lead
+Next                  /wholeloop:decide-next scope-a9e0
+```
 
 | Client | Invoke | Parallel analysts run as |
 | --- | --- | --- |

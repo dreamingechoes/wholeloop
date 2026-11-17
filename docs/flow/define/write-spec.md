@@ -53,7 +53,11 @@ On its own it takes a pasted idea, a document or an issue URL. With no initiativ
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![write-spec: an illustrative example session in a coding client](../../assets/terminal/session-write-spec.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:write-spec init-41c2

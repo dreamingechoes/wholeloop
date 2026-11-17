@@ -52,7 +52,11 @@ Give it a description of what is shipping ("CSV export for the orders list, flag
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![prepare-launch: an illustrative example session in a coding client](../../assets/terminal/session-prepare-launch.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:prepare-launch scope-a9e0

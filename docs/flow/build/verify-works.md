@@ -64,7 +64,11 @@ No criteria anywhere? It **asks**. Without them the result is only a test run, a
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![verify-works: an illustrative example session in a coding client](../../assets/terminal/session-verify-works.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:verify-works slice-0d4e

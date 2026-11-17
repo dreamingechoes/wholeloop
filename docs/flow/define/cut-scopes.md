@@ -79,7 +79,11 @@ Revising the cut targets the initiative again and reuses each scope's stable `ke
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![cut-scopes: an illustrative example session in a coding client](../../assets/terminal/session-cut-scopes.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:cut-scopes init-41c2

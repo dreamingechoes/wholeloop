@@ -62,7 +62,32 @@ Point it at a scope, or describe what shipped and what you observed. Without che
 
 ## Run it
 
-Ask your client for the skill:
+![decide-next: an illustrative example session in a coding client](../../assets/terminal/session-decide-next.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
+
+```text
+> /wholeloop:decide-next scope-a9e0
+
+Decide — scope-a9e0 "Find an order"
+Promised   time to find ≤ 25 s · orders-page exits ≤ 20%
+Observed   18 s (met) · 27% (partly) · support tickets unknown
+Your lean  keep
+
+▸ challenger: "exits are still 7 points above target; iterate on the
+  empty-result page before removing the flag?"
+
+Decision: [keep] [iterate] [kill] [unflag]   > iterate
+Reason    > Search works; exits stay high when nothing matches.
+Unknowns  > acknowledge: support_tickets
+
+Recorded
+  scope-a9e0       closed · iterate · by Ana López
+  New idea         init-58d0 "Improve empty search results"   evidence linked
+Next               /wholeloop:frame-problem init-58d0
+```
 
 | Client | Invoke |
 | --- | --- |

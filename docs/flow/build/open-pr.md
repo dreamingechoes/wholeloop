@@ -91,7 +91,11 @@ After publication, local links and a part's parent slice are updated. Mirroring 
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![open-pr: an illustrative example session in a coding client](../../assets/terminal/session-open-pr.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:open-pr slice-0d4e

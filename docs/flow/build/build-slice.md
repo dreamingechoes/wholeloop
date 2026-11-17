@@ -95,7 +95,11 @@ This is the step people run on its own most. `build-slice "add CSV export to the
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![build-slice: an illustrative example session in a coding client](../../assets/terminal/session-build-slice.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:build-slice "add CSV export to the orders list"

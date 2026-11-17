@@ -235,6 +235,12 @@ Show its current state and pending decisions. Do not advance the flow yet.
 
 Every step, in every client, follows the same exchange with the core. You always see the plan before any work, and you decide at the same points.
 
+Here is a framing step as it might look in your client:
+
+![An illustrative frame-problem session: the step states its plan, asks where the framing should live and who owns it, fills in the framing questions with an explicit TBD, records a challenger's question and ends with the new initiative and the next step](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/terminal/session-frame-problem.gif)
+
+*Illustrative: an example session, animated. Its wording depends on your client and model. Every step page has one.*
+
 ![What every step does: the skill begins the step with the core, which returns what exists, the open questions and your repository's guidance; the skill shows you a preflight and asks its questions; it does the work; it completes the step with its artifact, which the core checks and records; and you get a receipt and any decision that is due](https://raw.githubusercontent.com/dreamingechoes/wholeloop/main/docs/assets/diagrams/step.svg)
 
 From a terminal you can see everything the client sees. `wl --help` lists the everyday commands first, `wl <command> --help` explains one, and a typo gets a suggestion:

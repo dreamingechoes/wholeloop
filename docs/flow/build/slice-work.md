@@ -90,7 +90,11 @@ Local tracker IDs are stored references. Remote publication stays pending until 
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![slice-work: an illustrative example session in a coding client](../../assets/terminal/session-slice-work.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:slice-work scope-a9e0

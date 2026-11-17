@@ -38,7 +38,11 @@ flowchart TD
 - **Pending decisions become questions** for a person, never automatic approvals.
 - **Respects your `stops` setting.** With `stops: each-step` it pauses after every step even when no decision is due ([profile](../configuration/profile.md)).
 
-An example session; the layout depends on your client:
+![next: an illustrative example session in a coding client](../assets/terminal/session-next.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:next https://linear.app/acme/issue/ENG-482
@@ -62,7 +66,13 @@ init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
 0 unread messages. Add --json for the full status.
 ```
 
-In your client, the skill groups the same data by what is waiting on you. An example:
+In your client, the skill groups the same data by what is waiting on you:
+
+![status: an illustrative example session in a coding client](../assets/terminal/session-status.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:status
@@ -119,7 +129,13 @@ Every choice is validated before anything is written, and saving needs an explic
 | `project` | everyone in this repository; your user profile still wins for personal style |
 | `run` | this run only; nothing is saved |
 
-In your client, the skill shows the same choices interactively. An example:
+In your client, the skill shows the same choices interactively:
+
+![setup: an illustrative example session in a coding client](../assets/terminal/session-setup.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:setup providers

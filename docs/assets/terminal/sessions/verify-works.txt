@@ -1,0 +1,17 @@
+> /wholeloop:verify-works slice-0d4e
+
+Verify — slice-0d4e "user can filter orders by date"
+Checks    npm test · npm run lint · npx tsc --noEmit   (from package.json)
+Criteria  4 (from slice-0d4e)
+Round     1 of 4
+
+▸ checks ran — 212 passed · 0 failed · lint clean · types clean
+▸ verifiers started: AC-1 · AC-2 · AC-3 · AC-4 · touched tests
+✓ AC-1  ✓ AC-2  ✗ AC-3  ✓ AC-4
+✗ touched tests: filters.spec.ts "applies range" still passes with the filter removed
+▸ challenging 2 findings…
+  AC-3 kept — nobody argued against it (end date excluded; criterion says included)
+  touched tests kept — 1 of 3 argued against it
+
+Verdict   FAIL — 2 blockers, recorded on slice-0d4e
+Next      builder, round 2 of 4

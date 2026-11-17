@@ -91,7 +91,11 @@ A PR URL also needs `--branch <resolved-local-head>`. The client supplies the re
 
 ## Run it
 
-An example session. The layout and wording depend on your client and model:
+![review-code: an illustrative example session in a coding client](../../assets/terminal/session-review-code.gif)
+
+*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+
+The same session as text:
 
 ```text
 > /wholeloop:review-code #142

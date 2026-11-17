@@ -47,7 +47,7 @@ A command without its output asks the reader to trust it blindly.
 - **Use real output.** Run the command with the released CLI in a disposable home, then paste what it printed. Shorten personal or temporary paths to `~` and long identifiers to their first characters followed by `…`; mark removed lines with a single `…` line.
 - **Explain the flags** of a long command in a short table under it: flag, what it does, when to change it.
 - **Long setup goes in a `<details>` block** with a summary such as "Setup: copy once". The reader sees the steps that teach something, not the boilerplate around them.
-- **Sessions with a coding client are illustrative.** Their wording changes with the model, so label them as an example and never present one as observed output.
+- **Sessions with a coding client are illustrative.** Their wording changes with the model, so label them as an example and never present one as observed output. They may be animated as an [illustrative recording](#terminal-recordings).
 - **Exit codes that are not zero are part of the example.** When a command is expected to fail, say so before it and show what it prints.
 
 ```console
@@ -57,13 +57,19 @@ No stored work yet. Ask your coding client for wl-frame-problem, or run 'wl next
 
 ## Terminal recordings
 
-Short animations show a command running, which a static block cannot.
+Short animations show something running, which a static block cannot. There are two kinds, and a reader must always be able to tell them apart.
 
-- Each recording is a [VHS](https://github.com/charmbracelet/vhs) script under `docs/assets/terminal/` (`.tape`) and the GIF it renders next to it.
-- Render with `vhs docs/assets/terminal/<name>.tape` from the repository root, with the released CLI on the path. Each script sets its own disposable `HOME` and state directories, so no personal path appears in the image.
-- Record only `wl` commands with their real output; never a simulated model session.
-- Keep each recording under 30 seconds and the GIF under 1 MB. The README links them by their absolute `raw.githubusercontent.com` URL, like the diagrams, so npm can show them.
-- Re-render a recording when its commands or their output change. No gate checks them, so mention it in the change.
+| Kind | Shows | Source | Label |
+| --- | --- | --- | --- |
+| **Real** | `wl` commands and their real output | `docs/assets/terminal/<name>.tape` | None needed: the output is what the CLI prints |
+| **Illustrative** | A session in a coding client | `docs/assets/terminal/session-<step>.tape`, replaying `sessions/<step>.txt` | The banner inside the recording and an *Illustrative* caption under it |
+
+Both are [VHS](https://github.com/charmbracelet/vhs) scripts rendered to a GIF next to them. Render one with `vhs docs/assets/terminal/<name>.tape` from the repository root, with the released CLI on the path.
+
+- **Real recordings** set their own disposable `HOME` and state directories, so no personal path appears.
+- **Illustrative recordings** replay, with `replay.sh`, the exact example session printed on the page. The transcript in `sessions/` is a copy of that block: change both together and render again. A model's wording changes from run to run, so a session is never presented as observed output.
+- Keep each recording under 30 seconds and its GIF under 1 MB. The README links recordings by their absolute `raw.githubusercontent.com` URL, like the diagrams, so npm can show them; pages under `docs/` use relative paths.
+- Re-render a recording when its commands, output or transcript change. No gate checks them, so mention it in the change.
 
 ## Diagrams
 

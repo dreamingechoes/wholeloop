@@ -1,0 +1,24 @@
+> /wholeloop:open-pr slice-0d4e
+
+Open PR — slice-0d4e "user can filter orders by date"
+Gates     verify ✓ (round 2) · review ✓ (round 1)
+Try it    worktree  ~/.local/state/wholeloop/worktrees/shop-web/slice-0d4e
+          run       npm run dev -- --port 5181  →  http://localhost:5181/orders?from=2026-09-01
+          data      npm run seed:orders (40 orders across 3 months)
+
+Did it work as expected?   [ Yes, open the PR ]  [ No — here's what I saw ]
+
+> Yes
+
+▸ pushed wl/slice-0d4e-orders-date-filter → origin
+▸ draft PR #151 opened (template: .github/pull_request_template.md)
+▸ linked: slice-0d4e ↔ #151 ↔ ENG-482
+
+Produced
+  Draft PR          #151                       gh pr view 151 --web
+  Branch            wl/slice-0d4e-orders-date-filter
+Outside the repo
+  Worktree          slice-0d4e (kept until merge)    wl worktree prune slice-0d4e
+  Dev server :5181  still running                    wl worktree stop slice-0d4e
+  Seeded orders     40 rows in local db              npm run seed:orders -- --undo
+Next              your review · merge when ready · sync cleans up afterwards
