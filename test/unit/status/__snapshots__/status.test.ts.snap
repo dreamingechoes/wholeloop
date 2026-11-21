@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`status observation and attention tree > groups due measurements before recent ordinary work and retains schedule meanings > due checkpoint tree 1`] = `
+"Due
+init-00000001 PRIVATE_FIXTURE_TITLE · measure · 1/1 children open · via scope-00000001
+  └ scope-00000001 PRIVATE_FIXTURE_TITLE · measure · due launch, d7, d30
+
+2 unread messages. Add --json for the full status."
+`;
+
+exports[`status observation and attention tree > projects real nested fixture stores, recorded failures and active-child focus without writing > nested with failed review 1`] = `
+"In progress
+init-00000001 Search orders · review · 1/1 children open · via slice-00000001
+  └ scope-00000001 Date filter · review · 1/2 children open · via slice-00000001
+    └ slice-00000001 Accept a date range · review · review 1/3 FAIL recorded, 1 open · worktree active
+
+0 unread messages. Add --json for the full status."
+`;

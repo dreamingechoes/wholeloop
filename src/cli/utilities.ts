@@ -1,13 +1,15 @@
-// `wl next` and `wl setup`, with the questions they return for missing input.
+// Keeps read-only status separate from the flow and preference actions of next and setup.
+import { isObject } from '../config/schema.js'
+import { statusDisplay } from '../display/status.js'
 import { FlowEngine } from '../flow/engine.js'
-import { configuredCheckpoints, impactSchedule } from '../impact/schedule.js'
+import { configuredCheckpoints } from '../impact/schedule.js'
 import { SharingWorkflow } from '../sharing/workflow.js'
-import { ITEM_ID } from '../state/events.js'
+import { ITEM_ID, replay } from '../state/events.js'
 import { unread } from '../state/mailbox.js'
 import { StateStore } from '../state/store.js'
+import { statusItems } from '../status/project.js'
 import { next } from '../utilities/next.js'
 import { setup } from '../utilities/setup.js'
-import { worktreeRecords } from '../worktrees/contracts.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
@@ -67,45 +69,45 @@ export function utilityCommand(
       } else {
         const id = positional[0]
         if (id && !ITEM_ID.test(id)) throw new CliError('status expects a typed item ID')
-        const items = id ? [store.get(id)] : store.list()
-        const workspaces = worktreeRecords(store.events())
-        const messages = unread(
-          store.events(),
-          value('--for') ?? 'conductor',
-          value('--reader') ?? value('--for') ?? 'conductor',
-        )
+        const events = store.events(),
+          items = [...replay(events).values()].sort((a, b) => a.id.localeCompare(b.id)),
+          configuration = items.length ? engine.config() : {},
+          decisions = isObject(configuration.flow) ? configuration.flow.decisions : undefined,
+          projected = statusItems(items, events, {
+            additions:
+              isObject(decisions) && Array.isArray(decisions.add)
+                ? decisions.add.filter((entry): entry is string => typeof entry === 'string')
+                : [],
+            checkpoints: configuredCheckpoints(configuration),
+            at: new Date().toISOString(),
+          }),
+          selected = id ? projected.filter((item) => item.id === id) : projected,
+          messages = unread(
+            events,
+            value('--for') ?? 'conductor',
+            value('--reader') ?? value('--for') ?? 'conductor',
+          ),
+          payload = {
+            schema: 'wholeloop/status@1',
+            items: selected,
+            unreadCount: messages.filter((message) => !id || message.thread === id).length,
+          }
+        if (id && !selected.length) throw new Error(`Unknown item: ${id}`)
         result = {
           code: EXIT.ok,
-          payload: {
-            schema: 'wholeloop/status@1',
-            items: items.map(({ id, kind, title, owner, status, updatedAt }) => ({
-              id,
-              kind,
-              title,
-              owner,
-              status,
-              updatedAt,
-              flow: engine.plan(id),
-              ...(impactSchedule(store.events(), id, configuredCheckpoints(engine.config()))
-                ? {
-                    impact: impactSchedule(
-                      store.events(),
-                      id,
-                      configuredCheckpoints(engine.config()),
-                    ),
-                  }
-                : {}),
-              ...(workspaces.some((workspace) => workspace.subject === id)
-                ? { workspace: workspaces.find((workspace) => workspace.subject === id) }
-                : {}),
-            })),
-            unreadCount: messages.filter((message) => !id || message.thread === id).length,
-          },
+          payload: json
+            ? { ...payload, display: statusDisplay(payload, { all: options['--all'] === true }) }
+            : payload,
         }
       }
     }
     if (!json && command === 'status')
-      io.out(statusSummary(result.payload as Parameters<typeof statusSummary>[0]))
+      io.out(
+        statusSummary(result.payload as Parameters<typeof statusSummary>[0], {
+          ...io.terminal,
+          all: options['--all'] === true,
+        }),
+      )
     else emitCommand(command, result.payload, io, json)
     return result.code
   } catch (error) {

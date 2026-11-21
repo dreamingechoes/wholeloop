@@ -69,9 +69,13 @@ describe('status summary', () => {
             kind: 'initiative',
             title: 'Find tasks by title',
             owner: 'Ada',
-            status: 'active',
+            status: 'open',
             updatedAt: '2026-11-16T10:00:00.000Z',
-            flow: { next: 'write-spec', available: true, pending: [{ id: 'approve-spec' }] },
+            flow: {
+              next: 'write-spec',
+              available: true,
+              pending: [{ id: 'approve-spec', state: 'actionable' }],
+            },
           },
           {
             id: 'init-5e6f7a8b',
@@ -83,12 +87,8 @@ describe('status summary', () => {
           },
         ],
       }),
-    ).toBe(`init-1a2b3c4d  initiative  active  Find tasks by title
-  owner Ada · updated 2026-11-16
-  next: write-spec · waiting on 1 decision
-init-5e6f7a8b  initiative  closed  Old idea
-  updated 2026-10-01
-  next: none
+    ).toBe(`Waiting on you
+init-1a2b3c4d Find tasks by title · specify · 1 decision
 
 1 unread message. Add --json for the full status.`)
   })

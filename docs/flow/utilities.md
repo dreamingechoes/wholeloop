@@ -59,35 +59,36 @@ Go?       [ Go ]  [ Only slice-work ]  [ Change the plan ]
 
 ```console
 $ wl status
-init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
-  owner Demo Owner · updated 2026-11-17
-  next: frame-problem
+In progress
+init-3cf1140a Find tasks by title in … · frame
 
 0 unread messages. Add --json for the full status.
 ```
 
-In your client, the skill groups the same data by what is waiting on you:
+The core groups the same tree by **Waiting on you**, **Due** and **In progress**, then by the most recent observation. Your client forwards its plain text. A parent stays beside its children and follows their most urgent state; it shows an active child separately without advancing its own work.
 
 ![status: an illustrative example session in a coding client](../assets/terminal/session-status.gif)
 
-*Illustrative: the example session below, animated. Its wording depends on your client and model.*
+*Illustrative: synthetic stored work rendered by the same core tree. A recorded failure is historical evidence, not a new check.*
 
 The same session as text:
 
 ```text
 > /wholeloop:status
 
-Waiting on you
-  approve      init-41c2 spec "orders date filter"           since 2 days
-  test it      slice-0d4e (green)                             wl open slice-0d4e
-  ramp         scope-a9e0 at 10% · criteria met               re-check was due today
-Due checkpoints
-  D+30         scope-7c21 "CSV export"                        measure-impact scope-7c21
 In progress
-  build        slice-77ab · round 2 of 4 verify               started 14 min ago
+init-00000001 Search orders · review · 1/1 children open · via slice-00000001
+  └ scope-00000001 Date filter · review · 1/2 children open · via slice-00000001
+    └ slice-00000001 Accept a date range · review · review 1/3 FAIL recorded, 1…
+
+0 unread messages. Add --json for the full status.
 ```
 
-`status <id>` zooms into one item; `--json` prints the same data for scripts and dashboards. Status shows stored items, owners, step plans, pending decisions, unread message counts, and workspaces and measurement schedules when there are any. It never marks messages as read, and it never polls a live service to guess what was deployed.
+`status <id>` zooms into one item; **`--all`** includes closed work. A closed parent remains as context when it has an open descendant. JSON retains every selected stored record, including closed ones, and adds the parent link, direct child counts and the tree's plain `display.text`.
+
+An approval is **upcoming** while its producing step is running; it appears in Waiting on you only after that step completes or is explicitly skipped. Check results name their recorded round, verdict and remaining findings; a recorded pass never certifies current workspace bytes. Due checkpoints and workspace state appear beside the item. Rows fit the terminal width; redirected output and client text stay plain, and `NO_COLOR` takes precedence over `FORCE_COLOR`.
+
+Status also retains owners, step plans, measurement schedules and unread message counts in JSON. It never marks messages as read, changes the parent's required approvals or polls a service to guess what was deployed.
 
 ## setup
 

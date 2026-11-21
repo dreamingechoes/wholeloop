@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-21 · P9-10 ✅ · Attention-first status with actionable decisions
+
+- **Changed:** status groups nested work by Waiting on you, Due and In progress, ranks subtrees by attention then recency and clips one row per item to terminal width. Closed rows require --all; JSON retains every selected stored item and gains parent links, direct child counts, pending-decision readiness, recorded gate results, due checkpoints, workspaces and active-child focus. The seven generated status skills forward the same plain tree.
+- **Authority:** status and overview share the approval transaction's producing-step guard. A running step creates an upcoming obligation without asking for approval; the test executes the exact actionable suggestion with its explicit person, outcome and basis. A parent's displayed child never advances the parent's own flow. Recorded checks never certify current workspace bytes.
+- **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) records preserving the frozen overview schema and all selected JSON records, keeping closed ancestor context for open children, and terminal-only colour with NO_COLOR precedence. Filtering machine records, proposing premature approvals and using a child's activity as parent completion were rejected. No task or manual acceptance gap was added.
+- **Cost:** one history read and one configuration observation replace repeated per-item reads; subject histories are indexed for the view while complete global merge proofs remain available. Normal state validation stays fresh. An empty store avoids unrelated configuration validation, and human text renders once. Tests bound subject-read growth at 100/400 items against the reference flow results; no latency improvement is claimed.
+- **Documentation:** README, getting started and utilities show actual synthetic status output. References were regenerated and remained current. The 234214-byte help, 106640-byte core-tour and 58114-byte illustrative status GIFs were regenerated in disposable homes and visually checked.
+- **Verified:** `CHECK PASS in 708s`, 5183 tests in 352 files; the initial `CHECK PASS (fast) in 270s` covered 2052 related tests in 90 files, and the empty-store refinement passed 145 tests in six files in 11s. Sixteen new status cases include compiled text/JSON/--all routes, compatibility, read-only observations and all seven rendered skills. A real local pseudo-terminal passed 40-column clipping, NO_COLOR precedence, FORCE_COLOR=0 and plain redirected FORCE_COLOR=1 output. Early targeted failures exposed an invalid fixture allocation, a recency fixture tie and trimmed tree indentation; corrected runs passed. macOS arm64 locally; required CI supplies Linux coverage. No live model, signed-in client, hosted trial or service call ran.
+
+---
+
 ## 2026-11-21 · P9-09 ✅ · Human command output and explicit raw documents
 
 - **Changed:** ordinary command handlers present structured observations directly as human text. Next, setup, resumption, configuration, profiles, overview, workspaces and catalogs have purpose-specific views; other inspection results use bounded labelled facts. Human watch frames use the overview view and --json retains NDJSON. Formatting adds no state query or JSON round trip.

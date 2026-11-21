@@ -27,7 +27,7 @@ export function displayValue(value: string): string {
 
 // Treat a grapheme as a unit so wrapping cannot split a combining mark or an emoji sequence.
 const segments = new Intl.Segmenter('en', { granularity: 'grapheme' })
-function cells(value: string): number {
+export function terminalCells(value: string): number {
   return [...segments.segment(value)].reduce(
     (width, { segment }) =>
       width +
@@ -42,13 +42,29 @@ function cells(value: string): number {
   )
 }
 
+/** Clip one literal row without splitting a grapheme or exceeding its terminal-cell budget. */
+export function clipText(value: string, width: number): string {
+  // Emoji joiners belong to a grapheme; direction and terminal controls do not.
+  const text = stripVTControlCharacters(value).replace(/[\p{Cc}\p{Cf}\p{Cs}]/gu, (character) =>
+      character === '\u200d' ? character : ' ',
+    ),
+    limit = Math.max(1, Math.floor(width))
+  if (terminalCells(text) <= limit) return text
+  let result = ''
+  for (const { segment } of segments.segment(text)) {
+    if (terminalCells(result + segment) > limit - 1) break
+    result += segment
+  }
+  return `${result}…`
+}
+
 export function wrapText(value: string, prefix = '', continuation = prefix): string[] {
   const lines: string[] = []
   let line = prefix
   let filled = false
   for (const word of displayValue(value).split(' ').filter(Boolean)) {
     const gap = filled ? ' ' : ''
-    if (cells(line + gap + word) <= 80) {
+    if (terminalCells(line + gap + word) <= 80) {
       line += gap + word
       filled = true
       continue
@@ -60,7 +76,7 @@ export function wrapText(value: string, prefix = '', continuation = prefix): str
     }
     // Prefer word boundaries; split only a path or other token that cannot fit on its own.
     for (const { segment } of segments.segment(word)) {
-      if (cells(line) + cells(segment) > 80) {
+      if (terminalCells(line) + terminalCells(segment) > 80) {
         lines.push(line.trimEnd())
         line = continuation
       }
@@ -85,7 +101,9 @@ export function humanLines(value: string): string {
       const literal = stripVTControlCharacters(line.trimStart())
         .replace(/[\p{Cc}\p{Cf}\p{Cs}]/gu, ' ')
         .trimEnd()
-      return cells(prefix + literal) <= 80 ? [prefix + literal] : wrapText(literal, prefix, prefix)
+      return terminalCells(prefix + literal) <= 80
+        ? [prefix + literal]
+        : wrapText(literal, prefix, prefix)
     })
     .join('\n')
 }
@@ -103,7 +121,7 @@ export function progressText(progress: DisplayProgress): string {
   const suffix = ` — ${progress.status} · ${elapsed}`
   let short = ''
   for (const { segment } of segments.segment(label)) {
-    if (cells(short + segment + suffix) > 79) break
+    if (terminalCells(short + segment + suffix) > 79) break
     short += segment
   }
   return `${short}${short === label ? '' : '…'}${suffix}`
@@ -113,7 +131,7 @@ export function renderDisplay(input: Omit<Display, 'schema' | 'text'>): Display 
   const fullHeader = displayValue(input.header)
   let header = ''
   for (const { segment } of segments.segment(fullHeader)) {
-    if (cells(header + segment) > 79) break
+    if (terminalCells(header + segment) > 79) break
     header += segment
   }
   if (header !== fullHeader) header += '…'
@@ -128,12 +146,14 @@ export function renderDisplay(input: Omit<Display, 'schema' | 'text'>): Display 
     ...entry,
     label: displayValue(entry.label),
   }))
-  const width = Math.min(18, Math.max(8, ...rows.map(({ label }) => cells(label) + 2)))
+  const width = Math.min(18, Math.max(8, ...rows.map(({ label }) => terminalCells(label) + 2)))
   const lines = wrapText(header)
   for (const { label, value } of rows) {
-    if (cells(label) > 16) lines.push(...wrapText(label))
+    if (terminalCells(label) > 16) lines.push(...wrapText(label))
     const prefix =
-      cells(label) > 16 ? '  ' : `${label}${' '.repeat(Math.max(0, width - cells(label)))} `
+      terminalCells(label) > 16
+        ? '  '
+        : `${label}${' '.repeat(Math.max(0, width - terminalCells(label)))} `
     lines.push(...wrapText(value, prefix, ' '.repeat(width + 1)))
   }
   if (progress?.length) {

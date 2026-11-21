@@ -20,7 +20,33 @@ export function impactSchedule(
   keys: string[],
   at = new Date().toISOString(),
 ) {
-  const runs = impactRuns(events).filter((run) => run.subject === subject)
+  return schedule(
+    impactRuns(events).filter((run) => run.subject === subject),
+    subject,
+    keys,
+    at,
+  )
+}
+
+/** Batch projections replay the complete journal once, retaining the same checkpoint semantics. */
+export function impactSchedules(events: readonly StateEvent[], keys: string[], at: string) {
+  const grouped = new Map<string, ReturnType<typeof impactRuns>>()
+  for (const run of impactRuns(events)) {
+    const runs = grouped.get(run.subject) ?? []
+    runs.push(run)
+    grouped.set(run.subject, runs)
+  }
+  return new Map(
+    [...grouped].map(([subject, runs]) => [subject, schedule(runs, subject, keys, at)]),
+  )
+}
+
+function schedule(
+  runs: ReturnType<typeof impactRuns>,
+  subject: string,
+  keys: string[],
+  at: string,
+) {
   const record = runs.at(-1)
   if (!record) return undefined
   return {

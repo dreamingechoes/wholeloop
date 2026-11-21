@@ -21,6 +21,14 @@ const code =
     : await adapterInvocation(
         process.argv.slice(2),
         {
+          terminal: {
+            columns: process.stdout.columns,
+            isTTY: process.stdout.isTTY,
+            noColor: process.env.NO_COLOR !== undefined,
+            ...(process.env.FORCE_COLOR === undefined
+              ? {}
+              : { forceColor: process.env.FORCE_COLOR }),
+          },
           out: (text) => process.stdout.write(`${text}\n`),
           err: (text) => process.stderr.write(`${text}\n`),
           flush: async (signal) => {

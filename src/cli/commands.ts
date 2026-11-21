@@ -1662,7 +1662,7 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'status',
     arguments: '[<id>]',
-    options: ['--for <role>', '--reader <id>'],
+    options: ['--for <role>', '--reader <id>', '--all'],
     schema: 'wholeloop/status@1',
     summary: 'Inspect work and pending decisions without mutation',
   },

@@ -186,9 +186,8 @@ Save the initiative ID the run returns. Restart the client and ask for `wl-statu
 
 ```console
 $ wl status
-init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
-  owner Demo Owner · updated 2026-11-17
-  next: frame-problem
+In progress
+init-3cf1140a Find tasks by title in … · frame
 
 0 unread messages. Add --json for the full status.
 ```
