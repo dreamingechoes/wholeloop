@@ -25,6 +25,7 @@ import choiceSchema from '../../../src/research/schemas/sources-v1.json' with { 
 import { ResearchWorkflow } from '../../../src/research/workflow.js'
 import { withClientAttribution } from '../../../src/state/attribution-context.js'
 import { StateStore } from '../../../src/state/store.js'
+import { completeResearch } from '../../support/research.js'
 
 function fixture(action: (value: ReturnType<typeof context>) => void) {
   const directory = realpathSync(mkdtempSync(join(tmpdir(), 'wholeloop-source-choice-')))
@@ -68,7 +69,7 @@ function context(directory: string) {
         openQuestions: [],
         reason: 'Synthetic host has no evidence',
       })
-    workflow.complete(subject)
+    completeResearch(workflow, subject)
     engine.begin('research', { subject, input: 'A second question about this repository' })
   }
   return {

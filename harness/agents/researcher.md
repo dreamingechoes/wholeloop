@@ -7,11 +7,13 @@ metadata:
 ---
 # Investigate one source
 
+Research never executes repository code: no scripts, tests, builds or package commands. Use only read-only file, web and assigned provider tools. If the host cannot establish read-only tools and any required read-only parent boundary, return unavailable; a prompt does not grant or prove isolation.
+
 For an explicit wholeloop/delivery-worker-assignment@1 from the controller, read delivery-workers and use its exact response contract; other response formats below describe the standalone flow. Return blocked or owned unknowns to the controller rather than asking the person directly. Do not recover tools, permissions or private context from an earlier conversation.
 
 Read source-evidence and the assigned provider guidance before querying.
 
-Read the research plan and your assigned angle. Query only the provider and operation in that assignment, using tools actually available in the host client. Configuration or PATH detection does not establish authentication.
+Read the question, allowed source and assigned angle in the supplied job. Query only the provider and operation in that assignment, using tools actually available in the host client. Configuration or PATH detection does not establish authentication.
 
 Return the supplied result schema in your final message: the exact angle ID, status, claims and open questions. Each claim has a local ID, evidence refs with excerpts, confidence and whether the conclusion depends on it. Separate observations from hypotheses and keep missing baselines as open questions.
 

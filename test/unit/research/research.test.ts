@@ -13,6 +13,7 @@ import { researchPlan } from '../../../src/research/plan.js'
 import { renderResearchBrief, researchReport } from '../../../src/research/report.js'
 import { ResearchWorkflow } from '../../../src/research/workflow.js'
 import { StateStore } from '../../../src/state/store.js'
+import { completeResearch } from '../../support/research.js'
 
 function fixture(
   run: (dir: string, engine: FlowEngine, workflow: ResearchWorkflow) => void | Promise<void>,
@@ -142,9 +143,9 @@ describe('source-bound planning and refutation arithmetic', () => {
         angle = p.angles[0]?.id ?? '',
         examined = renderResearchBrief(p, researchReport(p, [result(angle)], [])),
         unexamined = renderResearchBrief(p, researchReport(p, [result(angle, false)], []))
-      expect(examined).toContain(`active refutations: 0/${p.refutations}`)
+      expect(examined).toContain(`refuted by 0 of ${p.verifiers} (drops at ${p.refutations})`)
       // Found by the first live EVAL-10 trial: both judges read the count as verification.
-      expect(unexamined).not.toContain('active refutations')
+      expect(unexamined).not.toContain('refuted by')
       expect(unexamined).toContain('not load-bearing, so not independently examined')
     }))
   it.each([3, 5, 7, 9])(
@@ -169,7 +170,9 @@ describe('source-bound planning and refutation arithmetic', () => {
         })
         expect(report.openQuestions).toHaveLength(1)
         expect(report.openQuestions[0]?.missing).toContain(votes[0]?.reason)
-        expect(renderResearchBrief(p, report)).toContain('Confidence: low; active refutations: 1/')
+        expect(renderResearchBrief(p, report)).toContain(
+          `refuted by 1 of ${p.verifiers} (drops at ${p.refutations})`,
+        )
         expect(source.claims[0]?.confidence).toBe('high')
       }),
   )
@@ -282,11 +285,11 @@ describe('native and sequential research workflows', () => {
           '## Question\nForged\n## Owner\nAlex\n## Claims\nMade up\n## Dropped claims\nNone\n## Open questions\nNone',
         ),
       ).toThrow('aggregated report')
-      const completed = workflow.complete(id)
+      const completed = completeResearch(workflow, id)
       expect(completed.report.dropped).toHaveLength(p.angles.length)
       expect(completed.report.claims).toHaveLength(0)
       const brief = engine.store.files.read(completed.receipt.artifact)
-      expect(brief).toContain('active refutations: 2/2')
+      expect(brief).toContain('refuted by 2 of 3 (drops at 2)')
       engine.store.rebuild()
       expect(engine.store.files.read(completed.receipt.artifact)).toBe(brief)
       expect(() => workflow.examine(id, vote('unknown', 1, 'refute'))).toThrow('Begin research')
@@ -354,7 +357,19 @@ describe('native and sequential research workflows', () => {
         )
         cli('research', 'submit', '--for', id, '--file', file)
       }
-      const completed = cli('research', 'complete', '--for', id)
+      const context = cli('research', 'complete', '--for', id)
+      const completed = cli(
+        'research',
+        'complete',
+        '--for',
+        id,
+        '--basis',
+        context.basis,
+        '--answer',
+        'No source was available in the fixture.',
+        '--recommendation',
+        'Supply an available source before relying on an answer.',
+      )
       expect(completed.report.claims).toEqual([])
       expect(completed.report.openQuestions).toHaveLength(p.angles.length)
       expect(

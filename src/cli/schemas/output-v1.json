@@ -13676,6 +13676,25 @@
         "jobs",
         "examinations"
       ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/research-conclusion-context@1"
+        }
+      },
+      "required": [
+        "schema",
+        "status",
+        "subject",
+        "run",
+        "basis",
+        "report",
+        "inputSchema",
+        "certainty",
+        "text"
+      ]
     }
   ],
   "$defs": {

@@ -2,7 +2,7 @@
 
 > **TL;DR** — Splits a question into **angles**, investigates each one against a real source in parallel, lets a challenger try to refute the claims the conclusion rests on, and hands back a **brief**: claims with evidence and confidence, plus the open questions nothing could answer. Optional in the flow; useful on its own any day.
 
-Independent angles run concurrently at every interaction pace when the client supports native fan-out; otherwise the same assignments run sequentially. Actual native overlap and authenticated sources still need live-client evidence.
+Independent angles run concurrently at every interaction pace when the client supports native fan-out; otherwise the same assignments run sequentially. Actual native overlap, permission enforcement and authenticated sources still need live-client evidence. Research uses only read-only tools and never runs repository code; an unproven permission boundary leaves the evidence unavailable.
 
 ## At a glance
 
@@ -48,7 +48,7 @@ flowchart TD
 2. **Ask once and remember.** Keep the choice for this run, this repository or your user configuration. A remembered list replaces detection. Changing a pinned source set starts a new run.
 3. **Never fabricated.** A source that is not configured, not authenticated or returns nothing becomes an **open question** with what is missing and who might have it.
 4. **Cross-examination is bounded.** Only the claims each angle's conclusion rests on are challenged; a claim falls only on **two active refutations**, so a silent verifier cannot delete a real finding.
-5. **The brief has a fixed shape**, checked by `wl step complete` before it is recorded.
+5. **The answer stays in the brief.** The conductor writes Answer and Recommendation from the retained claims and unknowns. `research complete` binds that prose to the exact evidence, computes confidence and unchecked work, and stores one report with the answer first. It cannot replace the evidence or reuse a conclusion after that evidence changes.
 
 The first plan view returns `needs-sources`, access labels and suggested providers, with no worker jobs. It distinguishes native tools, MCP declared in this client, configuration in another client, an executable alone and unavailable access. These labels do not prove authentication. Once sources are selected, the plan view returns pending `jobs` and `examinations`. Each assignment includes its question, exact allowed source, angle or original claim, inline result schema and final-message destination. Start independent jobs before joining native handles; launch examination slots after the source phase has joined. Another verifier's vote is never part of an assignment. The conductor validates and submits the returned results.
 
@@ -91,9 +91,17 @@ Selected sources (3) — remembered in .wholeloop/config.yml
 ▸ challenger cross-examining 4 load-bearing claims…
 ✗ dropped 1 claim — 2 of 3 verifiers refuted it (single-week sample)
 
+Answer
+Returning customers need search and filters to find older orders.
+
+Recommendation
+Add search to the orders list, then measure time to find an order.
+
+Confidence: low.
+Not checked: no baseline for "time to find"; source claims not independently examined.
+
 Produced
   Research brief   brief-7f3a    wl open brief-7f3a
-Open questions     1             no baseline for "time to find"
 Next (optional)    /wholeloop:frame-problem --from brief-7f3a
 ```
 
@@ -132,12 +140,14 @@ wl research plan --for brief-0123abcd --sources native-code,native-web --remembe
 wl research submit --for brief-0123abcd --file /path/to/source-result.json --json
 wl research examine --for brief-0123abcd --file /path/to/examination.json --json
 wl research complete --for brief-0123abcd --json
+wl research complete --for brief-0123abcd --basis <context-basis> --answer "<answer>" --recommendation "<recommendation>" --json
 ```
 
 - **Attach or resume.** `step begin research --parent <initiative-or-scope>` attaches a new brief, and its owner becomes a known fact. `--for` resumes an existing brief.
 - **Source choice.** `--sources` takes comma-separated provider IDs or a JSON array; `[]` selects no sources. `--remember run` keeps the choice only in the external journal; `project` (also `repository`) writes `.wholeloop/config.yml`; `user` writes your wholeloop user configuration. Without a remembered choice, planning only offers candidates. A terminal outside an installed adapter may name `--client`; a packaged adapter already supplies its identity.
 - **Claims.** Each claim carries evidence references with excerpts, a confidence and whether the conclusion rests on it (*load-bearing*). The versioned schemas in `src/research/schemas/` define source results and votes.
 - **Verifiers.** Each verifier returns a reasoned `refute`, `confirm` or `uncertain`; a refutation needs evidence. The plan pins the number of verifiers (`research.verifiers`: 3, 5, 7 or 9; default 3) and its strict-majority threshold, so changing the setting later does not change a run.
+- **Author the conclusion.** The first `research complete` returns the current report, input schema and `basis`, without closing the run. Supply that basis and the conductor’s `--answer` and `--recommendation`; stale evidence requires a fresh context. The receipt’s `text` opens with the answer and includes recommendation, core-derived confidence, unchecked work and the same stored brief. Without `--json`, the command prints that text directly.
 - **Append-only.** Source results and examinations cannot be replaced within a run; start a new run to revise them. `research complete` builds the brief from what was recorded, and a different final artifact is refused.
 - **Gaps stay visible.** A missing source result becomes an open question with an owner. A missing or uncertain examination keeps the claim, at low confidence, and a duplicated verifier counts once.
 - **Independence is the client's job.** The core cannot check that verifiers ran in separate sessions; the client assigns them.

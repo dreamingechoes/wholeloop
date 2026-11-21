@@ -30,6 +30,11 @@ import { closeLearningScope } from '../learning/finalize.js'
 import { publicationPlan } from '../providers/publication.js'
 import { pullRequestReceipt } from '../pull-requests/workflow.js'
 import { rampReceipt } from '../ramp/workflow.js'
+import {
+  type ResearchConclusion,
+  researchTitle,
+  validateConclusion,
+} from '../research/conclusion.js'
 import { researchBrief } from '../research/report.js'
 import { reviewReceipt } from '../review/workflow.js'
 import { checkScopePlan, parseScopePlan, scopeContext } from '../scopes/contract.js'
@@ -403,7 +408,7 @@ export class FlowEngine {
               : parent
                 ? { parent: parent.id }
                 : {}),
-            title: payload.input ?? '',
+            title: name === 'research' ? researchTitle(payload.input ?? '') : (payload.input ?? ''),
             owner: payload.owner ?? '',
             body: payload.input ?? '',
           },
@@ -467,7 +472,11 @@ export class FlowEngine {
     content: string,
     outcome?: FrameOutcome,
     framingReview?: FrameReview,
+    researchConclusion?: ResearchConclusion,
   ) {
+    if (researchConclusion && name !== 'research')
+      throw new CliError('Research conclusions apply only to research')
+    if (researchConclusion) validateConclusion(researchConclusion)
     if (framingReview && name !== 'frame-problem')
       throw new CliError('Framing review applies only to frame-problem')
     const step = stepDefinition(name)
@@ -614,9 +623,12 @@ export class FlowEngine {
           append,
         })
       }
-      if (name === 'research' && content !== researchBrief(events, subject, run))
+      if (
+        name === 'research' &&
+        (!researchConclusion || content !== researchBrief(events, subject, run, researchConclusion))
+      )
         throw new CliError(
-          'Complete research through the aggregated report; do not replace its evidence',
+          'Complete research through the aggregated report and a bound answer; do not replace its evidence',
           EXIT.precondition,
         )
       const path = `items/${subject}/artifacts/${name}/${run}.md`

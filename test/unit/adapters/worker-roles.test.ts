@@ -10,6 +10,43 @@ const core = '#!/usr/bin/env node\nconsole.log("fixture core")\n'
 const canonical = () => bundledCanonical()
 
 describe.each(ADAPTERS)('$id role handoffs', (adapter) => {
+  it('keeps both research roles read-only and refuses unproven native boundaries', () => {
+    const generated = generateAdapter(adapter.id, canonical(), core, '0.0.0')
+    for (const role of ['researcher', 'challenger']) {
+      const text = generated.files.get(adapter.paths('agent', role))?.content ?? ''
+      const { body, allowed } = renderedRoleTools(text)
+      expect(allowed.shell, role).toBe(false)
+      if (adapter.id === 'codex') {
+        expect(allowed.write).toBeUndefined()
+        expect(body).toContain('read-only parent')
+      } else {
+        expect(allowed.write, role).toBe(false)
+        expect(allowed.read, role).toBe(true)
+      }
+      expect(body).toContain('Research never executes repository code')
+      expect(body).toContain('return unavailable')
+    }
+  })
+  it.each(['researcher', 'challenger'])(
+    'rejects a write or shell capability added to %s',
+    (role) => {
+      for (const capability of ['write', 'shell']) {
+        const source = canonical(),
+          path = `harness/agents/${role}.md`
+        source.set(
+          path,
+          (source.get(path) ?? '').replace(
+            'wholeloop.capabilities: read web',
+            `wholeloop.capabilities: read web ${capability}`,
+          ),
+        )
+        expect(() => generateAdapter(adapter.id, source, core, '0.0.0')).toThrow(
+          'Research roles require only read and web capabilities',
+        )
+      }
+    },
+  )
+
   it('preserves launch-before-join instructions in every read-only fan-out', () => {
     const generated = generateAdapter(adapter.id, canonical(), core, '0.0.0')
     for (const skill of ['research', 'review-code', 'verify-works', 'measure-impact']) {

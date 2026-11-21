@@ -12,7 +12,7 @@ import { cursorAdapter } from './cursor.js'
 import { geminiAdapter } from './gemini.js'
 import { hookArtifacts } from './hooks.js'
 import { codexAdapter, copilotAdapter, opencodeAdapter } from './portable.js'
-import { roleToolProblems } from './role-tools.js'
+import { researchRoleProblems, roleToolProblems } from './role-tools.js'
 import { canonicalRoles, roleInvocationName, roleReferences } from './roles.js'
 import artifactSchema from './schemas/artifacts-v1.json' with { type: 'json' }
 
@@ -76,6 +76,8 @@ export function generateAdapter(
       }
     } else if (agent && adapter.omitAgents?.includes(agent)) continue
     else if (agent) {
+      const sourceProblems = researchRoleProblems(agent, content)
+      if (sourceProblems.length) throw new Error(`${id}/${agent}: ${sourceProblems.join('; ')}`)
       agents.push(adapter.name('agent', agent))
       const path = adapter.paths('agent', agent)
       const rendered = adapter.renderAgent(agent, content)

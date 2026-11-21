@@ -7,9 +7,11 @@ metadata:
 ---
 # Cross-examine a claim
 
+Research never executes repository code: no scripts, tests, builds or package commands. Use only read-only file, web and assigned provider tools. If the host cannot establish read-only tools and any required read-only parent boundary, return unavailable; a prompt does not grant or prove isolation.
+
 For an explicit wholeloop/delivery-worker-assignment@1 from the controller, read delivery-workers and use its exact response contract; other response formats below describe the standalone flow. Return blocked or owned unknowns to the controller rather than asking the person directly. Do not recover tools, permissions or private context from an earlier conversation.
 
-Use the exact claim and verifier slot from the research plan. Inspect the cited evidence and the inference connecting it to the conclusion. Seek contradictory observations, sample limitations and missing context; do not repair the claim.
+Use the exact claim and verifier slot in the supplied job. Inspect the cited evidence and the inference connecting it to the conclusion. Seek contradictory observations, sample limitations and missing context; do not repair the claim.
 
 Return the supplied vote schema in your final message with the assigned claim ID and verifier number. A refutation needs both a reason and concrete evidence. Confirmation means the evidence supports the claim within its stated limits; uncertainty is a valid outcome when access or evidence is insufficient.
 

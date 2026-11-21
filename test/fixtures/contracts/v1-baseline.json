@@ -429,7 +429,9 @@
     "schema:wholeloop/adapter-invocation@1": "d236d8d4e317d4342ef604454c7a3bcaf85a74e7c31ddffa221e0879d397e217",
     "output:wholeloop/adapter-invocation@1": "fe1645266c10289db95bb478b1dd58d1e0faecca7232fcabb8967df94816d21f",
     "schema:wholeloop/research-sources@1": "837c1e2c9d9bc453bd7b12fd1b8f3d0f80c01535f13ecb12fe2a759dc0dccb68",
-    "output:wholeloop/research-sources@1": "0178235df3dd40765dadb64b198d7524b5674645ce71c52fa4ccfee1e8c39184"
+    "output:wholeloop/research-sources@1": "0178235df3dd40765dadb64b198d7524b5674645ce71c52fa4ccfee1e8c39184",
+    "schema:wholeloop/research-conclusion@1": "09cdd6b82d4698f93c2d979a5d5581b0af33c4ce07194935f4fd2d1ad23ebdc6",
+    "output:wholeloop/research-conclusion-context@1": "269393730348044b0c9d2afe95cd4ecce49453d7272eebc2369ed45dcbe416ea"
   },
   "commands": [
     {

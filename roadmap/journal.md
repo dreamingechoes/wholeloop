@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-21 · P9-06 ✅ · Research opens with an authored answer
+
+- **Changed:** public completion returns an evidence-bound conclusion context before recording the conductor's Answer and Recommendation. The core checks freshness again inside completion, preserves the aggregate and stores the prose in the existing artifact event. The receipt opens with the same answer, recommendation, derived confidence and unchecked work; no separate synthesis artifact is needed.
+- **Presentation:** confirmations collapse to one line per claim; disputes, uncertainty reasons and unique Verifier evidence remain visible. Refutation counts distinguish all assigned verifiers from the dropping threshold. Missing retained evidence explicitly prevents a checked-looking result; short default titles retain the full question in the body.
+- **Read-only:** generation refuses write/shell capabilities for researchers and challengers on all seven adapters. Their assignments and instructions forbid repository code, tests, builds and package commands; an unproven native boundary returns unavailable. Criterion 1 stays unchecked for actual native permission observations, including inherited Codex parent and external-tool permissions, in manual verification.
+- **Decision:** [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md) records bound authored prose, core-derived certainty and immutable evidence. Replacement aggregates, stale conclusions, fabricated deterministic narrative and another runtime state file were rejected. Existing step/event declarations are unchanged; only two new input/output fingerprints were added.
+- **New task:** P9-23 covers the separate private research controller, which still emits an evidence ledger without an authored conclusion. It follows the original task order; the original tasks are not reordered and the full answer-first outcome remains open for that endpoint. The roadmap grows to 139 tasks.
+- **Verified:** `CHECK PASS in 694s`, 4981 tests in 348 files; `CHECK PASS (fast) in 359s`, 2096 related tests in 95 files. Focused suites passed 777 tests in 21 files, with seven conclusion snapshots and two updated assignment snapshots reviewed. The first fast gate failed at harness enforcement because the new mapped conclusion rule lacked a protocol declaration; the corrected gate passed. Generated references remained current; the 204570-byte illustrative GIF was regenerated, matched to its page transcript and checked visually. macOS arm64 locally; Linux remains for required CI, and no native model or source call ran.
+
+---
+
 ## 2026-11-21 · P9-05 ✅ · Sources chosen before research starts
 
 - **Changed:** the first research plan offers access-labelled candidates with code and web suggested, without pinning angles or starting jobs. Explicit --sources accepts provider IDs or JSON arrays; an explicit empty list is a real choice. Configured sources replace detection, and conflicting choices require a new run.

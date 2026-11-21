@@ -1,0 +1,203 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`derives confirmed certainty from observations, not from authored prose 1`] = `
+{
+  "answer": "The handler rejects empty input with status 400.",
+  "confidence": "high",
+  "notChecked": [],
+  "recommendation": "Keep the explicit empty-input check and document its response.",
+  "text": "Answer
+The handler rejects empty input with status 400.
+
+Recommendation
+Keep the explicit empty-input check and document its response.
+
+Confidence: high.
+Not checked: None reported.",
+}
+`;
+
+exports[`derives missing certainty from observations, not from authored prose 1`] = `
+{
+  "answer": "The handler rejects empty input with status 400.",
+  "confidence": "low",
+  "notChecked": [
+    "3 independent verifier response(s) missing",
+  ],
+  "recommendation": "Keep the explicit empty-input check and document its response.",
+  "text": "Answer
+The handler rejects empty input with status 400.
+
+Recommendation
+Keep the explicit empty-input check and document its response.
+
+Confidence: low.
+Not checked: 3 independent verifier response(s) missing",
+}
+`;
+
+exports[`derives unavailable certainty from observations, not from authored prose 1`] = `
+{
+  "answer": "The handler rejects empty input with status 400.",
+  "confidence": "unknown",
+  "notChecked": [
+    "No retained claim supports an answer.",
+    "native-code: No source result received",
+  ],
+  "recommendation": "Keep the explicit empty-input check and document its response.",
+  "text": "Answer
+The handler rejects empty input with status 400.
+
+Recommendation
+Keep the explicit empty-input check and document its response.
+
+Confidence: unknown.
+Not checked: No retained claim supports an answer.; native-code: No source result received",
+}
+`;
+
+exports[`derives uncertain certainty from observations, not from authored prose 1`] = `
+{
+  "answer": "The handler rejects empty input with status 400.",
+  "confidence": "low",
+  "notChecked": [
+    "At least one independent verifier could not establish support or refutation",
+    "2 independent verifier response(s) missing",
+    "native-code:source.code:empty, verifier 1: The fixture branch was inaccessible.",
+  ],
+  "recommendation": "Keep the explicit empty-input check and document its response.",
+  "text": "Answer
+The handler rejects empty input with status 400.
+
+Recommendation
+Keep the explicit empty-input check and document its response.
+
+Confidence: low.
+Not checked: At least one independent verifier could not establish support or refutation; 2 independent verifier response(s) missing; native-code:source.code:empty, verifier 1: The fixture branch was inaccessible.",
+}
+`;
+
+exports[`derives unexamined certainty from observations, not from authored prose 1`] = `
+{
+  "answer": "The handler rejects empty input with status 400.",
+  "confidence": "low",
+  "notChecked": [
+    "native-code:source.code:empty: not independently examined",
+  ],
+  "recommendation": "Keep the explicit empty-input check and document its response.",
+  "text": "Answer
+The handler rejects empty input with status 400.
+
+Recommendation
+Keep the explicit empty-input check and document its response.
+
+Confidence: low.
+Not checked: native-code:source.code:empty: not independently examined",
+}
+`;
+
+exports[`keeps dispute reasons and unique verifier evidence without repeating confirmations or citations 1`] = `
+"# Research brief
+
+## Answer
+
+The handler rejects empty input with status 400.
+
+## Recommendation
+
+Keep the explicit empty-input check and document its response.
+
+Confidence: low.
+
+Not checked: Independent counterevidence disputes the current wording: An empty list is a counterexample. The dropping quorum was not reached; support remains unresolved.
+
+## Question
+
+> Does the handler reject an empty input?
+
+## Owner
+
+Fixture owner
+
+## Claims
+
+1 retained claim(s).
+
+### native-code:source.code:empty
+
+Claim: Empty input is rejected.
+
+Status: disputed; retained below the dropping quorum, not established as unqualified fact.
+
+Confidence: low; verifiers: 2 confirm, 1 refute; refuted by 1 of 3 (drops at 2).
+
+Evidence: fixture:handler:1
+
+> Empty input returns status 400.
+
+Verifier 2: refute — An empty list is a counterexample.
+
+Verifier evidence: fixture:empty-list:2
+
+> An empty list reaches the success branch.
+
+## Dropped claims
+
+0 claim(s) met the refutation quorum.
+
+None; silence never refutes a claim.
+
+## Open questions
+
+- What qualification is needed for claim native-code:source.code:empty? — missing: Independent counterevidence disputes the current wording: An empty list is a counterexample. The dropping quorum was not reached; support remains unresolved.; who: Fixture owner
+"
+`;
+
+exports[`shows the authored answer first, preserving one complete evidence-backed artifact through replay 1`] = `
+"# Research brief
+
+## Answer
+
+The handler rejects empty input with status 400.
+
+## Recommendation
+
+Keep the explicit empty-input check and document its response.
+
+Confidence: high.
+
+Not checked: None reported.
+
+## Question
+
+> Does the handler reject an empty input?
+
+## Owner
+
+Fixture owner
+
+## Claims
+
+1 retained claim(s).
+
+### native-code:source.code:empty
+
+Claim: Empty input is rejected.
+
+Confidence: high; verifiers: 3 confirm; refuted by 0 of 3 (drops at 2).
+
+Evidence: fixture:handler:1
+
+> Empty input returns status 400.
+
+## Dropped claims
+
+0 claim(s) met the refutation quorum.
+
+None; silence never refutes a claim.
+
+## Open questions
+
+None reported.
+"
+`;

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wholeloop/research-conclusion@1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "type": "string", "const": "wholeloop/research-conclusion@1" },
+    "basis": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "answer": { "type": "string", "minLength": 1, "maxLength": 16384 },
+    "recommendation": { "type": "string", "minLength": 1, "maxLength": 16384 }
+  },
+  "required": ["schema", "basis", "answer", "recommendation"]
+}

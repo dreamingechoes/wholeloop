@@ -1,5 +1,13 @@
 // Renders a synthesized research report and brief; the CLI workflow and the runner share it.
+
 import type { StateEvent } from '../state/events.js'
+import {
+  conclusionBasis,
+  conclusionText,
+  type ResearchConclusion,
+  researchCertainty,
+  validateConclusion,
+} from './conclusion.js'
 import type { AngleResult, Claim, Refutation, ResearchPlan } from './contracts.js'
 
 export function researchState(events: readonly StateEvent[], subject: string, run: string) {
@@ -105,36 +113,87 @@ export function researchReport(
   }
 }
 
-export function researchBrief(events: readonly StateEvent[], subject: string, run: string): string {
+export function researchBrief(
+  events: readonly StateEvent[],
+  subject: string,
+  run: string,
+  conclusion?: ResearchConclusion,
+): string {
   const { plan, results, votes } = researchState(events, subject, run)
-  return renderResearchBrief(plan, researchReport(plan, results, votes))
+  return renderResearchBrief(plan, researchReport(plan, results, votes), conclusion)
 }
 
-/** Pure rendering of a synthesized report; the CLI workflow and the runner share it. */
+/** Older private reports remain evidence ledgers until their conductor supplies a conclusion. */
 export function renderResearchBrief(
   plan: ResearchPlan,
   report: ReturnType<typeof researchReport>,
+  conclusion?: ResearchConclusion,
 ): string {
-  const renderClaim = (claim: (typeof report.claims)[number]) =>
-    [
-      `### ${claim.id}`,
-      `Claim: ${claim.text}`,
+  if (conclusion) validateConclusion(conclusion, conclusionBasis(plan, report))
+  const oneLine = (text: string) => text.replace(/\s+/g, ' ').trim()
+  const evidence = (label: string, entry: { ref: string; excerpt: string }) =>
+    `${label}: ${oneLine(entry.ref)}\n\n${entry.excerpt
+      .split(/\r?\n/)
+      .map((line) => `> ${line}`)
+      .join('\n')}`
+  const renderClaim = (claim: (typeof report.claims)[number]) => {
+    const counts = ['confirm', 'refute', 'uncertain']
+      .map((outcome) => ({
+        outcome,
+        count: claim.examinations.filter((vote) => vote.outcome === outcome).length,
+      }))
+      .filter(({ count }) => count)
+    const missing = plan.verifiers - claim.examinations.length
+    const votes = [
+      ...counts.map(({ outcome, count }) => `${count} ${outcome}`),
+      ...(missing ? [`${missing} missing`] : []),
+    ].join(', ')
+    const keyOf = (entry: { ref: string; excerpt: string }) =>
+      JSON.stringify([entry.ref, entry.excerpt])
+    const sourceEvidence = new Set(claim.evidence.map(keyOf))
+    const seen = new Set<string>()
+    const verifierEvidence = claim.examinations.flatMap((vote) =>
+      vote.evidence.flatMap((entry) => {
+        const key = keyOf(entry)
+        if (seen.has(key) || (vote.outcome !== 'refute' && sourceEvidence.has(key))) return []
+        seen.add(key)
+        return [evidence('Verifier evidence', entry)]
+      }),
+    )
+    return [
+      `### ${oneLine(claim.id)}`,
+      `Claim: ${oneLine(claim.text)}`,
       ...(claim.refutations > 0 && !claim.dropped
         ? [
             'Status: disputed; retained below the dropping quorum, not established as unqualified fact.',
           ]
         : []),
-      // A claim the worker did not mark load-bearing is never examined. Printing
-      // a refutation count for it read as a verified claim in the first live
-      // trial, and both delegated judges rejected the brief for it.
       claim.loadBearing
-        ? `Confidence: ${claim.confidence}; active refutations: ${claim.refutations}/${plan.refutations}.`
+        ? `Confidence: ${claim.confidence}; verifiers: ${votes}; refuted by ${claim.refutations} of ${plan.verifiers} (drops at ${plan.refutations}).`
         : `Confidence: ${claim.confidence}, as the source worker stated it; not load-bearing, so not independently examined.`,
-      ...claim.evidence.map((entry) => `Evidence: ${entry.ref}\n\n${entry.excerpt}`),
-      ...claim.examinations.map(
-        (entry) =>
-          `Verifier ${entry.verifier}: ${entry.outcome} — ${entry.reason}${entry.evidence.map((evidence) => `\n\nRefutation evidence: ${evidence.ref}\n\n${evidence.excerpt}`).join('')}`,
-      ),
+      ...claim.evidence.map((entry) => evidence('Evidence', entry)),
+      ...claim.examinations
+        .filter((vote) => vote.outcome === 'refute')
+        .map((vote) => `Verifier ${vote.verifier}: refute — ${oneLine(vote.reason)}`),
+      ...verifierEvidence,
     ].join('\n\n')
-  return `# Research brief\n\n## Question\n\n${plan.question}\n\n## Owner\n\n${plan.owner}\n\n## Claims\n\n${report.claims.length} retained claim(s).\n\n${report.claims.map(renderClaim).join('\n\n') || 'No supported claims were returned.'}\n\n## Dropped claims\n\n${report.dropped.length} claim(s) met the refutation quorum.\n\n${report.dropped.map(renderClaim).join('\n\n') || 'None; silence never refutes a claim.'}\n\n## Open questions\n\n${report.openQuestions.map((entry) => `- ${entry.question} — missing: ${entry.missing}; who: ${entry.who}`).join('\n') || 'None reported.'}\n`
+  }
+  const certainty = researchCertainty(report)
+  const uncertainty = report.claims.flatMap((claim) =>
+    claim.examinations
+      .filter((vote) => vote.outcome === 'uncertain')
+      .map(
+        (vote) =>
+          `- Verifier ${vote.verifier} for ${oneLine(claim.id)} — not checked: ${oneLine(vote.reason)}`,
+      ),
+  )
+  const authored = conclusion
+    ? `## Answer\n\n${conclusionText(conclusion.answer)}\n\n## Recommendation\n\n${conclusionText(conclusion.recommendation)}\n\nConfidence: ${certainty.confidence}.\n\nNot checked: ${certainty.notChecked.join('; ') || 'None reported.'}\n\n`
+    : ''
+  return `# Research brief\n\n${authored}## Question\n\n${plan.question
+    .split(/\r?\n/)
+    .map((line) => `> ${line}`)
+    .join(
+      '\n',
+    )}\n\n## Owner\n\n${oneLine(plan.owner)}\n\n## Claims\n\n${report.claims.length} retained claim(s).\n\n${report.claims.map(renderClaim).join('\n\n') || 'No supported claims were returned.'}\n\n## Dropped claims\n\n${report.dropped.length} claim(s) met the refutation quorum.\n\n${report.dropped.map(renderClaim).join('\n\n') || 'None; silence never refutes a claim.'}\n\n## Open questions\n\n${report.openQuestions.map((entry) => `- ${oneLine(entry.question)} — missing: ${oneLine(entry.missing)}; who: ${oneLine(entry.who)}`).join('\n') || 'None reported.'}${uncertainty.length ? `\n${uncertainty.join('\n')}` : ''}\n`
 }

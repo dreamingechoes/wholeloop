@@ -21,6 +21,8 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 - [ ] P9-05: in each signed-in native client, confirm that the source question precedes every unremembered research fan-out, code and web are suggested, a remembered list replaces detection, and only selected sources are queried. Confirm actual MCP tool availability and authentication separately from declaration labels. Seven-client configuration and rendered-skill fixtures pass; they do not establish live access.
 
+- [ ] P9-06: observe native researcher/challenger tools on all seven clients and confirm that no repository code executes. On inherited-permission clients, establish the actual read-only parent and external-tool set before delegation; otherwise the result must be unavailable. Confirm that the conductor authors the conclusion and shows the stored answer-first receipt, without a separate synthesis artifact. Static role denial, stale-basis checks, replay and built-CLI output pass with fixtures; native isolation remains unverified.
+
 ### P9-20 baseline capture
 
 - [ ] On P9-20 revision `2927dc0d329ed60ef931ff2c5174066a334378a9`, before the UX fixes, run the six-step evaluation on Codex and Claude Code using dedicated signed-in homes; retain native traces, client versions and the source revision outside repositories. No live experience run has been performed. See [evaluation instructions](../test/evals/experience/README.md).

@@ -24,7 +24,15 @@ Selected sources (3) — remembered in .wholeloop/config.yml
 ▸ challenger cross-examining 4 load-bearing claims…
 ✗ dropped 1 claim — 2 of 3 verifiers refuted it (single-week sample)
 
+Answer
+Returning customers need search and filters to find older orders.
+
+Recommendation
+Add search to the orders list, then measure time to find an order.
+
+Confidence: low.
+Not checked: no baseline for "time to find"; source claims not independently examined.
+
 Produced
   Research brief   brief-7f3a    wl open brief-7f3a
-Open questions     1             no baseline for "time to find"
 Next (optional)    /wholeloop:frame-problem --from brief-7f3a

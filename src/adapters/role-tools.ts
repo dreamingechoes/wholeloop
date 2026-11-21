@@ -115,3 +115,17 @@ export function roleToolProblems(content: string): string[] {
     .filter((kind) => allowed[kind] === false || exactDenied.has(kind))
     .map((kind) => `Instructions require the disabled ${kind} interface`)
 }
+
+/** A research role must never become a writer through a canonical capability edit. */
+export function researchRoleProblems(role: string, content: string): string[] {
+  if (!['researcher', 'challenger'].includes(role)) return []
+  const header = frontmatter(content)
+  const metadata = header && isObject(header.metadata) ? header.metadata : {}
+  const capabilities = String(metadata['wholeloop.capabilities'] ?? '')
+    .trim()
+    .split(/\s+/)
+  return capabilities.includes('read') &&
+    capabilities.every((capability) => ['read', 'web'].includes(capability))
+    ? []
+    : ['Research roles require only read and web capabilities']
+}

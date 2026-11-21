@@ -80,7 +80,7 @@ describe('unattended research route (P6-33)', () => {
           const { synthesis, text } = brief(store, digest)
           expect(synthesis.outcome).toBe(uncertainty === 'blocked' ? 'blocked' : 'unknowns')
           if (state === 'completed') {
-            expect(text).toContain('Confidence: low; active refutations: 1/2')
+            expect(text).toContain('refuted by 1 of 3 (drops at 2)')
             expect(text).toContain('The cited behavior has a documented exception.')
           }
         },
@@ -125,7 +125,7 @@ describe('unattended research route (P6-33)', () => {
         expect(states).not.toContain('paused')
         const stored = brief(store, digest)
         expect(stored.synthesis.outcome).toBe('complete')
-        expect(stored.text).toContain('## Question\n\nFind tasks by title.')
+        expect(stored.text).toContain('## Question\n\n> Find tasks by title.')
         expect(stored.text).toContain('https://docs.example/index')
         expect(stored.text).toContain('- Outcome: research-report-complete')
         expect(stored.text).toContain('publication not performed; human approval not recorded')
@@ -260,7 +260,7 @@ describe('unattended research route (P6-33)', () => {
           expect(synthesis.outcome).toBe(stored)
           // The refuted claim stays visible with its counterevidence.
           expect(text).toContain('1 claim(s) met the refutation quorum.')
-          expect(text).toContain('Refutation evidence: https://bench.example/run')
+          expect(text).toContain('Verifier evidence: https://bench.example/run')
           expect(text).toContain(
             'Identical excerpts under different references count as one source:\n\n- https://docs.example/index, https://mirror.example/index',
           )
