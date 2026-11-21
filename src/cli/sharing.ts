@@ -6,8 +6,9 @@ import { SharingWorkflow } from '../sharing/workflow.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitCommand } from './presentation.js'
-import { sharedRead } from './sharing-read.js'
+import { sharedObservation, sharedRead } from './sharing-read.js'
 
 export async function sharingCommand(
   command: string,
@@ -22,6 +23,10 @@ export async function sharingCommand(
     if (!result) throw new Error(`Provide ${name}`)
     return result
   }
+  const observation = (ref: string, provider: string, kind: string) =>
+    options['--stdin'] === true
+      ? sharedObservation(jsonInput(options, { limit: 2 * 1024 * 1024 }), ref, provider, kind)
+      : sharedRead(required('--file'), ref, provider, kind)
   const workflow = new SharingWorkflow(new FlowEngine(new StateStore(), root))
   let result: unknown
   let code: number = EXIT.ok
@@ -31,7 +36,7 @@ export async function sharingCommand(
     const provider = required('--provider')
     const kind = required('--kind')
     if (kind !== 'docs' && kind !== 'tracker') throw new Error('Choose --kind docs|tracker')
-    const adopted = workflow.importRead(ref, sharedRead(required('--file'), ref, provider, kind), {
+    const adopted = workflow.importRead(ref, observation(ref, provider, kind), {
       provider,
       kind,
       ...(value('--owner') ? { owner: value('--owner') as string } : {}),
@@ -47,14 +52,16 @@ export async function sharingCommand(
       const mode = required('--mode')
       if (mode !== 'local' && mode !== 'shared') throw new Error('Choose --mode local|shared')
       let targets: SharedTarget[] = workflow.report(subject).targets
-      if (value('--file')) {
-        try {
-          const raw = readFileSync(required('--file'), 'utf8')
-          if (Buffer.byteLength(raw) > 64 * 1024) throw new Error()
-          targets = JSON.parse(raw)
-        } catch {
-          throw new Error('Cannot read bounded target array; contents omitted')
-        }
+      if (hasJsonInput(options)) {
+        targets = jsonInput(options, {
+          limit: 65536,
+          readFile: (file) => {
+            const raw = readFileSync(file, 'utf8')
+            if (Buffer.byteLength(raw) > 65536)
+              throw new Error('Cannot read bounded target array; contents omitted')
+            return raw
+          },
+        }) as SharedTarget[]
         if (!Array.isArray(targets)) throw new Error('Shared destinations must be a target array')
       }
       result = workflow.setMode(subject, mode, required('--by'), targets)
@@ -66,7 +73,7 @@ export async function sharingCommand(
       const ref = required('--ref')
       const entry = workflow.report(subject).publications.find((entry) => entry.key === key)
       if (!entry) throw new Error('Choose an exact retained outbox key')
-      const read = sharedRead(required('--file'), ref, entry.target.provider, entry.target.kind)
+      const read = observation(ref, entry.target.provider, entry.target.kind)
       result = await workflow.reconcile(
         subject,
         key,

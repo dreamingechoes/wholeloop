@@ -1,5 +1,4 @@
 // `wl sync`: reconciles merged pull requests with delivery and trackers.
-import { readFileSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import { FlowEngine } from '../flow/engine.js'
 import type { OperationResult } from '../providers/operations.js'
@@ -10,6 +9,7 @@ import { SyncWorkflow } from '../sync/workflow.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitCommand } from './presentation.js'
 
 export async function syncCommand(
@@ -23,9 +23,9 @@ export async function syncCommand(
   const prune = options['--prune'] ?? 'on'
   if (!['on', 'off'].includes(String(prune))) throw new Error('Use --prune on|off')
   let input: unknown
-  if (typeof options['--file'] === 'string') {
+  if (hasJsonInput(options)) {
     try {
-      input = JSON.parse(readFileSync(options['--file'], 'utf8'))
+      input = jsonInput(options)
     } catch {
       throw new Error('Cannot read normalized sync observations; contents omitted')
     }

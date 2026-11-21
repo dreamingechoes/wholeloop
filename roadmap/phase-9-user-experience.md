@@ -372,15 +372,17 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-22 · Fewer calls and files per step
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
 
 **Goal** — A step does its bookkeeping in as few `wl` calls as possible, and the person does not watch the agent write JSON files.
 
 **Acceptance criteria:**
 
-- [ ] Small decision and result payloads (frame decision, review answers, worker results, normalized responses) are accepted on standard input or as answers; files remain for large artifacts only.
-- [ ] Commands that always run together in a step are one call (for example beginning a step and returning its plan).
-- [ ] Skills write any remaining scratch files quietly in one scratch directory, never echoing their contents.
+- [x] Small decision and result payloads (frame decision, review answers, worker results, normalized responses) are accepted on standard input or as answers; files remain for large artifacts only.
+- [x] Commands that always run together in a step are one call (for example beginning a step and returning its plan).
+- [x] Skills write any remaining scratch files quietly in one scratch directory, never echoing their contents.
+
+**Evidence** — Sixteen cases in `test/unit/cli/json-input.test.ts` exercise real stdin pipes and legacy files against the same framing decision/final-review, gate result/vote and normalized observation contracts; malformed/empty/oversize input, literal dash filenames and conflicting rationale input are refused without echoing contents or changing state. Research begin returns its first plan without bypassing questions; ready-only framing schemas are isolated from caller mutation, and scratch paths are outside repositories and the private store without eager creation. Canonical command flags and all seven renders are checked. The fixture-only experience counter records four bookkeeping calls reduced to two; live timing/quota calibration remains in the existing manual baseline. `CHECK PASS in 701s`: 5199 tests in 353 files; related fast gates passed 2852 tests in 140 files in 522s and 886 tests in 58 files in 223s. [ADR-0003](../docs/decisions/0003-deterministic-core-cli.md) records the explicit input mode, retained guards and artifact ownership. Four generated references remain current; existing human recordings are unchanged. No new manual gap or task was added.
 
 **Tests** — Command tests for standard-input payloads against the same schemas as files; the experience check counts tool calls per step.
 

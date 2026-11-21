@@ -8,4 +8,6 @@ Before producing an artifact, show display.text from the step command. Load sele
 
 After a successful command, show display.text, including produced artifacts and open questions. A returned wrapper's result carries the command display. Distinguish observed results from unavailable checks. Preserve an error's exit code and missing action; never present it as a successful result.
 
-Only `wl` writes runtime state. Draft artifacts in a temporary location outside repositories and pass them to `step complete`; never edit projections directly. The next step is a suggestion until its availability and decisions are checked.
+Only `wl` writes runtime state. Draft large artifacts quietly in the returned scratch directory and pass them to `step complete`; never edit projections directly. The next step is a suggestion until its availability and decisions are checked.
+
+- ⛔ `quiet-step-inputs` — stream small non-secret decisions, worker results and normalized responses through --stdin, using the host input field or a quoted here-document with a delimiter absent from the payload. Never interpolate JSON into shell arguments or echo it. Keep remaining artifact files in the returned scratch directory, create it only when needed, and never write runtime state or scratch inside a repository. Reuse returned plans, schemas and assignments rather than calling again for the same observation; a changed round still needs fresh input.

@@ -1,0 +1,95 @@
+{
+  "schema": "wholeloop/experience-trace@1",
+  "provenance": "synthetic",
+  "client": "codex",
+  "step": "research",
+  "wallMs": 1000,
+  "exitCode": 0,
+  "chosenSources": [],
+  "requiredQuestions": [],
+  "events": [
+    {
+      "atMs": 0,
+      "event": {
+        "type": "thread.started",
+        "thread_id": "synthetic-bookkeeping"
+      }
+    },
+    {
+      "atMs": 1,
+      "event": {
+        "type": "turn.started"
+      }
+    },
+    {
+      "atMs": 100,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "command-0",
+          "type": "command_execution",
+          "command": "wl step begin research",
+          "exit_code": 0
+        }
+      }
+    },
+    {
+      "atMs": 200,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "command-1",
+          "type": "command_execution",
+          "command": "wl research plan",
+          "exit_code": 0
+        }
+      }
+    },
+    {
+      "atMs": 300,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "command-2",
+          "type": "command_execution",
+          "command": "write result.json",
+          "exit_code": 0
+        }
+      }
+    },
+    {
+      "atMs": 400,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "command-3",
+          "type": "command_execution",
+          "command": "wl research submit --file result.json",
+          "exit_code": 0
+        }
+      }
+    },
+    {
+      "atMs": 600,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "answer",
+          "type": "agent_message",
+          "text": "Research preparation is ready."
+        }
+      }
+    },
+    {
+      "atMs": 700,
+      "event": {
+        "type": "turn.completed",
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 10,
+          "cached_input_tokens": 0
+        }
+      }
+    }
+  ]
+}

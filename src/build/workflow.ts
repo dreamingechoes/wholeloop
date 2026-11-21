@@ -278,6 +278,7 @@ export class BuildWorkflow {
     const workspace = new WorktreeManager(this.engineFor(subject)).create(subject, options)
     return {
       schema: 'wholeloop/build-prepare@1',
+      scratch: started.payload.scratch,
       preflight,
       run: started.payload.run,
       workspace: workspace.record,

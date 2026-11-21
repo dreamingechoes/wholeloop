@@ -89,6 +89,7 @@ export class LaunchWorkflow {
     })
     return {
       schema: 'wholeloop/launch-begin@1',
+      scratch: begun.payload.scratch,
       status: 'planned' as const,
       subject,
       run,

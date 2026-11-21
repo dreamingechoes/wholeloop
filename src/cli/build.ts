@@ -1,5 +1,4 @@
 // `wl build route`, `agree`, `plan` and related subcommands: builder plans, agreements and receipts for build-slice.
-import { readFileSync } from 'node:fs'
 import { BUILDER_PLAN_SCHEMA, type BuilderPlan } from '../build/contracts.js'
 import { BuildWorkflow } from '../build/workflow.js'
 import { parseCriteria } from '../definition/criteria.js'
@@ -8,6 +7,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitStep } from './presentation.js'
 
 export function buildCommand(
@@ -32,7 +32,7 @@ export function buildCommand(
       const file = value('--criteria')
       const by = value('--by')
       const owner = value('--owner')
-      if (!file || !by || !owner)
+      if ((!file && options['--stdin'] !== true) || !by || !owner)
         throw new CliError('Provide --criteria, --owner and --by after the person agrees')
       const ref = value('--issue')
       const revision = value('--revision')
@@ -40,7 +40,7 @@ export function buildCommand(
       if (!ref && revision) throw new CliError('--revision requires --issue')
       payload = workflow.agree(subject, owner, {
         by,
-        criteria: parseCriteria(JSON.parse(readFileSync(file, 'utf8'))),
+        criteria: parseCriteria(jsonInput({ '--file': file, '--stdin': options['--stdin'] })),
         source: ref
           ? { kind: 'issue', ref, revision: revision ?? '' }
           : { kind: 'sentence', ref: subject },
@@ -52,11 +52,11 @@ export function buildCommand(
         ...(value('--after') ? { after: value('--after') as string } : {}),
       })
     else if (action === 'plan') {
-      if (!value('--file') || !value('--basis'))
+      if (!hasJsonInput(options) || !value('--basis'))
         throw new CliError('Provide --file <builder-plan.json> and the prepared --basis snapshot')
       payload = workflow.recordPlan(
         subject,
-        JSON.parse(readFileSync(value('--file') ?? '', 'utf8')) as BuilderPlan,
+        jsonInput(options) as BuilderPlan,
         value('--basis') ?? '',
       )
     } else payload = { schema: 'wholeloop/build-complete@1', receipt: workflow.complete(subject) }

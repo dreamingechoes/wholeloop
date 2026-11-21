@@ -14,6 +14,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitStep } from './presentation.js'
 
 export async function impactCommand(
@@ -65,15 +66,15 @@ export async function impactCommand(
   else if (command === 'measure requests')
     payload = await impactReadRequests(workflow, subject ?? '')
   else if (command === 'measure observe') {
-    if (!value('--file')) throw new Error('Provide --file <normalized-read-responses.json>')
+    if (!hasJsonInput(options)) throw new Error('Provide --file <normalized-read-responses.json>')
     const requests = await impactReadRequests(workflow, subject ?? '')
     payload = await workflow.observe(
       subject ?? '',
-      impactResponseHost(read(value('--file') ?? ''), requests),
+      impactResponseHost(jsonInput(options), requests),
     )
   } else if (command === 'measure format') {
-    if (!value('--file')) throw new Error('Provide --file <report-layout.json>')
-    payload = workflow.format(subject ?? '', read(value('--file') ?? '') as ImpactLayout[])
+    if (!hasJsonInput(options)) throw new Error('Provide --file <report-layout.json>')
+    payload = workflow.format(subject ?? '', jsonInput(options) as ImpactLayout[])
   } else if (command === 'measure complete')
     payload = { schema: 'wholeloop/impact-complete@1', ...workflow.complete(subject ?? '') }
   else if (command === 'measure schedule') payload = workflow.schedule(subject ?? '')
