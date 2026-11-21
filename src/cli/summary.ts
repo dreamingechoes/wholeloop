@@ -41,41 +41,7 @@ export function doctorSummary(report: { status: string; checks: readonly DoctorC
   )
 }
 
-interface StatusItem {
-  id: string
-  kind: string
-  title: string
-  owner?: string
-  status: string
-  updatedAt: string
-  flow: { next: string | null; available: boolean; pending: readonly { id: string }[] }
-}
-
-export function statusSummary(payload: {
-  items: readonly StatusItem[]
-  unreadCount: number
-}): string {
-  if (!payload.items.length)
-    return "No stored work yet. Ask your coding client for wl-frame-problem, or run 'wl next <idea>'."
-  const items = payload.items.flatMap((item) => [
-    `${item.id}  ${item.kind}  ${item.status}  ${item.title}`,
-    `  ${[item.owner ? `owner ${item.owner}` : undefined, `updated ${item.updatedAt.slice(0, 10)}`]
-      .filter(Boolean)
-      .join(' · ')}`,
-    `  next: ${
-      item.flow.next
-        ? `${item.flow.next}${item.flow.available ? '' : ' (not available from the core yet)'}`
-        : 'none'
-    }${item.flow.pending.length ? ` · waiting on ${plural(item.flow.pending.length, 'decision')}` : ''}`,
-  ])
-  return humanLines(
-    [
-      ...items,
-      '',
-      `${plural(payload.unreadCount, 'unread message')}. Add --json for the full status.`,
-    ].join('\n'),
-  )
-}
+export { statusSummary } from '../display/status.js'
 
 interface InstallationSummary {
   storeAccess?: { file: string; snippet: string }

@@ -4,7 +4,7 @@ import { findBudget } from '../delivery/budget-events.js'
 import { budgetUsage, unmeteredDeliveryWork } from '../delivery/budget-policy.js'
 import { deliveryEffects } from '../delivery/effect-events.js'
 import { deliveryAttempts } from '../delivery/reducer.js'
-import { itemFlow } from '../flow/plan.js'
+import { decisionProducer, readFlows } from '../flow/plan.js'
 import { STEPS } from '../flow/registry.js'
 import { impactSchedule } from '../impact/schedule.js'
 import { deliveryRunner } from '../runner/events.js'
@@ -177,7 +177,8 @@ function itemOrder(view: OverviewInput) {
 }
 
 export function projectOverview(view: OverviewInput) {
-  const attention: Attention[] = [],
+  const flows = readFlows(view.stateEvents, view.configuration.additions),
+    attention: Attention[] = [],
     attentionKeys = new Set<string>(),
     add = (
       reason: AttentionReason,
@@ -200,7 +201,7 @@ export function projectOverview(view: OverviewInput) {
     items = itemOrder(view).map((id) => {
       const item = view.items.get(id)
       if (!item) throw new Error('Overview item unavailable; contents omitted')
-      const flow = itemFlow(view.stateEvents, id, view.configuration.additions),
+      const flow = flows.plan(id),
         pending = flow.pending.map((decision) => ({
           ...decision,
           id: publicDecision(decision.id),
@@ -208,6 +209,8 @@ export function projectOverview(view: OverviewInput) {
         blockedBy = blockingDependencies(view.stateEvents, id)
       if (item.status === 'open') {
         for (const decision of flow.pending) {
+          if (decisionProducer(flows.history(decision.subject), decision.subject, decision.id))
+            continue
           const command: NextCommand = genericDecisions.has(decision.id)
             ? {
                 argv: [
@@ -227,7 +230,11 @@ export function projectOverview(view: OverviewInput) {
                 ],
               }
             : inspect('status', id)
-          add('item-decision', 'item', decision.subject, [command], decision)
+          add('item-decision', 'item', decision.subject, [command], {
+            id: decision.id,
+            basis: decision.basis,
+            subject: decision.subject,
+          })
         }
         if (blockedBy.length)
           add('blocked-dependency', 'item', id, [inspect('status', id)], blockedBy)

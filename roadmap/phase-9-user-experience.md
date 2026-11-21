@@ -201,7 +201,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-10 · Status and overview for many items
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-09 · **Release:** 1.2.0
+**Status:** 🔄 · **Size:** M · **Depends on:** P9-09 · **Release:** 1.2.0
 
 **Goal** — `wl status` stays readable with many initiatives, scopes and slices.
 

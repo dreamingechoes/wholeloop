@@ -165,9 +165,8 @@ You can read the same state from a terminal:
 
 ```console
 $ wl status init-3cf1140a
-init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
-  owner Demo Owner · updated 2026-11-17
-  next: frame-problem
+In progress
+init-3cf1140a Find tasks by title in … · frame
 
 0 unread messages. Add --json for the full status.
 ```
@@ -182,7 +181,7 @@ init-3cf1140a  initiative  open  Find tasks by title in a fictional task app
 
 State lives under `~/.local/state/wholeloop`, or `$XDG_STATE_HOME/wholeloop` when that variable is set. Every session must see **the same store** to find the same work.
 
-If you put the idea on hold or dropped it, status shows `closed` with no next step. The outcome, the reason and what would reopen it are kept; a new session does not reopen it on its own. [Recovery checks](./tutorials/first-framing.md#recover-in-a-new-session).
+If you put the idea on hold or dropped it, `status --all` shows `closed` with no next step. The outcome, the reason and what would reopen it are kept; a new session does not reopen it on its own. [Recovery checks](./tutorials/first-framing.md#recover-in-a-new-session).
 
 ## Optional configuration
 

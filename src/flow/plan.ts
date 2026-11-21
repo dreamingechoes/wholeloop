@@ -79,10 +79,11 @@ export function decisionTrail(
   return result
 }
 
-export function flowPlan(
+function observedFlowPlan(
   events: readonly StateEvent[],
   subject: string,
-  additions: readonly string[] = [],
+  additions: readonly string[],
+  ready: boolean,
 ) {
   const completed = new Set<StepName>()
   let active: StepName | undefined
@@ -123,7 +124,7 @@ export function flowPlan(
         if (active === entry.data.step) active = undefined
       }
     }
-  if (syncReady(syncState(events), subject))
+  if (ready)
     furthest = Math.max(
       furthest,
       STEPS.findIndex((step) => step.name === 'open-pr'),
@@ -145,22 +146,82 @@ export function flowPlan(
   }
 }
 
-/** The same current and inherited decisions serve status, execution and read-only overview. */
+/** Readiness uses the same producing-step guard as the fresh decision transaction. */
+export function decisionProducer(events: readonly StateEvent[], subject: string, decision: string) {
+  const producer = STEPS.find((step) => step.after.includes(decision))
+  if (!producer) return undefined
+  const latest = events.findLast(
+    (entry) =>
+      entry.subject === subject &&
+      (entry.type === 'step.started' ||
+        entry.type === 'step.completed' ||
+        entry.type === 'step.skipped') &&
+      entry.data.step === producer.name,
+  )
+  return latest?.type === 'step.started' ? producer.name : undefined
+}
+
+export function flowPlan(
+  events: readonly StateEvent[],
+  subject: string,
+  additions: readonly string[] = [],
+) {
+  return observedFlowPlan(events, subject, additions, syncReady(syncState(events), subject))
+}
+
+/** Index one observation only; global merge evidence stays available across subject boundaries. */
+export function readFlows(events: readonly StateEvent[], additions: readonly string[] = []) {
+  const histories = new Map<string, StateEvent[]>(),
+    parents = new Map<string, string>(),
+    state = syncState(events)
+  for (const entry of events) {
+    const history = histories.get(entry.subject) ?? []
+    history.push(entry)
+    histories.set(entry.subject, history)
+    if (entry.type === 'item.created' && entry.data.parent)
+      parents.set(entry.subject, entry.data.parent)
+  }
+  return {
+    history: (subject: string): readonly StateEvent[] => histories.get(subject) ?? [],
+    plan(subject: string) {
+      const plan = observedFlowPlan(
+        histories.get(subject) ?? [],
+        subject,
+        additions,
+        syncReady(state, subject),
+      )
+      const inherited = [],
+        seen = new Set([subject])
+      let parent = parents.get(subject)
+      while (parent) {
+        if (seen.has(parent)) throw new Error('Item parent cycle')
+        seen.add(parent)
+        const id = parent
+        inherited.push(
+          ...decisions(histories.get(id) ?? [], id).map((decision) => ({
+            ...decision,
+            subject: id,
+          })),
+        )
+        parent = parents.get(id)
+      }
+      return {
+        schema: 'wholeloop/step-plan@1',
+        subject,
+        ...plan,
+        pending: [...inherited, ...plan.pending.map((decision) => ({ ...decision, subject }))],
+      }
+    },
+  }
+}
+
+/** Execution and inspection retain the same current and inherited obligations. */
 export function itemFlow(
   events: readonly StateEvent[],
   subject: string,
   additions: readonly string[] = [],
 ) {
-  const plan = flowPlan(events, subject, additions)
-  return {
-    schema: 'wholeloop/step-plan@1',
-    subject,
-    ...plan,
-    pending: [
-      ...decisionTrail(events, subject).filter((decision) => decision.subject !== subject),
-      ...plan.pending.map((decision) => ({ ...decision, subject })),
-    ],
-  }
+  return readFlows(events, additions).plan(subject)
 }
 
 export function remembered(

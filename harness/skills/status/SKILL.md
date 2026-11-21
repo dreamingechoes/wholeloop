@@ -6,7 +6,7 @@ description: Inspect wholeloop items, pending human decisions and unread message
 
 Read the shared output-contract protocol. Read speaking-to-person.
 
-Call `wl status [<id>] --json`. Summarize each item's title, owner and status, its active or next step, pending decisions and unread message count. An empty store is an empty status, not a reason to fabricate a project.
+Call `wl status [<id>] --json` and show `display.text` verbatim. Add `--all` only when closed work was requested. The core groups the tree by actionable decisions, due checkpoints and work in progress; upcoming decisions do not ask for approval. An empty store is an empty status, not a reason to fabricate a project.
 
 For details, use `wl state get <id> --json`, `wl open <id>` or `wl resume <id>
 --json`. These reads leave messages unread. Use explicit message reads only when the person or the workflow requests them.

@@ -51,8 +51,16 @@ import type { StateStore } from '../state/store.js'
 import { verificationCriteria } from '../verification/contracts.js'
 import { verificationReceipt } from '../verification/workflow.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
-import { beginPlan, decisions, decisionTrail, flowPlan, itemFlow, remembered } from './plan.js'
-import { checkShape, decisionBlocks, STEPS, stepDefinition } from './registry.js'
+import {
+  beginPlan,
+  decisionProducer,
+  decisions,
+  decisionTrail,
+  flowPlan,
+  itemFlow,
+  remembered,
+} from './plan.js'
+import { checkShape, decisionBlocks, stepDefinition } from './registry.js'
 
 const newRun = () => `run-${randomBytes(8).toString('hex')}`
 const beginWrite = Symbol('begin-write')
@@ -833,24 +841,9 @@ export class FlowEngine {
     const subject = options.subject
     const by = options.by
     return this.store.transaction((events, append) => {
-      const producer = STEPS.find((step) => step.after.includes(decision))
-      if (producer) {
-        const latest = [...events]
-          .reverse()
-          .find(
-            (entry) =>
-              entry.subject === subject &&
-              (entry.type === 'step.started' ||
-                entry.type === 'step.completed' ||
-                entry.type === 'step.skipped') &&
-              entry.data.step === producer.name,
-          )
-        if (latest?.type === 'step.started')
-          throw new CliError(
-            `Complete ${producer.name} before recording ${decision}`,
-            EXIT.precondition,
-          )
-      }
+      const producer = decisionProducer(events, subject, decision)
+      if (producer)
+        throw new CliError(`Complete ${producer} before recording ${decision}`, EXIT.precondition)
       const required = decisions(
         events,
         subject,

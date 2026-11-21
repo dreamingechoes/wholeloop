@@ -1,5 +1,6 @@
 // Output streams and the exit codes every command returns.
 export interface Io {
+  terminal?: { columns?: number; isTTY?: boolean; noColor?: boolean; forceColor?: string }
   out: (text: string) => void
   err: (text: string) => void
   flush?: (signal?: AbortSignal) => Promise<void>
