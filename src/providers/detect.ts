@@ -59,7 +59,11 @@ export interface McpDeclaration {
   file: string
   enabled: boolean
 }
-export function detectMcp(root: string, home = homedir(), env: NodeJS.ProcessEnv = process.env) {
+export function detectMcpByClient(
+  root: string,
+  home = homedir(),
+  env: NodeJS.ProcessEnv = process.env,
+) {
   const configHome = env.XDG_CONFIG_HOME?.startsWith('/')
     ? env.XDG_CONFIG_HOME
     : join(home, '.config')
@@ -103,9 +107,10 @@ export function detectMcp(root: string, home = homedir(), env: NodeJS.ProcessEnv
     { target: 'gemini', file: join(root, '.gemini/settings.json'), field: 'mcpServers' },
   ]
   const declarations: McpDeclaration[] = []
-  const problems: { file: string; message: string }[] = []
+  const problems: { target: string; file: string; message: string }[] = []
   if (env.GEMINI_CLI_HOME && !isAbsolute(env.GEMINI_CLI_HOME))
     problems.push({
+      target: 'gemini',
       file: 'GEMINI_CLI_HOME',
       message: 'Gemini home override must be absolute; contents omitted',
     })
@@ -116,6 +121,7 @@ export function detectMcp(root: string, home = homedir(), env: NodeJS.ProcessEnv
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT')
         problems.push({
+          target: entry.target,
           file: entry.file,
           message: 'Cannot read MCP configuration; contents omitted',
         })
@@ -143,10 +149,20 @@ export function detectMcp(root: string, home = homedir(), env: NodeJS.ProcessEnv
           })
         }
     } catch {
-      problems.push({ file: entry.file, message: 'Invalid MCP configuration; contents omitted' })
+      problems.push({
+        target: entry.target,
+        file: entry.file,
+        message: 'Invalid MCP configuration; contents omitted',
+      })
     }
   }
   return { declarations, problems }
+}
+
+/** Keep the existing all-client diagnostic payload unchanged. */
+export function detectMcp(root: string, home = homedir(), env: NodeJS.ProcessEnv = process.env) {
+  const { declarations, problems } = detectMcpByClient(root, home, env)
+  return { declarations, problems: problems.map(({ file, message }) => ({ file, message })) }
 }
 
 export function detectProvider(

@@ -64,11 +64,12 @@ function plan(dir: string, verifiers = 3): ResearchPlan {
     registry: loadProviders({ root: dir, user: join(dir, 'user') }),
     declarations: [],
     path: '',
+    sources: ['native-code', 'native-web'],
   })
 }
 
 describe('source-bound planning and refutation arithmetic', () => {
-  it('offers exactly configured or detected source query providers and excludes destinations', () =>
+  it('plans only configured source query providers without adding detected sources', () =>
     fixture((dir) => {
       const root = join(dir, '.wholeloop/providers/support')
       mkdirSync(root, { recursive: true })
@@ -106,17 +107,13 @@ describe('source-bound planning and refutation arithmetic', () => {
           declarations,
           path: '',
         })
-      expect(build([]).angles.map((angle) => angle.provider)).toEqual(['native-code', 'native-web'])
+      expect(build([]).angles).toEqual([])
       const configured = build(['support'])
-      expect(configured.angles.map((angle) => angle.provider)).toEqual([
-        'native-code',
-        'native-web',
-        'support',
-      ])
+      expect(configured.angles.map((angle) => angle.provider)).toEqual(['support'])
       expect(configured.angles.find((angle) => angle.provider === 'support')?.available).toBe(false)
       expect(
         build([], [{ target: 'codex', server: 'support', file: 'fixture', enabled: true }]).angles,
-      ).toHaveLength(3)
+      ).toHaveLength(0)
       expect(build(['missing']).openQuestions[0]?.missing).toContain('no validated query provider')
     }))
 
@@ -239,7 +236,8 @@ describe('native and sequential research workflows', () => {
       const start = engine.begin('research', { input: 'Find evidence for search', owner: 'Alex' })
       const id = start.payload.subject?.id ?? ''
       expect(id).toMatch(/^brief-/)
-      const p = workflow.plan(id)
+      const p = workflow.plan(id, { sources: ['native-code', 'native-web'] })
+      if (p.status !== 'planned') throw new Error('Expected selected research plan')
       expect(p.jobs).toHaveLength(p.angles.length)
       expect(p.jobs[0]).toMatchObject({
         question: p.question,
@@ -293,7 +291,7 @@ describe('native and sequential research workflows', () => {
       expect(engine.store.files.read(completed.receipt.artifact)).toBe(brief)
       expect(() => workflow.examine(id, vote('unknown', 1, 'refute'))).toThrow('Begin research')
       engine.begin('research', { subject: id, input: 'A revised research question' })
-      expect(workflow.plan(id)).toMatchObject({
+      expect(workflow.plan(id, { sources: ['native-code', 'native-web'] })).toMatchObject({
         question: 'A revised research question',
         verifiers: 5,
       })
@@ -333,7 +331,15 @@ describe('native and sequential research workflows', () => {
       }
       const id = cli('step', 'begin', 'research', '--input', 'Why search?', '--owner', 'Alex')
         .subject.id
-      const p = cli('research', 'plan', '--for', id) as ResearchPlan
+      expect(cli('research', 'plan', '--for', id).status).toBe('needs-sources')
+      const p = cli(
+        'research',
+        'plan',
+        '--for',
+        id,
+        '--sources',
+        'native-code,native-web',
+      ) as ResearchPlan
       for (const angle of p.angles) {
         const file = join(dir, 'result.json')
         writeFileSync(

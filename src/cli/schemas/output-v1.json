@@ -13657,6 +13657,25 @@
         }
       },
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "wholeloop/research-sources@1"
+        }
+      },
+      "required": [
+        "schema",
+        "subject",
+        "run",
+        "status",
+        "candidates",
+        "suggested",
+        "unusable",
+        "jobs",
+        "examinations"
+      ]
     }
   ],
   "$defs": {

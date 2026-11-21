@@ -427,7 +427,9 @@
     "output:wholeloop/delivery-ci-continue@1": "f27f6abed74ec3d0cc4552e74d7f18d527d2ee16e3c1a46bd2373a7abd21c130",
     "schema:wholeloop/repository-diff-input@1": "40dc8a252a8c4183fe969f95d2dcb170c7f9b82e860cd81d999e05fcf92b0db2",
     "schema:wholeloop/adapter-invocation@1": "d236d8d4e317d4342ef604454c7a3bcaf85a74e7c31ddffa221e0879d397e217",
-    "output:wholeloop/adapter-invocation@1": "fe1645266c10289db95bb478b1dd58d1e0faecca7232fcabb8967df94816d21f"
+    "output:wholeloop/adapter-invocation@1": "fe1645266c10289db95bb478b1dd58d1e0faecca7232fcabb8967df94816d21f",
+    "schema:wholeloop/research-sources@1": "837c1e2c9d9bc453bd7b12fd1b8f3d0f80c01535f13ecb12fe2a759dc0dccb68",
+    "output:wholeloop/research-sources@1": "0178235df3dd40765dadb64b198d7524b5674645ce71c52fa4ccfee1e8c39184"
   },
   "commands": [
     {

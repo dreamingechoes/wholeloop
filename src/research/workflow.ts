@@ -1,10 +1,16 @@
 // The research step workflow: plan, angle results, refutations and the report.
+import { join } from 'node:path'
+import { ADAPTERS } from '../adapters/generate.js'
 import { CliError } from '../cli/errors.js'
 import { EXIT } from '../cli/io.js'
 import { loadExtensionOptions } from '../config/load.js'
+import { isObject } from '../config/schema.js'
+import { writeSetting } from '../config/write.js'
 import type { FlowEngine } from '../flow/engine.js'
-import { detectMcp } from '../providers/detect.js'
+import { detectMcpByClient } from '../providers/detect.js'
 import { loadProviders } from '../providers/load.js'
+import { sourceCandidates } from '../providers/source-access.js'
+import { currentClientAttribution } from '../state/attribution-context.js'
 import type { StateEvent } from '../state/events.js'
 import { researchAssignments } from './assignments.js'
 import {
@@ -38,41 +44,140 @@ function activeRun(events: readonly StateEvent[], subject: string): string {
 export class ResearchWorkflow {
   constructor(readonly engine: FlowEngine) {}
 
-  plan(subject: string) {
+  plan(
+    subject: string,
+    options: {
+      sources?: readonly string[]
+      remember?: string
+      client?: string
+      path?: string
+      env?: NodeJS.ProcessEnv
+    } = {},
+  ) {
+    const declared = currentClientAttribution()?.client
+    if (options.client && !ADAPTERS.some((adapter) => adapter.id === options.client))
+      throw new CliError('Unknown research client')
+    if (declared && options.client && declared !== options.client)
+      throw new CliError('The research client must match the executing adapter')
+    const client = declared ?? options.client
+    const scope = options.remember === 'repository' ? 'project' : (options.remember ?? 'run')
+    if (!['run', 'project', 'user'].includes(scope))
+      throw new CliError('Remember sources for run, project or user')
+    if (options.remember && options.sources === undefined)
+      throw new CliError('Remembering sources requires an explicit --sources choice')
+    const remember = (sources: readonly string[]) => {
+      const file =
+        scope === 'user' ? this.engine.userFile : join(this.engine.root, '.wholeloop/config.yml')
+      writeSetting(file, ['providers', 'sources'], [...sources].sort())
+      return { scope, file }
+    }
     return this.engine.store.transaction((events, append) => {
       const run = activeRun(events, subject)
       let existing = events.find(
         (entry) =>
           entry.subject === subject && entry.type === 'research.planned' && entry.data.run === run,
       )
-      if (existing?.type !== 'research.planned') {
+      let remembered: { scope: string; file: string } | undefined
+      if (existing?.type === 'research.planned') {
+        const pinned = [...new Set(existing.data.plan.angles.map((angle) => angle.provider))].sort()
+        if (options.sources !== undefined) {
+          const selected = [...options.sources].sort()
+          if (JSON.stringify(selected) !== JSON.stringify(pinned))
+            throw new CliError(
+              'Sources are already pinned; begin a new research run to change them',
+            )
+          if (options.remember && scope !== 'run') remembered = remember(selected)
+        }
+      } else {
         const configuration = this.engine.configuration()
-        const detection = detectMcp(this.engine.root, this.engine.home)
-        if (detection.problems.length)
-          throw new CliError('Resolve MCP configuration problems before planning research')
+        const detection = detectMcpByClient(
+          this.engine.root,
+          this.engine.home,
+          options.env ?? process.env,
+        )
+        if (detection.problems.some((problem) => problem.target === client))
+          throw new CliError(
+            'Resolve MCP configuration problems in the current client before planning research',
+          )
         const item = this.engine.store.get(subject)
         const started = events.find(
           (entry) =>
             entry.subject === subject && entry.type === 'step.started' && entry.data.run === run,
         )
         if (started?.type !== 'step.started') throw new Error('Research run is missing its input')
+        const registry = loadProviders(
+          loadExtensionOptions({ root: this.engine.root, userFile: this.engine.userFile }),
+        )
+        const choices = sourceCandidates({
+          registry,
+          declarations: detection.declarations,
+          client,
+          path: options.path,
+        })
+        const providers = configuration.values.providers
+        const configured =
+          isObject(providers) && Array.isArray(providers.sources)
+            ? (providers.sources as string[])
+            : undefined
+        const selected = options.sources ?? configured
+        if (
+          selected !== undefined &&
+          (new Set(selected).size !== selected.length ||
+            selected.some((id) => !choices.candidates.some((candidate) => candidate.id === id)))
+        )
+          throw new CliError('Select unique source IDs offered by research plan')
         const plan = researchPlan({
           subject,
           run,
           question: started.data.input,
           owner: item.owner,
           configuration: configuration.values,
-          registry: loadProviders(
-            loadExtensionOptions({ root: this.engine.root, userFile: this.engine.userFile }),
-          ),
+          registry,
           declarations: detection.declarations,
+          client,
+          path: options.path,
+          sources: selected ?? [],
+          candidates: choices.candidates,
         })
+        if (selected === undefined)
+          return {
+            ...plan,
+            schema: 'wholeloop/research-sources@1' as const,
+            status: 'needs-sources' as const,
+            client: client ?? 'unknown',
+            ...choices,
+            suggested: choices.candidates
+              .filter(
+                (candidate) =>
+                  candidate.access === 'native' &&
+                  candidate.available &&
+                  candidate.capabilities.length === 1 &&
+                  ((candidate.id === 'native-code' &&
+                    candidate.capabilities[0] === 'source.code') ||
+                    (candidate.id === 'native-web' && candidate.capabilities[0] === 'source.web')),
+              )
+              .map((candidate) => candidate.id),
+            jobs: [],
+            examinations: [],
+            remember: ['run', 'project', 'user'],
+          }
+        if (options.remember && scope !== 'run') remembered = remember(selected)
         append(subject, { type: 'research.planned', data: { run, plan } })
         existing = events.at(-1)
       }
       const state = researchState(events, subject, run)
+      if (existing?.type !== 'research.planned') throw new Error('Research plan was not pinned')
+      const journalFile = this.engine.store.files.path(`journal/${existing.ts.slice(0, 7)}.ndjson`)
+      if (options.remember && scope === 'run') remembered = { scope, file: journalFile }
       return {
         ...state.plan,
+        status: 'planned' as const,
+        selection: {
+          sources: [...new Set(state.plan.angles.map((angle) => angle.provider))].sort(),
+          scope: 'run',
+          file: journalFile,
+        },
+        ...(remembered ? { remembered } : {}),
         ...researchAssignments(state.plan, state.results, state.votes),
       }
     })

@@ -84,6 +84,8 @@ sequenceDiagram
   S->>TL: wl answer docs=notion --remember project
 ```
 
+- **Research sources are a choice.** The research step offers access labels before starting workers and suggests only this codebase and the web. A remembered `providers.sources` list replaces detection; an empty list selects no sources.
+- **Access is client-scoped.** MCP declarations count only for the executing client. Another client's configuration and an executable on `PATH` do not establish a connection here. Unknown MCP servers appear once with the provider guide.
 - **Detection is deterministic.** `wl` reads the client's MCP configuration files and checks executables on `PATH`; it never guesses. `available: true` means declared or configured; whether a server is *signed in* stays `authenticated: false` until the skill checks it with one cheap call. Configuration errors are reported without their contents, and no command from a manifest is run to detect anything.
 - **`wl mcp add <provider> --target <client>`** prints the snippet in the format that client expects. It never edits the client's configuration and never reads a token:
 

@@ -8,16 +8,16 @@ Sources   not configured for this repo yet ↓
 Which sources can I use?                                 (multi-select)
   [x] Web                    native
   [x] This codebase          native
-  [ ] PostHog                ✓ MCP detected in your CLI config
-  [ ] Mixpanel               ✗ not connected — I can show you how to add it
-  [ ] Support tickets        ✗ no provider configured
+  [ ] PostHog                MCP declared in this client; authentication unverified
+  [ ] Mixpanel               unavailable — configure a connection first
 Remember this for:  ( ) just this time  (•) this repo  ( ) always
 
-Angles (3) — "go", "drop 2" or "add …"
+> Use Web, this codebase and PostHog; remember for this repo.
+
+Selected sources (3) — remembered in .wholeloop/config.yml
  1  web       how comparable products expose order history, search and filters
  2  posthog   orders-page usage: searches, time to find, drop-off
  3  codebase  current orders list: filters, pagination, query limits
- —  support   not available → open question
 
 ▸ researcher:web started · researcher:posthog started · researcher:codebase started
 ✓ codebase 3 claims · ✓ posthog 2 claims · ✓ web 4 claims
@@ -26,5 +26,5 @@ Angles (3) — "go", "drop 2" or "add …"
 
 Produced
   Research brief   brief-7f3a    wl open brief-7f3a
-Open questions     2             support tickets unreachable · no baseline for "time to find"
+Open questions     1             no baseline for "time to find"
 Next (optional)    /wholeloop:frame-problem --from brief-7f3a

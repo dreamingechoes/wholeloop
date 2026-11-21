@@ -15,6 +15,8 @@
 # enforced by test/unit/experience/experience.test.ts in the ordinary fixture suite.
 version: 1
 rules:
+  - id: research-person-selects-sources
+    enforcers: [src/providers/source-access.ts#sourceCandidates, src/providers/detect.ts#detectMcpByClient, src/research/plan.ts#researchPlan, src/research/workflow.ts#ResearchWorkflow, src/cli/research.ts#researchCommand, src/config/write.ts#writeSettings, test/unit/research/source-choice.test.ts, test/unit/research/research.test.ts]
   - id: read-only-fanout-joins
     enforcers: [src/workers/schedule.ts#scheduleAssignments, src/workers/assignment.ts#workerAssignment, src/research/assignments.ts#researchAssignments, src/gates/assignments.ts#gateAssignments, harness/workflows/research.ts#runResearch, src/gates/execution.ts, test/unit/workers/schedule.test.ts, test/unit/workers/assignments.test.ts, test/unit/adapters/worker-roles.test.ts, test/unit/profile/profile.test.ts]
   - id: named-assignment-only-workers

@@ -19,8 +19,10 @@ export function writeSettings(
   file: string,
   changes: readonly { path: readonly string[]; value: unknown }[],
 ): void {
-  const existing = readConfig(file, true) ?? { version: 1 }
+  const loaded = readConfig(file, true)
+  const existing = loaded ?? { version: 1 }
   if (!isObject(existing)) throw new Error(`Invalid configuration: ${file}`)
+  const previous = JSON.stringify(existing)
   for (const { path, value } of changes) {
     if (!path.length) throw new Error('A configuration setting needs a key path')
     let target = existing
@@ -37,6 +39,8 @@ export function writeSettings(
   }
   const problems = validate(existing, undefined, file)
   if (problems.length) throw new Error(problems.join('\n'))
+  // Repeating an explicit choice must not rewrite unchanged configuration.
+  if (loaded !== undefined && JSON.stringify(existing) === previous) return
   mkdirSync(dirname(file), { recursive: true, mode: 0o700 })
   const temporary = `${file}.${randomUUID()}.tmp`
   try {

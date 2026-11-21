@@ -8,6 +8,7 @@ import { loadProviders } from '../../../src/providers/load.js'
 import { validateProvider } from '../../../src/providers/manifest.js'
 import { MCP_TARGETS, renderMcp } from '../../../src/providers/mcp.js'
 import { type OperationResult, performOperation } from '../../../src/providers/operations.js'
+import { sourceCandidates } from '../../../src/providers/source-access.js'
 import { querySource, type SourceQuery } from '../../../src/providers/sources.js'
 import { researchPlan } from '../../../src/research/plan.js'
 
@@ -99,7 +100,7 @@ describe('read-only source catalog', () => {
       })
     }))
 
-  it('offers exactly configured or detected sources without requiring live authentication', () =>
+  it('offers detected sources without adding them to the selected research plan', () =>
     fixture((dir) => {
       const { registry } = inputs('posthog', dir)
       const plan = researchPlan({
@@ -112,11 +113,9 @@ describe('read-only source catalog', () => {
         declarations: [],
         path: '',
       })
-      expect(new Set(plan.angles.map((angle) => angle.provider))).toEqual(
-        new Set([...ids, 'native-code', 'native-web']),
-      )
+      expect(new Set(plan.angles.map((angle) => angle.provider))).toEqual(new Set(ids))
       expect(plan.angles.find((angle) => angle.provider === 'posthog')?.available).toBe(false)
-      const detected = researchPlan({
+      const options = {
         subject: plan.subject,
         run: plan.run,
         question: plan.question,
@@ -124,13 +123,18 @@ describe('read-only source catalog', () => {
         configuration: {},
         registry,
         declarations: [{ target: 'codex', server: 'posthog', enabled: true, file: 'fixture' }],
+        client: 'codex',
         path: '',
+      }
+      const offered = sourceCandidates(options)
+      expect(offered.candidates.find((candidate) => candidate.id === 'posthog')).toMatchObject({
+        access: 'available in this client',
+        available: true,
       })
-      expect(detected.angles.map((angle) => angle.provider)).toEqual([
-        'native-code',
-        'native-web',
-        'posthog',
-      ])
+      expect(researchPlan(options).angles).toEqual([])
+      const selected = researchPlan({ ...options, sources: ['posthog'] })
+      expect(selected.angles.map((angle) => angle.provider)).toEqual(['posthog'])
+      expect(selected.angles[0]?.evidence).toContain('authentication are unverified')
     }))
 
   it('renders explicit PostHog tools mode without accepting credential query parameters', () =>

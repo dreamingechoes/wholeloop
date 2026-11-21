@@ -21,8 +21,25 @@ export function researchCommand(
   const workflow = new ResearchWorkflow(new FlowEngine(new StateStore(), root))
   try {
     let payload: unknown
-    if (command === 'research plan') payload = workflow.plan(subject)
-    else if (command === 'research complete') payload = workflow.complete(subject)
+    if (command === 'research plan') {
+      const raw = options['--sources']
+      let sources: string[] | undefined
+      if (typeof raw === 'string') {
+        const value: unknown = raw.trim().startsWith('[')
+          ? JSON.parse(raw)
+          : raw.split(',').map((id) => id.trim())
+        if (!Array.isArray(value) || !value.every((id) => typeof id === 'string' && id.trim()))
+          throw new CliError(
+            'Sources must be a comma-separated list of provider IDs or a JSON array',
+          )
+        sources = value
+      }
+      payload = workflow.plan(subject, {
+        ...(sources !== undefined ? { sources } : {}),
+        ...(typeof options['--remember'] === 'string' ? { remember: options['--remember'] } : {}),
+        ...(typeof options['--client'] === 'string' ? { client: options['--client'] } : {}),
+      })
+    } else if (command === 'research complete') payload = workflow.complete(subject)
     else {
       const file = options['--file']
       if (typeof file !== 'string') throw new CliError('Provide --file <json-report>', EXIT.input)
