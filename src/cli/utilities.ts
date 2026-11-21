@@ -71,7 +71,7 @@ export function utilityCommand(
         if (id && !ITEM_ID.test(id)) throw new CliError('status expects a typed item ID')
         const events = store.events(),
           items = [...replay(events).values()].sort((a, b) => a.id.localeCompare(b.id)),
-          configuration = engine.config(),
+          configuration = items.length ? engine.config() : {},
           decisions = isObject(configuration.flow) ? configuration.flow.decisions : undefined,
           projected = statusItems(items, events, {
             additions:
@@ -95,10 +95,9 @@ export function utilityCommand(
         if (id && !selected.length) throw new Error(`Unknown item: ${id}`)
         result = {
           code: EXIT.ok,
-          payload: {
-            ...payload,
-            display: statusDisplay(payload, { all: options['--all'] === true }),
-          },
+          payload: json
+            ? { ...payload, display: statusDisplay(payload, { all: options['--all'] === true }) }
+            : payload,
         }
       }
     }

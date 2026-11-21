@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { stripVTControlCharacters } from 'node:util'
@@ -350,6 +350,28 @@ describe('status observation and attention tree', () => {
           skill = files.files.get(adapter.paths('skill', 'status'))?.content
         expect(skill, adapter.id).toContain('display.text')
       }
+    }))
+  it('reads an empty store without unrelated configuration validation or creating state', () =>
+    fixture((store, dir) => {
+      mkdirSync(join(dir, '.wholeloop'))
+      writeFileSync(join(dir, '.wholeloop', 'config.yml'), 'version: 999\n')
+      const env = {
+          ...process.env,
+          XDG_STATE_HOME: join(dir, 'state'),
+          XDG_CONFIG_HOME: join(dir, 'config'),
+          WL_WORKSPACE: '',
+        },
+        invoke = (...args: string[]) =>
+          spawnSync(process.execPath, [resolve('dist/wl.mjs'), ...args], {
+            cwd: dir,
+            env,
+            encoding: 'utf8',
+          }),
+        result = invoke('status', '--json')
+      expect(result.status).toBe(0)
+      expect(JSON.parse(result.stdout)).toMatchObject({ items: [], unreadCount: 0 })
+      expect(invoke('config', 'show', '--json').status).not.toBe(0)
+      expect(store.events()).toEqual([])
     }))
   it('indexes one read without weakening global flow results or retaining decisions between observations', () => {
     const rows = [100, 400].map((size) => {

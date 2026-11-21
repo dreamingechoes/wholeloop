@@ -201,16 +201,18 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-10 · Status and overview for many items
 
-**Status:** 🔄 · **Size:** M · **Depends on:** P9-09 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** P9-09 · **Release:** 1.2.0
 
 **Goal** — `wl status` stays readable with many initiatives, scopes and slices.
 
 **Acceptance criteria:**
 
-- [ ] Status payloads gain the parent link and child counts (additive); the human form is a tree grouped by "Waiting on you", "Due", "In progress", sorted by attention then recency, with closed items behind `--all`.
-- [ ] One line per item, truncated to the terminal width; colour only on a terminal, honouring `NO_COLOR` and `FORCE_COLOR`.
-- [ ] Decisions are "upcoming" until their step completes and only actionable ones reach attention and "Waiting on you"; the overview never proposes a command the core will refuse.
-- [ ] The active gate (round, verdict, open findings), due checkpoints and worktrees appear per item; a standalone-created parent follows its active child.
+- [x] Status payloads gain the parent link and child counts (additive); the human form is a tree grouped by "Waiting on you", "Due", "In progress", sorted by attention then recency, with closed items behind `--all`.
+- [x] One line per item, truncated to the terminal width; colour only on a terminal, honouring `NO_COLOR` and `FORCE_COLOR`.
+- [x] Decisions are "upcoming" until their step completes and only actionable ones reach attention and "Waiting on you"; the overview never proposes a command the core will refuse.
+- [x] The active gate (round, verdict, open findings), due checkpoints and worktrees appear per item; a standalone-created parent follows its active child.
+
+**Evidence** — `test/unit/status/status.test.ts` covers nested fixture stores, direct child counts, an upcoming approval inherited by a child, the exact core-accepted suggested approval, a failed recorded review, due checkpoints, workspaces, active-child focus, recency, closed rows and unchanged JSON selection. It snapshots the tree, bounds subject-read growth at 100/400 items and checks all seven generated skills. Compiled CLI tests cover plain text, JSON, --all and empty stores; an actual local pseudo-terminal passed 40-column clipping and colour precedence. `CHECK PASS in 708s`: 5183 tests in 352 files; the initial related gate passed 2052 tests in 90 files in 270s and the bounded empty-store refinement passed in 11s. Three affected GIFs were regenerated and visually checked. [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) records the conservative compatibility and readiness choices. No new manual evidence is required; native client forwarding remains in the existing per-client pass.
 
 **Tests** — Fixture stores with nested items, upcoming decisions and a failed review round; snapshot tests.
 
