@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundledCanonical } from '../adapters/canonical.js'
 import { openCodeVersionProbe } from '../diagnostics/doctor.js'
+import { codexStoreAccess } from '../diagnostics/store-access.js'
 import { TARGETS } from '../installation/contracts.js'
 import { manageInstallation } from '../installation/manage.js'
 import { storePath } from '../state/paths.js'
@@ -30,7 +31,7 @@ export function installationCommand(
       action === 'install' && targets.includes('opencode')
         ? openCodeVersionProbe(process.env, root).version
         : undefined
-    const result = manageInstallation(action, {
+    const installed = manageInstallation(action, {
       context: {
         root,
         home: homedir(),
@@ -45,6 +46,19 @@ export function installationCommand(
       version: VERSION,
       dryRun: options['--dry-run'] === true,
     })
+    const result = {
+      ...installed,
+      ...(action === 'install' && targets.includes('codex')
+        ? {
+            storeAccess: codexStoreAccess(
+              typeof options['--store'] === 'string'
+                ? resolve(root, options['--store'])
+                : storePath(),
+              homedir(),
+            ),
+          }
+        : {}),
+    }
     io.out(json ? JSON.stringify(result) : installationSummary(result))
     return 0
   } catch (error) {

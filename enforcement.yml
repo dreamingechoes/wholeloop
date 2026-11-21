@@ -355,7 +355,7 @@ rules:
   - id: installation-is-not-activation
     enforcers: [src/installation/manage.ts#manageInstallation, src/installation/inspect.ts#inspectInstallation, src/diagnostics/doctor.ts#doctor, test/unit/installation/installation.test.ts]
   - id: diagnostics-observed-availability
-    enforcers: [src/diagnostics/doctor.ts#doctor, src/diagnostics/doctor.ts#versionProbe, src/diagnostics/doctor.ts#probeStore, test/unit/diagnostics/doctor.test.ts]
+    enforcers: [src/diagnostics/doctor.ts#doctor, src/diagnostics/doctor.ts#versionProbe, src/diagnostics/doctor.ts#probeStore, test/unit/diagnostics/doctor.test.ts, src/diagnostics/store-access.ts#inspectCodexStore, src/diagnostics/store-access.ts#codexStoreAccess, test/unit/diagnostics/store-access.test.ts]
   - id: build-topic-commits
     enforcers: [src/guards/assess.ts#guardCommit, src/guards/git-hooks.ts#gitGuards, test/unit/guards/guards.test.ts]
   - id: open-pr-publication-only
@@ -523,7 +523,7 @@ rules:
   - id: missing-input-blocks-mutation
     enforcers: [src/flow/engine.ts#begin, src/flow/engine.ts#activeStep, src/discovery/tree.ts#discover, src/state/events.ts#replay, test/unit/flow/preflight.test.ts, test/unit/state/replay-starts.test.ts, test/unit/discovery/cache-read.test.ts, test/unit/utilities/utilities.test.ts]
   - id: external-runtime-state
-    enforcers: [src/state/paths.ts#assertExternal, src/state/paths.ts#canonicalPath, test/unit/state/path-suffix-performance.test.ts, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, src/state/store.ts#transaction, test/unit/state/projection-writes.test.ts, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts, src/state/events.ts#replayState, src/state/projections.ts#replayProjections, test/unit/state/projection-replay.test.ts, src/state/store.ts#appendBasic, src/state/store.ts#publishProjectionBatch, src/state/projections.ts#replayProjectionSnapshot, test/unit/state/basic-actions-performance.test.ts, src/state/paths.ts#physicalStorePath, test/unit/state/store-root-containment.test.ts]
+    enforcers: [src/state/paths.ts#assertExternal, src/diagnostics/store-access.ts#storeAccessMessage, src/cli/store-error.ts#storeCommandFailure, test/unit/diagnostics/store-access.test.ts, src/state/paths.ts#canonicalPath, test/unit/state/path-suffix-performance.test.ts, src/state/paths.ts#externalStorePath, src/guards/assess.ts#guardStateWrite, src/guards/assess.ts#guardTool, src/guards/assess.ts#guardCommit, src/state/store.ts#transaction, test/unit/state/projection-writes.test.ts, test/unit/state/store.test.ts, test/unit/state/paths.test.ts, test/unit/guards/guards.test.ts, src/state/events.ts#replayState, src/state/projections.ts#replayProjections, test/unit/state/projection-replay.test.ts, src/state/store.ts#appendBasic, src/state/store.ts#publishProjectionBatch, src/state/projections.ts#replayProjectionSnapshot, test/unit/state/basic-actions-performance.test.ts, src/state/paths.ts#physicalStorePath, test/unit/state/store-root-containment.test.ts]
   - id: recorded-step-skips
     enforcers: [src/flow/engine.ts#skip, test/unit/flow/engine.test.ts]
   - id: required-human-decisions

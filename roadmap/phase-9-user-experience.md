@@ -49,15 +49,17 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-01 · A store the client can write
 
-**Status:** ⬜ · **Size:** S · **Depends on:** — · **Release:** 1.2.0
+**Status:** ✅ · **Size:** S · **Depends on:** — · **Release:** 1.2.0
 
 **Goal** — The first command in a sandboxed client succeeds, or says in one sentence what to allow.
 
 **Acceptance criteria:**
 
-- [ ] `EACCES` or `EPERM` on the store maps to exit 3 with a human message naming the store path and, per detected client, the setting that allows it (for Codex, the workspace-write writable roots).
-- [ ] `wl install --target codex` prints that snippet for review; `wl doctor --target codex` reports whether the Codex configuration allows the store.
-- [ ] Troubleshooting has an entry for a sandboxed client that cannot write the store.
+- [x] `EACCES` or `EPERM` on the store maps to exit 3 with a human message naming the store path and, per detected client, the setting that allows it (for Codex, the workspace-write writable roots).
+- [x] `wl install --target codex` prints that snippet for review; `wl doctor --target codex` reports whether the Codex configuration allows the store.
+- [x] Troubleshooting has an entry for a sandboxed client that cannot write the store.
+
+**Evidence** — `CHECK PASS in 773s`, 4815 tests in 341 files. The focused store-access and existing doctor suites passed 45 tests. Both human and JSON subprocess cases returned exit 3 from a genuinely unwritable external-store fixture; synthetic `EACCES` and `EPERM` cases cover all seven client hints and wrapped errors. Configuration fixtures cover absent, matching, parent, sibling, read-only and malformed settings plus project overrides. Installation dry runs returned the review snippet without writing client configuration. The troubleshooting example was captured from the built CLI in a disposable home. ADR-0004 records the read-only configuration boundary; actual native policy remains in the existing per-client manual checks.
 
 **Tests** — Unwritable-store fixture for the message and exit code; doctor fixture with and without the Codex setting.
 

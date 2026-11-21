@@ -63,6 +63,7 @@ import { sharingCommand } from './sharing.js'
 import { slicesCommand } from './slices.js'
 import { specCommand } from './spec.js'
 import { stateCommand } from './state.js'
+import { storeCommandFailure } from './store-error.js'
 import { syncCommand } from './sync.js'
 import { utilityCommand } from './utilities.js'
 import { verificationCommand, verificationSuiteCommand } from './verification.js'
@@ -247,8 +248,13 @@ export function run(argv: readonly string[], io: Io, root = process.cwd()): numb
       }
     })
   } catch (error) {
-    const code = error instanceof CliError ? error.code : EXIT.unexpected
-    const message = error instanceof Error ? error.message : String(error)
+    const storeFailure = storeCommandFailure(error, argv, root)
+    const code = storeFailure
+      ? EXIT.precondition
+      : error instanceof CliError
+        ? error.code
+        : EXIT.unexpected
+    const message = storeFailure ?? (error instanceof Error ? error.message : String(error))
     if (json) io.out(JSON.stringify({ schema: 'wholeloop/error@1', code, message }))
     else io.err(`wl: ${message}`)
     return code
@@ -399,8 +405,14 @@ export async function runAsync(
                   : await verificationSuiteCommand(parsed, root, json, io)
     })
   } catch (error) {
-    const code = error instanceof CliError ? error.code : EXIT.precondition
-    const message = error instanceof Error ? error.message : 'Asynchronous command failed'
+    const storeFailure = storeCommandFailure(error, argv, root)
+    const code = storeFailure
+      ? EXIT.precondition
+      : error instanceof CliError
+        ? error.code
+        : EXIT.precondition
+    const message =
+      storeFailure ?? (error instanceof Error ? error.message : 'Asynchronous command failed')
     if (json) io.out(JSON.stringify({ schema: 'wholeloop/error@1', code, message }))
     else io.err(`wl: ${message}`)
     return code

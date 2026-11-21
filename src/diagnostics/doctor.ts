@@ -14,6 +14,7 @@ import { detectMcp, detectProvider } from '../providers/detect.js'
 import { loadProviders } from '../providers/load.js'
 import { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside, storePath } from '../state/paths.js'
+import { inspectCodexStore, storeAccessMessage } from './store-access.js'
 
 const DEFAULT_TARGETS = ['claude', 'codex', 'opencode', 'copilot'] as const
 export const DOCTOR_TARGETS = [...DEFAULT_TARGETS, 'gemini', 'antigravity', 'cursor'] as const
@@ -157,9 +158,16 @@ export function probeStore(root: string) {
   if (failures.length) throw new AggregateError(failures, 'Store probe or cleanup failed')
 }
 // The repair must change something: suggesting doctor again on the store that just failed
-// fixes nothing. A permission failure on a directory the user owns is restored with chmod;
-// otherwise doctor points at another external store, never the failing one.
-export function storeRepair(store: string, error: unknown, home: string) {
+// fixes nothing. A selected client gets its sandbox remedy first; ordinary filesystem access
+// is restored with chmod for an owned directory, otherwise with another external store.
+export function storeRepair(store: string, error: unknown, home: string, client?: string) {
+  const message = client ? storeAccessMessage(error, store, client) : undefined
+  if (client && message)
+    return {
+      instruction: message,
+      command: ['wl', 'install', '--target', client, '--scope', 'user', '--dry-run'],
+    }
+
   const failures = error instanceof AggregateError ? error.errors : [error]
   const denied = failures.some((failure) =>
     ['EACCES', 'EPERM'].includes((failure as NodeJS.ErrnoException)?.code ?? ''),
@@ -344,9 +352,18 @@ export function doctor(options: DoctorOptions) {
       status: 'fail',
       summary:
         'The store is inside Git, inaccessible or its probe/cleanup failed; no journal was changed.',
-      repair: storeRepair(options.store, error, options.home),
+      repair: storeRepair(
+        options.store,
+        error,
+        options.home,
+        options.targets?.length === 1 ? options.targets[0] : undefined,
+      ),
     })
   }
+  if ((options.targets ?? DEFAULT_TARGETS).includes('codex'))
+    checks.push(
+      inspectCodexStore(options.store, options.root, options.home, options.env ?? process.env),
+    )
   let providerSummary: { id: string; kind: string; available: boolean; authenticated: false }[] = []
   try {
     loadConfig({ root: options.root, ...(options.userFile ? { userFile: options.userFile } : {}) })
