@@ -1534,7 +1534,7 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'research plan',
     arguments: '',
-    options: ['--for <id>'],
+    options: ['--for <id>', '--sources <ids>', '--remember <scope>', '--client <id>'],
     schema: 'wholeloop/research-plan@1',
     summary: 'Plan source angles and independent examination jobs',
   },

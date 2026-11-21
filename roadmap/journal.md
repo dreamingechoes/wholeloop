@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-21 · P9-05 ✅ · Sources chosen before research starts
+
+- **Changed:** the first research plan offers access-labelled candidates with code and web suggested, without pinning angles or starting jobs. Explicit --sources accepts provider IDs or JSON arrays; an explicit empty list is a real choice. Configured sources replace detection, and conflicting choices require a new run.
+- **Access:** MCP declarations count only for the executing client; another client's configuration and a PATH executable establish no connection here. Unknown MCP servers appear once with the provider guide. Suggestions require actual native access and exactly the expected capability, so provider replacements cannot inherit them by name.
+- **Memory:** the existing external plan journal retains run choices; explicit project/user choices use configuration and report their destination. Identical settings do not rewrite files. [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md) records selection before pinning and rejects detected-source unions, foreign access claims and a redundant run preference file.
+- **Documentation:** the source question, remembrance and selected sources now agree in the research page and illustrative transcript. The unsupported extra angle-editing confirmation was corrected to the implemented source choice. session-research.tape was rendered locally, its 186600-byte GIF checked visually, and its transcript matched against the page; generated references remained current.
+- **Verified:** `CHECK PASS in 678s`, 4941 tests in 347 files; `CHECK PASS (fast) in 307s`, 1795 related tests in 78 files. Focused suites passed 662 tests in 12 files, including all seven clients and the CLI; only two new schema/output fingerprints were added. An earlier completed fast gate failed on the old detected-source union expectation, now replaced by separate candidate/selection checks; interrupted runs are excluded from this evidence. macOS arm64 locally; Linux remains for required CI, while actual native access and authentication remain in manual verification. No native or model call ran.
+
+---
+
 ## 2026-11-21 · P9-04 ✅ · Concurrent read-only work and complete joins
 
 - **Changed:** pace stages decisions and writing work; independent read-only assignments launch together at every pace within host capacity. Canonical research, review, verification and measurement skills retain handles and use native joins, without fixed sleeps. Explicit sequential fallback preserves coverage.

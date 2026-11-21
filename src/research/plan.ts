@@ -1,8 +1,8 @@
 // Builds the research plan from a question and the configured sources.
 import { isObject } from '../config/schema.js'
 import type { McpDeclaration } from '../providers/detect.js'
-import { detectProvider } from '../providers/detect.js'
 import type { Registry } from '../providers/load.js'
+import { type SourceCandidate, sourceCandidates } from '../providers/source-access.js'
 import { type ResearchPlan, validatePlan } from './contracts.js'
 
 export function researchPlan(options: {
@@ -13,20 +13,25 @@ export function researchPlan(options: {
   configuration: Record<string, unknown>
   registry: Registry
   declarations: readonly McpDeclaration[]
-  path?: string
+  path?: string | undefined
+  client?: string | undefined
+  sources?: readonly string[]
+  candidates?: readonly SourceCandidate[]
 }): ResearchPlan {
   if (options.registry.problems.length)
     throw new Error('Resolve provider registry problems before planning research')
   const providers = options.configuration.providers
   const configured =
-    isObject(providers) && Array.isArray(providers.sources) ? (providers.sources as string[]) : []
+    options.sources ??
+    (isObject(providers) && Array.isArray(providers.sources) ? (providers.sources as string[]) : [])
   const research = options.configuration.research
   const verifiers =
     isObject(research) && typeof research.verifiers === 'number' ? research.verifiers : 3
+  const candidates = options.candidates ?? sourceCandidates(options).candidates
   const angles = options.registry.providers
     .flatMap(({ manifest }) => {
-      const detection = detectProvider(manifest, options.declarations, options.path)
-      if (!configured.includes(manifest.id) && !detection.available) return []
+      const detection = candidates.find((candidate) => candidate.id === manifest.id)
+      if (!configured.includes(manifest.id) || !detection) return []
       return manifest.capabilities
         .filter(
           (capability) =>

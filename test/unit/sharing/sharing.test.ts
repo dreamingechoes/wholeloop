@@ -323,7 +323,7 @@ describe('URL adoption and explicit shared publication', () => {
         engine.begin('research', { input: 'Who needs shared search?', owner: 'Alex' }).payload
           .subject?.id ?? ''
       const research = new ResearchWorkflow(engine)
-      research.plan(brief)
+      research.plan(brief, { sources: ['native-code', 'native-web'] })
       research.complete(brief)
       expect(sharingState(engine.store.events()).queue.size).toBe(0)
       const id = engine.begin('frame-problem', { from: brief }).payload.subject?.id ?? ''

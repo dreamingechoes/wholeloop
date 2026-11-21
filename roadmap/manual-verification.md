@@ -19,6 +19,8 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 
 - [ ] P9-04: on each native client with fan-out support, retain handles for independent read-only jobs, confirm actual overlap at guided, staged and parallel pace, and collect results through native waits without fixed sleeps. Confirm the explicit sequential fallback on clients without native fan-out. Promise-barrier and rendered-artifact fixtures establish scheduling policy, not live native execution.
 
+- [ ] P9-05: in each signed-in native client, confirm that the source question precedes every unremembered research fan-out, code and web are suggested, a remembered list replaces detection, and only selected sources are queried. Confirm actual MCP tool availability and authentication separately from declaration labels. Seven-client configuration and rendered-skill fixtures pass; they do not establish live access.
+
 ### P9-20 baseline capture
 
 - [ ] On P9-20 revision `2927dc0d329ed60ef931ff2c5174066a334378a9`, before the UX fixes, run the six-step evaluation on Codex and Claude Code using dedicated signed-in homes; retain native traces, client versions and the source revision outside repositories. No live experience run has been performed. See [evaluation instructions](../test/evals/experience/README.md).

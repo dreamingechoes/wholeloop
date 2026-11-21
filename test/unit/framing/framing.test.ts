@@ -114,7 +114,7 @@ describe('complete framing contract', () => {
         engine.begin('research', { input: 'Is order retrieval a problem?', owner: 'Alex' }).payload
           .subject?.id ?? ''
       const research = new ResearchWorkflow(engine)
-      research.plan(brief)
+      research.plan(brief, { sources: ['native-code', 'native-web'] })
       const report = research.complete(brief)
       const framing = engine.begin('frame-problem', { from: brief })
       const id = framing.payload.subject?.id ?? ''
@@ -226,7 +226,7 @@ describe('complete framing contract', () => {
         '--owner',
         'Alex',
       ).value.subject.id
-      cli('research', 'plan', '--for', brief)
+      cli('research', 'plan', '--for', brief, '--sources', 'native-code,native-web')
       expect(cli('research', 'complete', '--for', brief).code).toBe(0)
       const id = cli('step', 'begin', 'frame-problem', '--from', brief).value.subject.id
       const file = join(dir, 'frame.md')

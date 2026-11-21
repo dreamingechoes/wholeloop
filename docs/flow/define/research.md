@@ -27,8 +27,8 @@ Independent angles run concurrently at every interaction pace when the client su
 
 ```mermaid
 flowchart TD
-  Q["question"] --> P["plan angles<br/>one per source, schema-bound"]
-  P --> C{{"confirm angles"}}:::person
+  Q["question"] --> P["offer source providers<br/>with access labels"]
+  P --> C{{"choose sources<br/>and where to remember"}}:::person
   C --> A1["researcher · web"]
   C --> A2["researcher · product analytics"]
   C --> A3["researcher · codebase"]
@@ -44,13 +44,13 @@ flowchart TD
   classDef opt stroke-dasharray:5 3;
 ```
 
-1. **Sources are providers.** The angles on offer are exactly the `source.*` providers you have configured or that `wl` detects. Add a provider and it shows up here, with no change to the step ([extending/providers](../../extending/providers.md)).
-2. **Confirming angles is cheap and optional.** It is a lightweight check, not one of the six decision points: say "go", "drop 2" or "add competitors' mobile apps".
+1. **Sources are a choice.** Before workers start, choose from validated `source.*` providers. The codebase and web are suggested; detection labels the options without selecting them. Add a provider and it appears in the list ([extending/providers](../../extending/providers.md)).
+2. **Ask once and remember.** Keep the choice for this run, this repository or your user configuration. A remembered list replaces detection. Changing a pinned source set starts a new run.
 3. **Never fabricated.** A source that is not configured, not authenticated or returns nothing becomes an **open question** with what is missing and who might have it.
 4. **Cross-examination is bounded.** Only the claims each angle's conclusion rests on are challenged; a claim falls only on **two active refutations**, so a silent verifier cannot delete a real finding.
 5. **The brief has a fixed shape**, checked by `wl step complete` before it is recorded.
 
-The plan view returns pending `jobs` and `examinations`. Each assignment includes its question, exact allowed source, angle or original claim, inline result schema and final-message destination. Start independent jobs before joining native handles; launch examination slots after the source phase has joined. Another verifier's vote is never part of an assignment. The conductor validates and submits the returned results.
+The first plan view returns `needs-sources`, access labels and suggested providers, with no worker jobs. It distinguishes native tools, MCP declared in this client, configuration in another client, an executable alone and unavailable access. These labels do not prove authentication. Once sources are selected, the plan view returns pending `jobs` and `examinations`. Each assignment includes its question, exact allowed source, angle or original claim, inline result schema and final-message destination. Start independent jobs before joining native handles; launch examination slots after the source phase has joined. Another verifier's vote is never part of an assignment. The conductor validates and submits the returned results.
 
 ## Standalone use
 
@@ -75,16 +75,16 @@ Sources   not configured for this repo yet ↓
 Which sources can I use?                                 (multi-select)
   [x] Web                    native
   [x] This codebase          native
-  [ ] PostHog                ✓ MCP detected in your CLI config
-  [ ] Mixpanel               ✗ not connected — I can show you how to add it
-  [ ] Support tickets        ✗ no provider configured
+  [ ] PostHog                MCP declared in this client; authentication unverified
+  [ ] Mixpanel               unavailable — configure a connection first
 Remember this for:  ( ) just this time  (•) this repo  ( ) always
 
-Angles (3) — "go", "drop 2" or "add …"
+> Use Web, this codebase and PostHog; remember for this repo.
+
+Selected sources (3) — remembered in .wholeloop/config.yml
  1  web       how comparable products expose order history, search and filters
  2  posthog   orders-page usage: searches, time to find, drop-off
  3  codebase  current orders list: filters, pagination, query limits
- —  support   not available → open question
 
 ▸ researcher:web started · researcher:posthog started · researcher:codebase started
 ✓ codebase 3 claims · ✓ posthog 2 claims · ✓ web 4 claims
@@ -93,7 +93,7 @@ Angles (3) — "go", "drop 2" or "add …"
 
 Produced
   Research brief   brief-7f3a    wl open brief-7f3a
-Open questions     2             support tickets unreachable · no baseline for "time to find"
+Open questions     1             no baseline for "time to find"
 Next (optional)    /wholeloop:frame-problem --from brief-7f3a
 ```
 
@@ -115,6 +115,8 @@ Next (optional)    /wholeloop:frame-problem --from brief-7f3a
 
 **"It asked me which sources to use — every time?"** Only until you answer with *this repo* or *always*; then it is remembered at that scope.
 
+**"It found an executable or a source in another client."** Neither establishes access in the current client. It remains a labelled option, and selecting it does not switch clients, sign in or grant credentials. A missing connection remains an open question.
+
 **"A source I need is not in the list."** Write a provider manifest for it, usually a few lines pointing at an MCP server ([how](../../extending/providers.md)).
 
 **"Why was a claim dropped that looked right to me?"** The receipt links each dropped claim with the verifiers' reasons. If they were wrong, that is a calibration case worth adding to the eval corpus.
@@ -126,12 +128,14 @@ The commands the skill uses, for scripts and skill authors:
 ```text
 wl step begin research --input "How do people find old orders?" --owner Alex --json
 wl research plan --for brief-0123abcd --json
+wl research plan --for brief-0123abcd --sources native-code,native-web --remember project --json
 wl research submit --for brief-0123abcd --file /path/to/source-result.json --json
 wl research examine --for brief-0123abcd --file /path/to/examination.json --json
 wl research complete --for brief-0123abcd --json
 ```
 
 - **Attach or resume.** `step begin research --parent <initiative-or-scope>` attaches a new brief, and its owner becomes a known fact. `--for` resumes an existing brief.
+- **Source choice.** `--sources` takes comma-separated provider IDs or a JSON array; `[]` selects no sources. `--remember run` keeps the choice only in the external journal; `project` (also `repository`) writes `.wholeloop/config.yml`; `user` writes your wholeloop user configuration. Without a remembered choice, planning only offers candidates. A terminal outside an installed adapter may name `--client`; a packaged adapter already supplies its identity.
 - **Claims.** Each claim carries evidence references with excerpts, a confidence and whether the conclusion rests on it (*load-bearing*). The versioned schemas in `src/research/schemas/` define source results and votes.
 - **Verifiers.** Each verifier returns a reasoned `refute`, `confirm` or `uncertain`; a refutation needs evidence. The plan pins the number of verifiers (`research.verifiers`: 3, 5, 7 or 9; default 3) and its strict-majority threshold, so changing the setting later does not change a run.
 - **Append-only.** Source results and examinations cannot be replaced within a run; start a new run to revise them. `research complete` builds the brief from what was recorded, and a different final artifact is refused.

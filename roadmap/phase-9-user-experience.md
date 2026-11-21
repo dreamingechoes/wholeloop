@@ -115,16 +115,18 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-05 · Research asks which sources to use
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-03 · **Release:** 1.2.0 · **Decision:** amends [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md)
+**Status:** ✅ · **Size:** M · **Depends on:** P9-03 · **Release:** 1.2.0 · **Decision:** amends [ADR-0021](../docs/decisions/0021-journaled-research-plans-and-refutations.md)
 
 **Goal** — Research uses the sources the person chose, which are remembered, and nothing unrelated.
 
 **Acceptance criteria:**
 
-- [ ] `wl research plan` returns candidates with an access label (native, available in this client, configured in another client, executable only) and pins only the chosen ones; `--sources` selects them; the choice is remembered per run, repository or user.
-- [ ] MCP declarations count only for the current client; an executable alone is never preselected; configured sources replace detection instead of adding to it.
-- [ ] MCP servers without a provider are listed once as "not usable yet" with the provider guide.
-- [ ] The research skill asks once, with this codebase and the web preselected, before any worker starts.
+- [x] `wl research plan` returns candidates with an access label (native, available in this client, configured in another client, executable only) and pins only the chosen ones; `--sources` selects them; the choice is remembered per run, repository or user.
+- [x] MCP declarations count only for the current client; an executable alone is never preselected; configured sources replace detection instead of adding to it.
+- [x] MCP servers without a provider are listed once as "not usable yet" with the provider guide.
+- [x] The research skill asks once, with this codebase and the web preselected, before any worker starts.
+
+**Evidence** — `CHECK PASS in 678s`, 4941 tests in 347 files; `CHECK PASS (fast) in 307s`, 1795 related tests in 78 files. The focused source, provider, adoption and compatibility suites passed 662 tests in 12 files. Synthetic fixtures cover all seven clients, every access label, foreign Notion and PATH-only psql, no jobs before selection, explicit and configured choices, empty lists, run/project/user memory, cross-repository user preferences, idempotence, unknown MCP deduplication, provider replacements and actual CLI flags. Only the new choice schema/output fingerprints were added; existing fingerprints are unchanged. The illustrative research recording was regenerated and visually checked. Actual native source selection, MCP tool availability and authentication remain in [manual verification](./manual-verification.md); no live source or model call ran.
 
 **Tests** — Plan tests for each access label and for configured-replaces-detected; a fixture home with `psql` on `PATH` and a Notion MCP declared only for another client.
 
