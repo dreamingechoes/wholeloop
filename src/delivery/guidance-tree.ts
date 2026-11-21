@@ -197,14 +197,11 @@ export function proposeGuidance(
           repository: repository.id,
           slot,
           prompt: question.prompt,
-          options: [
-            ...question.options,
-            { value: 'default', label: 'harness: use wholeloop guidance' },
-          ],
+          options: question.options,
         })
         continue
       }
-      if (resolution.selected && resolution.selected.origin !== 'harness')
+      if (resolution.selected && resolution.selected.ref !== 'default')
         selections.push({ slot, ref: resolution.selected.ref })
     }
     const wanted = new Map<string, { slot: string; ref: string; paths: string[] }>()

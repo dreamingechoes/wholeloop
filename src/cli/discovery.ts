@@ -11,7 +11,7 @@ import { EXIT, type Io } from './io.js'
 
 export function discoveryCommand(
   command: string,
-  { positional }: ReturnType<typeof parseArguments>,
+  { positional, options }: ReturnType<typeof parseArguments>,
   root: string,
   json: boolean,
   io: Io,
@@ -22,7 +22,10 @@ export function discoveryCommand(
       EXIT.input,
     )
   try {
-    const inventory = discover(root, new StateStore().files, homedir())
+    const inventory = discover(root, new StateStore().files, homedir(), {
+      ...(typeof options['--client'] === 'string' ? { client: options['--client'] } : {}),
+      ...(options['--include-other-clients'] ? { includeOtherClients: true } : {}),
+    })
     if (command === 'discover') {
       io.out(
         JSON.stringify(
@@ -31,6 +34,7 @@ export function discoveryCommand(
             fingerprint: inventory.fingerprint,
             cached: inventory.cached,
             user: inventory.user,
+            otherClients: inventory.otherClients,
             warnings: inventory.warnings,
           },
           null,
@@ -50,7 +54,7 @@ export function discoveryCommand(
       ...(binding ? { binding } : {}),
     })
     io.out(JSON.stringify(payload, null, json ? undefined : 2))
-    return payload.questions.length ? EXIT.input : EXIT.ok
+    return payload.selected === null ? EXIT.input : EXIT.ok
   } catch (error) {
     if (error instanceof CliError) throw error
     throw new CliError(error instanceof Error ? error.message : String(error))

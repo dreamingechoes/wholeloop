@@ -73,7 +73,7 @@ export class LearningWorkflow {
     if (questions.length)
       return { schema: 'wholeloop/learning-begin@1', status: 'question' as const, questions }
     if (!leaning || !evidence) throw new Error('Missing decision context')
-    const guidance = learningGuidance(engine)
+    const guidance = learningGuidance(engine, options.subject)
     const { content: _content, ...reference } = guidance
     const profile = engine.config().profile as unknown as Profile
     const candidate = {
@@ -120,7 +120,7 @@ export class LearningWorkflow {
     const engine = new BuildWorkflow(this.engine).engineFor(subject)
     const record = latest(engine, subject)
     if (!record) throw new Error('Begin decide-next before challenging or recording a decision')
-    const guidance = learningGuidance(engine)
+    const guidance = learningGuidance(engine, subject, record.plan.run)
     const { content: _content, ...reference } = guidance
     const profile = engine.config().profile as unknown as Profile
     if (

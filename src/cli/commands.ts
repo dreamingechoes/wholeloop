@@ -1774,14 +1774,14 @@ export const COMMANDS: readonly Command[] = [
   {
     path: 'discover',
     arguments: '',
-    options: [],
+    options: ['--client <name>', '--include-other-clients'],
     schema: 'wholeloop/discover@1',
     summary: 'Discover repository guidance and declared commands without executing them',
   },
   {
     path: 'resolve',
     arguments: '<slot>',
-    options: [],
+    options: ['--client <name>', '--include-other-clients'],
     schema: 'wholeloop/resolve@1',
     summary: 'Explain slot precedence or ask about ambiguous matches',
   },
@@ -1810,7 +1810,10 @@ export const COMMANDS: readonly Command[] = [
     path: 'step begin',
     arguments: '<step>',
     options: [
+      '--client <name>',
+      '--include-other-clients',
       '--for <id>',
+      '--run <id>',
       '--parent <id>',
       '--from <brief-id>',
       '--input <text>',
@@ -1853,6 +1856,8 @@ export const COMMANDS: readonly Command[] = [
     path: 'answer',
     arguments: '<qid=value>',
     options: [
+      '--client <name>',
+      '--include-other-clients',
       '--for <id>',
       '--run <id>',
       '--remember <scope>',

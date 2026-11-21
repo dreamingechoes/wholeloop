@@ -130,9 +130,9 @@ describe('repository guidance for autonomous runs', () => {
       const question = asked.questions.find((entry) => entry.slot === 'build.frontend')
       expect(question?.id).toBe('app:slot:build.frontend')
       expect(question?.options.map((option) => option.value)).toEqual([
+        'default',
         '.claude/skills/frontend-app/SKILL.md',
         '.claude/skills/frontend-ui/SKILL.md',
-        'default',
       ])
       const answered = proposeGuidance([{ id: 'app', root, base }], {
         answers: { 'app:slot:build.frontend': '.claude/skills/frontend-ui/SKILL.md' },
@@ -143,6 +143,12 @@ describe('repository guidance for autonomous runs', () => {
         answers: { 'app:slot:build.frontend': 'default' },
       })
       expect(declined.pins.some((entry) => entry.slot === 'build.frontend')).toBe(false)
+      const configuredDefault = proposeGuidance([{ id: 'app', root, base }], {
+        bindings: () => ({ 'build.frontend': 'default' }),
+      })
+      expect(configuredDefault.status).toBe('proposed')
+      expect(configuredDefault.pins.some((entry) => entry.slot === 'build.frontend')).toBe(false)
+      expect(configuredDefault.skipped.some((entry) => entry.slot === 'build.frontend')).toBe(false)
       // An answer outside the offered options is not accepted.
       expect(
         proposeGuidance([{ id: 'app', root, base }], {

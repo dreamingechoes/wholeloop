@@ -14,6 +14,10 @@ interface AttributionContext {
 }
 const context = new AsyncLocalStorage<AttributionContext>()
 
+export function currentClientAttribution() {
+  return structuredClone(context.getStore()?.client)
+}
+
 /** The executing adapter declares its client; this never authenticates a native worker. */
 export function withClientAttribution<T>(client: ClientIdentity | undefined, action: () => T): T {
   return context.run(client ? { client: structuredClone(client) } : {}, action)

@@ -7,6 +7,7 @@ import { RegularFileError, readRegularFileStrict } from '../fs/regular-file.js'
 import type { StoreFiles } from '../state/files.js'
 import { canonicalPath, inside } from '../state/paths.js'
 import { inReadObservation, observedRead } from '../state/read-observation.js'
+import { guidanceClient, personalFolders } from './clients.js'
 import { fileKind, isGeneratedDistribution, scan } from './scan.js'
 import type { CapabilityMap } from './types.js'
 
@@ -26,15 +27,15 @@ const IGNORE = new Set([
   '.tox',
   '.yarn',
 ])
-const TOOL_DIRS = ['.agents', '.claude', '.codex', '.opencode', '.gemini', '.cursor', '.github']
 
 export function readInventory(
   root: string,
   starts: readonly string[] = ['.'],
+  options: { personal?: boolean; seen?: Set<string> } = {},
 ): { files: Map<string, string>; warnings: string[] } {
   const files = new Map<string, string>()
   const warnings: string[] = []
-  const seen = new Set<string>()
+  const seen = options.seen ?? new Set<string>()
   const boundary = canonicalPath(root)
   function walk(directory: string): void {
     if (isGeneratedDistribution(relative(root, directory).split(sep).join('/'))) return
@@ -71,7 +72,7 @@ export function readInventory(
         }
       }
       const name = relative(root, path).split(sep).join('/')
-      if (!fileKind(name)) continue
+      if (options.personal ? entry.name !== 'SKILL.md' : !fileKind(name)) continue
       // Links inside the boundary were followed above and still are; type and size come from
       // the descriptor that is read, so a file swapped after the walk cannot slip through.
       try {
@@ -92,34 +93,49 @@ export function readInventory(
 
 const hash = (value: string) => createHash('sha256').update(value).digest('hex')
 
-function discoveryInput(root: string, home: string) {
+function discoveryInput(
+  root: string,
+  home: string,
+  client: string | undefined,
+  includeOtherClients: boolean,
+  env: NodeJS.ProcessEnv,
+) {
   const repo = readInventory(root)
-  const user = readInventory(
-    home,
-    TOOL_DIRS.map((tool) => `${tool}/skills`),
-  )
+  const selection = personalFolders(home, client, includeOtherClients, env)
+  const user = { files: new Map<string, string>(), warnings: [] as string[] }
+  const personalSeen = new Set<string>()
+  for (const folder of selection.starts) {
+    const inventory = readInventory(folder, ['.'], { personal: true, seen: personalSeen })
+    for (const [path, content] of inventory.files)
+      user.files.set(join(folder, path).split(sep).join('/'), content)
+    user.warnings.push(...inventory.warnings)
+  }
   const bytes = Buffer.from(
     JSON.stringify({
-      // The parser now distinguishes harness entrypoints even when another core cached the same bytes.
-      v: 2,
+      // Client-scoped, content-aware rules must invalidate inventories produced by the old matcher.
+      v: 3,
+      client: client ?? null,
+      selection,
       repo: [...repo.files],
       user: [...user.files],
       warnings: [...repo.warnings, ...user.warnings],
     }),
   )
-  return { repo, user, bytes, fingerprint: hash(bytes.toString()) }
+  return { repo, user, selection, bytes, fingerprint: hash(bytes.toString()) }
 }
 
-function scanInventory(input: ReturnType<typeof discoveryInput>, home: string) {
+function scanInventory(input: ReturnType<typeof discoveryInput>) {
+  const user = scan(input.user.files, { personal: true })
+  for (const asset of user.assets)
+    asset.access = input.selection.current.some((folder) =>
+      asset.path.startsWith(`${folder.split(sep).join('/')}/`),
+    )
+      ? 'current-client'
+      : 'configured-for-another-client'
   return {
     repo: scan(input.repo.files),
-    user: scan(
-      new Map(
-        [...input.user.files]
-          .filter(([path]) => fileKind(path) === 'skill')
-          .map(([path, content]) => [join(home, path).split(sep).join('/'), content]),
-      ),
-    ),
+    otherClients: input.selection.otherClients,
+    user,
     fingerprint: input.fingerprint,
     cached: false,
     warnings: [...input.repo.warnings, ...input.user.warnings],
@@ -130,18 +146,35 @@ export function discover(
   root: string,
   store: StoreFiles,
   home = homedir(),
-  options: { persist?: boolean } = {},
+  options: {
+    persist?: boolean
+    client?: string
+    includeOtherClients?: boolean
+    env?: NodeJS.ProcessEnv
+  } = {},
 ) {
+  const client = options.client ?? guidanceClient()
+  const includeOtherClients = options.includeOtherClients === true
+  const env = options.env ?? (home === homedir() ? process.env : {})
+  const configuration = JSON.stringify([
+    env.CODEX_HOME,
+    env.CLAUDE_CONFIG_DIR,
+    env.OPENCODE_CONFIG_DIR,
+    env.XDG_CONFIG_HOME,
+    env.COPILOT_HOME,
+    env.GEMINI_CLI_HOME,
+  ])
+  const identity = `${configuration}\n${canonicalPath(root)}\n${canonicalPath(home)}\n${client ?? ''}\n${includeOtherClients}`
   if (inReadObservation())
     return structuredClone(
-      observedRead(`discovery:${canonicalPath(root)}\0${canonicalPath(home)}`, () => {
-        const input = discoveryInput(root, home)
-        return { bytes: input.bytes, value: scanInventory(input, home) }
+      observedRead(`discovery:${identity}`, () => {
+        const input = discoveryInput(root, home, client, includeOtherClients, env)
+        return { bytes: input.bytes, value: scanInventory(input) }
       }),
     )
-  const input = discoveryInput(root, home),
+  const input = discoveryInput(root, home, client, includeOtherClients, env),
     { repo, user, fingerprint } = input
-  const file = `cache/discovery/${hash(`${canonicalPath(root)}\n${canonicalPath(home)}`)}.json`
+  const file = `cache/discovery/${hash(identity)}.json`
   const readCached = () => {
     const content = store.read(file)
     if (content) {
@@ -161,6 +194,7 @@ export function discover(
             user: cached.user,
             fingerprint,
             cached: true,
+            otherClients: input.selection.otherClients,
             warnings: [...repo.warnings, ...user.warnings],
           }
         }
@@ -172,7 +206,7 @@ export function discover(
   }
   const cached = readCached()
   if (cached) return cached
-  const result = scanInventory(input, home)
+  const result = scanInventory(input)
   if (options.persist === false) return result
   return store.locked(() => {
     // Another writer may have populated the disposable cache while this
@@ -190,6 +224,7 @@ export function discover(
       user: userMap,
       fingerprint,
       cached: false,
+      otherClients: input.selection.otherClients,
       warnings: [...repo.warnings, ...user.warnings],
     }
   })

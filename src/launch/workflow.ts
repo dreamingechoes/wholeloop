@@ -51,7 +51,7 @@ export class LaunchWorkflow {
     if (questions.length)
       return { schema: 'wholeloop/launch-begin@1', status: 'question' as const, questions }
     if (options.measurement) validateMeasurement(options.measurement)
-    const guidance = launchGuidance(this.engine)
+    const guidance = launchGuidance(this.engine, options.subject)
     const source: MeasurementSource =
       stored ??
       (() => {
@@ -111,7 +111,7 @@ export class LaunchWorkflow {
     )
     if (source && source.digest !== entry.plan.source.digest)
       throw new Error('The scope measurement revision changed after launch planning')
-    const guidance = launchGuidance(this.engine)
+    const guidance = launchGuidance(this.engine, subject, entry.plan.run)
     if (
       JSON.stringify(guidance.map(({ content: _content, ...reference }) => reference)) !==
       JSON.stringify(entry.plan.guidance)

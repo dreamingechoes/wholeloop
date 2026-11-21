@@ -13,6 +13,7 @@ import { isObject } from '../config/schema.js'
 import { writeSetting } from '../config/write.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { knownSlot } from '../discovery/rules.js'
+import { rememberRunGuidance, runGuidance, validGuidanceRun } from '../discovery/run.js'
 import { discover } from '../discovery/tree.js'
 import {
   checkFrame,
@@ -71,6 +72,9 @@ function activeStep(events: readonly StateEvent[], subject: string, name: string
   )
 }
 export interface BeginOptions {
+  run?: string
+  client?: string
+  includeOtherClients?: boolean
   profile?: Record<string, unknown>
   subject?: string
   parent?: string
@@ -93,8 +97,25 @@ export class FlowEngine {
     return loadConfig({ root: this.root, userFile: this.userFile })
   }
 
-  config() {
-    return this.configuration().values
+  config(subject?: string, step?: string, selectedRun?: string): Record<string, unknown> {
+    const configuration = this.configuration().values
+    const active = subject && step ? activeStep(this.store.events(), subject, step) : undefined
+    const runs = [
+      ...new Set(
+        [active?.type === 'step.started' ? active.data.run : undefined, selectedRun].filter(
+          (value): value is string => value !== undefined,
+        ),
+      ),
+    ]
+    if (!runs.length) return configuration
+    const slots = Object.assign(
+      {},
+      ...runs.map((run) => runGuidance(this.store.files, this.root, run)),
+    )
+    return {
+      ...configuration,
+      slots: { ...(isObject(configuration.slots) ? configuration.slots : {}), ...slots },
+    }
   }
 
   additions(): string[] {
@@ -116,26 +137,32 @@ export class FlowEngine {
           loaded.presets,
         ).values
       : loaded.values
-    const inventory = discover(this.root, this.store.files, this.home, { persist: false })
-    const bindings = Object.fromEntries(
-      step.slots.map((slot) => {
-        const binding =
-          isObject(configuration.slots) && typeof configuration.slots[slot] === 'string'
-            ? configuration.slots[slot]
-            : undefined
-        return [
-          slot,
-          resolveSlot(slot, inventory.repo, {
-            user: inventory.user,
-            ...(binding ? { binding } : {}),
-          }),
-        ]
-      }),
-    )
-    const templateSource =
-      name === 'write-spec'
-        ? specTemplate(this.root, this.userFile, configuration, bindings['spec.template']?.selected)
-        : null
+    if (options.run && (!validGuidanceRun(options.run) || !options.run.startsWith('run-')))
+      throw new CliError('Use a run ID returned by step begin')
+    const inventory = discover(this.root, this.store.files, this.home, {
+      persist: false,
+      ...(options.client ? { client: options.client } : {}),
+      ...(options.includeOtherClients ? { includeOtherClients: true } : {}),
+    })
+    const resolveBindings = (run: string) => {
+      const runSlots = step.slots.length ? runGuidance(this.store.files, this.root, run) : {}
+      return Object.fromEntries(
+        step.slots.map((slot) => {
+          const binding =
+            runSlots[slot] ??
+            (isObject(configuration.slots) && typeof configuration.slots[slot] === 'string'
+              ? configuration.slots[slot]
+              : undefined)
+          return [
+            slot,
+            resolveSlot(slot, inventory.repo, {
+              user: inventory.user,
+              ...(binding ? { binding } : {}),
+            }),
+          ]
+        }),
+      )
+    }
     if (options.impact && name !== 'write-spec') throw new CliError('--impact is for write-spec')
     const prepare = ((events, append) => {
       const items = replay(events)
@@ -238,7 +265,26 @@ export class FlowEngine {
       if (options.subject && !subject)
         throw new CliError(`Unknown item: ${options.subject}`, EXIT.precondition)
       const active = subject ? activeStep(events, subject.id, name) : undefined
-      const run = active?.type === 'step.started' ? active.data.run : newRun()
+      if (options.run && active?.type === 'step.started' && options.run !== active.data.run)
+        throw new CliError('The supplied run does not match the active step')
+      if (
+        options.run &&
+        !active &&
+        events.some((entry) => entry.type === 'step.started' && entry.data.run === options.run)
+      )
+        throw new CliError('The supplied run already belongs to a started or completed step')
+      const run = active?.type === 'step.started' ? active.data.run : (options.run ?? newRun())
+      const bindings = resolveBindings(run)
+      const templateSource =
+        name === 'write-spec'
+          ? specTemplate(
+              this.root,
+              this.userFile,
+              configuration,
+              bindings['spec.template']?.selected,
+            )
+          : null
+
       const owner = options.owner ?? parent?.owner ?? source?.owner
       const frameArtifact = subject
         ? events.findLast(
@@ -269,6 +315,7 @@ export class FlowEngine {
           presets: loaded.presets,
         }),
         bindings,
+        guidanceSources: inventory.otherClients,
         templateSource,
         expectedImpact: name === 'write-spec' ? (impact ?? null) : null,
       }
@@ -295,7 +342,7 @@ export class FlowEngine {
       }
       for (const resolution of Object.values(bindings))
         if (resolution.questions.length) {
-          payload.missing.push(`slot:${resolution.slot}`)
+          if (!resolution.selected) payload.missing.push(`slot:${resolution.slot}`)
           payload.questions.push(...resolution.questions)
         }
       if (payload.missing.length) return { payload, code: EXIT.input }
@@ -432,7 +479,7 @@ export class FlowEngine {
     if (name === 'prepare-launch') new LaunchWorkflow(this).context(subject)
     let sections: readonly string[] = step.sections
     if (name === 'write-spec') {
-      const configuration = this.config()
+      const configuration = this.config(subject, 'write-spec')
       const inventory = discover(this.root, this.store.files, this.home)
       const binding = resolveSlot('spec.template', inventory.repo, {
         user: inventory.user,
@@ -441,7 +488,7 @@ export class FlowEngine {
           ? { binding: configuration.slots['spec.template'] }
           : {}),
       })
-      if (binding.questions.length)
+      if (!binding.selected)
         throw new CliError('Resolve the spec.template choice before completion', EXIT.input)
       sections = specTemplate(this.root, this.userFile, configuration, binding.selected).sections
     }
@@ -662,7 +709,15 @@ export class FlowEngine {
   answer(
     qid: string,
     value: string,
-    options: { scope: string; subject?: string; run?: string; by?: string; basis?: string },
+    options: {
+      scope: string
+      subject?: string
+      run?: string
+      by?: string
+      basis?: string
+      client?: string
+      includeOtherClients?: boolean
+    },
   ) {
     if (!value.trim()) throw new CliError('Answer must not be empty')
     const scope = options.scope
@@ -673,8 +728,49 @@ export class FlowEngine {
     if (qid.startsWith('slot:')) {
       const slot = qid.slice(5)
       if (!knownSlot(slot)) throw new CliError(`Unknown slot: ${slot}`)
-      if (scope !== 'project' && scope !== 'user')
-        throw new CliError('Slot choices must be remembered at project or user scope')
+      if (!['run', 'project', 'user'].includes(scope))
+        throw new CliError('Guidance choices use run, project or user scope')
+      const inventory = discover(this.root, this.store.files, this.home, {
+        persist: false,
+        ...(options.client ? { client: options.client } : {}),
+        ...(options.includeOtherClients ? { includeOtherClients: true } : {}),
+      })
+      const resolution = resolveSlot(slot, inventory.repo, { user: inventory.user })
+      if (
+        value !== 'default' &&
+        !resolution.candidates.some((candidate) => candidate.ref === value)
+      )
+        throw new CliError('Choose one of the offered guidance values')
+      if (scope === 'run') {
+        const events = options.subject ? this.store.events() : []
+        const latest = options.subject
+          ? events.findLast(
+              (entry) => entry.subject === options.subject && entry.type === 'step.started',
+            )
+          : undefined
+        const run = options.run ?? (latest?.type === 'step.started' ? latest.data.run : undefined)
+        if (options.subject && run?.startsWith('gate-')) {
+          if (
+            !events.some(
+              (entry) =>
+                entry.subject === options.subject &&
+                entry.type === 'gate.planned' &&
+                entry.data.plan.run === run,
+            )
+          )
+            throw new CliError('The gate run does not belong to this item')
+        } else if (options.subject && latest?.type === 'step.started') {
+          const active = activeStep(events, options.subject, latest.data.step)
+          if (active?.type !== 'step.started' || active.data.run !== run)
+            throw new CliError('The supplied run does not match an active step for this item')
+        }
+        if (!run)
+          throw new CliError(
+            'Provide --run from step begin or --for an active item for a run choice',
+          )
+        const file = rememberRunGuidance(this.store.files, this.root, run, slot, value)
+        return { schema: 'wholeloop/answer@1', qid, value, scope, run, file }
+      }
       const file = scope === 'user' ? this.userFile : join(this.root, '.wholeloop/config.yml')
       writeSetting(file, ['slots', slot], value)
       return { schema: 'wholeloop/answer@1', qid, value, scope, file }

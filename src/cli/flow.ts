@@ -38,6 +38,8 @@ export function flowCommand(
       const scope = value('--remember') ?? 'run'
       payload = engine.answer(answer.slice(0, equals), answer.slice(equals + 1), {
         scope,
+        ...(value('--client') ? { client: value('--client') as string } : {}),
+        ...(options['--include-other-clients'] ? { includeOtherClients: true } : {}),
         ...(value('--for') ? { subject: value('--for') as string } : {}),
         ...(value('--run') ? { run: value('--run') as string } : {}),
         ...(value('--by') ? { by: value('--by') as string } : {}),
@@ -53,6 +55,9 @@ export function flowCommand(
         const result = engine.begin(name, {
           ...(value('--profile') ? { profile: parseProfile(value('--profile') ?? '') } : {}),
           mode,
+          ...(value('--run') ? { run: value('--run') as string } : {}),
+          ...(value('--client') ? { client: value('--client') as string } : {}),
+          ...(options['--include-other-clients'] ? { includeOtherClients: true } : {}),
           ...(value('--for') ? { subject: value('--for') as string } : {}),
           ...(value('--parent') ? { parent: value('--parent') as string } : {}),
           ...(value('--from') ? { from: value('--from') as string } : {}),

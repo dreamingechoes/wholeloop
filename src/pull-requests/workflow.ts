@@ -1,23 +1,23 @@
 // The open-pr workflow: plan, human testing of the exact snapshot and draft-only publication.
+
 import { createHash } from 'node:crypto'
-import { isAbsolute, join } from 'node:path'
 import { assertBuildGreen } from '../build/contracts.js'
 import { BuildWorkflow } from '../build/workflow.js'
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
+import { guidanceText } from '../discovery/content.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
 import { environmentReceipt } from '../environment/ledger.js'
 import type { FlowEngine } from '../flow/engine.js'
 import { decisionTrail } from '../flow/plan.js'
 import { checkShape } from '../flow/registry.js'
-import { readRegularText } from '../fs/regular-file.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { hasToolAttribution } from '../git/commit.js'
 import { loadProviders, resolveProvider } from '../providers/load.js'
 import { type ProviderHost, performOperation } from '../providers/operations.js'
 import { itemId, type StateEvent } from '../state/events.js'
-import { canonicalPath, inside } from '../state/paths.js'
+import { canonicalPath } from '../state/paths.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { git, namedBase } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
@@ -40,25 +40,20 @@ const latest = (events: readonly StateEvent[], subject: string) =>
     .at(-1)
 const hash = (value: string) => createHash('sha256').update(value).digest('hex')
 
-function convention(engine: FlowEngine, root: string) {
+function convention(engine: FlowEngine, root: string, subject?: string) {
   const inventory = discover(root, engine.store.files, engine.home)
-  const slots = engine.config().slots
+  const slots = engine.config(subject, 'open-pr').slots
   const selected = resolveSlot('open-pr.convention', inventory.repo, {
     user: inventory.user,
     ...(isObject(slots) && typeof slots['open-pr.convention'] === 'string'
       ? { binding: slots['open-pr.convention'] }
       : {}),
   })
-  if (!selected.selected || selected.questions.length)
-    throw new Error('Resolve open-pr.convention before preparing a PR')
+  if (!selected.selected) throw new Error('Resolve open-pr.convention before preparing a PR')
   const { ref, origin } = selected.selected
   let content = ''
-  if (origin !== 'harness') {
-    const base = origin === 'user' ? engine.home : root
-    const file = canonicalPath(isAbsolute(ref) ? ref : join(base, ref))
-    // The canonical path is checked, then read through one descriptor that refuses a link
-    // swapped in after the check.
-    const text = inside(canonicalPath(base), file) ? readRegularText(file, 1024 * 1024) : undefined
+  if (ref !== 'default') {
+    const text = guidanceText(root, engine.home, { ref })
     if (text === undefined) throw new Error('PR convention must be a local file under 1 MiB')
     content = text
   }
@@ -86,7 +81,7 @@ export class PullRequestWorkflow {
     const context = options.subject ? this.context(options.subject) : undefined
     const engine = context?.engine ?? this.engine
     const root = context?.root ?? engine.root
-    const guidance = convention(engine, root)
+    const guidance = convention(engine, root, options.subject)
     const settings = engine.config().providers
     const configured =
       options.provider ??
@@ -235,7 +230,7 @@ export class PullRequestWorkflow {
       throw new Error('PR plan is stale; prepare and test the changed snapshot again')
     if (codehostRepository(context.root, entry.plan.remote).url !== entry.plan.repository)
       throw new Error('PR remote changed after planning')
-    const { content: _content, ...reference } = convention(context.engine, context.root)
+    const { content: _content, ...reference } = convention(context.engine, context.root, subject)
     if (JSON.stringify(reference) !== JSON.stringify(entry.plan.convention))
       throw new Error('PR convention changed after planning')
     if (entry.plan.gated) assertBuildGreen(context.engine.store.events(), subject, context.root)

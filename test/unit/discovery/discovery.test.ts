@@ -53,7 +53,7 @@ describe('repository capability maps', () => {
       ).commands,
     ).toEqual([])
   })
-  it('prefers explicit bindings, then repo tags, repo rules, user skills and defaults', () => {
+  it('prefers explicit bindings, then repo tags and rules, with personal choices optional', () => {
     const repo = scan(new Map(Object.entries(fixtures.mixed)))
     const user = scan(
       new Map([
@@ -73,11 +73,13 @@ describe('repository capability maps', () => {
     expect(
       resolveSlot('build.frontend', repo, { binding: 'default', user }).selected,
     ).toMatchObject({ ref: 'default', origin: 'config' })
-    expect(resolveSlot('build.frontend', scan(new Map()), { user }).selected?.origin).toBe('user')
+    expect(resolveSlot('build.frontend', scan(new Map()), { user }).selected?.origin).toBe(
+      'harness',
+    )
     expect(resolveSlot('build.mobile', scan(new Map())).selected?.origin).toBe('harness')
     expect(selected).toMatchSnapshot()
   })
-  it('asks on equal candidates or description-only matches instead of choosing by filename', () => {
+  it('asks on distinct equal candidates and excludes description-only matches', () => {
     const skill = (name: string, description: string) =>
       `---\nname: ${name}\ndescription: ${description}\n---\n`
     const tied = scan(
@@ -87,11 +89,12 @@ describe('repository capability maps', () => {
       ]),
     )
     expect(resolveSlot('build.frontend', tied).selected).toBeNull()
-    expect(resolveSlot('build.frontend', tied).questions[0]?.options).toHaveLength(2)
+    expect(resolveSlot('build.frontend', tied).questions[0]?.options).toHaveLength(3)
     const weak = scan(
       new Map([['.agents/skills/guide/SKILL.md', skill('guide', 'Our frontend patterns')]]),
     )
-    expect(resolveSlot('build.frontend', weak).questions).toHaveLength(1)
+    expect(resolveSlot('build.frontend', weak).questions).toHaveLength(0)
+    expect(resolveSlot('build.frontend', weak).selected?.origin).toBe('harness')
   })
   it('reports invalid metadata and package files, and refuses resolution over a partial scan', () => {
     const map = scan(
@@ -256,7 +259,7 @@ describe('discovery cache and step bindings', () => {
         guide('.claude', 'other-frame')
         const ambiguous = begin('Find the third synthetic order')
         expect(ambiguous.status).toBe(2)
-        expect(JSON.parse(ambiguous.stdout).questions[0].options).toHaveLength(2)
+        expect(JSON.parse(ambiguous.stdout).questions[0].options).toHaveLength(3)
       } finally {
         rmSync(dir, { recursive: true, force: true })
       }
@@ -368,7 +371,10 @@ describe('discovery cache and step bindings', () => {
       for (const tool of ['agents', 'claude']) {
         const file = join(root, `.${tool}/skills/frame-problem/SKILL.md`)
         mkdirSync(dirname(file), { recursive: true })
-        writeFileSync(file, '---\nname: frame-problem\ndescription: Framing guide\n---\n')
+        writeFileSync(
+          file,
+          `---\nname: frame-problem\ndescription: Framing guide\n---\n# ${tool} guidance\n`,
+        )
       }
       const engine = new FlowEngine(
         new StateStore(join(dir, 'state')),

@@ -1,15 +1,14 @@
 // Prepares a review round's pinned input and rubric.
+
 import { createHash } from 'node:crypto'
-import { isAbsolute, join } from 'node:path'
 import { isObject } from '../config/schema.js'
+import { guidanceText } from '../discovery/content.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
 import type { FlowEngine } from '../flow/engine.js'
-import { readRegularText } from '../fs/regular-file.js'
 import type { GatePlan } from '../gates/contracts.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
-import { canonicalPath, inside } from '../state/paths.js'
 import type { ReviewContext } from './contracts.js'
 import { ReviewSnapshots } from './snapshots.js'
 import { reviewInputs } from './state.js'
@@ -18,9 +17,9 @@ export const digest = (value: string) => createHash('sha256').update(value).dige
 export const DEFAULT_REVIEW_RUBRIC =
   'Apply each assigned lens to concrete changed behavior, repository idioms and evidence. Report actionable defects with locations; do not repair code or manufacture approval.'
 
-export function reviewRubric(engine: FlowEngine, root: string) {
+export function reviewRubric(engine: FlowEngine, root: string, subject?: string, run?: string) {
   const inventory = discover(root, engine.store.files, engine.home)
-  const slots = engine.config().slots
+  const slots = engine.config(subject, 'review-code', run).slots
   const binding = resolveSlot('review.rubric', inventory.repo, {
     user: inventory.user,
     ...(isObject(slots) && typeof slots['review.rubric'] === 'string'
@@ -28,15 +27,10 @@ export function reviewRubric(engine: FlowEngine, root: string) {
       : {}),
   })
   const selected = binding.selected
-  if (!selected || binding.questions.length)
-    throw new Error('Resolve review.rubric before reviewing')
+  if (!selected) throw new Error('Resolve review.rubric before reviewing')
   let content = DEFAULT_REVIEW_RUBRIC
-  if (selected.origin !== 'harness') {
-    const base = selected.origin === 'user' ? engine.home : root
-    const file = canonicalPath(isAbsolute(selected.ref) ? selected.ref : join(base, selected.ref))
-    // The canonical path is checked, then read through one descriptor that refuses a link
-    // swapped in after the check.
-    const text = inside(canonicalPath(base), file) ? readRegularText(file, 1024 * 1024) : undefined
+  if (selected.ref !== 'default') {
+    const text = guidanceText(root, engine.home, selected)
     if (text === undefined)
       throw new Error('Review rubric must be a readable local file under 1 MiB')
     content = text
@@ -58,7 +52,7 @@ export function prepareReviewInput(engine: FlowEngine, plan: GatePlan): ReviewCo
         .filter((finding) => kept.has(`${result.unit}:${finding.id}`))
         .map((finding) => ({ unit: result.unit, finding })),
     ) ?? []
-  const rubric = reviewRubric(engine, plan.repository)
+  const rubric = reviewRubric(engine, plan.repository, plan.subject, plan.run)
   const { content: _content, ...reference } = rubric
   const entries = reviewInputs(engine.store.events()).filter(
     (entry) => entry.input.run === plan.run,

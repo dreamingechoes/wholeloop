@@ -5,6 +5,8 @@ export interface Asset {
   name: string
   description: string
   slots: string[]
+  contentHash?: string
+  access?: 'current-client' | 'configured-for-another-client'
   entrypoint?: true
 }
 export interface CommandAsset {

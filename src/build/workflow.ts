@@ -1,15 +1,15 @@
 // The build-slice workflow: agreement, builder plan, suite assignment and receipt.
+
 import { createHash } from 'node:crypto'
-import { isAbsolute, join } from 'node:path'
 import { loadExtensionOptions } from '../config/load.js'
 import { isObject } from '../config/schema.js'
 import { lintCriteria, parseCriteria } from '../definition/criteria.js'
+import { guidanceText } from '../discovery/content.js'
 import { resolveSlot } from '../discovery/resolve.js'
 import { discover } from '../discovery/tree.js'
 import { environmentReceipt } from '../environment/ledger.js'
 import { FlowEngine } from '../flow/engine.js'
 import { decisionTrail } from '../flow/plan.js'
-import { readRegularText } from '../fs/regular-file.js'
 import { workspaceSnapshot } from '../gates/snapshot.js'
 import { gateRuns } from '../gates/state.js'
 import type { Profile } from '../profile/presets.js'
@@ -18,7 +18,7 @@ import { loadProviders, resolveProvider } from '../providers/load.js'
 import { type ProviderHost, performOperation } from '../providers/operations.js'
 import { blockingDependencies, buildChildren, buildReady } from '../slices/routing.js'
 import { ITEM_ID, itemId } from '../state/events.js'
-import { canonicalPath, inside } from '../state/paths.js'
+import { canonicalPath } from '../state/paths.js'
 import { worktreeRecords } from '../worktrees/contracts.js'
 import { git } from '../worktrees/git.js'
 import { WorktreeManager } from '../worktrees/manager.js'
@@ -192,7 +192,7 @@ export class BuildWorkflow {
       .reverse()
       .find((entry) => entry.subject === source && entry.type === 'slice.defined')
 
-    const config = engine.config()
+    const config = engine.config(subject, 'build-slice')
     const inventory = discover(engine.root, this.engine.store.files, engine.home)
     const configured = isObject(config.slots) ? config.slots : {}
     const slots = [
@@ -218,24 +218,20 @@ export class BuildWorkflow {
         ...(typeof configured[slot] === 'string' ? { binding: configured[slot] } : {}),
       }),
     )
-    const questions = bindings.flatMap((binding) => binding.questions)
+    const questions = bindings
+      .filter((binding) => !binding.selected)
+      .flatMap((binding) => binding.questions)
     const guidance: BuildGuidance[] = []
     for (const binding of bindings) {
       const selected = binding.selected
-      if (!selected || selected.origin === 'harness') continue
+      if (!selected || selected.ref === 'default') continue
       // Commands are suite assignments, not instruction files; the suite workflow executes them.
       if (
         binding.slot === 'verify.suite' &&
         inventory.repo.commands.some((command) => command.ref === selected.ref)
       )
         continue
-      const root = selected.origin === 'user' ? engine.home : engine.root
-      const file = canonicalPath(isAbsolute(selected.ref) ? selected.ref : join(root, selected.ref))
-      // The canonical path is checked, then read through one descriptor that refuses a link
-      // swapped in after the check.
-      const content = inside(canonicalPath(root), file)
-        ? readRegularText(file, 1024 * 1024)
-        : undefined
+      const content = guidanceText(engine.root, engine.home, selected)
       if (content === undefined)
         throw new Error('Selected build guidance must be a readable local file under 1 MiB')
       guidance.push({
