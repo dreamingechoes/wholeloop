@@ -12,5 +12,3 @@ Every installed skill calls its packaged core through its own relative launcher;
 User configuration roots are resolved at runtime. Project launchers/hooks retain relative bindings after a checkout moves. A copied project has no local runtime receipt; existing unmanaged files are preserved rather than automatically adopted.
 
 Doctor can inspect owned user/project scopes without activation. Current means matching owned bytes/source/core; absent means no local ownership receipt, not no native components. Stale output can be upgraded; changed/invalid/interrupted state needs preservation and the report's diagnostic/recovery action.
-
-Bound ownership receipt reads/writes at 4 MiB while retaining every pending recovery catalog. Reject oversized writes before replacing the last recoverable receipt.

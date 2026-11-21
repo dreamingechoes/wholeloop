@@ -4,7 +4,7 @@ description: Choose a wholeloop interaction profile and docs or tracker provider
 ---
 # Set preferences
 
-Read the shared ask-never-guess, output-contract and installation protocols.
+Read the shared ask-never-guess, output-contract and installation protocols. Read speaking-to-person.
 
 1. Call `wl setup --json` to obtain profile, provider and remember-scope choices. Present the returned questions together; preserve free-text choices.
 2. Apply only explicit choices with `wl setup --profile <id> --docs <id>
@@ -13,7 +13,7 @@ Read the shared ask-never-guess, output-contract and installation protocols.
 4. Inspect integrations through `wl provider list --json` and `wl provider test
    <id> --json`. Detection is not authentication. For a requested MCP client, `wl mcp add <id> --target <cli> --json` prints a snippet to review and merge. Prefer that client's observed MCP tools/schemas; read source-evidence and destination-publication before calls. Use provider plan for the selected operation and external metadata. wholeloop has no service client of its own: without client MCP access an operation stays an open question or local handoff.
 
-For local setup failures, call `wl doctor --json`; with a known generated artifact, pass its single --target and --artifact. Inspect its repair/diagnostic commands without running installation or permission changes automatically. ⛔ `diagnostics-observed-availability` — versions/declarations are observations, not authentication, actual client discovery or model/permission conformance.
+For local setup failures, call `wl doctor --json`; with a known generated artifact, pass its single --target and --artifact. Inspect its repair/diagnostic commands without running installation or permission changes automatically. Report actual access and activation separately from installed versions or declarations.
 
 For an explicit installation request, use install/uninstall with exact targets and scope; report ownership, retained backups and pending activation from the core.
 

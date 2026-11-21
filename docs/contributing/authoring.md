@@ -13,6 +13,7 @@ Budgets, front-matter checks and the enforcement lint run in `wl harness check`,
 | `harness/skills/<step>/SKILL.md` | ≤ 120 lines · description ≤ 400 characters | budget lint |
 | `harness/agents/<role>.md` | ≤ 60 lines | budget lint |
 | `harness/protocols/*.md` | ≤ 80 lines | budget lint |
+| `harness/policies/*.md` | ≤ 80 lines | budget lint |
 | `harness/workflows/*.ts` | ≤ 150 lines | budget lint |
 | provider `guidance/*.md` | ≤ 30 lines | budget lint |
 | lens `prompt.md` | ≤ 40 lines | budget lint |
@@ -34,11 +35,13 @@ metadata:
 
 # build-slice
 
+Read speaking-to-person and the protocols this step uses.
+
 1. Run `wl step begin build-slice --input "$ARGUMENTS" --json`. If exit code 2, ask the questions it returns, then `wl answer …`.
-2. Show the `preflight` lines verbatim. Wait only if the payload says so.
+2. Show `display.text` verbatim. Wait only if the payload says so.
 3. Load every skill listed in `bindings` before writing code.
 …
-N. Run `wl step complete build-slice --json` and show the receipt.
+N. Run `wl step complete build-slice --json` and show `display.text`.
 
 Protocols: [ask-never-guess](../protocols/ask-never-guess.md) · [output-contract](../protocols/output-contract.md)
 ```
@@ -48,7 +51,9 @@ Rules of thumb:
 - **Numbered steps, imperative mood, one action each.** The agent follows a sequence better than prose.
 - **Never compute in prose** what `wl` can return — orders, precedences, caps, next steps.
 - **Only portable front matter** (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`). CLI-specific extras go in a sidecar the adapter reads.
-- **Link protocols, don't paste them.** Shared rules live once in `harness/protocols/`.
+- **Link protocols, don't paste them.** Shared host actions live once in `harness/protocols/`. Every skill reads `speaking-to-person`; its vocabulary map matches `src/display/terms.ts`. Keep the startup read list in `src/harness/protocols.ts` specific to the step, and load provider/evaluation guidance only when needed.
+- **Keep core declarations out of prompts.** `harness/policies/` retains their hard-rule IDs and enforcers without a runtime read. Preserve host actions the core cannot perform: actual tool boundaries, explicit answers and unavailable evidence.
+- **Use short command notation.** Show `wl ...` to the person; execute through the adapter's checked packaged launcher. Never install an alias, guess PATH or change permissions to shorten text.
 
 ## Agents
 

@@ -6,7 +6,7 @@ metadata:
 ---
 # Frame a problem
 
-Read worker-handoffs, destination-publication, ask-never-guess, output-contract and framing-evidence.
+Read worker-handoffs, destination-publication, ask-never-guess, output-contract and framing-evidence. Read speaking-to-person.
 
 1. Call `wl step begin frame-problem --input "<idea>" --owner "<person>" --json`. Omit unknown values for batched questions. Use `--for <initiative>` to refine known work or `--from <brief-id>` to adopt completed research. Read the source artifact named in the preflight and carry its unresolved questions forward. Equivalent normalized titles and repeated brief adoption reuse an initiative; unrelated ideas need their own initiative. Ambiguity requires an explicit ID.
 2. Handle exit 2 by collecting explicit answers and rerunning begin. Exit 3 is a precondition; exit 4 is invalid input. Do not create a second initiative to bypass a closed outcome, a required decision or another failure.

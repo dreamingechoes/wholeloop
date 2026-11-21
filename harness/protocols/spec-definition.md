@@ -7,4 +7,3 @@
 Follow selected repository spec guidance before drafting. Templates can add or reorder sections; they cannot remove the core definition needed by later steps.
 
 - ⛔ `definition-fixed-coverage` — problem/spec/criteria/scopes challenger plans keep their checks and findings at every dial; only tone and extra questions vary.
-- ⛔ `definition-structural-contradictions` — explicitly comparable numeric criterion assertions cannot have conflicting pairs. Missing metadata does not authorize inventing constraints or treating prose as proven consistent.

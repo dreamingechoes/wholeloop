@@ -5,4 +5,4 @@
 - ⛔ `impact-checkpoint-report` — Pin the actual launch anchor and due checkpoint. Require all metric/qualitative coverage and a current complete layout before the canonical receipt; new observations invalidate old layouts.
 - ⛔ `impact-draft-publication` — Publication is explicit and conductor-only. Journal intent before a digest draft or same-read document update; preserve original content, use a stable marker, cache receipts and retain ambiguity. A comms result must explicitly confirm draft=true/sent=false.
 
-Typed read-only workers and synthetic hosts do not prove live client isolation. Inspect source semantics, causal interpretation and opaque provider permissions.
+Inspect source semantics, causal interpretation and actual provider permissions before making a claim.

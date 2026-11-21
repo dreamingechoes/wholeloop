@@ -6,7 +6,7 @@ metadata:
 ---
 # Research a question
 
-Read worker-handoffs, destination-publication, source-evidence, ask-never-guess, output-contract and core-invariants.
+Read worker-handoffs, destination-publication, source-evidence, ask-never-guess, output-contract. Read speaking-to-person.
 
 1. Begin `wl step begin research --input "<question>" --owner "<person>" --json`. For an attached brief, use `--parent <initiative-or-scope>`; the recorded parent owner can be reused. Resume an existing brief with `--for <brief-id>`.
 2. Collect missing inputs together. Show display.text and read the resolved `research.method` guidance before investigating.
@@ -17,6 +17,6 @@ Read worker-handoffs, destination-publication, source-evidence, ask-never-guess,
 6. Call `wl research complete --for <brief-id> --json` for its evidence-bound conclusion context. Write the Answer and Recommendation yourself from the retained claims, disputes and unknowns; no synthesis worker or separate Markdown summary is needed. Submit `wl research complete --for <brief-id> --basis <context-basis> --answer '<answer>' --recommendation '<recommendation>' --json`, quoting prose as literal arguments. A changed basis needs a fresh context and revised prose. The core preserves the deterministic evidence aggregate and computes confidence and unchecked work; missing workers remain open questions.
 7. Show display.text verbatim, with the answer first, recommendation, confidence and unchecked work. Link the same stored brief for evidence, retained/dropped claims and open questions. Continue with `step begin frame-problem --from <brief-id> --json` when requested. Adopted briefs use the initiative shared outbox through destination-publication.
 
-Host adapters still need live conformance. Do not claim parallelism, source access or authentication that the current client cannot establish.
+Do not claim parallelism, source access or authentication that the current client cannot establish.
 
 Start only the named rendered role with its assignment, required protocol text and result schema. Never fork conversation history or copy the conductor as a worker. Validate each final-message result and submit it from the conductor; checked headless transports already own their submissions.

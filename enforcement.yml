@@ -15,6 +15,10 @@
 # enforced by test/unit/experience/experience.test.ts in the ordinary fixture suite.
 version: 1
 rules:
+  - id: person-facing-language
+    enforcers: [src/harness/communication.ts#checkCommunication, src/display/terms.ts#PERSON_WORDS, test/unit/harness/communication.test.ts]
+  - id: step-only-protocols
+    enforcers: [src/harness/communication.ts#checkCommunication, src/harness/protocols.ts#STEP_PROTOCOLS, test/unit/harness/communication.test.ts]
   - id: research-read-only
     enforcers: [src/adapters/role-tools.ts#researchRoleProblems, src/adapters/generate.ts#generateAdapter, src/research/assignments.ts#researchAssignments, test/unit/adapters/worker-roles.test.ts, test/unit/research/conclusion.test.ts]
   - id: research-conclusion-preserves-evidence

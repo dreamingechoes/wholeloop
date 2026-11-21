@@ -1,6 +1,6 @@
 ---
 name: launcher
-description: Draft a launch kit from pinned measurements and repository guidance without sending messages, changing exposure or invoking publication tools.
+description: Draft a launch kit from agreed measurements and repository guidance without sending messages, changing exposure or invoking publication tools.
 metadata:
   wholeloop.capabilities: read
   wholeloop.tier: standard

@@ -166,17 +166,19 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-08 · Skills and protocols in plain language
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
 
 **Goal** — Nothing a skill tells the agent makes it speak the core's vocabulary to the person.
 
 **Acceptance criteria:**
 
-- [ ] A short protocol for speaking to the person, loaded by every skill, with the person-facing words for internal terms; a lint lists the banned terms.
-- [ ] Rules the core enforces are no longer loaded into skills; protocols keep only what the agent must do, and each skill loads only the protocols its step uses.
+- [x] A short protocol for speaking to the person, loaded by every skill, with the person-facing words for internal terms; a lint lists the banned terms.
+- [x] Rules the core enforces are no longer loaded into skills; protocols keep only what the agent must do, and each skill loads only the protocols its step uses.
 - [ ] A step reaches its first question, plan or answer in a bounded number of tool calls, set by the experience check's baseline.
-- [ ] Maintainer-facing caveats (conformance, Linux not run) leave the skills; stale ones are removed, including status's "checkpoints are not collected yet".
-- [ ] Shown commands use a short form instead of a 60-character launcher path wherever the client allows it.
+- [x] Maintainer-facing caveats (conformance, Linux not run) leave the skills; stale ones are removed, including status's "checkpoints are not collected yet".
+- [x] Shown commands use a short form instead of a 60-character launcher path wherever the client allows it.
+
+**Evidence:** `test/unit/harness/communication.test.ts` checks all thirteen vocabulary mappings, negative speaking instructions, private command/data compatibility, step-specific reads and all seventeen skills rendered for seven clients. Policy declarations remain in enforcement with an 80-line bound; existing skill/agent/protocol/workflow budgets and public schemas are unchanged. Maintainer caveats and the stale status/next limits are removed. Short command notation preserves each checked launcher, including the plugin-root route. `CHECK PASS in 703s`, 5145 tests in 350 files; `CHECK PASS (fast) in 488s`, 2336 related tests in 122 files. Generated references: four current, none rewritten. Criterion 3 remains unchecked for the manual P9-20 baseline and native call-count calibration; no live run was performed.
 
 **Tests** — The banned-term lint over rendered skills; size budgets unchanged.
 

@@ -6,7 +6,7 @@ metadata:
 ---
 # Ramp exposure
 
-Read ask-never-guess, output-contract and ramp-evidence.
+Read ask-never-guess, output-contract and ramp-evidence. Read speaking-to-person.
 
 1. Begin with `wl ramp begin --for <scope> --file <plan.json> --json`. Standalone entry supplies a description and --owner. Read `wl ramp schema` and confirm environment, flag/manual control, audiences, thresholds, units and windows. The default 0/internal/10/50/100 sequence is a suggestion, never an approval.
 2. Read the pinned ramp.criteria content. A prepared launch also requires its measurement sourceDigest. Do not replace either binding during the run.

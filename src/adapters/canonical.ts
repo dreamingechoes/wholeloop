@@ -1,6 +1,7 @@
 // The canonical harness bundled into the CLI, with its digest and validation.
 import { createHash } from 'node:crypto'
 import { checkBudgets } from '../harness/budgets.js'
+import { checkCommunication, SPEAKING_PROTOCOL } from '../harness/communication.js'
 import { checkFrontmatter } from '../harness/frontmatter.js'
 
 declare const __WL_HARNESS__: Record<string, string>
@@ -21,7 +22,11 @@ export function validateCanonical(files: ReadonlyMap<string, string>) {
     )
       throw new Error('Canonical resource needs a contained bounded harness path')
   const tree = { files, read: (path: string) => files.get(path) }
-  const problems = [...checkBudgets(tree), ...checkFrontmatter(tree)]
+  const problems = [
+    ...checkBudgets(tree),
+    ...checkFrontmatter(tree),
+    ...(files.has(`harness/protocols/${SPEAKING_PROTOCOL}.md`) ? checkCommunication(tree) : []),
+  ]
   if (problems.length)
     throw new Error(
       `Canonical harness validation failed: ${problems.map((problem) => `${problem.file}: ${problem.message}`).join('; ')}`,

@@ -5,4 +5,4 @@
 - ⛔ `sync-tracker-recovery` — Require explicit provider/reference/state and a certified basis. Read a complete revision-bound current state, journal intent before transition, then observe the desired state. Reconcile ambiguity through reads and preserve later external edits; never repeat an uncertain write.
 - ⛔ `sync-conservative-cleanup` — Reuse owned stopped/clean/locally merged worktree pruning outside the state lock. Retain active/dirty/unmerged work and branches; do not stop worker processes or force removal.
 
-Typed hosts and imported observations are trust boundaries, not proof of real server semantics. Preserve normalized source provenance and remaining handoffs.
+Keep imported observations labelled and preserve source references and pending handoffs.
