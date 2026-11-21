@@ -1,6 +1,6 @@
 ---
 name: analyst
-description: Read one pinned measurement source and arrange an impact report without guessing numbers or changing source definitions.
+description: Read one agreed measurement source and arrange an impact report without guessing numbers or changing source definitions.
 metadata:
   wholeloop.capabilities: read
   wholeloop.tier: standard

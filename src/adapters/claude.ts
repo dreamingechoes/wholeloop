@@ -40,12 +40,8 @@ export const claudeAdapter: Adapter = {
   }),
   renderSkill: (_name, content) => {
     const metadata = frontmatter(content)
-    const rewritten = body(content).replace(
-      /\bwl (?=[a-z][a-z-]*(?:\s|$))/g,
-      `node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" `,
-    )
-    const context = `Use shared protocols under \${CLAUDE_PLUGIN_ROOT}/resources/protocols/. When delegating, pass wholeloopRoot=\${CLAUDE_PLUGIN_ROOT} explicitly to each agent. The bundled core owns state; never replace it with another executable found on PATH.\n\n`
-    return { mode: 0o644, content: `---\n${stringify(metadata)}---\n${context}${rewritten}` }
+    const context = `Use shared protocols under \${CLAUDE_PLUGIN_ROOT}/resources/protocols/. When delegating, pass wholeloopRoot=\${CLAUDE_PLUGIN_ROOT} explicitly to each agent. For execution only, replace the leading wl in command notation with node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs". Show short wl commands to the person. The bundled core owns state; never replace it with another executable found on PATH.\n\n`
+    return { mode: 0o644, content: `---\n${stringify(metadata)}---\n${context}${body(content)}` }
   },
   renderAgent: (_name, content, options = {}) => {
     const metadata = frontmatter(content) ?? {}

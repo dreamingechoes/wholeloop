@@ -6,7 +6,7 @@ metadata:
 ---
 # Verify behavior
 
-Read worker-handoffs, headless-gates, ask-never-guess, output-contract, gate-rounds and verification-execution.
+Read worker-handoffs, headless-gates, ask-never-guess, output-contract, gate-rounds and verification-execution. Read speaking-to-person.
 
 1. Begin with `wl verify begin --for <slice-or-part> --json`. Standalone branch use supplies its name, named comparison `--base`, explicit `--owner`, `--by` and agreed `--criteria <wholeloop-criteria.json>`. Missing criteria become a question before mutation. Never invent them from a PR title or test names.
 2. A PR URL needs a host-resolved local named `--branch`; the CLI does not fetch or authenticate it. Preserve the observed PR identity. If the host cannot supply criteria or a checkout ref, ask together and leave the store unchanged.
@@ -15,7 +15,7 @@ Read worker-handoffs, headless-gates, ask-never-guess, output-contract, gate-rou
 5. Dispatch each returned suite jobs entry to read-only `wl-verifier` workers with only that assignment. Start all independent jobs before joining their handles with the native wait primitive; never use fixed sleeps. Ask whether deleting the feature would leave the changed tests green. Core constant-assertion lint is additive, not proof of semantic test sensitivity. Submit exact run/round results through the gate. Refresh the cached suite view for its self-contained examinations; join independent `wl-reviewer` refuters before submitting their votes. A cached view never reruns tests; missing raw output remains unavailable evidence.
 6. `wl gate verdict --for <id> --gate verify --json` seals the round. Actual suite failure remains a blocker even if a worker argues its findings away. Missing workers, changed files and uncertainty never establish approval.
 7. On PASS call `wl verify complete --for <id> --json`; it requires the actual successful suite receipt and current pinned code. On red, hand findings to the builder within the recorded budget; this checker never repairs code itself.
-8. Keep human testing separate. Report absent rendering sources, live-client isolation gaps and other unavailable observations instead of implying coverage.
+8. Keep human testing separate. Report actual missing rendering sources or inaccessible evidence with their effect on the result.
 
 When the conductor explicitly selects headless, use `wl fanout run verify --for
 <id> --engine headless --progress --adapter claude|codex|opencode|copilot|cursor --json` after the same planned inputs and actual suite receipt. The process host submits results/refutations and seals the same core verdict; continue with this skill's completion/handoff instead of dispatching workers twice.

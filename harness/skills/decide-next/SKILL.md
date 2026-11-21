@@ -1,12 +1,12 @@
 ---
 name: decide-next
-description: Challenge the leaning against pinned evidence, record a person's keep/iterate/kill/unflag and close only fully decided work.
+description: Challenge the leaning against agreed evidence, record a person's keep/iterate/kill/unflag and close only fully decided work.
 metadata:
   wholeloop.step: decide-next
 ---
 # Decide what follows
 
-Read worker-handoffs, ask-never-guess, output-contract and learning-decisions.
+Read worker-handoffs, ask-never-guess, output-contract and learning-decisions. Read speaking-to-person.
 
 1. Begin `wl learn begin --for <scope> --leaning <outcome> --json`. Read the original promise, exact checkpoint report, unknowns and pending checkpoints. Complete the latest measured report first. Standalone entry supplies an outcome description, --owner and explicit --reported evidence, never fake measurements.
 2. Read actual learn.decision guidance and the effective profile. Give `wl-challenger` the returned context, four coverage items and strongest case against the leaning. Tone/additional questions change by profile; evidence coverage never shrinks.

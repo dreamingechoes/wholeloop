@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Judge exact pinned planning and decision inputs under the original delegated rubric, without implementation tools or human approval claims.
+description: Judge exact agreed planning and decision inputs under the original delegated rubric, without implementation tools or human approval claims.
 metadata:
   wholeloop.capabilities: read
   wholeloop.tier: deep

@@ -6,7 +6,7 @@ metadata:
 ---
 # Publish a tested draft
 
-Read ask-never-guess, output-contract, draft-publication and environment-effects.
+Read ask-never-guess, output-contract, draft-publication and environment-effects. Read speaking-to-person.
 
 1. Resolve the repository's open-pr.convention and read the actual template. Draft its body in an external, non-secret file with actual validation evidence. Keep the repository's headings and style; do not add tool attribution.
 2. Use `wl pr prepare --for <slice-or-part> --body-file <file> --json`. For a standalone checked-out branch supply `--base`, `--owner` and `--title`; missing facts are batched before mutation. Choose `--provider github|gitlab` or configure providers.codehost. Prepare is local: it never pushes or opens anything.

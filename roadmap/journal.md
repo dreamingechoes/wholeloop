@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-11-21 · P9-08 ✅ · Plain language with step-specific instructions
+
+- **Changed:** all seventeen skills load one short speaking protocol. The vocabulary map is shared with the experience lint; speaking instructions are checked without changing executable commands, private fields or structured examples. All seven rendered catalogs retain the same policy.
+- **Reads:** core-owned declarations move to bounded policy resources and remain linked to their existing enforcers. Runtime protocols retain tool boundaries, actual observations, explicit decisions and recovery actions; the checked startup list excludes unrelated step protocols and core declarations. Provider/evaluation guidance remains conditional.
+- **Presentation:** stale next/status implementation limits and maintainer caveats leave the skills. Descriptions use plain words. Short wl command notation retains private execution through the checked bundled launcher, including the plugin-root route; it installs no alias and changes no permissions.
+- **Decision:** [ADR-0011](../docs/decisions/0011-size-budgets-and-enforcement.md) and [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) record bounded unloaded policy declarations, shared vocabulary and step-only reads. Blanket identifier bans and PATH aliases were rejected because they would damage machine contracts or execution provenance. Existing size budgets and public identities stay unchanged. No new task was added.
+- **Manual evidence:** first-question/plan/answer call limits remain unchecked until the P9-20 live baseline is captured. The manual row also retains seven-client observations of short notation and batched reads; fixtures do not establish native timing, permissions or model behavior.
+- **Verified:** `CHECK PASS in 703s`, 5145 tests in 350 files; `CHECK PASS (fast) in 488s`, 2336 related tests in 122 files. An earlier fast gate stopped on two new lint type errors; the corrected gate retains the existing enforcement finding kind. Four generated references are current with no rewritten output. Terminal examples are unchanged, so no recording was rerendered. macOS arm64 locally; required CI supplies Linux coverage. No signed-in client, model or live source call ran.
+
+---
+
 ## 2026-11-21 · P9-07 ✅ · One core display for every step
 
 - **Changed:** step commands attach wholeloop/display@1 through one shared emitter before serialization. Human output uses its exact text: one bounded header, aligned rows, observed progress, produced artifacts, open questions and the available next step. All thirteen layouts preserve decisions and unavailable evidence; profile style and coordination acknowledgements stay private.

@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Inspect one fixed lens or actively challenge one finding using pinned code, repository guidance and concrete evidence without changing files.
+description: Inspect one fixed lens or actively challenge one finding using agreed code, repository guidance and concrete evidence without changing files.
 metadata:
   wholeloop.capabilities: read
   wholeloop.tier: standard

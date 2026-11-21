@@ -6,7 +6,7 @@ metadata:
 ---
 # Prepare the launch
 
-Read worker-handoffs, ask-never-guess, output-contract and launch-preparation.
+Read worker-handoffs, ask-never-guess, output-contract and launch-preparation. Read speaking-to-person.
 
 1. Use `wl launch begin --for <scope> --json`. Standalone use supplies a shipping description, --owner and an agreed --measurement file from `wl launch schema`. Missing measurement numbers/queries/targets/windows/stages become a question; never invent metrics or earlier Define/merge completion.
 2. Use the scope's exact cut-scopes/spec revision, not the latest unrelated spec. Read the returned measurement digest and actual loaded comms.voice and launch.templates. Restore pinned source/guidance if a resumed run reports drift.

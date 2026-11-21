@@ -67,9 +67,7 @@ describe('canonical client artifact generation', () => {
     const generated = generateAdapter('claude', bundledCanonical(), core, VERSION)
     expect(generated.manifest.skills).toHaveLength(17)
     expect(generated.manifest.agents).toHaveLength(9)
-    expect(generated.files.get('skills/next/SKILL.md')?.content).toContain(
-      `node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next`,
-    )
+    expect(generated.files.get('skills/next/SKILL.md')?.content).toContain('`wl next')
     expect([...generated.files.keys()].some((path) => path.endsWith('.ts'))).toBe(false)
   })
   it('rejects symlinked or oversized build-time resources and excludes workflow source', () =>

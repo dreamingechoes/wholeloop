@@ -5,6 +5,7 @@ export const BUDGETS: readonly { kind: string; pattern: RegExp; maxLines: number
   { kind: 'skill', pattern: /^harness\/skills\/[^/]+\/SKILL\.md$/, maxLines: 120 },
   { kind: 'agent', pattern: /^harness\/agents\/[^/]+\.md$/, maxLines: 60 },
   { kind: 'protocol', pattern: /^harness\/protocols\/[^/]+\.md$/, maxLines: 80 },
+  { kind: 'policy', pattern: /^harness\/policies\/[^/]+\.md$/, maxLines: 80 },
   { kind: 'workflow', pattern: /^harness\/workflows\/[^/]+\.ts$/, maxLines: 150 },
   {
     kind: 'provider guidance',

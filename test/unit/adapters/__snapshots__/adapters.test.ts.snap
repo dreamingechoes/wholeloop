@@ -114,12 +114,12 @@ Use recorded facts.
 name: next
 description: Continue recorded fixture work.
 ---
-Use shared protocols under \${CLAUDE_PLUGIN_ROOT}/resources/protocols/. When delegating, pass wholeloopRoot=\${CLAUDE_PLUGIN_ROOT} explicitly to each agent. The bundled core owns state; never replace it with another executable found on PATH.
+Use shared protocols under \${CLAUDE_PLUGIN_ROOT}/resources/protocols/. When delegating, pass wholeloopRoot=\${CLAUDE_PLUGIN_ROOT} explicitly to each agent. For execution only, replace the leading wl in command notation with node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs". Show short wl commands to the person. The bundled core owns state; never replace it with another executable found on PATH.
 
 # Next
 
 Read core-invariants.
-Call \`node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next --json\`.
+Call \`wl next --json\`.
 <!-- wholeloop:entrypoint@1 -->
 ",
     "mode": 420,
@@ -162,7 +162,7 @@ Call \`node "\${CLAUDE_PLUGIN_ROOT}/bin/wl.mjs" next --json\`.
     {
       "path": "skills/next/SKILL.md",
       "mode": 420,
-      "sha256": "a2fab759d7bf1cbc952240ae090f2f6542fb0231de9188a6e82292ec8a6b07d5"
+      "sha256": "130fc65945d65fa9e0586d5347541fb623d037e83621b2d01d82fbf7fa93cede"
     },
     {
       "path": ".claude-plugin/plugin.json",

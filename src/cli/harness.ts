@@ -1,5 +1,6 @@
 // `wl harness check`: budgets, front matter and the enforcement map.
 import { checkBudgets } from '../harness/budgets.js'
+import { checkCommunication } from '../harness/communication.js'
 import { checkEnforcement, parseEnforcement } from '../harness/enforcement.js'
 import type { Finding } from '../harness/files.js'
 import { checkFrontmatter } from '../harness/frontmatter.js'
@@ -17,6 +18,7 @@ export function harnessCheck(root: string, json: boolean, io: Io): number {
   const findings = [
     ...checkBudgets(tree),
     ...checkFrontmatter(tree),
+    ...checkCommunication(tree),
     ...checkEnforcement(map, tree),
   ]
   if (json) {

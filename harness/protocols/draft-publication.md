@@ -6,4 +6,4 @@
 - ⛔ `pr-repository-convention` — Load the selected repository convention and require nonempty template sections; keep the pinned binding/content digest.
 - ⛔ `pr-no-tool-attribution` — Apply the same authorship policy to PR text as commit messages; never append an assistant credit or generated-with footer.
 
-Use gh/glab's existing credential store and stdin for JSON request bodies. Never copy a token to a config, temporary file, journal or argv. Preserve remote state on errors. The host owns authentication, server permissions and remote races; local fixtures do not establish live publication behavior.
+Use gh/glab's existing credential store and stdin for JSON request bodies. Never copy a token to a config, temporary file, journal or argv. Preserve remote state on errors. Confirm actual access, server permissions and the current remote state before publication.

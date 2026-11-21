@@ -17,6 +17,7 @@ describe('checkBudgets', () => {
   it.each([
     ['harness/agents/builder.md', 61, 'agent'],
     ['harness/protocols/ask.md', 81, 'protocol'],
+    ['harness/policies/core.md', 81, 'policy'],
     ['harness/workflows/gate.ts', 151, 'workflow'],
     ['harness/providers/x/guidance/query.md', 31, 'provider guidance'],
     ['harness/lenses/a11y/prompt.md', 41, 'lens prompt'],
