@@ -9,9 +9,11 @@ description: Observe assigned evidence.
 kind: local
 tools: [ read_file, read_many_files, list_directory, glob, search_file_content, google_web_search, web_fetch ]
 ---
-The main session supplies wholeloopRoot from the checked packaged launcher. Read named protocols under wholeloopRoot/resources/protocols/; canonical wl commands mean Node with wholeloopRoot/bin/wl.mjs. If context is missing, return questions instead of guessing PATH. Canonical model tier: deep; inherit the session model.
+Use only the supplied assignment, required protocol text and observed evidence. Return the exact requested result in your final message; the conductor validates and submits it. If a required tool or input is absent, return unavailable with a reason. Never obtain wider tools or import conversation history.
 
-This observer has no shell, write, memory or MCP tool. Ask the main session for observed command/provider evidence. Gemini subagents cannot nest delegation; return further role work to the main session for sequential execution. If structured questions are unavailable, return plain-text options and wait for answers.
+Canonical model tier: deep; inherit the selected model.
+
+This observer has no shell, write, memory or MCP tool. Ask the main session for observed command/provider evidence. Gemini subagents cannot nest delegation; return further role work to the main session for sequential execution. Return missing inputs to the conductor; never ask the person directly.
 
 # Review
 
@@ -71,7 +73,7 @@ Keep state external.
 name: wl-next
 description: Continue fixture work.
 ---
-Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink. Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. If the skill directory is unavailable, ask; never guess PATH. Supply workers only their assignment and required protocol text, never conversation history.
 
 # Next
 
@@ -116,7 +118,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "agents/wl-reviewer.md",
       "mode": 420,
-      "sha256": "177120039a0908bd721b0addf11fdadd49be2e5c257c53a290b442e357898408"
+      "sha256": "bcc2e8f72098349576d47de00b52e06a2aa8af2b32b19a58b800fc3464215846"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -126,7 +128,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "a70ab248939813c54fdbbbacc2a3ee9a2f192f5f01401a8eed007e070de774f5"
+      "sha256": "6a4a54be892cd7847b72b5fdb4a955ad72d0eb565c64356af7f229d612e6f386"
     },
     {
       "path": "skills/wl-next/scripts/wl.mjs",

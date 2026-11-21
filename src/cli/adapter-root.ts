@@ -3,11 +3,14 @@
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { bundledCanonical } from '../adapters/canonical.js'
 import { adapterFor, artifactDigest } from '../adapters/generate.js'
+import { canonicalRoles, roleInvocationName } from '../adapters/roles.js'
 import { isObject } from '../config/schema.js'
 import { readRegularText } from '../fs/regular-file.js'
 import { canonicalPath } from '../state/paths.js'
 import { VERSION } from '../version.js'
+import type { AdapterContext } from './adapter-context.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
 
@@ -67,6 +70,40 @@ export function packagedClient(executable: string) {
   try {
     const { value } = packagedAdapter(executable)
     return { client: value.target as string, source: 'declared' as const }
+  } catch {
+    return undefined
+  }
+}
+
+/** Package declarations locate resources and roles; they never prove native worker execution. */
+export function packagedContext(
+  executable: string,
+  entrypoint = executable,
+): AdapterContext | undefined {
+  try {
+    const { root, value } = packagedAdapter(executable)
+    const adapter = adapterFor(String(value.target))
+    const overlay =
+      adapter.id === 'claude' && canonicalPath(entrypoint) !== join(root, 'bin/wl.mjs')
+    // Malformed role declarations expose no roles, but never erase the checked client's identity.
+    const agents =
+      Array.isArray(value.agents) && value.agents.every((name) => typeof name === 'string')
+        ? value.agents
+        : []
+    return {
+      root,
+      target: adapter.id,
+      version: VERSION,
+      source: String(value.source),
+      roles: Object.fromEntries(
+        canonicalRoles(bundledCanonical())
+          .filter((role) => agents.includes(adapter.name('agent', role)))
+          .map((role) => [
+            role,
+            roleInvocationName(adapter.id, role, adapter.name('agent', role), overlay),
+          ]),
+      ),
+    }
   } catch {
     return undefined
   }

@@ -4,10 +4,9 @@ import { stringify as yaml } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import { claudeAdapter } from './claude.js'
 import type { Adapter, AdapterCapabilities } from './contracts.js'
+import { agentContext } from './roles.js'
 
 const strip = (content: string) => content.replace(/^---\n[\s\S]*?\n---\n/, '').trimStart()
-const context =
-  'The conductor supplies wholeloopRoot from the packaged adapter root command. For every canonical wl command invoke Node with wholeloopRoot/bin/wl.mjs. Read shared protocols under wholeloopRoot/resources/protocols/. If the root or required evidence is absent, return a question; do not guess PATH or manufacture coverage.\n\n'
 /**
  * OpenCode's own read default asks before .env files; a bare read allow placed after it
  * overrides that ask (observed on 2.2.5). Deny them outright, as the headless inspector does.
@@ -38,7 +37,7 @@ export function renderPortableSkill(content: string) {
   if (`wl-${String(metadata.name)}`.length > 64)
     throw new Error('Namespaced skill names must fit the 64-character skill budget')
   const preamble =
-    'Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.\n\n'
+    'Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink. Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. If the skill directory is unavailable, ask; never guess PATH. Supply workers only their assignment and required protocol text, never conversation history.\n\n'
   return {
     mode: 0o644 as const,
     content: `---\n${yaml({ ...metadata, name: `wl-${String(metadata.name)}` })}---\n${preamble}${strip(content)}`,
@@ -79,7 +78,7 @@ export const codexAdapter: Adapter = {
   renderAgent: (name, content, options = {}) => {
     const { metadata, capabilities, tier } = definition(content)
     const observer = !capabilities.includes('write')
-    const instructions = `${options.runtime === false ? '' : context}Canonical model tier: ${tier}; inherit the current model unless the caller explicitly chooses an available model.\n${observer ? 'This role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\n' : ''}\n${strip(content)}`
+    const instructions = `${options.runtime === false ? '' : agentContext(!observer && capabilities.includes('shell'))}Canonical model tier: ${tier}; inherit the current model unless the caller explicitly chooses an available model.\n${observer ? 'This role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\n' : ''}\n${strip(content)}`
     return {
       mode: 0o644,
       content: toml({
@@ -126,7 +125,7 @@ export const opencodeAdapter: Adapter = {
     }
     return {
       mode: 0o644,
-      content: `---\n${yaml({ description: metadata.description, mode: name === 'conductor' ? 'primary' : 'subagent', permission })}---\n${options.runtime === false ? '' : context}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or edit permission; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
+      content: `---\n${yaml({ description: metadata.description, mode: name === 'conductor' ? 'primary' : 'subagent', permission })}---\n${options.runtime === false ? '' : agentContext(writable && capabilities.includes('shell'))}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or edit permission; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
     }
   },
 }
@@ -153,7 +152,7 @@ export const copilotAdapter: Adapter = {
     ]
     return {
       mode: 0o644,
-      content: `---\n${yaml({ name: options.runtime === false ? name : `wl-${name}`, description: metadata.description, tools, 'include-custom-instructions': true, infer: false })}---\n${options.runtime === false ? '' : context}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or write tool; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
+      content: `---\n${yaml({ name: options.runtime === false ? name : `wl-${name}`, description: metadata.description, tools, 'include-custom-instructions': true, infer: false })}---\n${options.runtime === false ? '' : agentContext(writable && capabilities.includes('shell'))}Canonical model tier: ${tier}; inherit the selected session model. Read-only roles receive no shell or write tool; the conductor supplies observed command/provider results when needed.\n\n${strip(content)}`,
     }
   },
 }

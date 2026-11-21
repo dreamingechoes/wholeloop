@@ -52,7 +52,7 @@ describe('canonical client artifact generation', () => {
       hooks: 'native-and-git-fallback',
     })
     expect(frontmatter(generated.files.get('agents/reviewer.md')?.content ?? '')).toMatchObject({
-      tools: 'Read, Glob, Grep, Bash',
+      tools: 'Read, Glob, Grep',
       permissionMode: 'plan',
       disallowedTools: 'Write, Edit, NotebookEdit, mcp__*',
       model: 'opus',

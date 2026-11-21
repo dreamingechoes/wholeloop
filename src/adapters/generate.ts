@@ -12,6 +12,8 @@ import { cursorAdapter } from './cursor.js'
 import { geminiAdapter } from './gemini.js'
 import { hookArtifacts } from './hooks.js'
 import { codexAdapter, copilotAdapter, opencodeAdapter } from './portable.js'
+import { roleToolProblems } from './role-tools.js'
+import { canonicalRoles, roleInvocationName, roleReferences } from './roles.js'
 import artifactSchema from './schemas/artifacts-v1.json' with { type: 'json' }
 
 export const artifactDigest = (content: string) =>
@@ -45,6 +47,7 @@ export function generateAdapter(
   )
     throw new Error('Bundle a built executable core and a valid package version')
   const adapter = adapterFor(id)
+  const roles = canonicalRoles(canonical)
   const files = new Map<string, RenderedFile>()
   const skills: string[] = []
   const agents: string[] = []
@@ -55,7 +58,14 @@ export function generateAdapter(
       skills.push(adapter.name('skill', skill))
       const path = adapter.paths('skill', skill)
       const rendered = adapter.renderSkill(skill, content)
-      files.set(path, { ...rendered, content: markEntrypoint(rendered.content) })
+      files.set(path, {
+        ...rendered,
+        content: markEntrypoint(
+          roleReferences(rendered.content, roles, (role) =>
+            roleInvocationName(id, role, adapter.name('agent', role)),
+          ),
+        ),
+      })
       if (adapter.launchers) {
         const launcher = posix.join(posix.dirname(path), 'scripts/wl.mjs')
         const relative = posix.relative(posix.dirname(launcher), 'bin/wl.mjs')
@@ -69,6 +79,8 @@ export function generateAdapter(
       agents.push(adapter.name('agent', agent))
       const path = adapter.paths('agent', agent)
       const rendered = adapter.renderAgent(agent, content)
+      const problems = roleToolProblems(rendered.content)
+      if (problems.length) throw new Error(`${id}/${agent}: ${problems.join('; ')}`)
       files.set(path, {
         ...rendered,
         content: markEntrypoint(rendered.content, path.endsWith('.toml') ? 'toml' : 'md'),

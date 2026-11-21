@@ -57,7 +57,7 @@ Rules of thumb:
 name: reviewer
 description: Reviews a change through exactly one lens and returns structured findings. Read-only.
 metadata:
-  wholeloop.capabilities: read shell
+  wholeloop.capabilities: read
   wholeloop.tier: standard
 ---
 ```
@@ -65,6 +65,8 @@ metadata:
 - Capabilities are abstract (`read`, `write`, `shell`, `web`); each adapter maps them to tool names or permissions.
 - **What a role must not do is removed from its capabilities**, not only written in its prompt.
 - The model tier is a hint (`fast` · `standard` · `deep`) mapped per CLI.
+- **Workers return results in their final message.** Supply the exact assignment, schema, required protocol text and observed inputs. The conductor validates and submits the result. Do not instruct a command-disabled role to invoke the CLI, write a result file or create a replacement worker. The renderer refuses incompatible tool instructions; it does not add permissions.
+- **Name the role explicitly.** Canonical skills use `wl-researcher`, `wl-challenger`, `wl-builder` and the other declared roles. Generation renders each client's actual names. Follow `worker-handoffs`; never fork conversation history or substitute the conductor. The explicitly documented headless route handles an omitted native role.
 
 ## Protocols and enforcement
 
@@ -112,7 +114,7 @@ An adapter implements one interface:
 
 Local adapters are src/adapters/claude.ts and src/adapters/portable.ts, with pure renderers and an owned output writer. npm run build embeds bounded canonical resources into the executable; `wl build --target claude --out <directory>` renders a distribution tree. Golden fixtures and a compiled self-contained execution test cover that path.
 
-The same build command accepts codex, opencode and copilot. Tiny skill launchers and adapter root resolve the packaged core through symlinked overlays. Hook registration and actual client conformance remain pending; generated manifests state those gaps explicitly. See [ADR-0047](../decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md).
+The same build command accepts every supported target. Tiny skill launchers resolve the packaged core through symlinked overlays. For the first normal JSON command, put `--with-context` before its command words: `wholeloop/adapter-invocation@1` returns `context.root`, declared `context.roles` and the unchanged command payload as `result`. Read shared protocols from that checked root, then use the same launcher normally. The opt-in requires an unchanged owned package and JSON mode; existing command outputs and the explicit root command stay compatible. Native loading and actual client conformance remain separate evidence. See [ADR-0047](../decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md).
 
 Each adapter ships golden files and a conformance scenario. A new CLI is a new module plus those two; nothing else in the codebase should need to know it exists.
 

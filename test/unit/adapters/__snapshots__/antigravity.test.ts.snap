@@ -12,9 +12,11 @@ subagent: true
 model: inherit
 commandExecutionPolicy: off
 ---
-The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: deep; inherit the selected model.
+Use only the supplied assignment, required protocol text and observed evidence. Return the exact requested result in your final message; the conductor validates and submits it. If a required tool or input is absent, return unavailable with a reason. Never obtain wider tools or import conversation history.
 
-This observer has no shell, write, memory, MCP or delegation tool. Request observed command/provider evidence from the main session. Return additional role work for sequential main-session handoff. If structured questions are unavailable, return plain-text options and wait.
+Canonical model tier: deep; inherit the selected model.
+
+This observer has no shell, write, memory, MCP or delegation tool. Request observed command/provider evidence from the main session. Return additional role work for sequential main-session handoff. Return missing inputs to the conductor; never ask the person directly.
 
 # Review
 
@@ -61,7 +63,7 @@ Report observed evidence.
 name: wl-agy-next
 description: Continue fixture work.
 ---
-Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink. Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. If the skill directory is unavailable, ask; never guess PATH. Supply workers only their assignment and required protocol text, never conversation history.
 
 # Next
 
@@ -106,12 +108,12 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "agents/wl-agy-reviewer.md",
       "mode": 420,
-      "sha256": "2049b65047082a845867f8f4751277f37afc1546273453e4fc8f151a08d7b06f"
+      "sha256": "54f67bbab355529d438675f36c8adef537c1657ede0c7afa4fa808bcf93d1f2f"
     },
     {
       "path": "skills/wl-agy-next/SKILL.md",
       "mode": 420,
-      "sha256": "4cfed73600d53b3055c92612f6174b88d6e3930d942e8694321d67e300067ba8"
+      "sha256": "f38cdf5748ca7257e54e818466f4db52dbc2c5462685ca3095b731ff6d8dd026"
     },
     {
       "path": "skills/wl-agy-next/scripts/wl.mjs",
