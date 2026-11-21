@@ -16,6 +16,12 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 - [ ] Repeat the 2026-11-17 research question in Codex after P9-02–P9-07: one question about sources, read-only workers started together, no unrelated source, the answer first.
 - [x] Decisions: [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md), [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) and [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) accepted by the maintainer on 2026-11-21.
 
+### P9-20 baseline capture
+
+- [ ] On the P9-20 commit, before the UX fixes, run the six-step evaluation on Codex and Claude Code using dedicated signed-in homes; retain native traces, client versions and the source revision outside repositories. No live experience run has been performed. See [evaluation instructions](../test/evals/experience/README.md).
+- [ ] Calibrate token, first-question, call-count and build-gate time budgets from those twelve live traces. Until then, these checks fail explicitly as pending; synthetic fixtures do not establish a baseline.
+- [ ] Inspect native-stream coverage of nested worker usage, sources and permission decisions during each client pass; streams cannot prove actions they do not expose.
+
 ## Per-client native checks (2026-11-08)
 
 `npm run native:check -- <client>` runs the low-quota checks for one installed client: the version (no model), the read-only probe (one short turn) and the standalone framing scenario (one scenario), each only with `--live`. See [V1 acceptance](../docs/v1-acceptance.md#4-let-the-automatic-runner-cover-the-other-clients) for the commands and verdicts. Fake-client tests cover every verdict; a plan-only run against the installed Codex 0.166.0 observed its version and called no model.

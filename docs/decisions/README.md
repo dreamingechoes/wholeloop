@@ -260,6 +260,7 @@
 | [0258](./0258-proportional-depth-and-gate-cost.md) | Proportional depth and gate cost | Accepted | 2026-11-21 |
 | [0256](./0256-person-facing-display-rendered-by-the-core.md) | Person-facing display rendered by the core | Accepted | 2026-11-21 |
 | [0257](./0257-where-project-code-runs.md) | Where project code runs | Accepted | 2026-11-21 |
+| [0259](./0259-observed-experience-budgets.md) | Observed experience budgets | Accepted | 2026-11-21 |
 
 ## Lifecycle
 

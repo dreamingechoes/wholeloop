@@ -3,7 +3,7 @@
 > **Outcome** — A person who installs wholeloop and runs any step, in the terminal or in any supported client, gets a short, readable answer quickly and in proportion to the question: the step uses only the workers, calls, context and sources it needs, asks for the choices that are theirs (sources, providers, guidance), never picks unrelated tools on its own, shows what it costs before spending it, keeps the internal vocabulary to itself and finishes with the answer first. What the documentation shows is what the product does.
 
 > [!NOTE]
-> **Status: ⬜ planned · added on 2026-11-18 for 1.2.0 · open phase.** The task list is not closed: tasks are added as the experience check (P9-20) and the per-client passes (P9-21) find more. The announcement of the package waits for this phase. 1.2.0 was the first factory release in [ADR-0247](../docs/decisions/0247-software-factory-phasing-after-1-0-0.md); the factory moves one minor version later (1.3.0–1.5.0) and keeps its order.
+> **Status: 🔄 in progress · added on 2026-11-18 for 1.2.0 · open phase.** The task list is not closed: tasks are added as the experience check (P9-20) and the per-client passes (P9-21) find more. The announcement of the package waits for this phase. 1.2.0 was the first factory release in [ADR-0247](../docs/decisions/0247-software-factory-phasing-after-1-0-0.md); the factory moves one minor version later (1.3.0–1.5.0) and keeps its order.
 
 ## Why this phase exists
 
@@ -320,16 +320,18 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-20 · Experience check with budgets
 
-**Status:** ⬜ · **Size:** M · **Depends on:** — · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** — · **Release:** 1.2.0
 
 **Goal** — The experience is measured the way a person meets it, and regressions fail a check.
 
 **Acceptance criteria:**
 
 - [ ] `npm run eval:experience` runs research, framing, spec, scopes, slicing and an ad-hoc build in a small fixture application outside this repository, through a client's headless mode, with fixture answers; it refuses without `WHOLELOOP_LIVE_CONFIRM=spend-quota`.
-- [ ] Per step it records wall time, time to the first question or plan, tokens, workers and whether they ran together, tool calls shown, approval prompts, lines of assistant text, raw JSON shown, banned terms, sources used that the person did not choose, and whether the documented questions were asked.
+- [x] Per step it records wall time, time to the first question or plan, tokens, workers and whether they ran together, tool calls shown, approval prompts, lines of assistant text, raw JSON shown, banned terms, sources used that the person did not choose, and whether the documented questions were asked.
 - [ ] A baseline of the current behaviour on Codex and Claude Code is recorded before the fixes of P9-01–P9-05 land.
-- [ ] Budgets fail the check (initially: quick research ≤ 3 minutes and ≤ 3 workers, each Define step ≤ 5 minutes, no source the person did not choose, no fixed sleeps, no raw JSON, no banned terms, final message ≤ 25 lines; budgets for tokens, the first question and the build gates are set from the baseline and only tighten); the transcript parsers are tested with recorded fixtures.
+- [x] Budgets fail the check (initially: quick research ≤ 3 minutes and ≤ 3 workers, each Define step ≤ 5 minutes, no source the person did not choose, no fixed sleeps, no raw JSON, no banned terms, final message ≤ 25 lines; budgets for tokens, the first question and the build gates are set from the baseline and only tighten); the transcript parsers are tested with recorded fixtures.
+
+**Evidence** — `test/unit/experience/experience.test.ts`: 23 parser, budget, concurrency, provenance and refusal tests passed. Offline replay of the synthetic Codex trace reported the expected `Live baseline calibration pending` failure, without launching a client. The six-step runner, fixture application, both native recipes and external observation retention are implemented. Live execution, the current-behaviour baseline and its calibration remain unchecked above and open in [manual verification](./manual-verification.md#p9-20-baseline-capture); no live experience run was made. [ADR-0259](../docs/decisions/0259-observed-experience-budgets.md) records why missing calibration fails instead of using invented ceilings.
 
 **Tests** — Parser and budget tests on recorded transcripts; the live runs go to manual verification.
 

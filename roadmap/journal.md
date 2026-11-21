@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-21 · P9-20 ✅ · Observed experience budgets
+
+- **Changed:** a six-step external fixture evaluation for Codex and Claude Code, native transcript parsers, worker overlap and visible-output measurements, absolute budgets, offline replay and baseline calibration. The entry point refuses live work before launch without explicit quota confirmation; no live experience run was made.
+- **Decision:** [ADR-0259](../docs/decisions/0259-observed-experience-budgets.md) keeps unreported usage, incomplete worker observations and missing live calibration explicit. Synthetic transcripts test the arithmetic and never establish a live baseline. Token, first-question, call-count and build-gate ceilings come from twelve live step traces and can only tighten. Arbitrary initial ceilings and automatic permission grants were rejected.
+- **Acceptance:** locally complete with live execution, the pre-fix reference-client baseline and calibration left in [manual verification](./manual-verification.md#p9-20-baseline-capture). That baseline must use this task's commit before later fixes. Native streams may omit nested activity; the per-client pass checks their limits.
+- **Verified:** `CHECK PASS in 751s`, 4792 tests in 340 files; `CHECK PASS (fast) in 9s` for the final measurement corrections. All 23 focused parser, provenance, budget and refusal tests passed. Offline synthetic replay failed exactly on missing live calibration, as intended. macOS arm64 only; Linux execution remains for CI. The sandboxed repository suite was interrupted after an existing runner lease test failed; the same test passed with process access outside the sandbox.
+
+---
+
 ## 2026-11-21 · Decision · Proportional depth and gate cost (ADR-0258)
 
 - **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) is accepted in full and amends ADR-0010. Cost first falls without touching coverage (deterministic citation checks, cost shown before every fan-out, parallel read-only workers, a cheaper verifier model when mapped, applicability of optional lenses); findings carry `blocker`, `should` or `nit` and only blockers fail a round; and research and gates take an explicit rigor of `quick`, `standard` or `deep`, proposed by the step and confirmed by the person, never set by the profile. `standard` keeps today's coverage, reduced coverage is recorded and shown, and nothing drops below the refutation quorum.
