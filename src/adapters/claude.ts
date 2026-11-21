@@ -2,6 +2,7 @@
 import { stringify } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter } from './contracts.js'
+import { agentContext } from './roles.js'
 
 const tools: Record<string, string[]> = {
   read: ['Read', 'Glob', 'Grep'],
@@ -50,8 +51,15 @@ export const claudeAdapter: Adapter = {
     const metadata = frontmatter(content) ?? {}
     const canonical = (metadata.metadata ?? {}) as Record<string, string>
     const capabilities = (canonical['wholeloop.capabilities'] ?? '').split(/\s+/)
-    const selected = [...new Set(capabilities.flatMap((capability) => tools[capability] ?? []))]
     const writable = capabilities.includes('write')
+    // Plugin agents ignore permissionMode, so observers must not receive a command interface.
+    const selected = [
+      ...new Set(
+        capabilities.flatMap((capability) =>
+          capability === 'shell' && !writable ? [] : (tools[capability] ?? []),
+        ),
+      ),
+    ]
     const native = {
       name: metadata.name,
       description: metadata.description,
@@ -62,9 +70,7 @@ export const claudeAdapter: Adapter = {
         : {}),
     }
     const context =
-      options.runtime === false
-        ? ''
-        : "The conductor must supply wholeloopRoot as this plugin's absolute root. Read named shared protocols under wholeloopRoot/resources/protocols/ and invoke its bundled bin/wl.mjs with Node for every wl command. If that root is missing, return a question instead of guessing PATH.\n\n"
+      options.runtime === false ? '' : agentContext(writable && capabilities.includes('shell'))
     return { mode: 0o644, content: `---\n${stringify(native)}---\n${context}${body(content)}` }
   },
 }

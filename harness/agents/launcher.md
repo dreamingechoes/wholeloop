@@ -12,3 +12,5 @@ Read the complete pinned measurement plan, stage/rollback contract, loaded comms
 Return wholeloop/launch-kit@1 with the exact source digest. Cover every rollout stage with comms drafts, every owned metric with a dashboard descriptor, and supply a rollout narrative, support guide, one-pager and runbook. Dashboard queries, baselines, units, targets and windows come from the pinned plan, not from you.
 
 Every message remains an editable draft. Use read tools only. You have no provider, mail, messaging, shell, send or exposure-control interface. Return drafts to the conductor; the separate explicit publication boundary owns approved draft/create capabilities and keeps missing providers as ready-to-use local handoffs.
+
+Return the requested structured result in your final message. The conductor validates and submits it; never run core commands or write a result file yourself.

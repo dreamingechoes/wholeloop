@@ -4,6 +4,7 @@ import { Document, isSeq, stringify } from 'yaml'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter } from './contracts.js'
 import { renderPortableSkill } from './portable.js'
+import { agentContext } from './roles.js'
 
 /** .agents/skills is shared with Codex; a native namespace keeps both owned overlays usable. */
 export const antigravityAdapter: Adapter = {
@@ -63,8 +64,8 @@ export const antigravityAdapter: Adapter = {
     const context =
       options.runtime === false
         ? ''
-        : `The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
-    const boundary = `${writable ? '' : 'This observer has no shell, write, memory, MCP or delegation tool. Request observed command/provider evidence from the main session. '}Return additional role work for sequential main-session handoff. If structured questions are unavailable, return plain-text options and wait.\n\n`
+        : `${agentContext(writable && capabilities.includes('shell'))}Canonical model tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
+    const boundary = `${writable ? '' : 'This observer has no shell, write, memory, MCP or delegation tool. Request observed command/provider evidence from the main session. '}Return additional role work for sequential main-session handoff. ${options.runtime !== false && !writable ? 'Return missing inputs to the conductor; never ask the person directly.' : 'If structured questions are unavailable, return plain-text options and wait.'}\n\n`
     return {
       mode: 0o644,
       content: `---\n${header.toString({ lineWidth: 0 })}---\n${context}${boundary}${content.replace(/^---\n[\s\S]*?\n---\n/, '').trimStart()}`,

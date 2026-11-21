@@ -5,6 +5,7 @@ import { markEntrypoint } from '../harness/entrypoints.js'
 import { frontmatter } from '../harness/frontmatter.js'
 import type { Adapter, RenderedFile } from './contracts.js'
 import { renderPortableSkill } from './portable.js'
+import { agentContext } from './roles.js'
 
 export const cursorAdapter: Adapter = {
   id: 'cursor',
@@ -45,7 +46,7 @@ export const cursorAdapter: Adapter = {
         {
           mode: 0o644,
           content: markEntrypoint(
-            '---\ndescription: Invoke wholeloop through its checked packaged core and retain observed receipts.\nalwaysApply: false\n---\n# Wholeloop invocation\n\nRead the actual installed SKILL.md and locate its sibling scripts/wl.mjs. Ask that\nlauncher for adapter root before resolving packaged resources; never infer a core\nfrom PATH. Retain explicit human decisions, external runtime state and observed\nevidence. Native installation and a version token do not prove model execution.\n',
+            '---\ndescription: Invoke wholeloop through its checked packaged core and retain observed receipts.\nalwaysApply: false\n---\n# Wholeloop invocation\n\nRead the actual installed SKILL.md and locate its sibling scripts/wl.mjs. Invoke\nthe first normal JSON command with a leading --with-context; use context.root\nfor packaged resources and result for the command payload. Never infer a core\nfrom PATH. Retain explicit human decisions, external runtime state and observed\nevidence. Native installation and a version token do not prove model execution.\n',
           ),
         },
       ],
@@ -62,7 +63,8 @@ export const cursorAdapter: Adapter = {
   renderAgent: (name, content, options = {}) => {
     const metadata = frontmatter(content) ?? {}
     const canonical = (metadata.metadata ?? {}) as Record<string, string>
-    const writable = (canonical['wholeloop.capabilities'] ?? '').split(/\s+/).includes('write')
+    const capabilities = (canonical['wholeloop.capabilities'] ?? '').split(/\s+/)
+    const writable = capabilities.includes('write')
     const header = new Document({
       name: options.runtime === false ? name : `wl-${name}`,
       description: metadata.description,
@@ -73,8 +75,8 @@ export const cursorAdapter: Adapter = {
     const context =
       options.runtime === false
         ? ''
-        : `The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
-    const boundary = `${writable ? '' : 'This observer runs with native readonly permissions. Request observed command/provider evidence from the main session; do not change files, state or services. '}Return additional role work for sequential main-session handoff. If structured questions are unavailable, return plain-text options and wait.\n\n`
+        : `${agentContext(writable && capabilities.includes('shell'))}Canonical model tier: ${canonical['wholeloop.tier'] ?? 'standard'}; inherit the selected model.\n\n`
+    const boundary = `${writable ? '' : 'This observer runs with native readonly permissions. Request observed command/provider evidence from the main session; do not change files, state or services. '}Return additional role work for sequential main-session handoff. ${options.runtime !== false && !writable ? 'Return missing inputs to the conductor; never ask the person directly.' : 'If structured questions are unavailable, return plain-text options and wait.'}\n\n`
     return {
       mode: 0o644,
       content: `---\n${header.toString({ lineWidth: 0 })}---\n${context}${boundary}${content.replace(/^---\n[\s\S]*?\n---\n/, '').trimStart()}`,

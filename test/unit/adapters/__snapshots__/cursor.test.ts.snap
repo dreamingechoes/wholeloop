@@ -23,9 +23,11 @@ model: inherit
 readonly: true
 is_background: false
 ---
-The main session supplies wholeloopRoot from the checked packaged launcher. Read protocols under wholeloopRoot/resources/protocols/ and run canonical wl commands with Node and wholeloopRoot/bin/wl.mjs. Missing context returns a question, never a PATH guess. Canonical tier: deep; inherit the selected model.
+Use only the supplied assignment, required protocol text and observed evidence. Return the exact requested result in your final message; the conductor validates and submits it. If a required tool or input is absent, return unavailable with a reason. Never obtain wider tools or import conversation history.
 
-This observer runs with native readonly permissions. Request observed command/provider evidence from the main session; do not change files, state or services. Return additional role work for sequential main-session handoff. If structured questions are unavailable, return plain-text options and wait.
+Canonical model tier: deep; inherit the selected model.
+
+This observer runs with native readonly permissions. Request observed command/provider evidence from the main session; do not change files, state or services. Return additional role work for sequential main-session handoff. Return missing inputs to the conductor; never ask the person directly.
 
 # Review
 
@@ -74,8 +76,9 @@ alwaysApply: false
 ---
 # Wholeloop invocation
 
-Read the actual installed SKILL.md and locate its sibling scripts/wl.mjs. Ask that
-launcher for adapter root before resolving packaged resources; never infer a core
+Read the actual installed SKILL.md and locate its sibling scripts/wl.mjs. Invoke
+the first normal JSON command with a leading --with-context; use context.root
+for packaged resources and result for the command payload. Never infer a core
 from PATH. Retain explicit human decisions, external runtime state and observed
 evidence. Native installation and a version token do not prove model execution.
 <!-- wholeloop:entrypoint@1 -->
@@ -87,7 +90,7 @@ evidence. Native installation and a version token do not prove model execution.
 name: wl-next
 description: Continue fixture work.
 ---
-Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink. Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. If the skill directory is unavailable, ask; never guess PATH. Supply workers only their assignment and required protocol text, never conversation history.
 
 # Next
 
@@ -132,12 +135,12 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "agents/wl-reviewer.md",
       "mode": 420,
-      "sha256": "fecff8b6b846de3a38768d73bee96f2d1d59da18af6620b8de0b83f8210a9153"
+      "sha256": "be170b0d60ef30ec64e68ba0871753ba2750cb9bfe19a23a49b320db5c9d5d3f"
     },
     {
       "path": "skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "9403b0b86f7401e7c2c3b37348c54b3c076a1680e9a2f6d93302f84bf4eb679d"
+      "sha256": "ee01401fe5f0d08f0247d820326cefccb124aee3623885b7aac9a7722f7a1b18"
     },
     {
       "path": "skills/wl-next/scripts/wl.mjs",
@@ -157,7 +160,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "rules/wholeloop.mdc",
       "mode": 420,
-      "sha256": "c4ef7fa9a48aa820a9900815a83cc2d087088e9b2e53b50aaf2d09888de61b1e"
+      "sha256": "08f3c74e99e7ac5fb7a50ef807cd5185db1921cfda78dfcdde8c24857d1d7c07"
     },
     {
       "path": "hooks/hooks.json",

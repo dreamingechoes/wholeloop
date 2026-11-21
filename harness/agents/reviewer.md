@@ -16,3 +16,5 @@ Recheck prior blockers against current code even when their original lines are a
 In refute mode, actively test the assigned finding's argument. Refute only with counter-evidence; uncertainty and silence do not remove a finding. Correctness and security require every assigned verifier to refute, rather than a bare majority.
 
 Use read-only tools. Never repair files, weaken the pinned rubric, manufacture human approval or publish a comment. Preserve unexpected mutations for inspection.
+
+Return the requested structured result in your final message. The conductor validates and submits it; never run core commands or write a result file yourself.

@@ -1,0 +1,11 @@
+# Worker handoffs
+
+- ⛔ `named-assignment-only-workers` — start the named rendered role with only its assignment, required protocol text, result schema and exact observed inputs. Never fork full conversation history or substitute a copy of the conductor. A missing role or required tool uses an explicitly available checked headless route or returns unavailable; it never widens permissions.
+- ⛔ `worker-results-return-to-conductor` — workers return the requested structured result in their final message. The conductor validates its identity and schema, writes any required input file outside repositories, and submits it through the core. A returned result is a claim, not a command receipt, approval or evidence of an unobserved action.
+- ⛔ `rendered-role-tool-contract` — rendered instructions must not require a tool disabled by the rendered role configuration. Refuse an incompatible render; never grant a tool just to make an instruction executable. Missing tools or inputs remain unavailable evidence.
+
+Canonical role references are `wl-researcher`, `wl-challenger`, `wl-builder`, `wl-verifier`, `wl-reviewer`, `wl-analyst`, `wl-launcher` and `wl-planner`. The adapter renders the client's actual names. Start that role explicitly, with a fresh context and only the assigned work. If the host cannot provide fresh assignment-only context, use its explicitly selected checked headless route or return unavailable. No role may recover private inputs or authority from another conversation.
+
+Read-only workers receive observed command/provider output when their own tools cannot obtain it. The conductor prepares definition challenge plans and loads their schemas before handing them off. Keep unavailable evidence explicit. Workers never launch the shared suite, mutate the store, submit results or create another worker to recover missing capabilities.
+
+For research, the conductor submits each final result and examination vote under its exact planned identity. For gates, it submits each unit result and independent refutation under the pinned run and round. The same rule applies to learning challenges, launch kits and measurement observations. Headless transports already own these submissions; do not submit or dispatch them twice.

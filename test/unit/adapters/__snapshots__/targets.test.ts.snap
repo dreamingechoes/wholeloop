@@ -5,7 +5,7 @@ exports[`additional tier-A render targets > codex matches its native golden tree
   ".codex/agents/wl-reviewer.toml": {
     "content": "name = "wl-reviewer"
 description = "Observe the assigned fixture."
-developer_instructions = "The conductor supplies wholeloopRoot from the packaged adapter root command. For every canonical wl command invoke Node with wholeloopRoot/bin/wl.mjs. Read shared protocols under wholeloopRoot/resources/protocols/. If the root or required evidence is absent, return a question; do not guess PATH or manufacture coverage.\\n\\nCanonical model tier: deep; inherit the current model unless the caller explicitly chooses an available model.\\nThis role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\\n\\n# Review\\n\\nReturn concrete evidence.\\n"
+developer_instructions = "Use only the supplied assignment, required protocol text and observed evidence. Return the exact requested result in your final message; the conductor validates and submits it. If a required tool or input is absent, return unavailable with a reason. Never obtain wider tools or import conversation history.\\n\\nCanonical model tier: deep; inherit the current model unless the caller explicitly chooses an available model.\\nThis role cannot obtain a separate native sandbox from its custom-agent file. Use a read-only parent or the checked headless gate transport for repository inspection; a prompt alone does not enforce read-only access. Never repair source or report inaccessible evidence as observed.\\n\\n# Review\\n\\nReturn concrete evidence.\\n"
 
 [features]
 shell_tool = false
@@ -51,7 +51,7 @@ Retain evidence.
 name: wl-next
 description: Continue fixture work.
 ---
-Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink. Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. If the skill directory is unavailable, ask; never guess PATH. Supply workers only their assignment and required protocol text, never conversation history.
 
 # Next
 
@@ -94,7 +94,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": ".codex/agents/wl-reviewer.toml",
       "mode": 420,
-      "sha256": "2c4d40df94564e46db8ce0010caf7d6eff310abf7d032e258dca702e1a25a15d"
+      "sha256": "79771c64ecdbe082833dbca7e9e94afc08f18733cb3d7a05dcf57dbfa8d65f21"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -104,7 +104,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "7e72cdb720952201f725ee1266712dcef4692c638d7745c45d381843e3e06720"
+      "sha256": "f7dd8e73046714f71cb78db7390715ea1c8b2295b2b3302de0c18e71056ee4e8"
     },
     {
       "path": "skills/wl-next/scripts/wl.mjs",
@@ -149,7 +149,7 @@ tools:
 include-custom-instructions: true
 infer: false
 ---
-The conductor supplies wholeloopRoot from the packaged adapter root command. For every canonical wl command invoke Node with wholeloopRoot/bin/wl.mjs. Read shared protocols under wholeloopRoot/resources/protocols/. If the root or required evidence is absent, return a question; do not guess PATH or manufacture coverage.
+Use only the supplied assignment, required protocol text and observed evidence. Return the exact requested result in your final message; the conductor validates and submits it. If a required tool or input is absent, return unavailable with a reason. Never obtain wider tools or import conversation history.
 
 Canonical model tier: deep; inherit the selected session model. Read-only roles receive no shell or write tool; the conductor supplies observed command/provider results when needed.
 
@@ -249,7 +249,7 @@ Retain evidence.
 name: wl-next
 description: Continue fixture work.
 ---
-Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink. Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. If the skill directory is unavailable, ask; never guess PATH. Supply workers only their assignment and required protocol text, never conversation history.
 
 # Next
 
@@ -292,7 +292,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "com.github.copilot/agents/wl-reviewer.agent.md",
       "mode": 420,
-      "sha256": "cd57664f829286060cb5db3eeb17411bbfe2574751b325154123354a4017cccd"
+      "sha256": "378f1a6be1091b04fc74e6fdfebc619457a4ef70e6a3340afb163ae82034489c"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -302,7 +302,7 @@ await import(new URL("../../../bin/wl.mjs", import.meta.url))
     {
       "path": "skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "7e72cdb720952201f725ee1266712dcef4692c638d7745c45d381843e3e06720"
+      "sha256": "f7dd8e73046714f71cb78db7390715ea1c8b2295b2b3302de0c18e71056ee4e8"
     },
     {
       "path": "skills/wl-next/scripts/wl.mjs",
@@ -362,7 +362,7 @@ permission:
   webfetch: allow
   websearch: allow
 ---
-The conductor supplies wholeloopRoot from the packaged adapter root command. For every canonical wl command invoke Node with wholeloopRoot/bin/wl.mjs. Read shared protocols under wholeloopRoot/resources/protocols/. If the root or required evidence is absent, return a question; do not guess PATH or manufacture coverage.
+Use only the supplied assignment, required protocol text and observed evidence. Return the exact requested result in your final message; the conductor validates and submits it. If a required tool or input is absent, return unavailable with a reason. Never obtain wider tools or import conversation history.
 
 Canonical model tier: deep; inherit the selected session model. Read-only roles receive no shell or edit permission; the conductor supplies observed command/provider results when needed.
 
@@ -389,7 +389,7 @@ export const Wholeloop = async ({ directory }) => ({
 name: wl-next
 description: Continue fixture work.
 ---
-Use the exact directory of this loaded SKILL.md reported by the client. If unavailable, ask for it. Its scripts/wl.mjs launcher imports the packaged core, even through an installed directory symlink. First call that launcher with adapter root --json and pass the returned root to delegated agents. Canonical wl commands below mean this launcher, never an unrelated executable on PATH.
+Use the exact directory of this loaded SKILL.md reported by the client. Its scripts/wl.mjs launcher imports the packaged core, including through an installed symlink. Invoke the first normal command directly with --with-context before the command and --json: context.root locates resources/protocols/, context.roles names installed roles, and result is the unchanged command payload. Later calls use the same launcher without --with-context. If the skill directory is unavailable, ask; never guess PATH. Supply workers only their assignment and required protocol text, never conversation history.
 
 # Next
 
@@ -471,7 +471,7 @@ Retain evidence.
     {
       "path": ".opencode/agents/wl-reviewer.md",
       "mode": 420,
-      "sha256": "f0eeb5b7c7bfec1d9ead652ebc2b686c418614189dc411608373d9a533be7fc9"
+      "sha256": "7de922c8e9b9390c4cdc358ffd3d67c4de33c6fb8107483176fd9c618ac4226a"
     },
     {
       "path": "resources/protocols/core-invariants.md",
@@ -481,7 +481,7 @@ Retain evidence.
     {
       "path": ".opencode/skills/wl-next/SKILL.md",
       "mode": 420,
-      "sha256": "7e72cdb720952201f725ee1266712dcef4692c638d7745c45d381843e3e06720"
+      "sha256": "f7dd8e73046714f71cb78db7390715ea1c8b2295b2b3302de0c18e71056ee4e8"
     },
     {
       "path": ".opencode/skills/wl-next/scripts/wl.mjs",

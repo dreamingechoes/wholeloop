@@ -82,16 +82,18 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-03 · Worker roles that can do their job, on every client
 
-**Status:** ⬜ · **Size:** M · **Depends on:** — · **Release:** 1.2.0
+**Status:** ✅ · **Size:** M · **Depends on:** — · **Release:** 1.2.0
 
 **Goal** — The worker a skill asks for exists in the client with the tools its instructions need, and is the one actually started.
 
 **Acceptance criteria:**
 
-- [ ] A role rendered without a command tool returns its result in its final message and the conductor submits it; its instructions never ask it to run `wl`.
-- [ ] Skills name the role to start (`wl-researcher`, `wl-challenger`, …) and pass only its assignment; they forbid full-history copies of the conductor as workers.
-- [ ] Codex skills call the launcher without a separate `adapter root` step.
-- [ ] A conformance test fails for any adapter whose rendered agent instructions require a tool its rendered configuration disables, on all seven clients.
+- [x] A role rendered without a command tool returns its result in its final message and the conductor submits it; its instructions never ask it to run `wl`.
+- [x] Skills name the role to start (`wl-researcher`, `wl-challenger`, …) and pass only its assignment; they forbid full-history copies of the conductor as workers.
+- [x] Codex skills call the launcher without a separate `adapter root` step.
+- [x] A conformance test fails for any adapter whose rendered agent instructions require a tool its rendered configuration disables, on all seven clients.
+
+**Evidence** — `CHECK PASS in 678s`, 4887 tests in 344 files; `CHECK PASS (fast) in 479s`, 2243 related tests in 119 files. The focused adapter, installation and compatibility suites passed 817 tests in 14 files; the final role-tool suite passed 36 cases, with overlapping coverage. Real rendered roles for all seven clients are checked against their configured tools; an injected CLI requirement fails generation in every command-disabled role fixture. Skills render explicit callable names and fresh assignment boundaries, including Claude's plugin and loose-agent scopes and Antigravity's namespace. All seven full installed catalogs execute the first normal command with checked package context; ordinary output and client attribution remain intact. ADR-0002 and ADR-0047 record final-message return, observer tool restrictions and the optional new invocation envelope. Actual native role loading and context isolation remain explicitly open in manual verification; no native client or model call was made.
 
 **Tests** — The cross-adapter conformance test; rendered-artifact snapshots per client.
 

@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-11-21 · P9-03 ✅ · Usable named worker roles and direct startup
+
+- **Changed:** workers return structured final messages for conductor validation/submission. Read-only roles no longer request CLI commands or result-file writes. Canonical delegating skills name the role, supply only its assignment/protocol/schema and forbid copied conductor history. An unavailable fresh native context uses an explicitly selected checked route or remains unavailable.
+- **Rendering:** generation checks actual tool configuration against command/native-tool requirements and refuses incompatible output. No permission is added. Claude observers omit Bash as well as write tools; plugin permissionMode is supplementary, not the boundary. Callable names distinguish Claude's plugin scope from installed loose agents and preserve Antigravity's namespace. Role names derive from canonical files rather than a second manual list.
+- **Startup:** a leading --with-context on the first packaged JSON command returns wholeloop/adapter-invocation@1 with checked locations, callable roles and the unchanged result. The command runs once; ordinary output, diagnostics, exits and the explicit root command remain compatible. The same checked declaration supplies client attribution even when role metadata is malformed.
+- **Decision:** [ADR-0002](../docs/decisions/0002-open-standards-canonical-source.md) and [ADR-0047](../docs/decisions/0047-self-contained-client-artifacts-and-owned-output-upgrades.md) are amended. Wider worker tools, copied history, automatic client-setting changes and wrapping existing outputs by default were rejected. Only two new schema/output fingerprints are registered; every existing compatibility fingerprint is unchanged.
+- **Verified:** `CHECK PASS in 678s`, 4887 tests in 344 files; `CHECK PASS (fast) in 479s`, 2243 related tests in 119 files. The focused suites passed 817 tests in 14 files, including all seven full installed catalogs, plugin versus loose-agent names, incompatible roles, writers without shell and malformed role metadata retaining client identity. The final role-tool suite passed 36 cases, with overlapping coverage. Seven adapter goldens were reviewed and updated. An earlier fast gate was interrupted to strengthen exact-tool checking; its replacement passed. Generated references remained current. macOS arm64 locally; Linux remains for required CI. Native loading and actual context isolation remain in manual verification. No native or model call ran.
+
+---
+
 ## 2026-11-21 · P9-02 ✅ · Explicit personal guidance and run preferences
 
 - **Changed:** description-only matches are excluded; personal names match complete method aliases or explicit tags and remain optional offers. Wholeloop’s default is first, equivalent content is deduplicated and shared physical folders are walked once. Repository guidance remains automatic within its declared precedence.

@@ -13605,6 +13605,58 @@
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "required": ["schema", "context", "result"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "wholeloop/adapter-invocation@1"
+        },
+        "context": {
+          "type": "object",
+          "required": ["root", "target", "version", "source", "roles"],
+          "properties": {
+            "root": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target": {
+              "type": "string",
+              "enum": ["claude", "codex", "opencode", "copilot", "gemini", "antigravity", "cursor"]
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "roles": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "result": {
+          "type": "object",
+          "required": ["schema"],
+          "properties": {
+            "schema": {
+              "type": "string",
+              "pattern": "^wholeloop/[a-z][a-z0-9-]*@[1-9][0-9]*$"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
     }
   ],
   "$defs": {

@@ -18,6 +18,10 @@ import { pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { bundledCanonical } from '../../../src/adapters/canonical.js'
 import { artifactDigest } from '../../../src/adapters/generate.js'
+import invocationSchema from '../../../src/cli/schemas/adapter-invocation-v1.json' with {
+  type: 'json',
+}
+import { validate } from '../../../src/config/schema.js'
 import { doctor } from '../../../src/diagnostics/doctor.js'
 import { frontmatter } from '../../../src/harness/frontmatter.js'
 import {
@@ -31,6 +35,7 @@ import { type InstallInput, manageInstallation } from '../../../src/installation
 import {
   type InstallContext,
   installationPlan,
+  installedName,
   installLocations,
 } from '../../../src/installation/plan.js'
 import { installationScope, readReceipt, saveReceipt } from '../../../src/installation/receipts.js'
@@ -595,24 +600,20 @@ describe('owned native installation and retained external history', () => {
       expect(existsSync(file.path)).toBe(true)
       expect(readFileSync(backup, 'utf8')).toBe('Changed backup\n')
     }))
-  it.each(targets)(
-    'executes the installed %s launcher and its checked core outside the source tree',
+  it.each(TARGETS)(
+    'executes the installed %s launcher and returns checked context with the first normal command',
     (target) =>
       fixture(({ context, input, env }) => {
-        const result = installed(input([target]))
+        const result = installed(input([target], 'user', true))
         const locations = installLocations(target, context)
-        const launcher = join(locations.skills, 'wl-frame-problem/scripts/wl.mjs')
-        const root = spawnSync(process.execPath, [launcher, 'adapter', 'root', '--json'], {
-          cwd: context.root,
-          env,
-          encoding: 'utf8',
-        })
-        expect(root.status, root.stderr).toBe(0)
-        expect(JSON.parse(root.stdout).target).toBe(target)
+        const skill = readdirSync(locations.skills).find((name) => name.endsWith('frame-problem'))
+        expect(skill).toBeDefined()
+        const launcher = join(locations.skills, skill ?? 'missing', 'scripts/wl.mjs')
         const frame = spawnSync(
           process.execPath,
           [
             launcher,
+            '--with-context',
             'step',
             'begin',
             'frame-problem',
@@ -625,7 +626,74 @@ describe('owned native installation and retained external history', () => {
           { cwd: context.root, env, encoding: 'utf8' },
         )
         expect(frame.status, frame.stderr).toBe(0)
-        expect(JSON.parse(frame.stdout).schema).toBe('wholeloop/step-begin@1')
+        const invocation = JSON.parse(frame.stdout)
+        expect(validate(invocation, invocationSchema)).toEqual([])
+        expect(invocation.context.target).toBe(target)
+        expect(invocation.result.schema).toBe('wholeloop/step-begin@1')
+        const manifest = JSON.parse(
+          readFileSync(join(invocation.context.root, 'wholeloop-artifacts.json'), 'utf8'),
+        )
+        expect(invocation.context.source).toBe(manifest.source)
+        expect(Object.values(invocation.context.roles).sort()).toEqual(
+          Object.keys(invocation.context.roles)
+            .map((role) => installedName(target, 'agent', role))
+            .sort(),
+        )
+        expect(Object.keys(invocation.context.roles)).toHaveLength(manifest.agents.length)
+        const names = readdirSync(locations.agents)
+        for (const name of Object.values(invocation.context.roles))
+          expect(names.some((file) => file.startsWith(`${name}.`))).toBe(true)
+        expect(
+          existsSync(join(invocation.context.root, 'resources/protocols/worker-handoffs.md')),
+        ).toBe(true)
+        if (target === 'codex') expect(invocation.context.roles.launcher).toBeUndefined()
+        const plain = spawnSync(process.execPath, [launcher, 'status', '--json'], {
+          cwd: context.root,
+          env,
+          encoding: 'utf8',
+        })
+        expect(plain.status, plain.stderr).toBe(0)
+        expect(JSON.parse(plain.stdout).schema).toBe('wholeloop/status@1')
+        if (target === 'claude') {
+          const plugin = spawnSync(
+            process.execPath,
+            [join(invocation.context.root, 'bin/wl.mjs'), '--with-context', 'status', '--json'],
+            { cwd: context.root, env, encoding: 'utf8' },
+          )
+          expect(plugin.status, plugin.stderr).toBe(0)
+          expect(JSON.parse(plugin.stdout).context.roles.researcher).toBe('wholeloop:researcher')
+          expect(invocation.context.roles.researcher).toBe('wl-researcher')
+        }
+        if (target === 'codex') {
+          writeFileSync(
+            join(invocation.context.root, 'wholeloop-artifacts.json'),
+            JSON.stringify({ ...manifest, agents: 'invalid' }),
+          )
+          const refused = spawnSync(
+            process.execPath,
+            [
+              launcher,
+              '--with-context',
+              'answer',
+              'decision.fixture=yes',
+              '--remember',
+              'run',
+              '--for',
+              invocation.result.subject.id,
+              '--by',
+              'Owner',
+              '--channel',
+              'fixture',
+              '--json',
+            ],
+            { cwd: context.root, env, encoding: 'utf8' },
+          )
+          const response = JSON.parse(refused.stdout)
+          expect(refused.status).not.toBe(0)
+          expect(response.context.target).toBe('codex')
+          expect(response.context.roles).toEqual({})
+          expect(response.result.message).toContain('An agent cannot supply person attribution')
+        }
         expect(result.conformance).toBe('unverified')
       }),
     10000,

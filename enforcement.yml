@@ -15,6 +15,12 @@
 # enforced by test/unit/experience/experience.test.ts in the ordinary fixture suite.
 version: 1
 rules:
+  - id: named-assignment-only-workers
+    enforcers: [src/adapters/roles.ts#roleReferences, src/fanout/process.ts, src/fanout/host.ts, test/unit/adapters/worker-roles.test.ts, test/unit/fanout/fanout.test.ts]
+  - id: worker-results-return-to-conductor
+    enforcers: [src/fanout/host.ts, test/unit/adapters/worker-roles.test.ts, test/unit/fanout/fanout.test.ts]
+  - id: rendered-role-tool-contract
+    enforcers: [src/adapters/role-tools.ts#roleToolProblems, src/adapters/generate.ts#generateAdapter, test/unit/adapters/worker-roles.test.ts]
   - id: personal-guidance-is-a-choice
     enforcers: [src/discovery/clients.ts#personalFolders, src/discovery/resolve.ts#resolveSlot, src/discovery/run.ts#rememberRunGuidance, src/discovery/content.ts#guidanceText, src/flow/engine.ts#answer, test/unit/discovery/personal-guidance.test.ts]
   - id: delivery-read-observation
@@ -373,7 +379,7 @@ rules:
   - id: distribution-local-preview
     enforcers: [src/adapters/distribution.ts#generateDistribution, src/cli/release.ts#releaseArtifacts, test/unit/adapters/distribution.test.ts]
   - id: artifacts-bundled-core
-    enforcers: [src/adapters/generate.ts#generateAdapter, src/adapters/claude.ts#claudeAdapter, src/cli/adapter-root.ts#adapterRoot, test/unit/adapters/adapters.test.ts, test/unit/adapters/targets.test.ts]
+    enforcers: [src/adapters/generate.ts#generateAdapter, src/adapters/claude.ts#claudeAdapter, src/cli/adapter-root.ts#adapterRoot, src/cli/adapter-root.ts#packagedContext, src/cli/adapter-context.ts#adapterInvocation, test/unit/adapters/adapters.test.ts, test/unit/adapters/targets.test.ts, test/unit/adapters/invocation.test.ts, test/unit/installation/installation.test.ts]
   - id: headless-exact-assignment
     enforcers: [src/fanout/host.ts#HeadlessHost, src/gates/workflow.ts#submit, test/unit/fanout/fanout.test.ts]
   - id: headless-bounded-workers

@@ -13,6 +13,7 @@ Start with [V1 acceptance](../docs/v1-acceptance.md) for the ordered trial plan,
 - [ ] Baseline: the experience check (P9-20) is run on its pre-fix revision in Claude Code and in Codex, and its numbers are recorded here. Use the pinned revision below even after later fixes have landed.
 - [ ] The experience check (P9-20) passes its budgets on Claude Code and on Codex.
 - [ ] OpenCode, Copilot, Gemini, Cursor and Antigravity: the experience check is run and its results are recorded here, with any gap filed as a Phase 9 task (P9-21).
+- [ ] P9-03: on all seven native clients, confirm that delegation actually starts the named rendered role with only its assignment, that command-disabled workers return final-message results for conductor submission, and that no full conversation history is copied. Codex's omitted native launch drafter must use its documented checked headless route. Rendered configuration and installed-launcher fixtures pass locally; they do not establish native loading or context isolation.
 - [ ] Repeat the 2026-11-17 research question in Codex after P9-02–P9-07: one question about sources, read-only workers started together, no unrelated source, the answer first.
 - [x] Decisions: [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md), [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) and [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) accepted by the maintainer on 2026-11-21.
 
