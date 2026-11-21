@@ -1,7 +1,7 @@
 # 0258 — Proportional depth and gate cost
 
-- **Status:** Proposed
-- **Date:** 2026-11-18
+- **Status:** Accepted
+- **Date:** 2026-11-21
 
 ## Context
 
@@ -14,20 +14,21 @@
 
 A research question answerable from the repository in a few minutes took 14.6 minutes and about nine workers on 2026-11-17. Part of that came from scheduling and broken worker roles, fixed separately in Phase 9; the rest is this fixed cost.
 
-## Decision (proposed)
+## Decision
 
-Reduce cost first without reducing coverage, then decide whether coverage may vary:
+Reduce cost first without reducing coverage, then let coverage vary only by an explicit choice:
 
 1. **Without changing coverage (no change to ADR-0010):** deterministic checks the core can do itself (code citations at a commit), cost shown before every fan-out, parallel read-only workers, a cheaper model tier for verifiers when the person maps one, and lens applicability by changed paths for optional lenses only.
 2. **Severity of findings:** findings carry `blocker`, `should` or `nit`; only blockers fail a round; the others reach the person in the hand-back. Mandatory lenses (correctness, security) keep fail-safe behaviour. This changes what fails a round, not what is inspected.
-3. **Explicit depth (amends ADR-0010 if accepted):** `quick`, `standard` and `deep` for research and gates, chosen by the person or proposed by the step, never silently by the profile. Reduced coverage is recorded in the artifact and shown in the result ("not independently verified"); nothing is dropped below the existing refutation quorum, so a quick claim is unverified rather than retained or dropped. Verifier counts below three need new schema versions under [ADR-0066](./0066-v1-compatibility-baseline-and-deprecation.md).
+3. **Explicit rigor (amends ADR-0010):** `quick`, `standard` and `deep` for research and gates, chosen by the person or proposed by the step, never silently by the profile. Reduced coverage is recorded in the artifact and shown in the result ("not independently verified"); nothing is dropped below the existing refutation quorum, so a quick claim is unverified rather than retained or dropped. Verifier counts below three need new schema versions under [ADR-0066](./0066-v1-compatibility-baseline-and-deprecation.md).
 
-Points 1 and 2 can be accepted independently of point 3.
+The setting is called rigor, not depth, because the profile already has a `depth` dial that sets vocabulary and level of detail. `standard` is the default and keeps today's coverage; `quick` and `deep` are always chosen or confirmed by the person for that run.
 
 ## Alternatives rejected
 
 - **Lower the defaults silently.** It would change what a verdict means without the person knowing.
-- **Let the interaction profile choose depth.** ADR-0010 exists so that a gentler profile never means weaker checks; depth must be an explicit, visible choice.
+- **Let the interaction profile choose rigor.** ADR-0010 exists so that a gentler profile never means weaker checks; rigor must be an explicit, visible choice.
+- **Name the setting depth.** It would collide with the profile's `depth` dial, which changes vocabulary, and suggest that a profile preset sets it.
 
 ## Consequences
 

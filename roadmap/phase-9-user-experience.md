@@ -26,7 +26,7 @@ Inspecting the client's run logs and the code, and walking every step in an isol
 - **Spend only what the step needs.** The fewest workers, tool calls, files, tokens and approval prompts that keep its guarantees; independent work runs together; nothing waits on a clock; each worker gets only its assignment.
 - **Show the cost before spending it.** Workers, model and an estimate, before any fan-out.
 - **Measure before and after.** The experience check (P9-20) records the current behaviour first, so every fix is judged by numbers rather than impressions.
-- **Never trade a guarantee for speed silently.** Anything that reduces checks goes through proposal 0258 and is visible in the result.
+- **Never trade a guarantee for speed silently.** Anything that reduces checks is an explicit rigor choice ([ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)), recorded and visible in the result.
 - **Every client, not only one.** Each fix lands in the canonical skill, the core or the adapter layer, with a conformance check for all seven clients.
 
 ## Decisions needed
@@ -34,7 +34,7 @@ Inspecting the client's run logs and the code, and walking every step in an isol
 | Topic | Options | Record |
 | --- | --- | --- |
 | Where project code runs | Decided 2026-11-21: every execution of project code in Docker by default, supervised or autonomous; steps that only read never need Docker; host execution only as an explicit, recorded choice for supervised steps, never for the runner | [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) |
-| Depth and cost against ADR-0010 | Three parts accepted separately: cost cuts that keep coverage (deterministic checks, cost preview, cheaper verifier model, applicability of optional lenses); severity of findings, so only blockers fail a round; and explicit depth levels whose reduced coverage is recorded and shown. Without the third part, the floor for any research question stays one worker per source plus three verifiers per load-bearing claim | proposal 0258 |
+| Depth and cost against ADR-0010 | Decided 2026-11-21, all three parts: cost cuts that keep coverage (deterministic checks, cost preview, cheaper verifier model, applicability of optional lenses); severity of findings, so only blockers fail a round; and an explicit rigor choice (`quick`, `standard`, `deep`) per run, never set by the profile, whose reduced coverage is recorded and shown | [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) |
 | Documented interactions that do not exist | Implement them (setup detection, codehost and analytics; Define publication target; `next` path) or remove them from the documentation | P9-18 |
 
 Until a decision is accepted, its tasks wait and the current behaviour stays documented as it is.
@@ -44,7 +44,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 1. **Baseline:** the experience check's harness and a recorded run of the current behaviour (P9-20), so the fixes are measured against it.
 2. **What broke the trial:** P9-01–P9-05. Parallel workers without sleeps, working roles and asked sources alone should take the 2026-11-17 question from 14.6 minutes to about three or four.
 3. **What the person reads:** P9-06–P9-10 and P9-22.
-4. **Cost and guarantees:** P9-11–P9-17, as their decisions are accepted.
+4. **Cost and guarantees:** P9-11–P9-17.
 5. **Truth and every client:** P9-18, P9-19 and P9-21, with the experience check passing its budgets.
 
 ## P9-01 · A store the client can write
@@ -243,7 +243,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 **Acceptance criteria:**
 
 - [ ] `research submit` verifies each code citation: the file exists at the commit, the range is valid and the excerpt matches; a failed citation is reported on the claim.
-- [ ] The check adds to the current verifiers; whether it may replace any of them is decided in proposal 0258.
+- [ ] The check adds to the current verifiers; how it reduces verifier work follows point 1 of [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md).
 
 **Tests** — Citation fixtures: valid, missing file, wrong range, edited excerpt.
 
@@ -278,15 +278,15 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-17 · Proportional depth and gate cost
 
-**Status:** ⬜ · **Size:** L · **Depends on:** P9-13, P9-14 · **Release:** 1.2.0 · **Decision:** proposal 0258
+**Status:** ⬜ · **Size:** L · **Depends on:** P9-13, P9-14 · **Release:** 1.2.0 · **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md)
 
 **Goal** — A small question or change costs little, and any reduced check is recorded and visible.
 
-**Acceptance criteria (subject to the decision):**
+**Acceptance criteria:**
 
-- [ ] Research triages between a quick answer from the repository and a full brief; the choice and its coverage appear in the result.
+- [ ] Research and gates take a rigor of `quick`, `standard` (default, today's coverage) or `deep`, proposed by the step from the question or change and confirmed by the person; the profile never sets it, and the chosen rigor and its coverage appear in the result.
 - [ ] Findings carry a severity; only blockers fail a round; others reach the person in the hand-back; mandatory lenses keep fail-safe behaviour.
-- [ ] Optional review lenses apply by change size and paths; verifier counts below three exist only under new schema versions and only if accepted.
+- [ ] Optional review lenses apply by change size and paths; verifier counts below three exist only under new schema versions.
 
 **Tests** — Gate aggregation tables per severity; lens applicability tables; schema compatibility tests.
 

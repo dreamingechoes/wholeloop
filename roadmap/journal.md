@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-11-21 · Decision · Proportional depth and gate cost (ADR-0258)
+
+- **Decision:** [ADR-0258](../docs/decisions/0258-proportional-depth-and-gate-cost.md) is accepted in full and amends ADR-0010. Cost first falls without touching coverage (deterministic citation checks, cost shown before every fan-out, parallel read-only workers, a cheaper verifier model when mapped, applicability of optional lenses); findings carry `blocker`, `should` or `nit` and only blockers fail a round; and research and gates take an explicit rigor of `quick`, `standard` or `deep`, proposed by the step and confirmed by the person, never set by the profile. `standard` keeps today's coverage, reduced coverage is recorded and shown, and nothing drops below the refutation quorum.
+- **Naming:** the setting is rigor, not depth, because the profile's `depth` dial already sets vocabulary and level of detail.
+- **Why:** without explicit rigor, any research question costs one worker per source plus three verifiers per load-bearing claim; a question answerable from the repository in a few minutes should cost about one worker.
+- **Next:** no decision is open in [Phase 9](./phase-9-user-experience.md) except P9-18's implement-or-remove choices; the order starts with the baseline (P9-20) and P9-01–P9-05.
+
+---
+
 ## 2026-11-21 · Decision · Person-facing display rendered by the core (ADR-0256)
 
 - **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) is accepted. Every step command's payload gains a versioned `display` block and its text at 80 columns; the same renderer produces the CLI's human output; skills show `display.text` verbatim, add only what the person needs to decide and never narrate internal fields or raw JSON. ADR-0010's output contract still holds, with the preflight and receipt shown as the header and produced lines; while workers run, only one progress line per finished worker is shown.
