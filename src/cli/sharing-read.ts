@@ -20,6 +20,16 @@ export function sharedRead(
   } catch {
     throw new Error('Cannot read bounded shared-read observation; contents omitted')
   }
+  return sharedObservation(value, ref, provider, kind)
+}
+
+/** The same normalized observation contract applies to a streamed or stored response. */
+export function sharedObservation(
+  value: unknown,
+  ref: string,
+  provider: string,
+  kind: string,
+): OperationResult {
   if (
     !isObject(value) ||
     Object.keys(value).some(

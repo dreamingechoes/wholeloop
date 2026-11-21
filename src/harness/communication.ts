@@ -40,6 +40,22 @@ export function personInstructionProblems(content: string): { line: number; mess
   return findings
 }
 
+/** Legacy files stay readable, but canonical small-result instructions must avoid scratch writes. */
+export function streamInputProblems(content: string): string[] {
+  const problems: string[] = []
+  for (const match of content.matchAll(/`([^`]+)`/g)) {
+    const command = (match[1] ?? '').replace(/\s+/g, ' ').trim()
+    if (
+      /^wl (?:frame (?:draft|finalize)|gate submit|research (?:submit|examine|complete)|build plan|learn challenge|measure (?:observe|format)|ramp (?:observe|confirm)|share reconcile|sync)\b/.test(
+        command,
+      ) &&
+      /(?:^| )--file(?: |$)/.test(command)
+    )
+      problems.push('Small step payload instructions must use --stdin or existing answer options')
+  }
+  return problems
+}
+
 export function checkCommunication(tree: HarnessTree): Finding[] {
   const findings: Finding[] = []
   const add = (file: string, message: string, line?: number) =>
@@ -47,6 +63,7 @@ export function checkCommunication(tree: HarnessTree): Finding[] {
   const speaking = tree.read(`harness/protocols/${SPEAKING_PROTOCOL}.md`)
   for (const [file, content] of tree.files) {
     if (!ENTRYPOINT.test(file) && !PROTOCOL.test(file)) continue
+    for (const problem of streamInputProblems(content)) add(file, problem)
     if (file !== `harness/protocols/${SPEAKING_PROTOCOL}.md`)
       for (const finding of personInstructionProblems(content))
         add(file, finding.message, finding.line)

@@ -9,6 +9,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitStep } from './presentation.js'
 
 export function roundOverrides(value: string): Partial<Record<GateKind, number>> {
@@ -47,9 +48,9 @@ export function gateCommand(
     const workflow = new GateWorkflow(new FlowEngine(new StateStore(), root))
     let payload: unknown
     if (action === 'submit') {
-      if (positional.length || !value('--file'))
+      if (positional.length || !hasJsonInput(options))
         throw new CliError('Provide --file <submission.json>')
-      const data: unknown = JSON.parse(readFileSync(value('--file') ?? '', 'utf8'))
+      const data: unknown = jsonInput(options)
       if (
         !isObject(data) ||
         Object.keys(data).some((key) => !['run', 'round', 'result', 'vote'].includes(key)) ||

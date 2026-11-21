@@ -187,6 +187,7 @@ export class ImpactWorkflow {
     })
     return {
       schema: 'wholeloop/impact-begin@1',
+      scratch: begun.payload.scratch,
       status: 'planned' as const,
       subject,
       plan,

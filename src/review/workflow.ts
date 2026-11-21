@@ -112,6 +112,7 @@ export class ReviewWorkflow {
     return {
       ...result,
       schema: 'wholeloop/review-begin@1',
+      scratch: start.payload.scratch,
       status: 'planned' as const,
       questions: [],
       subject,

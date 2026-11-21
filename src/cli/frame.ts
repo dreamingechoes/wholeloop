@@ -11,6 +11,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import type { Io } from './io.js'
+import { jsonInput } from './json-input.js'
 import { emitStep } from './presentation.js'
 
 export function frameCommand(
@@ -38,7 +39,11 @@ export function frameCommand(
   const subject = options['--for'],
     artifact = options['--artifact'],
     file = options['--file']
-  if (typeof subject !== 'string' || typeof artifact !== 'string' || typeof file !== 'string')
+  if (
+    typeof subject !== 'string' ||
+    typeof artifact !== 'string' ||
+    (typeof file !== 'string' && options['--stdin'] !== true)
+  )
     throw new CliError(
       'Provide --for <initiative> --artifact <draft.md> --file <decision-or-review.json>',
     )
@@ -50,7 +55,7 @@ export function frameCommand(
   let content: string, input: unknown
   try {
     content = read(artifact, 1024 * 1024)
-    input = JSON.parse(read(file, 65536))
+    input = jsonInput(options, { limit: 65536, readFile: (path) => read(path, 65536) })
   } catch {
     throw new CliError('Use regular bounded draft and non-secret JSON files; contents omitted')
   }

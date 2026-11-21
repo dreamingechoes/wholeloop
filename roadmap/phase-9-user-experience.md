@@ -372,7 +372,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-22 · Fewer calls and files per step
 
-**Status:** ⬜ · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
+**Status:** 🔄 · **Size:** M · **Depends on:** P9-07 · **Release:** 1.2.0
 
 **Goal** — A step does its bookkeeping in as few `wl` calls as possible, and the person does not watch the agent write JSON files.
 

@@ -11,7 +11,7 @@ Read worker-handoffs, ask-never-guess, output-contract and learning-decisions. R
 1. Begin `wl learn begin --for <scope> --leaning <outcome> --json`. Read the original promise, exact checkpoint report, unknowns and pending checkpoints. Complete the latest measured report first. Standalone entry supplies an outcome description, --owner and explicit --reported evidence, never fake measurements.
 2. Read actual learn.decision guidance and the effective profile. Give `wl-challenger` the returned context, four coverage items and strongest case against the leaning. Tone/additional questions change by profile; evidence coverage never shrinks.
 3. Record wholeloop/learning-challenge@1 using `wl learn challenge --for <id>
-   --file <counterargument.json> --json`. It must cite the exact plan event, oppose the current leaning, name another outcome and explain argument/limits. Stale evidence or changed guidance/profile requires explicit re-planning.
+   --stdin --json`. It must cite the exact plan event, oppose the current leaning, name another outcome and explain argument/limits. Stale evidence or changed guidance/profile requires explicit re-planning.
 4. Show the counterargument and evidence to the person. Record `wl learn decide
    keep|iterate|kill|unflag --for <id> --basis <challenge-event> --by <person>
    --reason <reason> --ack <unknown-key-array> --json`. A written reason and acknowledgment of every unknown/pending checkpoint are mandatory.

@@ -69,6 +69,8 @@ export function withCommandAttribution<T>(
   const channel = options['--channel'],
     stdin = options['--rationale-stdin'],
     file = options['--rationale-file']
+  if (options['--stdin'] === true && stdin !== undefined)
+    throw new CliError('Payload and rationale cannot both consume standard input', EXIT.input)
   if (channel === undefined && stdin === undefined && file === undefined) return action()
   if (
     !ATTRIBUTED_COMMANDS.has(command) ||

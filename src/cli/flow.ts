@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { isObject } from '../config/schema.js'
 import { FlowEngine } from '../flow/engine.js'
 import type { FrameOutcome } from '../framing/contract.js'
+import { ResearchWorkflow } from '../research/workflow.js'
 import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
@@ -50,6 +51,8 @@ export function flowCommand(
     else {
       const name = require(positional[0], 'a step name')
       if (command === 'step begin') {
+        if (options['--with-plan'] === true && name !== 'research')
+          throw new CliError('--with-plan is supported for research only', EXIT.input)
         const mode = value('--mode') ?? 'standalone'
         if (mode !== 'standalone' && mode !== 'flow')
           throw new CliError('--mode must be standalone or flow')
@@ -68,6 +71,12 @@ export function flowCommand(
         })
         payload = result.payload
         code = result.code
+        if (options['--with-plan'] === true && result.code === EXIT.ok && result.payload.subject) {
+          const plan = new ResearchWorkflow(engine).plan(result.payload.subject.id, {
+            ...(value('--client') ? { client: value('--client') as string } : {}),
+          })
+          payload = { ...result.payload, plan }
+        }
       } else if (command === 'step skip')
         payload = engine.skip(
           name,

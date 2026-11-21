@@ -6,6 +6,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitStep } from './presentation.js'
 
 export function researchCommand(
@@ -41,28 +42,39 @@ export function researchCommand(
         ...(typeof options['--client'] === 'string' ? { client: options['--client'] } : {}),
       })
     } else if (command === 'research complete') {
+      if (
+        options['--stdin'] === true &&
+        ['--answer', '--recommendation', '--basis'].some((key) => options[key] !== undefined)
+      )
+        throw new CliError('Use --stdin or conclusion answer options, not both')
       const supplied = ['--answer', '--recommendation', '--basis'].some(
         (key) => options[key] !== undefined,
       )
       payload = workflow.complete(
         subject,
-        supplied
-          ? {
-              schema: 'wholeloop/research-conclusion@1',
-              basis: options['--basis'],
-              answer: options['--answer'],
-              recommendation: options['--recommendation'],
-            }
-          : undefined,
+        options['--stdin'] === true
+          ? jsonInput(options)
+          : supplied
+            ? {
+                schema: 'wholeloop/research-conclusion@1',
+                basis: options['--basis'],
+                answer: options['--answer'],
+                recommendation: options['--recommendation'],
+              }
+            : undefined,
       )
     } else {
-      const file = options['--file']
-      if (typeof file !== 'string') throw new CliError('Provide --file <json-report>', EXIT.input)
-      // A linked report is still accepted, as before; the check and the read share one descriptor.
-      const report = readRegularText(file, 1024 * 1024, { follow: true })
-      if (report === undefined)
-        throw new CliError('Research reports must be regular files under 1 MiB')
-      const value: unknown = JSON.parse(report)
+      if (!hasJsonInput(options))
+        throw new CliError('Provide --file <json-report> or --stdin', EXIT.input)
+      const value = jsonInput(options, {
+        limit: 1024 * 1024,
+        readFile: (file) => {
+          const report = readRegularText(file, 1024 * 1024, { follow: true })
+          if (report === undefined)
+            throw new CliError('Research reports must be regular files under 1 MiB')
+          return report
+        },
+      })
       payload =
         command === 'research submit'
           ? workflow.submit(subject, value)

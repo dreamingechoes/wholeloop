@@ -9,6 +9,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitStep } from './presentation.js'
 
 export async function rampCommand(
@@ -54,8 +55,8 @@ export async function rampCommand(
       value('--at'),
     )
   } else if (command === 'ramp observe' || command === 'ramp confirm') {
-    if (!value('--file')) throw new Error('Provide --file <normalized-read-responses.json>')
-    const supplied = read(value('--file') ?? '')
+    if (!hasJsonInput(options)) throw new Error('Provide --file <normalized-read-responses.json>')
+    const supplied = jsonInput(options)
     if (
       !supplied ||
       typeof supplied !== 'object' ||

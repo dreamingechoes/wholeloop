@@ -2,7 +2,7 @@
 import { isObject } from '../config/schema.js'
 import type { StepName } from '../flow/registry.js'
 import { displayDetails } from './details.js'
-import { renderDisplay } from './render.js'
+import { type Display, renderDisplay } from './render.js'
 
 export const STEP_LABELS: Record<StepName, string> = {
   research: 'Research',
@@ -80,7 +80,13 @@ export function stepDisplay(
   command: string,
   payload: Record<string, unknown>,
   args: readonly string[] = [],
-) {
+): Display {
+  if (
+    command === 'step begin' &&
+    record(payload.plan).schema &&
+    value(payload.schema) === 'wholeloop/step-begin@1'
+  )
+    return stepDisplay('research plan', record(payload.plan), args)
   const receipt = record(payload.receipt ?? payload.completion)
   const context = record(payload.context)
   const report = record(payload.report ?? receipt.report)

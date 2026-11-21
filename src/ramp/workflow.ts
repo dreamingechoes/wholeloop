@@ -132,6 +132,7 @@ export class RampWorkflow {
     })
     return {
       schema: 'wholeloop/ramp-begin@1',
+      scratch: begun.payload.scratch,
       status: 'planned' as const,
       subject,
       run,

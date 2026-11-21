@@ -21,7 +21,13 @@ import {
   framingMatches,
   validateFrameOutcome,
 } from '../framing/contract.js'
-import { type FrameReview, validateFrameReview } from '../framing/finalize.js'
+import {
+  FRAME_DECISION_SCHEMA,
+  FRAME_REVIEW_SCHEMA,
+  type FrameReview,
+  validateFrameReview,
+} from '../framing/finalize.js'
+import { scratchDirectory } from '../fs/scratch.js'
 import { impactReceipt } from '../impact/report.js'
 import { launchReceipt } from '../launch/artifacts.js'
 import { LaunchWorkflow } from '../launch/workflow.js'
@@ -327,6 +333,9 @@ export class FlowEngine {
           configuration,
           presets: loaded.presets,
         }),
+        ...(name === 'frame-problem'
+          ? { inputSchemas: { decision: FRAME_DECISION_SCHEMA, review: FRAME_REVIEW_SCHEMA } }
+          : {}),
         bindings,
         guidanceSources: inventory.otherClients,
         templateSource,
@@ -454,7 +463,11 @@ export class FlowEngine {
             data: { run, brief: source.id, artifact: sourceArtifact.data.artifact.path },
           })
       return {
-        payload: { ...payload, subject: { id, kind: subject?.kind ?? step.kind } },
+        payload: {
+          ...payload,
+          scratch: scratchDirectory(this.store.files.root, run),
+          subject: { id, kind: subject?.kind ?? step.kind },
+        },
         code: EXIT.ok,
       }
     }) satisfies Parameters<StateStore['transaction']>[0]

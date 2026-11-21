@@ -16,6 +16,16 @@ Reads make no store writes and establish no native acceptance. See the [overview
 
 Displayed item approval commands include optional `answer --basis <event-id>`. The writer transaction checks that it still matches the pending decision before appending an approval. Person and outcome inputs remain explicit.
 
+## Small step inputs and temporary artifacts
+
+**Small non-secret JSON** can go through --stdin instead of a scratch file: framing decisions and final reviews, gate results/votes, research results/examinations/conclusions, builder plans/criteria, learning challenges, environment declarations and normalized ramp, measurement, sharing and synchronization observations. Existing file flags and schemas stay compatible, including a file literally named `-`. Use exactly one input mode. Invalid input is refused without echoing its contents; normal ownership, source, workspace and approval checks still run.
+
+Standard input is at most **1 MiB**, except framing decisions/reviews and shared target lists (**64 KiB**) and shared observations (**2 MiB**). A decision payload and --rationale-stdin cannot share one stream; keep the existing separate file or answer mode when a rationale is required.
+
+**Preparation needs one observation.** `step begin research --with-plan` returns the first research plan alongside the usual contract; missing owner/guidance questions still stop before planning and source choices still precede workers. Framing begin returns inputSchemas for its decision and final review. Review begin already includes its review and assignments; read review input again only for a changed round or missing resumption context.
+
+Ready begin/prepare results return **scratch**, one stable directory per store/run under the operating system's temporary root, outside repositories and the private state store. It is not created until a large artifact is needed. Keep all remaining temporary artifacts there and write them quietly; stream small payloads without echoing them. Only the core writes private runtime state. The seven generated clients share these instructions; their live experience and call budgets remain in manual verification.
+
 ## Person-facing display
 
 Every step command carries a **display** (`wholeloop/display@1`): one header, aligned label/value rows, optional observed progress, produced artifacts, open questions and the available next step. Its `text` is the same plain text the terminal prints without `--json`, at 80 terminal cells. Skills forward that text verbatim; profile style instructions and internal state identifiers stay in machine fields. The shared emitter renders the operation's structured result before its single serialization, with no extra store query or command execution. Decisions still block continuation, unavailable checks stay visible, and formatting changes no approval or evidence.

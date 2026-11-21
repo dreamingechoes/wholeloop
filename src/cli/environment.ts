@@ -1,5 +1,4 @@
 // `wl env`: declares writes outside the repository and reports them.
-import { readFileSync } from 'node:fs'
 import { isAbsolute, resolve } from 'node:path'
 import { isObject } from '../config/schema.js'
 import type { EnvironmentWrite } from '../environment/contracts.js'
@@ -8,6 +7,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitStep } from './presentation.js'
 
 export function environmentCommand(
@@ -23,11 +23,10 @@ export function environmentCommand(
   try {
     let payload: ReturnType<EnvironmentLedger['declare']> | ReturnType<EnvironmentLedger['report']>
     if (command === 'env declare') {
-      if (typeof options['--file'] !== 'string')
-        throw new Error('Provide --file <non-secret-declaration.json>')
+      if (!hasJsonInput(options)) throw new Error('Provide --file <non-secret-declaration.json>')
       let input: unknown
       try {
-        input = JSON.parse(readFileSync(options['--file'], 'utf8'))
+        input = jsonInput(options)
       } catch {
         throw new Error('Cannot read a valid environment declaration; contents omitted')
       }

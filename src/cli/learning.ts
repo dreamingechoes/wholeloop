@@ -9,6 +9,7 @@ import { StateStore } from '../state/store.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitStep } from './presentation.js'
 
 export function learningCommand(
@@ -61,8 +62,8 @@ export function learningCommand(
         : {}),
     })
   else if (command === 'learn challenge') {
-    if (!value('--file')) throw new Error('Provide --file <counterargument.json>')
-    payload = workflow.challenge(subject ?? '', read(value('--file') ?? '') as LearningChallenge)
+    if (!hasJsonInput(options)) throw new Error('Provide --file <counterargument.json>')
+    payload = workflow.challenge(subject ?? '', jsonInput(options) as LearningChallenge)
   } else if (command === 'learn decide') {
     if (!positional[0]) throw new Error('Choose keep|iterate|kill|unflag')
     payload = {

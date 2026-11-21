@@ -13,8 +13,9 @@ import { setup } from '../utilities/setup.js'
 import type { parseArguments } from './arguments.js'
 import { CliError } from './errors.js'
 import { EXIT, type Io } from './io.js'
+import { hasJsonInput, jsonInput } from './json-input.js'
 import { emitCommand } from './presentation.js'
-import { sharedRead } from './sharing-read.js'
+import { sharedObservation, sharedRead } from './sharing-read.js'
 import { statusSummary } from './summary.js'
 
 export function utilityCommand(
@@ -41,7 +42,7 @@ export function utilityCommand(
       const engine = new FlowEngine(store, root)
       if (command === 'next') {
         const input = positional[0]
-        if (value('--file')) {
+        if (hasJsonInput(options)) {
           if (!input || !/^https?:\/\//i.test(input))
             throw new CliError('next --file requires an HTTPS work URL')
           const provider = value('--provider')
@@ -50,7 +51,14 @@ export function utilityCommand(
             throw new CliError('Provide --provider and --kind docs|tracker')
           const adopted = new SharingWorkflow(engine).importRead(
             input,
-            sharedRead(value('--file') ?? '', input, provider, kind),
+            options['--stdin'] === true
+              ? sharedObservation(
+                  jsonInput(options, { limit: 2 * 1024 * 1024 }),
+                  input,
+                  provider,
+                  kind,
+                )
+              : sharedRead(value('--file') ?? '', input, provider, kind),
             {
               provider,
               kind,

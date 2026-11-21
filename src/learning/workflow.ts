@@ -110,6 +110,7 @@ export class LearningWorkflow {
     })
     return {
       schema: 'wholeloop/learning-begin@1',
+      scratch: begun.payload.scratch,
       status: 'planned' as const,
       subject,
       context: this.context(subject),

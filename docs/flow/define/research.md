@@ -25,6 +25,8 @@ Independent angles run concurrently at every interaction pace when the client su
 
 **Skip it when** the problem and a plausible success signal are already clear. [`frame-problem`](./frame-problem.md) can start from a sentence and calls `research` itself when it judges the problem too hard to frame directly.
 
+**The first plan comes with begin.** `wl step begin research --with-plan` returns the usual questions and contract plus its first source plan when ready. Source confirmation still precedes investigation. Worker results and examination votes use --stdin against the same schemas; resumption without a returned plan can still inspect research plan. See [small step inputs](../../architecture/core-cli.md#small-step-inputs-and-temporary-artifacts).
+
 ## How it works
 
 ```mermaid
