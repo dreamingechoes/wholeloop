@@ -1,7 +1,7 @@
 # 0256 — Person-facing display rendered by the core
 
-- **Status:** Proposed
-- **Date:** 2026-11-18
+- **Status:** Accepted
+- **Date:** 2026-11-21
 
 ## Context
 
@@ -11,12 +11,13 @@ A trial of `wl-research` in Codex on 2026-11-17 showed the result: the person re
 
 Presentation has one right answer for a given payload, which by [ADR-0003](./0003-deterministic-core-cli.md) belongs in the core with a test, not in a prompt.
 
-## Decision (proposed)
+## Decision
 
 - Every step command's payload gains a versioned `display` block: `header`, `rows`, optional `progress`, `produced`, `open` and `next`, plus `text`, the block rendered as plain text at 80 columns. The block is additive to the existing schemas.
 - The same renderer produces the human output of the CLI without `--json`, so the terminal and every client show identical text.
 - While workers run, `progress` gives one line per finished worker and the elapsed time; the skill shows those lines and nothing else until the result.
 - The output contract changes: a skill shows `display.text` verbatim for each command it runs, adds only what the person needs to decide, and never narrates internal fields or shows raw JSON. The preflight becomes the header line; the profile style block is for the agent only.
+- The output contract of [ADR-0010](./0010-interaction-profile-never-changes-coverage.md) still holds: the preflight and the receipt are always shown, now as the `display` header and its produced lines. `verbosity` changes only the explanation around `display`, never `display` itself.
 - A banned-terms list for person-facing text is kept beside the renderer; the experience check (P9-20) lints transcripts against it.
 
 ## Alternatives rejected

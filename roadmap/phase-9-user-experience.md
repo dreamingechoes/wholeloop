@@ -136,7 +136,7 @@ Until a decision is accepted, its tasks wait and the current behaviour stays doc
 
 ## P9-07 · Person-facing display rendered by the core
 
-**Status:** ⬜ · **Size:** L · **Depends on:** — · **Release:** 1.2.0 · **Decision:** proposal 0256
+**Status:** ⬜ · **Size:** L · **Depends on:** — · **Release:** 1.2.0 · **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md)
 
 **Goal** — Every client shows the same short, readable text for every step, written by `wl`.
 

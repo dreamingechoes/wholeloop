@@ -4,6 +4,14 @@
 
 ---
 
+## 2026-11-21 · Decision · Person-facing display rendered by the core (ADR-0256)
+
+- **Decision:** [ADR-0256](../docs/decisions/0256-person-facing-display-rendered-by-the-core.md) is accepted. Every step command's payload gains a versioned `display` block and its text at 80 columns; the same renderer produces the CLI's human output; skills show `display.text` verbatim, add only what the person needs to decide and never narrate internal fields or raw JSON. ADR-0010's output contract still holds, with the preflight and receipt shown as the header and produced lines; while workers run, only one progress line per finished worker is shown.
+- **Why:** each model improvised the presentation from payloads full of internal fields, which was most of the noise in the 2026-11-17 trial; presentation has one right answer per payload, so it belongs in the core with snapshot tests.
+- **Next:** P9-07 is no longer waiting on a decision; P9-08 and P9-09 follow it. Proposal 0258 is the only open decision in [Phase 9](./phase-9-user-experience.md).
+
+---
+
 ## 2026-11-21 · Decision · Where project code runs (ADR-0257)
 
 - **Decision:** [ADR-0257](../docs/decisions/0257-where-project-code-runs.md) is accepted and amends ADR-0245. Every execution of project code runs in Docker by default, supervised or autonomous, including the tests and scripts builder and verifier workers run, through a `wl` command in a per-slice environment kept warm. Steps that only read (research, framing, specification, scopes, slicing, review, Rollout and Learn) never check for Docker. A person may choose host execution for a supervised run or repository; it is shown before the step, recorded and displayed as not isolated. The autonomous runner never allows it.
