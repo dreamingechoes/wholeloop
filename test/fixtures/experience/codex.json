@@ -1,0 +1,159 @@
+{
+  "schema": "wholeloop/experience-trace@1",
+  "provenance": "synthetic",
+  "step": "research",
+  "wallMs": 4000,
+  "exitCode": 0,
+  "chosenSources": ["codebase"],
+  "requiredQuestions": ["sources"],
+  "client": "codex",
+  "events": [
+    {
+      "atMs": 0,
+      "event": {
+        "type": "thread.started",
+        "thread_id": "example-thread"
+      }
+    },
+    {
+      "atMs": 1,
+      "event": {
+        "type": "turn.started"
+      }
+    },
+    {
+      "atMs": 100,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "q",
+          "type": "agent_message",
+          "text": "Which sources should I use?\nPlan: inspect title normalization."
+        }
+      }
+    },
+    {
+      "atMs": 200,
+      "event": {
+        "type": "item.started",
+        "item": {
+          "id": "spawn-a",
+          "type": "collab_tool_call",
+          "tool": "spawn_agent"
+        }
+      }
+    },
+    {
+      "atMs": 210,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "spawn-a",
+          "type": "collab_tool_call",
+          "tool": "spawn_agent",
+          "receiver_thread_ids": ["a"]
+        }
+      }
+    },
+    {
+      "atMs": 220,
+      "event": {
+        "type": "item.started",
+        "item": {
+          "id": "spawn-b",
+          "type": "collab_tool_call",
+          "tool": "spawn_agent"
+        }
+      }
+    },
+    {
+      "atMs": 230,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "spawn-b",
+          "type": "collab_tool_call",
+          "tool": "spawn_agent",
+          "receiver_thread_ids": ["b"]
+        }
+      }
+    },
+    {
+      "atMs": 300,
+      "event": {
+        "type": "item.started",
+        "item": {
+          "id": "read",
+          "type": "command_execution",
+          "command": "cat titles.js"
+        }
+      }
+    },
+    {
+      "atMs": 350,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "read",
+          "type": "command_execution",
+          "command": "cat titles.js",
+          "aggregated_output": "{\"internal\":\"tool output only\"}"
+        }
+      }
+    },
+    {
+      "atMs": 1800,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "wait-a",
+          "type": "collab_tool_call",
+          "tool": "wait",
+          "agents_states": {
+            "a": {
+              "status": "completed"
+            }
+          }
+        }
+      }
+    },
+    {
+      "atMs": 1900,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "wait-b",
+          "type": "collab_tool_call",
+          "tool": "wait",
+          "agents_states": {
+            "b": {
+              "status": "completed"
+            }
+          }
+        }
+      }
+    },
+    {
+      "atMs": 2000,
+      "event": {
+        "type": "item.completed",
+        "item": {
+          "id": "answer",
+          "type": "agent_message",
+          "text": "The function trims leading and trailing spaces.\nInternal spaces are preserved."
+        }
+      }
+    },
+    {
+      "atMs": 2100,
+      "event": {
+        "type": "turn.completed",
+        "usage": {
+          "input_tokens": 1000,
+          "output_tokens": 90,
+          "cached_input_tokens": 500
+        }
+      }
+    }
+  ]
+}

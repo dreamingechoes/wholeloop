@@ -1,0 +1,155 @@
+{
+  "schema": "wholeloop/experience-trace@1",
+  "provenance": "synthetic",
+  "step": "research",
+  "wallMs": 4000,
+  "exitCode": 0,
+  "chosenSources": ["codebase"],
+  "requiredQuestions": ["sources"],
+  "client": "claude",
+  "events": [
+    {
+      "atMs": 0,
+      "event": {
+        "type": "system",
+        "subtype": "init"
+      }
+    },
+    {
+      "atMs": 100,
+      "event": {
+        "type": "assistant",
+        "message": {
+          "id": "q",
+          "content": [
+            {
+              "type": "text",
+              "text": "Which sources should I use?\nPlan: inspect title normalization."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "atMs": 200,
+      "event": {
+        "type": "assistant",
+        "message": {
+          "id": "tasks",
+          "content": [
+            {
+              "type": "tool_use",
+              "id": "a",
+              "name": "Agent",
+              "input": {
+                "prompt": "Read titles.js"
+              }
+            },
+            {
+              "type": "tool_use",
+              "id": "b",
+              "name": "Agent",
+              "input": {
+                "prompt": "Read the tests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "atMs": 300,
+      "event": {
+        "type": "assistant",
+        "message": {
+          "id": "read",
+          "content": [
+            {
+              "type": "tool_use",
+              "id": "r",
+              "name": "Read",
+              "input": {
+                "file_path": "titles.js"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "atMs": 350,
+      "event": {
+        "type": "user",
+        "message": {
+          "content": [
+            {
+              "type": "tool_result",
+              "tool_use_id": "r",
+              "content": "{\"internal\":\"tool output only\"}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "atMs": 1800,
+      "event": {
+        "type": "user",
+        "message": {
+          "content": [
+            {
+              "type": "tool_result",
+              "tool_use_id": "a",
+              "content": "Spaces trimmed."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "atMs": 1900,
+      "event": {
+        "type": "user",
+        "message": {
+          "content": [
+            {
+              "type": "tool_result",
+              "tool_use_id": "b",
+              "content": "Three tests."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "atMs": 2000,
+      "event": {
+        "type": "assistant",
+        "message": {
+          "id": "answer",
+          "content": [
+            {
+              "type": "text",
+              "text": "The function trims leading and trailing spaces.\nInternal spaces are preserved."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "atMs": 2100,
+      "event": {
+        "type": "result",
+        "is_error": false,
+        "result": "The function trims leading and trailing spaces.\nInternal spaces are preserved.",
+        "usage": {
+          "input_tokens": 500,
+          "output_tokens": 90,
+          "cache_read_input_tokens": 400,
+          "cache_creation_input_tokens": 100
+        },
+        "permission_denials": []
+      }
+    }
+  ]
+}

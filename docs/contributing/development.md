@@ -77,6 +77,8 @@ It is idempotent and preserves an existing hooks path. Check a range with `npm r
 
 ## Other scripts
 
+The [experience evaluation](../../test/evals/experience/README.md) tests transcript parsers and budgets with synthetic fixtures in the ordinary suite. Its live entry point requires a dedicated signed-in client home and explicit quota confirmation; it never runs as part of the repository gate.
+
 | Script | Purpose |
 | --- | --- |
 | `npm run eval:*` | Evaluation corpora and the Docker-backed delivery and runner checks; each prints its own result |

@@ -10,6 +10,9 @@
 # Maintainer skills and agents (maintainer/, ADR-0246) are not harness sources: their
 # budgets, front matter and render sync are enforced by scripts/maintainer.mjs
 # (npm run maintainer:check, a step of npm run check) and test/unit/maintainer/render.test.ts.
+# Repository-only experience budgets and quota refusal (P9-20):
+# src/experience/{transcript,report,budgets}.ts and scripts/check-experience.mjs,
+# enforced by test/unit/experience/experience.test.ts in the ordinary fixture suite.
 version: 1
 rules:
   - id: delivery-read-observation
